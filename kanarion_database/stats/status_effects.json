@@ -15,14 +15,102 @@
     }
   },
 
-  "categories": ["dot", "stat_modifiers", "tempo", "control", "defensive", "immunity", "special"],
+  "categories": ["dot", "hot", "stat_modifiers", "tempo", "control", "defensive", "immunity", "aggro", "special"],
 
   "effects": {
     "dot": {
       "_comment": "Damage over Time - degats physiques ou magiques selon le sort source",
-      "burn": {"name_fr": "Brulure", "polarity": "debuff", "stacking": "stackable", "impl": "done", "damage_type": "magical"},
-      "poison": {"name_fr": "Poison", "polarity": "debuff", "stacking": "stackable", "impl": "done", "damage_type": "magical"},
-      "bleed": {"name_fr": "Saignement", "polarity": "debuff", "stacking": "stackable", "impl": "done", "damage_type": "physical"}
+      "burn": {
+        "name_fr": "Brulure",
+        "name_en": "Burn",
+        "polarity": "debuff",
+        "stacking": "stackable",
+        "max_stacks": 3,
+        "impl": "done",
+        "damage_type": "magical",
+        "formula": "MAG * 0.25 per tick per stack",
+        "tick_interval": 1.0,
+        "description_fr": "Inflige des degats magiques par seconde. Se stack jusqu'a 3. Duree peut etre prolongee/reduite.",
+        "description_en": "Deals magical damage per second. Stacks up to 3. Duration can be extended/reduced.",
+        "sources": ["Mage", "sorts de feu"]
+      },
+      "poison": {
+        "name_fr": "Poison",
+        "name_en": "Poison",
+        "polarity": "debuff",
+        "stacking": "stackable",
+        "max_stacks": 5,
+        "impl": "done",
+        "damage_type": "magical",
+        "formula": "2% max HP per tick per stack",
+        "tick_interval": 1.0,
+        "description_fr": "Inflige des degats bases sur les HP max. Se stack jusqu'a 5. Ignore armure/resist.",
+        "description_en": "Deals max HP-based damage per second. Stacks up to 5. Ignores armor/resist.",
+        "sources": ["Rogue", "Alchemist", "monstres"]
+      },
+      "bleed": {
+        "name_fr": "Saignement",
+        "name_en": "Bleed",
+        "polarity": "debuff",
+        "stacking": "stackable",
+        "max_stacks": 3,
+        "impl": "done",
+        "damage_type": "physical",
+        "formula": "ATK * 0.3 per tick per stack",
+        "tick_interval": 1.0,
+        "description_fr": "Inflige des degats physiques par seconde. Se stack jusqu'a 3. Reduit par armure.",
+        "description_en": "Deals physical damage per second. Stacks up to 3. Reduced by armor.",
+        "sources": ["Warrior", "Rogue", "attaques tranchantes"]
+      },
+      "curse_dot": {
+        "name_fr": "Malediction",
+        "name_en": "Curse",
+        "polarity": "debuff",
+        "stacking": "unique",
+        "max_stacks": 1,
+        "impl": "todo",
+        "damage_type": "magical",
+        "formula": "MAG * 0.2 per tick, EXPLOSION at end = total_damage * 0.5",
+        "tick_interval": 1.0,
+        "duration_modifiable": true,
+        "description_fr": "Degats constants + EXPLOSION a la fin. Duree prolongee = explosion plus forte. Duree reduite = explosion anticipee + SPREAD aux ennemis adjacents.",
+        "description_en": "Constant damage + EXPLOSION at end. Extended duration = stronger explosion. Reduced duration = early explosion + SPREAD to adjacent enemies.",
+        "sources": ["Mage (dark)", "monstres corrompus"],
+        "lore": "Corruption de l'Imitateur qui s'accumule et eclate"
+      },
+      "holy_dot": {
+        "name_fr": "Lumiere Purificatrice",
+        "name_en": "Holy Fire",
+        "polarity": "debuff",
+        "stacking": "unique",
+        "max_stacks": 1,
+        "impl": "todo",
+        "damage_type": "magical",
+        "formula": "tick_1: MAG * 0.1, tick_2: MAG * 0.15, tick_3: MAG * 0.2, ... (croissant)",
+        "tick_interval": 1.0,
+        "duration_modifiable": false,
+        "description_fr": "Degats CROISSANTS par tick. Duree FIXE, ne peut pas etre prolongee ou reduite. Inexorable.",
+        "description_en": "ESCALATING damage per tick. FIXED duration, cannot be extended or reduced. Inexorable.",
+        "sources": ["Healer", "Paladin"],
+        "lore": "Lumiere purificatrice du Createur, brule de plus en plus fort"
+      }
+    },
+
+    "hot": {
+      "_comment": "Heal over Time - soins appliques par sorts",
+      "heal_over_time": {
+        "name_fr": "Soin Continu",
+        "name_en": "Heal over Time",
+        "polarity": "buff",
+        "stacking": "stackable",
+        "max_stacks": 3,
+        "impl": "todo",
+        "formula": "heal_power * 0.2 per tick per stack",
+        "tick_interval": 1.0,
+        "description_fr": "Soigne X HP par seconde. Se stack jusqu'a 3. Applique par sorts de Healer.",
+        "description_en": "Heals X HP per second. Stacks up to 3. Applied by Healer spells.",
+        "sources": ["Healer", "potions"]
+      }
     },
 
     "stat_modifiers": {
@@ -119,11 +207,12 @@
   },
 
   "_summary": {
-    "total": 60,
-    "categories": 8,
+    "total": 63,
+    "categories": 9,
     "by_polarity": {
-      "buff": 30,
-      "debuff": 30
-    }
+      "buff": 31,
+      "debuff": 32
+    },
+    "note": "DoT: 5 (burn, poison, bleed, curse, holy) | HoT: 1 | Others: 57"
   }
 }

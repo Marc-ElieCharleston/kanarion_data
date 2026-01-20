@@ -52,6 +52,7 @@ interface EffectsData {
 
 const CATEGORY_CONFIG: Record<string, { name: string; icon: string; color: string; description: string }> = {
   dot: { name: 'DoT', icon: '🔥', color: 'text-red-400 border-red-500/30', description: 'Damage over Time' },
+  hot: { name: 'HoT', icon: '💚', color: 'text-green-400 border-green-500/30', description: 'Heal over Time' },
   stat_modifiers: { name: 'Stat Modifiers', icon: '📊', color: 'text-blue-400 border-blue-500/30', description: 'Buffs/Debuffs de stats' },
   tempo: { name: 'Tempo', icon: '⚡', color: 'text-yellow-400 border-yellow-500/30', description: 'Attack & Cast speed' },
   control: { name: 'Control (CC)', icon: '🔒', color: 'text-purple-400 border-purple-500/30', description: 'Crowd Control' },
