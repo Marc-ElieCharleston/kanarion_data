@@ -1,9 +1,14 @@
 {
   "_meta": {
-    "version": "3.0",
-    "last_updated": "2026-01-10",
-    "description": "Definition complete de toutes les stats du jeu",
-    "categories": ["resources", "offensive", "defensive", "precision", "support", "special"]
+    "version": "3.3",
+    "last_updated": "2026-01-20",
+    "description": "Definition complete de toutes les stats du jeu avec types de bonus et formules MMO-style",
+    "categories": ["resources", "offensive", "defensive", "precision", "support", "special"],
+    "bonus_types": {
+      "flat": "Ajoute directement a la stat (ex: +50 HP)",
+      "percent": "Multiplie la stat totale (ex: +10% HP)",
+      "both": "Supporte flat ET percent separement"
+    }
   },
 
   "stats": {
@@ -11,24 +16,42 @@
       "hp": {
         "name": "Points de Vie",
         "description": "Sante du personnage. A 0, le personnage meurt.",
-        "point_value": 10
+        "bonus_type": "both",
+        "formula": "hp_final = (base + growth + flat_bonus) × (1 + percent_bonus/100)"
       },
       "mp": {
         "name": "Points de Mana",
         "description": "Ressource pour lancer des competences.",
-        "point_value": 5
+        "bonus_type": "both",
+        "formula": "mp_final = (base + growth + flat_bonus) × (1 + percent_bonus/100)"
       },
       "hp_regen": {
         "name": "Regeneration HP",
         "description": "Points de vie regeneres par seconde hors combat.",
-        "formula": "hp_regen_total = base_hp_regen + equipment + buffs",
-        "base_value": 3.0
+        "bonus_type": "both",
+        "default": 3.0,
+        "formula": "hp_regen_final = (base + flat_bonus) × (1 + percent_bonus/100)"
       },
       "mp_regen": {
         "name": "Regeneration MP",
         "description": "Points de mana regeneres par seconde hors combat.",
-        "formula": "mp_regen_total = base_mp_regen + equipment + buffs",
-        "base_value": 2.0
+        "bonus_type": "both",
+        "default": 2.0,
+        "formula": "mp_regen_final = (base + flat_bonus) × (1 + percent_bonus/100)"
+      },
+      "hp_regen_combat": {
+        "name": "Regen HP Combat",
+        "description": "Points de vie regeneres par seconde EN combat.",
+        "bonus_type": "both",
+        "default": 0,
+        "formula": "hp_regen_combat_final = (base + flat_bonus) × (1 + percent_bonus/100)"
+      },
+      "mp_regen_combat": {
+        "name": "Regen MP Combat",
+        "description": "Points de mana regeneres par seconde EN combat.",
+        "bonus_type": "both",
+        "default": 2.0,
+        "formula": "mp_regen_combat_final = (base + flat_bonus) × (1 + percent_bonus/100)"
       }
     },
 
@@ -36,119 +59,167 @@
       "atk": {
         "name": "Attaque",
         "description": "Puissance des attaques physiques et competences physiques.",
-        "point_value": 1
+        "bonus_type": "both",
+        "formula": "atk_final = (base + growth + flat_bonus) × (1 + percent_bonus/100)"
       },
       "mag": {
         "name": "Magie",
         "description": "Puissance des sorts et soins.",
-        "point_value": 1
+        "bonus_type": "both",
+        "formula": "mag_final = (base + growth + flat_bonus) × (1 + percent_bonus/100)"
       },
       "power": {
         "name": "Puissance",
-        "description": "ATK + MAG combines. Pour classes hybrides.",
-        "formula": "power = atk + mag",
-        "derived": true
+        "description": "ATK + MAG combines. Pour classes hybrides ou scaling universel.",
+        "bonus_type": "none",
+        "derived": true,
+        "formula": "power = atk_final + mag_final"
       },
       "crit": {
-        "name": "Critique",
-        "description": "Chance de coup critique (en %).",
+        "name": "Chance Critique",
+        "description": "Chance de coup critique (en %). Bonus toujours en points.",
+        "bonus_type": "flat",
         "default": 5,
-        "cap": 100
+        "cap": 100,
+        "formula": "crit_final = base + flat_bonus (capped at 100)"
       },
       "crit_dmg": {
         "name": "Degats Critiques",
-        "description": "Multiplicateur des degats critiques (en %).",
-        "default": 150
+        "description": "Multiplicateur des degats critiques (en %). Bonus en points.",
+        "bonus_type": "flat",
+        "default": 150,
+        "formula": "crit_damage = base_damage × (crit_dmg / 100)"
       },
       "damage_percent": {
-        "name": "% Degats",
+        "name": "Bonus Degats %",
         "description": "Bonus multiplicatif aux degats infliges (tous types).",
+        "bonus_type": "flat",
         "default": 0,
-        "cap": 100,
-        "formula": "final_damage = base_damage * (1 + damage_percent / 100)"
+        "cap": 200,
+        "formula": "final_damage = base_damage × (1 + damage_percent/100)"
       },
       "double_hit_chance": {
         "name": "Chance Double Frappe",
-        "description": "Chance de frapper deux fois (style Double Attack RO).",
+        "description": "Chance de frapper deux fois (auto-attack uniquement).",
+        "bonus_type": "flat",
         "default": 0,
-        "cap": 50
+        "cap": 50,
+        "formula": "Si proc: attaque 2x, chaque hit = 100% damage"
       },
       "attack_speed": {
-        "name": "Vitesse d'attaque",
-        "description": "Modificateur de vitesse d'auto-attaque.",
+        "name": "Vitesse d'Attaque",
+        "description": "Multiplicateur de vitesse d'auto-attaque. Pas de cap.",
+        "bonus_type": "percent",
         "default": 1.0,
-        "cap": 3.0,
-        "formula": "interval = 2.0 / attack_speed"
+        "formula": "attack_interval = 2.0 / attack_speed"
       },
       "armor_pen": {
         "name": "Penetration Armure",
-        "description": "Ignore X points d'armure de la cible.",
-        "default": 0
+        "description": "% de l'armure enemie ignoree. Cap pour eviter immortalite des tanks.",
+        "bonus_type": "flat",
+        "default": 0,
+        "cap": 70,
+        "formula": "effective_armor = target.armor × (1 - armor_pen/100)"
       },
       "magic_pen": {
         "name": "Penetration Magique",
-        "description": "Ignore X points de resistance magique de la cible.",
-        "default": 0
+        "description": "% de la resist magique enemie ignoree. Cap pour eviter immortalite.",
+        "bonus_type": "flat",
+        "default": 0,
+        "cap": 70,
+        "formula": "effective_mr = target.magic_resist × (1 - magic_pen/100)"
       },
       "effect_chance": {
         "name": "Chance d'Effet",
-        "description": "Bonus % pour appliquer les CC et debuffs.",
-        "default": 0
+        "description": "Augmente la chance d'appliquer les debuffs et CC. Oppose a effect_resist.",
+        "bonus_type": "flat",
+        "default": 0,
+        "formula": "apply_chance = 100 - (target.effect_resist - attacker.effect_chance)"
+      },
+      "debuff_duration": {
+        "name": "Duree Debuffs",
+        "description": "Augmente la duree des debuffs et CC infliges aux ennemis.",
+        "bonus_type": "flat",
+        "default": 0,
+        "cap": 100,
+        "formula": "debuff_duration_final = base_duration × (1 + debuff_duration/100)"
       },
       "shield_pierce": {
         "name": "Perce-Bouclier",
-        "description": "% des degats qui ignorent le shield.",
+        "description": "% des degats qui ignorent le shield adverse.",
+        "bonus_type": "flat",
         "default": 0,
-        "cap": 100
+        "cap": 100,
+        "formula": "damage_to_hp = total_damage × (shield_pierce/100)"
       },
       "shield_break": {
         "name": "Brise-Bouclier",
         "description": "% de degats bonus infliges aux shields.",
+        "bonus_type": "flat",
         "default": 0,
-        "cap": 100
+        "cap": 200,
+        "formula": "damage_to_shield = total_damage × (1 + shield_break/100)"
       }
     },
 
     "defensive": {
       "def": {
         "name": "Defense",
-        "description": "Reduction brute des degats physiques.",
-        "point_value": 1,
-        "formula": "damage_after_def = max(raw * 0.1, raw - def)"
+        "description": "Reduction FIXE appliquee apres armor/mr. Retire X points de degats (min 10% du coup). Efficace contre les petits coups rapides, moins contre les gros coups.",
+        "bonus_type": "both",
+        "formula": "damage_after_def = max(raw_damage × 0.1, raw_damage - def_final)"
       },
       "armor": {
         "name": "Armure",
-        "description": "Reduction % des degats physiques.",
-        "formula": "damage_reduction = 100 / (100 + armor)"
+        "description": "Reduction POURCENTAGE des degats PHYSIQUES (ATK-based). Scaling logarithmique: 100 armor = 50% reduc, 200 = 66%, 300 = 75%. Peut etre bypass par armor_pen.",
+        "bonus_type": "both",
+        "formula": "phys_reduction% = armor / (armor + 100) × 100"
       },
       "magic_resist": {
         "name": "Resistance Magique",
-        "description": "Reduction % des degats magiques.",
-        "formula": "damage_reduction = 100 / (100 + magic_resist)"
+        "description": "Reduction POURCENTAGE des degats MAGIQUES (MAG-based). Meme scaling que armor: 100 mr = 50% reduc. Peut etre bypass par magic_pen.",
+        "bonus_type": "both",
+        "formula": "magic_reduction% = mr / (mr + 100) × 100"
       },
       "damage_reduction": {
         "name": "Reduction Degats",
         "description": "% reduction de TOUS les degats recus (apres armor/mr).",
+        "bonus_type": "flat",
         "default": 0,
-        "cap": 75
+        "cap": 75,
+        "formula": "final_damage = damage_after_armor × (1 - damage_reduction/100)"
       },
       "block_chance": {
         "name": "Chance Bloquer",
-        "description": "Chance de bloquer (reduit degats de 50%).",
+        "description": "Chance de bloquer une attaque (reduit degats de 50%).",
+        "bonus_type": "flat",
         "default": 0,
-        "cap": 75
+        "cap": 75,
+        "formula": "Si block: damage = damage × 0.5"
       },
       "parry_chance": {
         "name": "Chance Parer",
-        "description": "Chance de parer (annule degats + riposte possible).",
+        "description": "Chance de parer (annule 100% degats, peut declencher riposte).",
+        "bonus_type": "flat",
         "default": 0,
-        "cap": 30
+        "cap": 30,
+        "formula": "Si parry: damage = 0, peut trigger counter-attack"
       },
       "effect_resist": {
         "name": "Resistance aux Effets",
-        "description": "% chance de resister aux CC et debuffs.",
+        "description": "Chance de resister aux debuffs et CC. Oppose a effect_chance.",
+        "bonus_type": "flat",
         "default": 0,
-        "cap": 80
+        "cap": 85,
+        "formula": "resist_chance = effect_resist - attacker.effect_chance"
+      },
+      "tenacity": {
+        "name": "Tenacite",
+        "description": "Reduit la duree des debuffs et CC subis.",
+        "bonus_type": "flat",
+        "default": 0,
+        "cap": 50,
+        "formula": "duration_received = base_duration × (1 - tenacity/100)"
       }
     },
 
@@ -156,29 +227,50 @@
       "hit": {
         "name": "Precision",
         "description": "Chance de toucher la cible. Oppose a Flee.",
+        "bonus_type": "flat",
         "default": 100,
-        "formula": "hit_chance = 80 + (attacker.hit - target.flee)",
+        "formula": "hit_chance% = 80 + (attacker.hit - target.flee)",
         "clamp": {"min": 5, "max": 95}
       },
       "flee": {
         "name": "Esquive",
         "description": "Chance d'esquiver les attaques. Oppose a Hit.",
-        "default": 0
+        "bonus_type": "flat",
+        "default": 0,
+        "formula": "dodge_chance% = 100 - hit_chance%"
       }
     },
 
     "support": {
       "heal_power": {
         "name": "Puissance de Soin",
-        "description": "Bonus flat ajoute aux soins donnes.",
+        "description": "Bonus aux soins donnes.",
+        "bonus_type": "both",
         "default": 0,
-        "formula": "heal = base_heal + heal_power"
+        "formula": "heal_final = (base_heal + heal_power) × (1 + percent_bonus/100)"
+      },
+      "shield_power": {
+        "name": "Puissance de Bouclier",
+        "description": "Bonus aux boucliers crees.",
+        "bonus_type": "both",
+        "default": 0,
+        "formula": "shield_final = (base_shield + shield_power) × (1 + percent_bonus/100)"
       },
       "healing_received": {
         "name": "Soins Recus",
         "description": "% bonus aux soins recus.",
+        "bonus_type": "flat",
         "default": 0,
-        "cap": 50
+        "cap": 100,
+        "formula": "heal_received = incoming_heal × (1 + healing_received/100)"
+      },
+      "buff_duration": {
+        "name": "Duree Buffs",
+        "description": "Augmente la duree des buffs donnes (a soi ou aux allies).",
+        "bonus_type": "flat",
+        "default": 0,
+        "cap": 100,
+        "formula": "buff_duration_final = base_duration × (1 + buff_duration/100)"
       }
     },
 
@@ -186,62 +278,142 @@
       "lifesteal": {
         "name": "Vol de Vie",
         "description": "% des degats physiques convertis en HP.",
+        "bonus_type": "flat",
         "default": 0,
-        "cap": 30
+        "cap": 50,
+        "formula": "hp_gained = physical_damage_dealt × (lifesteal/100)"
       },
       "spell_vamp": {
         "name": "Vampirisme Magique",
-        "description": "% des degats magiques convertis en HP.",
+        "description": "% des degats magiques convertis en HP. Reduit sur AoE.",
+        "bonus_type": "flat",
         "default": 0,
-        "cap": 30,
-        "aoe_effectiveness": 0.33
+        "cap": 50,
+        "aoe_effectiveness": 0.33,
+        "formula": "hp_gained = magic_damage × (spell_vamp/100) × (is_aoe ? 0.33 : 1)"
       },
       "thorns": {
         "name": "Epines",
         "description": "Degats flat renvoyes aux attaquants melee.",
-        "default": 0
+        "bonus_type": "both",
+        "default": 0,
+        "formula": "On melee hit received: attacker takes thorns damage"
       },
       "reflect": {
         "name": "Reflet",
         "description": "% des degats recus renvoyes a l'attaquant.",
+        "bonus_type": "flat",
         "default": 0,
-        "cap": 30
+        "cap": 30,
+        "formula": "reflected_damage = damage_received × (reflect/100)"
       },
       "shield": {
         "name": "Bouclier",
-        "description": "Points de bouclier absorbant tous types de degats.",
-        "default": 0
+        "description": "Points de bouclier temporaire absorbant tous types de degats.",
+        "bonus_type": "flat",
+        "default": 0,
+        "formula": "Absorbe les degats avant HP jusqu'a epuisement"
       },
       "luck": {
         "name": "Chance",
         "description": "Bonus aux drops et petits bonus RNG.",
+        "bonus_type": "flat",
         "default": 0,
-        "effects": {
-          "drop_rate_bonus": "luck * 0.1%",
-          "crit_bonus": "luck * 0.05%"
-        }
+        "formula": "drop_bonus = luck × 0.1%, crit_luck_bonus = luck × 0.05%"
       },
       "cast_speed": {
         "name": "Vitesse Incantation",
         "description": "% reduction du temps d'incantation des sorts.",
+        "bonus_type": "flat",
         "default": 0,
-        "cap": 50
+        "cap": 50,
+        "formula": "cast_time = base_cast_time × (1 - cast_speed/100)"
       },
       "cooldown_reduction": {
         "name": "Reduction Cooldown",
         "description": "% reduction des temps de recharge des skills.",
+        "bonus_type": "flat",
         "default": 0,
-        "cap": 40
+        "cap": 40,
+        "formula": "cooldown = base_cooldown × (1 - cdr/100)"
+      }
+    }
+  },
+
+  "effect_system": {
+    "description": "Systeme de debuffs/CC style MMO - tous les sorts ont 100% de base",
+    "apply_formula": {
+      "step1": "resist_chance = target.effect_resist - attacker.effect_chance",
+      "step2": "apply_chance = 100 - max(0, resist_chance)",
+      "step3": "apply_chance = clamp(apply_chance, 15, 85)",
+      "explanation": "Les sorts ont 100% de chance de base. La difference effect_resist - effect_chance determine la resistance. Minimum 15% pour toujours avoir une chance, maximum 85% pour pouvoir toujours resister."
+    },
+    "duration_formula": {
+      "base": "Les debuffs/CC ont une duree de base en secondes",
+      "attacker_bonus": "duration_after_attacker = base × (1 + attacker.debuff_duration/100)",
+      "defender_reduction": "final_duration = duration_after_attacker × (1 - target.tenacity/100)",
+      "minimum_duration": 0.5,
+      "example": "Stun 3s, attacker +30% debuff_duration, target 20% tenacity: 3 × 1.3 × 0.8 = 3.12s"
+    },
+    "buff_formula": {
+      "base": "Les buffs ont une duree de base en secondes",
+      "caster_bonus": "final_duration = base × (1 + caster.buff_duration/100)",
+      "example": "Buff ATK 10s, caster +50% buff_duration: 10 × 1.5 = 15s"
+    },
+    "effect_categories": {
+      "hard_cc": {
+        "name": "Controle dur",
+        "examples": ["stun", "freeze", "sleep", "petrify", "knockdown"],
+        "can_resist": true,
+        "affected_by_tenacity": true
+      },
+      "soft_cc": {
+        "name": "Controle leger",
+        "examples": ["slow", "silence", "blind", "taunt", "root"],
+        "can_resist": true,
+        "affected_by_tenacity": true
+      },
+      "debuff": {
+        "name": "Debuff",
+        "examples": ["atk_down", "def_down", "poison", "burn", "bleed"],
+        "can_resist": true,
+        "affected_by_tenacity": true,
+        "stacking": "Voir stacking_system"
+      },
+      "buff": {
+        "name": "Buff",
+        "examples": ["atk_up", "def_up", "haste", "regen", "shield"],
+        "can_resist": false,
+        "affected_by_buff_duration": true,
+        "stacking": "Voir stacking_system"
       }
     }
   },
 
   "stacking_system": {
-    "description": "Systeme de stacking gacha-style pour buffs/debuffs",
+    "description": "Systeme de stacking pour buffs/debuffs",
     "value_per_stack": 10,
     "max_stacks": 10,
     "max_total_bonus": 100,
-    "formula": "final_value = base_value * (1 + (stacks * 10 / 100))",
-    "applies_to": ["atk_up", "atk_down", "def_up", "def_down", "mag_up", "mag_down", "haste", "slow", "etc."]
+    "formula": "final_value = base_value × (1 + stacks × 10/100)",
+    "refresh_on_reapply": true,
+    "applies_to": ["atk_up", "atk_down", "def_up", "def_down", "mag_up", "mag_down", "speed_up", "speed_down", "poison", "burn", "bleed", "regen"]
+  },
+
+  "damage_pipeline": {
+    "description": "Ordre de calcul des degats",
+    "steps": [
+      "1. Base damage = ATK/MAG × skill_multiplier",
+      "2. Crit check: if crit, damage × (crit_dmg/100)",
+      "3. Apply damage_percent bonus",
+      "4. Apply penetration (armor_pen ou magic_pen)",
+      "5. Apply target defense (armor ou magic_resist)",
+      "6. Apply target damage_reduction",
+      "7. Block/Parry check",
+      "8. Apply shield absorption",
+      "9. Apply to HP",
+      "10. Trigger lifesteal/spell_vamp",
+      "11. Trigger reflect/thorns"
+    ]
   }
 }
