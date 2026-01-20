@@ -300,22 +300,22 @@ const PATTERNS = {
     },
   },
 
-  // Chain patterns (visual representation) - min 1 cell distance between bounces
+  // Chain patterns - max 1 cell distance between bounces (adjacent only)
   chain_2: {
     name: 'Chain 2',
-    description: 'Rebondit sur 2 cibles (min 1 case entre)',
+    description: 'Rebondit sur 2 cibles adjacentes (max 1 case)',
     category: 'chain',
     getPattern: (rows: number, cols: number) => {
-      // Visual: shows bouncing pattern with distance
-      return [[0, 0], [2 % rows, 2 % cols], [0, cols - 1]];
+      // Visual: shows adjacent bouncing
+      return [[1, 1], [1, 2], [2, 2]];
     },
   },
   chain_3: {
     name: 'Chain 3',
-    description: 'Rebondit sur 3 cibles (min 1 case entre)',
+    description: 'Rebondit sur 3 cibles adjacentes (max 1 case)',
     category: 'chain',
     getPattern: (rows: number, cols: number) => {
-      return [[0, 0], [2 % rows, 1], [0, 2], [2 % rows, 3 % cols]];
+      return [[1, 0], [1, 1], [2, 1], [2, 2]];
     },
   },
 
