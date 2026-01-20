@@ -1,8 +1,13 @@
 {
   "_meta": {
-    "version": "3.0",
-    "last_updated": "2026-01-10",
+    "version": "3.1",
+    "last_updated": "2026-01-20",
     "description": "Tous les buffs/debuffs/DoTs du jeu",
+    "damage_types": {
+      "physical": "Degats physiques (ATK-based)",
+      "magical": "Degats magiques (MAG-based)",
+      "_note": "Pas d'elements (feu/glace/etc). Visuels cosmétiques uniquement."
+    },
     "stacking_system": {
       "refresh": "Reapplying refreshes duration only",
       "stackable": "10% per stack, max 10 stacks = 100%",
@@ -10,92 +15,99 @@
     }
   },
 
-  "categories": ["dot", "stat", "regen", "tempo", "control", "defensive", "special"],
+  "categories": ["dot", "stat_modifiers", "tempo", "control", "defensive", "immunity", "special"],
 
   "effects": {
     "dot": {
-      "_comment": "Damage over Time",
-      "burn": {"name_fr": "Brulure", "polarity": "debuff", "stacking": "stackable", "impl": "done"},
-      "poison": {"name_fr": "Poison", "polarity": "debuff", "stacking": "stackable", "impl": "done"},
-      "bleed": {"name_fr": "Saignement", "polarity": "debuff", "stacking": "stackable", "impl": "done"},
-      "curse_dot": {"name_fr": "Malediction DoT", "polarity": "debuff", "stacking": "stackable", "impl": "v2"},
-      "holy_dot": {"name_fr": "DoT Sacre", "polarity": "debuff", "stacking": "stackable", "impl": "v2"}
+      "_comment": "Damage over Time - degats physiques ou magiques selon le sort source",
+      "burn": {"name_fr": "Brulure", "polarity": "debuff", "stacking": "stackable", "impl": "done", "damage_type": "magical"},
+      "poison": {"name_fr": "Poison", "polarity": "debuff", "stacking": "stackable", "impl": "done", "damage_type": "magical"},
+      "bleed": {"name_fr": "Saignement", "polarity": "debuff", "stacking": "stackable", "impl": "done", "damage_type": "physical"}
     },
 
     "stat_modifiers": {
-      "_comment": "Stackable 10% per stack, max 10 stacks",
-      "atk_up": {"name_fr": "ATK +", "polarity": "buff", "impl": "done"},
-      "atk_down": {"name_fr": "ATK -", "polarity": "debuff", "impl": "done"},
-      "def_up": {"name_fr": "DEF +", "polarity": "buff", "impl": "done"},
-      "def_down": {"name_fr": "DEF -", "polarity": "debuff", "impl": "done"},
-      "mag_up": {"name_fr": "MAG +", "polarity": "buff", "impl": "done"},
-      "mag_down": {"name_fr": "MAG -", "polarity": "debuff", "impl": "done"},
-      "crit_up": {"name_fr": "CRIT +", "polarity": "buff", "impl": "todo"},
-      "crit_down": {"name_fr": "CRIT -", "polarity": "debuff", "impl": "todo"},
-      "armor_up": {"name_fr": "Armure +", "polarity": "buff", "impl": "todo"},
-      "armor_down": {"name_fr": "Armure -", "polarity": "debuff", "impl": "todo"},
-      "magic_resist_up": {"name_fr": "Resist Mag +", "polarity": "buff", "impl": "todo"},
-      "magic_resist_down": {"name_fr": "Resist Mag -", "polarity": "debuff", "impl": "todo"},
-      "hit_up": {"name_fr": "Precision +", "polarity": "buff", "impl": "todo"},
-      "hit_down": {"name_fr": "Precision -", "polarity": "debuff", "impl": "todo"},
-      "accuracy_down": {"name_fr": "Precision -", "polarity": "debuff", "impl": "done", "note": "Alchemist nerve_suppressant"},
-      "flee_up": {"name_fr": "Esquive +", "polarity": "buff", "impl": "todo"},
-      "flee_down": {"name_fr": "Esquive -", "polarity": "debuff", "impl": "todo"},
-      "heal_power_up": {"name_fr": "Soin +", "polarity": "buff", "impl": "todo"},
-      "heal_power_down": {"name_fr": "Soin -", "polarity": "debuff", "impl": "todo"},
-      "damage_percent_up": {"name_fr": "Degats % +", "polarity": "buff", "impl": "todo"},
-      "damage_percent_down": {"name_fr": "Degats % -", "polarity": "debuff", "impl": "todo"},
-      "damage_reduction_up": {"name_fr": "Reduction +", "polarity": "buff", "impl": "todo"},
-      "damage_reduction_down": {"name_fr": "Reduction -", "polarity": "debuff", "impl": "todo"}
+      "_comment": "Stackable 10% per stack, max 10 stacks. Couvre precision physique ET magique.",
+      "atk_up": {"name_fr": "ATK +", "polarity": "buff", "stacking": "stackable", "impl": "done"},
+      "atk_down": {"name_fr": "ATK -", "polarity": "debuff", "stacking": "stackable", "impl": "done"},
+      "def_up": {"name_fr": "DEF +", "polarity": "buff", "stacking": "stackable", "impl": "done"},
+      "def_down": {"name_fr": "DEF -", "polarity": "debuff", "stacking": "stackable", "impl": "done"},
+      "mag_up": {"name_fr": "MAG +", "polarity": "buff", "stacking": "stackable", "impl": "done"},
+      "mag_down": {"name_fr": "MAG -", "polarity": "debuff", "stacking": "stackable", "impl": "done"},
+      "crit_chance_up": {"name_fr": "Crit Chance +", "polarity": "buff", "stacking": "stackable", "impl": "todo"},
+      "crit_chance_down": {"name_fr": "Crit Chance -", "polarity": "debuff", "stacking": "stackable", "impl": "todo"},
+      "crit_damage_up": {"name_fr": "Crit Damage +", "polarity": "buff", "stacking": "stackable", "impl": "todo"},
+      "crit_damage_down": {"name_fr": "Crit Damage -", "polarity": "debuff", "stacking": "stackable", "impl": "todo"},
+      "armor_up": {"name_fr": "Armure +", "polarity": "buff", "stacking": "stackable", "impl": "todo"},
+      "armor_down": {"name_fr": "Armure -", "polarity": "debuff", "stacking": "stackable", "impl": "todo"},
+      "magic_resist_up": {"name_fr": "Resist Mag +", "polarity": "buff", "stacking": "stackable", "impl": "todo"},
+      "magic_resist_down": {"name_fr": "Resist Mag -", "polarity": "debuff", "stacking": "stackable", "impl": "todo"},
+      "hit_up": {"name_fr": "Precision +", "polarity": "buff", "stacking": "stackable", "impl": "todo", "note": "Couvre precision physique et magique"},
+      "hit_down": {"name_fr": "Precision -", "polarity": "debuff", "stacking": "stackable", "impl": "todo", "note": "Couvre precision physique et magique"},
+      "flee_up": {"name_fr": "Esquive +", "polarity": "buff", "stacking": "stackable", "impl": "todo"},
+      "flee_down": {"name_fr": "Esquive -", "polarity": "debuff", "stacking": "stackable", "impl": "todo"},
+      "heal_power_up": {"name_fr": "Puissance Soin +", "polarity": "buff", "stacking": "stackable", "impl": "todo"},
+      "heal_power_down": {"name_fr": "Puissance Soin -", "polarity": "debuff", "stacking": "stackable", "impl": "todo"},
+      "damage_percent_up": {"name_fr": "Degats % +", "polarity": "buff", "stacking": "stackable", "impl": "todo"},
+      "damage_percent_down": {"name_fr": "Degats % -", "polarity": "debuff", "stacking": "stackable", "impl": "todo"},
+      "damage_reduction_up": {"name_fr": "Reduction Degats +", "polarity": "buff", "stacking": "stackable", "impl": "todo"},
+      "damage_reduction_down": {"name_fr": "Reduction Degats -", "polarity": "debuff", "stacking": "stackable", "impl": "todo"}
     },
 
     "tempo": {
-      "_comment": "Speed modifiers",
-      "haste": {"name_fr": "Hate", "polarity": "buff", "stacking": "stackable", "impl": "done"},
-      "slow": {"name_fr": "Ralentissement", "polarity": "debuff", "stacking": "stackable", "impl": "done"},
-      "cast_speed_up": {"name_fr": "Incant +", "polarity": "buff", "impl": "todo"},
-      "cast_speed_down": {"name_fr": "Incant -", "polarity": "debuff", "impl": "todo"}
+      "_comment": "Attack speed modifiers - GCD reste fixe a 2s",
+      "atk_speed_up": {"name_fr": "Vitesse ATK +", "polarity": "buff", "stacking": "stackable", "impl": "done", "note": "Augmente attack speed, GCD inchange"},
+      "atk_speed_down": {"name_fr": "Vitesse ATK -", "polarity": "debuff", "stacking": "stackable", "impl": "done", "note": "Reduit attack speed, GCD inchange"},
+      "cast_speed_up": {"name_fr": "Vitesse Incant +", "polarity": "buff", "stacking": "stackable", "impl": "todo"},
+      "cast_speed_down": {"name_fr": "Vitesse Incant -", "polarity": "debuff", "stacking": "stackable", "impl": "todo"}
     },
 
     "control": {
-      "_comment": "CC effects",
-      "stun": {"name_fr": "Etourdissement", "polarity": "debuff", "stacking": "refresh", "impl": "done"},
-      "silence": {"name_fr": "Silence", "polarity": "debuff", "stacking": "refresh", "impl": "done"},
-      "root": {"name_fr": "Immobilisation", "polarity": "debuff", "stacking": "refresh", "impl": "done"},
-      "fear": {"name_fr": "Peur", "polarity": "debuff", "stacking": "refresh", "impl": "v2"},
-      "confusion": {"name_fr": "Confusion", "polarity": "debuff", "impl": "todo"},
-      "panic": {"name_fr": "Panique", "polarity": "debuff", "impl": "todo"}
+      "_comment": "CC effects - Crowd Control",
+      "stun": {"name_fr": "Etourdissement", "polarity": "debuff", "stacking": "refresh", "impl": "done", "effect": "Impossible d'agir"},
+      "silence": {"name_fr": "Silence", "polarity": "debuff", "stacking": "refresh", "impl": "done", "effect": "Impossible de lancer des sorts"},
+      "root": {"name_fr": "Immobilisation", "polarity": "debuff", "stacking": "refresh", "impl": "done", "effect": "Impossible de se deplacer"},
+      "fear": {"name_fr": "Peur", "polarity": "debuff", "stacking": "refresh", "impl": "todo", "effect": "Mouvement aleatoire, impossible d'agir"},
+      "confusion": {"name_fr": "Confusion", "polarity": "debuff", "stacking": "refresh", "impl": "todo", "effect": "Peut attaquer allies"},
+      "blind": {"name_fr": "Aveuglement", "polarity": "debuff", "stacking": "refresh", "impl": "todo", "effect": "Reduit drastiquement la precision"}
     },
 
     "defensive": {
       "_comment": "Protection effects",
-      "shield": {"name_fr": "Bouclier", "polarity": "buff", "stacking": "refresh", "impl": "done"},
-      "evasion": {"name_fr": "Evasion", "polarity": "buff", "impl": "done"},
-      "block": {"name_fr": "Blocage", "polarity": "buff", "impl": "done"},
-      "parry": {"name_fr": "Parade", "polarity": "buff", "impl": "done"},
-      "reflect": {"name_fr": "Reflet", "polarity": "buff", "impl": "done"},
-      "thorns": {"name_fr": "Epines", "polarity": "buff", "impl": "done"},
-      "invulnerable": {"name_fr": "Invulnerable", "polarity": "buff", "impl": "done"},
-      "untargetable": {"name_fr": "Intouchable", "polarity": "buff", "impl": "done"}
+      "shield": {"name_fr": "Bouclier", "polarity": "buff", "stacking": "refresh", "impl": "done", "effect": "Absorbe X degats"},
+      "evasion": {"name_fr": "Evasion", "polarity": "buff", "stacking": "refresh", "impl": "done", "effect": "Evite TOUTES les attaques pendant X secondes"},
+      "block": {"name_fr": "Blocage", "polarity": "buff", "stacking": "refresh", "impl": "done", "effect": "Bloque la prochaine attaque"},
+      "parry": {"name_fr": "Parade", "polarity": "buff", "stacking": "refresh", "impl": "done", "effect": "Bloque et contre-attaque"},
+      "reflect": {"name_fr": "Reflet", "polarity": "buff", "stacking": "refresh", "impl": "done", "effect": "Renvoie X% des degats"},
+      "thorns": {"name_fr": "Epines", "polarity": "buff", "stacking": "stackable", "impl": "done", "effect": "Inflige degats aux attaquants melee"}
+    },
+
+    "immunity": {
+      "_comment": "Immunites - buffs puissants avec CD long",
+      "invulnerable": {"name_fr": "Invulnerable", "polarity": "buff", "stacking": "refresh", "impl": "done", "effect": "Immune a tous les degats pendant X secondes"},
+      "untargetable": {"name_fr": "Intouchable", "polarity": "buff", "stacking": "refresh", "impl": "done", "effect": "Ne peut pas etre cible"},
+      "cc_immune": {"name_fr": "Immunite CC", "polarity": "buff", "stacking": "refresh", "impl": "todo", "effect": "Immune a tous les effets de controle"},
+      "cc_immune_zone": {"name_fr": "Zone Anti-CC", "polarity": "buff", "stacking": "refresh", "impl": "todo", "effect": "Zone: allies immunises aux CC", "is_aura": true}
     },
 
     "special": {
       "_comment": "Unique mechanics",
-      "taunt": {"name_fr": "Provocation", "polarity": "debuff", "impl": "done"},
-      "marked": {"name_fr": "Marque", "polarity": "debuff", "impl": "done"},
-      "regen": {"name_fr": "Regeneration", "polarity": "buff", "impl": "done"},
-      "lifesteal": {"name_fr": "Vol de vie", "polarity": "buff", "impl": "done"},
-      "heal_block": {"name_fr": "Blocage Soin", "polarity": "debuff", "impl": "todo", "note": "Bloque 100% des soins recus"},
-      "heal_reduction": {"name_fr": "Anti-Soin", "polarity": "debuff", "stacking": "stackable", "impl": "todo", "note": "-50% soins recus, counter healer"},
-      "shield_block": {"name_fr": "Brise-Bouclier", "polarity": "debuff", "stacking": "refresh", "impl": "todo", "note": "Empeche de recevoir nouveaux shields"},
-      "empowered": {"name_fr": "Renforce", "polarity": "buff", "impl": "done", "note": "Alchemist catalyze - boost degats"}
+      "taunt": {"name_fr": "Provocation", "polarity": "debuff", "stacking": "refresh", "impl": "done", "effect": "Force a cibler le tank"},
+      "marked": {"name_fr": "Marque", "polarity": "debuff", "stacking": "refresh", "impl": "done", "effect": "Cible prioritaire, bonus degats"},
+      "regen": {"name_fr": "Regeneration", "polarity": "buff", "stacking": "stackable", "impl": "done", "effect": "Regenere X HP par seconde"},
+      "mana_regen": {"name_fr": "Regen Mana", "polarity": "buff", "stacking": "stackable", "impl": "todo", "effect": "Regenere X MP par seconde"},
+      "lifesteal": {"name_fr": "Vol de vie", "polarity": "buff", "stacking": "stackable", "impl": "done", "effect": "Soigne X% des degats infliges"},
+      "heal_block": {"name_fr": "Blocage Soin", "polarity": "debuff", "stacking": "refresh", "impl": "todo", "effect": "Bloque 100% des soins recus"},
+      "heal_reduction": {"name_fr": "Anti-Soin", "polarity": "debuff", "stacking": "stackable", "impl": "todo", "effect": "-50% soins recus par stack"},
+      "shield_block": {"name_fr": "Brise-Bouclier", "polarity": "debuff", "stacking": "refresh", "impl": "todo", "effect": "Empeche de recevoir nouveaux shields"}
     }
   },
 
   "_summary": {
-    "total": 54,
-    "done": 23,
-    "todo": 26,
-    "v2": 5
+    "total": 48,
+    "categories": 7,
+    "by_polarity": {
+      "buff": 24,
+      "debuff": 24
+    }
   }
 }

@@ -1,8 +1,16 @@
 {
   "_meta": {
-    "version": "3.0",
-    "last_updated": "2026-01-10",
+    "version": "3.1",
+    "last_updated": "2026-01-20",
     "description": "Configuration des status effects - durees, stacking, balance"
+  },
+
+  "damage_types": {
+    "_comment": "Types de degats simplifies - pas d'elements",
+    "types": ["physical", "magical"],
+    "physical": "Degats bases sur ATK, reduits par armor",
+    "magical": "Degats bases sur MAG, reduits par magic_resist",
+    "design_note": "Les visuels (feu, glace, ombre) sont cosmetiques uniquement, pas de mecanique rock-paper-scissors"
   },
 
   "stacking_system": {
@@ -34,19 +42,21 @@
     },
     "applies_to": [
       "atk_up", "atk_down", "def_up", "def_down", "mag_up", "mag_down",
-      "crit_up", "crit_down", "armor_up", "armor_down",
+      "crit_chance_up", "crit_chance_down", "crit_damage_up", "crit_damage_down",
+      "armor_up", "armor_down", "magic_resist_up", "magic_resist_down",
       "hit_up", "hit_down", "flee_up", "flee_down",
       "damage_percent_up", "damage_percent_down",
       "damage_reduction_up", "damage_reduction_down",
-      "effect_chance_up", "effect_chance_down",
-      "effect_resist_up", "effect_resist_down",
-      "haste", "slow"
+      "heal_power_up", "heal_power_down",
+      "atk_speed_up", "atk_speed_down", "cast_speed_up", "cast_speed_down",
+      "regen", "mana_regen", "lifesteal", "thorns", "heal_reduction"
     ],
     "does_not_apply_to": {
-      "_comment": "Ces effets utilisent leurs propres regles",
+      "_comment": "Ces effets utilisent refresh ou unique",
       "dots": ["burn", "poison", "bleed"],
-      "control": ["stun", "silence", "root", "fear"],
-      "special": ["shield", "invulnerable", "untargetable", "marked", "taunt"]
+      "control": ["stun", "silence", "root", "fear", "confusion", "blind"],
+      "immunity": ["invulnerable", "untargetable", "cc_immune", "cc_immune_zone"],
+      "special": ["shield", "evasion", "block", "parry", "reflect", "marked", "taunt", "heal_block", "shield_block"]
     }
   },
 
@@ -81,21 +91,73 @@
     "stun": {
       "max_duration": 3,
       "diminishing_returns": true,
-      "dr_formula": "each subsequent stun = duration * 0.5"
+      "dr_formula": "each subsequent stun = duration * 0.5",
+      "prevents": ["all_actions"],
+      "allows": []
     },
     "silence": {
       "max_duration": 5,
+      "diminishing_returns": false,
       "prevents": ["skills", "spells"],
       "allows": ["auto_attack", "movement", "items"]
     },
     "root": {
       "max_duration": 4,
+      "diminishing_returns": false,
       "prevents": ["movement", "dash_skills"],
       "allows": ["skills", "auto_attack"]
     },
     "fear": {
       "max_duration": 3,
+      "diminishing_returns": true,
+      "dr_formula": "each subsequent fear = duration * 0.5",
       "effect": "random_movement + cannot_act"
+    },
+    "confusion": {
+      "max_duration": 4,
+      "diminishing_returns": true,
+      "dr_formula": "each subsequent confusion = duration * 0.5",
+      "effect": "can_attack_allies"
+    },
+    "blind": {
+      "max_duration": 5,
+      "diminishing_returns": false,
+      "effect": "hit_rate_reduced_to_25%"
+    }
+  },
+
+  "immunity_effects": {
+    "_comment": "Buffs d'immunite - puissants, CD long",
+    "evasion": {
+      "effect": "Evite TOUTES les attaques",
+      "typical_duration": {"min": 2, "max": 5},
+      "cooldown_tier": "long",
+      "note": "Buff PvP clutch, fenetre d'immunity"
+    },
+    "invulnerable": {
+      "effect": "Immune a tous les degats",
+      "typical_duration": {"min": 2, "max": 4},
+      "cooldown_tier": "very_long",
+      "note": "Ne peut pas agir pendant l'effet (optionnel)"
+    },
+    "untargetable": {
+      "effect": "Ne peut pas etre cible directement",
+      "typical_duration": {"min": 3, "max": 6},
+      "cooldown_tier": "long",
+      "note": "AOE peuvent toujours toucher"
+    },
+    "cc_immune": {
+      "effect": "Immune a tous les CC (stun, silence, root, fear, confusion, blind)",
+      "typical_duration": {"min": 5, "max": 10},
+      "cooldown_tier": "medium",
+      "note": "Buff personnel"
+    },
+    "cc_immune_zone": {
+      "effect": "Zone: allies dans la zone immunises aux CC",
+      "typical_duration": {"min": 4, "max": 8},
+      "cooldown_tier": "long",
+      "is_aura": true,
+      "note": "Buff de zone, Healer/Support skill"
     }
   },
 

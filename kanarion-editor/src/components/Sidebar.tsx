@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { name: 'Dashboard', href: '/', icon: '🏠' },
   { name: 'Classes', href: '/classes', icon: '⚔️' },
   { name: 'Stats Reference', href: '/stats', icon: '📊' },
+  { name: 'Status Effects', href: '/effects', icon: '💫' },
   { name: 'Patterns', href: '/patterns', icon: '🎯' },
   { name: 'Monsters', href: '/monsters', icon: '👹', disabled: true },
   { name: 'Items', href: '/items', icon: '🎒', disabled: true },
