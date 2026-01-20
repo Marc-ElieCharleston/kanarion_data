@@ -4,10 +4,16 @@ import { useEffect, useState } from 'react';
 
 interface Effect {
   name_fr: string;
+  name_en?: string;
   polarity: 'buff' | 'debuff';
   stacking?: string;
   impl: string;
   note?: string;
+  formula?: string;
+  description_fr?: string;
+  description_en?: string;
+  max_stacks?: number;
+  damage_type?: string;
 }
 
 interface EffectsData {
@@ -213,11 +219,11 @@ export default function EffectsReferencePage() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-zinc-800 text-left text-xs text-zinc-500 uppercase">
-                      <th className="px-4 py-3 w-44">Effet</th>
+                      <th className="px-4 py-3 w-48">Effet</th>
                       <th className="px-4 py-3 w-24">Type</th>
                       <th className="px-4 py-3 w-28">Stacking</th>
                       <th className="px-4 py-3 w-20">Status</th>
-                      <th className="px-4 py-3">Notes</th>
+                      <th className="px-4 py-3">Formula / Description</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -227,6 +233,9 @@ export default function EffectsReferencePage() {
                           <div className={`font-medium ${catConfig.color.split(' ')[0]}`}>
                             {effect.name_fr}
                           </div>
+                          {effect.name_en && effect.name_en !== effect.name_fr && (
+                            <div className="text-xs text-zinc-500">{effect.name_en}</div>
+                          )}
                           <code className="text-[10px] text-zinc-600">{key}</code>
                         </td>
                         <td className="px-4 py-3">
@@ -236,9 +245,14 @@ export default function EffectsReferencePage() {
                         </td>
                         <td className="px-4 py-3">
                           {effect.stacking ? (
-                            <span className={`text-xs px-2 py-0.5 rounded ${STACKING_COLORS[effect.stacking] || STACKING_COLORS.unique}`}>
-                              {effect.stacking}
-                            </span>
+                            <div>
+                              <span className={`text-xs px-2 py-0.5 rounded ${STACKING_COLORS[effect.stacking] || STACKING_COLORS.unique}`}>
+                                {effect.stacking}
+                              </span>
+                              {effect.max_stacks && effect.max_stacks > 1 && (
+                                <span className="text-[10px] text-zinc-500 ml-1">({effect.max_stacks})</span>
+                              )}
+                            </div>
                           ) : (
                             <span className="text-xs text-zinc-600">—</span>
                           )}
@@ -248,8 +262,16 @@ export default function EffectsReferencePage() {
                             {effect.impl}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-sm text-zinc-400">
-                          {effect.note || '—'}
+                        <td className="px-4 py-3 text-sm">
+                          {effect.formula && (
+                            <code className="text-xs text-amber-400 block mb-1">{effect.formula}</code>
+                          )}
+                          {effect.description_fr && (
+                            <p className="text-zinc-400 text-xs">{effect.description_fr}</p>
+                          )}
+                          {!effect.formula && !effect.description_fr && (
+                            <span className="text-zinc-600">—</span>
+                          )}
                         </td>
                       </tr>
                     ))}
