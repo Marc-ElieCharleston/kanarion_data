@@ -55,8 +55,9 @@ const CATEGORY_CONFIG: Record<string, { name: string; icon: string; color: strin
   stat_modifiers: { name: 'Stat Modifiers', icon: '📊', color: 'text-blue-400 border-blue-500/30', description: 'Buffs/Debuffs de stats' },
   tempo: { name: 'Tempo', icon: '⚡', color: 'text-yellow-400 border-yellow-500/30', description: 'Attack & Cast speed' },
   control: { name: 'Control (CC)', icon: '🔒', color: 'text-purple-400 border-purple-500/30', description: 'Crowd Control' },
-  defensive: { name: 'Defensive', icon: '🛡️', color: 'text-sky-400 border-sky-500/30', description: 'Protection effects' },
-  immunity: { name: 'Immunity', icon: '✨', color: 'text-emerald-400 border-emerald-500/30', description: 'Immunites (CC, degats)' },
+  defensive: { name: 'Defensive', icon: '🛡️', color: 'text-sky-400 border-sky-500/30', description: 'Protection & Tank' },
+  immunity: { name: 'Immunity', icon: '✨', color: 'text-emerald-400 border-emerald-500/30', description: 'Immunites (CC, degats, ciblage)' },
+  aggro: { name: 'Aggro', icon: '😤', color: 'text-orange-400 border-orange-500/30', description: 'Systeme de menace' },
   special: { name: 'Special', icon: '🎯', color: 'text-amber-400 border-amber-500/30', description: 'Mecaniques uniques' },
 };
 
