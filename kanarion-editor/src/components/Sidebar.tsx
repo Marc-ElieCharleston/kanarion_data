@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { name: 'Stats Reference', href: '/stats', icon: '📊' },
   { name: 'Status Effects', href: '/effects', icon: '💫' },
   { name: 'Patterns', href: '/patterns', icon: '🎯' },
+  { name: 'Panoplies', href: '/panoplies', icon: '👕' },
   { name: 'Monsters', href: '/monsters', icon: '👹', disabled: true },
   { name: 'Items', href: '/items', icon: '🎒', disabled: true },
   { name: 'World', href: '/world', icon: '🗺️', disabled: true },

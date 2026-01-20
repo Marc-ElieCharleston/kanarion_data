@@ -41,9 +41,9 @@ const PATTERNS = {
       return [[r, c], [r, c+1], [r, c+2]];
     },
   },
-  row_full: {
-    name: 'Row Full',
-    description: 'Ligne complete',
+  row_4: {
+    name: 'Row 4',
+    description: 'Ligne complete (4 cases)',
     category: 'line',
     getPattern: (rows: number, cols: number) => {
       const r = Math.floor(rows/2);
@@ -72,9 +72,9 @@ const PATTERNS = {
       return [[0, c], [1, c], [2, c]];
     },
   },
-  col_full: {
-    name: 'Column Full',
-    description: 'Colonne complete',
+  col_4: {
+    name: 'Column 4',
+    description: 'Colonne complete (4 cases)',
     category: 'line',
     getPattern: (rows: number, cols: number) => {
       const c = Math.floor(cols/2);

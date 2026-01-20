@@ -36,9 +36,10 @@ kanarion_database/
 
 ## Combat
 
-- **Grille**: 2 lignes × 5 colonnes (10 slots par équipe)
-- **Système**: Tour par tour avec cooldowns
-- **Ciblage**: Dual-target (allié + ennemi)
+- **Grille**: 4×4 (16 slots, max 10 joueurs par équipe)
+- **Rows**: front, mid_front, mid_back, back
+- **Système**: Temps réel avec GCD 2.0s, drag-and-drop
+- **Line of Sight**: Auto-attacks bloquées si la cible a des unités devant (même colonne)
 
 ## Pour les développeurs
 
