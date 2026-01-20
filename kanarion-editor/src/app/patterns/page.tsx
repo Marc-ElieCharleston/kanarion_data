@@ -300,22 +300,50 @@ const PATTERNS = {
     },
   },
 
-  // Chain patterns - max 1 cell distance between bounces (adjacent only)
+  // T patterns
+  t_pattern: {
+    name: 'T Pattern',
+    description: 'Forme en T (souffle)',
+    category: 'special',
+    getPattern: (rows: number, cols: number) => {
+      const midC = Math.floor(cols / 2);
+      return [
+        [0, midC - 1], [0, midC], [0, midC + 1],
+        [1, midC],
+        [2, midC],
+      ].filter(([r, c]) => r < rows && c >= 0 && c < cols);
+    },
+  },
+  t_inverted: {
+    name: 'T Inverse',
+    description: 'Forme en T inverse',
+    category: 'special',
+    getPattern: (rows: number, cols: number) => {
+      const midC = Math.floor(cols / 2);
+      return [
+        [0, midC],
+        [1, midC],
+        [2, midC - 1], [2, midC], [2, midC + 1],
+      ].filter(([r, c]) => r < rows && c >= 0 && c < cols);
+    },
+  },
+
+  // Chain patterns - max 1 cell distance (adjacent, diagonal included)
   chain_2: {
     name: 'Chain 2',
-    description: 'Rebondit sur 2 cibles adjacentes (max 1 case)',
+    description: 'Rebondit sur 2 cibles (max 1 case, diag incluse)',
     category: 'chain',
     getPattern: (rows: number, cols: number) => {
-      // Visual: shows adjacent bouncing
-      return [[1, 1], [1, 2], [2, 2]];
+      // Visual: shows adjacent bouncing including diagonal
+      return [[1, 1], [2, 2], [3, 1]];
     },
   },
   chain_3: {
     name: 'Chain 3',
-    description: 'Rebondit sur 3 cibles adjacentes (max 1 case)',
+    description: 'Rebondit sur 3 cibles (max 1 case, diag incluse)',
     category: 'chain',
     getPattern: (rows: number, cols: number) => {
-      return [[1, 0], [1, 1], [2, 1], [2, 2]];
+      return [[0, 1], [1, 2], [2, 1], [3, 2]];
     },
   },
 
