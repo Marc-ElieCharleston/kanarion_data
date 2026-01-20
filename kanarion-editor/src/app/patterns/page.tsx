@@ -198,39 +198,82 @@ const PATTERNS = {
     },
   },
 
-  // X pattern
+  // X pattern (checkerboard corners + center)
   x_pattern: {
     name: 'X Pattern',
-    description: 'Les deux diagonales',
+    description: 'Coins + centre (damier)',
     category: 'special',
     getPattern: (rows: number, cols: number) => {
-      const tiles: number[][] = [];
-      const len = Math.min(rows, cols);
-      for (let i = 0; i < len; i++) {
-        tiles.push([i, i]);
-        if (rows - 1 - i !== i) {
-          tiles.push([rows - 1 - i, i]);
-        }
-      }
-      return tiles;
+      // Pattern:
+      // 1 0 1
+      // 0 1 0
+      // 1 0 1
+      const midR = Math.floor(rows / 2);
+      const midC = Math.floor(cols / 2);
+      return [
+        [midR - 1, midC - 1], [midR - 1, midC + 1],
+        [midR, midC],
+        [midR + 1, midC - 1], [midR + 1, midC + 1],
+      ].filter(([r, c]) => r >= 0 && r < rows && c >= 0 && c < cols);
     },
   },
 
-  // Cone pattern
-  cone: {
-    name: 'Cone',
-    description: 'Cone (1-2-3 tiles par row)',
+  // V pattern
+  v_pattern: {
+    name: 'V Pattern',
+    description: 'Forme en V',
     category: 'special',
     getPattern: (rows: number, cols: number) => {
+      // V shape: corners spread at top, converge at bottom
       const tiles: number[][] = [];
-      const centerCol = Math.floor(cols/2);
+      const midCol = Math.floor(cols / 2);
       for (let r = 0; r < Math.min(rows, 3); r++) {
-        const width = r + 1;
-        const startCol = centerCol - Math.floor(width/2);
-        for (let dc = 0; dc < width; dc++) {
-          const c = startCol + dc;
-          if (c >= 0 && c < cols) {
-            tiles.push([r, c]);
+        const spread = 2 - r; // 2, 1, 0
+        if (spread === 0) {
+          tiles.push([r, midCol]);
+        } else {
+          tiles.push([r, midCol - spread]);
+          tiles.push([r, midCol + spread]);
+        }
+      }
+      return tiles.filter(([row, col]) => col >= 0 && col < cols);
+    },
+  },
+
+  // A pattern (inverse V)
+  a_pattern: {
+    name: 'A Pattern',
+    description: 'Forme en A (V inverse)',
+    category: 'special',
+    getPattern: (rows: number, cols: number) => {
+      // A shape: converge at top, spread at bottom
+      const tiles: number[][] = [];
+      const midCol = Math.floor(cols / 2);
+      for (let r = 0; r < Math.min(rows, 3); r++) {
+        const spread = r; // 0, 1, 2
+        if (spread === 0) {
+          tiles.push([r, midCol]);
+        } else {
+          tiles.push([r, midCol - spread]);
+          tiles.push([r, midCol + spread]);
+        }
+      }
+      return tiles.filter(([row, col]) => col >= 0 && col < cols);
+    },
+  },
+
+  // Double row (2x4)
+  double_row: {
+    name: 'Double Row',
+    description: '2 lignes completes (2x4)',
+    category: 'area',
+    getPattern: (rows: number, cols: number) => {
+      const tiles: number[][] = [];
+      const startRow = Math.floor(rows / 2) - 1;
+      for (let r = 0; r < 2; r++) {
+        for (let c = 0; c < cols; c++) {
+          if (startRow + r >= 0 && startRow + r < rows) {
+            tiles.push([startRow + r, c]);
           }
         }
       }
@@ -238,21 +281,41 @@ const PATTERNS = {
     },
   },
 
-  // Chain patterns (visual representation)
+  // Double line (4x2) - 2 full columns
+  double_line: {
+    name: 'Double Line',
+    description: '2 colonnes completes (4x2)',
+    category: 'area',
+    getPattern: (rows: number, cols: number) => {
+      const tiles: number[][] = [];
+      const startCol = Math.floor(cols / 2) - 1;
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < 2; c++) {
+          if (startCol + c >= 0 && startCol + c < cols) {
+            tiles.push([r, startCol + c]);
+          }
+        }
+      }
+      return tiles;
+    },
+  },
+
+  // Chain patterns (visual representation) - min 1 cell distance between bounces
   chain_2: {
     name: 'Chain 2',
-    description: 'Rebondit sur 2 cibles',
+    description: 'Rebondit sur 2 cibles (min 1 case entre)',
     category: 'chain',
     getPattern: (rows: number, cols: number) => {
-      return [[0, 0], [1 % rows, 2 % cols], [0, 4 % cols]];
+      // Visual: shows bouncing pattern with distance
+      return [[0, 0], [2 % rows, 2 % cols], [0, cols - 1]];
     },
   },
   chain_3: {
     name: 'Chain 3',
-    description: 'Rebondit sur 3 cibles',
+    description: 'Rebondit sur 3 cibles (min 1 case entre)',
     category: 'chain',
     getPattern: (rows: number, cols: number) => {
-      return [[0, 0], [1 % rows, 1], [0, 2], [1 % rows, 3 % cols]];
+      return [[0, 0], [2 % rows, 1], [0, 2], [2 % rows, 3 % cols]];
     },
   },
 
@@ -410,51 +473,6 @@ export default function PatternsPage() {
           ))}
         </div>
 
-        {/* Grid Analysis */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-zinc-800 p-4 rounded">
-            <h3 className="font-medium text-emerald-400 mb-2">Avantages {config.name}</h3>
-            <ul className="text-sm text-zinc-300 space-y-1">
-              {selectedGrid === '3x4' && (
-                <>
-                  <li>Front/Mid/Back avec 4 pos chacun</li>
-                  <li>12 slots = 6v6 ou 12v12</li>
-                  <li>Colonnes de 3 pour LoS</li>
-                  <li>Plus compact sur mobile</li>
-                </>
-              )}
-              {selectedGrid === '4x4' && (
-                <>
-                  <li>4 lignes = positionnement tactique</li>
-                  <li>Place pour invocations</li>
-                  <li>Diagonales completes (4 tiles)</li>
-                  <li>Spells de deplacement utiles</li>
-                  <li>LoS interessant (colonnes de 4)</li>
-                </>
-              )}
-            </ul>
-          </div>
-
-          <div className="bg-zinc-800 p-4 rounded">
-            <h3 className="font-medium text-rose-400 mb-2">Inconvenients {config.name}</h3>
-            <ul className="text-sm text-zinc-300 space-y-1">
-              {selectedGrid === '3x4' && (
-                <>
-                  <li>Diagonales incompletes (3 tiles max)</li>
-                  <li>Moins de place pour invocations</li>
-                  <li>LoS moins profond</li>
-                </>
-              )}
-              {selectedGrid === '4x4' && (
-                <>
-                  <li>16 slots peut sembler vide (10 joueurs)</li>
-                  <li>Combats potentiellement plus longs</li>
-                  <li>UI plus chargee sur mobile</li>
-                </>
-              )}
-            </ul>
-          </div>
-        </div>
       </div>
 
       {/* Category Filter */}
