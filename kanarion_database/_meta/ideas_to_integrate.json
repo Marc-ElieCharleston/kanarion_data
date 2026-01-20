@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "version": "1.0",
+    "version": "1.1",
     "last_updated": "2026-01-20",
-    "description": "Liste d'idees a integrer plus tard dans le jeu. Ces idees sont en attente de design detaille.",
+    "description": "Liste d'idees a integrer plus tard. NE PAS OUVRIR dans l'editeur pour l'instant.",
     "status_legend": {
       "idea": "Concept brut, pas encore reflechi",
       "draft": "En cours de reflexion",
@@ -14,69 +14,131 @@
   "ideas": [
     {
       "id": "star_modifier_items",
-      "title": "Ressources de modification d'etoiles (Branch System)",
-      "status": "idea",
+      "title": "Resonance/Fracture d'Ame (Branch System)",
+      "status": "draft",
       "category": "items",
       "priority": "medium",
       "inspiration": "Ragnarok Online Branch System",
-      "description": "Loot de ressources permettant d'augmenter OU diminuer de 1 niveau l'etoile d'un groupe de monstres spawn",
+      "description": "Items pour modifier le star_level d'un groupe de monstres",
       "details": {
-        "concept": "Items consommables qui modifient le star_level d'un spawn de monstres",
-        "usage": "Utiliser sur un groupe de monstres pour changer sa difficulte",
-        "items_proposed": [
+        "items": [
           {
-            "id": "resonance_ame_up",
-            "name": "Resonance d'Ame",
-            "name_fr": "Résonance d'Âme",
-            "effect": "+1 star level au groupe cible (attire les ames liees)",
+            "id": "resonance_ame",
+            "name_fr": "Resonance d'Ame",
+            "name_en": "Soul Resonance",
+            "effect": "+1 star level (attire les ames liees)",
             "rarity_tiers": {
-              "common": "Star +1 (max 2 stars)",
-              "uncommon": "Star +1 (max 3 stars)",
-              "rare": "Star +1 (max 4 stars)",
-              "epic": "Star +1 (max 5 stars) - Le plus rare"
+              "common": "max 2 stars",
+              "uncommon": "max 3 stars",
+              "rare": "max 4 stars",
+              "epic": "max 5 stars"
             },
-            "lore": "Les ames corrompues resonnent entre elles, attirees par la souffrance partagee",
-            "note": "Plus la rarete est haute, plus on peut monter haut en etoiles"
+            "lore": "Les ames corrompues resonnent entre elles, attirees par la souffrance partagee"
           },
           {
-            "id": "fracture_ame_down",
-            "name": "Fracture d'Ame",
-            "name_fr": "Fracture d'Âme",
-            "effect": "-1 star level au groupe cible (brise le lien entre les ames)",
-            "use_case": "Reduire la difficulte pour farm plus facilement ou solo",
+            "id": "fracture_ame",
+            "name_fr": "Fracture d'Ame",
+            "name_en": "Soul Fracture",
+            "effect": "-1 star level (brise le lien)",
             "rarity": "common",
-            "lore": "Brise le lien qui unit les ames corrompues, les dispersant",
-            "note": "Moins rare car moins demande"
+            "lore": "Brise le lien qui unit les ames corrompues"
           }
         ],
-        "balance_notes": [
-          "5 stars tres rare car donne 6 monstres = beaucoup de loot/XP",
-          "Les items qui montent haut doivent etre tres rares",
-          "Descendre = plus accessible pour les joueurs solo",
-          "Possible restriction: ne fonctionne que sur monstres non-agro?"
+        "balance": [
+          "5 stars = 6 monstres = beaucoup de loot/XP",
+          "Monter haut = tres rare",
+          "Descendre = accessible pour solo"
         ],
-        "loot_sources": [
-          "Monstres rares/elite",
-          "Boss",
-          "Quetes speciales",
-          "Events"
-        ]
+        "sources": ["Monstres elite", "Boss", "Quetes", "Events"]
       },
-      "related_files": [
-        "entities/monster_variants.json (star_system)"
-      ],
+      "related_files": ["entities/monster_variants.json"],
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "spellblade_subclass",
+      "title": "Spellblade - Subclass hybride",
+      "status": "idea",
+      "category": "classes",
+      "priority": "low",
+      "description": "Subclass qui ajoute MAG scaling aux auto-attacks",
+      "details": {
+        "concept": "Auto-attack reste ATK-based pour tous, SAUF Spellblade qui ajoute MAG",
+        "formula_idea": "auto_damage = ATK + (MAG * 0.3)",
+        "design_note": "Permet un build hybride melee/caster sans changer le core system"
+      },
+      "related_files": ["classes/", "stats/stats.json"],
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "curse_dot_explosion",
+      "title": "Curse DoT - Explosion mechanic",
+      "status": "integrated",
+      "category": "combat",
+      "priority": "high",
+      "description": "Curse explose a la fin, duration modifiable affecte l'explosion",
+      "details": {
+        "mechanic": "DoT constant + EXPLOSION finale",
+        "duration_extended": "Explosion plus forte",
+        "duration_reduced": "Explosion anticipee + SPREAD adjacent",
+        "lore": "Corruption de l'Imitateur qui s'accumule"
+      },
+      "related_files": ["stats/status_effects.json (curse_dot)"],
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "holy_dot_escalating",
+      "title": "Holy DoT - Escalating damage",
+      "status": "integrated",
+      "category": "combat",
+      "priority": "high",
+      "description": "Holy DoT avec degats croissants et duree FIXE",
+      "details": {
+        "mechanic": "Degats augmentent chaque tick",
+        "duration_fixed": "Ne peut PAS etre prolonge ou reduit",
+        "design": "Inexorable - tu sais combien de temps ca dure",
+        "lore": "Lumiere purificatrice du Createur"
+      },
+      "related_files": ["stats/status_effects.json (holy_dot)"],
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "parallel_work_plan",
+      "title": "Plan de travail parallele",
+      "status": "draft",
+      "category": "meta",
+      "priority": "high",
+      "description": "Organisation du travail entre associes",
+      "details": {
+        "associe_peut_faire": [
+          "World/Maps - zones, regions, biomes, connexions",
+          "Items base - types, slots, raretes, stats",
+          "Panoplies - set bonuses (apres items)",
+          "Monster base - noms, apparence, zones, stats (sans skills)"
+        ],
+        "toi_tu_fais": [
+          "Skills actifs/passifs (le gros)",
+          "Monster skillsets",
+          "Loot tables (apres items + monsters)"
+        ],
+        "ordre_suggere": {
+          "associe": "World → Items → Panoplies",
+          "toi": "Skills → Monster skills → Loots"
+        }
+      },
       "added_date": "2026-01-20"
     }
   ],
 
   "_template": {
-    "_comment": "Template pour ajouter une nouvelle idee",
     "id": "unique_id",
     "title": "Titre court",
     "status": "idea|draft|ready|integrated",
-    "category": "items|combat|progression|social|world|ui|other",
+    "category": "items|combat|classes|progression|social|world|ui|meta|other",
     "priority": "low|medium|high|critical",
-    "inspiration": "Source d'inspiration (optionnel)",
     "description": "Description courte",
     "details": {},
     "related_files": [],
