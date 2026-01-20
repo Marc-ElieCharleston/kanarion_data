@@ -1,0 +1,307 @@
+{
+  "_meta": {
+    "version": "3.2",
+    "last_updated": "2026-01-12",
+    "class": "warrior",
+    "description": "Tous les skills actifs du Warrior (base + subclasses)",
+    "pattern_presets": {
+      "single": "1 case",
+      "row_1x2": "Segment ligne 2 cases",
+      "row_1x3": "Segment ligne 3 cases",
+      "row_full": "Ligne entière (5 cases)",
+      "col_1x2": "Colonne 2 cases (full)",
+      "rect_2x2": "Rectangle 2x2",
+      "rect_2x3": "Rectangle 2x3",
+      "single_plus_adjacent_1": "Cible + 1 adjacent",
+      "single_plus_adjacent_2": "Cible + 2 adjacents",
+      "around_radius_1": "Cible + anneau",
+      "chain_2": "Rebond 2 cibles",
+      "global": "Toutes les cibles"
+    },
+    "vfx_available": ["melee_slash", "shield", "buff_aura", "debuff_aura", "whirlwind", "dash_trail", "falling", "life_steal"]
+  },
+
+  "base_skills": [
+    {
+      "id": "heavy_strike",
+      "name": "Heavy Strike",
+      "target": "enemy",
+      "pattern": "single",
+      "vfx_type": "melee_slash",
+      "tres": "res://resources/skills/warrior/base/heavy_strike.tres",
+      "description": "Coup puissant infligeant de gros dégâts physiques à une cible. Attaque de base polyvalente.",
+      "tags": ["damage", "melee", "pattern:single"]
+    },
+    {
+      "id": "shield_bash",
+      "name": "Shield Bash",
+      "target": "enemy",
+      "pattern": "single",
+      "vfx_type": "melee_slash",
+      "tres": "res://resources/skills/warrior/base/shield_bash.tres",
+      "description": "Frappe avec le bouclier pouvant étourdir brièvement la cible. Dégâts + contrôle.",
+      "tags": ["damage", "stun", "melee", "pattern:single"]
+    },
+    {
+      "id": "defensive_stance",
+      "name": "Defensive Stance",
+      "target": "self",
+      "pattern": "single",
+      "vfx_type": "shield",
+      "tres": "res://resources/skills/warrior/base/defensive_stance.tres",
+      "description": "Adopte une posture défensive réduisant les dégâts reçus pendant un court instant.",
+      "tags": ["defense", "buff", "pattern:single"]
+    },
+    {
+      "id": "taunting_shout",
+      "name": "Taunting Shout",
+      "target": "enemies",
+      "pattern": "row_1x3",
+      "vfx_type": "buff_aura",
+      "tres": "res://resources/skills/warrior/base/taunting_shout.tres",
+      "description": "Provoque 3 ennemis en ligne pour attirer leur attention sur vous.",
+      "tags": ["taunt", "aggro", "aoe", "pattern:row_1x3"]
+    },
+    {
+      "id": "cleave",
+      "name": "Cleave",
+      "target": "enemies",
+      "pattern": "row_1x2",
+      "vfx_type": "melee_slash",
+      "tres": "res://resources/skills/warrior/base/cleave.tres",
+      "description": "Balayage horizontal frappant 2 ennemis adjacents.",
+      "tags": ["damage", "melee", "aoe", "pattern:row_1x2"]
+    }
+  ],
+
+  "subclass_skills": {
+    "guardian": {
+      "identity": "Pure tank protector + shields",
+      "signature": "aegis_breaker",
+      "skills": [
+        {
+          "id": "protect_ally",
+          "name": "Protect Ally",
+          "target": "ally",
+          "pattern": "single",
+          "vfx_type": "shield",
+          "tres": "res://resources/skills/warrior/guardian/protect_ally.tres",
+          "description": "Protège un allié en interceptant une partie des dégâts qu'il subirait.",
+          "tags": ["defense", "support", "ally"]
+        },
+        {
+          "id": "iron_stance",
+          "name": "Iron Stance",
+          "target": "self",
+          "pattern": "single",
+          "vfx_type": "shield",
+          "tres": "res://resources/skills/warrior/guardian/iron_stance.tres",
+          "description": "Posture de fer réduisant drastiquement les dégâts reçus mais limitant le mouvement.",
+          "tags": ["defense", "buff", "tank"]
+        },
+        {
+          "id": "shield_wall",
+          "name": "Shield Wall",
+          "target": "allies",
+          "pattern": "col_1x2",
+          "vfx_type": "shield",
+          "tres": "res://resources/skills/warrior/guardian/shield_wall.tres",
+          "description": "Mur de boucliers protégeant la colonne d'alliés (2 cases) des dégâts entrants.",
+          "tags": ["defense", "aoe", "support", "pattern:col_1x2"]
+        },
+        {
+          "id": "barrier",
+          "name": "Barrier",
+          "target": "allies",
+          "pattern": "single_plus_adjacent_1",
+          "vfx_type": "shield",
+          "tres": "res://resources/skills/warrior/guardian/barrier.tres",
+          "description": "Barrière protectrice sur un allié + 1 adjacent. Absorbe les dégâts.",
+          "tags": ["defense", "shield", "aoe"]
+        },
+        {
+          "id": "aegis_breaker",
+          "name": "Aegis Breaker",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/warrior/guardian/aegis_breaker.tres",
+          "description": "SIGNATURE - Frappe dévastatrice qui brise les shields ennemis et inflige des dégâts bonus.",
+          "is_signature": true,
+          "tags": ["damage", "shield_break", "signature"]
+        }
+      ]
+    },
+    "berserker": {
+      "identity": "Bruiser DPS + rage + lifesteal",
+      "signature": "decimate",
+      "skills": [
+        {
+          "id": "rage_slash",
+          "name": "Rage Slash",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/warrior/berserker/rage_slash.tres",
+          "description": "Frappe rageur infligeant des dégâts bonus quand vous êtes blessé.",
+          "tags": ["damage", "rage", "melee"]
+        },
+        {
+          "id": "bloodlust",
+          "name": "Bloodlust",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "life_steal",
+          "tres": "res://resources/skills/warrior/berserker/bloodlust.tres",
+          "description": "Frappe sanglante qui vole de la vie à la cible pour vous soigner.",
+          "tags": ["damage", "lifesteal", "melee"]
+        },
+        {
+          "id": "whirlwind",
+          "name": "Whirlwind",
+          "target": "enemies",
+          "pattern": "around_radius_1",
+          "vfx_type": "whirlwind",
+          "tres": "res://resources/skills/warrior/berserker/whirlwind.tres",
+          "description": "Tourbillon frappant la cible et toutes les cases adjacentes.",
+          "tags": ["damage", "aoe", "melee", "pattern:around_radius_1"]
+        },
+        {
+          "id": "frenzy",
+          "name": "Frenzy",
+          "target": "self",
+          "pattern": "single",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/warrior/berserker/frenzy.tres",
+          "description": "Entre en frénésie, augmentant massivement l'attaque et la vitesse.",
+          "tags": ["buff", "attack", "speed"]
+        },
+        {
+          "id": "decimate",
+          "name": "Decimate",
+          "target": "enemy",
+          "pattern": "single_plus_adjacent_2",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/warrior/berserker/decimate.tres",
+          "description": "SIGNATURE - Exécution brutale sur la cible + 2 adjacents. Bonus contre low HP.",
+          "is_signature": true,
+          "tags": ["damage", "execute", "aoe", "signature"]
+        }
+      ]
+    },
+    "weaponmaster": {
+      "identity": "Technique melee + armor break",
+      "signature": "titan_slam",
+      "skills": [
+        {
+          "id": "weapon_combo",
+          "name": "Weapon Combo",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/warrior/weaponmaster/weapon_combo.tres",
+          "description": "Combo de 3 frappes sur une cible. Chaque hit augmente les dégâts.",
+          "tags": ["damage", "combo", "multi_hit"]
+        },
+        {
+          "id": "armor_break",
+          "name": "Armor Break",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/warrior/weaponmaster/armor_break.tres",
+          "description": "Frappe brisant l'armure de la cible, réduisant sa défense pendant plusieurs tours.",
+          "tags": ["damage", "armor_break", "debuff"]
+        },
+        {
+          "id": "sweeping_line",
+          "name": "Sweeping Line",
+          "target": "enemies",
+          "pattern": "row_1x3",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/warrior/weaponmaster/sweeping_line.tres",
+          "description": "Balayage large touchant 3 ennemis en ligne.",
+          "tags": ["damage", "aoe", "melee", "pattern:row_1x3"]
+        },
+        {
+          "id": "column_cleave",
+          "name": "Column Cleave",
+          "target": "enemies",
+          "pattern": "col_1x2",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/warrior/weaponmaster/column_cleave.tres",
+          "description": "Frappe verticale touchant les 2 ennemis d'une colonne.",
+          "tags": ["damage", "aoe", "melee", "pattern:col_1x2"]
+        },
+        {
+          "id": "titan_slam",
+          "name": "Titan Slam",
+          "target": "enemies",
+          "pattern": "rect_2x2",
+          "vfx_type": "falling",
+          "tres": "res://resources/skills/warrior/weaponmaster/titan_slam.tres",
+          "description": "SIGNATURE - Frappe titanesque en zone 2x2. Dégâts massifs + chance d'étourdir.",
+          "is_signature": true,
+          "tags": ["damage", "aoe", "stun", "signature", "pattern:rect_2x2"]
+        }
+      ]
+    },
+    "warlord": {
+      "identity": "Leader support + buffs",
+      "signature": "war_banner",
+      "skills": [
+        {
+          "id": "command_shout",
+          "name": "Command Shout",
+          "target": "allies",
+          "pattern": "row_1x3",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/warrior/warlord/command_shout.tres",
+          "description": "Cri de commandement buffant 3 alliés en ligne avec bonus d'attaque.",
+          "tags": ["buff", "attack", "aoe", "pattern:row_1x3"]
+        },
+        {
+          "id": "intimidate",
+          "name": "Intimidate",
+          "target": "enemies",
+          "pattern": "row_1x2",
+          "vfx_type": "debuff_aura",
+          "tres": "res://resources/skills/warrior/warlord/intimidate.tres",
+          "description": "Intimidation réduisant l'attaque de 2 ennemis en ligne.",
+          "tags": ["debuff", "attack_down", "aoe", "pattern:row_1x2"]
+        },
+        {
+          "id": "rally",
+          "name": "Rally",
+          "target": "allies",
+          "pattern": "single_plus_adjacent_2",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/warrior/warlord/rally.tres",
+          "description": "Ralliement: buff défensif sur un allié + 2 adjacents.",
+          "tags": ["buff", "defense", "support", "aoe"]
+        },
+        {
+          "id": "hold_the_line",
+          "name": "Hold the Line",
+          "target": "allies",
+          "pattern": "col_1x2",
+          "vfx_type": "shield",
+          "tres": "res://resources/skills/warrior/warlord/hold_the_line.tres",
+          "description": "Ordre défensif: bouclier sur la colonne d'alliés (2 cases).",
+          "tags": ["buff", "shield", "aoe", "pattern:col_1x2"]
+        },
+        {
+          "id": "war_banner",
+          "name": "War Banner",
+          "target": "allies",
+          "pattern": "rect_2x3",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/warrior/warlord/war_banner.tres",
+          "description": "SIGNATURE - Bannière de guerre en zone 2x3 régénérant HP et boostant les alliés.",
+          "is_signature": true,
+          "tags": ["buff", "heal", "aoe", "signature", "pattern:rect_2x3"]
+        }
+      ]
+    }
+  }
+}

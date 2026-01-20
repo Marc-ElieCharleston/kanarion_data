@@ -1,0 +1,307 @@
+{
+  "_meta": {
+    "version": "3.2",
+    "last_updated": "2026-01-15",
+    "class": "archer",
+    "description": "Tous les skills actifs de l'Archer (base + subclasses)",
+    "pattern_presets": {
+      "single": "1 case",
+      "row_1x2": "Segment ligne 2 cases",
+      "row_1x3": "Segment ligne 3 cases",
+      "row_1x4": "Segment ligne 4 cases",
+      "row_full": "Ligne entière (5 cases)",
+      "col_1x2": "Colonne 2 cases",
+      "rect_2x2": "Rectangle 2x2",
+      "rect_2x3": "Rectangle 2x3",
+      "single_plus_adjacent_1": "Cible + 1 adjacent",
+      "chain_2": "Rebond 2 cibles",
+      "chain_4": "Rebond 4 cibles",
+      "global": "Toutes les cibles"
+    },
+    "vfx_available": ["projectile", "fireball", "ice_ball", "buff_aura", "debuff_aura", "falling", "dash_trail"]
+  },
+
+  "base_skills": [
+    {
+      "id": "aimed_shot",
+      "name": "Aimed Shot",
+      "target": "enemy",
+      "pattern": "single",
+      "vfx_type": "projectile",
+      "tres": "res://resources/skills/archer/base/aimed_shot.tres",
+      "description": "Tir précis infligeant des dégâts bonus avec chance de critique augmentée.",
+      "tags": ["damage", "crit", "pattern:single"]
+    },
+    {
+      "id": "volley",
+      "name": "Volley",
+      "target": "enemies",
+      "pattern": "row_1x3",
+      "vfx_type": "projectile",
+      "tres": "res://resources/skills/archer/base/volley.tres",
+      "description": "Volée de flèches frappant 3 ennemis en ligne.",
+      "tags": ["damage", "aoe", "pattern:row_1x3"]
+    },
+    {
+      "id": "crippling_arrow",
+      "name": "Crippling Arrow",
+      "target": "enemy",
+      "pattern": "single",
+      "vfx_type": "projectile",
+      "tres": "res://resources/skills/archer/base/crippling_arrow.tres",
+      "description": "Flèche paralysante ralentissant la cible et réduisant sa vitesse d'attaque.",
+      "tags": ["damage", "slow", "debuff", "pattern:single"]
+    },
+    {
+      "id": "eagle_eye",
+      "name": "Eagle Eye",
+      "target": "self",
+      "pattern": "single",
+      "vfx_type": "buff_aura",
+      "tres": "res://resources/skills/archer/base/eagle_eye.tres",
+      "description": "Prise de visée augmentant précision et chances de critique pendant plusieurs secondes.",
+      "tags": ["buff", "crit", "accuracy", "pattern:single"]
+    },
+    {
+      "id": "hunter_mark",
+      "name": "Hunter Mark",
+      "target": "enemy",
+      "pattern": "single",
+      "vfx_type": "debuff_aura",
+      "tres": "res://resources/skills/archer/base/hunter_mark.tres",
+      "description": "Marque une cible, augmentant les dégâts qu'elle reçoit de toute l'équipe.",
+      "tags": ["debuff", "mark", "pattern:single"]
+    }
+  ],
+
+  "subclass_skills": {
+    "ranger": {
+      "identity": "Classic archer + crit + versatile",
+      "signature": "headshot",
+      "skills": [
+        {
+          "id": "power_shot",
+          "name": "Power Shot",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/archer/ranger/power_shot.tres",
+          "description": "Tir puissant marquant la cible. Dégâts bonus + l'équipe inflige +20% à la cible marquée.",
+          "tags": ["damage", "crit", "mark", "team_utility"]
+        },
+        {
+          "id": "multi_shot",
+          "name": "Multi Shot",
+          "target": "enemies",
+          "pattern": "row_1x4",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/archer/ranger/multi_shot.tres",
+          "description": "Tire plusieurs flèches sur 4 cases en ligne.",
+          "tags": ["damage", "aoe", "pattern:row_1x4"]
+        },
+        {
+          "id": "vital_strike",
+          "name": "Vital Strike",
+          "target": "self",
+          "pattern": "single",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/archer/ranger/mark_target.tres",
+          "description": "Concentration mortelle augmentant vos chances de critique et dégâts critiques.",
+          "tags": ["buff", "crit", "self"]
+        },
+        {
+          "id": "arrow_rain",
+          "name": "Arrow Rain",
+          "target": "enemies",
+          "pattern": "rect_2x2",
+          "vfx_type": "falling",
+          "tres": "res://resources/skills/archer/ranger/arrow_rain.tres",
+          "description": "Pluie de flèches sur une zone 2x2. Dégâts en zone.",
+          "tags": ["damage", "aoe", "pattern:rect_2x2"]
+        },
+        {
+          "id": "headshot",
+          "name": "Headshot",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/archer/ranger/headshot.tres",
+          "description": "SIGNATURE - Tir à la tête. Critique garanti avec dégâts massifs. Peut étourdir.",
+          "is_signature": true,
+          "tags": ["damage", "crit", "stun", "signature"]
+        }
+      ]
+    },
+    "falconer": {
+      "identity": "Companion strikes + burst",
+      "signature": "falcon_assault",
+      "skills": [
+        {
+          "id": "falcon_strike",
+          "name": "Falcon Strike",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "falling",
+          "tres": "res://resources/skills/archer/falconer/falcon_strike.tres",
+          "description": "Votre faucon plonge sur une cible, infligeant des dégâts perçants.",
+          "tags": ["damage", "pet"]
+        },
+        {
+          "id": "falcon_row",
+          "name": "Falcon Row",
+          "target": "enemies",
+          "pattern": "row_1x3",
+          "vfx_type": "falling",
+          "tres": "res://resources/skills/archer/falconer/falcon_row.tres",
+          "description": "Le faucon balaye 3 ennemis en ligne.",
+          "tags": ["damage", "aoe", "pet", "pattern:row_1x3"]
+        },
+        {
+          "id": "talon_rend",
+          "name": "Talon Rend",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "falling",
+          "tres": "res://resources/skills/archer/falconer/hunter_mark_falcon.tres",
+          "description": "Le faucon lacère la cible avec ses serres, infligeant saignement.",
+          "tags": ["damage", "bleed", "dot", "pet"]
+        },
+        {
+          "id": "wing_guard",
+          "name": "Wing Guard",
+          "target": "self",
+          "pattern": "single",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/archer/falconer/wing_guard.tres",
+          "description": "Le faucon vous protège, augmentant l'esquive temporairement.",
+          "tags": ["buff", "evasion", "pet"]
+        },
+        {
+          "id": "falcon_assault",
+          "name": "Falcon Assault",
+          "target": "enemies",
+          "pattern": "rect_2x3",
+          "vfx_type": "falling",
+          "tres": "res://resources/skills/archer/falconer/falcon_assault.tres",
+          "description": "SIGNATURE - Le faucon déchaîne une tempête de griffes sur une zone 2x3.",
+          "is_signature": true,
+          "tags": ["damage", "aoe", "pet", "signature", "pattern:rect_2x3"]
+        }
+      ]
+    },
+    "ballmaster": {
+      "identity": "Bouncing projectiles + trick shots",
+      "signature": "hunters_cage",
+      "skills": [
+        {
+          "id": "bounce_shot",
+          "name": "Bounce Shot",
+          "target": "enemies",
+          "pattern": "chain_2",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/archer/ballmaster/bounce_shot.tres",
+          "description": "Tir rebondissant sur 3 cibles (cible + 2 rebonds).",
+          "tags": ["damage", "bounce", "chain", "pattern:chain_2"]
+        },
+        {
+          "id": "ricochet_row",
+          "name": "Ricochet Row",
+          "target": "enemies",
+          "pattern": "row_1x4",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/archer/ballmaster/ricochet_row.tres",
+          "description": "Projectile ricochant sur 4 cases en ligne.",
+          "tags": ["damage", "bounce", "aoe", "pattern:row_1x4"]
+        },
+        {
+          "id": "impact_column",
+          "name": "Impact Column",
+          "target": "enemies",
+          "pattern": "col_1x2",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/archer/ballmaster/impact_column.tres",
+          "description": "Projectile traversant la colonne (2 cibles).",
+          "tags": ["damage", "pierce", "pattern:col_1x2"]
+        },
+        {
+          "id": "spin_burst",
+          "name": "Spin Burst",
+          "target": "enemies",
+          "pattern": "single_plus_adjacent_1",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/archer/ballmaster/spin_burst.tres",
+          "description": "Projectile rotatif touchant la cible + 1 adjacent.",
+          "tags": ["damage", "bounce", "splash"]
+        },
+        {
+          "id": "hunters_cage",
+          "name": "Hunter's Cage",
+          "target": "enemies",
+          "pattern": "rect_2x2",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/archer/ballmaster/hunters_cage.tres",
+          "description": "SIGNATURE - Cage de projectiles rebondissants en zone 2x2. Multiples hits.",
+          "is_signature": true,
+          "tags": ["damage", "bounce", "aoe", "dot", "signature", "pattern:rect_2x2"]
+        }
+      ]
+    },
+    "gunslinger": {
+      "identity": "Rapid fire + burst shots",
+      "signature": "pin_down",
+      "skills": [
+        {
+          "id": "quickshot",
+          "name": "Quickshot",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/archer/gunslinger/quickshot.tres",
+          "description": "Tir instantané très rapide. Idéal pour interrompre.",
+          "tags": ["damage", "fast", "interrupt"]
+        },
+        {
+          "id": "double_tap",
+          "name": "Double Tap",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/archer/gunslinger/double_tap.tres",
+          "description": "Deux tirs rapides sur la même cible. Double chance de crit.",
+          "tags": ["damage", "multi_hit", "crit"]
+        },
+        {
+          "id": "crossfire",
+          "name": "Crossfire",
+          "target": "enemies",
+          "pattern": "row_1x2",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/archer/gunslinger/crossfire.tres",
+          "description": "Tirs croisés sur 2 ennemis en ligne.",
+          "tags": ["damage", "aoe", "pattern:row_1x2"]
+        },
+        {
+          "id": "suppressing_row",
+          "name": "Suppressing Row",
+          "target": "enemies",
+          "pattern": "row_1x3",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/archer/gunslinger/suppressing_row.tres",
+          "description": "Tir de suppression sur 3 ennemis en ligne. Réduit leur attaque.",
+          "tags": ["damage", "debuff", "aoe", "pattern:row_1x3"]
+        },
+        {
+          "id": "pin_down",
+          "name": "Pin Down",
+          "target": "enemies",
+          "pattern": "row_1x4",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/archer/gunslinger/pin_down.tres",
+          "description": "SIGNATURE - Tir de suppression clouant 4 ennemis en ligne. Dégâts + immobilisation.",
+          "is_signature": true,
+          "tags": ["damage", "aoe", "root", "cc", "signature", "pattern:row_1x4"]
+        }
+      ]
+    }
+  }
+}

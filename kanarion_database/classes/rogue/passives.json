@@ -1,0 +1,107 @@
+{
+  "_meta": {
+    "version": "3.1",
+    "last_updated": "2026-01-12",
+    "class": "rogue",
+    "description": "Tous les passifs du Rogue (base + subclasses) - BALANCED"
+  },
+
+  "base_passives": [
+    {
+      "id": "p_rog_shadow_step",
+      "name": "Shadow Step",
+      "max_rank": 5,
+      "description": "Augmente l'esquive (flee) de 2% par rang.",
+      "effects": [{"stat": "flee", "op": "add_percent", "value_per_rank": 2}]
+    },
+    {
+      "id": "p_rog_cunning",
+      "name": "Cunning",
+      "max_rank": 5,
+      "description": "+2% chance critique et +3% degats critiques par rang.",
+      "effects": [
+        {"stat": "crit", "op": "add_percent", "value_per_rank": 2},
+        {"stat": "crit_dmg", "op": "add_flat", "value_per_rank": 3}
+      ],
+      "_balance_note": "NERF: was +5% crit_dmg, now +3% (same as Archer)"
+    }
+  ],
+
+  "subclass_passives": {
+    "shadowblade": [
+      {
+        "id": "p_sb_assassin",
+        "name": "Assassin's Mark",
+        "max_rank": 5,
+        "description": "+4% degats contre cibles < 30% HP par rang.",
+        "effects": [{"stat": "damage", "op": "add_percent", "value_per_rank": 4, "condition": "target_hp_below_30"}],
+        "_balance_note": "NERF: was +5%, now +4%"
+      },
+      {
+        "id": "p_sb_shadow_mastery",
+        "name": "Shadow Mastery",
+        "max_rank": 5,
+        "description": "+6% degats depuis stealth par rang.",
+        "effects": [{"stat": "damage", "op": "add_percent", "value_per_rank": 6, "condition": "from_stealth"}],
+        "_balance_note": "NERF: was +10%, now +6%"
+      }
+    ],
+    "trickster": [
+      {
+        "id": "p_trick_misdirect",
+        "name": "Misdirection",
+        "max_rank": 5,
+        "description": "+3% esquive et -4% generation de menace par rang.",
+        "effects": [
+          {"stat": "flee", "op": "add_percent", "value_per_rank": 3},
+          {"stat": "threat_mult", "op": "reduce_percent", "value_per_rank": 4}
+        ]
+      },
+      {
+        "id": "p_trick_chaos",
+        "name": "Chaos Agent",
+        "max_rank": 5,
+        "description": "+3% chance d'effet des debuffs par rang.",
+        "effects": [{"tag": "debuff", "op": "effect_chance_add_percent", "value_per_rank": 3}]
+      }
+    ],
+    "corsair": [
+      {
+        "id": "p_cors_dirty",
+        "name": "Dirty Fighting",
+        "max_rank": 5,
+        "description": "+3% chance de stun/blind sur melee par rang.",
+        "effects": [{"tag": "melee", "op": "cc_chance_add_percent", "value_per_rank": 3}]
+      },
+      {
+        "id": "p_cors_sea_dog",
+        "name": "Sea Dog",
+        "max_rank": 5,
+        "description": "+2% degats et +2% armure quand un buff est actif par rang.",
+        "effects": [
+          {"stat": "damage", "op": "add_percent", "value_per_rank": 2, "condition": "has_buff"},
+          {"stat": "armor", "op": "add_percent", "value_per_rank": 2, "condition": "has_buff"}
+        ]
+      }
+    ],
+    "duelist": [
+      {
+        "id": "p_duel_riposte",
+        "name": "Riposte Master",
+        "max_rank": 5,
+        "description": "+4% chance de contre-attaque par rang.",
+        "effects": [{"stat": "counter_chance", "op": "add_flat", "value_per_rank": 4}]
+      },
+      {
+        "id": "p_duel_blade_dance",
+        "name": "Blade Dance",
+        "max_rank": 5,
+        "description": "+2% esquive et +2% crit apres une esquive par rang.",
+        "effects": [
+          {"stat": "flee", "op": "add_percent", "value_per_rank": 2},
+          {"stat": "crit", "op": "add_percent", "value_per_rank": 2, "condition": "after_dodge"}
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,323 @@
+{
+  "_meta": {
+    "version": "3.2",
+    "last_updated": "2026-01-15",
+    "class": "mage",
+    "description": "Tous les skills actifs du Mage (base + subclasses)",
+    "pattern_presets": {
+      "single": "1 case",
+      "row_1x2": "Segment ligne 2 cases",
+      "row_1x3": "Segment ligne 3 cases",
+      "row_1x4": "Segment ligne 4 cases",
+      "row_full": "Ligne entière (5 cases)",
+      "col_1x2": "Colonne 2 cases (full)",
+      "col_1x3": "Segment colonne 3 cases",
+      "col_1x4": "Segment colonne 4 cases",
+      "rect_2x2": "Rectangle 2x2",
+      "rect_2x3": "Rectangle 2x3",
+      "rect_3x2": "Rectangle 3x2",
+      "rect_2x4": "Rectangle 2x4",
+      "rect_2x5_full": "Rectangle 2x5 (full map)",
+      "single_plus_adjacent_1": "Cible + 1 adjacent (cross)",
+      "single_plus_adjacent_2": "Cible + 2 adjacents",
+      "single_plus_adjacent_3": "Cible + 3 adjacents",
+      "ring_radius_1": "Anneau autour (sans centre)",
+      "around_radius_1": "Cible + anneau (avec centre)",
+      "chain_1": "Rebond 1 cible",
+      "chain_2": "Rebond 2 cibles",
+      "chain_4": "Rebond 4 cibles",
+      "cone_2x3": "Cône 2 profondeur x 3 largeur",
+      "global": "Toutes les cibles"
+    },
+    "vfx_available": ["fireball", "blizzard", "ice_ball", "heal", "shield", "buff_aura", "debuff_aura", "melee_slash", "regeneration", "aoe_pulse", "dash_trail", "life_steal", "magic_bolt", "sanctuary", "whirlwind", "falling", "projectile"]
+  },
+
+  "base_skills": [
+    {
+      "id": "magic_bolt",
+      "name": "Magic Bolt",
+      "target": "enemy",
+      "pattern": "single",
+      "vfx_type": "magic_bolt",
+      "tres": "res://resources/skills/mage/base/magic_bolt.tres",
+      "description": "Projectile arcanique simple et fiable. Inflige des dégâts magiques à une cible.",
+      "tags": ["damage", "pattern:single", "target:enemy"]
+    },
+    {
+      "id": "arcane_pulse",
+      "name": "Arcane Pulse",
+      "target": "enemies",
+      "pattern": "rect_2x2",
+      "vfx_type": "aoe_pulse",
+      "tres": "res://resources/skills/mage/base/arcane_pulse.tres",
+      "description": "Onde arcanique qui frappe une zone 2x2 autour de la cible. Dégâts modérés en zone.",
+      "tags": ["damage", "aoe", "pattern:rect_2x2", "target:enemies"]
+    },
+    {
+      "id": "mana_shield",
+      "name": "Mana Shield",
+      "target": "self",
+      "pattern": "single",
+      "vfx_type": "shield",
+      "tres": "res://resources/skills/mage/base/mana_shield.tres",
+      "description": "Bouclier personnel alimenté par le mana pour absorber une partie des dégâts.",
+      "tags": ["defense", "shield", "pattern:single", "target:self"]
+    },
+    {
+      "id": "focused_cast",
+      "name": "Focused Cast",
+      "target": "self",
+      "pattern": "single",
+      "vfx_type": "buff_aura",
+      "tres": "res://resources/skills/mage/base/focused_cast.tres",
+      "description": "Concentration magique augmentant temporairement la puissance et l'efficacité des sorts.",
+      "tags": ["buff", "pattern:single", "target:self"]
+    },
+    {
+      "id": "arcane_shift",
+      "name": "Arcane Shift",
+      "target": "self",
+      "pattern": "single",
+      "vfx_type": "dash_trail",
+      "tres": "res://resources/skills/mage/base/arcane_shift.tres",
+      "description": "Déplacement court (blink) pour se repositionner rapidement sur une case adjacente.",
+      "tags": ["mobility", "pattern:single", "target:self"]
+    }
+  ],
+
+  "subclass_skills": {
+    "elementalist": {
+      "identity": "Elemental damage + clear AoE shapes",
+      "signature": "elemental_burst",
+      "skills": [
+        {
+          "id": "elemental_bolt",
+          "name": "Elemental Bolt",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "fireball",
+          "tres": "res://resources/skills/mage/elementalist/elemental_bolt.tres",
+          "description": "Projectile élémentaire mono-cible. Change d'élément selon le dernier sort lancé.",
+          "tags": ["damage", "elemental"]
+        },
+        {
+          "id": "fireball",
+          "name": "Fireball",
+          "target": "enemy",
+          "pattern": "single_plus_adjacent_1",
+          "vfx_type": "fireball",
+          "tres": "res://resources/skills/mage/elementalist/fireball.tres",
+          "description": "Boule de feu classique touchant la cible + 1 case adjacente. Chance de brûlure.",
+          "tags": ["damage", "fire", "elemental", "splash"]
+        },
+        {
+          "id": "blizzard",
+          "name": "Blizzard",
+          "target": "enemies",
+          "pattern": "rect_2x3",
+          "vfx_type": "blizzard",
+          "tres": "res://resources/skills/mage/elementalist/blizzard.tres",
+          "description": "Tempête de glace dévastatrice couvrant une zone 2x3. Inflige des dégâts de givre et ralentit.",
+          "tags": ["damage", "ice", "elemental", "aoe", "slow"]
+        },
+        {
+          "id": "ice_ball",
+          "name": "Ice Ball",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "ice_ball",
+          "tres": "res://resources/skills/mage/elementalist/ice_ball.tres",
+          "description": "Projectile de glace perçant qui ralentit la cible pendant quelques secondes.",
+          "tags": ["damage", "ice", "elemental", "slow"]
+        },
+        {
+          "id": "elemental_burst",
+          "name": "Elemental Burst",
+          "target": "enemies",
+          "pattern": "around_radius_1",
+          "vfx_type": "aoe_pulse",
+          "tres": "res://resources/skills/mage/elementalist/elemental_burst.tres",
+          "description": "SIGNATURE - Explosion élémentaire autour de la cible (centre + anneau). Dégâts massifs.",
+          "is_signature": true,
+          "tags": ["damage", "elemental", "aoe", "signature"]
+        }
+      ]
+    },
+    "occultist": {
+      "identity": "Dark magic + debuffs + drains",
+      "signature": "shadow_pact",
+      "skills": [
+        {
+          "id": "dark_bolt",
+          "name": "Dark Bolt",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "magic_bolt",
+          "tres": "res://resources/skills/mage/occultist/dark_bolt.tres",
+          "description": "Projectile d'énergie sombre infligeant des dégâts d'ombre à une cible.",
+          "tags": ["damage", "dark", "occult"]
+        },
+        {
+          "id": "curse_of_weakness",
+          "name": "Curse of Weakness",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "debuff_aura",
+          "tres": "res://resources/skills/mage/occultist/curse_of_weakness.tres",
+          "description": "Malédiction qui réduit l'attaque et la défense de la cible pendant plusieurs tours.",
+          "tags": ["debuff", "occult", "curse"]
+        },
+        {
+          "id": "hex_row",
+          "name": "Hex Row",
+          "target": "enemies",
+          "pattern": "row_1x3",
+          "vfx_type": "debuff_aura",
+          "tres": "res://resources/skills/mage/occultist/hex_row.tres",
+          "description": "Malédiction de zone touchant 3 cases en ligne. Réduit la précision.",
+          "tags": ["debuff", "occult", "aoe"]
+        },
+        {
+          "id": "life_drain",
+          "name": "Life Drain",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "life_steal",
+          "tres": "res://resources/skills/mage/occultist/life_drain.tres",
+          "description": "Absorbe la vie de la cible pour restaurer vos propres HP. Dégâts et soin simultanés.",
+          "tags": ["damage", "heal", "lifesteal", "occult"]
+        },
+        {
+          "id": "shadow_pact",
+          "name": "Shadow Pact",
+          "target": "enemies",
+          "pattern": "rect_2x2",
+          "vfx_type": "life_steal",
+          "tres": "res://resources/skills/mage/occultist/shadow_pact.tres",
+          "description": "SIGNATURE - Pacte sombre drainant la vie d'une zone 2x2 et amplifiant vos dégâts d'ombre.",
+          "is_signature": true,
+          "tags": ["damage", "lifesteal", "occult", "aoe", "signature"]
+        }
+      ]
+    },
+    "cardmaster": {
+      "identity": "Luck manipulation + flexible patterns",
+      "signature": "fate_flip",
+      "skills": [
+        {
+          "id": "card_throw",
+          "name": "Card Throw",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/mage/cardmaster/card_throw.tres",
+          "description": "Lance une carte tranchante. Effet aléatoire bonus (dégâts, slow, ou crit).",
+          "tags": ["damage", "random", "cards"]
+        },
+        {
+          "id": "card_barrage",
+          "name": "Card Barrage",
+          "target": "enemies",
+          "pattern": "row_1x4",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/mage/cardmaster/card_barrage.tres",
+          "description": "Barrage de cartes sur 4 cases en ligne. Dégâts multiples.",
+          "tags": ["damage", "aoe", "cards"]
+        },
+        {
+          "id": "lucky_draw",
+          "name": "Lucky Draw",
+          "target": "self",
+          "pattern": "single",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/mage/cardmaster/lucky_draw.tres",
+          "description": "Tire une carte du destin: buff aléatoire puissant (ATK, crit, vitesse, ou shield).",
+          "tags": ["buff", "random", "cards"]
+        },
+        {
+          "id": "unlucky_curse",
+          "name": "Unlucky Curse",
+          "target": "enemies",
+          "pattern": "rect_3x2",
+          "vfx_type": "debuff_aura",
+          "tres": "res://resources/skills/mage/cardmaster/unlucky_curse.tres",
+          "description": "Malchance sur une zone 3x2. Applique aléatoirement 1-2 debuffs: aveuglement et/ou réduction de crit.",
+          "random_debuffs": ["blind", "crit_reduction"],
+          "random_count": "1-2",
+          "tags": ["debuff", "random", "cards", "aoe"]
+        },
+        {
+          "id": "fate_flip",
+          "name": "Fate Flip",
+          "target": "enemies",
+          "pattern": "rect_2x2",
+          "vfx_type": "card",
+          "tres": "res://resources/skills/mage/cardmaster/fate_flip.tres",
+          "description": "SIGNATURE - Inverse le destin: zone 2x2, dégâts + effets aléatoires. 50% de chance de frapper 2 fois!",
+          "is_signature": true,
+          "double_hit_chance": 0.5,
+          "random_debuffs": ["stun", "slow", "burn", "confusion"],
+          "random_count": "1-2",
+          "tags": ["damage", "random", "aoe", "cards", "signature", "double_hit"]
+        }
+      ]
+    },
+    "spellblade": {
+      "identity": "Hybrid melee magic + self buffs",
+      "signature": "arcane_cleave",
+      "skills": [
+        {
+          "id": "arcane_slash",
+          "name": "Arcane Slash",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/mage/spellblade/arcane_slash.tres",
+          "description": "Frappe de mêlée infusée d'énergie arcanique. Dégâts physiques + magiques.",
+          "tags": ["damage", "melee", "hybrid"]
+        },
+        {
+          "id": "mana_strike",
+          "name": "Mana Strike",
+          "target": "enemy",
+          "pattern": "single_plus_adjacent_1",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/mage/spellblade/mana_strike.tres",
+          "description": "Frappe explosive touchant la cible + 1 adjacent. Restaure du mana au hit.",
+          "tags": ["damage", "melee", "mana_restore"]
+        },
+        {
+          "id": "enchanted_blade",
+          "name": "Enchanted Blade",
+          "target": "self",
+          "pattern": "single",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/mage/spellblade/enchanted_blade.tres",
+          "description": "Enchante votre arme avec de l'énergie magique, ajoutant des dégâts arcanes aux attaques.",
+          "tags": ["buff", "enchant", "hybrid"]
+        },
+        {
+          "id": "spell_guard",
+          "name": "Spell Guard",
+          "target": "self",
+          "pattern": "single",
+          "vfx_type": "shield",
+          "tres": "res://resources/skills/mage/spellblade/spell_guard.tres",
+          "description": "Armure magique augmentant votre défense physique et magique temporairement.",
+          "tags": ["buff", "defense", "shield"]
+        },
+        {
+          "id": "arcane_cleave",
+          "name": "Arcane Cleave",
+          "target": "enemies",
+          "pattern": "row_1x3",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/mage/spellblade/arcane_cleave.tres",
+          "description": "SIGNATURE - Balayage arcanique touchant 3 cases en ligne. Dégâts hybrides dévastateurs.",
+          "is_signature": true,
+          "tags": ["damage", "melee", "aoe", "hybrid", "signature"]
+        }
+      ]
+    }
+  }
+}

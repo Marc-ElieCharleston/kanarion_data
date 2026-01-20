@@ -1,0 +1,316 @@
+{
+  "_meta": {
+    "version": "3.2",
+    "last_updated": "2026-01-15",
+    "class": "healer",
+    "description": "Tous les skills actifs du Healer (base + subclasses)",
+    "pattern_presets": {
+      "single": "1 case",
+      "row_1x2": "Segment ligne 2 cases",
+      "row_1x3": "Segment ligne 3 cases",
+      "row_full": "Ligne entière (5 cases)",
+      "col_1x2": "Colonne 2 cases (full)",
+      "rect_2x2": "Rectangle 2x2",
+      "rect_2x3": "Rectangle 2x3",
+      "single_plus_adjacent_1": "Cible + 1 adjacent",
+      "single_plus_adjacent_2": "Cible + 2 adjacents",
+      "around_radius_1": "Cible + anneau",
+      "global": "Toutes les cibles"
+    },
+    "vfx_available": ["heal", "regeneration", "shield", "buff_aura", "debuff_aura", "sanctuary", "magic_bolt"]
+  },
+
+  "base_skills": [
+    {
+      "id": "smite",
+      "name": "Smite",
+      "target": "enemy",
+      "pattern": "single",
+      "vfx_type": "magic_bolt",
+      "tres": "res://resources/skills/healer/base/smite.tres",
+      "description": "Châtiment sacré infligeant des dégâts de lumière à une cible. Filler damage pour healers.",
+      "tags": ["damage", "holy", "pattern:single"]
+    },
+    {
+      "id": "heal",
+      "name": "Heal",
+      "target": "ally",
+      "pattern": "single",
+      "vfx_type": "heal",
+      "tres": "res://resources/skills/healer/base/heal.tres",
+      "description": "Soin direct restaurant une quantité modérée de HP à un allié ciblé.",
+      "tags": ["heal", "pattern:single"]
+    },
+    {
+      "id": "renew",
+      "name": "Renew",
+      "target": "ally",
+      "pattern": "single",
+      "vfx_type": "regeneration",
+      "tres": "res://resources/skills/healer/base/renew.tres",
+      "description": "Régénération sur la durée (HoT) soignant un allié pendant plusieurs secondes.",
+      "tags": ["heal", "hot", "pattern:single"]
+    },
+    {
+      "id": "holy_shield",
+      "name": "Holy Shield",
+      "target": "ally",
+      "pattern": "single",
+      "vfx_type": "shield",
+      "tres": "res://resources/skills/healer/base/holy_shield.tres",
+      "description": "Bouclier sacré absorbant des dégâts sur un allié pendant un temps limité.",
+      "tags": ["shield", "defense", "pattern:single"]
+    },
+    {
+      "id": "purify",
+      "name": "Purify",
+      "target": "ally",
+      "pattern": "single",
+      "vfx_type": "heal",
+      "tres": "res://resources/skills/healer/base/purify.tres",
+      "description": "Dissipe un ou plusieurs effets négatifs (debuffs, DoT) sur un allié ciblé.",
+      "tags": ["dispel", "cleanse", "pattern:single"]
+    },
+    {
+      "id": "light_pulse",
+      "name": "Light Pulse",
+      "target": "allies",
+      "pattern": "single_plus_adjacent_1",
+      "vfx_type": "heal",
+      "tres": "res://resources/skills/healer/base/light_pulse.tres",
+      "description": "Impulsion de lumière soignant la cible et 1 allié adjacent.",
+      "tags": ["heal", "aoe", "pattern:single_plus_adjacent_1"]
+    }
+  ],
+
+  "subclass_skills": {
+    "lifewarden": {
+      "identity": "Sustain + regen + nature",
+      "signature": "nature_blessing",
+      "skills": [
+        {
+          "id": "nature_heal",
+          "name": "Nature Heal",
+          "target": "ally",
+          "pattern": "single",
+          "vfx_type": "heal",
+          "tres": "res://resources/skills/healer/lifewarden/nature_heal.tres",
+          "description": "Soin de nature direct avec bonus de regen.",
+          "tags": ["heal", "nature"]
+        },
+        {
+          "id": "regrowth",
+          "name": "Regrowth",
+          "target": "allies",
+          "pattern": "row_1x2",
+          "vfx_type": "regeneration",
+          "tres": "res://resources/skills/healer/lifewarden/regrowth.tres",
+          "description": "HoT sur 2 alliés en ligne. Soin sur la durée.",
+          "tags": ["heal", "hot", "aoe", "pattern:row_1x2"]
+        },
+        {
+          "id": "vine_shield",
+          "name": "Vine Shield",
+          "target": "ally",
+          "pattern": "single",
+          "vfx_type": "shield",
+          "tres": "res://resources/skills/healer/lifewarden/vine_shield.tres",
+          "description": "Bouclier de vignes absorbant les dégâts et repoussant les attaquants.",
+          "tags": ["shield", "nature"]
+        },
+        {
+          "id": "regeneration",
+          "name": "Regeneration",
+          "target": "allies",
+          "pattern": "col_1x2",
+          "vfx_type": "regeneration",
+          "tres": "res://resources/skills/healer/lifewarden/regeneration.tres",
+          "description": "HoT puissant sur la colonne d'alliés (2 cases).",
+          "tags": ["heal", "hot", "aoe", "pattern:col_1x2"]
+        },
+        {
+          "id": "nature_blessing",
+          "name": "Nature's Blessing",
+          "target": "allies",
+          "pattern": "rect_2x3",
+          "vfx_type": "heal",
+          "tres": "res://resources/skills/healer/lifewarden/nature_blessing.tres",
+          "description": "SIGNATURE - Bénédiction en zone 2x3: burst heal + HoT + bonus regen.",
+          "is_signature": true,
+          "tags": ["heal", "hot", "aoe", "signature", "pattern:rect_2x3"]
+        }
+      ]
+    },
+    "lightbringer": {
+      "identity": "Burst heals + holy buffs",
+      "signature": "heal_burst",
+      "skills": [
+        {
+          "id": "radiant_heal",
+          "name": "Radiant Heal",
+          "target": "ally",
+          "pattern": "single",
+          "vfx_type": "heal",
+          "tres": "res://resources/skills/healer/lightbringer/radiant_heal.tres",
+          "description": "Soin radieux puissant et instantané.",
+          "tags": ["heal", "holy", "burst"]
+        },
+        {
+          "id": "sanctuary",
+          "name": "Sanctuary",
+          "target": "allies",
+          "pattern": "rect_2x2",
+          "vfx_type": "sanctuary",
+          "tres": "res://resources/skills/healer/lightbringer/sanctuary.tres",
+          "description": "Zone sanctifiée 2x2 réduisant les dégâts et soignant les alliés.",
+          "tags": ["heal", "defense", "aoe", "pattern:rect_2x2"]
+        },
+        {
+          "id": "bless",
+          "name": "Bless",
+          "target": "allies",
+          "pattern": "single_plus_adjacent_2",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/healer/lightbringer/bless.tres",
+          "description": "Bénédiction sur la cible + 2 adjacents. Bonus défensif.",
+          "tags": ["buff", "defense", "aoe"]
+        },
+        {
+          "id": "cleanse_wave",
+          "name": "Cleanse Wave",
+          "target": "allies",
+          "pattern": "row_1x3",
+          "vfx_type": "heal",
+          "tres": "res://resources/skills/healer/lightbringer/cleanse_wave.tres",
+          "description": "Vague purificatrice dissipant les debuffs sur 3 alliés en ligne.",
+          "tags": ["dispel", "aoe", "pattern:row_1x3"]
+        },
+        {
+          "id": "heal_burst",
+          "name": "Heal Burst",
+          "target": "allies",
+          "pattern": "around_radius_1",
+          "vfx_type": "heal",
+          "tres": "res://resources/skills/healer/lightbringer/heal_burst.tres",
+          "description": "SIGNATURE - Explosion curative sur la cible + anneau adjacent. Soin massif.",
+          "is_signature": true,
+          "tags": ["heal", "aoe", "burst", "signature"]
+        }
+      ]
+    },
+    "cantor": {
+      "identity": "Sacred hymns + resurrection + holy purification",
+      "signature": "requiem",
+      "skills": [
+        {
+          "id": "hymn_of_light",
+          "name": "Hymn of Light",
+          "target": "allies",
+          "pattern": "single_plus_adjacent_1",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/healer/cantor/hymn_of_light.tres",
+          "description": "Hymne sacrée accordant une régénération de vie à un allié.",
+          "tags": ["buff", "heal", "hot"]
+        },
+        {
+          "id": "sacred_ward",
+          "name": "Sacred Ward",
+          "target": "ally",
+          "pattern": "single",
+          "vfx_type": "shield",
+          "tres": "res://resources/skills/healer/cantor/sacred_ward.tres",
+          "description": "Protection sacrée immunisant contre le prochain effet de contrôle.",
+          "tags": ["buff", "cc_immune", "holy", "shield"]
+        },
+        {
+          "id": "canticle_of_war",
+          "name": "Canticle of War",
+          "target": "allies",
+          "pattern": "global",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/healer/cantor/canticle_of_war.tres",
+          "description": "Cantique guerrier buffant tous les alliés (ATK + vitesse).",
+          "tags": ["buff", "attack", "speed", "global"]
+        },
+        {
+          "id": "absolution",
+          "name": "Absolution",
+          "target": "ally",
+          "pattern": "single",
+          "vfx_type": "heal",
+          "tres": "res://resources/skills/healer/cantor/absolution.tres",
+          "description": "Absolution purificatrice: soin puissant + cleanse tous debuffs.",
+          "tags": ["heal", "dispel", "cleanse", "burst"]
+        },
+        {
+          "id": "requiem",
+          "name": "Requiem",
+          "target": "ally",
+          "pattern": "single",
+          "vfx_type": "heal",
+          "tres": "res://resources/skills/healer/cantor/requiem.tres",
+          "description": "SIGNATURE - Chant de résurrection ramenant un allié tombé avec une partie de ses HP.",
+          "is_signature": true,
+          "tags": ["resurrect", "holy", "signature"]
+        }
+      ]
+    },
+    "oracle": {
+      "identity": "Prediction + fate buffs",
+      "signature": "prophecy",
+      "skills": [
+        {
+          "id": "foresee",
+          "name": "Foresee",
+          "target": "ally",
+          "pattern": "single",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/healer/oracle/foresee.tres",
+          "description": "Vision du futur permettant d'esquiver la prochaine attaque.",
+          "tags": ["buff", "evasion", "fate"]
+        },
+        {
+          "id": "destiny_thread",
+          "name": "Destiny Thread",
+          "target": "allies",
+          "pattern": "chain_2",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/healer/oracle/destiny_thread.tres",
+          "description": "Lie 3 alliés (cible + 2 rebonds): partage les soins reçus.",
+          "tags": ["buff", "chain", "heal_share"]
+        },
+        {
+          "id": "omen",
+          "name": "Omen",
+          "target": "enemy",
+          "pattern": "single_plus_adjacent_1",
+          "vfx_type": "debuff_aura",
+          "tres": "res://resources/skills/healer/oracle/omen.tres",
+          "description": "Présage maudit sur la cible + 1 adjacent: réduit leur esquive.",
+          "tags": ["debuff", "evasion_down", "aoe"]
+        },
+        {
+          "id": "fate_reset",
+          "name": "Fate Reset",
+          "target": "ally",
+          "pattern": "single",
+          "vfx_type": "heal",
+          "tres": "res://resources/skills/healer/oracle/fate_reset.tres",
+          "description": "Réinitialise le destin: retire tous les debuffs + petit soin.",
+          "tags": ["dispel", "heal", "fate"]
+        },
+        {
+          "id": "prophecy",
+          "name": "Prophecy",
+          "target": "allies",
+          "pattern": "global",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/healer/oracle/prophecy.tres",
+          "description": "SIGNATURE - Prophétie ultime: si un allié tombe sous 20% HP, soin automatique.",
+          "is_signature": true,
+          "tags": ["buff", "emergency_heal", "global", "signature"]
+        }
+      ]
+    }
+  }
+}

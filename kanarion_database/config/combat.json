@@ -1,0 +1,227 @@
+{
+  "_meta": {
+    "version": "3.0",
+    "last_updated": "2026-01-10",
+    "description": "Configuration combat - formules, constantes, settings"
+  },
+
+  "settings": {
+    "_comment": "Constantes utilisees par combat_system.gd",
+    "base_attack_interval": 2.0,
+    "min_damage_percent": 0.1,
+    "armor_effectiveness": 100,
+    "default_crit_chance": 5,
+    "default_crit_dmg": 150,
+    "gcd_duration": 2.0,
+    "combat_mp_regen_per_second": 2.0,
+    "out_of_combat_hp_regen_per_second": 5.0,
+
+    "hit_flee": {
+      "base_hit_chance": 80,
+      "hit_chance_min": 5,
+      "hit_chance_max": 95,
+      "default_hit": 100,
+      "default_flee": 0
+    },
+
+    "effects": {
+      "default_effect_chance": 0,
+      "default_effect_resist": 0,
+      "effect_apply_minimum": 5,
+      "effect_resist_cap": 80
+    },
+
+    "damage": {
+      "default_damage_percent": 0,
+      "default_damage_reduction": 0,
+      "damage_reduction_cap": 75,
+      "default_armor_pen": 0,
+      "default_magic_pen": 0
+    },
+
+    "double_hit": {
+      "default_chance": 0,
+      "damage_mult": 0.75,
+      "cap": 50
+    },
+
+    "sustain": {
+      "default_lifesteal": 0,
+      "default_spell_vamp": 0,
+      "lifesteal_cap": 30,
+      "spell_vamp_aoe_effectiveness": 0.33
+    },
+
+    "luck": {
+      "default": 0,
+      "drop_bonus_per_point": 0.001,
+      "crit_bonus_per_point": 0.0005,
+      "effect_resist_per_point": 0.001
+    },
+
+    "abilities": {
+      "cooldown_reduction_cap": 40,
+      "cast_speed_cap": 50
+    },
+
+    "defensive": {
+      "block_damage_reduction": 0.5,
+      "block_chance_cap": 75,
+      "parry_chance_cap": 30
+    }
+  },
+
+  "formulas": {
+    "_comment": "Formules EXACTES - v2.0 avec hit/flee, penetration, effect system",
+    "_implementation_file": "scripts/combat/combat_system.gd",
+
+    "damage_pipeline": {
+      "order_of_operations": [
+        "1. HIT CHECK: hit_chance = 80 + (attacker.hit - target.flee), clamp(5, 95)",
+        "2. Si MISS: skip tout, afficher 'MISS'",
+        "3. EVASION CHECK: if randf() * 100 < target.evasion_chance: DODGE",
+        "4. BLOCK CHECK: if randf() * 100 < target.block_chance: damage *= 0.5",
+        "5. PARRY CHECK: if randf() * 100 < target.parry_chance: damage = 0, riposte",
+        "6. CALCULATE DAMAGE: voir physical_damage ou magic_damage",
+        "7. DAMAGE REDUCTION: damage *= (1 - target.damage_reduction / 100)",
+        "8. SHIELD PIERCE: pierce_damage = damage * (shield_pierce / 100); shield_damage = damage - pierce_damage",
+        "9. SHIELD BREAK: shield_damage *= (1 + shield_break / 100)",
+        "10. SHIELD ABSORB: if target.shield > 0: target.shield -= shield_damage (clamp 0)",
+        "11. APPLY HP DAMAGE: target.hp -= (pierce_damage + overflow_from_shield)",
+        "12. THORNS/REFLECT: if melee, attacker takes thorns + reflect damage",
+        "13. LIFESTEAL/SPELLVAMP: attacker heals",
+        "14. DOUBLE HIT: if randf() * 100 < double_hit_chance: repeat at 75% damage"
+      ]
+    },
+
+    "hit_flee_system": {
+      "formula": "hit_chance = BASE_HIT + (attacker.hit - target.flee)",
+      "constants": {"BASE_HIT": 80},
+      "clamp": {"min": 5, "max": 95},
+      "examples": {
+        "equal_hit_flee": "80 + (100 - 100) = 80% hit",
+        "high_hit_vs_low_flee": "80 + (150 - 50) = 180 -> 95% hit (capped)",
+        "low_hit_vs_high_flee": "80 + (80 - 150) = 10% hit"
+      }
+    },
+
+    "physical_damage": {
+      "order_of_operations": [
+        "1. raw_damage = base_power (ou atk pour auto-attack)",
+        "2. Si crit: raw_damage *= (crit_dmg / 100)",
+        "3. raw_damage *= (1 + damage_percent / 100)",
+        "4. effective_armor = max(0, target.armor - attacker.armor_pen)",
+        "5. raw_damage = max(raw_damage * 0.1, raw_damage - target.def)",
+        "6. raw_damage *= (100 / (100 + effective_armor))",
+        "7. raw_damage *= (1 - target.damage_reduction / 100)",
+        "8. actual_damage = max(1, int(raw_damage))"
+      ],
+      "formula_complete": "damage = raw * (1+dmg%) * (100/(100+armor-pen)) * (1-dr%)"
+    },
+
+    "magic_damage": {
+      "order_of_operations": [
+        "1. raw_damage = base_power",
+        "2. Si crit: raw_damage *= (crit_dmg / 100)",
+        "3. raw_damage *= (1 + damage_percent / 100)",
+        "4. effective_mr = max(0, target.magic_resist - attacker.magic_pen)",
+        "5. raw_damage *= (100 / (100 + effective_mr))",
+        "6. raw_damage *= (1 - target.damage_reduction / 100)",
+        "7. actual_damage = max(1, int(raw_damage))"
+      ],
+      "formula_complete": "damage = raw * (1+dmg%) * (100/(100+mr-pen)) * (1-dr%)"
+    },
+
+    "critical_hit": {
+      "formula": "if randf() * 100 < crit_chance: damage *= (crit_dmg / 100)",
+      "defaults": {"crit_chance": 5, "crit_dmg": 150},
+      "luck_bonus": "crit_chance += luck * 0.05"
+    },
+
+    "double_hit": {
+      "formula": "if randf() * 100 < double_hit_chance: trigger second hit",
+      "second_hit_damage": 0.75,
+      "can_crit": true,
+      "applies_to": ["auto_attack", "single_target_physical_skills"]
+    },
+
+    "effect_application": {
+      "formula": "final_chance = (skill.base_chance * (1 + caster.effect_chance/100)) - target.effect_resist",
+      "minimum_chance": 5,
+      "luck_bonus": "effect_resist += luck * 0.1"
+    },
+
+    "healing": {
+      "formula": "heal = (base_power + heal_power) * (1 + mag * scaling_ratio)",
+      "healing_received_bonus": "actual_heal = heal * (1 + target.healing_received / 100)"
+    },
+
+    "lifesteal_spellvamp": {
+      "lifesteal_formula": "hp_gained = physical_damage_dealt * (lifesteal / 100)",
+      "spellvamp_formula": "hp_gained = magic_damage_dealt * (spell_vamp / 100)",
+      "aoe_effectiveness": 0.33
+    },
+
+    "shield_mechanics": {
+      "shield_pierce": {
+        "formula": "pierce_damage = total_damage * (shield_pierce / 100)",
+        "examples": {
+          "0_pierce": "0 direct HP, 100 to shield",
+          "30_pierce": "30 direct HP, 70 to shield"
+        }
+      },
+      "shield_break": {
+        "formula": "effective_shield_damage = shield_damage * (1 + shield_break / 100)"
+      }
+    }
+  },
+
+  "skill_balance": {
+    "scaling_ratios": {
+      "weak": 0.7,
+      "normal": 1.0,
+      "strong": 1.2,
+      "ultimate": 1.5
+    },
+    "cooldown_tiers": {
+      "filler": "3-4.5 sec",
+      "spam": "5-6 sec",
+      "normal": "8-12 sec",
+      "strong": "14-18 sec",
+      "ultimate": "20-30 sec",
+      "resurrection": "120 sec"
+    },
+    "mp_cost_guidelines": {
+      "filler": "5-8 MP",
+      "basic": "10-15 MP",
+      "normal": "15-22 MP",
+      "strong": "25-35 MP",
+      "ultimate": "40-60 MP"
+    },
+    "filler_skills_by_class": {
+      "_comment": "Skill de base spammable pour chaque classe",
+      "warrior": {"skill": "slash", "cd": 3.0, "power": 22, "ratio": 1.0},
+      "archer": {"skill": "arrow_shot", "cd": 3.0, "power": 20, "ratio": 1.0},
+      "mage": {"skill": "magic_bolt", "cd": 4.0, "power": 15, "ratio": 1.0},
+      "artisan": {"skill": "tool_strike", "cd": 4.0, "power": 18, "ratio": 0.9},
+      "healer": {"skill": "smite", "cd": 4.0, "power": 15, "ratio": 0.7},
+      "rogue": {"skill": "stab", "cd": 4.5, "power": 22, "ratio": 1.0}
+    },
+    "pattern_balance": {
+      "_comment": "Guidelines MP/Power par pattern",
+      "single_target": {"mp": "8-15", "power": "18-30", "ratio": "1.0-1.2"},
+      "row_5_tiles": {"mp": "15-20", "power": "15-22", "ratio": "0.8-0.9"},
+      "column_2_tiles": {"mp": "12-18", "power": "20-26", "ratio": "0.9-1.0"},
+      "full_aoe": {"mp": "18-25", "power": "12-20", "ratio": "0.7-0.8"}
+    }
+  },
+
+  "flee_system": {
+    "base_flee_chance": 80,
+    "per_monster_resist": 10,
+    "per_star_resist": 5,
+    "elite_resist_bonus": 20,
+    "boss_flee_allowed": false,
+    "flee_cooldown_seconds": 3
+  }
+}

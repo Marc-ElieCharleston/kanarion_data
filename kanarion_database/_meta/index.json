@@ -1,0 +1,157 @@
+{
+  "_meta": {
+    "name": "Kanarion Online - Database v3.0",
+    "description": "Clean, deduplicated structure for all game data",
+    "version": "3.0.0",
+    "last_updated": "2026-01-14",
+    "migration_from": "database/ (v2.x)",
+    "migration_status": "COMPLETE",
+    "principles": [
+      "Single source of truth - no duplicates",
+      "Clear separation: config vs content vs systems",
+      "One file per domain, easy to find",
+      "Scalable for future extensions"
+    ]
+  },
+
+  "structure": {
+    "config/": {
+      "description": "Global game configuration",
+      "files": {
+        "game_config.json": "High concept, implementation status, game constants (DONE)",
+        "combat_config.json": "Combat formulas, damage pipeline, timers (DONE)",
+        "status_effects_config.json": "Stacking system, durations, DoT/control rules (DONE)",
+        "monster_ai_config.json": "Monster AI system: roles, intelligence levels, boss phases (DONE)"
+      }
+    },
+
+    "ROADMAP.md": "Future features: Group Finder, Raids, Collectibles (DONE)",
+
+    "classes/": {
+      "description": "Playable classes data",
+      "files": {
+        "_classes_index.json": "Index of 6 classes with identity, subclasses, lore (DONE)",
+        "warrior/skills.json": "Warrior active skills (DONE)",
+        "warrior/passives.json": "Warrior passives (DONE)",
+        "mage/skills.json": "Mage active skills (DONE)",
+        "mage/passives.json": "Mage passives (DONE)",
+        "healer/skills.json": "Healer active skills (DONE)",
+        "healer/passives.json": "Healer passives (DONE)",
+        "archer/skills.json": "Archer active skills (DONE)",
+        "archer/passives.json": "Archer passives (DONE)",
+        "rogue/skills.json": "Rogue active skills (DONE)",
+        "rogue/passives.json": "Rogue passives (DONE)",
+        "artisan/skills.json": "Artisan active skills (DONE)",
+        "artisan/passives.json": "Artisan passives (DONE)"
+      }
+    },
+
+    "stats/": {
+      "description": "Stats and effects system",
+      "files": {
+        "definitions.json": "Definition of each stat (hp, atk, flee, etc.) (DONE)",
+        "class_base_stats.json": "Base stats per class at level 1 (DONE)",
+        "class_growth.json": "Stat growth per level (DONE)",
+        "status_effects.json": "All buffs/debuffs/DoTs (DONE)"
+      }
+    },
+
+    "entities/": {
+      "description": "Monsters, NPCs, Bosses",
+      "files": {
+        "monsters.json": "Complete bestiary (DONE)",
+        "monster_variants.json": "Prefix, elite, boss variants (DONE)",
+        "npcs.json": "World NPCs (DONE)",
+        "boss_mechanics.json": "Boss mechanics (DONE)"
+      }
+    },
+
+    "items/": {
+      "description": "Items and equipment",
+      "files": {
+        "consumables.json": "Potions, food (DONE)",
+        "materials.json": "Crafting materials (DONE)",
+        "currencies.json": "Gold, gems (DONE)",
+        "equipment.json": "Weapons, armor, accessories (DONE)",
+        "affixes.json": "Equipment affixes (DONE)"
+      }
+    },
+
+    "world/": {
+      "description": "World and exploration",
+      "files": {
+        "zones.json": "Game zones (DONE)",
+        "world_map.json": "World map (DONE)",
+        "quests.json": "Quests (DONE)"
+      }
+    },
+
+    "systems/": {
+      "description": "Game systems",
+      "files": {
+        "progression.json": "XP, leveling, stat allocation (DONE)",
+        "economy.json": "Prices, gold sinks, trade (DONE)",
+        "social.json": "Friends, chat basics (DONE)",
+        "guilds.json": "Complete guild system (DONE)",
+        "pvp.json": "Duel, arena, guild wars (DONE)",
+        "boutique.json": "Shop, gacha, battle pass (DONE)",
+        "daily_rewards.json": "Daily rewards (DONE)",
+        "achievements.json": "Achievements and statistics (DONE)",
+        "koro.json": "Koro card system (DONE)",
+        "keystones.json": "Keystone talents (DONE)",
+        "leaderboards.json": "Leaderboards (DONE)"
+      }
+    },
+
+    "ui/": {
+      "description": "User interface",
+      "files": {
+        "icons.json": "Icon mapping (DONE)"
+      }
+    }
+  },
+
+  "file_count": {
+    "root": 2,
+    "config": 4,
+    "classes": 13,
+    "stats": 4,
+    "entities": 4,
+    "items": 5,
+    "world": 3,
+    "systems": 11,
+    "ui": 1,
+    "total": 47
+  },
+
+  "migration_map": {
+    "_comment": "Old file -> New files",
+    "balance.json": ["stats/definitions.json", "stats/class_base_stats.json", "stats/class_growth.json", "config/combat_config.json", "systems/progression.json", "systems/economy.json"],
+    "classes.json": ["classes/_classes_index.json"],
+    "skills.json": ["classes/*/skills.json"],
+    "mage.json": "REMOVED - merged into classes/mage/skills.json",
+    "warrior.json": "REMOVED - merged into classes/warrior/skills.json",
+    "healer.json": "REMOVED - merged into classes/healer/skills.json",
+    "ranger.json": "REMOVED - merged into classes/archer/skills.json",
+    "voleur.json": "REMOVED - merged into classes/rogue/skills.json",
+    "status_effects.json": ["stats/status_effects.json"],
+    "monsters.json": ["entities/monsters.json"],
+    "npcs.json": ["entities/npcs.json"],
+    "boss_mechanics.json": ["entities/boss_mechanics.json"],
+    "items.json": ["items/consumables.json", "items/materials.json", "items/currencies.json"],
+    "equipement_affixe.json": ["items/equipment.json", "items/affixes.json"],
+    "global_project.json": ["config/game_config.json"],
+    "world_map.json": ["world/world_map.json"],
+    "zone_1_20.json": ["world/zones.json"],
+    "quests.json": ["world/quests.json"],
+    "boutique.json": ["systems/boutique.json"],
+    "guilds.json": ["systems/guilds.json", "systems/social.json"],
+    "statistics.json": ["systems/achievements.json"],
+    "leaderboards.json": ["systems/leaderboards.json"],
+    "keystones.json": ["systems/keystones.json"],
+    "artisan.json": ["classes/artisan/skills.json"],
+    "icons.json": ["ui/icons.json"],
+    "daily_rewards.json": ["systems/daily_rewards.json"],
+    "achievements.json": ["systems/achievements.json"]
+  }
+}

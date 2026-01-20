@@ -1,0 +1,772 @@
+{
+  "_meta": {
+    "version": "3.2",
+    "last_updated": "2026-01-15",
+    "class": "artisan",
+    "description": "Tous les skills actifs de l'Artisan (base + subclasses + tier3)",
+    "pattern_presets": {
+      "single": "1 case",
+      "row_1x2": "Segment ligne 2 cases",
+      "row_1x3": "Segment ligne 3 cases",
+      "row_1x4": "Segment ligne 4 cases",
+      "row_full": "Ligne entière (5 cases)",
+      "col_1x2": "Colonne 2 cases (full)",
+      "rect_2x2": "Rectangle 2x2",
+      "rect_2x3": "Rectangle 2x3",
+      "single_plus_adjacent_1": "Cible + 1 adjacent",
+      "single_plus_adjacent_2": "Cible + 2 adjacents",
+      "around_radius_1": "Cible + anneau",
+      "chain_2": "Rebond 2 cibles",
+      "global": "Toutes les cibles"
+    },
+    "vfx_available": ["melee_slash", "projectile", "buff_aura", "debuff_aura", "heal", "regeneration", "aoe_pulse", "shield", "falling"]
+  },
+
+  "base_skills": [
+    {
+      "id": "art_tool_strike",
+      "name": "Tool Strike",
+      "target": "enemy",
+      "pattern": "single",
+      "vfx_type": "melee_slash",
+      "tres": "res://resources/skills/artisan/base/tool_strike.tres",
+      "description": "Frappe basique avec un outil de métier. Dégâts physiques simples.",
+      "tags": ["damage", "melee", "pattern:single"]
+    },
+    {
+      "id": "art_quick_patch",
+      "name": "Quick Patch",
+      "target": "ally",
+      "pattern": "single",
+      "vfx_type": "heal",
+      "tres": "res://resources/skills/artisan/base/quick_patch.tres",
+      "description": "Réparation rapide soignant un allié avec les ressources disponibles.",
+      "tags": ["heal", "support", "pattern:single"]
+    },
+    {
+      "id": "art_work_rhythm",
+      "name": "Work Rhythm",
+      "target": "allies",
+      "pattern": "row_1x3",
+      "vfx_type": "buff_aura",
+      "tres": "res://resources/skills/artisan/base/work_rhythm.tres",
+      "description": "Impose un rythme de travail buffant la vitesse de 3 alliés en ligne.",
+      "tags": ["buff", "speed", "aoe", "pattern:row_1x3"]
+    },
+    {
+      "id": "art_expose_flaw",
+      "name": "Expose Flaw",
+      "target": "enemy",
+      "pattern": "single",
+      "vfx_type": "debuff_aura",
+      "tres": "res://resources/skills/artisan/base/expose_flaw.tres",
+      "description": "Identifie un défaut dans l'armure ennemie, réduisant sa défense.",
+      "tags": ["debuff", "armor_break", "pattern:single"]
+    },
+    {
+      "id": "art_masters_focus",
+      "name": "Master's Focus",
+      "target": "self",
+      "pattern": "single",
+      "vfx_type": "buff_aura",
+      "tres": "res://resources/skills/artisan/base/masters_focus.tres",
+      "description": "Concentration de maître augmentant la précision et l'efficacité des skills.",
+      "tags": ["buff", "accuracy", "pattern:single"]
+    }
+  ],
+
+  "subclass_skills": {
+    "blacksmith": {
+      "identity": "Armor breaking + boss setup + brutal finisher",
+      "signature": "bs_anvil_crash",
+      "skills": [
+        {
+          "id": "bs_heavy_swing",
+          "name": "Heavy Swing",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/artisan/blacksmith/heavy_swing.tres",
+          "description": "Coup de marteau lourd infligeant de gros dégâts physiques.",
+          "tags": ["damage", "melee"]
+        },
+        {
+          "id": "bs_armor_dent",
+          "name": "Armor Dent",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/artisan/blacksmith/armor_dent.tres",
+          "description": "Enfonce l'armure ennemie, réduisant sa défense de manière permanente.",
+          "tags": ["damage", "armor_break", "debuff"]
+        },
+        {
+          "id": "bs_rending_row",
+          "name": "Rending Row",
+          "target": "enemies",
+          "pattern": "row_1x3",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/artisan/blacksmith/rending_row.tres",
+          "description": "Balayage de marteau déchirant l'armure de 3 ennemis en ligne.",
+          "tags": ["damage", "aoe", "armor_break", "pattern:row_1x3"]
+        },
+        {
+          "id": "bs_metalguard",
+          "name": "Metalguard",
+          "target": "ally",
+          "pattern": "single",
+          "vfx_type": "shield",
+          "tres": "res://resources/skills/artisan/blacksmith/metalguard.tres",
+          "description": "Forge un bouclier temporaire protégeant un allié des dégâts.",
+          "tags": ["shield", "defense", "support"]
+        },
+        {
+          "id": "bs_anvil_crash",
+          "name": "Anvil Crash",
+          "target": "enemies",
+          "pattern": "rect_2x2",
+          "vfx_type": "falling",
+          "tres": "res://resources/skills/artisan/blacksmith/anvil_crash.tres",
+          "description": "SIGNATURE - Fait tomber une enclume géante en zone 2x2. Dégâts massifs + stun.",
+          "is_signature": true,
+          "tags": ["damage", "aoe", "stun", "signature", "pattern:rect_2x2"]
+        }
+      ],
+      "tier3": {
+        "forgemaster": {
+          "identity": "Protective forging + shields + anti-CC anchor",
+          "signature": "fm_living_fortress",
+          "skills": [
+            {
+              "id": "fm_shield_wall",
+              "name": "Shield Wall",
+              "target": "allies",
+              "pattern": "col_1x2",
+              "vfx_type": "shield",
+              "tres": "res://resources/skills/artisan/blacksmith/forgemaster/shield_wall.tres",
+              "description": "Érige un mur de boucliers forgés protégeant la colonne d'alliés.",
+              "tags": ["shield", "defense", "aoe", "pattern:col_1x2"]
+            },
+            {
+              "id": "fm_reinforced_plating",
+              "name": "Reinforced Plating",
+              "target": "ally",
+              "pattern": "single",
+              "vfx_type": "shield",
+              "tres": "res://resources/skills/artisan/blacksmith/forgemaster/reinforced_plating.tres",
+              "description": "Renforce l'armure d'un allié, augmentant sa défense durablement.",
+              "tags": ["buff", "defense"]
+            },
+            {
+              "id": "fm_heat_quench",
+              "name": "Heat Quench",
+              "target": "allies",
+              "pattern": "single_plus_adjacent_1",
+              "vfx_type": "heal",
+              "tres": "res://resources/skills/artisan/blacksmith/forgemaster/heat_quench.tres",
+              "description": "Trempe curative soignant la cible + 1 adjacent et retirant les debuffs de feu.",
+              "tags": ["heal", "dispel", "aoe"]
+            },
+            {
+              "id": "fm_thornplate",
+              "name": "Thornplate",
+              "target": "ally",
+              "pattern": "single",
+              "vfx_type": "shield",
+              "tres": "res://resources/skills/artisan/blacksmith/forgemaster/thornplate.tres",
+              "description": "Armure à épines renvoyant une partie des dégâts aux attaquants.",
+              "tags": ["shield", "reflect", "thorns"]
+            },
+            {
+              "id": "fm_living_fortress",
+              "name": "Living Fortress",
+              "target": "allies",
+              "pattern": "rect_2x3",
+              "vfx_type": "shield",
+              "tres": "res://resources/skills/artisan/blacksmith/forgemaster/living_fortress.tres",
+              "description": "SIGNATURE - Transforme la zone 2x3 en forteresse vivante. Shield massif + immunité CC.",
+              "is_signature": true,
+              "tags": ["shield", "cc_immune", "aoe", "signature", "pattern:rect_2x3"]
+            }
+          ]
+        },
+        "breaker": {
+          "identity": "Anti-boss breaker + brutal vulnerability windows",
+          "signature": "br_shatterpoint",
+          "skills": [
+            {
+              "id": "br_sunder",
+              "name": "Sunder",
+              "target": "enemy",
+              "pattern": "single",
+              "vfx_type": "melee_slash",
+              "tres": "res://resources/skills/artisan/blacksmith/breaker/sunder.tres",
+              "description": "Coup dévastateur brisant l'armure et infligeant des dégâts bonus aux boss.",
+              "tags": ["damage", "armor_break", "anti_boss"]
+            },
+            {
+              "id": "br_expose_weakness",
+              "name": "Expose Weakness",
+              "target": "enemy",
+              "pattern": "single",
+              "vfx_type": "debuff_aura",
+              "tres": "res://resources/skills/artisan/blacksmith/breaker/expose_weakness.tres",
+              "description": "Expose les faiblesses de la cible. Tous les alliés infligent +25% dégâts.",
+              "tags": ["debuff", "vulnerability", "team_boost"]
+            },
+            {
+              "id": "br_crush_column",
+              "name": "Crush Column",
+              "target": "enemies",
+              "pattern": "col_1x2",
+              "vfx_type": "melee_slash",
+              "tres": "res://resources/skills/artisan/blacksmith/breaker/crush_column.tres",
+              "description": "Écrase les 2 ennemis d'une colonne avec un coup vertical dévastateur.",
+              "tags": ["damage", "aoe", "pattern:col_1x2"]
+            },
+            {
+              "id": "br_mark_for_breaking",
+              "name": "Mark for Breaking",
+              "target": "enemy",
+              "pattern": "single",
+              "vfx_type": "debuff_aura",
+              "tres": "res://resources/skills/artisan/blacksmith/breaker/mark_for_breaking.tres",
+              "description": "Marque une cible. Le prochain coup critique la brise complètement.",
+              "tags": ["debuff", "mark", "setup"]
+            },
+            {
+              "id": "br_shatterpoint",
+              "name": "Shatterpoint",
+              "target": "enemy",
+              "pattern": "single_plus_adjacent_2",
+              "vfx_type": "falling",
+              "tres": "res://resources/skills/artisan/blacksmith/breaker/shatterpoint.tres",
+              "description": "SIGNATURE - Frappe le point de rupture. Dégâts colossaux sur cible + 2 adjacents. Détruit les shields.",
+              "is_signature": true,
+              "tags": ["damage", "shield_break", "aoe", "signature"]
+            }
+          ]
+        }
+      }
+    },
+    "alchemist": {
+      "identity": "Debuff pressure + DoT setup + reaction bursts",
+      "signature": "alc_catalyze",
+      "skills": [
+        {
+          "id": "alc_toxic_flask",
+          "name": "Toxic Flask",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/artisan/alchemist/toxic_flask.tres",
+          "description": "Lance une fiole toxique infligeant poison et dégâts instantanés.",
+          "tags": ["damage", "poison", "dot"]
+        },
+        {
+          "id": "alc_corrosive_agent",
+          "name": "Corrosive Agent",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/artisan/alchemist/corrosive_agent.tres",
+          "description": "Agent corrosif rongeant l'armure de la cible sur plusieurs tours.",
+          "tags": ["debuff", "armor_break", "dot"]
+        },
+        {
+          "id": "alc_nerve_suppressant",
+          "name": "Nerve Suppressant",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/artisan/alchemist/nerve_suppressant.tres",
+          "description": "Suppresseur nerveux ralentissant la cible et réduisant sa vitesse d'attaque.",
+          "tags": ["debuff", "slow"]
+        },
+        {
+          "id": "alc_fume_row",
+          "name": "Fume Row",
+          "target": "enemies",
+          "pattern": "row_1x3",
+          "vfx_type": "aoe_pulse",
+          "tres": "res://resources/skills/artisan/alchemist/fume_row.tres",
+          "description": "Fumée toxique couvrant 3 ennemis en ligne. DoT + réduction de précision.",
+          "tags": ["damage", "debuff", "aoe", "dot", "pattern:row_1x3"]
+        },
+        {
+          "id": "alc_catalyze",
+          "name": "Catalyze",
+          "target": "enemies",
+          "pattern": "rect_2x2",
+          "vfx_type": "aoe_pulse",
+          "tres": "res://resources/skills/artisan/alchemist/catalyze.tres",
+          "description": "SIGNATURE - Catalyse tous les effets alchimiques en zone 2x2. Fait exploser les DoTs pour dégâts massifs.",
+          "is_signature": true,
+          "tags": ["damage", "aoe", "detonate", "signature", "pattern:rect_2x2"]
+        }
+      ],
+      "tier3": {
+        "plague_brewer": {
+          "identity": "DoT stacking + soft control + attrition wins",
+          "signature": "pb_plagueburst",
+          "skills": [
+            {
+              "id": "pb_virulent_poison",
+              "name": "Virulent Poison",
+              "target": "enemy",
+              "pattern": "single",
+              "vfx_type": "projectile",
+              "tres": "res://resources/skills/artisan/alchemist/plague_brewer/virulent_poison.tres",
+              "description": "Poison virulent se propageant aux adjacents quand la cible meurt.",
+              "tags": ["damage", "poison", "spread"]
+            },
+            {
+              "id": "pb_contagion_row",
+              "name": "Contagion Row",
+              "target": "enemies",
+              "pattern": "row_1x4",
+              "vfx_type": "aoe_pulse",
+              "tres": "res://resources/skills/artisan/alchemist/plague_brewer/contagion_row.tres",
+              "description": "Contagion touchant 4 ennemis en ligne. Chaque cible infectée propage la maladie.",
+              "tags": ["damage", "disease", "aoe", "spread", "pattern:row_1x4"]
+            },
+            {
+              "id": "pb_wither",
+              "name": "Wither",
+              "target": "enemy",
+              "pattern": "single",
+              "vfx_type": "debuff_aura",
+              "tres": "res://resources/skills/artisan/alchemist/plague_brewer/wither.tres",
+              "description": "Fait dépérir la cible, réduisant ses soins reçus de 50%.",
+              "tags": ["debuff", "heal_reduction"]
+            },
+            {
+              "id": "pb_sickening_mist",
+              "name": "Sickening Mist",
+              "target": "enemies",
+              "pattern": "rect_2x2",
+              "vfx_type": "aoe_pulse",
+              "tres": "res://resources/skills/artisan/alchemist/plague_brewer/sickening_mist.tres",
+              "description": "Brume nauséabonde en zone 2x2. Applique maladie + slow + weak.",
+              "tags": ["debuff", "aoe", "disease", "slow", "pattern:rect_2x2"]
+            },
+            {
+              "id": "pb_plagueburst",
+              "name": "Plagueburst",
+              "target": "enemies",
+              "pattern": "around_radius_1",
+              "vfx_type": "aoe_pulse",
+              "tres": "res://resources/skills/artisan/alchemist/plague_brewer/plagueburst.tres",
+              "description": "SIGNATURE - Fait exploser toutes les maladies (cible + anneau). Dégâts basés sur le nombre de DoTs actifs.",
+              "is_signature": true,
+              "tags": ["damage", "detonate", "aoe", "signature"]
+            }
+          ]
+        },
+        "reactionist": {
+          "identity": "Detonation windows + conditional burst + chain reactions",
+          "signature": "rx_chain_reaction",
+          "skills": [
+            {
+              "id": "rx_unstable_mix",
+              "name": "Unstable Mix",
+              "target": "enemy",
+              "pattern": "single",
+              "vfx_type": "projectile",
+              "tres": "res://resources/skills/artisan/alchemist/reactionist/unstable_mix.tres",
+              "description": "Mélange instable appliquant une marque explosive. Explose si la cible est frappée.",
+              "tags": ["damage", "mark", "setup"]
+            },
+            {
+              "id": "rx_pressure_spike",
+              "name": "Pressure Spike",
+              "target": "enemy",
+              "pattern": "single_plus_adjacent_1",
+              "vfx_type": "aoe_pulse",
+              "tres": "res://resources/skills/artisan/alchemist/reactionist/pressure_spike.tres",
+              "description": "Pic de pression explosant sur la cible + 1 adjacent.",
+              "tags": ["damage", "aoe"]
+            },
+            {
+              "id": "rx_reactive_mark",
+              "name": "Reactive Mark",
+              "target": "enemy",
+              "pattern": "single",
+              "vfx_type": "debuff_aura",
+              "tres": "res://resources/skills/artisan/alchemist/reactionist/reactive_mark.tres",
+              "description": "Marque réactive. Si la cible utilise un skill, elle explose.",
+              "tags": ["debuff", "mark", "reactive"]
+            },
+            {
+              "id": "rx_detonate",
+              "name": "Detonate",
+              "target": "enemies",
+              "pattern": "global",
+              "vfx_type": "aoe_pulse",
+              "tres": "res://resources/skills/artisan/alchemist/reactionist/detonate.tres",
+              "description": "Détone toutes les marques actives sur le champ de bataille.",
+              "tags": ["damage", "detonate", "global"]
+            },
+            {
+              "id": "rx_chain_reaction",
+              "name": "Chain Reaction",
+              "target": "enemies",
+              "pattern": "chain_2",
+              "vfx_type": "aoe_pulse",
+              "tres": "res://resources/skills/artisan/alchemist/reactionist/chain_reaction.tres",
+              "description": "SIGNATURE - Réaction en chaîne rebondissant sur 3 cibles. Chaque explosion augmente les dégâts.",
+              "is_signature": true,
+              "tags": ["damage", "chain", "escalating", "signature"]
+            }
+          ]
+        }
+      }
+    },
+    "chef": {
+      "identity": "Sustain + tempo + clutch team utilities",
+      "signature": "chef_shared_feast",
+      "skills": [
+        {
+          "id": "chef_hearty_meal",
+          "name": "Hearty Meal",
+          "target": "ally",
+          "pattern": "single",
+          "vfx_type": "heal",
+          "tres": "res://resources/skills/artisan/chef/hearty_meal.tres",
+          "description": "Repas copieux soignant un allié et lui donnant un buff de regen.",
+          "tags": ["heal", "hot"]
+        },
+        {
+          "id": "chef_clean_taste",
+          "name": "Clean Taste",
+          "target": "ally",
+          "pattern": "single",
+          "vfx_type": "heal",
+          "tres": "res://resources/skills/artisan/chef/clean_taste.tres",
+          "description": "Goût pur nettoyant tous les debuffs d'un allié.",
+          "tags": ["dispel", "cleanse"]
+        },
+        {
+          "id": "chef_energy_snack",
+          "name": "Energy Snack",
+          "target": "ally",
+          "pattern": "single",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/artisan/chef/energy_snack.tres",
+          "description": "En-cas énergétique boostant la vitesse et l'attaque d'un allié.",
+          "tags": ["buff", "attack", "speed"]
+        },
+        {
+          "id": "chef_fortifying_broth",
+          "name": "Fortifying Broth",
+          "target": "allies",
+          "pattern": "row_1x2",
+          "vfx_type": "heal",
+          "tres": "res://resources/skills/artisan/chef/fortifying_broth.tres",
+          "description": "Bouillon fortifiant soignant et buffant la défense de 2 alliés en ligne.",
+          "tags": ["heal", "buff", "defense", "aoe", "pattern:row_1x2"]
+        },
+        {
+          "id": "chef_shared_feast",
+          "name": "Shared Feast",
+          "target": "allies",
+          "pattern": "global",
+          "vfx_type": "heal",
+          "tres": "res://resources/skills/artisan/chef/shared_feast.tres",
+          "description": "SIGNATURE - Festin partagé soignant et buffant tous les alliés. Regen + ATK + DEF.",
+          "is_signature": true,
+          "tags": ["heal", "buff", "global", "signature"]
+        }
+      ],
+      "tier3": {
+        "battle_cook": {
+          "identity": "Premium group support + tempo spikes",
+          "signature": "bc_banquet_timing",
+          "skills": [
+            {
+              "id": "bc_power_dish",
+              "name": "Power Dish",
+              "target": "ally",
+              "pattern": "single",
+              "vfx_type": "buff_aura",
+              "tres": "res://resources/skills/artisan/chef/battle_cook/power_dish.tres",
+              "description": "Plat de puissance donnant un boost d'attaque massif temporaire.",
+              "tags": ["buff", "attack"]
+            },
+            {
+              "id": "bc_steady_course",
+              "name": "Steady Course",
+              "target": "allies",
+              "pattern": "row_1x3",
+              "vfx_type": "heal",
+              "tres": "res://resources/skills/artisan/chef/battle_cook/steady_course.tres",
+              "description": "Plat régulier soignant 3 alliés en ligne sur plusieurs tours.",
+              "tags": ["heal", "hot", "aoe", "pattern:row_1x3"]
+            },
+            {
+              "id": "bc_purifying_spice",
+              "name": "Purifying Spice",
+              "target": "allies",
+              "pattern": "single_plus_adjacent_1",
+              "vfx_type": "heal",
+              "tres": "res://resources/skills/artisan/chef/battle_cook/purifying_spice.tres",
+              "description": "Épice purifiante nettoyant les debuffs de la cible + 1 adjacent.",
+              "tags": ["dispel", "aoe"]
+            },
+            {
+              "id": "bc_second_serving",
+              "name": "Second Serving",
+              "target": "ally",
+              "pattern": "single",
+              "vfx_type": "heal",
+              "tres": "res://resources/skills/artisan/chef/battle_cook/second_serving.tres",
+              "description": "Deuxième portion restaurant un allié à pleine vie si sous 30% HP.",
+              "tags": ["heal", "emergency"]
+            },
+            {
+              "id": "bc_banquet_timing",
+              "name": "Banquet Timing",
+              "target": "allies",
+              "pattern": "rect_2x3",
+              "vfx_type": "heal",
+              "tres": "res://resources/skills/artisan/chef/battle_cook/banquet_timing.tres",
+              "description": "SIGNATURE - Banquet parfaitement synchronisé. Heal massif zone 2x3 + haste + cleanse.",
+              "is_signature": true,
+              "tags": ["heal", "buff", "dispel", "aoe", "signature", "pattern:rect_2x3"]
+            }
+          ]
+        },
+        "spice_master": {
+          "identity": "Aggressive support (burn + vulnerability) + pressure finisher",
+          "signature": "sm_inferno_seasoning",
+          "skills": [
+            {
+              "id": "sm_spiced_cut",
+              "name": "Spiced Cut",
+              "target": "enemy",
+              "pattern": "single",
+              "vfx_type": "melee_slash",
+              "tres": "res://resources/skills/artisan/chef/spice_master/spiced_cut.tres",
+              "description": "Coupe épicée infligeant dégâts + brûlure sur la durée.",
+              "tags": ["damage", "burn", "dot"]
+            },
+            {
+              "id": "sm_blazing_aroma",
+              "name": "Blazing Aroma",
+              "target": "enemies",
+              "pattern": "row_1x3",
+              "vfx_type": "aoe_pulse",
+              "tres": "res://resources/skills/artisan/chef/spice_master/blazing_aroma.tres",
+              "description": "Arôme brûlant appliquant burn à 3 ennemis en ligne.",
+              "tags": ["damage", "burn", "aoe", "pattern:row_1x3"]
+            },
+            {
+              "id": "sm_pepper_shock",
+              "name": "Pepper Shock",
+              "target": "enemy",
+              "pattern": "single",
+              "vfx_type": "projectile",
+              "tres": "res://resources/skills/artisan/chef/spice_master/pepper_shock.tres",
+              "description": "Choc de poivre étourdissant brièvement la cible.",
+              "tags": ["damage", "stun"]
+            },
+            {
+              "id": "sm_overheat",
+              "name": "Overheat",
+              "target": "enemy",
+              "pattern": "single",
+              "vfx_type": "debuff_aura",
+              "tres": "res://resources/skills/artisan/chef/spice_master/overheat.tres",
+              "description": "Surchauffe la cible, augmentant les dégâts de feu reçus de 50%.",
+              "tags": ["debuff", "vulnerability", "fire"]
+            },
+            {
+              "id": "sm_inferno_seasoning",
+              "name": "Inferno Seasoning",
+              "target": "enemies",
+              "pattern": "rect_2x2",
+              "vfx_type": "aoe_pulse",
+              "tres": "res://resources/skills/artisan/chef/spice_master/inferno_seasoning.tres",
+              "description": "SIGNATURE - Assaisonnement infernal en zone 2x2. Fait exploser toutes les brûlures actives.",
+              "is_signature": true,
+              "tags": ["damage", "fire", "detonate", "aoe", "signature", "pattern:rect_2x2"]
+            }
+          ]
+        }
+      }
+    },
+    "musician": {
+      "identity": "Tempo control + clean buffs + team stability",
+      "signature": "mus_grand_performance",
+      "skills": [
+        {
+          "id": "mus_battle_hymn",
+          "name": "Battle Hymn",
+          "target": "allies",
+          "pattern": "row_1x3",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/artisan/musician/battle_hymn.tres",
+          "description": "Hymne de bataille buffant l'attaque de 3 alliés en ligne.",
+          "tags": ["buff", "attack", "aoe", "pattern:row_1x3"]
+        },
+        {
+          "id": "mus_soothing_melody",
+          "name": "Soothing Melody",
+          "target": "allies",
+          "pattern": "single_plus_adjacent_1",
+          "vfx_type": "heal",
+          "tres": "res://resources/skills/artisan/musician/soothing_melody.tres",
+          "description": "Mélodie apaisante soignant la cible + 1 adjacent.",
+          "tags": ["heal", "aoe"]
+        },
+        {
+          "id": "mus_tempo_shift",
+          "name": "Tempo Shift",
+          "target": "allies",
+          "pattern": "global",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/artisan/musician/tempo_shift.tres",
+          "description": "Change le tempo du combat, accélérant tous les alliés temporairement.",
+          "tags": ["buff", "haste", "global"]
+        },
+        {
+          "id": "mus_dissonant_chord",
+          "name": "Dissonant Chord",
+          "target": "enemies",
+          "pattern": "row_1x2",
+          "vfx_type": "debuff_aura",
+          "tres": "res://resources/skills/artisan/musician/dissonant_chord.tres",
+          "description": "Accord dissonant perturbant 2 ennemis en ligne. Réduit leur précision.",
+          "tags": ["debuff", "accuracy_down", "aoe", "pattern:row_1x2"]
+        },
+        {
+          "id": "mus_grand_performance",
+          "name": "Grand Performance",
+          "target": "allies",
+          "pattern": "global",
+          "vfx_type": "buff_aura",
+          "tres": "res://resources/skills/artisan/musician/grand_performance.tres",
+          "description": "SIGNATURE - Performance grandiose buffant tous les alliés. ATK + DEF + Haste + Regen.",
+          "is_signature": true,
+          "tags": ["buff", "heal", "global", "signature"]
+        }
+      ],
+      "tier3": {
+        "bard": {
+          "identity": "Classic support anchor + anti-CC team window",
+          "signature": "bard_perfect_harmony",
+          "skills": [
+            {
+              "id": "bard_heroic_anthem",
+              "name": "Heroic Anthem",
+              "target": "allies",
+              "pattern": "global",
+              "vfx_type": "buff_aura",
+              "tres": "res://resources/skills/artisan/musician/bard/heroic_anthem.tres",
+              "description": "Hymne héroïque inspirant tous les alliés avec un boost de courage.",
+              "tags": ["buff", "attack", "crit", "global"]
+            },
+            {
+              "id": "bard_clear_chorus",
+              "name": "Clear Chorus",
+              "target": "allies",
+              "pattern": "row_1x3",
+              "vfx_type": "heal",
+              "tres": "res://resources/skills/artisan/musician/bard/clear_chorus.tres",
+              "description": "Chœur clair nettoyant les debuffs de 3 alliés en ligne.",
+              "tags": ["dispel", "aoe", "pattern:row_1x3"]
+            },
+            {
+              "id": "bard_gentle_cadence",
+              "name": "Gentle Cadence",
+              "target": "allies",
+              "pattern": "col_1x2",
+              "vfx_type": "regeneration",
+              "tres": "res://resources/skills/artisan/musician/bard/gentle_cadence.tres",
+              "description": "Cadence douce appliquant une regen puissante à la colonne d'alliés.",
+              "tags": ["heal", "hot", "aoe", "pattern:col_1x2"]
+            },
+            {
+              "id": "bard_rallying_verse",
+              "name": "Rallying Verse",
+              "target": "ally",
+              "pattern": "single",
+              "vfx_type": "buff_aura",
+              "tres": "res://resources/skills/artisan/musician/bard/rallying_verse.tres",
+              "description": "Vers ralliant un allié mourant, le soignant et boostant sa défense.",
+              "tags": ["heal", "buff", "emergency"]
+            },
+            {
+              "id": "bard_perfect_harmony",
+              "name": "Perfect Harmony",
+              "target": "allies",
+              "pattern": "global",
+              "vfx_type": "buff_aura",
+              "tres": "res://resources/skills/artisan/musician/bard/perfect_harmony.tres",
+              "description": "SIGNATURE - Harmonie parfaite. Tous les alliés deviennent immuns au CC pendant 5 secondes + heal.",
+              "is_signature": true,
+              "tags": ["buff", "cc_immune", "heal", "global", "signature"]
+            }
+          ]
+        },
+        "drummer": {
+          "identity": "DPS pressure + mark windows + signature slam",
+          "signature": "drum_drum_assault",
+          "skills": [
+            {
+              "id": "drum_heavy_beat",
+              "name": "Heavy Beat",
+              "target": "enemy",
+              "pattern": "single",
+              "vfx_type": "melee_slash",
+              "tres": "res://resources/skills/artisan/musician/drummer/heavy_beat.tres",
+              "description": "Coup de tambour lourd infligeant des dégâts physiques + stun court.",
+              "tags": ["damage", "stun"]
+            },
+            {
+              "id": "drum_rolling_rhythm",
+              "name": "Rolling Rhythm",
+              "target": "enemies",
+              "pattern": "row_1x3",
+              "vfx_type": "aoe_pulse",
+              "tres": "res://resources/skills/artisan/musician/drummer/rolling_rhythm.tres",
+              "description": "Rythme roulant frappant 3 ennemis en ligne avec des ondes sonores.",
+              "tags": ["damage", "aoe", "pattern:row_1x3"]
+            },
+            {
+              "id": "drum_shockwave",
+              "name": "Shockwave",
+              "target": "enemies",
+              "pattern": "single_plus_adjacent_2",
+              "vfx_type": "aoe_pulse",
+              "tres": "res://resources/skills/artisan/musician/drummer/shockwave.tres",
+              "description": "Onde de choc puissante frappant la cible + 2 adjacents.",
+              "tags": ["damage", "aoe"]
+            },
+            {
+              "id": "drum_targeted_cadence",
+              "name": "Targeted Cadence",
+              "target": "enemy",
+              "pattern": "single",
+              "vfx_type": "debuff_aura",
+              "tres": "res://resources/skills/artisan/musician/drummer/targeted_cadence.tres",
+              "description": "Cadence ciblée marquant un ennemi. Les prochaines attaques font +20% dégâts.",
+              "tags": ["debuff", "mark", "vulnerability"]
+            },
+            {
+              "id": "drum_drum_assault",
+              "name": "Drum Assault",
+              "target": "enemies",
+              "pattern": "rect_2x2",
+              "vfx_type": "aoe_pulse",
+              "tres": "res://resources/skills/artisan/musician/drummer/drum_assault.tres",
+              "description": "SIGNATURE - Assaut de tambours en zone 2x2. Dégâts massifs + stun tous les ennemis touchés.",
+              "is_signature": true,
+              "tags": ["damage", "stun", "aoe", "signature", "pattern:rect_2x2"]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,308 @@
+{
+  "_meta": {
+    "version": "3.3",
+    "last_updated": "2026-01-15",
+    "class": "rogue",
+    "description": "Tous les skills actifs du Rogue (base + subclasses)",
+    "pattern_presets": {
+      "single": "1 case",
+      "row_1x2": "Segment ligne 2 cases",
+      "row_1x3": "Segment ligne 3 cases",
+      "row_1x4": "Segment ligne 4 cases",
+      "row_full": "Ligne entière (5 cases)",
+      "col_1x2": "Colonne 2 cases (full)",
+      "rect_2x2": "Rectangle 2x2",
+      "rect_2x3": "Rectangle 2x3",
+      "single_plus_adjacent_1": "Cible + 1 adjacent",
+      "single_plus_adjacent_2": "Cible + 2 adjacents",
+      "around_radius_1": "Cible + anneau",
+      "chain_2": "Rebond 2 cibles",
+      "global": "Toutes les cibles"
+    },
+    "vfx_available": ["melee_slash", "projectile", "debuff_aura", "buff_aura", "dash_trail", "whirlwind", "aoe_pulse", "shield", "life_steal"]
+  },
+
+  "base_skills": [
+    {
+      "id": "quick_stab",
+      "name": "Quick Stab",
+      "target": "enemy",
+      "pattern": "single",
+      "vfx_type": "melee_slash",
+      "tres": "res://resources/skills/rogue/base/quick_stab.tres",
+      "description": "Coup de dague rapide au corps à corps. Faible cooldown pour maintenir la pression.",
+      "tags": ["damage", "melee", "fast", "pattern:single"]
+    },
+    {
+      "id": "throw_dagger",
+      "name": "Throw Dagger",
+      "target": "enemy",
+      "pattern": "single",
+      "vfx_type": "projectile",
+      "tres": "res://resources/skills/rogue/base/throw_dagger.tres",
+      "description": "Lance une dague à distance. Permet d'engager ou finir une cible qui s'éloigne.",
+      "tags": ["damage", "ranged", "pattern:single"]
+    },
+    {
+      "id": "smoke_bomb",
+      "name": "Smoke Bomb",
+      "target": "enemies",
+      "pattern": "rect_2x2",
+      "vfx_type": "debuff_aura",
+      "tres": "res://resources/skills/rogue/base/smoke_bomb.tres",
+      "description": "Bombe fumigène en zone 2x2 réduisant la précision des ennemis et facilitant l'esquive.",
+      "tags": ["debuff", "blind", "aoe", "pattern:rect_2x2"]
+    },
+    {
+      "id": "shadow_dash",
+      "name": "Shadow Dash",
+      "target": "self",
+      "pattern": "single",
+      "vfx_type": "dash_trail",
+      "tres": "res://resources/skills/rogue/base/shadow_dash.tres",
+      "description": "Pas de l'ombre pour se repositionner rapidement et éviter une attaque.",
+      "tags": ["mobility", "evasion", "pattern:single"]
+    },
+    {
+      "id": "mark_target",
+      "name": "Mark Target",
+      "target": "enemy",
+      "pattern": "single",
+      "vfx_type": "debuff_aura",
+      "tres": "res://resources/skills/rogue/base/mark_target.tres",
+      "description": "Marque une cible augmentant les dégâts qu'elle reçoit de toute l'équipe.",
+      "tags": ["debuff", "mark", "team_utility", "pattern:single"]
+    }
+  ],
+
+  "subclass_skills": {
+    "shadowblade": {
+      "identity": "Stealth assassination + execution",
+      "signature": "death_blossom",
+      "skills": [
+        {
+          "id": "backstab",
+          "name": "Backstab",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/rogue/shadowblade/backstab.tres",
+          "description": "Attaque dans le dos infligeant des dégâts massifs si en stealth ou derrière la cible.",
+          "tags": ["damage", "melee", "stealth", "execute"]
+        },
+        {
+          "id": "vanish",
+          "name": "Vanish",
+          "target": "self",
+          "pattern": "single",
+          "vfx_type": "dash_trail",
+          "tres": "res://resources/skills/rogue/shadowblade/vanish.tres",
+          "description": "Disparition dans les ombres. Invisibilité temporaire permettant un Backstab garanti.",
+          "tags": ["stealth", "buff", "mobility"]
+        },
+        {
+          "id": "assassinate",
+          "name": "Assassinate",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/rogue/shadowblade/assassinate.tres",
+          "description": "Exécution ciblant les ennemis affaiblis. Dégâts bonus massifs sous 30% HP.",
+          "tags": ["damage", "execute", "finisher"]
+        },
+        {
+          "id": "shadow_strike",
+          "name": "Shadow Strike",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/rogue/shadowblade/shadow_strike.tres",
+          "description": "Frappe d'ombre ignorant une partie de l'armure. Dégâts d'ombre purs.",
+          "tags": ["damage", "armor_pierce", "shadow"]
+        },
+        {
+          "id": "death_blossom",
+          "name": "Death Blossom",
+          "target": "enemies",
+          "pattern": "around_radius_1",
+          "vfx_type": "whirlwind",
+          "tres": "res://resources/skills/rogue/shadowblade/death_blossom.tres",
+          "description": "SIGNATURE - Tourbillon de lames mortelles (cible + anneau). Dégâts dévastateurs tout autour.",
+          "is_signature": true,
+          "tags": ["damage", "aoe", "melee", "signature", "pattern:around_radius_1"]
+        }
+      ]
+    },
+    "trickster": {
+      "identity": "Disruption + debuffs + control",
+      "signature": "grand_swindle",
+      "skills": [
+        {
+          "id": "confuse",
+          "name": "Confuse",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "debuff_aura",
+          "tres": "res://resources/skills/rogue/trickster/confuse.tres",
+          "description": "Embrouille la cible, la faisant attaquer aléatoirement (alliés ou ennemis).",
+          "tags": ["debuff", "cc", "confusion"]
+        },
+        {
+          "id": "mislead",
+          "name": "Mislead",
+          "target": "enemies",
+          "pattern": "row_1x3",
+          "vfx_type": "debuff_aura",
+          "tres": "res://resources/skills/rogue/trickster/mislead.tres",
+          "description": "Tromperie de masse sur 3 ennemis en ligne. Réduit leur précision.",
+          "tags": ["debuff", "blind", "aoe", "pattern:row_1x3"]
+        },
+        {
+          "id": "trap",
+          "name": "Trap",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "debuff_aura",
+          "tres": "res://resources/skills/rogue/trickster/trap.tres",
+          "description": "Pose un piège immobilisant la cible. Root garanti.",
+          "tags": ["cc", "root", "debuff"]
+        },
+        {
+          "id": "misdirection",
+          "name": "Misdirection",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "debuff_aura",
+          "tres": "res://resources/skills/rogue/trickster/misdirection.tres",
+          "description": "Détourne l'attention: la cible attaque un autre ennemi pendant 1 tour.",
+          "tags": ["debuff", "taunt", "redirect"]
+        },
+        {
+          "id": "grand_swindle",
+          "name": "Grand Swindle",
+          "target": "enemies",
+          "pattern": "global",
+          "vfx_type": "debuff_aura",
+          "tres": "res://resources/skills/rogue/trickster/grand_swindle.tres",
+          "description": "SIGNATURE - Arnaque ultime: vole des buffs à tous les ennemis et les applique aux alliés.",
+          "is_signature": true,
+          "tags": ["debuff", "buff_steal", "global", "signature"]
+        }
+      ]
+    },
+    "corsair": {
+      "identity": "Pirate + bleed + dirty tricks",
+      "signature": "venom_burst",
+      "skills": [
+        {
+          "id": "cutlass_slash",
+          "name": "Cutlass Slash",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/rogue/corsair/cutlass_slash.tres",
+          "description": "Coup de coutelas infligeant dégâts + saignement sur plusieurs tours.",
+          "tags": ["damage", "bleed", "melee"]
+        },
+        {
+          "id": "pistol_shot",
+          "name": "Pistol Shot",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "projectile",
+          "tres": "res://resources/skills/rogue/corsair/pistol_shot.tres",
+          "description": "Tir de pistolet pirate à moyenne portée. Dégâts + chance d'étourdir.",
+          "tags": ["damage", "ranged", "stun"]
+        },
+        {
+          "id": "dirty_trick",
+          "name": "Dirty Trick",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "debuff_aura",
+          "tres": "res://resources/skills/rogue/corsair/dirty_trick.tres",
+          "description": "Coup bas: sable dans les yeux réduisant la précision + petit dégât.",
+          "tags": ["damage", "debuff", "blind"]
+        },
+        {
+          "id": "poison_blade",
+          "name": "Poison Blade",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/rogue/corsair/poison_blade.tres",
+          "description": "Lame empoisonnée infligeant un DoT de poison puissant sur la durée.",
+          "tags": ["damage", "poison", "dot"]
+        },
+        {
+          "id": "venom_burst",
+          "name": "Venom Burst",
+          "target": "enemies",
+          "pattern": "rect_2x2",
+          "vfx_type": "aoe_pulse",
+          "tres": "res://resources/skills/rogue/corsair/venom_burst.tres",
+          "description": "SIGNATURE - Explosion de venin en zone 2x2. Fait éclater tous les poisons actifs pour des dégâts bonus.",
+          "is_signature": true,
+          "tags": ["damage", "poison", "aoe", "signature", "pattern:rect_2x2"]
+        }
+      ]
+    },
+    "duelist": {
+      "identity": "Fast melee + counter + riposte",
+      "signature": "flurry_finisher",
+      "skills": [
+        {
+          "id": "lunge",
+          "name": "Lunge",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/rogue/duelist/lunge.tres",
+          "description": "Fente rapide fermant la distance et infligeant des dégâts. Repositionnement inclus.",
+          "tags": ["damage", "mobility", "melee"]
+        },
+        {
+          "id": "parry",
+          "name": "Parry",
+          "target": "self",
+          "pattern": "single",
+          "vfx_type": "shield",
+          "tres": "res://resources/skills/rogue/duelist/parry.tres",
+          "description": "Parade préparant une contre-attaque. Si touché, riposte automatiquement.",
+          "tags": ["defense", "counter", "buff"]
+        },
+        {
+          "id": "riposte",
+          "name": "Riposte",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/rogue/duelist/riposte.tres",
+          "description": "Contre-attaque puissante activée après une parade réussie. Critique garanti.",
+          "tags": ["damage", "counter", "crit"]
+        },
+        {
+          "id": "flurry",
+          "name": "Flurry",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/rogue/duelist/flurry.tres",
+          "description": "Rafale de 4 coups rapides sur une cible. Chaque hit peut crit indépendamment.",
+          "tags": ["damage", "multi_hit", "melee"]
+        },
+        {
+          "id": "flurry_finisher",
+          "name": "Flurry Finisher",
+          "target": "enemy",
+          "pattern": "single",
+          "vfx_type": "melee_slash",
+          "tres": "res://resources/skills/rogue/duelist/flurry_finisher.tres",
+          "description": "SIGNATURE - Enchaînement mortel de 7 coups terminé par une frappe fatale. Exécution si cible < 20% HP.",
+          "is_signature": true,
+          "tags": ["damage", "multi_hit", "execute", "signature"]
+        }
+      ]
+    }
+  }
+}

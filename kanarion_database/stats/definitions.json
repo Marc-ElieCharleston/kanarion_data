@@ -1,0 +1,247 @@
+{
+  "_meta": {
+    "version": "3.0",
+    "last_updated": "2026-01-10",
+    "description": "Definition complete de toutes les stats du jeu",
+    "categories": ["resources", "offensive", "defensive", "precision", "support", "special"]
+  },
+
+  "stats": {
+    "resources": {
+      "hp": {
+        "name": "Points de Vie",
+        "description": "Sante du personnage. A 0, le personnage meurt.",
+        "point_value": 10
+      },
+      "mp": {
+        "name": "Points de Mana",
+        "description": "Ressource pour lancer des competences.",
+        "point_value": 5
+      },
+      "hp_regen": {
+        "name": "Regeneration HP",
+        "description": "Points de vie regeneres par seconde hors combat.",
+        "formula": "hp_regen_total = base_hp_regen + equipment + buffs",
+        "base_value": 3.0
+      },
+      "mp_regen": {
+        "name": "Regeneration MP",
+        "description": "Points de mana regeneres par seconde hors combat.",
+        "formula": "mp_regen_total = base_mp_regen + equipment + buffs",
+        "base_value": 2.0
+      }
+    },
+
+    "offensive": {
+      "atk": {
+        "name": "Attaque",
+        "description": "Puissance des attaques physiques et competences physiques.",
+        "point_value": 1
+      },
+      "mag": {
+        "name": "Magie",
+        "description": "Puissance des sorts et soins.",
+        "point_value": 1
+      },
+      "power": {
+        "name": "Puissance",
+        "description": "ATK + MAG combines. Pour classes hybrides.",
+        "formula": "power = atk + mag",
+        "derived": true
+      },
+      "crit": {
+        "name": "Critique",
+        "description": "Chance de coup critique (en %).",
+        "default": 5,
+        "cap": 100
+      },
+      "crit_dmg": {
+        "name": "Degats Critiques",
+        "description": "Multiplicateur des degats critiques (en %).",
+        "default": 150
+      },
+      "damage_percent": {
+        "name": "% Degats",
+        "description": "Bonus multiplicatif aux degats infliges (tous types).",
+        "default": 0,
+        "cap": 100,
+        "formula": "final_damage = base_damage * (1 + damage_percent / 100)"
+      },
+      "double_hit_chance": {
+        "name": "Chance Double Frappe",
+        "description": "Chance de frapper deux fois (style Double Attack RO).",
+        "default": 0,
+        "cap": 50
+      },
+      "attack_speed": {
+        "name": "Vitesse d'attaque",
+        "description": "Modificateur de vitesse d'auto-attaque.",
+        "default": 1.0,
+        "cap": 3.0,
+        "formula": "interval = 2.0 / attack_speed"
+      },
+      "armor_pen": {
+        "name": "Penetration Armure",
+        "description": "Ignore X points d'armure de la cible.",
+        "default": 0
+      },
+      "magic_pen": {
+        "name": "Penetration Magique",
+        "description": "Ignore X points de resistance magique de la cible.",
+        "default": 0
+      },
+      "effect_chance": {
+        "name": "Chance d'Effet",
+        "description": "Bonus % pour appliquer les CC et debuffs.",
+        "default": 0
+      },
+      "shield_pierce": {
+        "name": "Perce-Bouclier",
+        "description": "% des degats qui ignorent le shield.",
+        "default": 0,
+        "cap": 100
+      },
+      "shield_break": {
+        "name": "Brise-Bouclier",
+        "description": "% de degats bonus infliges aux shields.",
+        "default": 0,
+        "cap": 100
+      }
+    },
+
+    "defensive": {
+      "def": {
+        "name": "Defense",
+        "description": "Reduction brute des degats physiques.",
+        "point_value": 1,
+        "formula": "damage_after_def = max(raw * 0.1, raw - def)"
+      },
+      "armor": {
+        "name": "Armure",
+        "description": "Reduction % des degats physiques.",
+        "formula": "damage_reduction = 100 / (100 + armor)"
+      },
+      "magic_resist": {
+        "name": "Resistance Magique",
+        "description": "Reduction % des degats magiques.",
+        "formula": "damage_reduction = 100 / (100 + magic_resist)"
+      },
+      "damage_reduction": {
+        "name": "Reduction Degats",
+        "description": "% reduction de TOUS les degats recus (apres armor/mr).",
+        "default": 0,
+        "cap": 75
+      },
+      "block_chance": {
+        "name": "Chance Bloquer",
+        "description": "Chance de bloquer (reduit degats de 50%).",
+        "default": 0,
+        "cap": 75
+      },
+      "parry_chance": {
+        "name": "Chance Parer",
+        "description": "Chance de parer (annule degats + riposte possible).",
+        "default": 0,
+        "cap": 30
+      },
+      "effect_resist": {
+        "name": "Resistance aux Effets",
+        "description": "% chance de resister aux CC et debuffs.",
+        "default": 0,
+        "cap": 80
+      }
+    },
+
+    "precision": {
+      "hit": {
+        "name": "Precision",
+        "description": "Chance de toucher la cible. Oppose a Flee.",
+        "default": 100,
+        "formula": "hit_chance = 80 + (attacker.hit - target.flee)",
+        "clamp": {"min": 5, "max": 95}
+      },
+      "flee": {
+        "name": "Esquive",
+        "description": "Chance d'esquiver les attaques. Oppose a Hit.",
+        "default": 0
+      }
+    },
+
+    "support": {
+      "heal_power": {
+        "name": "Puissance de Soin",
+        "description": "Bonus flat ajoute aux soins donnes.",
+        "default": 0,
+        "formula": "heal = base_heal + heal_power"
+      },
+      "healing_received": {
+        "name": "Soins Recus",
+        "description": "% bonus aux soins recus.",
+        "default": 0,
+        "cap": 50
+      }
+    },
+
+    "special": {
+      "lifesteal": {
+        "name": "Vol de Vie",
+        "description": "% des degats physiques convertis en HP.",
+        "default": 0,
+        "cap": 30
+      },
+      "spell_vamp": {
+        "name": "Vampirisme Magique",
+        "description": "% des degats magiques convertis en HP.",
+        "default": 0,
+        "cap": 30,
+        "aoe_effectiveness": 0.33
+      },
+      "thorns": {
+        "name": "Epines",
+        "description": "Degats flat renvoyes aux attaquants melee.",
+        "default": 0
+      },
+      "reflect": {
+        "name": "Reflet",
+        "description": "% des degats recus renvoyes a l'attaquant.",
+        "default": 0,
+        "cap": 30
+      },
+      "shield": {
+        "name": "Bouclier",
+        "description": "Points de bouclier absorbant tous types de degats.",
+        "default": 0
+      },
+      "luck": {
+        "name": "Chance",
+        "description": "Bonus aux drops et petits bonus RNG.",
+        "default": 0,
+        "effects": {
+          "drop_rate_bonus": "luck * 0.1%",
+          "crit_bonus": "luck * 0.05%"
+        }
+      },
+      "cast_speed": {
+        "name": "Vitesse Incantation",
+        "description": "% reduction du temps d'incantation des sorts.",
+        "default": 0,
+        "cap": 50
+      },
+      "cooldown_reduction": {
+        "name": "Reduction Cooldown",
+        "description": "% reduction des temps de recharge des skills.",
+        "default": 0,
+        "cap": 40
+      }
+    }
+  },
+
+  "stacking_system": {
+    "description": "Systeme de stacking gacha-style pour buffs/debuffs",
+    "value_per_stack": 10,
+    "max_stacks": 10,
+    "max_total_bonus": 100,
+    "formula": "final_value = base_value * (1 + (stacks * 10 / 100))",
+    "applies_to": ["atk_up", "atk_down", "def_up", "def_down", "mag_up", "mag_down", "haste", "slow", "etc."]
+  }
+}

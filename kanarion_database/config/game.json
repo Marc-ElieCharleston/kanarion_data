@@ -1,0 +1,104 @@
+{
+  "_meta": {
+    "name": "Kanarion Online",
+    "version": "0.9",
+    "last_updated": "2026-01-11",
+    "description": "High-level game configuration and implementation status"
+  },
+
+  "high_concept": {
+    "genre": ["2D", "Mobile", "MMORPG", "Grid Combat"],
+    "pitch": "Mobile 2D MMO inspired by Canaan Online: fast farming, generated loot, builds via equipment + Koros, instanced grid combat (2x5).",
+    "mvp_scope": "Zones 1-20, 6 classes, loot/gear/skills/status, gold shop. Light quests later."
+  },
+
+  "implementation_status": {
+    "_comment": "MVP status as of 2026-01-11",
+    "core": {
+      "combat_system": "implemented",
+      "skills_system": "implemented",
+      "status_effects": "implemented",
+      "inventory_equipment": "implemented",
+      "save_load": "implemented",
+      "passive_system": "implemented",
+      "death_respawn": "implemented"
+    },
+    "ui": {
+      "hud_manager": "implemented",
+      "settings_screen": "implemented",
+      "skill_bar_drag_drop": "implemented",
+      "minimap": "implemented",
+      "chat_panel": "implemented",
+      "party_panel": "implemented"
+    },
+    "world": {
+      "zone_manager": "implemented",
+      "tutorial_manager": "implemented",
+      "out_of_combat_regen": "implemented",
+      "combat_joining": "implemented"
+    },
+    "network": {
+      "multiplayer": "partial",
+      "chat_system": "implemented"
+    },
+    "data_only": {
+      "quests": "data_only",
+      "keystones": "data_only",
+      "shop_boutique": "data_only",
+      "world_map": "data_only"
+    }
+  },
+
+  "game_constants": {
+    "max_level": 60,
+    "max_party_size": 9,
+    "max_raid_size": 19,
+    "combat_slots_per_team": 10,
+    "stat_points_per_level": 5,
+    "skill_points_per_level": 1
+  },
+
+  "chat_channels": {
+    "world": {"id": 0, "prefix": "[W]", "color": "#E6E6D9", "commands": ["/world", "/1"]},
+    "say": {"id": 1, "prefix": "[S]", "color": "#FFFFFF", "commands": ["/s", "/say"]},
+    "party": {"id": 2, "prefix": "[P]", "color": "#66B3FF", "commands": ["/p", "/party"]},
+    "guild": {"id": 3, "prefix": "[G]", "color": "#66E666", "commands": ["/g", "/guild"]},
+    "whisper": {"id": 4, "prefix": "[MP]", "color": "#E680E6", "commands": ["/w", "/whisper"]},
+    "sale": {"id": 5, "prefix": "[V]", "color": "#FF9933", "commands": ["/v", "/trade"]},
+    "lfg": {"id": 6, "prefix": "[LFG]", "color": "#E6E666", "commands": ["/lfg"]}
+  },
+
+  "minimap": {
+    "shape": "circle",
+    "radius_pixels": 60,
+    "world_radius": 300,
+    "update_rate_hz": 10,
+    "hidden_during_combat": true,
+    "markers": {
+      "player": {"shape": "triangle", "color": "cyan"},
+      "monster": {"color": "red", "size": 4},
+      "elite": {"color": "orange", "size": 5},
+      "boss": {"color": "dark_orange", "size": 6},
+      "npc": {"color": "yellow", "size": 4},
+      "party": {"color": "green", "size": 4}
+    }
+  },
+
+  "party_behavior": {
+    "leader_controls_movement": true,
+    "party_enters_together": true,
+    "follow_distance": 40,
+    "max_members_display": 6
+  },
+
+  "files_reference": {
+    "_comment": "Detailed specs are split across these files",
+    "combat_rules": "config/combat_config.json",
+    "status_effects_rules": "config/status_effects_config.json",
+    "classes": "classes/_classes_index.json",
+    "monsters": "entities/monsters.json",
+    "items": "items/*.json",
+    "world": "world/*.json",
+    "systems": "systems/*.json"
+  }
+}

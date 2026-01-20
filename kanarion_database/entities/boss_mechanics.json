@@ -1,0 +1,213 @@
+{
+  "_meta": {
+    "version": "3.0",
+    "last_updated": "2026-01-10",
+    "description": "Boss mechanics: phases, attacks, patterns, scaling"
+  },
+
+  "mechanic_types": {
+    "phase_trigger": "New phase at HP threshold",
+    "enrage": "Permanent buff after X time or low HP",
+    "special_attack": "Special attack with targeting pattern",
+    "summon": "Summon adds during combat",
+    "aoe_zone": "Damage zone to avoid (ground visual)",
+    "buff_self": "Boss buffs itself",
+    "debuff_players": "Applies debuff to players",
+    "shield_phase": "Boss invulnerable until condition met"
+  },
+
+  "target_patterns": {
+    "single_target": "Random player",
+    "tank_highest_aggro": "Player with most aggro",
+    "lowest_hp_percent": "Player with lowest % HP",
+    "healer_priority": "Target healers first",
+    "backline": "Target backline only",
+    "frontline": "Target frontline only",
+    "random_column": "Target entire column",
+    "random_row": "Target entire row",
+    "all_players": "All players"
+  },
+
+  "aoe_patterns": {
+    "circle_center": "Circle at arena center",
+    "circle_boss": "Circle around boss",
+    "circle_player": "Circle on a player",
+    "line_horizontal": "Horizontal line",
+    "line_vertical": "Vertical line",
+    "cross": "Cross from boss",
+    "donut": "Ring (safe zone at center)",
+    "checkerboard": "Alternating squares"
+  },
+
+  "world_bosses": [
+    {
+      "id": "boss_forest_guardian",
+      "name": "Forest Guardian",
+      "base_monster": "mob_cerf_obscur",
+      "level": 15,
+      "multipliers": {"hp": 50, "damage": 3},
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Normal Phase",
+          "hp_range": [100, 60],
+          "mechanics": [
+            {"type": "special_attack", "skill": "charge", "cooldown": 15, "warning": 2, "target": "tank_highest_aggro"},
+            {"type": "aoe_zone", "pattern": "circle_boss", "damage_percent": 20, "warning": 3}
+          ]
+        },
+        {
+          "phase": 2,
+          "name": "Furious Phase",
+          "hp_range": [60, 30],
+          "mechanics": [
+            {"type": "buff_self", "buff": "boss_rage", "dispellable": false, "effect": "+30% ATK, +20% attack speed"},
+            {"type": "summon", "monsters": ["mob_spectral_wolf"], "count": 2, "interval": 30, "max_active": 4}
+          ]
+        },
+        {
+          "phase": 3,
+          "name": "Desperate Phase",
+          "hp_range": [30, 0],
+          "mechanics": [
+            {"type": "enrage", "buff": "boss_enrage", "effect": "+50% damage, attacks unstoppable"},
+            {"type": "special_attack", "skill": "death_roar", "cooldown": 20, "warning": 4, "target": "all_players"}
+          ]
+        }
+      ],
+      "loot": {
+        "guaranteed": ["mat_shadow_essence", "mat_corrupt_essence"],
+        "rare": [
+          {"item": "equip_guardian_helm", "chance": 0.05},
+          {"item": "koro_nature_shield", "chance": 0.01}
+        ],
+        "gold": [500, 1000]
+      },
+      "respawn_minutes": [45, 15]
+    },
+    {
+      "id": "boss_goblin_king",
+      "name": "Goblin King",
+      "base_monster": "mob_goblin_warior",
+      "level": 10,
+      "multipliers": {"hp": 30, "damage": 2.5},
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Royal Phase",
+          "hp_range": [100, 50],
+          "mechanics": [
+            {"type": "summon", "monsters": ["mob_goblin"], "count": 3, "interval": 20, "max_active": 6},
+            {"type": "special_attack", "skill": "crown_throw", "cooldown": 12, "warning": 1.5, "target": "random_column"}
+          ]
+        },
+        {
+          "phase": 2,
+          "name": "Enraged Phase",
+          "hp_range": [50, 0],
+          "mechanics": [
+            {"type": "buff_self", "buff": "king_fury", "dispellable": true, "effect": "+40% ATK"},
+            {"type": "debuff_players", "debuff": "goblin_curse", "target_count": 2, "cooldown": 25}
+          ]
+        }
+      ],
+      "loot": {
+        "guaranteed": ["mat_goblin_ear", "mat_goblin_ear", "mat_iron_fragment"],
+        "rare": [
+          {"item": "equip_goblin_crown", "chance": 0.03},
+          {"item": "koro_summon_goblin", "chance": 0.008}
+        ],
+        "gold": [200, 500]
+      },
+      "respawn_minutes": [30, 10]
+    }
+  ],
+
+  "dungeon_bosses": [
+    {
+      "id": "boss_spider_queen",
+      "name": "Cave Spider Queen",
+      "dungeon": "dungeon_spider_cave",
+      "level": 12,
+      "multipliers": {"hp": 40, "damage": 2.5},
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Normal Phase",
+          "hp_range": [100, 70],
+          "mechanics": [
+            {"type": "special_attack", "skill": "web_shot", "cooldown": 10, "warning": 1, "target": "random_column", "effect": "slow"}
+          ]
+        },
+        {
+          "phase": 2,
+          "name": "Cocoon Phase",
+          "hp_range": [70, 40],
+          "mechanics": [
+            {"type": "shield_phase", "duration": 10, "break_condition": "kill_adds"},
+            {"type": "summon", "monsters": ["mob_spider_small"], "count": 5, "instant": true}
+          ]
+        },
+        {
+          "phase": 3,
+          "name": "Venomous Phase",
+          "hp_range": [40, 0],
+          "mechanics": [
+            {"type": "aoe_zone", "pattern": "checkerboard", "damage_percent": 15, "warning": 2, "duration": 3, "cooldown": 15},
+            {"type": "debuff_players", "debuff": "deadly_venom", "target_count": 1, "cooldown": 20, "note": "Must heal quickly"}
+          ]
+        }
+      ],
+      "loot": {
+        "guaranteed": ["mat_chitin", "mat_chitin"],
+        "rare": [
+          {"item": "equip_spider_fang_dagger", "chance": 0.08},
+          {"item": "koro_poison_spray", "chance": 0.02}
+        ],
+        "gold": [150, 300]
+      }
+    }
+  ],
+
+  "elite_templates": [
+    {
+      "id": "elite_berserker",
+      "name": "Berserker",
+      "applies_to": ["melee", "beast"],
+      "mechanic": {"type": "enrage", "trigger": "hp_30%", "buff": "elite_rage"}
+    },
+    {
+      "id": "elite_summoner",
+      "name": "Summoner",
+      "applies_to": ["caster", "humanoid"],
+      "mechanic": {"type": "summon", "count": 2, "interval": 45, "max_active": 2}
+    },
+    {
+      "id": "elite_shielder",
+      "name": "Protector",
+      "applies_to": ["tank", "construct"],
+      "mechanic": {"type": "shield_phase", "duration": 5, "break_damage": 500, "cooldown": 30}
+    }
+  ],
+
+  "difficulty_scaling": {
+    "1_player": {"hp_mult": 0.3, "add_mult": 0.5, "damage_mult": 0.7},
+    "2_players": {"hp_mult": 0.5, "add_mult": 0.7, "damage_mult": 0.85},
+    "3_4_players": {"hp_mult": 0.75, "add_mult": 1.0, "damage_mult": 1.0},
+    "5_8_players": {"hp_mult": 1.0, "add_mult": 1.0, "damage_mult": 1.0}
+  },
+
+  "boss_status_effects": {
+    "boss_rage": {"type": "buff", "atk_percent": 30, "attack_speed_percent": 20, "dispellable": false},
+    "boss_enrage": {"type": "buff", "atk_percent": 50, "ignore_block": true, "dispellable": false},
+    "king_fury": {"type": "buff", "atk_percent": 40, "dispellable": true},
+    "goblin_curse": {"type": "debuff", "atk_percent": -20, "def_percent": -20, "duration": 10},
+    "deadly_venom": {"type": "debuff", "dot_damage": 50, "tick_rate": 1, "duration": 8}
+  },
+
+  "visual_indicators": {
+    "ground_marker": {"danger": "#FF0000", "safe": "#00FF00", "warning": "#FFAA00"},
+    "screen_flash": {"color": "#FFFFFF", "duration_ms": 200},
+    "target_marker": "target_crosshair"
+  }
+}

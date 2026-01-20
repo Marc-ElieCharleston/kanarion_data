@@ -1,0 +1,127 @@
+{
+  "_meta": {
+    "version": "3.0",
+    "last_updated": "2026-01-10",
+    "description": "Configuration des status effects - durees, stacking, balance"
+  },
+
+  "stacking_system": {
+    "_comment": "Systeme de stacking style gacha - chaque stack donne un bonus, max 10 stacks",
+    "enabled": true,
+    "value_per_stack": 10,
+    "value_per_stack_comment": "Chaque stack donne +10% de l'effet de base",
+    "max_stacks": 10,
+    "max_total_bonus": 100,
+    "max_total_bonus_comment": "10 stacks x 10% = +100% max",
+    "formula": "final_value = base_value * (1 + (stacks * value_per_stack / 100))",
+    "examples": {
+      "1_stack": "base * 1.10 = +10%",
+      "3_stacks": "base * 1.30 = +30%",
+      "5_stacks": "base * 1.50 = +50%",
+      "10_stacks": "base * 2.00 = +100% (cap)"
+    },
+    "skill_stack_grants": {
+      "_comment": "Les skills peuvent donner plusieurs stacks d'un coup",
+      "solo_skill_example": "Un buff personnel peut donner 4 stacks d'ATK_UP",
+      "support_skill_example": "Un buff de groupe donne generalement 1-2 stacks par ally",
+      "signature_skill_example": "Les skills signature peuvent donner 3-5 stacks"
+    },
+    "stacking_rules": {
+      "same_source_same_effect": "Additionne les stacks jusqu'au max",
+      "different_source_same_effect": "Additionne les stacks jusqu'au max (pas de source tracking)",
+      "duration_on_new_stack": "Refresh la duree totale du buff/debuff",
+      "duration_notes": "Chaque application refresh la duree, pas de tracking par stack"
+    },
+    "applies_to": [
+      "atk_up", "atk_down", "def_up", "def_down", "mag_up", "mag_down",
+      "crit_up", "crit_down", "armor_up", "armor_down",
+      "hit_up", "hit_down", "flee_up", "flee_down",
+      "damage_percent_up", "damage_percent_down",
+      "damage_reduction_up", "damage_reduction_down",
+      "effect_chance_up", "effect_chance_down",
+      "effect_resist_up", "effect_resist_down",
+      "haste", "slow"
+    ],
+    "does_not_apply_to": {
+      "_comment": "Ces effets utilisent leurs propres regles",
+      "dots": ["burn", "poison", "bleed"],
+      "control": ["stun", "silence", "root", "fear"],
+      "special": ["shield", "invulnerable", "untargetable", "marked", "taunt"]
+    }
+  },
+
+  "duration_balance": {
+    "buff_durations": {
+      "short": {"min": 3, "max": 5, "typical_use": "Combat opener"},
+      "medium": {"min": 8, "max": 12, "typical_use": "Standard buff"},
+      "long": {"min": 15, "max": 20, "typical_use": "Ultimate/signature"}
+    },
+    "debuff_durations": {
+      "short": {"min": 2, "max": 4, "typical_use": "Basic CC"},
+      "medium": {"min": 5, "max": 8, "typical_use": "Standard debuff"},
+      "long": {"min": 10, "max": 15, "typical_use": "Strong debuff/DoT"}
+    }
+  },
+
+  "dot_balance": {
+    "tick_interval": 1.0,
+    "max_stacks": {
+      "poison": 5,
+      "bleed": 3,
+      "burn": 3
+    },
+    "damage_formula": {
+      "poison": "2% max HP per tick per stack",
+      "bleed": "ATK * 0.3 per tick per stack",
+      "burn": "MAG * 0.25 per tick per stack"
+    }
+  },
+
+  "control_effects": {
+    "stun": {
+      "max_duration": 3,
+      "diminishing_returns": true,
+      "dr_formula": "each subsequent stun = duration * 0.5"
+    },
+    "silence": {
+      "max_duration": 5,
+      "prevents": ["skills", "spells"],
+      "allows": ["auto_attack", "movement", "items"]
+    },
+    "root": {
+      "max_duration": 4,
+      "prevents": ["movement", "dash_skills"],
+      "allows": ["skills", "auto_attack"]
+    },
+    "fear": {
+      "max_duration": 3,
+      "effect": "random_movement + cannot_act"
+    }
+  },
+
+  "counter_effects": {
+    "_comment": "Debuffs pour counter les builds tank/healer",
+    "heal_reduction": {
+      "base_reduction_percent": 50,
+      "stacking": "stackable",
+      "max_reduction_percent": 95,
+      "formula": "healing_received = healing * max(0.05, 1 - 0.5 * stacks)",
+      "duration": {"min": 5, "max": 8},
+      "counters": ["full_heal_builds", "lifesteal_tanks"]
+    },
+    "heal_block": {
+      "reduction_percent": 100,
+      "stacking": "refresh",
+      "duration": {"min": 2, "max": 4},
+      "counters": ["emergency_heals", "healing_combos"],
+      "notes": "Rare et puissant, PvP principalement"
+    },
+    "shield_block": {
+      "effect": "prevents_new_shields",
+      "stacking": "refresh",
+      "duration": {"min": 5, "max": 8},
+      "counters": ["guardian_shield_spam", "support_shields"],
+      "notes": "N'affecte pas shields existants"
+    }
+  }
+}
