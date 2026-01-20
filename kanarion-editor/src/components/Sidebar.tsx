@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { name: 'Items', href: '/items', icon: '🎒', disabled: true },
   { name: 'World', href: '/world', icon: '🗺️', disabled: true },
   { name: 'Systems', href: '/systems', icon: '⚙️', disabled: true },
+  { name: 'Ideas', href: '/ideas', icon: '💡' },
 ];
 
 const CLASSES = [

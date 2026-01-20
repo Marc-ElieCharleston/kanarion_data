@@ -1,20 +1,21 @@
 {
   "_meta": {
-    "version": "1.1",
+    "version": "1.2",
     "last_updated": "2026-01-20",
-    "description": "Liste d'idees a integrer plus tard. NE PAS OUVRIR dans l'editeur pour l'instant.",
+    "description": "Liste d'idees a integrer plus tard. Brainstorm central.",
     "status_legend": {
       "idea": "Concept brut, pas encore reflechi",
       "draft": "En cours de reflexion",
       "ready": "Pret a etre implemente",
       "integrated": "Deja integre dans les fichiers principaux"
-    }
+    },
+    "categories": ["items", "combat", "classes", "progression", "social", "world", "pvp", "pve", "economy", "meta"]
   },
 
   "ideas": [
     {
       "id": "star_modifier_items",
-      "title": "Resonance/Fracture d'Ame (Branch System)",
+      "title": "Resonance/Fracture d'Ame",
       "status": "draft",
       "category": "items",
       "priority": "medium",
@@ -27,31 +28,18 @@
             "name_fr": "Resonance d'Ame",
             "name_en": "Soul Resonance",
             "effect": "+1 star level (attire les ames liees)",
-            "rarity_tiers": {
-              "common": "max 2 stars",
-              "uncommon": "max 3 stars",
-              "rare": "max 4 stars",
-              "epic": "max 5 stars"
-            },
-            "lore": "Les ames corrompues resonnent entre elles, attirees par la souffrance partagee"
+            "rarity_tiers": {"common": "max 2*", "uncommon": "max 3*", "rare": "max 4*", "epic": "max 5*"}
           },
           {
             "id": "fracture_ame",
             "name_fr": "Fracture d'Ame",
             "name_en": "Soul Fracture",
-            "effect": "-1 star level (brise le lien)",
-            "rarity": "common",
-            "lore": "Brise le lien qui unit les ames corrompues"
+            "effect": "-1 star level",
+            "rarity": "common"
           }
         ],
-        "balance": [
-          "5 stars = 6 monstres = beaucoup de loot/XP",
-          "Monter haut = tres rare",
-          "Descendre = accessible pour solo"
-        ],
-        "sources": ["Monstres elite", "Boss", "Quetes", "Events"]
+        "lore": "Les ames corrompues resonnent entre elles"
       },
-      "related_files": ["entities/monster_variants.json"],
       "added_date": "2026-01-20"
     },
 
@@ -63,11 +51,9 @@
       "priority": "low",
       "description": "Subclass qui ajoute MAG scaling aux auto-attacks",
       "details": {
-        "concept": "Auto-attack reste ATK-based pour tous, SAUF Spellblade qui ajoute MAG",
         "formula_idea": "auto_damage = ATK + (MAG * 0.3)",
-        "design_note": "Permet un build hybride melee/caster sans changer le core system"
+        "design_note": "Build hybride melee/caster"
       },
-      "related_files": ["classes/", "stats/stats.json"],
       "added_date": "2026-01-20"
     },
 
@@ -77,31 +63,331 @@
       "status": "integrated",
       "category": "combat",
       "priority": "high",
-      "description": "Curse explose a la fin, duration modifiable affecte l'explosion",
+      "description": "Curse explose a la fin, spread si reduit",
       "details": {
-        "mechanic": "DoT constant + EXPLOSION finale",
         "duration_extended": "Explosion plus forte",
-        "duration_reduced": "Explosion anticipee + SPREAD adjacent",
-        "lore": "Corruption de l'Imitateur qui s'accumule"
+        "duration_reduced": "Explosion anticipee + SPREAD adjacent"
       },
-      "related_files": ["stats/status_effects.json (curse_dot)"],
       "added_date": "2026-01-20"
     },
 
     {
       "id": "holy_dot_escalating",
-      "title": "Holy DoT - Escalating damage",
+      "title": "Holy DoT - Degats croissants",
       "status": "integrated",
       "category": "combat",
       "priority": "high",
-      "description": "Holy DoT avec degats croissants et duree FIXE",
+      "description": "Holy DoT avec degats croissants et duree FIXE inexorable",
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "arena_boss_summon",
+      "title": "Arene d'invocation de Boss",
+      "status": "idea",
+      "category": "pve",
+      "priority": "high",
+      "inspiration": "Dofus",
+      "description": "Zone speciale pour invoquer et combattre des boss",
       "details": {
-        "mechanic": "Degats augmentent chaque tick",
-        "duration_fixed": "Ne peut PAS etre prolonge ou reduit",
-        "design": "Inexorable - tu sais combien de temps ca dure",
-        "lore": "Lumiere purificatrice du Createur"
+        "concept": "Utiliser des items (soul stones?) pour invoquer un boss dans l'arene",
+        "avantages": [
+          "Pas besoin de farmer le spawn du boss",
+          "Environnement controle",
+          "Peut etre solo ou groupe"
+        ],
+        "items_required": "Soul Stone du boss specifique (drop ou craft)",
+        "possible_features": [
+          "Difficulte variable (normal/hard/nightmare)",
+          "Leaderboards par boss",
+          "Rewards exclusifs arene"
+        ]
       },
-      "related_files": ["stats/status_effects.json (holy_dot)"],
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "dungeon_rank_system",
+      "title": "Systeme de Rang de Donjon",
+      "status": "idea",
+      "category": "pve",
+      "priority": "high",
+      "inspiration": "Mythic+ WoW, Abyss Genshin",
+      "description": "Refaire le meme donjon avec difficulte/rewards croissants",
+      "details": {
+        "concept": "Chaque rang augmente la difficulte mais aussi les rewards",
+        "rank_system": {
+          "rank_1": "Normal - x1 rewards",
+          "rank_2": "Hard - x1.5 rewards, mobs +20% stats",
+          "rank_3": "Expert - x2 rewards, mobs +50% stats, nouveaux patterns",
+          "rank_4": "Nightmare - x3 rewards, mobs +100% stats, mechanics supplementaires",
+          "rank_5+": "Inferno - scaling infini, leaderboard"
+        },
+        "unlock": "Finir rang N pour debloquer rang N+1",
+        "weekly_reset": "Possibilite de reset hebdo pour les hauts rangs?"
+      },
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "key_loot_system",
+      "title": "Systeme de Cles",
+      "status": "idea",
+      "category": "items",
+      "priority": "medium",
+      "description": "Cles droppees pour acceder a du contenu",
+      "details": {
+        "types_de_cles": [
+          "Cle de donjon (acces au donjon)",
+          "Cle de coffre (coffres speciaux dans le monde)",
+          "Cle de boss (raccourci vers boss de donjon)",
+          "Cle d'arene (acces arene boss)"
+        ],
+        "obtention": ["Drop de monstres", "Craft", "Quetes", "Events"],
+        "tradeable": "A definir - impact economie"
+      },
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "pvp_arena_ranked",
+      "title": "Arene PvP Ranked",
+      "status": "idea",
+      "category": "pvp",
+      "priority": "high",
+      "inspiration": "WoW Arena, LoL Ranked",
+      "description": "Matchmaking PvP avec differents formats",
+      "details": {
+        "formats": {
+          "1v1": "Duel - skill individuel pur",
+          "2v2": "Duo - synergie de base",
+          "4v4": "Equipe - composition et strat",
+          "8v8": "Grand combat - chaos organise"
+        },
+        "ranking": {
+          "system": "ELO ou League-based (Bronze→Diamond→Master)",
+          "seasons": "Reset chaque saison avec rewards",
+          "rewards": "Titres, cosmetics, monnaie PvP"
+        },
+        "matchmaking": "Base sur le rang + winrate recent",
+        "anti_smurf": "Placements obligatoires, detection de skill"
+      },
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "guild_system",
+      "title": "Systeme de Guilde",
+      "status": "idea",
+      "category": "social",
+      "priority": "high",
+      "description": "Guildes avec progression et avantages",
+      "details": {
+        "features_base": [
+          "Chat guilde",
+          "Banque guilde partagee",
+          "Rangs et permissions",
+          "Roster management"
+        ],
+        "guild_level": {
+          "concept": "La guilde gagne de l'XP et level up",
+          "sources_xp": ["Activite des membres", "Quetes de guilde", "Boss kills", "PvP wins"],
+          "bonuses_par_level": ["Slots membres+", "Bonus XP%", "Bonus drop%", "Acces contenu guilde"]
+        },
+        "guild_hall": "Zone privee de guilde avec upgrades?"
+      },
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "guild_war_system",
+      "title": "Guerre de Guilde (GvG)",
+      "status": "idea",
+      "category": "pvp",
+      "priority": "medium",
+      "inspiration": "GW2 WvW, Albion",
+      "description": "Systeme de guerre entre guildes",
+      "details": {
+        "types": [
+          {
+            "name": "War Declaration",
+            "desc": "Une guilde declare la guerre, PvP active entre les deux guildes partout"
+          },
+          {
+            "name": "Territory Control",
+            "desc": "Zones contestables, la guilde qui controle gagne des bonus"
+          },
+          {
+            "name": "Scheduled GvG",
+            "desc": "Match organise a heure fixe, format tournoi"
+          }
+        ],
+        "rewards": ["Territoire", "Ressources", "Titres", "Bragging rights"],
+        "protection": "Guildes peuvent refuser les wars? Cooldown entre wars?"
+      },
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "collectible_system",
+      "title": "Systeme de Collectibles",
+      "status": "idea",
+      "category": "progression",
+      "priority": "medium",
+      "inspiration": "Pokemon, Mounts WoW, Card games",
+      "description": "Collection d'items rares avec ou sans bonus stats",
+      "details": {
+        "types_possibles": [
+          {
+            "type": "Cosmetic only",
+            "desc": "Skins, mounts, pets - aucun impact gameplay",
+            "pros": "Fair, pas P2W",
+            "cons": "Moins motivant pour certains"
+          },
+          {
+            "type": "Stats bonus",
+            "desc": "Chaque collectible donne un petit bonus permanent",
+            "pros": "Tres motivant, progression long terme",
+            "cons": "Peut devenir P2W si achetable"
+          },
+          {
+            "type": "Collection bonus",
+            "desc": "Bonus uniquement si collection complete (set)",
+            "pros": "Encourage completionisme",
+            "cons": "All or nothing frustrant"
+          }
+        ],
+        "sources": ["Achievements", "Boss drops", "Events", "Exploration"],
+        "recommendation": "Mix: cosmetics + collection bonus small stats"
+      },
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "pvp_chest_system",
+      "title": "Coffres avec PvP integre",
+      "status": "idea",
+      "category": "pvp",
+      "priority": "medium",
+      "inspiration": "Dark Zone Division, Sea of Thieves",
+      "description": "Coffres speciaux qui attirent le PvP",
+      "details": {
+        "concept": "Coffres rares dans le monde, mais les ouvrir/transporter active le PvP",
+        "mechanics": [
+          "Coffre spawn dans zone contested",
+          "Joueur qui prend le coffre est flagge PvP",
+          "Doit transporter le coffre vers un point d'extraction",
+          "Autres joueurs peuvent l'attaquer et voler le coffre",
+          "Extraction reussie = gros rewards"
+        ],
+        "risk_reward": "Plus le coffre est rare, plus il flag longtemps",
+        "anti_grief": [
+          "Zones PvP delimitees",
+          "Cooldown apres avoir perdu un coffre",
+          "Pas de perte d'items personnels, juste le coffre"
+        ]
+      },
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "world_boss_events",
+      "title": "World Boss Events",
+      "status": "idea",
+      "category": "pve",
+      "priority": "high",
+      "inspiration": "GW2, FFXIV FATEs",
+      "description": "Boss massifs en open world, tous les joueurs peuvent participer",
+      "details": {
+        "concept": "Boss gigantesque qui spawn a heures fixes ou aleatoires",
+        "participation": "Pas besoin de groupe, contribution individuelle trackee",
+        "scaling": "Boss scale avec le nombre de joueurs",
+        "rewards": "Bases sur contribution (damage, healing, tanking)",
+        "lore_link": "Manifestations de l'Imitateur ou de la Faille?"
+      },
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "crafting_specialization",
+      "title": "Specialisation Craft",
+      "status": "idea",
+      "category": "economy",
+      "priority": "medium",
+      "description": "Artisans peuvent se specialiser pour bonus",
+      "details": {
+        "concept": "Choisir une specialite de craft pour avoir des bonus exclusifs",
+        "examples": [
+          "Maitre Forgeron: +10% stats armes",
+          "Maitre Alchimiste: potions durent +50%",
+          "Maitre Enchanteur: enchants +1 tier"
+        ],
+        "limit": "Un seul maitre craft par personnage",
+        "trade": "Force l'interdependance entre joueurs"
+      },
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "achievement_system",
+      "title": "Systeme d'Achievements",
+      "status": "idea",
+      "category": "progression",
+      "priority": "medium",
+      "description": "Achievements avec rewards",
+      "details": {
+        "categories": ["Combat", "Exploration", "Social", "Collection", "PvP", "Craft"],
+        "rewards": ["Titres", "Cosmetics", "Monnaie", "Collectibles (si system existe)"],
+        "tracking": "Progress visible, notifications"
+      },
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "mentor_system",
+      "title": "Systeme de Mentorat",
+      "status": "idea",
+      "category": "social",
+      "priority": "low",
+      "inspiration": "FFXIV Mentor",
+      "description": "Joueurs veterants aident les nouveaux avec rewards",
+      "details": {
+        "concept": "High level players peuvent devenir mentors",
+        "benefits_mentor": "Rewards pour aider nouveaux joueurs",
+        "benefits_mentee": "Bonus XP, guidance, queue priority",
+        "requirements": "Certain level + achievements pour devenir mentor"
+      },
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "housing_system",
+      "title": "Systeme de Housing",
+      "status": "idea",
+      "category": "social",
+      "priority": "low",
+      "inspiration": "FFXIV Housing, Wildstar",
+      "description": "Maisons personnelles decorables",
+      "details": {
+        "features": ["Decoration", "Stockage", "Crafting stations", "Trophees"],
+        "location": "Instance personnelle ou monde ouvert?",
+        "guild_hall": "Peut etre lie au systeme de guilde"
+      },
+      "added_date": "2026-01-20"
+    },
+
+    {
+      "id": "seasonal_events",
+      "title": "Events Saisonniers",
+      "status": "idea",
+      "category": "world",
+      "priority": "medium",
+      "description": "Events temporaires avec contenu exclusif",
+      "details": {
+        "types": ["Festivals", "Invasions", "Competitions", "Story events"],
+        "rewards": "Cosmetics exclusifs time-limited",
+        "recurrence": "Certains events reviennent chaque annee"
+      },
       "added_date": "2026-01-20"
     },
 
@@ -113,21 +399,8 @@
       "priority": "high",
       "description": "Organisation du travail entre associes",
       "details": {
-        "associe_peut_faire": [
-          "World/Maps - zones, regions, biomes, connexions",
-          "Items base - types, slots, raretes, stats",
-          "Panoplies - set bonuses (apres items)",
-          "Monster base - noms, apparence, zones, stats (sans skills)"
-        ],
-        "toi_tu_fais": [
-          "Skills actifs/passifs (le gros)",
-          "Monster skillsets",
-          "Loot tables (apres items + monsters)"
-        ],
-        "ordre_suggere": {
-          "associe": "World → Items → Panoplies",
-          "toi": "Skills → Monster skills → Loots"
-        }
+        "associe": "World → Items → Panoplies",
+        "toi": "Skills → Monster skills → Loots"
       },
       "added_date": "2026-01-20"
     }
@@ -137,11 +410,10 @@
     "id": "unique_id",
     "title": "Titre court",
     "status": "idea|draft|ready|integrated",
-    "category": "items|combat|classes|progression|social|world|ui|meta|other",
-    "priority": "low|medium|high|critical",
+    "category": "items|combat|classes|progression|social|world|pvp|pve|economy|meta",
+    "priority": "low|medium|high",
     "description": "Description courte",
     "details": {},
-    "related_files": [],
     "added_date": "YYYY-MM-DD"
   }
 }
