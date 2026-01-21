@@ -1,10 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-// Check local copy first (Vercel build), then parent directory (local dev)
-const LOCAL_DB = path.join(process.cwd(), 'kanarion_database');
-const PARENT_DB = path.join(process.cwd(), '..', 'kanarion_database');
-const DB_PATH = fs.existsSync(LOCAL_DB) ? LOCAL_DB : PARENT_DB;
+const DB_PATH = path.join(process.cwd(), 'kanarion_database');
 
 export function readJsonFile<T>(relativePath: string): T {
   const filePath = path.join(DB_PATH, relativePath);
