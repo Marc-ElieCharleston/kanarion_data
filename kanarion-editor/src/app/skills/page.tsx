@@ -53,6 +53,12 @@ interface SkillsFile {
   }>;
 }
 
+interface TierScaling {
+  power_per_level: number;
+  mana_per_level: number;
+  description: string;
+}
+
 interface SkillSystemConfig {
   _meta: { version: string; last_updated: string };
   skill_points: {
@@ -69,13 +75,12 @@ interface SkillSystemConfig {
     unlock_at_player_level: number;
     description: string;
   }>;
-  scaling: Record<string, {
-    per_level_percent?: number;
-    per_level_flat?: number;
-    at_level_10: number;
-    formula: string;
-    description: string;
-  }>;
+  scaling: {
+    type: string;
+    effect_chance_per_level: number;
+    [key: string]: unknown;
+  };
+  scaling_by_tier: Record<string, TierScaling>;
   skill_tiers: Record<string, {
     power_range: [number, number];
     cooldown_range: [number, number];
@@ -116,10 +121,35 @@ const CLASS_ICONS: Record<string, string> = {
   artisan: '🔧',
 };
 
-function SkillCard({ skill, skillLevel }: { skill: Skill; skillLevel: number }) {
-  const scaledPower = skill.base_power > 0
-    ? Math.round(skill.base_power * (1 + skillLevel * 0.06))
+// Default scaling values if not found in config
+const DEFAULT_SCALING: Record<string, TierScaling> = {
+  filler: { power_per_level: 2, mana_per_level: 1, description: '' },
+  basic: { power_per_level: 3, mana_per_level: 1, description: '' },
+  standard: { power_per_level: 4, mana_per_level: 2, description: '' },
+  strong: { power_per_level: 5, mana_per_level: 2, description: '' },
+  signature: { power_per_level: 7, mana_per_level: 3, description: '' },
+  ultimate: { power_per_level: 10, mana_per_level: 4, description: '' },
+};
+
+function SkillCard({
+  skill,
+  skillLevel,
+  scalingByTier
+}: {
+  skill: Skill;
+  skillLevel: number;
+  scalingByTier: Record<string, TierScaling>;
+}) {
+  const tierScaling = scalingByTier[skill.tier] || DEFAULT_SCALING[skill.tier] || { power_per_level: 2, mana_per_level: 1 };
+
+  // Linear scaling: base + (level - 1) * per_level
+  const powerAtLevel = skill.base_power > 0
+    ? skill.base_power + (skillLevel - 1) * tierScaling.power_per_level
     : 0;
+  const manaAtLevel = skill.mana_cost + (skillLevel - 1) * tierScaling.mana_per_level;
+
+  const baseRatio = skill.base_power > 0 ? (skill.base_power / skill.mana_cost).toFixed(2) : '—';
+  const scaledRatio = powerAtLevel > 0 ? (powerAtLevel / manaAtLevel).toFixed(2) : '—';
 
   return (
     <div className={`bg-zinc-900 rounded-lg border ${skill.is_signature ? 'border-amber-500/50' : 'border-zinc-800'} overflow-hidden`}>
@@ -149,8 +179,8 @@ function SkillCard({ skill, skillLevel }: { skill: Skill; skillLevel: number }) 
               <span className="text-orange-400">⚔️</span>
               <span className="text-zinc-400">Power:</span>
               <span className="text-white">{skill.base_power}</span>
-              {skillLevel > 0 && (
-                <span className="text-emerald-400 text-xs">→ {scaledPower}</span>
+              {skillLevel > 1 && (
+                <span className="text-emerald-400 text-xs">→ {powerAtLevel}</span>
               )}
             </div>
           )}
@@ -158,6 +188,9 @@ function SkillCard({ skill, skillLevel }: { skill: Skill; skillLevel: number }) 
             <span className="text-sky-400">💧</span>
             <span className="text-zinc-400">Mana:</span>
             <span className="text-white">{skill.mana_cost}</span>
+            {skillLevel > 1 && (
+              <span className="text-amber-400 text-xs">→ {manaAtLevel}</span>
+            )}
           </div>
           <div className="flex items-center gap-1">
             <span className="text-violet-400">⏱️</span>
@@ -165,6 +198,13 @@ function SkillCard({ skill, skillLevel }: { skill: Skill; skillLevel: number }) 
             <span className="text-white">{skill.cooldown}s</span>
           </div>
         </div>
+
+        {/* Ratio indicator */}
+        {skill.base_power > 0 && skillLevel > 1 && (
+          <div className="mb-3 text-xs text-zinc-500">
+            Ratio P/M: {baseRatio} → {scaledRatio}
+          </div>
+        )}
 
         {/* Pattern + Description */}
         <div className="flex gap-4">
@@ -234,7 +274,7 @@ export default function SkillsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedClass, setSelectedClass] = useState<string>('warrior');
   const [selectedSubclass, setSelectedSubclass] = useState<string | null>(null);
-  const [skillLevel, setSkillLevel] = useState(5);
+  const [skillLevel, setSkillLevel] = useState(1);
 
   useEffect(() => {
     fetch('/api/skills')
@@ -263,6 +303,7 @@ export default function SkillsPage() {
 
   const classData = data.classes[selectedClass];
   const subclasses = classData ? Object.keys(classData.subclass_skills) : [];
+  const scalingByTier = data.system.scaling_by_tier || DEFAULT_SCALING;
 
   return (
     <div className="p-8">
@@ -307,21 +348,41 @@ export default function SkillsPage() {
         </div>
 
         <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4">
-          <h3 className="font-semibold text-emerald-400 mb-2">Scaling per Level</h3>
+          <h3 className="font-semibold text-emerald-400 mb-2">Scaling (Linear)</h3>
           <div className="space-y-1 text-sm">
             <div className="flex justify-between">
-              <span className="text-zinc-500">Power</span>
-              <span>+{data.system.scaling.power.per_level_percent}% / lvl</span>
+              <span className="text-zinc-500">Type</span>
+              <span>Linear (+X par niveau)</span>
             </div>
             <div className="flex justify-between">
               <span className="text-zinc-500">Effect Chance</span>
-              <span>+{data.system.scaling.effect_chance.per_level_flat}% / lvl</span>
+              <span>+{data.system.scaling.effect_chance_per_level || 3}% / lvl</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-zinc-500">CD / Mana</span>
-              <span className="text-zinc-600">Fixed (via gear)</span>
+              <span className="text-zinc-500">CD / Mana base</span>
+              <span className="text-zinc-600">Fixed (gear)</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Scaling by Tier */}
+      <div className="mb-8 bg-zinc-900 rounded-lg border border-zinc-800 p-4">
+        <h3 className="font-semibold mb-3">Scaling par Tier (Power / Mana par niveau)</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          {Object.entries(scalingByTier)
+            .filter(([tier]) => !tier.startsWith('_'))
+            .map(([tier, info]) => (
+            <div key={tier} className={`p-3 rounded border ${TIER_COLORS[tier]}`}>
+              <div className="font-medium capitalize">{tier}</div>
+              <div className="text-xs opacity-70 mt-1">
+                +{info.power_per_level} power / lvl
+              </div>
+              <div className="text-xs opacity-70">
+                +{info.mana_per_level} mana / lvl
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -331,7 +392,7 @@ export default function SkillsPage() {
           <span className="text-zinc-400">Preview skill at level:</span>
           <input
             type="range"
-            min="0"
+            min="1"
             max="10"
             value={skillLevel}
             onChange={(e) => setSkillLevel(parseInt(e.target.value))}
@@ -339,9 +400,9 @@ export default function SkillsPage() {
           />
           <span className="text-2xl font-bold text-violet-400 w-8">{skillLevel}</span>
         </div>
-        {skillLevel > 0 && (
+        {skillLevel > 1 && (
           <div className="mt-2 text-xs text-zinc-500">
-            Power: +{Math.round(skillLevel * 6)}% • Effect Chance: +{skillLevel * 3}%
+            Exemple filler: Power {22} → {22 + (skillLevel - 1) * 2} | Mana {8} → {8 + (skillLevel - 1) * 1}
           </div>
         )}
       </div>
@@ -378,7 +439,12 @@ export default function SkillsPage() {
             </h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
               {classData.base_skills.map((skill) => (
-                <SkillCard key={skill.id} skill={skill} skillLevel={skillLevel} />
+                <SkillCard
+                  key={skill.id}
+                  skill={skill}
+                  skillLevel={skillLevel}
+                  scalingByTier={scalingByTier}
+                />
               ))}
             </div>
           </div>
@@ -416,7 +482,12 @@ export default function SkillsPage() {
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                 {classData.subclass_skills[selectedSubclass].skills.map((skill) => (
-                  <SkillCard key={skill.id} skill={skill} skillLevel={skillLevel} />
+                  <SkillCard
+                    key={skill.id}
+                    skill={skill}
+                    skillLevel={skillLevel}
+                    scalingByTier={scalingByTier}
+                  />
                 ))}
               </div>
             </div>
@@ -424,9 +495,9 @@ export default function SkillsPage() {
         </>
       )}
 
-      {/* Tier Legend */}
+      {/* Tier Reference */}
       <div className="mt-8 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-        <h3 className="font-semibold mb-3">Skill Tiers</h3>
+        <h3 className="font-semibold mb-3">Tiers - Valeurs de Base (Niveau 1)</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {Object.entries(data.system.skill_tiers)
             .filter(([tier]) => !tier.startsWith('_'))

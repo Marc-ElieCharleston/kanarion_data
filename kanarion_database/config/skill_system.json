@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "version": "1.0",
+    "version": "2.0",
     "last_updated": "2026-01-21",
-    "description": "Systeme de skills - points, niveaux, scaling, unlock"
+    "description": "Systeme de skills - points, niveaux, scaling lineaire"
   },
 
   "skill_points": {
@@ -17,24 +17,24 @@
     "min_level": 0,
     "max_level": 10,
     "points_per_skill_level": 1,
-    "_comment": "Chaque skill va de 0 a 10, 1 point par niveau"
+    "_comment": "Chaque skill va de 0 (non appris) a 10 (master)"
   },
 
   "skill_categories": {
     "base": {
       "count": 5,
       "unlock_at_player_level": 1,
-      "description": "Skills de base de la classe, disponibles immediatement"
+      "description": "Skills de base, disponibles immediatement"
     },
     "subclass": {
       "count": 5,
       "unlock_at_player_level": 15,
-      "description": "Skills de sous-classe (tier 2), debloques au choix de subclass"
+      "description": "Skills de sous-classe (tier 2)"
     },
     "tier3": {
       "count": 5,
       "unlock_at_player_level": 40,
-      "description": "Skills de specialisation (tier 3), debloques au choix de tier3"
+      "description": "Skills de specialisation (tier 3)"
     }
   },
 
@@ -43,77 +43,109 @@
     "points_to_max_all": 150,
     "points_available": 100,
     "deficit": -50,
-    "design_intent": "Force le joueur a faire des choix de build, impossible de tout maxer"
+    "design_intent": "Force les choix de build, impossible de tout maxer"
   },
 
   "scaling": {
-    "_comment": "Bonus par niveau de skill (niveau 1 a 10). Le scaling vient principalement des stats/equipement, les skill levels donnent juste un boost de puissance",
-    "power": {
-      "per_level_percent": 6,
-      "at_level_10": 60,
-      "formula": "final_power = base_power * (1 + skill_level * 0.06)",
-      "description": "+6% puissance par niveau, +60% au max"
+    "_comment": "Scaling LINEAIRE par niveau de skill. Power et Mana augmentent, ratio diminue legerement (~15% moins efficient au max)",
+    "type": "linear",
+    "formula_power": "power_at_level = base_power + (skill_level - 1) * power_per_level",
+    "formula_mana": "mana_at_level = base_mana + (skill_level - 1) * mana_per_level",
+    "formula_effect_chance": "chance_at_level = base_chance + (skill_level - 1) * 3",
+    "effect_chance_per_level": 3,
+    "cooldown": "fixed",
+    "cooldown_note": "Le CD ne scale pas avec le niveau du skill, vient de l'equipement/CDR"
+  },
+
+  "scaling_by_tier": {
+    "_comment": "Valeurs de scaling par niveau selon le tier du skill",
+    "filler": {
+      "power_per_level": 2,
+      "mana_per_level": 1,
+      "description": "Skill spam - scaling modere"
     },
-    "effect_chance": {
-      "per_level_flat": 3,
-      "at_level_10": 30,
-      "formula": "final_chance = base_chance + (skill_level * 3)",
-      "description": "+3% chance d'effet par niveau"
+    "basic": {
+      "power_per_level": 3,
+      "mana_per_level": 1,
+      "description": "Skill polyvalent - bon scaling"
     },
-    "cooldown": {
-      "scaling": "fixed",
-      "description": "Le cooldown ne change PAS avec le niveau du skill (vient de l'equipement/CDR)"
+    "standard": {
+      "power_per_level": 4,
+      "mana_per_level": 2,
+      "description": "Skill standard - scaling equilibre"
     },
-    "mana_cost": {
-      "scaling": "fixed",
-      "description": "Le cout mana ne change PAS avec le niveau du skill"
+    "strong": {
+      "power_per_level": 5,
+      "mana_per_level": 2,
+      "description": "Skill puissant - fort scaling"
+    },
+    "signature": {
+      "power_per_level": 7,
+      "mana_per_level": 3,
+      "description": "Signature - scaling majeur"
+    },
+    "ultimate": {
+      "power_per_level": 10,
+      "mana_per_level": 4,
+      "description": "Ultimate - scaling massif"
     }
   },
 
   "skill_tiers": {
-    "_comment": "Classification des skills par puissance",
+    "_comment": "Classification des skills - valeurs de BASE (niveau 1)",
     "filler": {
-      "power_range": [15, 25],
+      "power_range": [18, 25],
       "cooldown_range": [3.0, 4.5],
-      "mana_range": [5, 10],
+      "mana_range": [6, 10],
       "description": "Skill spammable, faible CD"
     },
     "basic": {
-      "power_range": [25, 40],
+      "power_range": [15, 30],
       "cooldown_range": [5.0, 8.0],
-      "mana_range": [10, 18],
+      "mana_range": [10, 15],
       "description": "Skill de base polyvalent"
     },
     "standard": {
-      "power_range": [35, 55],
+      "power_range": [25, 45],
       "cooldown_range": [8.0, 12.0],
-      "mana_range": [15, 25],
-      "description": "Skill standard, bon rapport puissance/CD"
+      "mana_range": [14, 22],
+      "description": "Skill standard equilibre"
     },
     "strong": {
-      "power_range": [50, 75],
+      "power_range": [40, 60],
       "cooldown_range": [12.0, 18.0],
-      "mana_range": [25, 40],
+      "mana_range": [20, 32],
       "description": "Skill puissant, CD moyen"
     },
     "signature": {
-      "power_range": [70, 100],
+      "power_range": [55, 80],
       "cooldown_range": [18.0, 30.0],
-      "mana_range": [40, 60],
-      "description": "Skill signature de subclass, tres puissant"
+      "mana_range": [35, 50],
+      "description": "Skill signature de subclass"
     },
     "ultimate": {
-      "power_range": [90, 130],
+      "power_range": [75, 110],
       "cooldown_range": [25.0, 45.0],
-      "mana_range": [50, 80],
-      "description": "Ultime, long CD, impact massif"
+      "mana_range": [45, 70],
+      "description": "Ultimate, long CD, impact massif"
     }
   },
 
-  "level_breakpoints": {
-    "_comment": "Effets speciaux debloques a certains niveaux de skill",
-    "level_1": "Skill utilisable",
-    "level_5": "Effet secondaire ameliore (optionnel selon skill)",
-    "level_10": "Effet master (optionnel selon skill)"
+  "example_scaling": {
+    "_comment": "Exemple: Heavy Strike (filler) - base 22 power, 8 mana",
+    "skill": "Heavy Strike",
+    "tier": "filler",
+    "levels": {
+      "1": { "power": 22, "mana": 8, "ratio": 2.75 },
+      "2": { "power": 24, "mana": 9, "ratio": 2.67 },
+      "3": { "power": 26, "mana": 10, "ratio": 2.60 },
+      "4": { "power": 28, "mana": 11, "ratio": 2.55 },
+      "5": { "power": 30, "mana": 12, "ratio": 2.50 },
+      "6": { "power": 32, "mana": 13, "ratio": 2.46 },
+      "7": { "power": 34, "mana": 14, "ratio": 2.43 },
+      "8": { "power": 36, "mana": 15, "ratio": 2.40 },
+      "9": { "power": 38, "mana": 16, "ratio": 2.38 },
+      "10": { "power": 40, "mana": 17, "ratio": 2.35 }
+    }
   }
 }

@@ -21,6 +21,14 @@ interface StarTier {
   description_en: string;
 }
 
+interface StatMultiplier {
+  hp_multiplier: number;
+  atk_multiplier: number;
+  mag_multiplier: number;
+  def_multiplier: number;
+  note: string;
+}
+
 interface EncounterStarsData {
   _meta: {
     version: string;
@@ -31,7 +39,10 @@ interface EncounterStarsData {
     description: string;
     affects: string[];
   };
-  star_tiers: Record<string, StarTier>;
+  star_tiers: Record<string, StarTier & {
+    elite_stats?: StatMultiplier;
+    boss_stats?: StatMultiplier;
+  }>;
   loot_integration: {
     rarity_boost: Record<string, number>;
   };
@@ -214,6 +225,108 @@ function EncounterStarsTab() {
             <span className="w-6 h-6 rounded-full bg-emerald-800 flex items-center justify-center text-xs">✓</span>
             <span className="text-emerald-400">Résultat: 1 boss, 3 élites, 5 normaux (tous +30%)</span>
           </div>
+        </div>
+      </div>
+
+      {/* Elite & Boss Stats */}
+      <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Elite Stats */}
+        <div className="p-4 bg-zinc-900 rounded-lg border border-zinc-800 border-l-4 border-l-purple-500">
+          <h2 className="text-lg font-semibold mb-3 text-purple-400">Stats des Élites</h2>
+          <p className="text-xs text-zinc-500 mb-4">Multiplicateurs par rapport à un monstre normal (+ bonus ★)</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-zinc-800/50 rounded p-3 text-center">
+              <div className="text-2xl font-bold text-red-400">×3</div>
+              <div className="text-xs text-zinc-500">HP</div>
+            </div>
+            <div className="bg-zinc-800/50 rounded p-3 text-center">
+              <div className="text-2xl font-bold text-orange-400">×1.8</div>
+              <div className="text-xs text-zinc-500">ATK / MAG</div>
+            </div>
+            <div className="bg-zinc-800/50 rounded p-3 text-center">
+              <div className="text-2xl font-bold text-blue-400">×2</div>
+              <div className="text-xs text-zinc-500">DEF</div>
+            </div>
+            <div className="bg-zinc-800/50 rounded p-3 text-center">
+              <div className="text-lg font-bold text-purple-400">+1 Passif</div>
+              <div className="text-xs text-zinc-500">+1 Skill</div>
+            </div>
+          </div>
+          <div className="mt-3 text-xs text-zinc-500">
+            6 archétypes: Warrior, Tank, Assassin, Caster, Healer, Summoner
+          </div>
+        </div>
+
+        {/* Boss Stats */}
+        <div className="p-4 bg-zinc-900 rounded-lg border border-zinc-800 border-l-4 border-l-orange-500">
+          <h2 className="text-lg font-semibold mb-3 text-orange-400">Stats des Boss</h2>
+          <p className="text-xs text-zinc-500 mb-4">Stats FIXES (pas de bonus ★ appliqué)</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-zinc-800/50 rounded p-3 text-center">
+              <div className="text-2xl font-bold text-red-400">×8</div>
+              <div className="text-xs text-zinc-500">HP</div>
+            </div>
+            <div className="bg-zinc-800/50 rounded p-3 text-center">
+              <div className="text-2xl font-bold text-orange-400">×2.5</div>
+              <div className="text-xs text-zinc-500">ATK / MAG</div>
+            </div>
+            <div className="bg-zinc-800/50 rounded p-3 text-center">
+              <div className="text-2xl font-bold text-blue-400">×2</div>
+              <div className="text-xs text-zinc-500">DEF</div>
+            </div>
+            <div className="bg-zinc-800/50 rounded p-3 text-center">
+              <div className="text-lg font-bold text-orange-400">2-3 Passifs</div>
+              <div className="text-xs text-zinc-500">2-4 Skills</div>
+            </div>
+          </div>
+          <div className="mt-3 text-xs text-zinc-500">
+            Immune CC hard, Tenacité -70%, Enrage Timer
+          </div>
+        </div>
+      </div>
+
+      {/* Combat Example */}
+      <div className="mt-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
+        <h2 className="text-lg font-semibold mb-3">Exemple: Combat 5★ (Zone T1 lvl 10)</h2>
+        <p className="text-xs text-zinc-500 mb-4">Monstre normal de base: 100 HP, 20 ATK, 10 DEF</p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-zinc-700">
+                <th className="text-left py-2 px-3 text-zinc-400">Type</th>
+                <th className="text-center py-2 px-3 text-zinc-400">Calcul HP</th>
+                <th className="text-center py-2 px-3 text-zinc-400">HP Final</th>
+                <th className="text-center py-2 px-3 text-zinc-400">ATK Final</th>
+                <th className="text-center py-2 px-3 text-zinc-400">DEF Final</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b border-zinc-800">
+                <td className="py-2 px-3 text-zinc-300">Normal (5★)</td>
+                <td className="py-2 px-3 text-center text-zinc-500">100 × 1.30</td>
+                <td className="py-2 px-3 text-center text-red-400">130</td>
+                <td className="py-2 px-3 text-center text-orange-400">26</td>
+                <td className="py-2 px-3 text-center text-blue-400">13</td>
+              </tr>
+              <tr className="border-b border-zinc-800 bg-purple-500/5">
+                <td className="py-2 px-3 text-purple-400">Élite (5★)</td>
+                <td className="py-2 px-3 text-center text-zinc-500">100 × 3 × 1.30</td>
+                <td className="py-2 px-3 text-center text-red-400">390</td>
+                <td className="py-2 px-3 text-center text-orange-400">47</td>
+                <td className="py-2 px-3 text-center text-blue-400">26</td>
+              </tr>
+              <tr className="bg-orange-500/5">
+                <td className="py-2 px-3 text-orange-400">Boss</td>
+                <td className="py-2 px-3 text-center text-zinc-500">100 × 8 (fixe)</td>
+                <td className="py-2 px-3 text-center text-red-400">800</td>
+                <td className="py-2 px-3 text-center text-orange-400">50</td>
+                <td className="py-2 px-3 text-center text-blue-400">20</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="mt-3 p-2 bg-zinc-800/50 rounded text-xs text-zinc-400">
+          <strong>Total groupe 5★:</strong> 5 normaux (650 HP) + 3 élites (1170 HP) + 1 boss (800 HP) = <span className="text-amber-400">2620 HP total</span>
         </div>
       </div>
     </div>
