@@ -1,0 +1,236 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-01-21",
+    "description": "Système de loot global avec multiplicateurs",
+    "formula_overview": "final_drop_chance = base_chance × encounter_stars_mult × state_mult × dungeon_mult × group_mult × luck_mult × event_mult × level_penalty"
+  },
+
+  "rarity_system": {
+    "description": "Système d'étoiles pour la rareté des drops",
+    "tiers": {
+      "1_star": { "name": "Commun", "name_en": "Common", "color": "#9d9d9d", "base_weight": 1000 },
+      "2_star": { "name": "Peu commun", "name_en": "Uncommon", "color": "#1eff00", "base_weight": 400 },
+      "3_star": { "name": "Rare", "name_en": "Rare", "color": "#0070dd", "base_weight": 100 },
+      "4_star": { "name": "Épique", "name_en": "Epic", "color": "#a335ee", "base_weight": 20 },
+      "5_star": { "name": "Légendaire", "name_en": "Legendary", "color": "#ff8000", "base_weight": 2 }
+    }
+  },
+
+  "base_drops": {
+    "description": "Drops de base garantis ou très fréquents",
+    "gold": {
+      "base_per_monster_level": 2,
+      "variance": 0.2,
+      "formula": "gold = monster_level × base × (1 + random(-variance, +variance)) × all_multipliers"
+    },
+    "xp": {
+      "base_per_monster_level": 10,
+      "variance": 0.1,
+      "formula": "xp = monster_level × base × (1 + random(-variance, +variance)) × state_mult × dungeon_mult"
+    },
+    "common_consumables": {
+      "description": "Potions et items de base qui peuvent drop sur tous les mobs",
+      "drops": [
+        { "item": "cons_hp_potion_small", "base_chance": 0.05, "level_range": [1, 20] },
+        { "item": "cons_mp_potion_small", "base_chance": 0.05, "level_range": [1, 20] },
+        { "item": "cons_hp_potion_medium", "base_chance": 0.04, "level_range": [15, 40] },
+        { "item": "cons_mp_potion_medium", "base_chance": 0.04, "level_range": [15, 40] },
+        { "item": "cons_hp_potion_large", "base_chance": 0.03, "level_range": [35, 60] },
+        { "item": "cons_mp_potion_large", "base_chance": 0.03, "level_range": [35, 60] },
+        { "item": "cons_antidote", "base_chance": 0.02, "level_range": [1, 60] },
+        { "item": "cons_cleanse_potion", "base_chance": 0.015, "level_range": [10, 60] }
+      ]
+    }
+  },
+
+  "multipliers": {
+    "monster_state": {
+      "description": "Multiplicateur selon le type de monstre (s'applique individuellement à chaque mob)",
+      "normal": { "gold": 1.0, "xp": 1.0, "drop_chance": 1.0, "rarity_boost": 0 },
+      "elite": { "gold": 3.0, "xp": 2.5, "drop_chance": 2.0, "rarity_boost": 1 },
+      "mini_boss": { "gold": 5.0, "xp": 4.0, "drop_chance": 3.0, "rarity_boost": 1 },
+      "boss": { "gold": 10.0, "xp": 8.0, "drop_chance": 5.0, "rarity_boost": 2 },
+      "world_boss": { "gold": 25.0, "xp": 15.0, "drop_chance": 8.0, "rarity_boost": 3 }
+    },
+
+    "encounter_stars": {
+      "description": "Multiplicateur selon les étoiles de la rencontre (s'applique au groupe entier)",
+      "reference": "systems/encounter_stars.json",
+      "0": { "gold": 1.0, "xp": 1.0, "drop_chance": 1.0, "rarity_boost": 0 },
+      "1": { "gold": 1.1, "xp": 1.1, "drop_chance": 1.1, "rarity_boost": 0 },
+      "2": { "gold": 1.2, "xp": 1.25, "drop_chance": 1.25, "rarity_boost": 0 },
+      "3": { "gold": 1.4, "xp": 1.5, "drop_chance": 1.5, "rarity_boost": 1 },
+      "4": { "gold": 1.8, "xp": 2.0, "drop_chance": 2.0, "rarity_boost": 1 },
+      "5": { "gold": 2.5, "xp": 3.0, "drop_chance": 3.0, "rarity_boost": 2, "guaranteed_loot": true }
+    },
+
+    "dungeon_difficulty": {
+      "description": "Multiplicateur selon la difficulté du donjon",
+      "open_world": { "gold": 1.0, "xp": 1.0, "drop_chance": 1.0, "rarity_boost": 0 },
+      "dungeon_normal": { "gold": 1.5, "xp": 1.3, "drop_chance": 1.5, "rarity_boost": 0 },
+      "dungeon_hard": { "gold": 2.5, "xp": 2.0, "drop_chance": 2.5, "rarity_boost": 1 },
+      "dungeon_nightmare": { "gold": 4.0, "xp": 3.0, "drop_chance": 4.0, "rarity_boost": 2 },
+      "dungeon_inferno": { "gold": 6.0, "xp": 4.0, "drop_chance": 6.0, "rarity_boost": 3 }
+    },
+
+    "act_progression": {
+      "description": "Multiplicateur selon l'acte du jeu",
+      "act_1": { "gold": 1.0, "base_item_level": 1, "max_rarity": "3_star" },
+      "act_2": { "gold": 1.2, "base_item_level": 15, "max_rarity": "4_star" },
+      "act_3": { "gold": 1.5, "base_item_level": 30, "max_rarity": "4_star" },
+      "act_4": { "gold": 2.0, "base_item_level": 45, "max_rarity": "5_star" },
+      "act_5": { "gold": 2.5, "base_item_level": 55, "max_rarity": "5_star" },
+      "endgame": { "gold": 3.0, "base_item_level": 60, "max_rarity": "5_star" }
+    },
+
+    "group_size": {
+      "description": "Bonus de loot simple: +5% par joueur",
+      "formula": "group_mult = 1 + (group_size × 0.05)",
+      "max_players": 10,
+      "max_bonus_percent": 50,
+      "values": {
+        "1": { "mult": 1.05, "bonus": "+5%" },
+        "2": { "mult": 1.10, "bonus": "+10%" },
+        "3": { "mult": 1.15, "bonus": "+15%" },
+        "4": { "mult": 1.20, "bonus": "+20%" },
+        "5": { "mult": 1.25, "bonus": "+25%" },
+        "6": { "mult": 1.30, "bonus": "+30%" },
+        "7": { "mult": 1.35, "bonus": "+35%" },
+        "8": { "mult": 1.40, "bonus": "+40%" },
+        "9": { "mult": 1.45, "bonus": "+45%" },
+        "10": { "mult": 1.50, "bonus": "+50%" }
+      },
+      "notes": "Simple et prévisible. Chaque joueur ajoute +5% de loot pour tout le groupe."
+    },
+
+    "level_difference": {
+      "description": "Pénalité si le joueur est trop haut niveau par rapport au mob",
+      "no_penalty_range": 5,
+      "penalty_per_level": 0.10,
+      "max_penalty": 0.90,
+      "min_drop_rate": 0.10,
+      "formula": "Si (player_level - mob_level) > no_penalty_range: penalty = min(max_penalty, (diff - no_penalty_range) × penalty_per_level)",
+      "examples": [
+        { "player": 20, "mob": 15, "penalty": 0, "note": "Dans la range, pas de pénalité" },
+        { "player": 25, "mob": 15, "penalty": 0.5, "note": "10 niveaux d'écart, -50%" },
+        { "player": 30, "mob": 15, "penalty": 0.9, "note": "15+ niveaux, pénalité max" }
+      ]
+    }
+  },
+
+  "luck_system": {
+    "description": "Comment la luck et les bonus affectent le loot",
+    "base_luck": 0,
+    "luck_stat_formula": {
+      "drop_chance_bonus": "luck × 0.002",
+      "rarity_bonus": "luck × 0.001",
+      "gold_bonus": "luck × 0.001",
+      "example": "100 luck = +20% drop chance, +10% rarity, +10% gold"
+    },
+    "passive_bonuses": {
+      "description": "Bonus de passifs, équipements, buffs",
+      "types": [
+        { "id": "loot_chance_percent", "description": "+X% chance de drop", "stacks": "additive" },
+        { "id": "gold_find_percent", "description": "+X% gold trouvé", "stacks": "additive" },
+        { "id": "magic_find_percent", "description": "+X% chance de rareté supérieure", "stacks": "additive" },
+        { "id": "xp_bonus_percent", "description": "+X% XP gagné", "stacks": "additive" }
+      ],
+      "examples": [
+        { "source": "Parchemin de Fortune", "bonus": "loot_chance_percent", "value": 25, "duration": "30min" },
+        { "source": "Set Davar 6p", "bonus": "gold_find_percent", "value": 10, "duration": "permanent" },
+        { "source": "Guilde buff", "bonus": "xp_bonus_percent", "value": 10, "duration": "24h" }
+      ]
+    },
+    "final_formula": {
+      "luck_mult": "1 + (luck_stat_bonus + sum(passive_bonuses)) / 100",
+      "example": "100 luck (+20%) + Parchemin (+25%) + Set (+10%) = luck_mult = 1.55"
+    }
+  },
+
+  "events": {
+    "description": "Événements spéciaux avec bonus de loot",
+    "event_types": {
+      "weekend_bonus": {
+        "name_fr": "Week-end doré",
+        "name_en": "Golden Weekend",
+        "schedule": "Saturday 00:00 - Sunday 23:59",
+        "bonuses": { "gold": 2.0, "xp": 1.5, "drop_chance": 1.0 }
+      },
+      "double_drop": {
+        "name_fr": "Pluie de butin",
+        "name_en": "Loot Rain",
+        "schedule": "Event spécial",
+        "bonuses": { "gold": 1.0, "xp": 1.0, "drop_chance": 2.0 }
+      },
+      "double_xp": {
+        "name_fr": "Fièvre d'expérience",
+        "name_en": "XP Fever",
+        "schedule": "Event spécial",
+        "bonuses": { "gold": 1.0, "xp": 2.0, "drop_chance": 1.0 }
+      },
+      "treasure_hunt": {
+        "name_fr": "Chasse au trésor",
+        "name_en": "Treasure Hunt",
+        "schedule": "Event spécial",
+        "bonuses": { "gold": 3.0, "xp": 1.0, "drop_chance": 1.5, "rarity_boost": 1 }
+      },
+      "festival": {
+        "name_fr": "Festival saisonnier",
+        "name_en": "Seasonal Festival",
+        "schedule": "Seasonal (2 weeks)",
+        "bonuses": { "gold": 1.5, "xp": 1.5, "drop_chance": 1.5 },
+        "special_drops": ["event_token_festival"]
+      }
+    },
+    "stacking": "Les events ne stack PAS entre eux, seul le meilleur bonus s'applique"
+  },
+
+  "final_calculation": {
+    "description": "Formule finale pour calculer un drop",
+    "steps": [
+      "1. Récupérer base_chance de l'item",
+      "2. Appliquer monster_state.drop_chance",
+      "3. Appliquer dungeon_difficulty.drop_chance",
+      "4. Appliquer group_size multiplier",
+      "5. Appliquer luck_mult (luck stat + passives)",
+      "6. Appliquer event multiplier (si actif)",
+      "7. Appliquer level_difference penalty",
+      "8. Roll random [0, 1] et comparer"
+    ],
+    "formula": "final_chance = base_chance × state_mult × dungeon_mult × group_mult × luck_mult × event_mult × (1 - level_penalty)",
+    "rarity_roll": {
+      "description": "Pour les items avec rareté variable",
+      "steps": [
+        "1. Calculer rarity_boost total (state + dungeon + event)",
+        "2. Ajuster les weights: weight[tier] = base_weight × (tier <= boosted_tier ? boost_factor : 1)",
+        "3. Roll weighted random pour déterminer la rareté"
+      ]
+    },
+    "example": {
+      "scenario": "Joueur lvl 25, mob elite lvl 22 en donjon hard, groupe de 3, 50 luck, parchemin +25%, weekend event",
+      "base_chance": 0.10,
+      "state_mult": 2.0,
+      "dungeon_mult": 2.5,
+      "group_mult": 1.20,
+      "luck_mult": "1 + (0.10 + 0.25) = 1.35",
+      "event_mult": 1.0,
+      "level_penalty": 0,
+      "final_chance": "0.10 × 2.0 × 2.5 × 1.20 × 1.35 × 1.0 × 1.0 = 0.81 (81%)"
+    }
+  },
+
+  "_notes": {
+    "balance": "Ces valeurs sont des bases, à ajuster selon les tests",
+    "caps": {
+      "drop_chance": "Max 95% pour éviter le 100% garanti sauf items spécifiques",
+      "gold_mult": "Pas de cap mais attention à l'inflation",
+      "rarity_boost": "Max +3 tiers (un mob normal ne peut pas drop légendaire facilement)"
+    },
+    "anti_exploit": [
+      "Level penalty empêche le farm de mobs bas niveau",
+      "Les events ne stack pas",
+      "Certains drops sont limités par jour/semaine"
+    ]
+  }
+}

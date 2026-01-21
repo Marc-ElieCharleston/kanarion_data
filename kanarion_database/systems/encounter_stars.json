@@ -1,0 +1,188 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-01-21",
+    "description": "Système d'étoiles des rencontres - Définit la difficulté et composition des groupes de monstres",
+    "star_range": [0, 5]
+  },
+
+  "overview": {
+    "description": "Le système d'étoiles régit la composition des groupes de monstres qui spawn dans le monde. Plus d'étoiles = plus de monstres, plus forts, avec chance d'élites/boss.",
+    "affects": [
+      "Nombre de monstres dans le groupe",
+      "Bonus de stats des monstres",
+      "Chance d'apparition d'élites",
+      "Chance d'apparition de boss",
+      "Multiplicateur de loot"
+    ]
+  },
+
+  "star_tiers": {
+    "0": {
+      "name_fr": "Rencontre Triviale",
+      "name_en": "Trivial Encounter",
+      "icon": "☆",
+      "color": "#9d9d9d",
+      "monster_count": { "min": 1, "max": 2 },
+      "stat_bonus_percent": 0,
+      "elite_chance": 0,
+      "elite_count": { "min": 0, "max": 0 },
+      "boss_chance": 0,
+      "loot_multiplier": 1.0,
+      "xp_multiplier": 1.0,
+      "gold_multiplier": 1.0,
+      "description_fr": "Quelques monstres isolés, aucune menace réelle.",
+      "description_en": "A few isolated monsters, no real threat."
+    },
+
+    "1": {
+      "name_fr": "Rencontre Facile",
+      "name_en": "Easy Encounter",
+      "icon": "★",
+      "color": "#1eff00",
+      "monster_count": { "min": 1, "max": 3 },
+      "stat_bonus_percent": 5,
+      "elite_chance": 0,
+      "elite_count": { "min": 0, "max": 0 },
+      "boss_chance": 0,
+      "loot_multiplier": 1.1,
+      "xp_multiplier": 1.1,
+      "gold_multiplier": 1.1,
+      "description_fr": "Un petit groupe légèrement renforcé.",
+      "description_en": "A small slightly reinforced group."
+    },
+
+    "2": {
+      "name_fr": "Rencontre Modérée",
+      "name_en": "Moderate Encounter",
+      "icon": "★★",
+      "color": "#0070dd",
+      "monster_count": { "min": 2, "max": 4 },
+      "stat_bonus_percent": 10,
+      "elite_chance": 0,
+      "elite_count": { "min": 0, "max": 0 },
+      "boss_chance": 0,
+      "loot_multiplier": 1.25,
+      "xp_multiplier": 1.25,
+      "gold_multiplier": 1.2,
+      "description_fr": "Un groupe coordonné qui demande de l'attention.",
+      "description_en": "A coordinated group that requires attention."
+    },
+
+    "3": {
+      "name_fr": "Rencontre Difficile",
+      "name_en": "Hard Encounter",
+      "icon": "★★★",
+      "color": "#a335ee",
+      "monster_count": { "min": 3, "max": 6 },
+      "stat_bonus_percent": 15,
+      "elite_chance": 10,
+      "elite_count": { "min": 0, "max": 1 },
+      "boss_chance": 0,
+      "loot_multiplier": 1.5,
+      "xp_multiplier": 1.5,
+      "gold_multiplier": 1.4,
+      "description_fr": "Un groupe dangereux avec possibilité d'un élite.",
+      "description_en": "A dangerous group with possible elite."
+    },
+
+    "4": {
+      "name_fr": "Rencontre Très Difficile",
+      "name_en": "Very Hard Encounter",
+      "icon": "★★★★",
+      "color": "#ff8000",
+      "monster_count": { "min": 5, "max": 8 },
+      "stat_bonus_percent": 20,
+      "elite_chance": 20,
+      "elite_count": { "min": 0, "max": 2 },
+      "boss_chance": 0,
+      "loot_multiplier": 2.0,
+      "xp_multiplier": 2.0,
+      "gold_multiplier": 1.8,
+      "elite_spawn_rules": {
+        "description": "Chaque élite potentiel a 20% de chance d'apparaître",
+        "rolls": 2,
+        "chance_per_roll": 20
+      },
+      "description_fr": "Une horde menaçante avec jusqu'à 2 élites possibles.",
+      "description_en": "A threatening horde with up to 2 possible elites."
+    },
+
+    "5": {
+      "name_fr": "Rencontre Légendaire",
+      "name_en": "Legendary Encounter",
+      "icon": "★★★★★",
+      "color": "#e6cc80",
+      "monster_count": { "min": 8, "max": 10 },
+      "stat_bonus_percent": 30,
+      "elite_chance": 100,
+      "elite_count": { "min": 2, "max": 4 },
+      "boss_chance": 100,
+      "boss_count": 1,
+      "loot_multiplier": 3.0,
+      "xp_multiplier": 3.0,
+      "gold_multiplier": 2.5,
+      "elite_spawn_rules": {
+        "description": "2 élites garantis + 20% chance pour chaque élite supplémentaire (remplace un normal)",
+        "guaranteed": 2,
+        "extra_rolls": 2,
+        "chance_per_extra": 20
+      },
+      "boss_spawn_rules": {
+        "description": "1 boss garanti, extrêmement difficile",
+        "guaranteed": 1
+      },
+      "guaranteed_loot": true,
+      "description_fr": "Une armée menée par un boss. Victoire = loot garanti. Défaite = probable.",
+      "description_en": "An army led by a boss. Victory = guaranteed loot. Defeat = likely."
+    }
+  },
+
+  "spawn_algorithm": {
+    "description": "Comment le jeu génère une rencontre",
+    "steps": [
+      "1. Déterminer le tier d'étoiles (basé sur zone, événement, etc.)",
+      "2. Roll nombre de monstres: random(min, max)",
+      "3. Appliquer stat_bonus_percent à tous les monstres",
+      "4. Roll pour élites: pour chaque slot élite, roll chance",
+      "5. Si 5★: placer le boss, puis les élites garantis",
+      "6. Remplir les slots restants avec des monstres normaux de la zone"
+    ],
+    "example_5_star": {
+      "step1": "5★ sélectionné",
+      "step2": "Roll count: 9 monstres",
+      "step3": "Tous les monstres +30% stats",
+      "step4": "2 élites garantis + roll 2× (20% chacun) = 1 extra élite",
+      "step5": "1 boss placé",
+      "result": "Composition finale: 1 boss, 3 élites, 5 normaux (tous +30% stats)"
+    }
+  },
+
+  "zone_star_limits": {
+    "description": "Chaque zone a une plage d'étoiles possible",
+    "placeholder": true,
+    "examples": {
+      "zone_tutorial": { "min": 0, "max": 1 },
+      "zone_forest": { "min": 0, "max": 3 },
+      "zone_desert": { "min": 1, "max": 4 },
+      "zone_volcano": { "min": 2, "max": 5 },
+      "zone_endgame": { "min": 3, "max": 5 }
+    },
+    "notes": "À définir avec le système de zones"
+  },
+
+  "loot_integration": {
+    "description": "Comment les étoiles affectent le loot",
+    "formula": "Le loot_multiplier s'applique à la chance de drop finale",
+    "stacks_with": ["monster_state", "dungeon_difficulty", "group_size", "luck", "events"],
+    "rarity_boost": {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 1,
+      "4": 1,
+      "5": 2
+    },
+    "notes": "5★ avec boss = loot garanti (ignore la chance, drop direct)"
+  }
+}

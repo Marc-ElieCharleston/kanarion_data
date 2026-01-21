@@ -6,14 +6,16 @@ import { usePathname } from 'next/navigation';
 const NAV_ITEMS = [
   { name: 'Dashboard', href: '/', icon: '🏠' },
   { name: 'Classes', href: '/classes', icon: '⚔️' },
+  { name: 'Skills', href: '/skills', icon: '✨' },
   { name: 'Stats Reference', href: '/stats', icon: '📊' },
   { name: 'Status Effects', href: '/effects', icon: '💫' },
   { name: 'Patterns', href: '/patterns', icon: '🎯' },
   { name: 'Panoplies', href: '/panoplies', icon: '👕' },
+  { name: 'Loot Tables', href: '/loot', icon: '🎁' },
   { name: 'Monsters', href: '/monsters', icon: '👹', disabled: true },
   { name: 'Items', href: '/items', icon: '🎒', disabled: true },
   { name: 'World', href: '/world', icon: '🗺️', disabled: true },
-  { name: 'Systems', href: '/systems', icon: '⚙️', disabled: true },
+  { name: 'Systems', href: '/systems', icon: '⚙️' },
   { name: 'Ideas', href: '/ideas', icon: '💡' },
 ];
 
