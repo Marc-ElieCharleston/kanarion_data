@@ -47,14 +47,49 @@
   },
 
   "scaling": {
-    "_comment": "Scaling LINEAIRE par niveau de skill. Power et Mana augmentent, ratio diminue legerement (~15% moins efficient au max)",
+    "_comment": "Scaling LINEAIRE par niveau de skill",
     "type": "linear",
     "formula_power": "power_at_level = base_power + (skill_level - 1) * power_per_level",
     "formula_mana": "mana_at_level = base_mana + (skill_level - 1) * mana_per_level",
-    "formula_effect_chance": "chance_at_level = base_chance + (skill_level - 1) * 3",
-    "effect_chance_per_level": 3,
-    "cooldown": "fixed",
-    "cooldown_note": "Le CD ne scale pas avec le niveau du skill, vient de l'equipement/CDR"
+    "formula_duration": "duration_at_level = base_duration + (skill_level - 1) * duration_per_level",
+    "formula_shield": "shield_at_level = base_shield + (skill_level - 1) * shield_per_level",
+    "effect_chance": "fixed - geree par stats (effect_precision, tenacity, resist_debuff)",
+    "cooldown": "fixed - vient de l'equipement/CDR"
+  },
+
+  "duration_scaling": {
+    "_comment": "Scaling de duree par type d'effet",
+    "hard_cc": {
+      "types": ["stun", "freeze", "petrify", "sleep", "knockdown"],
+      "duration_per_level": 0.1,
+      "description": "CC dur - +0.1s par niveau"
+    },
+    "soft_cc": {
+      "types": ["slow", "root", "silence", "blind", "disarm"],
+      "duration_per_level": 0.15,
+      "description": "CC soft - +0.15s par niveau"
+    },
+    "taunt": {
+      "types": ["taunt", "fear", "confusion"],
+      "duration_per_level": 0.2,
+      "description": "Taunt/Fear - +0.2s par niveau"
+    },
+    "buff": {
+      "types": ["damage_reduction", "atk_up", "def_up", "speed_up", "frenzy"],
+      "duration_per_level": 0.3,
+      "description": "Buffs - +0.3s par niveau"
+    },
+    "debuff": {
+      "types": ["armor_reduction", "atk_down", "def_down", "slow"],
+      "duration_per_level": 0.25,
+      "description": "Debuffs - +0.25s par niveau"
+    },
+    "shield": {
+      "types": ["shield"],
+      "duration_per_level": 0,
+      "value_per_level": 8,
+      "description": "Shields - duree fixe, valeur +8 par niveau"
+    }
   },
 
   "scaling_by_tier": {

@@ -19,8 +19,8 @@ interface Skill {
   description_en?: string;
   tags: string[];
   is_signature?: boolean;
+  ignore_los?: boolean;
   effect?: string;
-  effect_chance?: number;
   effect_duration?: number;
   buff?: string;
   buff_value?: number;
@@ -59,6 +59,13 @@ interface TierScaling {
   description: string;
 }
 
+interface DurationScaling {
+  types: string[];
+  duration_per_level: number;
+  value_per_level?: number;
+  description: string;
+}
+
 interface SkillSystemConfig {
   _meta: { version: string; last_updated: string };
   skill_points: {
@@ -77,10 +84,10 @@ interface SkillSystemConfig {
   }>;
   scaling: {
     type: string;
-    effect_chance_per_level: number;
     [key: string]: unknown;
   };
   scaling_by_tier: Record<string, TierScaling>;
+  duration_scaling: Record<string, DurationScaling>;
   skill_tiers: Record<string, {
     power_range: [number, number];
     cooldown_range: [number, number];
@@ -121,8 +128,8 @@ const CLASS_ICONS: Record<string, string> = {
   artisan: '🔧',
 };
 
-// Default scaling values if not found in config
-const DEFAULT_SCALING: Record<string, TierScaling> = {
+// Default scaling values
+const DEFAULT_TIER_SCALING: Record<string, TierScaling> = {
   filler: { power_per_level: 2, mana_per_level: 1, description: '' },
   basic: { power_per_level: 3, mana_per_level: 1, description: '' },
   standard: { power_per_level: 4, mana_per_level: 2, description: '' },
@@ -131,25 +138,68 @@ const DEFAULT_SCALING: Record<string, TierScaling> = {
   ultimate: { power_per_level: 10, mana_per_level: 4, description: '' },
 };
 
+const DEFAULT_DURATION_SCALING: Record<string, DurationScaling> = {
+  hard_cc: { types: ['stun', 'freeze', 'petrify', 'sleep', 'knockdown'], duration_per_level: 0.1, description: '' },
+  soft_cc: { types: ['slow', 'root', 'silence', 'blind', 'disarm'], duration_per_level: 0.15, description: '' },
+  taunt: { types: ['taunt', 'fear', 'confusion'], duration_per_level: 0.2, description: '' },
+  buff: { types: ['damage_reduction', 'atk_up', 'def_up', 'speed_up', 'frenzy'], duration_per_level: 0.3, description: '' },
+  debuff: { types: ['armor_reduction', 'atk_down', 'def_down'], duration_per_level: 0.25, description: '' },
+  shield: { types: ['shield'], duration_per_level: 0, value_per_level: 8, description: '' },
+};
+
+function getDurationScaling(effectType: string, durationScaling: Record<string, DurationScaling>): number {
+  for (const [, config] of Object.entries(durationScaling)) {
+    if (config.types && config.types.includes(effectType)) {
+      return config.duration_per_level;
+    }
+  }
+  return 0.1; // default
+}
+
+function getShieldScaling(durationScaling: Record<string, DurationScaling>): number {
+  return durationScaling.shield?.value_per_level || 8;
+}
+
 function SkillCard({
   skill,
   skillLevel,
-  scalingByTier
+  scalingByTier,
+  durationScaling
 }: {
   skill: Skill;
   skillLevel: number;
   scalingByTier: Record<string, TierScaling>;
+  durationScaling: Record<string, DurationScaling>;
 }) {
-  const tierScaling = scalingByTier[skill.tier] || DEFAULT_SCALING[skill.tier] || { power_per_level: 2, mana_per_level: 1 };
+  const tierScaling = scalingByTier[skill.tier] || DEFAULT_TIER_SCALING[skill.tier] || { power_per_level: 2, mana_per_level: 1 };
 
-  // Linear scaling: base + (level - 1) * per_level
+  // Power/Mana scaling
   const powerAtLevel = skill.base_power > 0
     ? skill.base_power + (skillLevel - 1) * tierScaling.power_per_level
     : 0;
   const manaAtLevel = skill.mana_cost + (skillLevel - 1) * tierScaling.mana_per_level;
 
-  const baseRatio = skill.base_power > 0 ? (skill.base_power / skill.mana_cost).toFixed(2) : '—';
-  const scaledRatio = powerAtLevel > 0 ? (powerAtLevel / manaAtLevel).toFixed(2) : '—';
+  // Duration scaling for effects
+  const effectDurationScaling = skill.effect ? getDurationScaling(skill.effect, durationScaling) : 0;
+  const effectDurationAtLevel = skill.effect_duration
+    ? skill.effect_duration + (skillLevel - 1) * effectDurationScaling
+    : 0;
+
+  const buffDurationScaling = skill.buff ? getDurationScaling(skill.buff, durationScaling) : 0;
+  const buffDurationAtLevel = skill.buff_duration
+    ? skill.buff_duration + (skillLevel - 1) * buffDurationScaling
+    : 0;
+
+  const debuffDurationScaling = skill.debuff ? getDurationScaling(skill.debuff, durationScaling) : 0;
+  const debuffDurationAtLevel = skill.debuff_duration
+    ? skill.debuff_duration + (skillLevel - 1) * debuffDurationScaling
+    : 0;
+
+  // Shield value scaling
+  const shieldScaling = getShieldScaling(durationScaling);
+  const shieldValueAtLevel = skill.shield_value
+    ? skill.shield_value + (skillLevel - 1) * shieldScaling
+    : 0;
 
   return (
     <div className={`bg-zinc-900 rounded-lg border ${skill.is_signature ? 'border-amber-500/50' : 'border-zinc-800'} overflow-hidden`}>
@@ -164,9 +214,21 @@ function SkillCard({
               <div className="text-xs text-zinc-500">{skill.name_fr}</div>
             )}
           </div>
-          <span className={`text-xs px-2 py-1 rounded border ${TIER_COLORS[skill.tier]}`}>
-            {skill.tier}
-          </span>
+          <div className="flex items-center gap-2">
+            {/* LoS indicator */}
+            {skill.ignore_los ? (
+              <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded">
+                Ignore LoS
+              </span>
+            ) : (
+              <span className="text-[10px] px-1.5 py-0.5 bg-zinc-700/50 text-zinc-500 border border-zinc-600/30 rounded">
+                Req LoS
+              </span>
+            )}
+            <span className={`text-xs px-2 py-1 rounded border ${TIER_COLORS[skill.tier]}`}>
+              {skill.tier}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -199,65 +261,88 @@ function SkillCard({
           </div>
         </div>
 
-        {/* Ratio indicator */}
-        {skill.base_power > 0 && skillLevel > 1 && (
-          <div className="mb-3 text-xs text-zinc-500">
-            Ratio P/M: {baseRatio} → {scaledRatio}
-          </div>
-        )}
-
-        {/* Pattern + Description */}
-        <div className="flex gap-4">
+        {/* Two grids: 4x4 and 5x3 */}
+        <div className="flex gap-4 mb-3">
           <AoeGrid
             pattern={skill.pattern}
             target={skill.target as 'enemy' | 'ally' | 'self' | 'allies' | 'enemies'}
             size="sm"
+            gridFormat="4x4"
           />
-          <div className="flex-1">
-            <p className="text-sm text-zinc-300">
-              {skill.description_fr || skill.description_en || 'No description'}
-            </p>
-
-            {/* Effect details */}
-            {skill.effect && (
-              <div className="mt-2 text-xs">
-                <span className="text-violet-400">Effect:</span>{' '}
-                <span className="text-zinc-300">{skill.effect}</span>
-                {skill.effect_chance && <span className="text-zinc-500"> ({skill.effect_chance}%)</span>}
-                {skill.effect_duration && <span className="text-zinc-500"> for {skill.effect_duration}s</span>}
-              </div>
-            )}
-
-            {skill.buff && (
-              <div className="mt-1 text-xs">
-                <span className="text-emerald-400">Buff:</span>{' '}
-                <span className="text-zinc-300">{skill.buff}</span>
-                {skill.buff_value && <span className="text-zinc-500"> ({skill.buff_value})</span>}
-                {skill.buff_duration && <span className="text-zinc-500"> for {skill.buff_duration}s</span>}
-              </div>
-            )}
-
-            {skill.debuff && (
-              <div className="mt-1 text-xs">
-                <span className="text-red-400">Debuff:</span>{' '}
-                <span className="text-zinc-300">{skill.debuff}</span>
-                {skill.debuff_value && <span className="text-zinc-500"> ({skill.debuff_value})</span>}
-                {skill.debuff_duration && <span className="text-zinc-500"> for {skill.debuff_duration}s</span>}
-              </div>
-            )}
-
-            {skill.shield_value && (
-              <div className="mt-1 text-xs">
-                <span className="text-sky-400">Shield:</span>{' '}
-                <span className="text-zinc-300">{skill.shield_value}</span>
-                {skill.shield_duration && <span className="text-zinc-500"> for {skill.shield_duration}s</span>}
-              </div>
-            )}
-          </div>
+          <AoeGrid
+            pattern={skill.pattern}
+            target={skill.target as 'enemy' | 'ally' | 'self' | 'allies' | 'enemies'}
+            size="sm"
+            gridFormat="5x3"
+          />
         </div>
 
+        {/* Description */}
+        <p className="text-sm text-zinc-300 mb-2">
+          {skill.description_fr || skill.description_en || 'No description'}
+        </p>
+
+        {/* Effect details with duration scaling */}
+        {skill.effect && (
+          <div className="text-xs mb-1">
+            <span className="text-violet-400">Effect:</span>{' '}
+            <span className="text-zinc-300">{skill.effect}</span>
+            {skill.effect_duration && (
+              <>
+                <span className="text-zinc-500"> {skill.effect_duration}s</span>
+                {skillLevel > 1 && (
+                  <span className="text-emerald-400"> → {effectDurationAtLevel.toFixed(1)}s</span>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {skill.buff && (
+          <div className="text-xs mb-1">
+            <span className="text-emerald-400">Buff:</span>{' '}
+            <span className="text-zinc-300">{skill.buff}</span>
+            {skill.buff_value && <span className="text-zinc-500"> ({skill.buff_value})</span>}
+            {skill.buff_duration && (
+              <>
+                <span className="text-zinc-500"> {skill.buff_duration}s</span>
+                {skillLevel > 1 && (
+                  <span className="text-emerald-400"> → {buffDurationAtLevel.toFixed(1)}s</span>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {skill.debuff && (
+          <div className="text-xs mb-1">
+            <span className="text-red-400">Debuff:</span>{' '}
+            <span className="text-zinc-300">{skill.debuff}</span>
+            {skill.debuff_value && <span className="text-zinc-500"> ({skill.debuff_value})</span>}
+            {skill.debuff_duration && (
+              <>
+                <span className="text-zinc-500"> {skill.debuff_duration}s</span>
+                {skillLevel > 1 && (
+                  <span className="text-emerald-400"> → {debuffDurationAtLevel.toFixed(1)}s</span>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {skill.shield_value && (
+          <div className="text-xs mb-1">
+            <span className="text-sky-400">Shield:</span>{' '}
+            <span className="text-zinc-300">{skill.shield_value}</span>
+            {skillLevel > 1 && (
+              <span className="text-emerald-400"> → {shieldValueAtLevel}</span>
+            )}
+            {skill.shield_duration && <span className="text-zinc-500"> for {skill.shield_duration}s</span>}
+          </div>
+        )}
+
         {/* Tags */}
-        <div className="flex flex-wrap gap-1 mt-3">
+        <div className="flex flex-wrap gap-1 mt-2">
           {skill.tags.map((tag) => (
             <span key={tag} className="text-[10px] px-1.5 py-0.5 bg-zinc-800 text-zinc-500 rounded">
               {tag}
@@ -303,7 +388,8 @@ export default function SkillsPage() {
 
   const classData = data.classes[selectedClass];
   const subclasses = classData ? Object.keys(classData.subclass_skills) : [];
-  const scalingByTier = data.system.scaling_by_tier || DEFAULT_SCALING;
+  const scalingByTier = data.system.scaling_by_tier || DEFAULT_TIER_SCALING;
+  const durationScaling = data.system.duration_scaling || DEFAULT_DURATION_SCALING;
 
   return (
     <div className="p-8">
@@ -311,85 +397,14 @@ export default function SkillsPage() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Skills System</h1>
         <p className="text-zinc-500 text-sm">
-          {data.system.skill_points.total_points_available} skill points • Max skill level {data.system.skill_levels.max_level} • v{data.system._meta.version}
+          {data.system.skill_points.total_points_available} skill points | Max level {data.system.skill_levels.max_level} | v{data.system._meta.version}
         </p>
-      </div>
-
-      {/* System Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4">
-          <h3 className="font-semibold text-violet-400 mb-2">Skill Points</h3>
-          <div className="space-y-1 text-sm">
-            <div className="flex justify-between">
-              <span className="text-zinc-500">Points per level</span>
-              <span>{data.system.skill_points.points_per_level}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-zinc-500">Max player level</span>
-              <span>{data.system.skill_points.max_player_level}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-zinc-500">Total points</span>
-              <span className="text-emerald-400">{data.system.skill_points.total_points_available}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4">
-          <h3 className="font-semibold text-amber-400 mb-2">Skill Categories</h3>
-          <div className="space-y-1 text-sm">
-            {Object.entries(data.system.skill_categories).map(([key, cat]) => (
-              <div key={key} className="flex justify-between">
-                <span className="text-zinc-500 capitalize">{key}</span>
-                <span>{cat.count} skills (lvl {cat.unlock_at_player_level}+)</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4">
-          <h3 className="font-semibold text-emerald-400 mb-2">Scaling (Linear)</h3>
-          <div className="space-y-1 text-sm">
-            <div className="flex justify-between">
-              <span className="text-zinc-500">Type</span>
-              <span>Linear (+X par niveau)</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-zinc-500">Effect Chance</span>
-              <span>+{data.system.scaling.effect_chance_per_level || 3}% / lvl</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-zinc-500">CD / Mana base</span>
-              <span className="text-zinc-600">Fixed (gear)</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Scaling by Tier */}
-      <div className="mb-8 bg-zinc-900 rounded-lg border border-zinc-800 p-4">
-        <h3 className="font-semibold mb-3">Scaling par Tier (Power / Mana par niveau)</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          {Object.entries(scalingByTier)
-            .filter(([tier]) => !tier.startsWith('_'))
-            .map(([tier, info]) => (
-            <div key={tier} className={`p-3 rounded border ${TIER_COLORS[tier]}`}>
-              <div className="font-medium capitalize">{tier}</div>
-              <div className="text-xs opacity-70 mt-1">
-                +{info.power_per_level} power / lvl
-              </div>
-              <div className="text-xs opacity-70">
-                +{info.mana_per_level} mana / lvl
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
 
       {/* Skill Level Slider */}
       <div className="mb-6 bg-zinc-900 rounded-lg border border-zinc-800 p-4">
         <div className="flex items-center gap-4">
-          <span className="text-zinc-400">Preview skill at level:</span>
+          <span className="text-zinc-400">Skill Level:</span>
           <input
             type="range"
             min="1"
@@ -400,11 +415,9 @@ export default function SkillsPage() {
           />
           <span className="text-2xl font-bold text-violet-400 w-8">{skillLevel}</span>
         </div>
-        {skillLevel > 1 && (
-          <div className="mt-2 text-xs text-zinc-500">
-            Exemple filler: Power {22} → {22 + (skillLevel - 1) * 2} | Mana {8} → {8 + (skillLevel - 1) * 1}
-          </div>
-        )}
+        <div className="mt-2 text-xs text-zinc-600">
+          Power/Mana + durees d&apos;effets scalent avec le niveau du skill
+        </div>
       </div>
 
       {/* Class Selection */}
@@ -444,6 +457,7 @@ export default function SkillsPage() {
                   skill={skill}
                   skillLevel={skillLevel}
                   scalingByTier={scalingByTier}
+                  durationScaling={durationScaling}
                 />
               ))}
             </div>
@@ -487,6 +501,7 @@ export default function SkillsPage() {
                     skill={skill}
                     skillLevel={skillLevel}
                     scalingByTier={scalingByTier}
+                    durationScaling={durationScaling}
                   />
                 ))}
               </div>
@@ -495,26 +510,25 @@ export default function SkillsPage() {
         </>
       )}
 
-      {/* Tier Reference */}
+      {/* Duration Scaling Reference */}
       <div className="mt-8 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-        <h3 className="font-semibold mb-3">Tiers - Valeurs de Base (Niveau 1)</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          {Object.entries(data.system.skill_tiers)
-            .filter(([tier]) => !tier.startsWith('_'))
-            .map(([tier, info]) => (
-            <div key={tier} className={`p-3 rounded border ${TIER_COLORS[tier]}`}>
-              <div className="font-medium capitalize">{tier}</div>
-              <div className="text-xs opacity-70 mt-1">
-                Power: {info.power_range[0]}-{info.power_range[1]}
+        <h3 className="font-semibold mb-3">Duration Scaling par Type</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 text-sm">
+          {Object.entries(durationScaling)
+            .filter(([key]) => !key.startsWith('_'))
+            .map(([type, config]) => (
+              <div key={type} className="p-2 bg-zinc-800 rounded">
+                <div className="font-medium text-zinc-300 capitalize">{type.replace('_', ' ')}</div>
+                <div className="text-xs text-zinc-500">
+                  {config.duration_per_level > 0
+                    ? `+${config.duration_per_level}s/lvl`
+                    : config.value_per_level
+                      ? `+${config.value_per_level} value/lvl`
+                      : 'fixed'
+                  }
+                </div>
               </div>
-              <div className="text-xs opacity-70">
-                CD: {info.cooldown_range[0]}-{info.cooldown_range[1]}s
-              </div>
-              <div className="text-xs opacity-70">
-                Mana: {info.mana_range[0]}-{info.mana_range[1]}
-              </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </div>
