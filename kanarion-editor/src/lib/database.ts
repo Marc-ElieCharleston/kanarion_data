@@ -20,8 +20,14 @@ export function getClassList(): string[] {
 
 export interface ClassStats {
   identity: string;
+  // Resources
   hp: number;
   mp: number;
+  hp_regen: number;
+  mp_regen: number;
+  hp_regen_combat: number;
+  mp_regen_combat: number;
+  // Offensive
   atk: number;
   def: number;
   mag: number;
@@ -29,23 +35,44 @@ export interface ClassStats {
   magic_resist: number;
   crit: number;
   crit_dmg: number;
+  // Precision
   hit: number;
   flee: number;
   armor_pen: number;
   magic_pen: number;
+  // Defensive
+  block_chance: number;
+  parry_chance: number;
   effect_chance: number;
   effect_resist: number;
+  debuff_duration: number;
+  tenacity: number;
+  buff_duration: number;
   damage_percent: number;
   damage_reduction: number;
+  // Support
   double_hit_chance: number;
   attack_speed: number;
   heal_power: number;
+  shield_power: number;
+  healing_received: number;
+  lifesteal: number;
+  spell_vamp: number;
+  cast_speed: number;
+  cooldown_reduction: number;
+  // Special
   luck: number;
 }
 
 export interface ClassGrowth {
+  // Resources
   hp: number;
   mp: number;
+  hp_regen: number;
+  mp_regen: number;
+  hp_regen_combat: number;
+  mp_regen_combat: number;
+  // Offensive
   atk: number;
   def: number;
   mag: number;
@@ -53,16 +80,32 @@ export interface ClassGrowth {
   magic_resist: number;
   crit: number;
   crit_dmg: number;
+  // Precision
   hit: number;
   flee: number;
   armor_pen: number;
   magic_pen: number;
+  // Defensive
+  block_chance: number;
+  parry_chance: number;
   effect_chance: number;
   effect_resist: number;
+  debuff_duration: number;
+  tenacity: number;
+  buff_duration: number;
+  damage_percent: number;
   damage_reduction: number;
+  // Support
   double_hit_chance: number;
   attack_speed: number;
   heal_power: number;
+  shield_power: number;
+  healing_received: number;
+  lifesteal: number;
+  spell_vamp: number;
+  cast_speed: number;
+  cooldown_reduction: number;
+  // Special
   luck: number;
 }
 

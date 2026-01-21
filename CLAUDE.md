@@ -29,10 +29,13 @@ No test suite is currently configured.
 
 - **API Routes** (`src/app/api/*/route.ts`): Server-side handlers that read from JSON database
   - `GET /api/classes` - All classes with stats
+  - `GET /api/classes/[classId]` - Single class details
   - `GET /api/classes/[classId]/skills` - Skills for a class
   - `GET /api/effects` - Status effects
   - `GET /api/stats` - Stat definitions
-- **Pages** (`src/app/*/page.tsx`): Route pages for classes, stats, effects, patterns
+  - `GET /api/panoplies` - Equipment sets
+  - `GET /api/ideas` - Game ideas/proposals
+- **Pages** (`src/app/*/page.tsx`): Route pages for classes, stats, effects, patterns, panoplies, ideas
 - **Components** (`src/components/`): Reusable UI (Sidebar, AoeGrid, SkillCard, etc.)
 - **Database Utility** (`src/lib/database.ts`): Centralized file I/O for JSON read/write operations
 
@@ -41,20 +44,24 @@ No test suite is currently configured.
 - **AoeGrid.tsx**: Visualizes combat patterns on 4x4 grid
 - **SkillCard.tsx**: Displays skill details with patterns and VFX
 - **Sidebar.tsx**: Navigation with class submenu
+- **StatsDisplay.tsx**: Renders class stats tables
+- **LevelSlider.tsx**: Level adjustment control for stat calculations
 
 ### Database Structure
 
 ```
 kanarion_database/
+├── _meta/         # Project metadata and version info
 ├── classes/       # 6 base classes (warrior, mage, healer, archer, rogue, artisan)
 │                  # Each has skills.json and passives.json
 ├── combat/        # Targeting system (4x4 grid), Line of Sight mechanics
 ├── config/        # Combat formulas, monster AI, status effects rules
 ├── entities/      # Monsters (50+), NPCs, boss mechanics
-├── items/         # Equipment, consumables, materials, affixes
+├── items/         # Equipment, consumables, materials, affixes, panoplies
 ├── stats/         # 40+ stat definitions, class base stats, growth rates
 ├── systems/       # Economy, guilds, achievements, PvP, leaderboards
 ├── world/         # Zones, quests, maps
+├── ui/            # UI configuration and layouts
 └── schemas/       # JSON Schema validation
 ```
 
@@ -93,8 +100,16 @@ kanarion_database/
 
 In the editor, `@/*` maps to `./src/*` (configured in tsconfig.json).
 
+### Key Config Files
+
+- `config/game.json` - Global game constants
+- `config/combat.json` - Damage formulas and combat parameters
+- `config/monster_ai.json` - Monster AI behaviors
+- `config/status_effects.json` - Buff/debuff rules
+
 ## Notes
 
 - Database path from editor: `../kanarion_database/` (relative)
 - Some content has bilingual FR/EN text
 - Combat balance formulas are complex - review `config/combat.json` before modifying damage calculations
+- Database types are defined in `src/lib/database.ts` (ClassStats, ClassGrowth, Skill, SkillsFile interfaces)
