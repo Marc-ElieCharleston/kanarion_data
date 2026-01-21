@@ -6,87 +6,129 @@ interface SetBonus {
   [key: string]: number;
 }
 
+interface PieceInfo {
+  id: string;
+  name_fr: string;
+  name_en: string;
+}
+
 interface PanoplieSet {
   id: string;
   name_fr: string;
   name_en: string;
+  meaning: string;
   identity: string;
+  armor_type: string;
   description_fr: string;
-  level_range: [number, number];
+  description_en: string;
   pieces_count: number;
-  pieces: Record<string, string>;
+  pieces: Record<string, PieceInfo>;
   bonuses: Record<string, SetBonus>;
   total_at_max: SetBonus;
+}
+
+interface EquipmentSlot {
+  id: string;
+  name_fr: string;
+  name_en: string;
 }
 
 interface PanopliesData {
   _meta: {
     version: string;
+    last_updated: string;
+    description: string;
     total_sets: number;
-    equipment_slots: string[];
+    tier_system: Record<string, { level_range: [number, number]; stat_multiplier: number }>;
+    equipment_slots: EquipmentSlot[];
+    notes: Record<string, string>;
   };
   sets: Record<string, PanoplieSet>;
   _summary: {
-    by_pieces: Record<string, string[]>;
+    total_sets: number;
+    by_size: Record<string, string[]>;
+    by_armor_type: Record<string, string[]>;
     by_identity: Record<string, string[]>;
   };
 }
 
 const IDENTITY_CONFIG: Record<string, { name: string; color: string; icon: string }> = {
-  sustain_regen: { name: 'Sustain / Regen', color: 'text-green-400 border-green-500/30', icon: '💚' },
-  tank_def: { name: 'Tank / DEF', color: 'text-sky-400 border-sky-500/30', icon: '🛡️' },
-  balanced_utility: { name: 'Balanced / Utility', color: 'text-zinc-400 border-zinc-500/30', icon: '⚖️' },
-  physical_dps_crit: { name: 'Physical DPS / Crit', color: 'text-red-400 border-red-500/30', icon: '⚔️' },
-  healer: { name: 'Healer', color: 'text-emerald-400 border-emerald-500/30', icon: '✨' },
-  support_buff: { name: 'Support / Buff', color: 'text-amber-400 border-amber-500/30', icon: '🎯' },
-  shield_tank: { name: 'Shield Tank', color: 'text-blue-400 border-blue-500/30', icon: '🔰' },
-  rogue_evasion: { name: 'Rogue / Evasion', color: 'text-purple-400 border-purple-500/30', icon: '🗡️' },
-  fire_mage_dot: { name: 'Fire Mage / DoT', color: 'text-orange-400 border-orange-500/30', icon: '🔥' },
-  ice_mage_control: { name: 'Ice Mage / Control', color: 'text-cyan-400 border-cyan-500/30', icon: '❄️' },
-  bruiser_hp_atk: { name: 'Bruiser / HP+ATK', color: 'text-yellow-400 border-yellow-500/30', icon: '💪' },
+  // Mini-sets (2p)
+  lifesteal_link: { name: 'Lifesteal Link', color: 'text-rose-400 border-rose-500/30', icon: '🩸' },
+  crit_marker: { name: 'Crit / Marker', color: 'text-red-400 border-red-500/30', icon: '🎯' },
+  hp_regen: { name: 'HP Regen', color: 'text-green-400 border-green-500/30', icon: '💚' },
+  mana_wisdom: { name: 'Mana / Wisdom', color: 'text-blue-400 border-blue-500/30', icon: '🔮' },
+  mana_sustain: { name: 'Mana Sustain', color: 'text-blue-400 border-blue-500/30', icon: '💙' },
+  raw_power: { name: 'Raw Power', color: 'text-orange-400 border-orange-500/30', icon: '💪' },
+  defense_anchor: { name: 'Defense Anchor', color: 'text-sky-400 border-sky-500/30', icon: '🛡️' },
+  // Medium sets (4p)
   speed_evasion: { name: 'Speed / Evasion', color: 'text-teal-400 border-teal-500/30', icon: '💨' },
-  anti_burst_mitigation: { name: 'Anti-Burst / Mitigation', color: 'text-slate-400 border-slate-500/30', icon: '🏠' },
-  lifesteal_sustain_dps: { name: 'Lifesteal / Sustain DPS', color: 'text-rose-400 border-rose-500/30', icon: '🩸' },
+  buff_support: { name: 'Buff / Support', color: 'text-amber-400 border-amber-500/30', icon: '✨' },
+  control_slow: { name: 'Control / Slow', color: 'text-cyan-400 border-cyan-500/30', icon: '❄️' },
+  armor_break: { name: 'Armor Break', color: 'text-yellow-500 border-yellow-500/30', icon: '⚔️' },
+  hot_healer: { name: 'HoT Healer', color: 'text-emerald-400 border-emerald-500/30', icon: '🌿' },
+  hp_tank: { name: 'HP Tank', color: 'text-slate-400 border-slate-500/30', icon: '🪨' },
+  mage_dps: { name: 'Mage DPS', color: 'text-violet-400 border-violet-500/30', icon: '🔮' },
+  physical_dps: { name: 'Physical DPS', color: 'text-red-500 border-red-500/30', icon: '⚔️' },
+  // Large sets (6p)
+  rogue_assassin: { name: 'Rogue / Assassin', color: 'text-purple-400 border-purple-500/30', icon: '🗡️' },
+  healer_holy: { name: 'Holy Healer', color: 'text-yellow-300 border-yellow-400/30', icon: '☀️' },
+  fire_mage_dot: { name: 'Fire Mage / DoT', color: 'text-orange-500 border-orange-500/30', icon: '🔥' },
+  ice_mage_control: { name: 'Ice Mage / Control', color: 'text-cyan-300 border-cyan-400/30', icon: '❄️' },
+  shield_tank: { name: 'Shield Tank', color: 'text-blue-500 border-blue-500/30', icon: '🔰' },
+  balanced_utility: { name: 'Balanced / Utility', color: 'text-zinc-400 border-zinc-500/30', icon: '⚖️' },
+  // Complete sets (8p)
+  main_tank: { name: 'Main Tank', color: 'text-sky-400 border-sky-500/30', icon: '🛡️' },
+  physical_dps_crit: { name: 'Physical DPS / Crit', color: 'text-red-500 border-red-500/30', icon: '🏹' },
+  sustain_regen: { name: 'Sustain / Regen', color: 'text-green-400 border-green-500/30', icon: '💚' },
+  bruiser_hp_atk: { name: 'Bruiser / HP+ATK', color: 'text-yellow-400 border-yellow-500/30', icon: '💪' },
+};
+
+const ARMOR_TYPE_CONFIG: Record<string, { name: string; color: string; icon: string }> = {
+  cloth: { name: 'Tissu', color: 'text-violet-400 border-violet-500/30', icon: '👘' },
+  leather: { name: 'Cuir', color: 'text-amber-500 border-amber-500/30', icon: '🦊' },
+  plate: { name: 'Plaque', color: 'text-slate-300 border-slate-400/30', icon: '⚙️' },
+  mixed: { name: 'Mixte', color: 'text-zinc-400 border-zinc-500/30', icon: '⚖️' },
 };
 
 const STAT_LABELS: Record<string, string> = {
-  hp_regen_percent: 'HP Regen/s',
-  mp_regen_percent: 'MP Regen/s',
+  // Resources
   hp_max: 'HP Max',
   mp_max: 'MP Max',
-  heal_received_percent: 'Heal Received',
-  def_percent: 'DEF',
+  hp_regen: 'HP Regen',
+  mp_regen: 'MP Regen',
+  // Offensive
+  atk: 'ATK',
+  atk_percent: 'ATK %',
+  mag: 'MAG',
+  mag_percent: 'MAG %',
+  crit: 'Crit Chance',
+  crit_dmg: 'Crit Damage',
+  damage_percent: 'Damage %',
+  attack_speed: 'Attack Speed',
+  armor_pen: 'Armor Pen',
+  magic_pen: 'Magic Pen',
+  effect_chance: 'Effect Chance',
+  debuff_duration: 'Debuff Duration',
+  // Defensive
+  def_percent: 'DEF %',
   armor: 'Armor',
-  damage_reduction_percent: 'Damage Reduction',
-  aggro_generation_percent: 'Aggro Generation',
-  atk_percent: 'ATK',
-  mag_percent: 'MAG',
-  all_stats_percent: 'All Stats',
-  xp_gain_percent: 'XP Gain',
-  gold_drop_percent: 'Gold Drop',
-  crit_chance_percent: 'Crit Chance',
-  crit_damage_percent: 'Crit Damage',
-  armor_penetration_percent: 'Armor Pen',
-  heal_power_percent: 'Heal Power',
-  mana_cost_reduction_percent: 'Mana Cost Reduction',
-  hot_effectiveness_percent: 'HoT Effectiveness',
-  shield_power_percent: 'Shield Power',
-  buff_duration_percent: 'Buff Duration',
-  buff_potency_percent: 'Buff Potency',
-  block_chance_percent: 'Block Chance',
-  shield_received_percent: 'Shield Received',
-  flee_percent: 'Flee (Evasion)',
-  attack_speed_percent: 'Attack Speed',
-  burn_damage_percent: 'Burn Damage',
-  dot_duration_bonus: 'DoT Duration',
-  dot_damage_percent: 'DoT Damage',
-  magic_penetration_percent: 'Magic Pen',
-  slow_potency_percent: 'Slow Potency',
-  cc_duration_bonus: 'CC Duration',
-  magic_resist_debuff_percent: 'MR Debuff',
-  lifesteal_percent: 'Lifesteal',
-  spell_vamp_percent: 'Spell Vamp',
-  crit_damage_received_reduction_percent: 'Crit Damage Received Reduction',
+  damage_reduction: 'Damage Reduction',
+  block_chance: 'Block Chance',
+  flee: 'Flee (Evasion)',
+  hit: 'Hit Rate',
+  // Support
+  heal_power: 'Heal Power',
+  shield_power: 'Shield Power',
+  healing_received: 'Heal Received',
+  buff_duration: 'Buff Duration',
+  cooldown_reduction: 'CDR',
+  // Special
+  lifesteal: 'Lifesteal',
+  spell_vamp: 'Spell Vamp',
+  thorns: 'Thorns',
+  luck: 'Luck',
+  cast_speed: 'Cast Speed',
 };
 
 function formatBonus(stat: string, value: number): string {
@@ -99,6 +141,7 @@ function formatBonus(stat: string, value: number): string {
 
 function SetCard({ set }: { set: PanoplieSet }) {
   const identity = IDENTITY_CONFIG[set.identity] || { name: set.identity, color: 'text-zinc-400 border-zinc-500/30', icon: '?' };
+  const armorType = ARMOR_TYPE_CONFIG[set.armor_type] || { name: set.armor_type, color: 'text-zinc-400 border-zinc-500/30', icon: '?' };
   const bonusLevels = Object.keys(set.bonuses).sort((a, b) => parseInt(a) - parseInt(b));
 
   return (
@@ -107,10 +150,15 @@ function SetCard({ set }: { set: PanoplieSet }) {
       <div className="flex items-start justify-between mb-3">
         <div>
           <h3 className="font-semibold text-lg">{set.name_fr}</h3>
-          <p className="text-xs text-zinc-500">{set.name_en}</p>
+          <p className="text-xs text-zinc-500">{set.name_en} • <span className="text-zinc-400 italic">&quot;{set.meaning}&quot;</span></p>
         </div>
-        <div className={`px-2 py-1 rounded border text-xs ${identity.color}`}>
-          {identity.icon} {identity.name}
+        <div className="flex flex-col gap-1 items-end">
+          <div className={`px-2 py-1 rounded border text-xs ${identity.color}`}>
+            {identity.icon} {identity.name}
+          </div>
+          <div className={`px-2 py-0.5 rounded border text-[10px] ${armorType.color}`}>
+            {armorType.icon} {armorType.name}
+          </div>
         </div>
       </div>
 
@@ -119,9 +167,6 @@ function SetCard({ set }: { set: PanoplieSet }) {
 
       {/* Meta info */}
       <div className="flex gap-3 mb-4 text-xs">
-        <span className="bg-zinc-800 px-2 py-1 rounded">
-          Lvl {set.level_range[0]}-{set.level_range[1]}
-        </span>
         <span className="bg-zinc-800 px-2 py-1 rounded">
           {set.pieces_count} pièces
         </span>
@@ -163,9 +208,10 @@ function SetCard({ set }: { set: PanoplieSet }) {
           Voir les {set.pieces_count} pièces
         </summary>
         <div className="mt-2 grid grid-cols-2 gap-1 text-xs text-zinc-500">
-          {Object.entries(set.pieces).map(([slot, itemId]) => (
+          {Object.entries(set.pieces).map(([slot, piece]) => (
             <div key={slot} className="bg-zinc-800/30 px-2 py-1 rounded">
-              <span className="text-zinc-400">{slot}:</span> {itemId.replace('item_', '')}
+              <span className="text-zinc-400 capitalize">{slot.replace('_', ' ')}:</span>{' '}
+              <span className="text-zinc-300">{piece.name_fr}</span>
             </div>
           ))}
         </div>
@@ -179,6 +225,7 @@ export default function PanopliesPage() {
   const [loading, setLoading] = useState(true);
   const [filterIdentity, setFilterIdentity] = useState<string>('all');
   const [filterPieces, setFilterPieces] = useState<string>('all');
+  const [filterArmorType, setFilterArmorType] = useState<string>('all');
 
   useEffect(() => {
     fetch('/api/panoplies')
@@ -205,12 +252,17 @@ export default function PanopliesPage() {
     );
   }
 
-  const sets = Object.values(data.sets);
+  // Filter out comment entries (they start with _)
+  const sets = Object.entries(data.sets)
+    .filter(([key]) => !key.startsWith('_'))
+    .map(([, value]) => value);
   const identities = [...new Set(sets.map(s => s.identity))];
+  const armorTypes = [...new Set(sets.map(s => s.armor_type))];
 
   const filteredSets = sets.filter(set => {
     if (filterIdentity !== 'all' && set.identity !== filterIdentity) return false;
     if (filterPieces !== 'all' && set.pieces_count !== parseInt(filterPieces)) return false;
+    if (filterArmorType !== 'all' && set.armor_type !== filterArmorType) return false;
     return true;
   });
 
@@ -220,7 +272,10 @@ export default function PanopliesPage() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Panoplies</h1>
         <p className="text-zinc-500 text-sm">
-          {data._meta.total_sets} sets - Âge de l&apos;Harmonie (lvl 1-20)
+          {data._meta.total_sets} sets - {data._meta.description}
+        </p>
+        <p className="text-zinc-600 text-xs mt-1">
+          v{data._meta.version} • Dernière mise à jour: {data._meta.last_updated}
         </p>
       </div>
 
@@ -254,24 +309,69 @@ export default function PanopliesPage() {
             className="bg-zinc-800 border border-zinc-700 rounded px-3 py-1.5 text-sm"
           >
             <option value="all">Toutes</option>
+            <option value="2">2 pièces ({sets.filter(s => s.pieces_count === 2).length})</option>
+            <option value="4">4 pièces ({sets.filter(s => s.pieces_count === 4).length})</option>
             <option value="6">6 pièces ({sets.filter(s => s.pieces_count === 6).length})</option>
             <option value="8">8 pièces ({sets.filter(s => s.pieces_count === 8).length})</option>
           </select>
         </div>
+
+        <div>
+          <label className="text-xs text-zinc-500 block mb-1">Type d&apos;armure</label>
+          <select
+            value={filterArmorType}
+            onChange={(e) => setFilterArmorType(e.target.value)}
+            className="bg-zinc-800 border border-zinc-700 rounded px-3 py-1.5 text-sm"
+          >
+            <option value="all">Tous</option>
+            {armorTypes.map(type => {
+              const config = ARMOR_TYPE_CONFIG[type] || { name: type, icon: '' };
+              const count = sets.filter(s => s.armor_type === type).length;
+              return (
+                <option key={type} value={type}>
+                  {config.icon} {config.name} ({count})
+                </option>
+              );
+            })}
+          </select>
+        </div>
       </div>
 
-      {/* Summary by identity */}
+      {/* Summary by size */}
       <div className="mb-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-        <h2 className="text-sm font-medium mb-3">Par type de build</h2>
+        <h2 className="text-sm font-medium mb-3">Par taille de set</h2>
         <div className="flex flex-wrap gap-2">
-          {Object.entries(data._summary.by_identity).map(([identity, setIds]) => {
-            const config = IDENTITY_CONFIG[identity] || { name: identity, icon: '?', color: 'text-zinc-400' };
+          {Object.entries(data._summary.by_size).map(([size, setIds]) => {
+            const sizeNum = size.replace('_pieces', '');
             return (
               <button
-                key={identity}
-                onClick={() => setFilterIdentity(filterIdentity === identity ? 'all' : identity)}
+                key={size}
+                onClick={() => setFilterPieces(filterPieces === sizeNum ? 'all' : sizeNum)}
                 className={`px-3 py-1.5 rounded text-xs transition-colors border ${
-                  filterIdentity === identity
+                  filterPieces === sizeNum
+                    ? 'bg-violet-500/20 border-violet-500 text-violet-300'
+                    : 'bg-zinc-800/50 border-zinc-700 text-zinc-400'
+                }`}
+              >
+                {sizeNum} pièces ({setIds.length})
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Summary by armor type */}
+      <div className="mb-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
+        <h2 className="text-sm font-medium mb-3">Par type d&apos;armure</h2>
+        <div className="flex flex-wrap gap-2">
+          {Object.entries(data._summary.by_armor_type).map(([type, setIds]) => {
+            const config = ARMOR_TYPE_CONFIG[type] || { name: type, icon: '?', color: 'text-zinc-400' };
+            return (
+              <button
+                key={type}
+                onClick={() => setFilterArmorType(filterArmorType === type ? 'all' : type)}
+                className={`px-3 py-1.5 rounded text-xs transition-colors border ${
+                  filterArmorType === type
                     ? 'bg-violet-500/20 border-violet-500 text-violet-300'
                     : `bg-zinc-800/50 ${config.color}`
                 }`}
