@@ -1,0 +1,157 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "last_updated": "2025-01-22",
+    "description_fr": "Systeme d'amelioration des equipements avec pierres",
+    "description_en": "Equipment enhancement system with stones"
+  },
+
+  "enhancement_overview": {
+    "description_fr": "Les equipements peuvent etre ameliores de +1 a +20 avec des pierres specifiques",
+    "description_en": "Equipment can be enhanced from +1 to +20 with specific stones",
+    "max_level": 20,
+    "stat_bonus_per_level": 3,
+    "stat_bonus_formula": "enhancement_level × 3%",
+    "milestones": {
+      "+5": { "total_bonus": "15%" },
+      "+10": { "total_bonus": "30%" },
+      "+15": { "total_bonus": "45%" },
+      "+20": { "total_bonus": "60%" }
+    }
+  },
+
+  "stone_types": {
+    "even_magen": {
+      "id": "even_magen",
+      "name_hebrew": "Even Magen",
+      "hebrew_script": "אבן מגן",
+      "name_fr": "Pierre de Bouclier",
+      "name_en": "Shield Stone",
+      "target": "armor",
+      "target_slots": ["helmet", "chest", "gloves", "boots", "belt", "shoulders"],
+      "icon": "🛡️",
+      "color": "#3B82F6"
+    },
+    "even_koach": {
+      "id": "even_koach",
+      "name_hebrew": "Even Koach",
+      "hebrew_script": "אבן כוח",
+      "name_fr": "Pierre de Puissance",
+      "name_en": "Power Stone",
+      "target": "accessory",
+      "target_slots": ["ring_1", "ring_2", "amulet"],
+      "icon": "💪",
+      "color": "#EF4444"
+    },
+    "even_neshama": {
+      "id": "even_neshama",
+      "name_hebrew": "Even Neshama",
+      "hebrew_script": "אבן נשמה",
+      "name_fr": "Pierre d'Ame",
+      "name_en": "Soul Stone",
+      "target": "soul_essence",
+      "target_slots": ["soul_essence"],
+      "icon": "✨",
+      "color": "#A855F7"
+    }
+  },
+
+  "stone_ranks": {
+    "rank_1": {
+      "name_fr": "Mineure",
+      "name_en": "Minor",
+      "enhancement_range": [1, 4],
+      "success_rate": 100,
+      "drop_source_fr": "Mobs communs (toutes zones)",
+      "drop_source_en": "Common mobs (all zones)",
+      "craft_recipe": null
+    },
+    "rank_2": {
+      "name_fr": "Standard",
+      "name_en": "Standard",
+      "enhancement_range": [5, 8],
+      "success_rate": 90,
+      "drop_source_fr": "Mobs et Elites",
+      "drop_source_en": "Mobs and Elites",
+      "craft_recipe": null
+    },
+    "rank_3": {
+      "name_fr": "Superieure",
+      "name_en": "Superior",
+      "enhancement_range": [9, 12],
+      "success_rate": 80,
+      "drop_source_fr": "Drop rare (Elites/Boss)",
+      "drop_source_en": "Rare drop (Elites/Boss)",
+      "craft_recipe": {
+        "input": { "rank": "rank_2", "quantity": 10 },
+        "output": { "rank": "rank_3", "quantity": 1 }
+      }
+    },
+    "rank_4": {
+      "name_fr": "Majeure",
+      "name_en": "Major",
+      "enhancement_range": [13, 16],
+      "success_rate": 70,
+      "drop_source_fr": "Tres rare (Boss haut niveau)",
+      "drop_source_en": "Very rare (High-level Boss)",
+      "craft_recipe": {
+        "input": { "rank": "rank_3", "quantity": 10 },
+        "output": { "rank": "rank_4", "quantity": 1 }
+      }
+    },
+    "rank_5": {
+      "name_fr": "Supreme",
+      "name_en": "Supreme",
+      "enhancement_range": [17, 20],
+      "success_rate": 60,
+      "drop_source_fr": "Ultra rare (Boss de raid)",
+      "drop_source_en": "Ultra rare (Raid Boss)",
+      "craft_recipe": {
+        "input": { "rank": "rank_4", "quantity": 10 },
+        "output": { "rank": "rank_5", "quantity": 1 }
+      }
+    }
+  },
+
+  "enhancement_rules": {
+    "on_success": {
+      "description_fr": "L'equipement gagne +1 niveau, la pierre est consommee",
+      "description_en": "Equipment gains +1 level, stone is consumed"
+    },
+    "on_failure": {
+      "description_fr": "La pierre est detruite, l'equipement reste intact",
+      "description_en": "Stone is destroyed, equipment remains intact"
+    },
+    "level_requirements": {
+      "description_fr": "Chaque rang de pierre correspond a une tranche de niveaux d'amelioration",
+      "description_en": "Each stone rank corresponds to an enhancement level range",
+      "+1_to_+4": "rank_1",
+      "+5_to_+8": "rank_2",
+      "+9_to_+12": "rank_3",
+      "+13_to_+16": "rank_4",
+      "+17_to_+20": "rank_5"
+    }
+  },
+
+  "visual_effects": {
+    "description_fr": "Effets visuels selon le niveau d'amelioration",
+    "description_en": "Visual effects based on enhancement level",
+    "effects": {
+      "+0_to_+4": { "glow": "none", "particles": "none" },
+      "+5_to_+9": { "glow": "subtle", "particles": "none", "color": "#FFFFFF" },
+      "+10_to_+14": { "glow": "medium", "particles": "sparkle", "color": "#3B82F6" },
+      "+15_to_+19": { "glow": "strong", "particles": "aura", "color": "#A855F7" },
+      "+20": { "glow": "legendary", "particles": "flames", "color": "#F59E0B" }
+    }
+  },
+
+  "economy_notes": {
+    "design_philosophy_fr": "Les pierres rank 1-2 sont abondantes pour encourager l'amelioration. Les ranks superieurs sont rares mais craftables, creant un sink de ressources.",
+    "design_philosophy_en": "Rank 1-2 stones are abundant to encourage enhancement. Higher ranks are rare but craftable, creating a resource sink.",
+    "estimated_stones_for_max": {
+      "best_case": "20 pierres (100% succes impossible au dela de +4)",
+      "average_case": "~35-50 pierres",
+      "worst_case": "100+ pierres (malchance extreme)"
+    }
+  }
+}

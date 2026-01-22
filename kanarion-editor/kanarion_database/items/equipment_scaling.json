@@ -1,0 +1,151 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "last_updated": "2025-01-22",
+    "description_fr": "Systeme de scaling des equipements par tier et rarete",
+    "description_en": "Equipment scaling system by tier and rarity"
+  },
+
+  "tier_system": {
+    "description_fr": "Les tiers determinent la puissance de base des equipements selon le niveau requis",
+    "description_en": "Tiers determine base equipment power based on required level",
+    "tiers": {
+      "T1": {
+        "name_fr": "Tier 1 - Debutant",
+        "name_en": "Tier 1 - Beginner",
+        "level_range": [1, 20],
+        "stat_multiplier": 1.0
+      },
+      "T2": {
+        "name_fr": "Tier 2 - Intermediaire",
+        "name_en": "Tier 2 - Intermediate",
+        "level_range": [21, 40],
+        "stat_multiplier": 1.5
+      },
+      "T3": {
+        "name_fr": "Tier 3 - Avance",
+        "name_en": "Tier 3 - Advanced",
+        "level_range": [41, 60],
+        "stat_multiplier": 2.0
+      },
+      "T4": {
+        "name_fr": "Tier 4 - Expert",
+        "name_en": "Tier 4 - Expert",
+        "level_range": [61, 80],
+        "stat_multiplier": 2.8
+      },
+      "T5": {
+        "name_fr": "Tier 5 - Maitre",
+        "name_en": "Tier 5 - Master",
+        "level_range": [81, 100],
+        "stat_multiplier": 4.0
+      }
+    }
+  },
+
+  "rarity_system": {
+    "description_fr": "La rarete affecte le nombre de substats et la fourchette de roll",
+    "description_en": "Rarity affects substat count and roll range",
+    "rarities": {
+      "1_star": {
+        "name_fr": "Commun",
+        "name_en": "Common",
+        "color": "#9CA3AF",
+        "substat_count": { "min": 1, "max": 1 },
+        "roll_range_percent": { "min": 50, "max": 80 },
+        "description_fr": "1 substat, rolls moyens",
+        "description_en": "1 substat, average rolls"
+      },
+      "2_star": {
+        "name_fr": "Peu Commun",
+        "name_en": "Uncommon",
+        "color": "#22C55E",
+        "substat_count": { "min": 1, "max": 2 },
+        "roll_range_percent": { "min": 55, "max": 85 },
+        "description_fr": "1-2 substats, rolls legerement meilleurs",
+        "description_en": "1-2 substats, slightly better rolls"
+      },
+      "3_star": {
+        "name_fr": "Rare",
+        "name_en": "Rare",
+        "color": "#3B82F6",
+        "substat_count": { "min": 2, "max": 2 },
+        "roll_range_percent": { "min": 60, "max": 90 },
+        "description_fr": "2 substats garantis, bons rolls",
+        "description_en": "2 guaranteed substats, good rolls"
+      },
+      "4_star": {
+        "name_fr": "Epique",
+        "name_en": "Epic",
+        "color": "#A855F7",
+        "substat_count": { "min": 2, "max": 3 },
+        "roll_range_percent": { "min": 70, "max": 95 },
+        "description_fr": "2-3 substats, tres bons rolls",
+        "description_en": "2-3 substats, very good rolls"
+      },
+      "5_star": {
+        "name_fr": "Legendaire",
+        "name_en": "Legendary",
+        "color": "#F59E0B",
+        "substat_count": { "min": 3, "max": 4 },
+        "roll_range_percent": { "min": 80, "max": 100 },
+        "description_fr": "3-4 substats, rolls optimaux",
+        "description_en": "3-4 substats, optimal rolls"
+      }
+    }
+  },
+
+  "base_stat_values": {
+    "description_fr": "Valeurs de base des stats au Tier 1 (multipliees par stat_multiplier du tier)",
+    "description_en": "Base stat values at Tier 1 (multiplied by tier stat_multiplier)",
+    "main_stats": {
+      "hp_max": { "base": 100, "per_level": 5 },
+      "mp_max": { "base": 50, "per_level": 2 },
+      "armor": { "base": 10, "per_level": 1 },
+      "magic_resist": { "base": 10, "per_level": 1 },
+      "atk": { "base": 15, "per_level": 1.5 },
+      "mag": { "base": 15, "per_level": 1.5 }
+    },
+    "substats": {
+      "_comment": "Valeurs max au T1, roll_range% determine la valeur finale",
+      "hp_max": 50,
+      "mp_max": 25,
+      "hp_regen": 5,
+      "mp_regen": 3,
+      "atk": 8,
+      "mag": 8,
+      "armor": 5,
+      "magic_resist": 5,
+      "crit": 3,
+      "crit_dmg": 5,
+      "hit": 3,
+      "flee": 3,
+      "attack_speed": 2,
+      "cast_speed": 2,
+      "cooldown_reduction": 2,
+      "lifesteal": 2,
+      "spell_vamp": 2,
+      "armor_pen": 3,
+      "magic_pen": 3,
+      "heal_power": 4,
+      "shield_power": 4,
+      "damage_percent": 2,
+      "damage_reduction": 2,
+      "luck": 5
+    }
+  },
+
+  "roll_formula": {
+    "description_fr": "Formule: valeur_finale = base_value × tier_mult × random(roll_min%, roll_max%)",
+    "description_en": "Formula: final_value = base_value × tier_mult × random(roll_min%, roll_max%)",
+    "example": {
+      "stat": "crit",
+      "base_value": 3,
+      "tier": "T3",
+      "tier_mult": 2.0,
+      "rarity": "4_star",
+      "roll_range": [70, 95],
+      "possible_values": "3 × 2.0 × (70-95%) = 4.2 to 5.7 → arrondi 4-6%"
+    }
+  }
+}

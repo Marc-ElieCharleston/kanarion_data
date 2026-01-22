@@ -53,6 +53,41 @@ interface EquipmentStatsData {
   examples: Record<string, object>;
 }
 
+interface ScalingTier {
+  name_fr: string;
+  name_en: string;
+  level_range: [number, number];
+  stat_multiplier: number;
+}
+
+interface ScalingRarity {
+  name_fr: string;
+  name_en: string;
+  color: string;
+  substat_count: { min: number; max: number };
+  roll_range_percent: { min: number; max: number };
+  description_fr: string;
+  description_en: string;
+}
+
+interface EquipmentScalingData {
+  _meta: { version: string; last_updated: string };
+  tier_system: {
+    description_fr: string;
+    description_en: string;
+    tiers: Record<string, ScalingTier>;
+  };
+  rarity_system: {
+    description_fr: string;
+    description_en: string;
+    rarities: Record<string, ScalingRarity>;
+  };
+  base_stat_values: {
+    main_stats: Record<string, { base: number; per_level: number }>;
+    substats: Record<string, number>;
+  };
+}
+
 const STAT_LABELS: Record<string, { fr: string; en: string }> = {
   hp_max: { fr: 'HP Max', en: 'Max HP' },
   mp_max: { fr: 'MP Max', en: 'Max MP' },
@@ -177,14 +212,18 @@ function SoulEssenceCard({ type, data }: { type: string; data: SoulEssenceType }
 
 export default function EquipmentStatsPage() {
   const [data, setData] = useState<EquipmentStatsData | null>(null);
+  const [scalingData, setScalingData] = useState<EquipmentScalingData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'armor' | 'accessory' | 'soul'>('armor');
+  const [activeTab, setActiveTab] = useState<'scaling' | 'armor' | 'accessory' | 'soul'>('scaling');
 
   useEffect(() => {
-    fetch('/api/equipment-stats')
-      .then(res => res.json())
-      .then(data => {
-        setData(data);
+    Promise.all([
+      fetch('/api/equipment-stats').then(res => res.json()),
+      fetch('/api/equipment-scaling').then(res => res.json())
+    ])
+      .then(([equipData, scaleData]) => {
+        setData(equipData);
+        setScalingData(scaleData);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -212,9 +251,9 @@ export default function EquipmentStatsPage() {
     <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
       <div className="mb-4 md:mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2">Systeme de Stats Equipement</h1>
+        <h1 className="text-2xl md:text-3xl font-bold mb-2">Systeme de Stats Equipement / Equipment Stats System</h1>
         <p className="text-zinc-500 text-sm">
-          Main stats, substats et Essences d&apos;Ame
+          Tiers, rarete, main stats, substats et Essences d&apos;Ame / Tiers, rarity, main stats, substats and Soul Essences
         </p>
       </div>
 
@@ -230,6 +269,18 @@ export default function EquipmentStatsPage() {
 
       {/* Tabs */}
       <div className="mb-4 md:mb-6 flex flex-wrap gap-2">
+        <button
+          onClick={() => setActiveTab('scaling')}
+          className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors flex items-center gap-1 sm:gap-2 ${
+            activeTab === 'scaling'
+              ? 'bg-emerald-500/20 border border-emerald-500 text-emerald-300'
+              : 'bg-zinc-800/50 border border-zinc-700 text-zinc-400 hover:text-white'
+          }`}
+        >
+          <span>📈</span>
+          <span className="hidden sm:inline">Scaling / Tiers</span>
+          <span className="sm:hidden">Scaling</span>
+        </button>
         <button
           onClick={() => setActiveTab('armor')}
           className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors flex items-center gap-1 sm:gap-2 ${
@@ -267,6 +318,142 @@ export default function EquipmentStatsPage() {
           <span className="sm:hidden">Essence</span>
         </button>
       </div>
+
+      {/* Scaling Tab */}
+      {activeTab === 'scaling' && scalingData && (
+        <div className="space-y-6">
+          {/* Tier System */}
+          <div className="p-4 bg-zinc-900 rounded-lg border border-zinc-800">
+            <h3 className="text-lg font-semibold mb-2">Systeme de Tiers / Tier System</h3>
+            <p className="text-sm text-zinc-400 mb-4">{scalingData.tier_system.description_fr}</p>
+            <p className="text-xs text-zinc-500 mb-4">{scalingData.tier_system.description_en}</p>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-zinc-700">
+                    <th className="text-left py-3 px-4 text-zinc-400">Tier</th>
+                    <th className="text-center py-3 px-4 text-zinc-400">Niveaux / Levels</th>
+                    <th className="text-center py-3 px-4 text-zinc-400">Multiplicateur / Multiplier</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(scalingData.tier_system.tiers).map(([key, tier], index) => (
+                    <tr key={key} className={`border-b border-zinc-800 ${index % 2 === 0 ? 'bg-zinc-800/20' : ''}`}>
+                      <td className="py-3 px-4">
+                        <span className="font-bold text-emerald-400">{key}</span>
+                        <span className="text-zinc-500 text-xs ml-2">{tier.name_fr}</span>
+                      </td>
+                      <td className="py-3 px-4 text-center font-mono text-zinc-300">
+                        {tier.level_range[0]} - {tier.level_range[1]}
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <span className="font-mono text-amber-400">×{tier.stat_multiplier}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Rarity Roll Ranges */}
+          <div className="p-4 bg-zinc-900 rounded-lg border border-zinc-800">
+            <h3 className="text-lg font-semibold mb-2">Rarete et Fourchettes de Roll / Rarity & Roll Ranges</h3>
+            <p className="text-sm text-zinc-400 mb-4">{scalingData.rarity_system.description_fr}</p>
+            <p className="text-xs text-zinc-500 mb-4">{scalingData.rarity_system.description_en}</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {Object.entries(scalingData.rarity_system.rarities).map(([key, rarity]) => (
+                <div
+                  key={key}
+                  className="bg-zinc-800/50 rounded-lg p-4 border-l-4"
+                  style={{ borderLeftColor: rarity.color }}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-bold" style={{ color: rarity.color }}>
+                      {key.replace('_star', '★')} {rarity.name_fr}
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-500 mb-3">{rarity.name_en}</p>
+
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="bg-zinc-700/30 rounded p-2">
+                      <div className="text-xs text-zinc-500">Substats</div>
+                      <div className="font-mono text-zinc-200">
+                        {rarity.substat_count.min === rarity.substat_count.max
+                          ? rarity.substat_count.min
+                          : `${rarity.substat_count.min}-${rarity.substat_count.max}`}
+                      </div>
+                    </div>
+                    <div className="bg-zinc-700/30 rounded p-2">
+                      <div className="text-xs text-zinc-500">Roll Range</div>
+                      <div className="font-mono text-blue-400">
+                        {rarity.roll_range_percent.min}-{rarity.roll_range_percent.max}%
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Roll Formula */}
+          <div className="p-4 bg-zinc-900 rounded-lg border border-zinc-800">
+            <h3 className="text-lg font-semibold mb-3">Formule de Calcul / Roll Formula</h3>
+            <div className="bg-zinc-800/50 rounded-lg p-4">
+              <code className="text-emerald-400 text-sm">
+                valeur_finale = base_value × tier_multiplier × random(roll_min%, roll_max%)
+              </code>
+            </div>
+
+            <div className="mt-4">
+              <h4 className="text-sm font-medium text-zinc-400 mb-2">Exemple / Example:</h4>
+              <div className="flex items-center gap-3 flex-wrap text-sm">
+                <div className="bg-zinc-800/50 rounded p-2 text-center">
+                  <div className="text-xs text-zinc-500">Crit (base)</div>
+                  <div className="font-mono text-zinc-300">3%</div>
+                </div>
+                <span className="text-zinc-500">×</span>
+                <div className="bg-zinc-800/50 rounded p-2 text-center">
+                  <div className="text-xs text-zinc-500">T3 mult</div>
+                  <div className="font-mono text-amber-400">2.0</div>
+                </div>
+                <span className="text-zinc-500">×</span>
+                <div className="bg-zinc-800/50 rounded p-2 text-center">
+                  <div className="text-xs text-zinc-500">4★ roll (70-95%)</div>
+                  <div className="font-mono text-purple-400">85%</div>
+                </div>
+                <span className="text-zinc-500">=</span>
+                <div className="bg-emerald-500/20 border border-emerald-500/50 rounded p-2 text-center">
+                  <div className="text-xs text-emerald-400">Final</div>
+                  <div className="font-mono text-emerald-300">5.1% Crit</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Base Values Reference */}
+          <div className="p-4 bg-zinc-900 rounded-lg border border-zinc-800">
+            <h3 className="text-lg font-semibold mb-3">Valeurs de Base T1 / Base T1 Values</h3>
+            <p className="text-xs text-zinc-500 mb-4">Valeurs multipliees par le multiplicateur du Tier</p>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+              {Object.entries(scalingData.base_stat_values.substats).map(([stat, value]) => {
+                const label = STAT_LABELS[stat];
+                return (
+                  <div key={stat} className="bg-zinc-800/50 rounded p-2 text-center">
+                    <div className="text-xs text-zinc-500 truncate">
+                      {label ? label.fr : stat}
+                    </div>
+                    <div className="font-mono text-zinc-300">{value}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Armor Tab */}
       {activeTab === 'armor' && (

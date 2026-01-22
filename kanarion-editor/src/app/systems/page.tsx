@@ -29,6 +29,52 @@ interface StatMultiplier {
   note: string;
 }
 
+interface StoneType {
+  id: string;
+  name_hebrew: string;
+  hebrew_script: string;
+  name_fr: string;
+  name_en: string;
+  target: string;
+  target_slots: string[];
+  icon: string;
+  color: string;
+}
+
+interface StoneRank {
+  name_fr: string;
+  name_en: string;
+  enhancement_range: [number, number];
+  success_rate: number;
+  drop_source_fr: string;
+  drop_source_en: string;
+  craft_recipe: { input: { rank: string; quantity: number }; output: { rank: string; quantity: number } } | null;
+}
+
+interface EnhancementData {
+  _meta: {
+    version: string;
+    last_updated: string;
+    description_fr: string;
+    description_en: string;
+  };
+  enhancement_overview: {
+    description_fr: string;
+    description_en: string;
+    max_level: number;
+    stat_bonus_per_level: number;
+    stat_bonus_formula: string;
+    milestones: Record<string, { total_bonus: string }>;
+  };
+  stone_types: Record<string, StoneType>;
+  stone_ranks: Record<string, StoneRank>;
+  visual_effects: {
+    description_fr: string;
+    description_en: string;
+    effects: Record<string, { glow: string; particles: string; color?: string }>;
+  };
+}
+
 interface EncounterStarsData {
   _meta: {
     version: string;
@@ -50,6 +96,7 @@ interface EncounterStarsData {
 
 const TABS = [
   { id: 'encounter-stars', name_fr: 'Systeme d\'Etoiles', name_en: 'Star System', icon: '⭐' },
+  { id: 'enhancement', name_fr: 'Amelioration', name_en: 'Enhancement', icon: '💎' },
   { id: 'economy', name_fr: 'Economie', name_en: 'Economy', icon: '💰', disabled: true },
   { id: 'pvp', name_fr: 'PvP', name_en: 'PvP', icon: '⚔️', disabled: true },
   { id: 'guilds', name_fr: 'Guildes', name_en: 'Guilds', icon: '🏰', disabled: true },
@@ -333,6 +380,199 @@ function EncounterStarsTab() {
   );
 }
 
+function EnhancementTab() {
+  const [data, setData] = useState<EnhancementData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/systems/enhancement')
+      .then(res => res.json())
+      .then(data => {
+        setData(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return <div className="animate-pulse text-zinc-500">Chargement...</div>;
+  }
+
+  if (!data) {
+    return <div className="text-red-400">Erreur de chargement</div>;
+  }
+
+  return (
+    <div>
+      {/* Overview */}
+      <div className="mb-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
+        <h2 className="text-lg font-semibold mb-2">Vue d&apos;ensemble / Overview</h2>
+        <p className="text-sm text-zinc-400 mb-3">{data.enhancement_overview.description_fr}</p>
+        <p className="text-xs text-zinc-500">{data.enhancement_overview.description_en}</p>
+        <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="bg-zinc-800/50 rounded p-3 text-center">
+            <div className="text-2xl font-bold text-emerald-400">+{data.enhancement_overview.max_level}</div>
+            <div className="text-xs text-zinc-500">Max Level</div>
+          </div>
+          <div className="bg-zinc-800/50 rounded p-3 text-center">
+            <div className="text-2xl font-bold text-blue-400">+{data.enhancement_overview.stat_bonus_per_level}%</div>
+            <div className="text-xs text-zinc-500">Par niveau / Per level</div>
+          </div>
+          <div className="bg-zinc-800/50 rounded p-3 text-center">
+            <div className="text-2xl font-bold text-amber-400">+60%</div>
+            <div className="text-xs text-zinc-500">Bonus Max (+20)</div>
+          </div>
+          <div className="bg-zinc-800/50 rounded p-3 text-center">
+            <div className="text-lg font-bold text-zinc-300">{data.enhancement_overview.stat_bonus_formula}</div>
+            <div className="text-xs text-zinc-500">Formule</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stone Types */}
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold mb-4">Types de Pierres / Stone Types</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {Object.entries(data.stone_types).map(([key, stone]) => (
+            <div
+              key={key}
+              className="bg-zinc-900 rounded-lg border border-zinc-800 p-4"
+              style={{ borderLeftColor: stone.color, borderLeftWidth: '4px' }}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-3xl">{stone.icon}</span>
+                <div>
+                  <h3 className="font-semibold" style={{ color: stone.color }}>{stone.name_hebrew}</h3>
+                  <p className="text-xs text-zinc-500">{stone.hebrew_script}</p>
+                </div>
+              </div>
+              <p className="text-sm text-zinc-400 mb-2">{stone.name_fr} / {stone.name_en}</p>
+              <div className="mt-3 pt-3 border-t border-zinc-800">
+                <div className="text-xs text-zinc-500 mb-1">Cible / Target:</div>
+                <div className="flex flex-wrap gap-1">
+                  {stone.target_slots.map(slot => (
+                    <span key={slot} className="bg-zinc-800 text-zinc-300 text-xs px-2 py-0.5 rounded capitalize">
+                      {slot.replace(/_/g, ' ')}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Stone Ranks & Success Rates */}
+      <div className="mb-6">
+        <h2 className="text-lg font-semibold mb-4">Rangs des Pierres / Stone Ranks</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm bg-zinc-900 rounded-lg border border-zinc-800">
+            <thead>
+              <tr className="border-b border-zinc-700">
+                <th className="text-left py-3 px-4 text-zinc-400">Rang / Rank</th>
+                <th className="text-center py-3 px-4 text-zinc-400">Niveaux / Levels</th>
+                <th className="text-center py-3 px-4 text-zinc-400">Taux / Rate</th>
+                <th className="text-left py-3 px-4 text-zinc-400">Source</th>
+                <th className="text-left py-3 px-4 text-zinc-400">Craft</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(data.stone_ranks).map(([key, rank], index) => (
+                <tr key={key} className={`border-b border-zinc-800 ${index % 2 === 0 ? 'bg-zinc-800/20' : ''}`}>
+                  <td className="py-3 px-4">
+                    <span className="font-medium text-zinc-200">{rank.name_fr}</span>
+                    <span className="text-zinc-500 text-xs ml-2">/ {rank.name_en}</span>
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    <span className="font-mono text-emerald-400">+{rank.enhancement_range[0]} → +{rank.enhancement_range[1]}</span>
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    <span className={`font-mono ${rank.success_rate === 100 ? 'text-green-400' : rank.success_rate >= 80 ? 'text-yellow-400' : 'text-orange-400'}`}>
+                      {rank.success_rate}%
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 text-zinc-400 text-xs">{rank.drop_source_fr}</td>
+                  <td className="py-3 px-4 text-zinc-400 text-xs">
+                    {rank.craft_recipe ? (
+                      <span className="text-violet-400">
+                        {rank.craft_recipe.input.quantity}× {data.stone_ranks[rank.craft_recipe.input.rank]?.name_fr || rank.craft_recipe.input.rank}
+                      </span>
+                    ) : (
+                      <span className="text-zinc-600">-</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Rules */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="bg-zinc-900 rounded-lg border border-zinc-800 border-l-4 border-l-green-500 p-4">
+          <h3 className="font-semibold text-green-400 mb-2">Succes / Success</h3>
+          <p className="text-sm text-zinc-400">L&apos;equipement gagne +1 niveau</p>
+          <p className="text-xs text-zinc-500 mt-1">Equipment gains +1 level</p>
+          <p className="text-sm text-zinc-400 mt-2">La pierre est consommee</p>
+          <p className="text-xs text-zinc-500">Stone is consumed</p>
+        </div>
+        <div className="bg-zinc-900 rounded-lg border border-zinc-800 border-l-4 border-l-red-500 p-4">
+          <h3 className="font-semibold text-red-400 mb-2">Echec / Failure</h3>
+          <p className="text-sm text-zinc-400">La pierre est detruite</p>
+          <p className="text-xs text-zinc-500 mt-1">Stone is destroyed</p>
+          <p className="text-sm text-emerald-400 mt-2">L&apos;equipement reste intact!</p>
+          <p className="text-xs text-zinc-500">Equipment remains intact!</p>
+        </div>
+      </div>
+
+      {/* Visual Effects */}
+      <div className="mb-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
+        <h2 className="text-lg font-semibold mb-4">Effets Visuels / Visual Effects</h2>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          {Object.entries(data.visual_effects.effects).map(([range, effect]) => (
+            <div
+              key={range}
+              className="bg-zinc-800/50 rounded p-3 text-center"
+              style={{ borderColor: effect.color || '#71717a', borderWidth: '1px' }}
+            >
+              <div className="text-sm font-mono text-zinc-300">{range.replace(/_/g, ' ')}</div>
+              <div className="text-xs text-zinc-500 mt-1">{effect.glow}</div>
+              {effect.particles !== 'none' && (
+                <div className="text-xs mt-1" style={{ color: effect.color }}>
+                  {effect.particles}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Example Calculation */}
+      <div className="p-4 bg-zinc-900 rounded-lg border border-zinc-800">
+        <h2 className="text-lg font-semibold mb-3">Exemple / Example</h2>
+        <p className="text-sm text-zinc-400 mb-4">Epee avec 100 ATK de base amelioree a +15:</p>
+        <div className="flex items-center gap-4 flex-wrap">
+          <div className="bg-zinc-800/50 rounded p-3 text-center">
+            <div className="text-sm text-zinc-500">Base ATK</div>
+            <div className="text-xl font-mono text-zinc-300">100</div>
+          </div>
+          <span className="text-zinc-500">×</span>
+          <div className="bg-zinc-800/50 rounded p-3 text-center">
+            <div className="text-sm text-zinc-500">Bonus +15</div>
+            <div className="text-xl font-mono text-blue-400">1.45</div>
+          </div>
+          <span className="text-zinc-500">=</span>
+          <div className="bg-emerald-500/20 border border-emerald-500/50 rounded p-3 text-center">
+            <div className="text-sm text-emerald-400">ATK Final</div>
+            <div className="text-xl font-mono text-emerald-300">145</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function SystemsPage() {
   const [activeTab, setActiveTab] = useState('encounter-stars');
 
@@ -370,6 +610,7 @@ export default function SystemsPage() {
 
       {/* Tab Content */}
       {activeTab === 'encounter-stars' && <EncounterStarsTab />}
+      {activeTab === 'enhancement' && <EnhancementTab />}
     </div>
   );
 }
