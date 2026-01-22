@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { name: 'Status Effects', href: '/effects', icon: '💫' },
   { name: 'Patterns', href: '/patterns', icon: '🎯' },
   { name: 'Panoplies', href: '/panoplies', icon: '👕' },
+  { name: 'Equipment Stats', href: '/equipment-stats', icon: '⚔️' },
   { name: 'Loot Tables', href: '/loot', icon: '🎁' },
   { name: 'Monsters', href: '/monsters', icon: '👹', disabled: true },
   { name: 'Items', href: '/items', icon: '🎒', disabled: true },

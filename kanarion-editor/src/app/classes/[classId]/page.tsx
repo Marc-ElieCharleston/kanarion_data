@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import StatsDisplay from '@/components/StatsDisplay';
-import SkillCard from '@/components/SkillCard';
+import SkillCard, { TierScaling, DurationScaling, DEFAULT_TIER_SCALING, DEFAULT_DURATION_SCALING } from '@/components/SkillCard';
 import LevelSlider from '@/components/LevelSlider';
 
 interface ClassData {
@@ -39,6 +39,7 @@ export default function ClassDetailPage() {
 
   const [classData, setClassData] = useState<ClassData | null>(null);
   const [level, setLevel] = useState(1);
+  const [skillLevel, setSkillLevel] = useState(1);
   const [activeTab, setActiveTab] = useState<'stats' | 'base' | string>('stats');
   const [loading, setLoading] = useState(true);
 
@@ -98,10 +99,31 @@ export default function ClassDetailPage() {
     if (activeTab === 'base') {
       return (
         <div className="space-y-4">
+          {/* Skill Level Slider */}
+          <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4">
+            <div className="flex items-center gap-4">
+              <span className="text-zinc-400">Skill Level:</span>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={skillLevel}
+                onChange={(e) => setSkillLevel(parseInt(e.target.value))}
+                className="flex-1 max-w-xs"
+              />
+              <span className="text-xl font-bold text-violet-400 w-8">{skillLevel}</span>
+            </div>
+          </div>
           <h3 className="text-lg font-semibold text-zinc-300">Base Skills</h3>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {classData.skills?.base_skills?.map((skill) => (
-              <SkillCard key={skill.id} skill={skill} />
+              <SkillCard
+                key={skill.id}
+                skill={skill}
+                skillLevel={skillLevel}
+                scalingByTier={DEFAULT_TIER_SCALING}
+                durationScaling={DEFAULT_DURATION_SCALING}
+              />
             ))}
           </div>
         </div>
@@ -114,6 +136,21 @@ export default function ClassDetailPage() {
 
     return (
       <div className="space-y-4">
+        {/* Skill Level Slider */}
+        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4">
+          <div className="flex items-center gap-4">
+            <span className="text-zinc-400">Skill Level:</span>
+            <input
+              type="range"
+              min="1"
+              max="10"
+              value={skillLevel}
+              onChange={(e) => setSkillLevel(parseInt(e.target.value))}
+              className="flex-1 max-w-xs"
+            />
+            <span className="text-xl font-bold text-violet-400 w-8">{skillLevel}</span>
+          </div>
+        </div>
         <div className="bg-zinc-900 p-4 rounded-lg border border-zinc-700">
           <h3 className="text-lg font-semibold text-zinc-300 capitalize">{activeTab}</h3>
           <p className="text-sm text-zinc-500">{subclass.identity}</p>
@@ -121,9 +158,15 @@ export default function ClassDetailPage() {
             Signature: {subclass.signature}
           </p>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
           {subclass.skills?.map((skill) => (
-            <SkillCard key={skill.id} skill={skill} />
+            <SkillCard
+              key={skill.id}
+              skill={skill}
+              skillLevel={skillLevel}
+              scalingByTier={DEFAULT_TIER_SCALING}
+              durationScaling={DEFAULT_DURATION_SCALING}
+            />
           ))}
         </div>
       </div>
