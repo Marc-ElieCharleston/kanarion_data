@@ -3,22 +3,24 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import { useLocale } from '@/i18n/provider';
 
 const NAV_ITEMS = [
-  { name: 'Dashboard', href: '/', icon: '🏠' },
-  { name: 'Classes', href: '/classes', icon: '⚔️' },
-  { name: 'Skills', href: '/skills', icon: '✨' },
-  { name: 'Stats Reference', href: '/stats', icon: '📊' },
-  { name: 'Status Effects', href: '/effects', icon: '💫' },
-  { name: 'Patterns', href: '/patterns', icon: '🎯' },
-  { name: 'Panoplies', href: '/panoplies', icon: '👕' },
-  { name: 'Equipment Stats', href: '/equipment-stats', icon: '⚔️' },
-  { name: 'Loot Tables', href: '/loot', icon: '🎁' },
-  { name: 'Monsters', href: '/monsters', icon: '👹', disabled: true },
-  { name: 'Items', href: '/items', icon: '🎒', disabled: true },
-  { name: 'World', href: '/world', icon: '🗺️', disabled: true },
-  { name: 'Systems', href: '/systems', icon: '⚙️' },
-  { name: 'Ideas', href: '/ideas', icon: '💡' },
+  { nameKey: 'dashboard', href: '/', icon: '🏠' },
+  { nameKey: 'classes', href: '/classes', icon: '⚔️' },
+  { nameKey: 'skills', href: '/skills', icon: '✨' },
+  { nameKey: 'statsReference', href: '/stats', icon: '📊' },
+  { nameKey: 'statusEffects', href: '/effects', icon: '💫' },
+  { nameKey: 'patterns', href: '/patterns', icon: '🎯' },
+  { nameKey: 'panoplies', href: '/panoplies', icon: '👕' },
+  { nameKey: 'equipmentStats', href: '/equipment-stats', icon: '⚔️' },
+  { nameKey: 'lootTables', href: '/loot', icon: '🎁' },
+  { nameKey: 'monsters', href: '/monsters', icon: '👹', disabled: true },
+  { nameKey: 'items', href: '/items', icon: '🎒', disabled: true },
+  { nameKey: 'world', href: '/world', icon: '🗺️', disabled: true },
+  { nameKey: 'systems', href: '/systems', icon: '⚙️' },
+  { nameKey: 'ideas', href: '/ideas', icon: '💡' },
 ];
 
 const CLASSES = [
@@ -33,6 +35,9 @@ const CLASSES = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const t = useTranslations('nav');
+  const tCommon = useTranslations('common');
+  const { locale, setLocale } = useLocale();
 
   // Close sidebar on route change (mobile)
   useEffect(() => {
@@ -59,6 +64,10 @@ export default function Sidebar() {
       document.body.style.overflow = '';
     };
   }, [isOpen]);
+
+  const toggleLocale = () => {
+    setLocale(locale === 'fr' ? 'en' : 'fr');
+  };
 
   return (
     <>
@@ -106,6 +115,7 @@ export default function Sidebar() {
           fixed lg:sticky top-0 left-0 z-40 h-screen
           w-64 bg-zinc-900 border-r border-zinc-800 overflow-y-auto
           transform transition-transform duration-300 ease-in-out
+          flex flex-col
           ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
@@ -114,14 +124,14 @@ export default function Sidebar() {
           <p className="text-xs text-zinc-500">Database Editor v0.9</p>
         </div>
 
-        <nav className="p-2">
+        <nav className="p-2 flex-1">
           {NAV_ITEMS.map((item) => (
             <div key={item.href}>
               {item.disabled ? (
                 <div className="flex items-center gap-3 px-3 py-2 text-zinc-600 cursor-not-allowed">
                   <span>{item.icon}</span>
-                  <span>{item.name}</span>
-                  <span className="text-[10px] bg-zinc-800 px-1.5 py-0.5 rounded ml-auto">Soon</span>
+                  <span>{t(item.nameKey)}</span>
+                  <span className="text-[10px] bg-zinc-800 px-1.5 py-0.5 rounded ml-auto">{tCommon('soon')}</span>
                 </div>
               ) : (
                 <Link
@@ -133,7 +143,7 @@ export default function Sidebar() {
                   }`}
                 >
                   <span>{item.icon}</span>
-                  <span>{item.name}</span>
+                  <span>{t(item.nameKey)}</span>
                 </Link>
               )}
 
@@ -158,6 +168,18 @@ export default function Sidebar() {
             </div>
           ))}
         </nav>
+
+        {/* Language Toggle */}
+        <div className="p-3 border-t border-zinc-800">
+          <button
+            onClick={toggleLocale}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors text-sm"
+          >
+            <span className="text-lg">{locale === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
+            <span className="text-zinc-300">{locale === 'fr' ? 'Francais' : 'English'}</span>
+            <span className="text-zinc-500 text-xs ml-auto">→ {locale === 'fr' ? 'EN' : 'FR'}</span>
+          </button>
+        </div>
       </aside>
     </>
   );
