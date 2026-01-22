@@ -21,6 +21,24 @@ interface GroupValue {
   bonus: string;
 }
 
+interface StoneDropRank {
+  name_fr: string;
+  name_en: string;
+  base_chance: number;
+  level_range: [number, number];
+  act_availability: string[];
+  act_multiplier?: Record<string, number>;
+  boss_only?: boolean;
+  note: string;
+}
+
+interface EnhancementStonesData {
+  description_fr: string;
+  description_en: string;
+  type_roll: Record<string, { weight: number; note: string }>;
+  drops_by_rank: Record<string, StoneDropRank>;
+}
+
 interface LootTablesData {
   _meta: {
     version: string;
@@ -52,6 +70,9 @@ interface LootTablesData {
       name_en: string;
       bonuses: { gold: number; xp: number; drop_chance: number };
     }>;
+  };
+  base_drops?: {
+    enhancement_stones?: EnhancementStonesData;
   };
 }
 
@@ -266,6 +287,100 @@ function LootFlowDiagram() {
   );
 }
 
+const STONE_TYPE_CONFIG: Record<string, { icon: string; color: string; name_fr: string; name_en: string }> = {
+  even_magen: { icon: '🛡️', color: '#3B82F6', name_fr: 'Even Magen', name_en: 'Shield Stone' },
+  even_koach: { icon: '💪', color: '#EF4444', name_fr: 'Even Koach', name_en: 'Power Stone' },
+  even_neshama: { icon: '✨', color: '#A855F7', name_fr: 'Even Neshama', name_en: 'Soul Stone' },
+};
+
+function EnhancementStonesSection({ data }: { data: EnhancementStonesData }) {
+  return (
+    <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4 xl:col-span-2">
+      <h3 className="font-semibold mb-2">Pierres d&apos;Amélioration / Enhancement Stones</h3>
+      <p className="text-xs text-zinc-500 mb-4">{data.description_fr}</p>
+
+      {/* Type Roll */}
+      <div className="mb-4">
+        <h4 className="text-sm text-zinc-400 mb-2">Roll du Type / Type Roll</h4>
+        <div className="flex flex-wrap gap-3">
+          {Object.entries(data.type_roll).map(([type, info]) => {
+            const config = STONE_TYPE_CONFIG[type];
+            return (
+              <div
+                key={type}
+                className="bg-zinc-800/50 rounded-lg p-3 flex items-center gap-2"
+                style={{ borderLeft: `3px solid ${config?.color || '#666'}` }}
+              >
+                <span className="text-xl">{config?.icon}</span>
+                <div>
+                  <div className="font-medium text-sm" style={{ color: config?.color }}>
+                    {config?.name_fr || type}
+                  </div>
+                  <div className="text-xs text-zinc-500">{info.weight}%</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Drop Rates Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-zinc-500 border-b border-zinc-700">
+              <th className="text-left py-2 px-2">Rang / Rank</th>
+              <th className="text-center py-2 px-2">Taux Base</th>
+              <th className="text-center py-2 px-2">Niveaux</th>
+              <th className="text-left py-2 px-2">Disponibilité / Availability</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(data.drops_by_rank).map(([key, rank]) => (
+              <tr key={key} className="border-b border-zinc-800/50 hover:bg-zinc-800/30">
+                <td className="py-2 px-2">
+                  <span className="font-medium text-zinc-200">{rank.name_fr}</span>
+                  <span className="text-zinc-500 text-xs ml-1">/ {rank.name_en}</span>
+                </td>
+                <td className="text-center py-2 px-2">
+                  <span className={`font-mono ${rank.base_chance >= 0.01 ? 'text-green-400' : rank.base_chance >= 0.001 ? 'text-yellow-400' : 'text-red-400'}`}>
+                    {(rank.base_chance * 100).toFixed(rank.base_chance < 0.001 ? 3 : 1)}%
+                  </span>
+                </td>
+                <td className="text-center py-2 px-2 font-mono text-zinc-400">
+                  {rank.level_range[0]}-{rank.level_range[1]}
+                </td>
+                <td className="py-2 px-2">
+                  <div className="flex flex-wrap gap-1">
+                    {rank.act_availability.map(act => (
+                      <span
+                        key={act}
+                        className="text-xs bg-zinc-700/50 px-1.5 py-0.5 rounded text-zinc-300"
+                      >
+                        {act.replace('_', ' ')}
+                      </span>
+                    ))}
+                    {rank.boss_only && (
+                      <span className="text-xs bg-orange-500/20 text-orange-400 px-1.5 py-0.5 rounded">
+                        Boss only
+                      </span>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Note */}
+      <div className="mt-4 p-3 bg-zinc-800/50 rounded text-xs text-zinc-400">
+        <strong className="text-zinc-300">Note:</strong> Les taux sont multipliés par monster_state (Elite ×2, Boss ×5) et les rangs supérieurs ont des multiplicateurs par acte.
+      </div>
+    </div>
+  );
+}
+
 export default function LootPage() {
   const [data, setData] = useState<LootTablesData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -380,6 +495,11 @@ export default function LootPage() {
             ))}
           </div>
         </div>
+
+        {/* Enhancement Stones */}
+        {data.base_drops?.enhancement_stones && (
+          <EnhancementStonesSection data={data.base_drops.enhancement_stones} />
+        )}
       </div>
     </div>
   );
