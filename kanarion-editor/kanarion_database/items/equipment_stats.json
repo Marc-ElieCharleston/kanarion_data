@@ -1,0 +1,203 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-01-22",
+    "description": "Systeme de stats des equipements: main stats, substats, et essences d'ame"
+  },
+
+  "rarity_tiers": {
+    "1_star": { "name_fr": "Commun", "name_en": "Common", "color": "#9d9d9d", "substat_count": 1, "substat_upgrade_chance": 0 },
+    "2_star": { "name_fr": "Peu commun", "name_en": "Uncommon", "color": "#1eff00", "substat_count": 1, "substat_upgrade_chance": 0.1 },
+    "3_star": { "name_fr": "Rare", "name_en": "Rare", "color": "#0070dd", "substat_count": 2, "substat_upgrade_chance": 0.15 },
+    "4_star": { "name_fr": "Epique", "name_en": "Epic", "color": "#a335ee", "substat_count": 3, "substat_upgrade_chance": 0.2 },
+    "5_star": { "name_fr": "Legendaire", "name_en": "Legendary", "color": "#ff8000", "substat_count": 4, "substat_upgrade_chance": 0.25 }
+  },
+
+  "equipment_categories": {
+    "armor": {
+      "description": "Pieces d'armure - stats defensives et utilitaires",
+      "slots": ["helmet", "armor", "gloves", "boots", "belt", "cape"],
+      "main_stat_by_armor_type": {
+        "cloth": {
+          "options": ["mp_max", "magic_resist"],
+          "weights": [60, 40]
+        },
+        "leather": {
+          "options": ["hp_max", "armor", "magic_resist"],
+          "weights": [50, 25, 25]
+        },
+        "plate": {
+          "options": ["hp_max", "armor"],
+          "weights": [40, 60]
+        },
+        "mixed": {
+          "options": ["hp_max", "mp_max", "armor", "magic_resist"],
+          "weights": [30, 30, 20, 20]
+        }
+      },
+      "substat_pool": [
+        { "stat": "hp_max", "weight": 20 },
+        { "stat": "mp_max", "weight": 15 },
+        { "stat": "armor", "weight": 15 },
+        { "stat": "magic_resist", "weight": 15 },
+        { "stat": "hp_regen", "weight": 12 },
+        { "stat": "mp_regen", "weight": 12 },
+        { "stat": "def_percent", "weight": 8 },
+        { "stat": "damage_reduction", "weight": 3 }
+      ]
+    },
+
+    "accessory": {
+      "description": "Accessoires - stats offensives et utilitaires",
+      "slots": ["amulet", "ring_1", "ring_2"],
+      "main_stat_options": {
+        "amulet": {
+          "options": ["atk_percent", "mag_percent", "crit", "effect_chance"],
+          "weights": [30, 30, 25, 15]
+        },
+        "ring": {
+          "options": ["atk_percent", "mag_percent", "crit", "cooldown_reduction", "hp_max"],
+          "weights": [25, 25, 20, 15, 15]
+        }
+      },
+      "substat_pool": [
+        { "stat": "atk", "weight": 12 },
+        { "stat": "mag", "weight": 12 },
+        { "stat": "crit", "weight": 15 },
+        { "stat": "crit_dmg", "weight": 12 },
+        { "stat": "hp_max", "weight": 10 },
+        { "stat": "mp_max", "weight": 8 },
+        { "stat": "attack_speed", "weight": 8 },
+        { "stat": "cooldown_reduction", "weight": 8 },
+        { "stat": "effect_chance", "weight": 8 },
+        { "stat": "buff_duration", "weight": 7 }
+      ]
+    },
+
+    "soul_essence": {
+      "description": "Essence d'Ame - s'integre a l'arme, stats purement offensives",
+      "slots": ["weapon"],
+      "lore": {
+        "fr": "Cristaux forges a partir des ames de creatures vaincues. Ils amplifient la puissance spirituelle de ton arme et te permettent de toucher l'essence meme de tes ennemis.",
+        "en": "Crystals forged from the souls of defeated creatures. They amplify the spiritual power of your weapon and allow you to touch the very essence of your enemies."
+      },
+      "main_stat_types": {
+        "essence_force": {
+          "name_fr": "Essence de Force",
+          "name_en": "Essence of Might",
+          "main_stat": "atk",
+          "description_fr": "Amplifie la puissance physique",
+          "color": "#ff6b6b"
+        },
+        "essence_arcane": {
+          "name_fr": "Essence Arcanique",
+          "name_en": "Arcane Essence",
+          "main_stat": "mag",
+          "description_fr": "Amplifie la puissance magique",
+          "color": "#9b59b6"
+        },
+        "essence_equilibre": {
+          "name_fr": "Essence d'Equilibre",
+          "name_en": "Essence of Balance",
+          "main_stat": "hybrid",
+          "stat_split": { "atk": 0.6, "mag": 0.6 },
+          "description_fr": "Amplifie les deux puissances (60% chacune)",
+          "color": "#f39c12"
+        }
+      },
+      "substat_pool": [
+        { "stat": "atk", "weight": 10 },
+        { "stat": "mag", "weight": 10 },
+        { "stat": "atk_percent", "weight": 12 },
+        { "stat": "mag_percent", "weight": 12 },
+        { "stat": "crit", "weight": 15 },
+        { "stat": "crit_dmg", "weight": 15 },
+        { "stat": "armor_pen", "weight": 8 },
+        { "stat": "magic_pen", "weight": 8 },
+        { "stat": "attack_speed", "weight": 5 },
+        { "stat": "damage_percent", "weight": 3 },
+        { "stat": "lifesteal", "weight": 2 }
+      ]
+    }
+  },
+
+  "stat_ranges_by_rarity": {
+    "_note": "Valeurs de base au niveau 1, scalent avec le niveau de l'item",
+    "main_stats": {
+      "hp_max": { "1_star": [20, 30], "2_star": [30, 45], "3_star": [45, 65], "4_star": [65, 90], "5_star": [90, 120] },
+      "mp_max": { "1_star": [10, 15], "2_star": [15, 25], "3_star": [25, 35], "4_star": [35, 50], "5_star": [50, 70] },
+      "atk": { "1_star": [5, 8], "2_star": [8, 12], "3_star": [12, 18], "4_star": [18, 25], "5_star": [25, 35] },
+      "mag": { "1_star": [5, 8], "2_star": [8, 12], "3_star": [12, 18], "4_star": [18, 25], "5_star": [25, 35] },
+      "armor": { "1_star": [3, 5], "2_star": [5, 8], "3_star": [8, 12], "4_star": [12, 18], "5_star": [18, 25] },
+      "magic_resist": { "1_star": [3, 5], "2_star": [5, 8], "3_star": [8, 12], "4_star": [12, 18], "5_star": [18, 25] },
+      "atk_percent": { "1_star": [2, 4], "2_star": [4, 6], "3_star": [6, 9], "4_star": [9, 12], "5_star": [12, 16] },
+      "mag_percent": { "1_star": [2, 4], "2_star": [4, 6], "3_star": [6, 9], "4_star": [9, 12], "5_star": [12, 16] },
+      "crit": { "1_star": [1, 2], "2_star": [2, 4], "3_star": [4, 6], "4_star": [6, 8], "5_star": [8, 12] },
+      "effect_chance": { "1_star": [1, 2], "2_star": [2, 4], "3_star": [4, 6], "4_star": [6, 8], "5_star": [8, 10] },
+      "cooldown_reduction": { "1_star": [1, 2], "2_star": [2, 3], "3_star": [3, 5], "4_star": [5, 7], "5_star": [7, 10] }
+    },
+    "substats": {
+      "_note": "Substats ont des valeurs plus faibles que main stats (~40-60%)",
+      "multiplier": 0.5
+    }
+  },
+
+  "upgrade_system": {
+    "description": "Amelioration des equipements",
+    "max_level": 20,
+    "stat_growth_per_level": 0.05,
+    "substat_upgrade": {
+      "description": "A certains paliers, une substat aleatoire est amelioree",
+      "upgrade_levels": [4, 8, 12, 16, 20],
+      "upgrade_amount": 0.2
+    }
+  },
+
+  "examples": {
+    "cloth_helmet_3star": {
+      "slot": "helmet",
+      "armor_type": "cloth",
+      "rarity": "3_star",
+      "level": 1,
+      "main_stat": { "mp_max": 32 },
+      "substats": [
+        { "magic_resist": 6 },
+        { "hp_regen": 2 }
+      ]
+    },
+    "soul_essence_force_4star": {
+      "slot": "weapon",
+      "type": "essence_force",
+      "rarity": "4_star",
+      "level": 1,
+      "main_stat": { "atk": 22 },
+      "substats": [
+        { "crit": 5 },
+        { "crit_dmg": 8 },
+        { "armor_pen": 4 }
+      ]
+    },
+    "ring_5star": {
+      "slot": "ring_1",
+      "rarity": "5_star",
+      "level": 1,
+      "main_stat": { "crit": 10 },
+      "substats": [
+        { "atk_percent": 6 },
+        { "crit_dmg": 12 },
+        { "attack_speed": 4 },
+        { "cooldown_reduction": 5 }
+      ]
+    }
+  },
+
+  "_summary": {
+    "armor_slots": 6,
+    "accessory_slots": 3,
+    "weapon_slot": 1,
+    "total_slots": 10,
+    "armor_focus": "Defensif (HP, MP, Armor, MR, Regen)",
+    "accessory_focus": "Offensif/Utilitaire (ATK%, MAG%, Crit, CDR)",
+    "soul_essence_focus": "Purement offensif (ATK/MAG, Crit, Pen, Speed)"
+  }
+}

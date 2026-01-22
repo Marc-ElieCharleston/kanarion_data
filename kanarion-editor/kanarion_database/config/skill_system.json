@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "version": "2.0",
-    "last_updated": "2026-01-21",
-    "description": "Systeme de skills - points, niveaux, scaling lineaire"
+    "version": "3.0",
+    "last_updated": "2026-01-22",
+    "description": "Systeme de skills - base damage + % stat scaling"
   },
 
   "skill_points": {
@@ -47,14 +47,26 @@
   },
 
   "scaling": {
-    "_comment": "Scaling LINEAIRE par niveau de skill",
-    "type": "linear",
-    "formula_power": "power_at_level = base_power + (skill_level - 1) * power_per_level",
+    "_comment": "DOUBLE scaling: base flat + % stat. Les deux augmentent avec le niveau.",
+    "type": "linear_dual",
+    "formula_base_power": "base_at_level = base_power + (skill_level - 1) * power_per_level",
+    "formula_scaling_percent": "percent_at_level = scaling_percent + (skill_level - 1) * percent_per_level",
+    "formula_final_damage": "final = base_at_level + (percent_at_level% * scaling_stat)",
     "formula_mana": "mana_at_level = base_mana + (skill_level - 1) * mana_per_level",
     "formula_duration": "duration_at_level = base_duration + (skill_level - 1) * duration_per_level",
-    "formula_shield": "shield_at_level = base_shield + (skill_level - 1) * shield_per_level",
     "effect_chance": "fixed - geree par stats (effect_precision, tenacity, resist_debuff)",
-    "cooldown": "fixed - vient de l'equipement/CDR"
+    "cooldown": "fixed - vient de l'equipement/CDR",
+    "design_note": "Early game: base damage matters. Late game: % scaling matters. Leveling always impactful."
+  },
+
+  "stat_scaling": {
+    "_comment": "scaling_stat = quelle stat le skill utilise pour le % scaling",
+    "available_stats": ["atk", "mag", "def", "max_hp", "max_mp", "armor", "magic_resist"],
+    "default_by_damage_type": {
+      "physical": "atk",
+      "magical": "mag",
+      "none": null
+    }
   },
 
   "duration_scaling": {
@@ -93,36 +105,42 @@
   },
 
   "scaling_by_tier": {
-    "_comment": "Valeurs de scaling par niveau selon le tier du skill",
+    "_comment": "Scaling par niveau: base_power, scaling_percent, mana",
     "filler": {
       "power_per_level": 2,
+      "percent_per_level": 4,
       "mana_per_level": 1,
-      "description": "Skill spam - scaling modere"
+      "description": "Skill spam - lvl10: +18 base, +36% stat"
     },
     "basic": {
       "power_per_level": 3,
+      "percent_per_level": 5,
       "mana_per_level": 1,
-      "description": "Skill polyvalent - bon scaling"
+      "description": "Skill polyvalent - lvl10: +27 base, +45% stat"
     },
     "standard": {
       "power_per_level": 4,
+      "percent_per_level": 6,
       "mana_per_level": 2,
-      "description": "Skill standard - scaling equilibre"
+      "description": "Skill standard - lvl10: +36 base, +54% stat"
     },
     "strong": {
       "power_per_level": 5,
+      "percent_per_level": 7,
       "mana_per_level": 2,
-      "description": "Skill puissant - fort scaling"
+      "description": "Skill puissant - lvl10: +45 base, +63% stat"
     },
     "signature": {
       "power_per_level": 7,
+      "percent_per_level": 8,
       "mana_per_level": 3,
-      "description": "Signature - scaling majeur"
+      "description": "Signature - lvl10: +63 base, +72% stat"
     },
     "ultimate": {
       "power_per_level": 10,
+      "percent_per_level": 10,
       "mana_per_level": 4,
-      "description": "Ultimate - scaling massif"
+      "description": "Ultimate - lvl10: +90 base, +90% stat"
     }
   },
 
@@ -167,20 +185,22 @@
   },
 
   "example_scaling": {
-    "_comment": "Exemple: Heavy Strike (filler) - base 22 power, 8 mana",
+    "_comment": "Exemple: Heavy Strike (filler) - 22 base + 40% ATK a lvl 1",
     "skill": "Heavy Strike",
     "tier": "filler",
+    "base_values": { "base_power": 22, "scaling_percent": 40, "scaling_stat": "atk", "mana": 8 },
     "levels": {
-      "1": { "power": 22, "mana": 8, "ratio": 2.75 },
-      "2": { "power": 24, "mana": 9, "ratio": 2.67 },
-      "3": { "power": 26, "mana": 10, "ratio": 2.60 },
-      "4": { "power": 28, "mana": 11, "ratio": 2.55 },
-      "5": { "power": 30, "mana": 12, "ratio": 2.50 },
-      "6": { "power": 32, "mana": 13, "ratio": 2.46 },
-      "7": { "power": 34, "mana": 14, "ratio": 2.43 },
-      "8": { "power": 36, "mana": 15, "ratio": 2.40 },
-      "9": { "power": 38, "mana": 16, "ratio": 2.38 },
-      "10": { "power": 40, "mana": 17, "ratio": 2.35 }
-    }
+      "1":  { "base": 22, "percent": 40, "mana": 8,  "total_100atk": 62 },
+      "2":  { "base": 24, "percent": 44, "mana": 9,  "total_100atk": 68 },
+      "3":  { "base": 26, "percent": 48, "mana": 10, "total_100atk": 74 },
+      "4":  { "base": 28, "percent": 52, "mana": 11, "total_100atk": 80 },
+      "5":  { "base": 30, "percent": 56, "mana": 12, "total_100atk": 86 },
+      "6":  { "base": 32, "percent": 60, "mana": 13, "total_100atk": 92 },
+      "7":  { "base": 34, "percent": 64, "mana": 14, "total_100atk": 98 },
+      "8":  { "base": 36, "percent": 68, "mana": 15, "total_100atk": 104 },
+      "9":  { "base": 38, "percent": 72, "mana": 16, "total_100atk": 110 },
+      "10": { "base": 40, "percent": 76, "mana": 17, "total_100atk": 116 }
+    },
+    "_note": "A 100 ATK: lvl1 = 62 dmg, lvl10 = 116 dmg (+87%). A 500 ATK: lvl1 = 222 dmg, lvl10 = 420 dmg (+89%)"
   }
 }
