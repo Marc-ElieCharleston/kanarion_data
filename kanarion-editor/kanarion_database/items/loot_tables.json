@@ -41,6 +41,104 @@
         { "item": "cons_antidote", "base_chance": 0.02, "level_range": [1, 60] },
         { "item": "cons_cleanse_potion", "base_chance": 0.015, "level_range": [10, 60] }
       ]
+    },
+    "enhancement_stones": {
+      "description_fr": "Pierres d'amélioration pour renforcer l'équipement (+1 à +20)",
+      "description_en": "Enhancement stones for upgrading equipment (+1 to +20)",
+      "notes": [
+        "Les 3 types (Magen/Koach/Neshama) ont les mêmes taux, roll séparé pour le type",
+        "Taux de base multipliés par monster_state (elite ×2, boss ×5, etc.)",
+        "Les rangs supérieurs deviennent disponibles en fin de jeu"
+      ],
+      "type_roll": {
+        "description": "Quand une pierre drop, roll pour déterminer le type",
+        "even_magen": { "weight": 40, "note": "Armor - plus d'équipements à up" },
+        "even_koach": { "weight": 35, "note": "Accessory" },
+        "even_neshama": { "weight": 25, "note": "Soul Essence - plus rare car 1 slot" }
+      },
+      "drops_by_rank": {
+        "rank_1_minor": {
+          "name_fr": "Pierre Mineure",
+          "name_en": "Minor Stone",
+          "base_chance": 0.025,
+          "level_range": [1, 100],
+          "act_availability": ["act_1", "act_2", "act_3", "act_4", "act_5", "endgame"],
+          "note": "2.5% de base, très commun - pierre de leveling"
+        },
+        "rank_2_standard": {
+          "name_fr": "Pierre Standard",
+          "name_en": "Standard Stone",
+          "base_chance": 0.008,
+          "level_range": [1, 100],
+          "act_availability": ["act_1", "act_2", "act_3", "act_4", "act_5", "endgame"],
+          "note": "0.8% de base, commun mais moins farmable"
+        },
+        "rank_3_superior": {
+          "name_fr": "Pierre Supérieure",
+          "name_en": "Superior Stone",
+          "base_chance": 0.001,
+          "level_range": [20, 100],
+          "act_availability": ["act_2", "act_3", "act_4", "act_5", "endgame"],
+          "act_multiplier": {
+            "act_2": 0.5,
+            "act_3": 0.75,
+            "act_4": 1.0,
+            "act_5": 1.25,
+            "endgame": 1.5
+          },
+          "note": "0.1% de base, rare - principalement via craft ou elite/boss"
+        },
+        "rank_4_major": {
+          "name_fr": "Pierre Majeure",
+          "name_en": "Major Stone",
+          "base_chance": 0.0002,
+          "level_range": [40, 100],
+          "act_availability": ["act_3", "act_4", "act_5", "endgame"],
+          "act_multiplier": {
+            "act_3": 0.25,
+            "act_4": 0.5,
+            "act_5": 1.0,
+            "endgame": 1.5
+          },
+          "note": "0.02% de base, très rare - principalement via craft"
+        },
+        "rank_5_supreme": {
+          "name_fr": "Pierre Suprême",
+          "name_en": "Supreme Stone",
+          "base_chance": 0.00005,
+          "level_range": [60, 100],
+          "act_availability": ["act_5", "endgame"],
+          "act_multiplier": {
+            "act_5": 0.5,
+            "endgame": 1.0
+          },
+          "boss_only": true,
+          "note": "0.005% de base, ultra rare - quasi exclusivement via craft"
+        }
+      },
+      "examples": {
+        "mob_normal_act1": {
+          "scenario": "Mob normal Act 1",
+          "rank_1": "2.5% × 1.0 = 2.5%",
+          "rank_2": "0.8% × 1.0 = 0.8%",
+          "rank_3": "Non disponible Act 1"
+        },
+        "elite_act3": {
+          "scenario": "Elite Act 3 (×2 drop chance)",
+          "rank_1": "2.5% × 2.0 = 5%",
+          "rank_2": "0.8% × 2.0 = 1.6%",
+          "rank_3": "0.1% × 2.0 × 0.75 = 0.15%",
+          "rank_4": "0.02% × 2.0 × 0.25 = 0.01%"
+        },
+        "boss_endgame": {
+          "scenario": "Boss Endgame (×5 drop chance)",
+          "rank_1": "2.5% × 5.0 = 12.5%",
+          "rank_2": "0.8% × 5.0 = 4%",
+          "rank_3": "0.1% × 5.0 × 1.5 = 0.75%",
+          "rank_4": "0.02% × 5.0 × 1.5 = 0.15%",
+          "rank_5": "0.005% × 5.0 × 1.0 = 0.025%"
+        }
+      }
     }
   },
 
