@@ -115,16 +115,24 @@ export default function Sidebar() {
           fixed lg:sticky top-0 left-0 z-40 h-screen
           w-64 bg-zinc-900 border-r border-zinc-800 overflow-y-auto
           transform transition-transform duration-300 ease-in-out
-          flex flex-col
           ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
         <div className="p-4 border-b border-zinc-800">
-          <h1 className="text-xl font-bold text-white">KanarionDB</h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-xl font-bold text-white">KanarionDB</h1>
+            <button
+              onClick={toggleLocale}
+              className="flex items-center gap-1 px-2 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors text-xs"
+            >
+              <span>{locale === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
+              <span className="text-zinc-400">{locale.toUpperCase()}</span>
+            </button>
+          </div>
           <p className="text-xs text-zinc-500">Database Editor v0.9</p>
         </div>
 
-        <nav className="p-2 flex-1">
+        <nav className="p-2 flex-1 overflow-y-auto">
           {NAV_ITEMS.map((item) => (
             <div key={item.href}>
               {item.disabled ? (
@@ -169,17 +177,6 @@ export default function Sidebar() {
           ))}
         </nav>
 
-        {/* Language Toggle */}
-        <div className="p-3 border-t border-zinc-800">
-          <button
-            onClick={toggleLocale}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors text-sm"
-          >
-            <span className="text-lg">{locale === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
-            <span className="text-zinc-300">{locale === 'fr' ? 'Francais' : 'English'}</span>
-            <span className="text-zinc-500 text-xs ml-auto">→ {locale === 'fr' ? 'EN' : 'FR'}</span>
-          </button>
-        </div>
       </aside>
     </>
   );
