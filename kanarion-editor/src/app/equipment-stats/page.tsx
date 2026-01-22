@@ -53,42 +53,42 @@ interface EquipmentStatsData {
   examples: Record<string, object>;
 }
 
-const STAT_LABELS: Record<string, string> = {
-  hp_max: 'HP Max',
-  mp_max: 'MP Max',
-  atk: 'ATK',
-  mag: 'MAG',
-  armor: 'Armure',
-  magic_resist: 'Res. Magique',
-  hp_regen: 'Regen HP',
-  mp_regen: 'Regen MP',
-  def_percent: 'DEF %',
-  damage_reduction: 'Reduction Degats',
-  atk_percent: 'ATK %',
-  mag_percent: 'MAG %',
-  crit: 'Critique',
-  crit_dmg: 'Degats Crit',
-  attack_speed: 'Vitesse ATK',
-  cooldown_reduction: 'Reduction CD',
-  effect_chance: 'Chance Effet',
-  buff_duration: 'Duree Buffs',
-  armor_pen: 'Pen. Armure',
-  magic_pen: 'Pen. Magique',
-  damage_percent: 'Degats %',
-  lifesteal: 'Vol de Vie',
+const STAT_LABELS: Record<string, { fr: string; en: string }> = {
+  hp_max: { fr: 'HP Max', en: 'Max HP' },
+  mp_max: { fr: 'MP Max', en: 'Max MP' },
+  atk: { fr: 'ATK', en: 'ATK' },
+  mag: { fr: 'MAG', en: 'MAG' },
+  armor: { fr: 'Armure', en: 'Armor' },
+  magic_resist: { fr: 'Res. Magique', en: 'Magic Resist' },
+  hp_regen: { fr: 'Regen HP', en: 'HP Regen' },
+  mp_regen: { fr: 'Regen MP', en: 'MP Regen' },
+  def_percent: { fr: 'DEF %', en: 'DEF %' },
+  damage_reduction: { fr: 'Reduction Degats', en: 'Damage Reduction' },
+  atk_percent: { fr: 'ATK %', en: 'ATK %' },
+  mag_percent: { fr: 'MAG %', en: 'MAG %' },
+  crit: { fr: 'Critique', en: 'Critical' },
+  crit_dmg: { fr: 'Degats Crit', en: 'Crit Damage' },
+  attack_speed: { fr: 'Vitesse ATK', en: 'Attack Speed' },
+  cooldown_reduction: { fr: 'Reduction CD', en: 'Cooldown Reduction' },
+  effect_chance: { fr: 'Chance Effet', en: 'Effect Chance' },
+  buff_duration: { fr: 'Duree Buffs', en: 'Buff Duration' },
+  armor_pen: { fr: 'Pen. Armure', en: 'Armor Pen' },
+  magic_pen: { fr: 'Pen. Magique', en: 'Magic Pen' },
+  damage_percent: { fr: 'Degats %', en: 'Damage %' },
+  lifesteal: { fr: 'Vol de Vie', en: 'Lifesteal' },
 };
 
-const SLOT_LABELS: Record<string, string> = {
-  helmet: 'Casque',
-  armor: 'Armure',
-  gloves: 'Gants',
-  boots: 'Bottes',
-  belt: 'Ceinture',
-  cape: 'Cape',
-  amulet: 'Amulette',
-  ring_1: 'Anneau 1',
-  ring_2: 'Anneau 2',
-  weapon: 'Arme',
+const SLOT_LABELS: Record<string, { fr: string; en: string }> = {
+  helmet: { fr: 'Casque', en: 'Helmet' },
+  armor: { fr: 'Armure', en: 'Armor' },
+  gloves: { fr: 'Gants', en: 'Gloves' },
+  boots: { fr: 'Bottes', en: 'Boots' },
+  belt: { fr: 'Ceinture', en: 'Belt' },
+  cape: { fr: 'Cape', en: 'Cape' },
+  amulet: { fr: 'Amulette', en: 'Amulet' },
+  ring_1: { fr: 'Anneau 1', en: 'Ring 1' },
+  ring_2: { fr: 'Anneau 2', en: 'Ring 2' },
+  weapon: { fr: 'Arme', en: 'Weapon' },
 };
 
 const ARMOR_TYPE_CONFIG: Record<string, { icon: string; color: string }> = {
@@ -113,22 +113,24 @@ function RarityBadge({ rarity, data }: { rarity: string; data: RarityTier }) {
   );
 }
 
-function StatPoolDisplay({ pool, title }: { pool: StatPool[]; title: string }) {
+function StatPoolDisplay({ pool, titleFr, titleEn }: { pool: StatPool[]; titleFr: string; titleEn: string }) {
   const totalWeight = pool.reduce((sum, s) => sum + s.weight, 0);
 
   return (
     <div className="bg-zinc-800/50 rounded-lg p-4">
-      <h4 className="text-sm font-medium mb-3 text-zinc-400">{title}</h4>
+      <h4 className="text-sm font-medium mb-1 text-zinc-300">{titleFr}</h4>
+      <h5 className="text-xs text-zinc-500 mb-3">{titleEn}</h5>
       <div className="flex flex-wrap gap-2">
         {pool.map((s) => {
           const percent = Math.round((s.weight / totalWeight) * 100);
+          const label = STAT_LABELS[s.stat];
           return (
             <span
               key={s.stat}
               className="bg-zinc-700/50 text-zinc-300 text-xs px-2 py-1 rounded"
               title={`${percent}% chance`}
             >
-              {STAT_LABELS[s.stat] || s.stat}
+              {label ? `${label.fr} / ${label.en}` : s.stat}
               <span className="text-zinc-500 ml-1">({percent}%)</span>
             </span>
           );
@@ -272,11 +274,14 @@ export default function EquipmentStatsPage() {
 
             {/* Slots */}
             <div className="flex flex-wrap gap-2 mb-4">
-              {armor.slots.map((slot) => (
-                <span key={slot} className="bg-zinc-800 text-zinc-300 text-sm px-3 py-1 rounded">
-                  {SLOT_LABELS[slot] || slot}
-                </span>
-              ))}
+              {armor.slots.map((slot) => {
+                const label = SLOT_LABELS[slot];
+                return (
+                  <span key={slot} className="bg-zinc-800 text-zinc-300 text-sm px-3 py-1 rounded">
+                    {label ? `${label.fr} / ${label.en}` : slot}
+                  </span>
+                );
+              })}
             </div>
 
             {/* Main Stats by Armor Type */}
@@ -298,7 +303,7 @@ export default function EquipmentStatsPage() {
                         key={stat}
                         className="text-xs bg-zinc-700/50 px-2 py-0.5 rounded text-zinc-300"
                       >
-                        {STAT_LABELS[stat] || stat}
+                        {STAT_LABELS[stat]?.fr || stat}
                         <span className="text-zinc-500 ml-1">({config.weights[i]}%)</span>
                       </span>
                     ))}
@@ -307,7 +312,7 @@ export default function EquipmentStatsPage() {
               ))}
             </div>
 
-            <StatPoolDisplay pool={armor.substat_pool} title="Pool de Substats (Defensif)" />
+            <StatPoolDisplay pool={armor.substat_pool} titleFr="Pool de Substats (Defensif)" titleEn="Substat Pool (Defensive)" />
           </div>
         </div>
       )}
@@ -337,7 +342,7 @@ export default function EquipmentStatsPage() {
                         key={stat}
                         className="text-xs bg-zinc-700/50 px-2 py-0.5 rounded text-zinc-300"
                       >
-                        {STAT_LABELS[stat] || stat}
+                        {STAT_LABELS[stat]?.fr || stat}
                         <span className="text-zinc-500 ml-1">({config.weights[i]}%)</span>
                       </span>
                     ))}
@@ -346,7 +351,7 @@ export default function EquipmentStatsPage() {
               ))}
             </div>
 
-            <StatPoolDisplay pool={accessory.substat_pool} title="Pool de Substats (Offensif/Utilitaire)" />
+            <StatPoolDisplay pool={accessory.substat_pool} titleFr="Pool de Substats (Offensif/Utilitaire)" titleEn="Substat Pool (Offensive/Utility)" />
           </div>
         </div>
       )}
@@ -369,7 +374,7 @@ export default function EquipmentStatsPage() {
 
           {/* Substat Pool */}
           <div className="p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-            <StatPoolDisplay pool={soul_essence.substat_pool} title="Pool de Substats (Pur Offensif)" />
+            <StatPoolDisplay pool={soul_essence.substat_pool} titleFr="Pool de Substats (Pur Offensif)" titleEn="Substat Pool (Pure Offensive)" />
           </div>
 
           {/* Build Examples */}

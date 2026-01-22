@@ -216,6 +216,7 @@ export default function SkillCard({
                 {skillLevel > 1 && (
                   <span className="text-emerald-400 text-xs">-&gt; {basePowerAtLevel}</span>
                 )}
+                <span className="text-zinc-500 text-xs">(+{tierScaling.power_per_level}/lvl)</span>
               </div>
             )}
             {skill.scaling_percent && skill.scaling_stat && (
@@ -225,6 +226,7 @@ export default function SkillCard({
                 {skillLevel > 1 && (
                   <span className="text-emerald-400 text-xs">-&gt; {scalingPercentAtLevel}%</span>
                 )}
+                <span className="text-zinc-500 text-xs">(+{percentPerLevel}%/lvl)</span>
               </div>
             )}
           </div>
@@ -238,6 +240,7 @@ export default function SkillCard({
             {skillLevel > 1 && (
               <span className="text-amber-400 text-xs">-&gt; {manaAtLevel}</span>
             )}
+            <span className="text-zinc-500 text-xs">(+{tierScaling.mana_per_level}/lvl)</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="text-violet-400">CD:</span>
