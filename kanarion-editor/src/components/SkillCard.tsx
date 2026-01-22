@@ -260,7 +260,7 @@ export default function SkillCard({
 
         {/* Two grids: 4x4 and 5x3 */}
         {showGrids && (
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-3">
+          <div className="flex justify-center space-x-8 mb-3 -mx-2">
             <AoeGrid
               pattern={skill.pattern}
               target={skill.target as 'enemy' | 'ally' | 'self' | 'allies' | 'enemies'}

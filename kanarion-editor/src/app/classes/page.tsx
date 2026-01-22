@@ -51,30 +51,30 @@ export default function ClassesPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="bg-zinc-900/50 rounded p-2">
-                  <div className="text-lg font-bold text-rose-400">{stats.hp}</div>
-                  <div className="text-[10px] text-zinc-500">HP</div>
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-2 text-center">
+                <div className="bg-zinc-900/50 rounded p-1.5 sm:p-2">
+                  <div className="text-base sm:text-lg font-bold text-rose-400">{stats.hp}</div>
+                  <div className="text-[9px] sm:text-[10px] text-zinc-500">HP</div>
                 </div>
-                <div className="bg-zinc-900/50 rounded p-2">
-                  <div className="text-lg font-bold text-orange-400">{stats.atk}</div>
-                  <div className="text-[10px] text-zinc-500">ATK</div>
+                <div className="bg-zinc-900/50 rounded p-1.5 sm:p-2">
+                  <div className="text-base sm:text-lg font-bold text-orange-400">{stats.atk}</div>
+                  <div className="text-[9px] sm:text-[10px] text-zinc-500">ATK</div>
                 </div>
-                <div className="bg-zinc-900/50 rounded p-2">
-                  <div className="text-lg font-bold text-violet-400">{stats.mag}</div>
-                  <div className="text-[10px] text-zinc-500">MAG</div>
+                <div className="bg-zinc-900/50 rounded p-1.5 sm:p-2">
+                  <div className="text-base sm:text-lg font-bold text-violet-400">{stats.mag}</div>
+                  <div className="text-[9px] sm:text-[10px] text-zinc-500">MAG</div>
                 </div>
-                <div className="bg-zinc-900/50 rounded p-2">
-                  <div className="text-lg font-bold text-sky-400">{stats.def}</div>
-                  <div className="text-[10px] text-zinc-500">DEF</div>
+                <div className="bg-zinc-900/50 rounded p-1.5 sm:p-2">
+                  <div className="text-base sm:text-lg font-bold text-sky-400">{stats.def}</div>
+                  <div className="text-[9px] sm:text-[10px] text-zinc-500">DEF</div>
                 </div>
-                <div className="bg-zinc-900/50 rounded p-2">
-                  <div className="text-lg font-bold text-amber-400">{stats.crit}%</div>
-                  <div className="text-[10px] text-zinc-500">CRIT</div>
+                <div className="bg-zinc-900/50 rounded p-1.5 sm:p-2">
+                  <div className="text-base sm:text-lg font-bold text-amber-400">{stats.crit}%</div>
+                  <div className="text-[9px] sm:text-[10px] text-zinc-500">CRIT</div>
                 </div>
-                <div className="bg-zinc-900/50 rounded p-2">
-                  <div className="text-lg font-bold text-emerald-400">{stats.flee}</div>
-                  <div className="text-[10px] text-zinc-500">FLEE</div>
+                <div className="bg-zinc-900/50 rounded p-1.5 sm:p-2">
+                  <div className="text-base sm:text-lg font-bold text-emerald-400">{stats.flee}</div>
+                  <div className="text-[9px] sm:text-[10px] text-zinc-500">FLEE</div>
                 </div>
               </div>
 

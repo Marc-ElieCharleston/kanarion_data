@@ -139,8 +139,8 @@ export default function StatsReferencePage() {
             </h2>
 
             {/* Stats Table */}
-            <div className="bg-zinc-900 rounded-lg border border-zinc-800 overflow-hidden">
-              <table className="w-full">
+            <div className="bg-zinc-900 rounded-lg border border-zinc-800 overflow-x-auto">
+              <table className="w-full min-w-[600px]">
                 <thead>
                   <tr className="border-b border-zinc-800 text-left text-xs text-zinc-500 uppercase">
                     <th className="px-4 py-3 w-36">Stat</th>

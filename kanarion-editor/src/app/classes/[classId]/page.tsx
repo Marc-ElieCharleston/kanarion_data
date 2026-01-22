@@ -185,19 +185,19 @@ export default function ClassDetailPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-2 mb-6 border-b border-zinc-800 pb-4">
+      <div className="flex flex-wrap gap-1 sm:gap-2 mb-4 sm:mb-6 border-b border-zinc-800 pb-3 sm:pb-4 overflow-x-auto">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+            className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors text-sm sm:text-base whitespace-nowrap ${
               activeTab === tab.id
                 ? 'bg-violet-600 text-white'
                 : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white'
             }`}
           >
             <span>{tab.icon}</span>
-            <span>{tab.label}</span>
+            <span className="hidden sm:inline">{tab.label}</span>
           </button>
         ))}
       </div>

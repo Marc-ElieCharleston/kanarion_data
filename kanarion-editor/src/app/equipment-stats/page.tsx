@@ -229,39 +229,42 @@ export default function EquipmentStatsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="mb-6 flex gap-2">
+      <div className="mb-4 md:mb-6 flex flex-wrap gap-2">
         <button
           onClick={() => setActiveTab('armor')}
-          className={`px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
+          className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors flex items-center gap-1 sm:gap-2 ${
             activeTab === 'armor'
               ? 'bg-blue-500/20 border border-blue-500 text-blue-300'
               : 'bg-zinc-800/50 border border-zinc-700 text-zinc-400 hover:text-white'
           }`}
         >
           <span>🛡️</span>
-          <span>Armure (6 slots)</span>
+          <span className="hidden sm:inline">Armure (6 slots)</span>
+          <span className="sm:hidden">Armure</span>
         </button>
         <button
           onClick={() => setActiveTab('accessory')}
-          className={`px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
+          className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors flex items-center gap-1 sm:gap-2 ${
             activeTab === 'accessory'
               ? 'bg-purple-500/20 border border-purple-500 text-purple-300'
               : 'bg-zinc-800/50 border border-zinc-700 text-zinc-400 hover:text-white'
           }`}
         >
           <span>💍</span>
-          <span>Accessoires (3 slots)</span>
+          <span className="hidden sm:inline">Accessoires (3 slots)</span>
+          <span className="sm:hidden">Accessoires</span>
         </button>
         <button
           onClick={() => setActiveTab('soul')}
-          className={`px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
+          className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors flex items-center gap-1 sm:gap-2 ${
             activeTab === 'soul'
               ? 'bg-amber-500/20 border border-amber-500 text-amber-300'
               : 'bg-zinc-800/50 border border-zinc-700 text-zinc-400 hover:text-white'
           }`}
         >
           <span>✨</span>
-          <span>Essence d&apos;Ame (arme)</span>
+          <span className="hidden sm:inline">Essence d&apos;Ame</span>
+          <span className="sm:hidden">Essence</span>
         </button>
       </div>
 
