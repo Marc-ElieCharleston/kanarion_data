@@ -114,10 +114,10 @@ export default function IdeasPage() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Ideas to Integrate</h1>
+      <div className="mb-4 md:mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold mb-2">Ideas to Integrate</h1>
         <p className="text-zinc-500 text-sm">
           {stats.total} ideas • {stats.byStatus.idea} idea, {stats.byStatus.draft} draft, {stats.byStatus.ready} ready, {stats.byStatus.integrated} integrated
         </p>

@@ -117,10 +117,10 @@ export default function SkillsPage() {
   const durationScaling = data.system.duration_scaling || DEFAULT_DURATION_SCALING;
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Skills System</h1>
+      <div className="mb-4 md:mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold mb-2">Skills System</h1>
         <p className="text-zinc-500 text-sm">
           {data.system.skill_points.total_points_available} skill points | Max level {data.system.skill_levels.max_level} | v{data.system._meta.version}
         </p>

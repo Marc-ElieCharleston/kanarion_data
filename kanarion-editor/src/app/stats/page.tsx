@@ -107,10 +107,10 @@ export default function StatsReferencePage() {
   });
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Stats Reference</h1>
+      <div className="mb-4 md:mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold mb-2">Stats Reference</h1>
         <p className="text-zinc-500 text-sm">
           {allStats.length} stats • v{data._meta.version}
         </p>

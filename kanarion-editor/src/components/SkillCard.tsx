@@ -155,17 +155,17 @@ export default function SkillCard({
   return (
     <div className={`bg-zinc-900 rounded-lg border ${skill.is_signature ? 'border-amber-500/50' : 'border-zinc-800'} overflow-hidden`}>
       {/* Header */}
-      <div className={`px-4 py-3 border-b ${skill.is_signature ? 'border-amber-500/30 bg-amber-500/5' : 'border-zinc-800'}`}>
-        <div className="flex items-center justify-between">
-          <div>
-            <h4 className={`font-semibold ${skill.is_signature ? 'text-amber-400' : 'text-white'}`}>
+      <div className={`px-3 sm:px-4 py-2 sm:py-3 border-b ${skill.is_signature ? 'border-amber-500/30 bg-amber-500/5' : 'border-zinc-800'}`}>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div className="min-w-0">
+            <h4 className={`font-semibold text-sm sm:text-base truncate ${skill.is_signature ? 'text-amber-400' : 'text-white'}`}>
               {skill.is_signature && '* '}{skill.name}
             </h4>
             {skill.name_fr && (
-              <div className="text-xs text-zinc-500">{skill.name_fr}</div>
+              <div className="text-xs text-zinc-500 truncate">{skill.name_fr}</div>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
             {/* LoS indicator */}
             {skill.ignore_los ? (
               <span className="text-[10px] px-1.5 py-0.5 bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded">
@@ -206,25 +206,27 @@ export default function SkillCard({
 
       {/* Content */}
       <div className="p-4">
-        {/* Damage stats row - NEW: base + % scaling */}
+        {/* Damage stats row - base + % scaling */}
         {hasDamage && (
           <div className="flex flex-wrap gap-3 mb-2 text-sm">
             {skill.base_power > 0 && (
               <div className="flex items-center gap-1">
-                <span className="text-orange-400">B:</span>
+                <span className="text-orange-400">⚔️</span>
+                <span className="text-zinc-400">Power:</span>
                 <span className="text-white">{skill.base_power}</span>
                 {skillLevel > 1 && (
-                  <span className="text-emerald-400 text-xs">-&gt; {basePowerAtLevel}</span>
+                  <span className="text-emerald-400 text-xs">→ {basePowerAtLevel}</span>
                 )}
                 <span className="text-zinc-500 text-xs">(+{tierScaling.power_per_level}/lvl)</span>
               </div>
             )}
             {skill.scaling_percent && skill.scaling_stat && (
               <div className="flex items-center gap-1">
-                <span className="text-amber-400">%:</span>
+                <span className="text-amber-400">📈</span>
+                <span className="text-zinc-400">Scaling:</span>
                 <span className="text-white">{skill.scaling_percent}% {skill.scaling_stat.toUpperCase()}</span>
                 {skillLevel > 1 && (
-                  <span className="text-emerald-400 text-xs">-&gt; {scalingPercentAtLevel}%</span>
+                  <span className="text-emerald-400 text-xs">→ {scalingPercentAtLevel}%</span>
                 )}
                 <span className="text-zinc-500 text-xs">(+{percentPerLevel}%/lvl)</span>
               </div>
@@ -235,15 +237,17 @@ export default function SkillCard({
         {/* Mana/CD row */}
         <div className="flex flex-wrap gap-3 mb-3 text-sm">
           <div className="flex items-center gap-1">
-            <span className="text-sky-400">MP:</span>
+            <span className="text-sky-400">💧</span>
+            <span className="text-zinc-400">Mana:</span>
             <span className="text-white">{skill.mana_cost}</span>
             {skillLevel > 1 && (
-              <span className="text-amber-400 text-xs">-&gt; {manaAtLevel}</span>
+              <span className="text-amber-400 text-xs">→ {manaAtLevel}</span>
             )}
             <span className="text-zinc-500 text-xs">(+{tierScaling.mana_per_level}/lvl)</span>
           </div>
           <div className="flex items-center gap-1">
-            <span className="text-violet-400">CD:</span>
+            <span className="text-violet-400">⏱️</span>
+            <span className="text-zinc-400">CD:</span>
             <span className="text-white">{skill.cooldown}s</span>
           </div>
           {skill.hit_count && skill.hit_count > 1 && (
@@ -256,7 +260,7 @@ export default function SkillCard({
 
         {/* Two grids: 4x4 and 5x3 */}
         {showGrids && (
-          <div className="flex gap-4 mb-3">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-3">
             <AoeGrid
               pattern={skill.pattern}
               target={skill.target as 'enemy' | 'ally' | 'self' | 'allies' | 'enemies'}

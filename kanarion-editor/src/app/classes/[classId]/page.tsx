@@ -174,12 +174,12 @@ export default function ClassDetailPage() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
-        <span className="text-5xl">{CLASS_ICONS[classId] || '⚔️'}</span>
+      <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
+        <span className="text-4xl md:text-5xl">{CLASS_ICONS[classId] || '⚔️'}</span>
         <div>
-          <h1 className="text-3xl font-bold capitalize">{classData.name}</h1>
+          <h1 className="text-2xl md:text-3xl font-bold capitalize">{classData.name}</h1>
           <p className="text-zinc-400">{classData.baseStats.identity}</p>
         </div>
       </div>

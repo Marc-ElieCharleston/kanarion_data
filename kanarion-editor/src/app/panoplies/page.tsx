@@ -84,64 +84,65 @@ const IDENTITY_CONFIG: Record<string, { name: string; color: string; icon: strin
   bruiser_hp_atk: { name: 'Bruiser / HP+ATK', color: 'text-yellow-400 border-yellow-500/30', icon: '💪' },
 };
 
-const ARMOR_TYPE_CONFIG: Record<string, { name: string; color: string; icon: string }> = {
-  cloth: { name: 'Tissu', color: 'text-violet-400 border-violet-500/30', icon: '👘' },
-  leather: { name: 'Cuir', color: 'text-amber-500 border-amber-500/30', icon: '🦊' },
-  plate: { name: 'Plaque', color: 'text-slate-300 border-slate-400/30', icon: '⚙️' },
-  mixed: { name: 'Mixte', color: 'text-zinc-400 border-zinc-500/30', icon: '⚖️' },
+const ARMOR_TYPE_CONFIG: Record<string, { name_fr: string; name_en: string; color: string; icon: string }> = {
+  cloth: { name_fr: 'Tissu', name_en: 'Cloth', color: 'text-violet-400 border-violet-500/30', icon: '👘' },
+  leather: { name_fr: 'Cuir', name_en: 'Leather', color: 'text-amber-500 border-amber-500/30', icon: '🦊' },
+  plate: { name_fr: 'Plaque', name_en: 'Plate', color: 'text-slate-300 border-slate-400/30', icon: '⚙️' },
+  mixed: { name_fr: 'Mixte', name_en: 'Mixed', color: 'text-zinc-400 border-zinc-500/30', icon: '⚖️' },
 };
 
-const STAT_LABELS: Record<string, string> = {
+const STAT_LABELS: Record<string, { fr: string; en: string }> = {
   // Resources
-  hp_max: 'HP Max',
-  mp_max: 'MP Max',
-  hp_regen: 'HP Regen',
-  mp_regen: 'MP Regen',
+  hp_max: { fr: 'HP Max', en: 'Max HP' },
+  mp_max: { fr: 'MP Max', en: 'Max MP' },
+  hp_regen: { fr: 'Regen HP', en: 'HP Regen' },
+  mp_regen: { fr: 'Regen MP', en: 'MP Regen' },
   // Offensive
-  atk: 'ATK',
-  atk_percent: 'ATK %',
-  mag: 'MAG',
-  mag_percent: 'MAG %',
-  crit: 'Crit Chance',
-  crit_dmg: 'Crit Damage',
-  damage_percent: 'Damage %',
-  attack_speed: 'Attack Speed',
-  armor_pen: 'Armor Pen',
-  magic_pen: 'Magic Pen',
-  effect_chance: 'Effect Chance',
-  debuff_duration: 'Debuff Duration',
+  atk: { fr: 'ATK', en: 'ATK' },
+  atk_percent: { fr: 'ATK %', en: 'ATK %' },
+  mag: { fr: 'MAG', en: 'MAG' },
+  mag_percent: { fr: 'MAG %', en: 'MAG %' },
+  crit: { fr: 'Critique', en: 'Crit Chance' },
+  crit_dmg: { fr: 'Degats Crit', en: 'Crit Damage' },
+  damage_percent: { fr: 'Degats %', en: 'Damage %' },
+  attack_speed: { fr: 'Vitesse ATK', en: 'Attack Speed' },
+  armor_pen: { fr: 'Pen. Armure', en: 'Armor Pen' },
+  magic_pen: { fr: 'Pen. Magique', en: 'Magic Pen' },
+  effect_chance: { fr: 'Chance Effet', en: 'Effect Chance' },
+  debuff_duration: { fr: 'Duree Debuff', en: 'Debuff Duration' },
   // Defensive
-  def_percent: 'DEF %',
-  armor: 'Armor',
-  damage_reduction: 'Damage Reduction',
-  block_chance: 'Block Chance',
-  flee: 'Flee (Evasion)',
-  hit: 'Hit Rate',
+  def_percent: { fr: 'DEF %', en: 'DEF %' },
+  armor: { fr: 'Armure', en: 'Armor' },
+  damage_reduction: { fr: 'Reduction Degats', en: 'Damage Reduction' },
+  block_chance: { fr: 'Chance Blocage', en: 'Block Chance' },
+  flee: { fr: 'Esquive', en: 'Flee (Evasion)' },
+  hit: { fr: 'Precision', en: 'Hit Rate' },
   // Support
-  heal_power: 'Heal Power',
-  shield_power: 'Shield Power',
-  healing_received: 'Heal Received',
-  buff_duration: 'Buff Duration',
-  cooldown_reduction: 'CDR',
+  heal_power: { fr: 'Puissance Soin', en: 'Heal Power' },
+  shield_power: { fr: 'Puissance Bouclier', en: 'Shield Power' },
+  healing_received: { fr: 'Soins Recus', en: 'Heal Received' },
+  buff_duration: { fr: 'Duree Buffs', en: 'Buff Duration' },
+  cooldown_reduction: { fr: 'Reduction CD', en: 'CDR' },
   // Special
-  lifesteal: 'Lifesteal',
-  spell_vamp: 'Spell Vamp',
-  thorns: 'Thorns',
-  luck: 'Luck',
-  cast_speed: 'Cast Speed',
+  lifesteal: { fr: 'Vol de Vie', en: 'Lifesteal' },
+  spell_vamp: { fr: 'Vol Magique', en: 'Spell Vamp' },
+  thorns: { fr: 'Epines', en: 'Thorns' },
+  luck: { fr: 'Chance', en: 'Luck' },
+  cast_speed: { fr: 'Vitesse Incant.', en: 'Cast Speed' },
 };
 
 function formatBonus(stat: string, value: number): string {
-  const label = STAT_LABELS[stat] || stat;
+  const label = STAT_LABELS[stat];
+  const labelText = label ? `${label.fr}` : stat;
   const isFlat = stat.includes('_max') || stat === 'armor' || stat.includes('_bonus');
   const prefix = value > 0 ? '+' : '';
   const suffix = isFlat ? '' : '%';
-  return `${prefix}${value}${suffix} ${label}`;
+  return `${prefix}${value}${suffix} ${labelText}`;
 }
 
 function SetCard({ set }: { set: PanoplieSet }) {
   const identity = IDENTITY_CONFIG[set.identity] || { name: set.identity, color: 'text-zinc-400 border-zinc-500/30', icon: '?' };
-  const armorType = ARMOR_TYPE_CONFIG[set.armor_type] || { name: set.armor_type, color: 'text-zinc-400 border-zinc-500/30', icon: '?' };
+  const armorType = ARMOR_TYPE_CONFIG[set.armor_type] || { name_fr: set.armor_type, name_en: set.armor_type, color: 'text-zinc-400 border-zinc-500/30', icon: '?' };
   const bonusLevels = Object.keys(set.bonuses).sort((a, b) => parseInt(a) - parseInt(b));
 
   return (
@@ -157,7 +158,7 @@ function SetCard({ set }: { set: PanoplieSet }) {
             {identity.icon} {identity.name}
           </div>
           <div className={`px-2 py-0.5 rounded border text-[10px] ${armorType.color}`}>
-            {armorType.icon} {armorType.name}
+            {armorType.icon} {armorType.name_fr} / {armorType.name_en}
           </div>
         </div>
       </div>
@@ -267,10 +268,10 @@ export default function PanopliesPage() {
   });
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Panoplies</h1>
+      <div className="mb-4 md:mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold mb-2">Panoplies</h1>
         <p className="text-zinc-500 text-sm">
           {data._meta.total_sets} sets - {data._meta.description}
         </p>
@@ -325,11 +326,11 @@ export default function PanopliesPage() {
           >
             <option value="all">Tous</option>
             {armorTypes.map(type => {
-              const config = ARMOR_TYPE_CONFIG[type] || { name: type, icon: '' };
+              const config = ARMOR_TYPE_CONFIG[type] || { name_fr: type, name_en: type, color: 'text-zinc-400', icon: '' };
               const count = sets.filter(s => s.armor_type === type).length;
               return (
                 <option key={type} value={type}>
-                  {config.icon} {config.name} ({count})
+                  {config.icon} {config.name_fr} / {config.name_en} ({count})
                 </option>
               );
             })}
@@ -365,7 +366,7 @@ export default function PanopliesPage() {
         <h2 className="text-sm font-medium mb-3">Par type d&apos;armure</h2>
         <div className="flex flex-wrap gap-2">
           {Object.entries(data._summary.by_armor_type).map(([type, setIds]) => {
-            const config = ARMOR_TYPE_CONFIG[type] || { name: type, icon: '?', color: 'text-zinc-400' };
+            const config = ARMOR_TYPE_CONFIG[type] || { name_fr: type, name_en: type, icon: '?', color: 'text-zinc-400' };
             return (
               <button
                 key={type}
@@ -376,7 +377,7 @@ export default function PanopliesPage() {
                     : `bg-zinc-800/50 ${config.color}`
                 }`}
               >
-                {config.icon} {config.name} ({setIds.length})
+                {config.icon} {config.name_fr} ({setIds.length})
               </button>
             );
           })}

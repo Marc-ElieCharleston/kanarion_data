@@ -49,10 +49,10 @@ interface EncounterStarsData {
 }
 
 const TABS = [
-  { id: 'encounter-stars', name: 'Système d\'Étoiles', icon: '⭐' },
-  { id: 'economy', name: 'Économie', icon: '💰', disabled: true },
-  { id: 'pvp', name: 'PvP', icon: '⚔️', disabled: true },
-  { id: 'guilds', name: 'Guildes', icon: '🏰', disabled: true },
+  { id: 'encounter-stars', name_fr: 'Systeme d\'Etoiles', name_en: 'Star System', icon: '⭐' },
+  { id: 'economy', name_fr: 'Economie', name_en: 'Economy', icon: '💰', disabled: true },
+  { id: 'pvp', name_fr: 'PvP', name_en: 'PvP', icon: '⚔️', disabled: true },
+  { id: 'guilds', name_fr: 'Guildes', name_en: 'Guilds', icon: '🏰', disabled: true },
 ];
 
 function StarTierCard({ tier, data }: { tier: string; data: StarTier }) {
@@ -156,7 +156,7 @@ function EncounterStarsTab() {
     <div>
       {/* Overview */}
       <div className="mb-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-        <h2 className="text-lg font-semibold mb-2">Vue d&apos;ensemble</h2>
+        <h2 className="text-lg font-semibold mb-2">Vue d&apos;ensemble / Overview</h2>
         <p className="text-sm text-zinc-400 mb-3">{data.overview.description}</p>
         <div className="flex flex-wrap gap-2">
           {data.overview.affects.map((affect, i) => (
@@ -169,7 +169,7 @@ function EncounterStarsTab() {
 
       {/* Visual Scale */}
       <div className="mb-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-        <h2 className="text-sm font-medium mb-3">Échelle de Difficulté</h2>
+        <h2 className="text-sm font-medium mb-3">Echelle de Difficulte / Difficulty Scale</h2>
         <div className="flex items-center gap-1">
           {Object.entries(data.star_tiers).map(([tier, tierData]) => (
             <div
@@ -199,7 +199,7 @@ function EncounterStarsTab() {
 
       {/* Spawn Example */}
       <div className="mt-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-        <h2 className="text-lg font-semibold mb-3">Exemple: Spawn 5★</h2>
+        <h2 className="text-lg font-semibold mb-3">Exemple: Spawn 5★ / Example: 5★ Spawn</h2>
         <div className="space-y-2 text-sm">
           <div className="flex items-start gap-2">
             <span className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-xs">1</span>
@@ -232,8 +232,8 @@ function EncounterStarsTab() {
       <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Elite Stats */}
         <div className="p-4 bg-zinc-900 rounded-lg border border-zinc-800 border-l-4 border-l-purple-500">
-          <h2 className="text-lg font-semibold mb-3 text-purple-400">Stats des Élites</h2>
-          <p className="text-xs text-zinc-500 mb-4">Multiplicateurs par rapport à un monstre normal (+ bonus ★)</p>
+          <h2 className="text-lg font-semibold mb-3 text-purple-400">Stats des Elites / Elite Stats</h2>
+          <p className="text-xs text-zinc-500 mb-4">Multiplicateurs vs monstre normal / Multipliers vs normal monster (+ ★ bonus)</p>
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-zinc-800/50 rounded p-3 text-center">
               <div className="text-2xl font-bold text-red-400">×3</div>
@@ -259,8 +259,8 @@ function EncounterStarsTab() {
 
         {/* Boss Stats */}
         <div className="p-4 bg-zinc-900 rounded-lg border border-zinc-800 border-l-4 border-l-orange-500">
-          <h2 className="text-lg font-semibold mb-3 text-orange-400">Stats des Boss</h2>
-          <p className="text-xs text-zinc-500 mb-4">Stats FIXES (pas de bonus ★ appliqué)</p>
+          <h2 className="text-lg font-semibold mb-3 text-orange-400">Stats des Boss / Boss Stats</h2>
+          <p className="text-xs text-zinc-500 mb-4">Stats FIXES / FIXED stats (no ★ bonus applied)</p>
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-zinc-800/50 rounded p-3 text-center">
               <div className="text-2xl font-bold text-red-400">×8</div>
@@ -287,8 +287,8 @@ function EncounterStarsTab() {
 
       {/* Combat Example */}
       <div className="mt-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-        <h2 className="text-lg font-semibold mb-3">Exemple: Combat 5★ (Zone T1 lvl 10)</h2>
-        <p className="text-xs text-zinc-500 mb-4">Monstre normal de base: 100 HP, 20 ATK, 10 DEF</p>
+        <h2 className="text-lg font-semibold mb-3">Exemple Combat 5★ / Combat Example (Zone T1 lvl 10)</h2>
+        <p className="text-xs text-zinc-500 mb-4">Monstre normal de base / Base normal monster: 100 HP, 20 ATK, 10 DEF</p>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -337,12 +337,12 @@ export default function SystemsPage() {
   const [activeTab, setActiveTab] = useState('encounter-stars');
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Systèmes</h1>
+      <div className="mb-4 md:mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold mb-2">Systemes / Systems</h1>
         <p className="text-zinc-500 text-sm">
-          Mécaniques de jeu et systèmes globaux
+          Mecaniques de jeu et systemes globaux / Game mechanics and global systems
         </p>
       </div>
 
@@ -362,7 +362,7 @@ export default function SystemsPage() {
             }`}
           >
             <span>{tab.icon}</span>
-            <span>{tab.name}</span>
+            <span>{tab.name_fr} / {tab.name_en}</span>
             {tab.disabled && <span className="text-[10px] bg-zinc-700 px-1.5 py-0.5 rounded">Soon</span>}
           </button>
         ))}

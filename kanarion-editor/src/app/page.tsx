@@ -11,9 +11,9 @@ export default function Home() {
   ];
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">KanarionDB Editor</h1>
+    <div className="p-4 md:p-6 lg:p-8">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold mb-2">KanarionDB Editor</h1>
         <p className="text-zinc-400">
           Visual database editor for Kanarion Online MMORPG
         </p>

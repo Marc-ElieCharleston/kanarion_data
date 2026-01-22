@@ -69,7 +69,7 @@ function RarityBadge({ tier, data }: { tier: string; data: RarityTier }) {
         <div className="text-xs text-zinc-500">{data.name_en}</div>
       </div>
       <div className="text-right">
-        <div className="text-sm text-zinc-400">Weight</div>
+        <div className="text-sm text-zinc-400">Poids / Weight</div>
         <div className="font-mono text-zinc-300">{data.base_weight}</div>
       </div>
     </div>
@@ -126,11 +126,11 @@ function Calculator({ data }: { data: LootTablesData }) {
 
   return (
     <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4">
-      <h3 className="font-semibold mb-4">Calculateur de Drop</h3>
+      <h3 className="font-semibold mb-4">Calculateur de Drop / Drop Calculator</h3>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
         <div>
-          <label className="text-xs text-zinc-500 block mb-1">Base Chance</label>
+          <label className="text-xs text-zinc-500 block mb-1">Chance de Base / Base Chance</label>
           <input
             type="number"
             step="0.01"
@@ -143,7 +143,7 @@ function Calculator({ data }: { data: LootTablesData }) {
         </div>
 
         <div>
-          <label className="text-xs text-zinc-500 block mb-1">Monster State</label>
+          <label className="text-xs text-zinc-500 block mb-1">État Monstre / Monster State</label>
           <select
             value={monsterState}
             onChange={(e) => setMonsterState(e.target.value)}
@@ -156,7 +156,7 @@ function Calculator({ data }: { data: LootTablesData }) {
         </div>
 
         <div>
-          <label className="text-xs text-zinc-500 block mb-1">Dungeon</label>
+          <label className="text-xs text-zinc-500 block mb-1">Donjon / Dungeon</label>
           <select
             value={dungeonDiff}
             onChange={(e) => setDungeonDiff(e.target.value)}
@@ -169,20 +169,20 @@ function Calculator({ data }: { data: LootTablesData }) {
         </div>
 
         <div>
-          <label className="text-xs text-zinc-500 block mb-1">Group Size</label>
+          <label className="text-xs text-zinc-500 block mb-1">Taille Groupe / Group Size</label>
           <select
             value={groupSize}
             onChange={(e) => setGroupSize(e.target.value)}
             className="w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-1.5 text-sm"
           >
             {Object.keys(data.multipliers.group_size.values).map(key => (
-              <option key={key} value={key}>{key} joueur(s)</option>
+              <option key={key} value={key}>{key} player(s)</option>
             ))}
           </select>
         </div>
 
         <div>
-          <label className="text-xs text-zinc-500 block mb-1">Luck Stat</label>
+          <label className="text-xs text-zinc-500 block mb-1">Stat Chance / Luck Stat</label>
           <input
             type="number"
             min="0"
@@ -194,13 +194,13 @@ function Calculator({ data }: { data: LootTablesData }) {
         </div>
 
         <div>
-          <label className="text-xs text-zinc-500 block mb-1">Event</label>
+          <label className="text-xs text-zinc-500 block mb-1">Événement / Event</label>
           <select
             value={event}
             onChange={(e) => setEvent(e.target.value)}
             className="w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-1.5 text-sm"
           >
-            <option value="none">Aucun</option>
+            <option value="none">Aucun / None</option>
             {Object.entries(data.events.event_types).map(([key, val]) => (
               <option key={key} value={key}>{val.name_fr}</option>
             ))}
@@ -209,13 +209,13 @@ function Calculator({ data }: { data: LootTablesData }) {
       </div>
 
       <div className="bg-zinc-800 rounded-lg p-4">
-        <div className="text-xs text-zinc-500 mb-2">Formule:</div>
+        <div className="text-xs text-zinc-500 mb-2">Formule / Formula:</div>
         <div className="font-mono text-xs text-zinc-400 mb-3 overflow-x-auto">
           {baseChance} × {stateMult} × {dungeonMult} × {groupMult.toFixed(2)} × {luckMult.toFixed(2)} × {eventMult} =
         </div>
         <div className="text-center">
           <span className="text-3xl font-bold text-green-400">{(finalChance * 100).toFixed(1)}%</span>
-          <span className="text-zinc-500 ml-2">chance de drop</span>
+          <span className="text-zinc-500 ml-2">chance de drop / drop chance</span>
         </div>
       </div>
     </div>
@@ -225,40 +225,40 @@ function Calculator({ data }: { data: LootTablesData }) {
 function LootFlowDiagram() {
   return (
     <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4">
-      <h3 className="font-semibold mb-4">Flow du Loot (Équipement)</h3>
+      <h3 className="font-semibold mb-4">Flow du Loot / Loot Flow (Equipment)</h3>
       <div className="space-y-2 text-sm">
         <div className="flex items-center gap-2">
           <span className="w-6 h-6 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center text-xs">1</span>
-          <span>Tuer monstre → Roll drop (oui/non selon chance finale)</span>
+          <span>Tuer monstre / Kill monster → Roll drop (yes/no)</span>
         </div>
         <div className="ml-4 border-l-2 border-zinc-700 pl-4 py-1">
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center text-xs">2</span>
-            <span>Roll catégorie (équipement, matériau, consommable)</span>
+            <span>Roll catégorie / Roll category (equipment, material, consumable)</span>
           </div>
         </div>
         <div className="ml-8 border-l-2 border-zinc-700 pl-4 py-1">
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center text-xs">3</span>
-            <span>Roll rareté (1-5★ selon weights + rarity_boost)</span>
+            <span>Roll rareté / Roll rarity (1-5★ weights + rarity_boost)</span>
           </div>
         </div>
         <div className="ml-12 border-l-2 border-zinc-700 pl-4 py-1">
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center text-xs">4</span>
-            <span>Roll quel set (weighted par zone/monstre)</span>
+            <span>Roll set (weighted by zone/monster)</span>
           </div>
         </div>
         <div className="ml-16 border-l-2 border-zinc-700 pl-4 py-1">
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs">5</span>
-            <span>Roll quelle pièce du set</span>
+            <span>Roll pièce / Roll piece (which slot)</span>
           </div>
         </div>
         <div className="ml-20 border-l-2 border-zinc-700 pl-4 py-1">
           <div className="flex items-center gap-2">
             <span className="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs">6</span>
-            <span>Roll main stat + substats + valeurs</span>
+            <span>Roll main stat + substats + values</span>
           </div>
         </div>
       </div>
@@ -296,10 +296,10 @@ export default function LootPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Tables de Loot</h1>
+      <div className="mb-4 md:mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold mb-2">Tables de Loot / Loot Tables</h1>
         <p className="text-zinc-500 text-sm">{data._meta.description}</p>
         <p className="text-zinc-600 text-xs mt-1">
           v{data._meta.version} • {data._meta.last_updated}
@@ -308,7 +308,7 @@ export default function LootPage() {
 
       {/* Formula Overview */}
       <div className="mb-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-        <h2 className="text-sm font-medium mb-2">Formule Globale</h2>
+        <h2 className="text-sm font-medium mb-2">Formule Globale / Global Formula</h2>
         <code className="text-xs text-emerald-400 bg-zinc-800 px-2 py-1 rounded">
           {data._meta.formula_overview}
         </code>
@@ -323,7 +323,7 @@ export default function LootPage() {
 
         {/* Rarity System */}
         <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4">
-          <h3 className="font-semibold mb-3">Système de Rareté</h3>
+          <h3 className="font-semibold mb-3">Système de Rareté / Rarity System</h3>
           <div className="space-y-2">
             {Object.entries(data.rarity_system.tiers).map(([tier, tierData]) => (
               <RarityBadge key={tier} tier={tier} data={tierData} />
@@ -333,7 +333,7 @@ export default function LootPage() {
 
         {/* Group Size */}
         <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4">
-          <h3 className="font-semibold mb-3">Bonus de Groupe</h3>
+          <h3 className="font-semibold mb-3">Bonus de Groupe / Group Bonus</h3>
           <p className="text-xs text-zinc-500 mb-3">Max: +{data.multipliers.group_size.max_bonus_percent}%</p>
           <div className="grid grid-cols-5 gap-2">
             {Object.entries(data.multipliers.group_size.values).map(([size, val]) => (
@@ -347,19 +347,19 @@ export default function LootPage() {
 
         {/* Monster State Multipliers */}
         <MultiplierTable
-          title="Multiplicateurs - État du Monstre"
+          title="Multiplicateurs État Monstre / Monster State Multipliers"
           data={data.multipliers.monster_state}
         />
 
         {/* Dungeon Difficulty Multipliers */}
         <MultiplierTable
-          title="Multiplicateurs - Difficulté Donjon"
+          title="Multiplicateurs Donjon / Dungeon Multipliers"
           data={data.multipliers.dungeon_difficulty}
         />
 
         {/* Events */}
         <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4 xl:col-span-2">
-          <h3 className="font-semibold mb-3">Événements Spéciaux</h3>
+          <h3 className="font-semibold mb-3">Événements Spéciaux / Special Events</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {Object.entries(data.events.event_types).map(([key, event]) => (
               <div key={key} className="bg-zinc-800/50 rounded-lg p-3">
