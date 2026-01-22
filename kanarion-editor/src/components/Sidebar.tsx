@@ -123,10 +123,11 @@ export default function Sidebar() {
             <h1 className="text-xl font-bold text-white">KanarionDB</h1>
             <button
               onClick={toggleLocale}
-              className="flex items-center gap-1 px-2 py-1 bg-zinc-800 hover:bg-zinc-700 rounded-lg transition-colors text-xs"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 hover:border-zinc-600 rounded-lg transition-colors"
+              title={locale === 'fr' ? 'Switch to English' : 'Passer en Français'}
             >
-              <span>{locale === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
-              <span className="text-zinc-400">{locale.toUpperCase()}</span>
+              <span className="text-lg">{locale === 'fr' ? '🇫🇷' : '🇬🇧'}</span>
+              <span className="text-zinc-300 text-sm font-medium">{locale.toUpperCase()}</span>
             </button>
           </div>
           <p className="text-xs text-zinc-500">Database Editor v0.9</p>
