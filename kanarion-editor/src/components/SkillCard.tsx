@@ -32,6 +32,12 @@ export interface Skill {
   debuff_duration?: number;
   shield_value?: number;
   shield_duration?: number;
+  // New shield scaling fields (MAG-based)
+  shield_base?: number;
+  shield_scaling_stat?: string;
+  shield_scaling_percent?: number;
+  self_shield_base?: number;
+  self_shield_scaling_percent?: number;
   hit_count?: number;
   lifesteal_percent?: number;
   execute_threshold?: number;
@@ -441,9 +447,24 @@ export default function SkillCard({
           </div>
         )}
 
-        {skill.shield_value && (
+        {/* Shield - MAG scaling format */}
+        {skill.shield_base && (
           <div className="text-xs mb-1">
-            <span className="text-sky-400">Shield:</span>{' '}
+            <span className="text-sky-400">🛡️ Shield:</span>{' '}
+            <span className="text-zinc-300">
+              {skill.shield_base} + {skill.shield_scaling_percent}% {skill.shield_scaling_stat?.toUpperCase()}
+            </span>
+            {skill.shield_duration && <span className="text-zinc-500"> for {skill.shield_duration}s</span>}
+            {skill.self_shield && skill.self_shield_base && (
+              <span className="text-teal-400"> + ({skill.self_shield_base} + {skill.self_shield_scaling_percent}% {skill.shield_scaling_stat?.toUpperCase()}) on self</span>
+            )}
+          </div>
+        )}
+
+        {/* Shield - HP% format (legacy/Blood Pact) */}
+        {skill.shield_value && !skill.shield_base && (
+          <div className="text-xs mb-1">
+            <span className="text-sky-400">🛡️ Shield:</span>{' '}
             <span className="text-zinc-300">
               {skill.shield_value}{skill.shield_scaling ? `% ${skill.shield_scaling.replace('_', ' ')}` : ''}
             </span>
