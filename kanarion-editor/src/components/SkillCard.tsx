@@ -48,6 +48,16 @@ export interface Skill {
     bonus_hit_count?: number;
     bonus_double_hit_chance?: number;
   };
+  // Healer-specific fields
+  base_heal?: number;
+  heal_scaling_stat?: string;
+  heal_scaling_percent?: number;
+  hot_percent?: number;
+  hot_duration?: number;
+  cleanse_count?: number;
+  self_shield?: boolean;
+  self_shield_value?: number;
+  shield_scaling?: string;
   [key: string]: unknown;
 }
 
@@ -249,6 +259,32 @@ export default function SkillCard({
           </div>
         )}
 
+        {/* Heal stats row */}
+        {skill.base_heal && (
+          <div className="flex flex-wrap gap-3 mb-2 text-sm">
+            <div className="flex items-center gap-1">
+              <span className="text-emerald-400">💚</span>
+              <span className="text-zinc-400">Heal:</span>
+              <span className="text-white">{skill.base_heal}</span>
+            </div>
+            {skill.heal_scaling_percent && skill.heal_scaling_stat && (
+              <div className="flex items-center gap-1">
+                <span className="text-emerald-400">📈</span>
+                <span className="text-zinc-400">Scaling:</span>
+                <span className="text-white">{skill.heal_scaling_percent}% {skill.heal_scaling_stat.toUpperCase()}</span>
+              </div>
+            )}
+            {skill.hot_percent && skill.hot_duration && (
+              <div className="flex items-center gap-1">
+                <span className="text-green-400">🔄</span>
+                <span className="text-zinc-400">HoT:</span>
+                <span className="text-white">{skill.hot_percent}% HP/s</span>
+                <span className="text-zinc-500">({skill.hot_duration}s)</span>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Mana/CD row */}
         <div className="flex flex-wrap gap-3 mb-3 text-sm">
           <div className="flex items-center gap-1">
@@ -359,11 +395,23 @@ export default function SkillCard({
         {skill.shield_value && (
           <div className="text-xs mb-1">
             <span className="text-sky-400">Shield:</span>{' '}
-            <span className="text-zinc-300">{skill.shield_value}</span>
-            {skillLevel > 1 && (
+            <span className="text-zinc-300">
+              {skill.shield_value}{skill.shield_scaling ? `% ${skill.shield_scaling.replace('_', ' ')}` : ''}
+            </span>
+            {!skill.shield_scaling && skillLevel > 1 && (
               <span className="text-emerald-400"> -&gt; {shieldValueAtLevel}</span>
             )}
             {skill.shield_duration && <span className="text-zinc-500"> for {skill.shield_duration}s</span>}
+            {skill.self_shield && skill.self_shield_value && (
+              <span className="text-teal-400"> + {skill.self_shield_value}% on self</span>
+            )}
+          </div>
+        )}
+
+        {skill.cleanse_count && (
+          <div className="text-xs mb-1">
+            <span className="text-purple-400">Cleanse:</span>{' '}
+            <span className="text-zinc-300">{skill.cleanse_count} debuff{skill.cleanse_count > 1 ? 's' : ''}</span>
           </div>
         )}
 
