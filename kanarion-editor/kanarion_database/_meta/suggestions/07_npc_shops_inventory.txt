@@ -1,0 +1,701 @@
+================================================================================
+                   KANARION ONLINE - INVENTAIRES DES MARCHANDS
+                      NPCs, Services, Lore et Items en Vente
+                          Version 1.0 - 2026-01-22
+================================================================================
+
+Ce document detaille l'inventaire complet de chaque NPC marchand,
+leurs services, et leur integration dans le lore du jeu.
+
+================================================================================
+                              TABLE DES MATIERES
+================================================================================
+1. Vue d'ensemble des NPCs
+2. Marchands de Service (Town Start)
+3. Marchands Specialises par Zone
+4. NPCs de Classe
+5. NPCs d'Event et Speciaux
+6. Integration Lore
+7. Economies des Shops
+
+================================================================================
+                        1. VUE D'ENSEMBLE DES NPCS
+================================================================================
+
+NPCS EXISTANTS (npcs.json)
+--------------------------
+Service (16):
+- Sister Aelina (Healer)
+- Milo the Trader (General)
+- Borin the Blacksmith (Forge)
+- Sana the Leatherworker (Leather)
+- Lyr the Enchanter (Enchant)
+- Orsen the Banker (Bank)
+- Petra the Alchemist (Potions)
+- Koru the Tamer (Pets/Koro)
+- Elle the Wayfarer (Teleport)
+- Rona the Innkeeper (Rest/Rumors)
+- Juno Materials Buyer (Materials)
+- Mara the Oracle (Lore)
+- Aldric Guild Master (Guild)
+- Yuki Koro Collector (Koro)
+- Velith Respec Sage (Respec)
+- Rewards Herald (Daily)
+
+Quest (2):
+- Nina the Guide (Tutorial)
+- Captain Rey (Quest Hub)
+
+Class Masters (5):
+- Master Kael (Warrior)
+- Archmage Selene (Mage)
+- Scout Veya (Archer)
+- Shadowblade Rask (Rogue)
+- Mother Iona (Healer)
+- [MISSING: Artisan Master]
+
+Arena (1):
+- Dargo Arena Master
+
+NPCS MANQUANTS PROPOSES
+-----------------------
+- Maitre Artisan pour la classe Artisan
+- Marchand PvP (Honor Points)
+- Marchand de Montures
+- Intendant de Guilde (Guild Hall)
+- Marchand d'Event (temporaire)
+- Maitre Donjon (entrees donjons)
+- Maitre de l'Arene d'Ames (boss invocation)
+
+
+================================================================================
+                    2. MARCHANDS DE SERVICE (TOWN START)
+================================================================================
+
+================================================================================
+MILO THE TRADER - Marchand General
+================================================================================
+Lore: "Always at the right place, right time. Knows the value of everything."
+Location: Place centrale du village de depart
+Services: buy_sell_general, sell_junk_auto
+
+INVENTAIRE PERMANENT:
+---------------------
+Consommables Basiques:
+| ID                  | Nom                    | Prix  | Stock |
+|---------------------|------------------------|-------|-------|
+| potion_hp_small     | Potion de Vie (P)      | 10g   | Inf   |
+| potion_hp_medium    | Potion de Vie (M)      | 35g   | 50/j  |
+| potion_mp_small     | Potion de Mana (P)     | 12g   | Inf   |
+| potion_mp_medium    | Potion de Mana (M)     | 40g   | 50/j  |
+| antidote            | Antidote               | 20g   | Inf   |
+| food_apple          | Pomme                  | 8g    | Inf   |
+| food_bread          | Pain                   | 5g    | Inf   |
+
+Outils:
+| ID                  | Nom                    | Prix  | Stock |
+|---------------------|------------------------|-------|-------|
+| scroll_return       | Parchemin de Retour    | 100g  | 20/j  |
+| torch               | Torche (light zones)   | 15g   | Inf   |
+| rope                | Corde (utility)        | 25g   | 10/j  |
+| empty_bottle        | Flacon Vide            | 5g    | Inf   |
+
+Revente: Achete tout a 35% du prix de base
+
+================================================================================
+BORIN THE BLACKSMITH - Forgeron
+================================================================================
+Lore: "Former mercenary who forges mainly for those who come back alive."
+Location: Forge pres de l'entree du village
+Services: repair, upgrade_weapon, craft_basic
+
+INVENTAIRE PERMANENT:
+---------------------
+Armes Basiques (T1):
+| ID                  | Nom                    | Prix  | Classe       |
+|---------------------|------------------------|-------|--------------|
+| wpn_sword_b1        | Rusty Sword            | 50g   | Warrior/Rogue|
+| wpn_dagger_b1       | Rogue Dagger           | 45g   | Rogue        |
+| wpn_staff_b1        | Apprentice Staff       | 55g   | Mage/Healer  |
+| wpn_bow_b1          | Simple Bow             | 60g   | Archer       |
+| wpn_tool_b1         | Work Hammer            | 40g   | Artisan      |
+
+Armures Lourdes (T1):
+| ID                  | Nom                    | Prix  | Slot         |
+|---------------------|------------------------|-------|--------------|
+| head_iron_b1        | Iron Helm              | 80g   | Head         |
+| chest_plate_b1      | Iron Plate             | 150g  | Chest        |
+| legs_plate_b1       | Plate Greaves          | 100g  | Legs         |
+| feet_plate_b1       | Plate Boots            | 70g   | Feet         |
+| gloves_plate_b1     | Plate Gauntlets        | 60g   | Gloves       |
+
+Offhands:
+| ID                  | Nom                    | Prix  | Classe       |
+|---------------------|------------------------|-------|--------------|
+| off_shield_b1       | Wooden Shield          | 65g   | Warrior/Art  |
+
+Materiaux de Craft (Forge):
+| ID                  | Nom                    | Prix  | Stock |
+|---------------------|------------------------|-------|-------|
+| mat_iron_bar        | Barre de Fer           | 30g   | 20/j  |
+| mat_steel_bar       | Barre d'Acier          | 80g   | 10/j  |
+| mat_coal            | Charbon                | 10g   | 50/j  |
+
+Services:
+| Service             | Prix                   | Effet               |
+|---------------------|------------------------|---------------------|
+| Reparation          | 5% valeur item         | Repair 100%         |
+| Upgrade +1          | 500g + materials       | +5% stats weapon    |
+| Craft Basique       | Variable               | Craft T1 weapons    |
+
+================================================================================
+SANA THE LEATHERWORKER - Travailleuse du Cuir
+================================================================================
+Lore: "Knows every beast by the texture of its skin."
+Location: Atelier de cuir, pres de la sortie vers les plaines
+Services: craft_light_armor, upgrade_armor_light
+
+INVENTAIRE PERMANENT:
+---------------------
+Armures Legeres (T1):
+| ID                  | Nom                    | Prix  | Slot         |
+|---------------------|------------------------|-------|--------------|
+| head_leather_b1     | Leather Hood           | 40g   | Head         |
+| chest_leather_b1    | Leather Tunic          | 90g   | Chest        |
+| legs_leather_b1     | Leather Pants          | 60g   | Legs         |
+| feet_leather_b1     | Leather Boots          | 45g   | Feet         |
+| gloves_leather_b1   | Leather Gloves         | 35g   | Gloves       |
+| cape_leather_b1     | Hunter Cape            | 55g   | Cape         |
+
+Offhands:
+| ID                  | Nom                    | Prix  | Classe       |
+|---------------------|------------------------|-------|--------------|
+| off_quiver_b1       | Leather Quiver         | 50g   | Archer       |
+| off_dagger_b1       | Parry Knife            | 45g   | Rogue        |
+
+Materiaux de Craft (Cuir):
+| ID                  | Nom                    | Prix  | Stock |
+|---------------------|------------------------|-------|-------|
+| mat_raw_leather     | Cuir Brut              | 15g   | 30/j  |
+| mat_tanned_leather  | Cuir Tanne             | 40g   | 15/j  |
+| mat_thread          | Fil Solide             | 8g    | 50/j  |
+| mat_dye_common      | Teinture Commune       | 20g   | 10/j  |
+
+================================================================================
+LYR THE ENCHANTER - Enchanteur
+================================================================================
+Lore: "Writes formulas on everything: paper, stone, metal... and sometimes people."
+Location: Tour d'enchantement, quartier magique
+Services: enchant_basic, reroll_affix
+
+INVENTAIRE PERMANENT:
+---------------------
+Parchemins d'Enchantement:
+| ID                  | Nom                    | Prix  | Effet              |
+|---------------------|------------------------|-------|--------------------|
+| scroll_enchant_atk1 | Enchant ATK I          | 200g  | +3 ATK sur arme    |
+| scroll_enchant_mag1 | Enchant MAG I          | 200g  | +3 MAG sur arme    |
+| scroll_enchant_def1 | Enchant DEF I          | 200g  | +3 DEF sur armure  |
+| scroll_enchant_hp1  | Enchant HP I           | 250g  | +20 HP sur armure  |
+| scroll_disenchant   | Parchemin Dissipation  | 100g  | Remove enchant     |
+
+Materiaux Magiques:
+| ID                  | Nom                    | Prix  | Stock |
+|---------------------|------------------------|-------|-------|
+| mat_mana_dust       | Poussiere de Mana      | 50g   | 20/j  |
+| mat_rune_ink        | Encre Runique          | 80g   | 10/j  |
+| mat_blank_scroll    | Parchemin Vierge       | 25g   | 30/j  |
+| gem_minor           | Gemme Mineure          | 100g  | 5/j   |
+
+Services:
+| Service             | Prix                   | Effet               |
+|---------------------|------------------------|---------------------|
+| Enchanter Item      | 300g + scroll          | Applique enchant    |
+| Reroll Affix        | 500g + 10 mana dust    | Reroll 1 substat    |
+| Identifier Item     | 50g                    | Revele stats hidden |
+
+================================================================================
+PETRA THE ALCHEMIST - Alchimiste
+================================================================================
+Lore: "Says every poison is a remedy that forgot its name."
+Location: Laboratoire, avec fumees colorees
+Services: potions_advanced, antidotes
+
+INVENTAIRE PERMANENT:
+---------------------
+Potions Avancees:
+| ID                  | Nom                    | Prix  | Stock | Effet           |
+|---------------------|------------------------|-------|-------|-----------------|
+| potion_hp_large     | Potion de Vie (G)      | 75g   | 30/j  | +300 HP         |
+| potion_mp_large     | Potion de Mana (G)     | 65g   | 30/j  | +150 MP         |
+| elixir_full         | Elixir Complet         | 500g  | 5/j   | Full HP/MP      |
+| revive_potion       | Potion Resurrection    | 200g  | 10/j  | Revive 30% HP   |
+
+Elixirs de Buff:
+| ID                  | Nom                    | Prix  | Stock | Effet (30min)   |
+|---------------------|------------------------|-------|-------|-----------------|
+| elixir_atk_small    | Elixir de Force        | 150g  | 10/j  | +10 ATK         |
+| elixir_mag_small    | Elixir de Sagesse      | 150g  | 10/j  | +10 MAG         |
+| elixir_def_small    | Elixir de Protection   | 150g  | 10/j  | +10 DEF         |
+| elixir_hp_small     | Elixir de Vitalite     | 180g  | 10/j  | +100 HP max     |
+| elixir_speed_small  | Elixir de Rapidite     | 200g  | 5/j   | +10% move speed |
+
+Antidotes Specifiques:
+| ID                  | Nom                    | Prix  | Stock | Guerit          |
+|---------------------|------------------------|-------|-------|-----------------|
+| antidote            | Antidote               | 20g   | Inf   | Poison          |
+| remedy_burn         | Baume Anti-Brulure     | 30g   | 20/j  | Burn            |
+| remedy_bleed        | Bandage Hemostase      | 30g   | 20/j  | Bleed           |
+| remedy_curse        | Eau Benite             | 50g   | 10/j  | Curse           |
+| remedy_all          | Panacee                | 150g  | 5/j   | Tous debuffs    |
+
+Materiaux Alchimie:
+| ID                  | Nom                    | Prix  | Stock |
+|---------------------|------------------------|-------|-------|
+| mat_herb_green      | Herbe Verte            | 10g   | 50/j  |
+| mat_herb_blue       | Herbe Bleue            | 15g   | 30/j  |
+| mat_herb_red        | Herbe Rouge            | 20g   | 20/j  |
+| mat_monster_blood   | Sang de Monstre        | 25g   | 15/j  |
+| mat_distilled_water | Eau Distillee          | 5g    | Inf   |
+
+================================================================================
+ORSEN THE BANKER - Banquier
+================================================================================
+Lore: "Only trusts numbers. Also keeps secrets... for a fee."
+Location: Batiment de la banque, securise
+Services: storage, currency_exchange
+
+INVENTAIRE/SERVICES:
+--------------------
+Stockage:
+| Service             | Prix                   | Effet               |
+|---------------------|------------------------|---------------------|
+| Acces Banque        | Gratuit                | 40 slots de base    |
+| Extension +10 slots | 5000g                  | Max 100 slots       |
+| Coffre Prive        | 10000g                 | +20 slots separes   |
+
+Services Financiers:
+| Service             | Prix                   | Effet               |
+|---------------------|------------------------|---------------------|
+| Depot Gold          | Gratuit                | Stocke gold safe    |
+| Retrait Gold        | Gratuit                | Recupere gold       |
+| Transfer Joueur     | 1% du montant          | Envoie gold a ami   |
+| Change Monnaie      | 5%                     | Convert currencies  |
+
+================================================================================
+KORU THE TAMER - Eleveur
+================================================================================
+Lore: "Claims a good pet also chooses its master."
+Location: Enclos aux animaux, sortie est du village
+Services: pet_manage, pet_food
+
+INVENTAIRE PERMANENT:
+---------------------
+Nourriture pour Pets:
+| ID                  | Nom                    | Prix  | Stock | Effet           |
+|---------------------|------------------------|-------|-------|-----------------|
+| pet_food_basic      | Croquettes             | 20g   | Inf   | +5 Loyaute      |
+| pet_food_meat       | Viande Fraiche         | 50g   | 20/j  | +15 Loyaute     |
+| pet_food_fish       | Poisson Frais          | 50g   | 20/j  | +15 Loyaute     |
+| pet_food_premium    | Festin de Familier     | 200g  | 5/j   | +50 Loyaute     |
+
+Items de Capture:
+| ID                  | Nom                    | Prix  | Stock | Capture         |
+|---------------------|------------------------|-------|-------|-----------------|
+| capture_seal_basic  | Sceau Basique          | 100g  | 20/j  | Monstres commun |
+| capture_seal_adv    | Sceau Renforce         | 500g  | 10/j  | Monstres rare   |
+| capture_seal_gold   | Sceau Dore             | 2000g | 3/j   | Elites          |
+
+Soins Pets:
+| ID                  | Nom                    | Prix  | Stock | Effet           |
+|---------------------|------------------------|-------|-------|-----------------|
+| pet_potion_hp       | Potion Familier        | 30g   | 20/j  | Heal pet 50%    |
+| pet_revive          | Essence de Vie         | 150g  | 5/j   | Revive pet      |
+| pet_whistle         | Sifflet                | 50g   | Inf   | Rappel instant  |
+
+================================================================================
+YUKI KORO COLLECTOR - Collectionneur de Koro
+================================================================================
+Lore: "Collects Koros since childhood. Says each card carries the echo of an ancient battle."
+Location: Boutique mysterieuse, quartier magique
+Services: koro_identify, koro_fusion, koro_trade, koro_codex
+
+INVENTAIRE PERMANENT:
+---------------------
+Materiaux Koro:
+| ID                  | Nom                    | Prix  | Stock | Usage           |
+|---------------------|------------------------|-------|-------|-----------------|
+| koro_dust           | Poussiere de Koro      | 20g   | 50/j  | Upgrade Koro    |
+| koro_core           | Noyau de Koro          | 120g  | 5/j   | Fusion Koro     |
+| koro_binder         | Classeur de Koro       | 500g  | 1/sem | +10 slots Koro  |
+| koro_sleeve         | Pochette Protectrice   | 50g   | 10/j  | Protect Koro    |
+
+Services:
+| Service             | Prix                   | Effet                |
+|---------------------|------------------------|----------------------|
+| Identifier Koro     | 100g                   | Revele rang et skill |
+| Fusion 2 Koros      | 200g + 5 cores        | Chance upgrade rang  |
+| Consulter Codex     | Gratuit                | Voir collection      |
+| Echanger Koro       | 50g                    | Trade avec PNJ stock |
+
+Koro en Stock (rotation hebdo):
+- 3 Koros aleatoires de rang C-B
+- Prix: 500-2000g selon rang
+- Quantite: 1 de chaque
+
+================================================================================
+ELLE THE WAYFARER - Voyageuse
+================================================================================
+Lore: "Travels light. Too light, some say. Says roads change at night."
+Location: Carrefour central, pres du portail
+Services: fast_travel, zone_info
+
+SERVICES:
+---------
+Teleportation:
+| Destination         | Prix Base | Formule              |
+|---------------------|-----------|----------------------|
+| Village de depart   | 50g       | Fixe                 |
+| Zones decouvertes   | Variable  | 50 + (distance/10)   |
+| Capitales           | 200g      | Fixe                 |
+| Guild Hall          | 100g      | Si guilde niveau 20  |
+
+Items:
+| ID                  | Nom                    | Prix  | Stock | Effet           |
+|---------------------|------------------------|-------|-------|-----------------|
+| scroll_return       | Parchemin de Retour    | 100g  | 20/j  | TP ville        |
+| scroll_mark         | Parchemin de Marque    | 500g  | 3/j   | Set TP point    |
+| compass             | Boussole               | 150g  | 5/j   | Reveal map fog  |
+
+================================================================================
+RONA THE INNKEEPER - Aubergiste
+================================================================================
+Lore: "Listens to everything, forgets nothing. Her rumors are worth more than gold."
+Location: Auberge "Le Repos du Voyageur"
+Services: rest_buff, rumors
+
+INVENTAIRE PERMANENT:
+---------------------
+Nourriture:
+| ID                  | Nom                    | Prix  | Stock | Buff (10min)    |
+|---------------------|------------------------|-------|-------|-----------------|
+| food_meal_basic     | Repas Simple           | 30g   | Inf   | +5% HP regen    |
+| food_meal_hearty    | Repas Copieux          | 80g   | 20/j  | +10% XP         |
+| food_meal_feast     | Festin                 | 200g  | 5/j   | +15% XP, +10% HP|
+| drink_ale           | Biere                  | 15g   | Inf   | Social          |
+| drink_wine          | Vin                    | 50g   | 10/j  | +5% Luck (5min) |
+
+Services:
+| Service             | Prix                   | Effet               |
+|---------------------|------------------------|---------------------|
+| Repos (lit)         | 50g                    | +10% XP 1h, CD 12h  |
+| Rumeurs             | 20g                    | Hint sur quetes     |
+| Chambre privee      | 200g/jour              | Stockage temporaire |
+
+================================================================================
+SISTER AELINA - Soigneuse
+================================================================================
+Lore: "Wandering healer who says the Abysses 'breathe' under the earth."
+Location: Chapelle, quartier calme
+Services: heal_full, cleanse_basic
+
+SERVICES:
+---------
+| Service             | Prix                   | Effet               |
+|---------------------|------------------------|---------------------|
+| Soin Complet        | Gratuit (hors combat)  | Full HP/MP          |
+| Purification        | 50g                    | Remove basic debuff |
+| Benediction         | 100g                   | +5% all stats 10min |
+| Resurrection        | 200g                   | Revive a 50% HP     |
+
+================================================================================
+VELITH RESPEC SAGE - Sage du Respec
+================================================================================
+Lore: "Can erase your past choices, but not their consequences."
+Location: Temple isole
+Services: stat_reset, skill_reset
+
+SERVICES:
+---------
+| Service             | Prix Base | Formule              |
+|---------------------|-----------|----------------------|
+| Reset Stats         | 1000g     | 1000 * (count + 1)   |
+| Reset Skills        | 1000g     | 1000 * (count + 1)   |
+| Reset Complet       | 1500g     | 1500 * (count + 1)   |
+| Apercu Build        | 200g      | Preview avant reset  |
+
+Note: Le prix augmente a chaque utilisation!
+
+
+================================================================================
+                   3. MARCHANDS SPECIALISES PAR ZONE
+================================================================================
+
+ZONE: PLAINES (Niveau 1-10)
+---------------------------
+Marchand Itinerant:
+- Potions HP/MP small
+- Antidotes
+- Nourriture basique
+- Scroll return (prix +20%)
+
+ZONE: FORET (Niveau 5-15)
+-------------------------
+Chasseur-Marchand:
+- Equipement cuir T1-T2
+- Fleches basiques
+- Pieges
+- Repulsifs (evite aggro temporaire)
+
+ZONE: MONTAGNES (Niveau 10-20)
+------------------------------
+Prospecteur:
+- Equipement metal T2
+- Outils de minage
+- Torches renforcees
+- Potions resistance froid
+
+ZONE: MARAIS (Niveau 15-25)
+---------------------------
+Ermite:
+- Antidotes (stock illimite)
+- Potions resistance poison
+- Bottes de marais (slow resist)
+- Herbes rares
+
+ZONE: DESERT (Niveau 20-30)
+---------------------------
+Nomade:
+- Outres d'eau (obligatoire)
+- Protection chaleur
+- Voiles anti-sable
+- Montures desert (chameau)
+
+ZONE: ENDGAME (Niveau 50+)
+--------------------------
+Marchand Elite:
+- Consommables T3
+- Materiaux rares (stock limite)
+- Pierres d'amelioration (Minor/Standard)
+- Recettes avancees
+
+
+================================================================================
+                          4. NPCS DE CLASSE
+================================================================================
+
+MASTER KAEL - Maitre Guerrier
+-----------------------------
+Lore: "Doesn't talk much. Watches your stance, then your courage."
+
+Services:
+- Quest de classe (niveau 20, 60)
+- Apprendre skills de subclass
+- Conseils de build (gratuit)
+
+Items Exclusifs Guerrier:
+| ID                  | Nom                    | Prix  | Requis        |
+|---------------------|------------------------|-------|---------------|
+| manual_warrior_1    | Manuel: Coup Puissant  | 1000g | Niveau 20     |
+| manual_warrior_2    | Manuel: Cri de Guerre  | 2500g | Niveau 40     |
+| manual_warrior_3    | Manuel: Charge Finale  | 5000g | Niveau 60     |
+
+ARCHMAGE SELENE - Maitresse Mage
+--------------------------------
+Lore: "Claims magic is a memory of the world, not a force."
+
+Items Exclusifs Mage:
+| ID                  | Nom                    | Prix  | Requis        |
+|---------------------|------------------------|-------|---------------|
+| manual_mage_1       | Manuel: Nova Glacee    | 1000g | Niveau 20     |
+| manual_mage_2       | Manuel: Teleportation  | 2500g | Niveau 40     |
+| manual_mage_3       | Manuel: Meteore        | 5000g | Niveau 60     |
+
+SCOUT VEYA - Maitresse Archer
+-----------------------------
+Lore: "Reads tracks like others read books. Hates unnecessary noise."
+
+Items Exclusifs Archer:
+| ID                  | Nom                    | Prix  | Requis        |
+|---------------------|------------------------|-------|---------------|
+| manual_archer_1     | Manuel: Tir Rapide     | 1000g | Niveau 20     |
+| manual_archer_2     | Manuel: Pluie Fleches  | 2500g | Niveau 40     |
+| manual_archer_3     | Manuel: Tir Parfait    | 5000g | Niveau 60     |
+
+SHADOWBLADE RASK - Maitre Rogue
+-------------------------------
+Lore: "Teaches how to disappear... but especially how to come back at the right time."
+
+Items Exclusifs Rogue:
+| ID                  | Nom                    | Prix  | Requis        |
+|---------------------|------------------------|-------|---------------|
+| manual_rogue_1      | Manuel: Embuscade      | 1000g | Niveau 20     |
+| manual_rogue_2      | Manuel: Evasion        | 2500g | Niveau 40     |
+| manual_rogue_3      | Manuel: Assassinat     | 5000g | Niveau 60     |
+
+MOTHER IONA - Maitresse Healer
+------------------------------
+Lore: "Speaks little, listens much. Has seen panic kill more than monsters."
+
+Items Exclusifs Healer:
+| ID                  | Nom                    | Prix  | Requis        |
+|---------------------|------------------------|-------|---------------|
+| manual_healer_1     | Manuel: Soin de Groupe | 1000g | Niveau 20     |
+| manual_healer_2     | Manuel: Barriere       | 2500g | Niveau 40     |
+| manual_healer_3     | Manuel: Resurrection   | 5000g | Niveau 60     |
+
+[A CREER] FORGE-MAITRE DURIN - Maitre Artisan
+---------------------------------------------
+Lore Suggere: "Says every item tells a story. His creations speak louder than words."
+
+Items Exclusifs Artisan:
+| ID                  | Nom                    | Prix  | Requis        |
+|---------------------|------------------------|-------|---------------|
+| manual_artisan_1    | Manuel: Creation Rapide| 1000g | Niveau 20     |
+| manual_artisan_2    | Manuel: Masterwork     | 2500g | Niveau 40     |
+| manual_artisan_3    | Manuel: Chef d'Oeuvre  | 5000g | Niveau 60     |
+
+
+================================================================================
+                      5. NPCS D'EVENT ET SPECIAUX
+================================================================================
+
+[A CREER] MARCHAND PVP - Valeria
+--------------------------------
+Lore: "Has seen every fight in the arena. Respects winners, learns from losers."
+Location: Arena
+Monnaie: Honor Points
+
+Inventaire:
+| ID                  | Nom                    | Prix (HP) | Requis        |
+|---------------------|------------------------|-----------|---------------|
+| pvp_title_gladiator | Titre: Gladiateur      | 500       | 10 wins       |
+| pvp_skin_weapon_1   | Skin Arme Sanglante    | 2000      | Silver+       |
+| pvp_aura_combat     | Aura de Combat         | 5000      | Gold+         |
+| pvp_mount_warhorse  | Destrier de Guerre     | 10000     | Platinum+     |
+| pvp_potion_tenacity | Potion Tenacite        | 50        | -             |
+| pvp_banner_guild    | Banniere de Guilde     | 200       | -             |
+
+[A CREER] MARCHAND DE MONTURES - Ecuyer Ronan
+---------------------------------------------
+Lore: "Every mount has a soul. Choose wisely, they choose you back."
+Location: Ecurie, sortie du village
+
+Inventaire:
+| ID                  | Nom                    | Prix      | Vitesse       |
+|---------------------|------------------------|-----------|---------------|
+| mount_horse_basic   | Cheval                 | 10,000g   | +50%          |
+| mount_wolf          | Loup de Selle          | 15,000g   | +50%          |
+| mount_boar          | Sanglier de Guerre     | 12,000g   | +40%, charge  |
+| mount_horse_war     | Destrier               | 100,000g  | +80%          |
+| mount_feed          | Fourrage               | 50g       | Heal mount    |
+| mount_armor_basic   | Barde Basique          | 5,000g    | +10% mount HP |
+
+[A CREER] MAITRE DE L'ARENE D'AMES - Shaman Korath
+--------------------------------------------------
+Lore: "The souls of the fallen still hunger for battle. I give them release."
+Location: Arene des Ames (zone speciale)
+
+Services:
+- Invoquer un boss avec Soul Stone
+- Choisir difficulte
+- Consulter records personnels
+
+Inventaire:
+| ID                  | Nom                    | Prix      | Usage         |
+|---------------------|------------------------|-----------|---------------|
+| soul_incense        | Encens d'Invocation    | 500g      | Boost success |
+| arena_key_normal    | Cle d'Arene            | 1000g     | 1 invocation  |
+| trophy_frame        | Cadre a Trophee        | 2000g     | Display kill  |
+
+
+================================================================================
+                         6. INTEGRATION LORE
+================================================================================
+
+LIENS ENTRE NPCS ET LORE
+------------------------
+
+Aelina (Healer):
+- Mentionne "les Abysses qui respirent" = prefigure la Faille
+- Peut donner des hints sur la Chute si questionne
+
+Milo (Trader):
+- "Toujours au bon endroit, au bon moment" = peut-etre plus qu'humain?
+- Vend des items qui semblent venir de tres loin
+
+Mara (Oracle):
+- "Voit des fragments de futurs possibles" = connait la Faille?
+- Ses hints peuvent etre prophetiques
+
+Yuki (Koro Collector):
+- "Chaque carte porte l'echo d'une bataille ancienne"
+- Les Koros = memoire des guerriers tombes?
+
+Rona (Innkeeper):
+- "Ecoute tout, oublie rien" = reseau d'information
+- Ses rumeurs = quests secondaires et lore
+
+X (PNJ discret mentionne dans le lore):
+- Pourrait etre UN des NPCs sous couverture
+- Accompagne sans forcer, observe
+- Candidats: Milo? Mara? Quelqu'un de nouveau?
+
+DIALOGUES LORE (exemples)
+-------------------------
+
+Aelina (apres Acte 1):
+"Les Abysses... elles ne dorment pas vraiment, tu sais.
+Parfois je les entends, la nuit. Comme un souffle.
+Non, ce n'est rien. Juste une vieille femme qui parle trop."
+
+Mara (apres Acte 2):
+"J'ai vu... Non. Tu n'es pas pret.
+Mais sache ceci: ce qui vient n'est pas ce que tu crois combattre.
+Le vrai ennemi... il etait la depuis le debut."
+
+Yuki (sur les Koros):
+"Les anciens les appelaient 'Echos'.
+Chaque Koro contient la memoire d'un guerrier.
+Son dernier souffle. Sa derniere technique.
+On ne les capture pas. On les libere."
+
+
+================================================================================
+                        7. ECONOMIES DES SHOPS
+================================================================================
+
+PRIX SUGGERES PAR TIER
+----------------------
+| Tier    | Niveau  | Potion HP  | Elixir    | Equip Base |
+|---------|---------|------------|-----------|------------|
+| T1      | 1-20    | 10-75g     | 150-200g  | 50-200g    |
+| T2      | 20-40   | 50-150g    | 300-500g  | 200-800g   |
+| T3      | 40-60   | 100-300g   | 500-1000g | 500-2000g  |
+| T4      | 60-80   | 200-500g   | 800-1500g | 1000-5000g |
+| T5      | 80-100  | 300-800g   | 1000-2500g| 2000-10000g|
+
+STOCKS JOURNALIERS
+------------------
+Pourquoi limiter les stocks:
+- Evite le hoarding excessif
+- Force l'exploration (autres marchands)
+- Maintient la valeur des drops
+- Encourage le craft
+
+TAXES ET MULTIPLICATEURS
+------------------------
+| Situation           | Multiplicateur Prix |
+|---------------------|---------------------|
+| Ville principale    | x1.0                |
+| Village eloigne     | x1.1                |
+| Zone dangereuse     | x1.2                |
+| Marchand itinerant  | x1.2-1.5            |
+| Nuit (si implemente)| x1.1                |
+| Guerre de guilde    | x1.3 (zone de guerre)|
+| Event festival      | x0.9 (promo)        |
+
+
+================================================================================
+                              FIN DU DOCUMENT
+================================================================================

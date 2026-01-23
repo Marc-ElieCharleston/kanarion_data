@@ -1,0 +1,538 @@
+================================================================================
+                   KANARION ONLINE - SYSTEME DE MESSAGERIE
+                        Mail System & Boite aux Lettres
+                          Version 1.0 - 2026-01-23
+================================================================================
+
+Ce document detaille le systeme de messagerie (mail) permettant
+la communication asynchrone et les transferts d'objets/gold.
+
+================================================================================
+                              TABLE DES MATIERES
+================================================================================
+1. Vue d'Ensemble
+2. Types de Courriers
+3. Interface Utilisateur
+4. Envoi de Courrier
+5. Reception et Gestion
+6. Pieces Jointes
+7. Courriers Systeme
+8. Regles et Restrictions
+9. Integration Technique
+
+================================================================================
+                          1. VUE D'ENSEMBLE
+================================================================================
+
+CONCEPT
+-------
+La boite aux lettres (mailbox) permet de:
+- Envoyer des messages texte a d'autres joueurs
+- Transferer des objets et du gold
+- Recevoir des recompenses systeme
+- Recuperer des objets de l'HDV
+- Communication asynchrone (pas besoin d'etre online)
+
+ACCES
+-----
+- NPC: Facteur dans chaque ville
+- Interface: Touche "M" (Mail)
+- Icone: Enveloppe dans l'interface (avec badge de notification)
+- Mobile: Notification push optionnelle
+
+PHILOSOPHIE
+-----------
+- Simple et intuitif
+- Pas de spam (couts d'envoi)
+- Securise (confirmation pour objets de valeur)
+- Retention limitee (pas de stockage infini)
+
+
+================================================================================
+                       2. TYPES DE COURRIERS
+================================================================================
+
+CATEGORIES
+----------
+| Type          | Expediteur      | Contenu Possible         | Duree    |
+|---------------|-----------------|--------------------------|----------|
+| Joueur        | Autre joueur    | Texte, objets, gold      | 30 jours |
+| Systeme       | Jeu             | Recompenses, annonces    | 7 jours  |
+| HDV           | Auction House   | Objets, gold des ventes  | 30 jours |
+| Guilde        | Maitre de guilde| Annonces, recompenses    | 14 jours |
+| Support       | GM/Admin        | Tickets, compensations   | 90 jours |
+
+COURRIERS JOUEUR
+----------------
+- Envoyes manuellement par un joueur
+- Peuvent contenir: texte, jusqu'a 5 objets, gold
+- Cout d'envoi (anti-spam)
+- Peuvent etre refuses par destinataire (blocklist)
+
+COURRIERS SYSTEME
+-----------------
+Envoyes automatiquement par le jeu:
+- Recompenses journalieres
+- Recompenses d'achievements
+- Recompenses d'events
+- Annonces importantes
+- Maintenance prevue
+
+COURRIERS HDV
+-------------
+- Objets achetes
+- Gold des ventes
+- Objets expires/annules
+- Gold rembourse (surenchere)
+
+COURRIERS GUILDE
+----------------
+- Annonces du maitre de guilde
+- Recompenses de missions de guilde
+- Invitations a rejoindre
+- Notifications de rang
+
+
+================================================================================
+                      3. INTERFACE UTILISATEUR
+================================================================================
+
+STRUCTURE GENERALE
+------------------
+```
++----------------------------------------------------------+
+|  BOITE AUX LETTRES                        [Nouveau Mail] |
++----------------------------------------------------------+
+| [Boite Reception] [Envoyes] [Systeme] [HDV] [Corbeille]  |
++----------------------------------------------------------+
+| □ | De           | Sujet                | Date    | [PJ] |
+|---|--------------|----------------------|---------|------|
+| ★ | DarkKnight   | Salut!              | 2h      |  📎  |
+| ○ | [Systeme]    | Recompense journa...| 5h      |  🎁  |
+| ○ | [HDV]        | Vente reussie: Ep...| 1j      |  💰  |
+| ○ | GuildMaster  | Reunion ce soir     | 2j      |      |
++----------------------------------------------------------+
+| Stockage: 45/100 messages                    [Vider tout]|
++----------------------------------------------------------+
+```
+
+INDICATEURS VISUELS
+-------------------
+- ★ Non lu (etoile/point)
+- ○ Lu (cercle vide)
+- 📎 Piece jointe (objet)
+- 💰 Gold attache
+- 🎁 Recompense a reclamer
+- [!] Expire bientot (< 24h)
+
+LECTURE D'UN MAIL
+-----------------
+```
++----------------------------------------------------------+
+| De: DarkKnight                            Date: 23/01/26 |
+| Sujet: Salut!                                            |
++----------------------------------------------------------+
+| Contenu:                                                 |
+| Hey! Voici les mats que tu m'avais demandes pour le      |
+| craft. Bonne chance pour ton epee!                       |
+|                                                          |
+| A+                                                       |
++----------------------------------------------------------+
+| Pieces jointes:                                          |
+| [Fer x50] [Cuir x30] [Gemme Bleue x2]                    |
+| Gold: 500g                                               |
+|                                                          |
+| [Tout recuperer] [Recuperer selection] [Repondre]        |
++----------------------------------------------------------+
+```
+
+
+================================================================================
+                        4. ENVOI DE COURRIER
+================================================================================
+
+PROCESSUS D'ENVOI
+-----------------
+1. Cliquer "Nouveau Mail"
+2. Entrer le nom du destinataire (auto-complete)
+3. Ecrire le sujet (optionnel, max 50 char)
+4. Ecrire le message (max 500 char)
+5. Ajouter des pieces jointes (optionnel)
+6. Ajouter du gold (optionnel)
+7. Payer les frais d'envoi
+8. Confirmer l'envoi
+
+INTERFACE D'ENVOI
+-----------------
+```
++----------------------------------------------------------+
+| NOUVEAU MESSAGE                                          |
++----------------------------------------------------------+
+| A: [________________] (nom du joueur)                    |
+| Sujet: [_________________________________]               |
++----------------------------------------------------------+
+| Message:                                                 |
+| [                                                    ]   |
+| [                                                    ]   |
+| [                                                    ]   |
+|                                           [0/500 char]   |
++----------------------------------------------------------+
+| Pieces jointes (max 5):                                  |
+| [+] [Slot vide] [Slot vide] [Slot vide] [Slot vide]      |
+|                                                          |
+| Gold a envoyer: [0_______]                               |
++----------------------------------------------------------+
+| Cout d'envoi:                                            |
+| - Base: 30g                                              |
+| - Objets (3): 0g                                         |
+| - Gold (500g): 0g                                        |
+| Total: 30g                                               |
+|                                                          |
+| [Annuler]                                    [Envoyer]   |
++----------------------------------------------------------+
+```
+
+COUTS D'ENVOI
+-------------
+| Element                | Cout                            |
+|------------------------|---------------------------------|
+| Message texte seul     | 30g                             |
+| + Objets (par objet)   | 0g (gratuit)                    |
+| + Gold (tout montant)  | 0g (gratuit)                    |
+| Membre de guilde       | 10g (reduit)                    |
+| Ami dans friends list  | 15g (reduit)                    |
+
+Note: Le cout sert d'anti-spam, pas de gold sink majeur.
+
+VALIDATION
+----------
+Avant envoi, verifier:
+- Destinataire existe
+- Destinataire n'a pas bloque l'expediteur
+- Destinataire a de la place dans sa mailbox
+- Expediteur a assez de gold pour frais + envoi
+- Objets sont tradables (non soulbound)
+
+
+================================================================================
+                      5. RECEPTION ET GESTION
+================================================================================
+
+NOTIFICATION DE NOUVEAU MAIL
+----------------------------
+- Icone enveloppe avec badge (nombre de non-lus)
+- Son de notification (optionnel)
+- Message chat: "Vous avez recu un nouveau courrier!"
+- Push notification mobile (si active)
+
+RECUPERATION DES PIECES JOINTES
+-------------------------------
+Options:
+- "Tout recuperer": Prend tous les objets + gold
+- "Recuperer selection": Choisir quoi prendre
+- Si inventaire plein: Message d'erreur, rien n'est pris
+
+Une fois recuperees:
+- Pieces jointes retirees du mail
+- Mail reste lisible (texte)
+- Peut etre supprime manuellement
+
+EXPIRATION
+----------
+| Type mail    | Duree avant expiration | Notification        |
+|--------------|------------------------|---------------------|
+| Joueur       | 30 jours               | A 7j, 1j, 1h        |
+| Systeme      | 7 jours                | A 1j                |
+| HDV          | 30 jours               | A 7j, 1j            |
+| Guilde       | 14 jours               | A 1j                |
+| Support      | 90 jours               | A 7j                |
+
+A l'expiration:
+- Mail supprime automatiquement
+- Pieces jointes NON RECLAMEES sont PERDUES
+- Notification avant expiration (configurable)
+
+GESTION EN MASSE
+----------------
+- Cocher plusieurs mails
+- Actions: Supprimer, Marquer lu/non-lu
+- "Tout recuperer et supprimer" (pour mails systeme)
+- Filtres: Par type, par date, par expediteur
+
+
+================================================================================
+                       6. PIECES JOINTES
+================================================================================
+
+LIMITES
+-------
+| Type          | Limite par mail                         |
+|---------------|-----------------------------------------|
+| Objets        | 5 slots maximum                         |
+| Gold          | 999,999,999 (pas de limite pratique)    |
+| Stacks        | Respecte le stack max de l'objet        |
+
+OBJETS AUTORISÉS
+----------------
+Peuvent etre envoyes:
+- Equipements (non soulbound)
+- Consommables
+- Materiaux
+- Koros (non soulbound)
+- Objets d'event (si tradable)
+
+OBJETS INTERDITS
+----------------
+Ne peuvent pas etre envoyes:
+- Objets "Lie au personnage" (Soulbound)
+- Objets de quete
+- Objets temporaires/expires
+- Monnaies (sauf gold)
+- Objets en cours de vente HDV
+
+ENVOI DE GOLD
+-------------
+- Montant libre (pas de frais supplementaires)
+- Confirmation requise si > 10,000g
+- Double confirmation si > 100,000g
+- Log de transaction pour securite
+
+
+================================================================================
+                      7. COURRIERS SYSTEME
+================================================================================
+
+TYPES DE COURRIERS AUTOMATIQUES
+-------------------------------
+
+A) Recompenses Journalieres
+```
+De: [Systeme]
+Sujet: Recompense de connexion - Jour 5
+---
+Felicitations pour votre 5eme jour de connexion!
+Voici votre recompense:
+
+[Potion HP Large x5] [500 Gold]
+
+Continuez a vous connecter pour de meilleures recompenses!
+```
+
+B) Achievement Complete
+```
+De: [Systeme]
+Sujet: Achievement debloque: Chasseur de Monstres
+---
+Vous avez debloque l'achievement "Chasseur de Monstres"!
+(Tuer 1000 monstres)
+
+Voici votre recompense:
+[Titre: Chasseur] [1000 Gold]
+```
+
+C) Event Participation
+```
+De: [Systeme]
+Sujet: Recompenses Event Halloween
+---
+Merci d'avoir participe a l'Event Halloween!
+Voici vos recompenses basees sur votre score:
+
+[Citrouille Pet] [Costume Fantome] [Event Coins x100]
+```
+
+D) Maintenance/Annonce
+```
+De: [Systeme]
+Sujet: Maintenance prevue - 25/01
+---
+Une maintenance est prevue:
+Date: 25 Janvier 2026
+Heure: 04:00 - 06:00 UTC
+Duree estimee: 2 heures
+
+Nous vous recommandons de vous deconnecter avant.
+Merci de votre comprehension!
+```
+
+E) Compensation
+```
+De: [Support]
+Sujet: Compensation Bug #4521
+---
+Suite au bug que vous avez rencontre, nous vous
+offrons cette compensation:
+
+[Potion XP x10] [2000 Gold]
+
+Nous nous excusons pour le desagrement.
+L'equipe Kanarion
+```
+
+RETENTION COURRIERS SYSTEME
+---------------------------
+- Priorite basse: 7 jours (daily rewards, annonces)
+- Priorite moyenne: 14 jours (achievements, events)
+- Priorite haute: 30 jours (compensations, support)
+- Jamais expire: Certains mails critiques (marques manuellement)
+
+
+================================================================================
+                     8. REGLES ET RESTRICTIONS
+================================================================================
+
+LIMITES DE STOCKAGE
+-------------------
+| Type compte  | Capacite mailbox                        |
+|--------------|-----------------------------------------|
+| Standard     | 100 messages                            |
+| Premium      | 200 messages                            |
+| Guilde Lv10+ | +20 messages bonus                      |
+
+Si mailbox pleine:
+- Nouveaux mails joueur refuses (expediteur notifie)
+- Mails systeme en attente (delivered quand place)
+- Mails HDV en attente (objets bloques)
+
+ANTI-SPAM
+---------
+| Restriction               | Limite                       |
+|---------------------------|------------------------------|
+| Mails par heure           | 20 (vers joueurs differents) |
+| Mails meme destinataire   | 5 par heure                  |
+| Cout minimum              | 30g par mail                 |
+| Cooldown apres spam       | 1 heure                      |
+
+BLOCKLIST
+---------
+- Bloquer un joueur = refuser ses mails
+- Les mails refuses sont renvoyes a l'expediteur
+- Message: "Le destinataire refuse vos messages"
+- Exception: Mails de guilde (si meme guilde)
+
+SECURITE
+--------
+- Confirmation pour envoi > 10,000g
+- Log de toutes les transactions
+- Possibilite de signaler un mail (Report)
+- Review automatique des patterns suspects
+- Pas de liens cliquables dans les mails (anti-phishing)
+
+
+================================================================================
+                    9. INTEGRATION TECHNIQUE
+================================================================================
+
+STRUCTURE JSON SUGGEREE
+-----------------------
+Fichier: systems/mail.json
+
+```json
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "Systeme de messagerie"
+  },
+
+  "general": {
+    "enabled": true,
+    "mailbox_capacity_standard": 100,
+    "mailbox_capacity_premium": 200,
+    "max_attachments": 5,
+    "max_subject_length": 50,
+    "max_message_length": 500
+  },
+
+  "costs": {
+    "base_cost": 30,
+    "guild_member_cost": 10,
+    "friend_cost": 15,
+    "attachment_cost": 0,
+    "gold_transfer_cost": 0
+  },
+
+  "expiration": {
+    "player_mail_days": 30,
+    "system_mail_days": 7,
+    "auction_mail_days": 30,
+    "guild_mail_days": 14,
+    "support_mail_days": 90
+  },
+
+  "notifications": {
+    "expiration_warnings_days": [7, 1],
+    "expiration_warnings_hours": [1],
+    "new_mail_sound": true,
+    "push_notification": true
+  },
+
+  "anti_spam": {
+    "max_mails_per_hour": 20,
+    "max_mails_same_recipient_per_hour": 5,
+    "cooldown_after_limit_minutes": 60
+  },
+
+  "confirmations": {
+    "gold_threshold_low": 10000,
+    "gold_threshold_high": 100000
+  },
+
+  "mail_types": {
+    "player": {
+      "icon": "envelope",
+      "color": "#FFFFFF",
+      "can_reply": true
+    },
+    "system": {
+      "icon": "bell",
+      "color": "#FFD700",
+      "can_reply": false
+    },
+    "auction": {
+      "icon": "gavel",
+      "color": "#32CD32",
+      "can_reply": false
+    },
+    "guild": {
+      "icon": "flag",
+      "color": "#4169E1",
+      "can_reply": true
+    },
+    "support": {
+      "icon": "headset",
+      "color": "#FF6347",
+      "can_reply": true
+    }
+  },
+
+  "restrictions": {
+    "non_mailable_tags": ["soulbound", "quest", "temporary"],
+    "block_links": true,
+    "log_all_transactions": true
+  }
+}
+```
+
+ENDPOINTS API (si applicable)
+-----------------------------
+```
+GET  /api/mail/inbox           - Liste des mails recus
+GET  /api/mail/sent            - Liste des mails envoyes
+GET  /api/mail/{id}            - Detail d'un mail
+POST /api/mail/send            - Envoyer un mail
+POST /api/mail/{id}/claim      - Recuperer pieces jointes
+DELETE /api/mail/{id}          - Supprimer un mail
+POST /api/mail/{id}/report     - Signaler un mail
+```
+
+BASE DE DONNEES
+---------------
+Tables suggerees:
+- mails (id, from, to, subject, body, type, created, expires, read)
+- mail_attachments (mail_id, item_id, quantity, claimed)
+- mail_gold (mail_id, amount, claimed)
+
+
+================================================================================
+                              FIN DU DOCUMENT
+================================================================================

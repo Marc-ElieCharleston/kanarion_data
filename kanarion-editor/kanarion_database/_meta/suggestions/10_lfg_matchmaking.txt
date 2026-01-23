@@ -1,0 +1,511 @@
+================================================================================
+                   KANARION ONLINE - SYSTEME LFG & MATCHMAKING
+                     Looking For Group & Formation de Groupes
+                          Version 1.0 - 2026-01-23
+================================================================================
+
+Ce document detaille le systeme de recherche de groupe (LFG) et le
+matchmaking automatique pour les contenus de groupe.
+
+================================================================================
+                              TABLE DES MATIERES
+================================================================================
+1. Vue d'Ensemble
+2. LFG Manuel (Bulletin Board)
+3. Matchmaking Automatique
+4. Roles et Composition
+5. Interface Utilisateur
+6. Regles et Restrictions
+7. Recompenses et Incentives
+8. Integration Technique
+
+================================================================================
+                          1. VUE D'ENSEMBLE
+================================================================================
+
+OBJECTIF
+--------
+Permettre aux joueurs de trouver des groupes pour:
+- Donjons
+- World Bosses
+- Quetes de groupe
+- Contenu PvP (Arena)
+- Activites de guilde
+
+DEUX SYSTEMES COMPLEMENTAIRES
+-----------------------------
+1. LFG Manuel: Annonces + recherche manuelle (social)
+2. Matchmaking Auto: File d'attente automatique (pratique)
+
+Les deux coexistent pour satisfaire differents types de joueurs.
+
+
+================================================================================
+                      2. LFG MANUEL (BULLETIN BOARD)
+================================================================================
+
+CONCEPT
+-------
+Un tableau d'affichage ou les joueurs postent des annonces
+pour chercher des membres ou rejoindre des groupes.
+
+TYPES D'ANNONCES
+----------------
+
+A) Cherche Groupe (LFG - Looking For Group)
+   - Le joueur cherche a rejoindre un groupe existant
+   - Indique: classe, niveau, role prefere, contenu souhaite
+
+B) Cherche Membres (LFM - Looking For Members)
+   - Le leader cherche des joueurs pour son groupe
+   - Indique: contenu, roles manquants, niveau requis
+
+CREATION D'ANNONCE
+------------------
+Champs obligatoires:
+| Champ           | Description                    | Exemple              |
+|-----------------|--------------------------------|----------------------|
+| Type            | LFG ou LFM                     | LFM                  |
+| Contenu         | Donjon/Boss/Quest/PvP          | Donjon: Crypte       |
+| Niveau requis   | Min-Max niveau                 | 15-20                |
+| Roles cherches  | Tank/Heal/DPS/Any              | Tank, DPS x2         |
+
+Champs optionnels:
+| Champ           | Description                    | Exemple              |
+|-----------------|--------------------------------|----------------------|
+| Message         | Note personnalisee (100 char)  | "Exp run, know fight"|
+| Langue          | FR/EN/Any                      | FR                   |
+| Voice chat      | Required/Optional/None         | Optional             |
+| Experience      | First time/Experienced/Any     | Experienced          |
+
+INTERFACE BULLETIN BOARD
+------------------------
+```
++----------------------------------------------------------+
+|  TABLEAU DES GROUPES                    [Filtres] [Creer]|
++----------------------------------------------------------+
+| Type  | Contenu           | Niveau | Roles    | Leader   |
+|-------|-------------------|--------|----------|----------|
+| LFM   | Crypte Necro      | 18-22  | Tank,DPS | DarkKnight|
+| LFM   | World Boss Titan  | 60+    | Any x5   | GuildLead |
+| LFG   | Any Dungeon       | 15     | Healer   | HolyMage  |
+| LFM   | Arena 4v4         | 20+    | DPS x2   | PvPMaster |
++----------------------------------------------------------+
+```
+
+FILTRES DISPONIBLES
+-------------------
+- Par type: LFG / LFM / Tous
+- Par contenu: Donjon / Boss / Quest / PvP / Tous
+- Par niveau: Slider min-max
+- Par role: Tank / Heal / DPS / Tous
+- Par langue: FR / EN / Tous
+
+ACTIONS
+-------
+- Cliquer sur une annonce: Voir details + postuler
+- Postuler: Envoie notification au leader
+- Leader: Accepter/Refuser les candidatures
+- Whisper: Message prive au poster
+
+DUREE DES ANNONCES
+------------------
+- Duree max: 30 minutes
+- Renouvellement: Manuel (1 clic)
+- Auto-suppression: Si groupe plein ou poster offline
+
+
+================================================================================
+                      3. MATCHMAKING AUTOMATIQUE
+================================================================================
+
+CONCEPT
+-------
+File d'attente automatique qui forme des groupes optimaux
+sans intervention manuelle.
+
+CONTENUS SUPPORTES
+------------------
+| Contenu            | Taille Groupe | Composition Requise      |
+|--------------------|---------------|--------------------------|
+| Donjon Normal      | 4             | 1 Tank, 1 Heal, 2 DPS    |
+| Donjon Hard        | 4             | 1 Tank, 1 Heal, 2 DPS    |
+| Donjon Nightmare   | 6             | 1 Tank, 2 Heal, 3 DPS    |
+| Raid 10            | 10            | 2 Tank, 3 Heal, 5 DPS    |
+| World Boss         | Variable      | Pas de compo requise     |
+| Arena 2v2          | 2             | Any                      |
+| Arena 4v4          | 4             | Equilibre prefere        |
+
+S'INSCRIRE EN FILE
+------------------
+1. Ouvrir l'interface LFG
+2. Selectionner le contenu souhaite
+3. Choisir son role (base sur la classe)
+4. Cliquer "Rejoindre la file"
+5. Attendre le match
+
+ROLES PAR CLASSE
+----------------
+| Classe   | Roles Disponibles        | Role par Defaut |
+|----------|--------------------------|-----------------|
+| Warrior  | Tank, DPS                | Tank            |
+| Mage     | DPS                      | DPS             |
+| Archer   | DPS                      | DPS             |
+| Rogue    | DPS                      | DPS             |
+| Healer   | Heal, DPS                | Heal            |
+| Artisan  | DPS, Support             | Support         |
+
+ALGORITHME DE MATCHMAKING
+-------------------------
+Priorites (dans l'ordre):
+1. Composition valide (Tank + Heal + DPS)
+2. Niveau approprie (+/- 5 niveaux du contenu)
+3. Temps d'attente (plus long = plus flexible)
+4. Langue preferee (si possible)
+
+Expansion du matchmaking:
+| Temps attente | Flexibilite                          |
+|---------------|--------------------------------------|
+| 0-2 min       | Stricte: niveau exact, langue exacte |
+| 2-5 min       | Moderee: +/- 3 niveaux               |
+| 5-10 min      | Large: +/- 5 niveaux, any langue     |
+| 10+ min       | Maximale: forme le groupe dispo      |
+
+ESTIMATION DE TEMPS
+-------------------
+Affiche une estimation basee sur:
+- Nombre de joueurs en file par role
+- Historique recent des temps d'attente
+- Heure de la journee
+
+Exemple affichage:
+```
+Role: Healer
+Contenu: Crypte du Necromancien
+Temps estime: < 2 minutes
+Joueurs en attente: Tank: 3 | Heal: 1 | DPS: 12
+```
+
+GROUPE FORME
+------------
+Quand le groupe est complet:
+1. Notification a tous les membres
+2. Popup "Groupe Pret" avec timer 30s
+3. Tous doivent accepter
+4. Si 1 decline: retour en file pour les autres
+5. Si tous acceptent: teleport au contenu
+
+PENALITES
+---------
+| Action                    | Penalite                    |
+|---------------------------|------------------------------|
+| Decliner le groupe        | Aucune (1ere fois)          |
+| Decliner 2x en 10min      | Timeout 5 minutes           |
+| Quitter pendant le donjon | Timeout 15 minutes          |
+| AFK pendant le donjon     | Timeout 30 minutes + report |
+| Kick vote abuse           | Review + possible timeout   |
+
+
+================================================================================
+                       4. ROLES ET COMPOSITION
+================================================================================
+
+DEFINITIONS DES ROLES
+---------------------
+
+TANK:
+- Responsabilite: Prendre les degats, controler l'aggro
+- Stats importantes: HP, DEF, Threat generation
+- Classes: Warrior (spec tank), Artisan (certains builds)
+- Icone: Bouclier
+
+HEALER:
+- Responsabilite: Soigner le groupe, dispel, utility
+- Stats importantes: MAG, MP, Heal power
+- Classes: Healer
+- Icone: Croix verte
+
+DPS:
+- Responsabilite: Infliger des degats
+- Stats importantes: ATK/MAG, Crit
+- Classes: Mage, Archer, Rogue, Warrior (spec dps)
+- Icone: Epee
+
+SUPPORT:
+- Responsabilite: Buffs, debuffs, utility
+- Stats importantes: Variable
+- Classes: Artisan, Healer (spec support)
+- Icone: Etoile
+
+COMPOSITIONS STANDARD
+---------------------
+
+4-man Dungeon:
+```
+[Tank] [Healer] [DPS] [DPS]
+   1       1       2
+```
+
+6-man Hard Content:
+```
+[Tank] [Healer] [Healer] [DPS] [DPS] [DPS]
+   1       2               3
+```
+
+10-man Raid:
+```
+[Tank] [Tank] [Heal] [Heal] [Heal] [DPS] [DPS] [DPS] [DPS] [DPS]
+   2            3                          5
+```
+
+FLEX ROLES
+----------
+Certaines classes peuvent changer de role:
+
+- Warrior: Tank ↔ DPS (change de stance/build)
+- Healer: Heal ↔ DPS (change de spec)
+- Artisan: DPS ↔ Support (change de skills)
+
+Le joueur peut indiquer ses roles acceptes dans le LFG.
+
+
+================================================================================
+                       5. INTERFACE UTILISATEUR
+================================================================================
+
+ACCES AU LFG
+------------
+- Raccourci clavier: P (Party)
+- Bouton dans la barre d'interface
+- Commande chat: /lfg
+
+ONGLETS PRINCIPAUX
+------------------
+```
++----------------------------------------------------------+
+|  [Bulletin] [File Auto] [Mon Groupe] [Historique]        |
++----------------------------------------------------------+
+```
+
+ONGLET BULLETIN
+---------------
+- Liste des annonces LFG/LFM
+- Filtres
+- Bouton creer annonce
+- Mes annonces actives
+
+ONGLET FILE AUTO
+----------------
+- Selection du contenu (dropdown)
+- Selection du role
+- Bouton "Rejoindre la file"
+- Status de la file (temps estime, joueurs en attente)
+- Bouton "Quitter la file"
+
+ONGLET MON GROUPE
+-----------------
+- Composition actuelle
+- Liste des membres avec role et classe
+- Bouton "Lancer le contenu"
+- Chat de groupe
+- Kick vote (si leader)
+
+ONGLET HISTORIQUE
+-----------------
+- Derniers groupes rejoints
+- Stats: Completions, Temps moyen, Role joue
+- Joueurs frequemment grouped avec
+
+NOTIFICATIONS
+-------------
+- Groupe trouve (popup + son)
+- Candidature recue (leader)
+- Candidature acceptee/refusee
+- Membre rejoint/quitte le groupe
+- Contenu pret a lancer
+
+
+================================================================================
+                      6. REGLES ET RESTRICTIONS
+================================================================================
+
+NIVEAU MINIMUM
+--------------
+| Contenu               | Niveau Min | Niveau Recommande |
+|-----------------------|------------|-------------------|
+| Donjon Lv10           | 8          | 10                |
+| Donjon Lv20           | 18         | 20                |
+| Donjon Hard           | Niveau req | +2 au dessus      |
+| Raid                  | 60         | 65+               |
+| World Boss            | Variable   | Niveau du boss -5 |
+
+EQUIPEMENT MINIMUM (optionnel)
+------------------------------
+Pour le contenu difficile, on peut exiger un item level minimum:
+- Donjon Normal: Aucun
+- Donjon Hard: iLvl moyen >= niveau du donjon
+- Raid: iLvl moyen >= niveau du raid + 5
+
+RESTRICTIONS DE GROUPE
+----------------------
+- Pas plus de 2 joueurs de la meme classe (donjons)
+- Au moins 1 healer pour contenu 4+ joueurs
+- Au moins 1 tank pour contenu 6+ joueurs
+- Max 1 joueur de la meme guilde en matchmaking random (optionnel)
+
+COMPORTEMENT
+------------
+- Vote kick: 3 votes necessaires (sur 4)
+- Cooldown kick: 1 seul kick par donjon
+- Raison obligatoire: AFK, Grief, Toxic, Other
+- Review automatique si kick frequent
+
+
+================================================================================
+                   7. RECOMPENSES ET INCENTIVES
+================================================================================
+
+BONUS PREMIER GROUPE DU JOUR
+----------------------------
+Le premier donjon complete via matchmaking donne:
+- +50% XP du donjon
+- +1 loot supplementaire (commun-rare)
+- +100 gold bonus
+
+Reset: Quotidien a minuit
+
+BONUS ROLE EN DEMANDE
+---------------------
+Si un role est en penurie (ex: Tank, Healer):
+- Icone "En demande" visible dans l'interface
+- Bonus pour jouer ce role:
+  - +25% XP
+  - +50 gold bonus
+  - Sac de recompense supplementaire (mats, pots)
+
+Calcul "en demande":
+- Ratio DPS:Tank:Heal > 5:1:1 = Tank/Heal en demande
+
+ACHIEVEMENTS LFG
+----------------
+| Achievement            | Condition                  | Reward          |
+|------------------------|----------------------------|-----------------|
+| Premier Groupe         | Terminer 1 donjon via LFG  | 100 gold        |
+| Habitue                | 10 donjons via LFG         | Titre           |
+| Veteran                | 100 donjons via LFG        | Titre + 1000g   |
+| Ange Gardien           | 50 donjons en Healer       | Titre           |
+| Mur Indestructible     | 50 donjons en Tank         | Titre           |
+| Machine a Degats       | 50 donjons en DPS          | Titre           |
+| Zero Wipe              | 10 donjons sans mort       | Titre           |
+
+REPUTATION JOUEUR
+-----------------
+Systeme optionnel de notation:
+- A la fin du groupe, noter les membres (optionnel)
+- Note: Pouce haut / Neutre / Pouce bas
+- Trop de pouces bas = flag pour review
+- Beaucoup de pouces haut = badge "Joueur Fiable"
+
+
+================================================================================
+                      8. INTEGRATION TECHNIQUE
+================================================================================
+
+STRUCTURE JSON SUGGEREE
+-----------------------
+Fichier: systems/lfg.json
+
+```json
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "Systeme LFG et Matchmaking"
+  },
+
+  "bulletin_board": {
+    "enabled": true,
+    "max_listings_per_player": 3,
+    "listing_duration_minutes": 30,
+    "max_message_length": 100
+  },
+
+  "matchmaking": {
+    "enabled": true,
+    "contents": {
+      "dungeon_normal": {
+        "group_size": 4,
+        "composition": {"tank": 1, "heal": 1, "dps": 2},
+        "level_tolerance": 5,
+        "queue_timeout_minutes": 15
+      },
+      "dungeon_hard": {
+        "group_size": 4,
+        "composition": {"tank": 1, "heal": 1, "dps": 2},
+        "level_tolerance": 3,
+        "ilvl_required": true
+      },
+      "raid_10": {
+        "group_size": 10,
+        "composition": {"tank": 2, "heal": 3, "dps": 5},
+        "level_tolerance": 2,
+        "ilvl_required": true
+      }
+    },
+    "ready_check_timeout_seconds": 30,
+    "decline_penalty_minutes": [0, 5, 15, 30]
+  },
+
+  "roles": {
+    "tank": {
+      "icon": "shield",
+      "color": "#4169E1",
+      "classes": ["warrior", "artisan"]
+    },
+    "heal": {
+      "icon": "cross",
+      "color": "#32CD32",
+      "classes": ["healer"]
+    },
+    "dps": {
+      "icon": "sword",
+      "color": "#DC143C",
+      "classes": ["warrior", "mage", "archer", "rogue", "healer", "artisan"]
+    }
+  },
+
+  "incentives": {
+    "first_daily_bonus": {
+      "xp_multiplier": 1.5,
+      "gold_bonus": 100,
+      "extra_loot": true
+    },
+    "in_demand_bonus": {
+      "xp_multiplier": 1.25,
+      "gold_bonus": 50,
+      "reward_bag": true
+    }
+  },
+
+  "penalties": {
+    "decline_queue": {"timeout_minutes": 5, "after_count": 2},
+    "leave_dungeon": {"timeout_minutes": 15},
+    "afk_dungeon": {"timeout_minutes": 30}
+  }
+}
+```
+
+CANAUX DE COMMUNICATION
+-----------------------
+Le chat LFG existant (`[LFG]`) reste pour la discussion libre.
+Le systeme ajoute des fonctionnalites structurees.
+
+SYNCHRONISATION
+---------------
+- Mise a jour bulletin: Toutes les 10 secondes
+- Estimation temps file: Toutes les 30 secondes
+- Notification groupe: Temps reel (WebSocket/push)
+
+
+================================================================================
+                              FIN DU DOCUMENT
+================================================================================

@@ -1,0 +1,710 @@
+================================================================================
+                   KANARION ONLINE - UTILITAIRES SOCIAUX
+                    Inspect, Report & Systeme de Notifications
+                          Version 1.0 - 2026-01-23
+================================================================================
+
+Ce document detaille les utilitaires sociaux: inspection de joueurs,
+systeme de signalement, et gestion des notifications.
+
+================================================================================
+                              TABLE DES MATIERES
+================================================================================
+PARTIE 1: SYSTEME D'INSPECTION
+1. Vue d'Ensemble
+2. Informations Affichees
+3. Controle de Confidentialite
+4. Integration UI
+
+PARTIE 2: SYSTEME DE SIGNALEMENT
+5. Types de Reports
+6. Interface de Report
+7. Traitement des Reports
+8. Sanctions
+
+PARTIE 3: NOTIFICATIONS
+9. Categories de Notifications
+10. Parametres et Preferences
+11. Centre de Notifications
+12. Integration Technique
+
+================================================================================
+                      PARTIE 1: SYSTEME D'INSPECTION
+================================================================================
+
+================================================================================
+                          1. VUE D'ENSEMBLE
+================================================================================
+
+CONCEPT
+-------
+L'inspection permet de voir les informations publiques d'un joueur:
+- Equipement
+- Statistiques
+- Guilde
+- Achievements
+- Activite recente
+
+ACCES
+-----
+- Clic droit sur le joueur -> "Inspecter"
+- Clic sur le nom dans le chat -> "Inspecter"
+- Commande: /inspect [nom]
+- Via la liste d'amis
+- Via le classement (leaderboards)
+
+RESTRICTIONS
+------------
+- Le joueur inspecte doit etre online (sauf certaines infos)
+- Certaines infos peuvent etre masquees (parametres vie privee)
+- Cooldown anti-spam: 1 inspection/seconde
+
+
+================================================================================
+                      2. INFORMATIONS AFFICHEES
+================================================================================
+
+INTERFACE D'INSPECTION
+----------------------
+```
++----------------------------------------------------------+
+| INSPECTION: DarkKnight                            [X]    |
++----------------------------------------------------------+
+| [Avatar/Portrait]    | Niveau: 65                        |
+|                      | Classe: Warrior (Tank)            |
+|                      | Guilde: <Knights of Dawn>         |
+|                      | Titre: Champion d'Arene           |
+|                      | Derniere connexion: En ligne      |
++----------------------------------------------------------+
+| [Equipement] [Stats] [Achievements] [Activite]           |
++----------------------------------------------------------+
+```
+
+ONGLET EQUIPEMENT
+-----------------
+```
++----------------------------------------------------------+
+|           [Casque T4 ★★★★ +12]                           |
+| [Epaules]                        [Amulette]              |
+|           [Armure T4 ★★★★★ +15]                          |
+| [Gants]                          [Anneau 1]              |
+|           [Jambes T4 ★★★★ +10]                           |
+| [Bottes]                         [Anneau 2]              |
+|                                                          |
+| Main: [Epee Legendaire T5 ★★★★★ +15]                     |
+| Off:  [Bouclier du Titan T4 ★★★★ +12]                    |
++----------------------------------------------------------+
+| Item Level moyen: 287                                    |
+| Valeur estimee: ~2,500,000 gold                          |
++----------------------------------------------------------+
+```
+
+Cliquer sur un item affiche:
+- Nom complet
+- Stats (base + bonus)
+- Enchantement
+- Gemmes serties
+- Set bonus (si applicable)
+
+ONGLET STATS
+------------
+```
++----------------------------------------------------------+
+| STATISTIQUES PRINCIPALES                                 |
+|----------------------------------------------------------|
+| HP: 45,000 / 45,000          | ATK: 3,200                |
+| MP: 8,000 / 8,000            | DEF: 2,800                |
+|                              | MAG: 850                  |
+|----------------------------------------------------------|
+| STATS SECONDAIRES                                        |
+|----------------------------------------------------------|
+| Crit Rate: 35%               | Crit DMG: 180%            |
+| Hit Rate: 98%                | Evasion: 12%              |
+| Block: 25%                   | Armor Pen: 40%            |
+|----------------------------------------------------------|
+| PvP Stats (si visible)                                   |
+|----------------------------------------------------------|
+| Arena Rating: 1850 (Gold II) | Win Rate: 58%             |
++----------------------------------------------------------+
+```
+
+ONGLET ACHIEVEMENTS
+-------------------
+```
++----------------------------------------------------------+
+| ACHIEVEMENTS RECENTS                                     |
+|----------------------------------------------------------|
+| [★] Maitre Forgeron - Craft 500 items               100% |
+| [★] Chasseur de Boss - Tuer 50 world bosses         100% |
+| [★] Arena Champion - Atteindre Gold                 100% |
+| [○] Legende Vivante - Atteindre niveau 100          65%  |
+|----------------------------------------------------------|
+| Total: 89/150 achievements (59%)                         |
+| Points: 4,520                                            |
++----------------------------------------------------------+
+```
+
+ONGLET ACTIVITE
+---------------
+```
++----------------------------------------------------------+
+| ACTIVITE RECENTE (7 derniers jours)                      |
+|----------------------------------------------------------|
+| Donjons completes: 23                                    |
+| Bosses tues: 5                                           |
+| Arenas jouees: 47                                        |
+| Temps de jeu: ~18h                                       |
+|----------------------------------------------------------|
+| POSITIONS CLASSEMENT                                     |
+|----------------------------------------------------------|
+| PvE DPS: #127 serveur                                    |
+| Arena 2v2: #45 serveur                                   |
+| Achievements: #89 serveur                                |
++----------------------------------------------------------+
+```
+
+
+================================================================================
+                    3. CONTROLE DE CONFIDENTIALITE
+================================================================================
+
+PARAMETRES DE VIE PRIVEE
+------------------------
+Le joueur peut choisir ce qui est visible:
+
+| Information          | Options                   | Defaut    |
+|----------------------|---------------------------|-----------|
+| Equipement           | Tous / Amis / Guilde / Personne | Tous |
+| Stats detaillees     | Tous / Amis / Guilde / Personne | Tous |
+| Achievements         | Tous / Amis / Personne    | Tous      |
+| Activite recente     | Tous / Amis / Personne    | Amis      |
+| PvP Rating           | Tous / Personne           | Tous      |
+| Derniere connexion   | Tous / Amis / Personne    | Amis      |
+| Position geographique| Tous / Amis / Personne    | Personne  |
+
+TOUJOURS VISIBLE
+----------------
+Certaines infos sont toujours publiques:
+- Nom du personnage
+- Niveau
+- Classe
+- Guilde (nom seulement)
+- Titre actif
+
+MESSAGES DE MASQUAGE
+--------------------
+Si une info est masquee:
+```
+"Ce joueur a choisi de ne pas afficher cette information."
+```
+
+
+================================================================================
+                       4. INTEGRATION UI
+================================================================================
+
+MENU CONTEXTUEL JOUEUR
+----------------------
+Clic droit sur un joueur:
+```
++------------------------+
+| DarkKnight             |
+|------------------------|
+| Inspecter              |
+| Inviter en groupe      |
+| Ajouter ami            |
+| Whisper                |
+| Inviter en guilde      |
+|------------------------|
+| Signaler               |
+| Bloquer                |
++------------------------+
+```
+
+RACCOURCIS
+----------
+- Shift + Clic sur nom = Inspection rapide
+- /inspect DarkKnight = Ouvre l'inspection
+- /who DarkKnight = Info basique dans le chat
+
+COMPARAISON D'EQUIPEMENT
+------------------------
+Option "Comparer avec mon equipement":
+```
++----------------------------------------------------------+
+| COMPARAISON: Epee du Heros vs Mon Epee                   |
+|----------------------------------------------------------|
+| ATK: 450 (+120)  ▲                                       |
+| DEF: 0 (=)                                               |
+| Crit: +15% (+5%)  ▲                                      |
+| Speed: +10 (-5)   ▼                                      |
++----------------------------------------------------------+
+```
+
+
+================================================================================
+                     PARTIE 2: SYSTEME DE SIGNALEMENT
+================================================================================
+
+================================================================================
+                        5. TYPES DE REPORTS
+================================================================================
+
+CATEGORIES DE SIGNALEMENT
+-------------------------
+
+A) Comportement Toxique
+   - Insultes, harcelement
+   - Discrimination
+   - Menaces
+   - Spam chat
+
+B) Triche/Exploit
+   - Utilisation de hacks
+   - Exploitation de bugs
+   - Bot/automation
+   - Speed hack, teleport
+
+C) Fraude Economique
+   - Scam (arnaque)
+   - RMT (Real Money Trading)
+   - Manipulation de marche
+   - Vol de compte (signale par victime)
+
+D) Nom Inapproprie
+   - Nom offensant
+   - Usurpation d'identite
+   - Nom trompeur
+
+E) Grief/Sabotage
+   - Ruiner le gameplay d'autrui intentionnellement
+   - AFK volontaire en groupe
+   - Feed intentionnel en PvP
+   - Blocage de spawn/ressources
+
+F) Contenu Inapproprie
+   - Discussion de sujets interdits
+   - Liens malveillants
+   - Publicite non autorisee
+
+
+================================================================================
+                      6. INTERFACE DE REPORT
+================================================================================
+
+ACCES AU REPORT
+---------------
+- Clic droit sur joueur -> "Signaler"
+- Clic sur message chat -> "Signaler"
+- Commande: /report [nom]
+- Menu: Parametres -> Support -> Signaler
+
+FORMULAIRE DE REPORT
+--------------------
+```
++----------------------------------------------------------+
+| SIGNALER UN JOUEUR                                       |
++----------------------------------------------------------+
+| Joueur signale: [DarkKnight]                             |
+|                                                          |
+| Categorie: [Comportement Toxique    v]                   |
+|                                                          |
+| Sous-categorie: [Insultes           v]                   |
+|                                                          |
+| Description (optionnel, max 500 char):                   |
+| [                                                    ]   |
+| [                                                    ]   |
+|                                                          |
+| Evidence:                                                |
+| [x] Inclure les 50 derniers messages du chat             |
+| [ ] Inclure une capture d'ecran (upload)                 |
+|                                                          |
+| [Annuler]                              [Envoyer Report]  |
++----------------------------------------------------------+
+```
+
+APRES L'ENVOI
+-------------
+Message de confirmation:
+```
+Votre signalement a ete envoye.
+Reference: #RPT-2026012345
+
+Notre equipe de moderation examinera ce report.
+Vous recevrez une notification du resultat par mail.
+
+Note: Les faux reports sont sanctionnes.
+```
+
+LIMITES ANTI-ABUS
+-----------------
+| Restriction              | Limite                        |
+|--------------------------|-------------------------------|
+| Reports par jour         | 5                             |
+| Reports meme joueur      | 1 par 24h                     |
+| Cooldown apres report    | 5 minutes                     |
+| Reports en attente max   | 10                            |
+
+
+================================================================================
+                     7. TRAITEMENT DES REPORTS
+================================================================================
+
+WORKFLOW DE MODERATION
+----------------------
+```
+[Report recu] -> [Queue automatique] -> [Triage IA]
+                                            |
+                    +-----------------------+
+                    |                       |
+              [Priorite haute]        [Priorite normale]
+                    |                       |
+              [GM Review]            [Auto-review]
+                    |                       |
+              [Decision]             [Decision ou escalade]
+                    |                       |
+              [Sanction/Rejet]       [Sanction/Rejet]
+                    |                       |
+              [Notification]         [Notification]
+```
+
+PRIORITE DES REPORTS
+--------------------
+| Type                      | Priorite   | Temps cible    |
+|---------------------------|------------|----------------|
+| Hack/Cheat evident        | Critique   | < 1 heure      |
+| Harcelement severe        | Haute      | < 4 heures     |
+| RMT/Scam                  | Haute      | < 4 heures     |
+| Toxicite generale         | Moyenne    | < 24 heures    |
+| Nom inapproprie           | Basse      | < 48 heures    |
+| Grief mineur              | Basse      | < 48 heures    |
+
+DETECTION AUTOMATIQUE
+---------------------
+Le systeme peut auto-detecter:
+- Mots interdits dans le chat
+- Patterns de mouvement anormaux
+- Transactions suspectes
+- Comportements de bot
+
+RESULTATS POSSIBLES
+-------------------
+| Resultat           | Description                          |
+|--------------------|--------------------------------------|
+| Rapport Valide     | Sanction appliquee                   |
+| Rapport Invalide   | Pas d'infraction constatee           |
+| Information        | Comportement surveille               |
+| Evidence insuffisante | Plus de preuves necessaires       |
+
+
+================================================================================
+                          8. SANCTIONS
+================================================================================
+
+ECHELLE DE SANCTIONS
+--------------------
+Les sanctions suivent une progression:
+
+| Niveau | Sanction           | Duree/Impact              |
+|--------|--------------------|-----------------------------|
+| 1      | Avertissement      | Notification + log        |
+| 2      | Mute temporaire    | 1-24 heures               |
+| 3      | Mute prolonge      | 1-7 jours                 |
+| 4      | Suspension compte  | 1-30 jours                |
+| 5      | Ban permanent      | Definitif                 |
+
+SANCTIONS PAR TYPE
+------------------
+
+Toxicite:
+- 1ere offense: Avertissement
+- 2eme offense: Mute 24h
+- 3eme offense: Mute 7 jours
+- 4eme offense: Suspension 7 jours
+- Recidive: Ban permanent
+
+Triche:
+- Detection confirmee: Ban permanent (tolerance zero)
+- Suspicion: Surveillance + restrictions temporaires
+
+RMT/Scam:
+- Scam confirme: Ban permanent + rollback pour victime
+- RMT: Ban permanent des deux parties
+
+Grief:
+- 1ere offense: Avertissement
+- Recidive: Suspensions croissantes
+
+APPEL
+-----
+Le joueur sanctionne peut faire appel:
+- Via le site web/support
+- Une seule fois par sanction
+- Review par un autre moderateur
+- Resultat en 48-72h
+
+FAUX REPORTS
+------------
+Signaler abusivement peut entrainer:
+- Avertissement
+- Perte du privilege de report (temporaire)
+- Sanction si malveillance evidente
+
+
+================================================================================
+                     PARTIE 3: NOTIFICATIONS
+================================================================================
+
+================================================================================
+                   9. CATEGORIES DE NOTIFICATIONS
+================================================================================
+
+TYPES DE NOTIFICATIONS
+----------------------
+
+A) Sociales
+   - Demande d'ami acceptee
+   - Joueur ami se connecte
+   - Invitation de groupe
+   - Invitation de guilde
+   - Nouveau whisper
+
+B) Guilde
+   - Annonce du GM
+   - Mission de guilde disponible
+   - Rang change
+   - Joueur rejoint/quitte
+
+C) Combat/PvE
+   - World Boss apparu
+   - Donjon disponible (cooldown termine)
+   - Event commence
+   - Loot rare obtenu
+
+D) Economie
+   - Objet vendu (HDV)
+   - Objet achete
+   - Enchere surpassee
+   - Vente expiree
+
+E) Systeme
+   - Maintenance prevue
+   - Mise a jour disponible
+   - Recompense prete a reclamer
+   - Achievement debloque
+
+F) Moderation
+   - Report traite
+   - Sanction recue
+   - Avertissement
+
+
+================================================================================
+                   10. PARAMETRES ET PREFERENCES
+================================================================================
+
+INTERFACE PARAMETRES NOTIFICATIONS
+----------------------------------
+```
++----------------------------------------------------------+
+| PARAMETRES NOTIFICATIONS                                 |
++----------------------------------------------------------+
+| SOCIALES                                                 |
+|   [x] Ami se connecte            [Pop-up v] [Son v]      |
+|   [x] Invitation de groupe       [Pop-up v] [Son v]      |
+|   [x] Nouveau whisper            [Pop-up v] [Son v]      |
+|                                                          |
+| GUILDE                                                   |
+|   [x] Annonces de guilde         [Pop-up v] [Son x]      |
+|   [ ] Joueur rejoint/quitte      [Banner v] [Son x]      |
+|                                                          |
+| COMBAT                                                   |
+|   [x] World Boss                 [Pop-up v] [Son v]      |
+|   [x] Event commence             [Pop-up v] [Son v]      |
+|                                                          |
+| ECONOMIE                                                 |
+|   [x] Vente HDV                  [Banner v] [Son x]      |
+|   [x] Enchere surpassee          [Pop-up v] [Son v]      |
+|                                                          |
+| SYSTEME                                                  |
+|   [x] Maintenance                [Pop-up v] [Son v]      |
+|   [x] Achievement                [Banner v] [Son v]      |
++----------------------------------------------------------+
+| Mode Ne Pas Deranger: [OFF]  (bloque pop-ups en combat)  |
++----------------------------------------------------------+
+```
+
+TYPES D'AFFICHAGE
+-----------------
+| Type      | Description                                   |
+|-----------|-----------------------------------------------|
+| Pop-up    | Fenetre au centre, necessite action           |
+| Banner    | Bandeau en haut, disparait apres 5s           |
+| Toast     | Petit message en coin, disparait apres 3s     |
+| Badge     | Icone avec compteur (mail, notif)             |
+| Sound     | Effet sonore uniquement                       |
+| None      | Desactive                                     |
+
+MODE NE PAS DERANGER
+--------------------
+Options:
+- OFF: Toutes notifications actives
+- Auto: Desactive en combat/donjon
+- ON: Uniquement les critiques
+- Horaire: Active entre X et Y heures
+
+
+================================================================================
+                    11. CENTRE DE NOTIFICATIONS
+================================================================================
+
+INTERFACE PRINCIPALE
+--------------------
+```
++----------------------------------------------------------+
+| NOTIFICATIONS                              [Tout lu] [X] |
++----------------------------------------------------------+
+| AUJOURD'HUI                                              |
+|----------------------------------------------------------|
+| [!] DarkKnight vous a ajoute en ami           il y a 5m  |
+| [G] Annonce Guilde: Raid ce soir 20h          il y a 1h  |
+| [$] Votre Epee s'est vendue pour 15,000g      il y a 2h  |
+| [★] Achievement debloque: Explorateur         il y a 3h  |
+|----------------------------------------------------------|
+| HIER                                                     |
+|----------------------------------------------------------|
+| [W] World Boss Titan apparu en Zone Nord      hier 22h   |
+| [!] Invitation de groupe de HolyMage          hier 18h   |
++----------------------------------------------------------+
+| [Voir historique complet]                                |
++----------------------------------------------------------+
+```
+
+ACTIONS SUR NOTIFICATIONS
+-------------------------
+- Cliquer: Action contextuelle (ouvrir mail, accepter invite, etc.)
+- Balayer droite: Marquer comme lu
+- Balayer gauche: Supprimer
+- Maintenir: Options (masquer ce type, etc.)
+
+HISTORIQUE
+----------
+- Garde les notifications des 7 derniers jours
+- Filtrable par categorie
+- Recherche possible
+
+
+================================================================================
+                    12. INTEGRATION TECHNIQUE
+================================================================================
+
+STRUCTURE JSON SUGGEREE
+-----------------------
+Fichier: systems/social_utilities.json
+
+```json
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "Inspect, Report et Notifications"
+  },
+
+  "inspect": {
+    "enabled": true,
+    "cooldown_ms": 1000,
+    "default_privacy": {
+      "equipment": "all",
+      "stats": "all",
+      "achievements": "all",
+      "activity": "friends",
+      "pvp_rating": "all",
+      "last_online": "friends",
+      "location": "none"
+    },
+    "always_visible": ["name", "level", "class", "guild_name", "title"]
+  },
+
+  "report": {
+    "enabled": true,
+    "max_reports_per_day": 5,
+    "cooldown_same_player_hours": 24,
+    "cooldown_after_report_minutes": 5,
+    "max_pending_reports": 10,
+    "max_description_length": 500,
+    "categories": {
+      "toxic_behavior": {
+        "priority": "medium",
+        "subcategories": ["insults", "harassment", "discrimination", "threats", "spam"]
+      },
+      "cheating": {
+        "priority": "critical",
+        "subcategories": ["hacks", "exploits", "bots", "speed_hack"]
+      },
+      "fraud": {
+        "priority": "high",
+        "subcategories": ["scam", "rmt", "market_manipulation", "account_theft"]
+      },
+      "inappropriate_name": {
+        "priority": "low",
+        "subcategories": ["offensive", "impersonation", "misleading"]
+      },
+      "griefing": {
+        "priority": "low",
+        "subcategories": ["intentional_sabotage", "afk_abuse", "spawn_blocking"]
+      },
+      "inappropriate_content": {
+        "priority": "medium",
+        "subcategories": ["forbidden_topics", "malicious_links", "unauthorized_ads"]
+      }
+    }
+  },
+
+  "sanctions": {
+    "escalation": [
+      {"level": 1, "type": "warning", "duration": null},
+      {"level": 2, "type": "mute", "duration_hours": [1, 24]},
+      {"level": 3, "type": "mute", "duration_days": [1, 7]},
+      {"level": 4, "type": "suspension", "duration_days": [1, 30]},
+      {"level": 5, "type": "ban", "duration": "permanent"}
+    ],
+    "zero_tolerance": ["cheating", "rmt"],
+    "appeal_allowed": true,
+    "appeal_review_hours": 72
+  },
+
+  "notifications": {
+    "enabled": true,
+    "categories": {
+      "social": {
+        "friend_online": {"default_display": "toast", "default_sound": true},
+        "group_invite": {"default_display": "popup", "default_sound": true},
+        "whisper": {"default_display": "popup", "default_sound": true}
+      },
+      "guild": {
+        "announcement": {"default_display": "popup", "default_sound": false},
+        "member_change": {"default_display": "banner", "default_sound": false}
+      },
+      "combat": {
+        "world_boss": {"default_display": "popup", "default_sound": true},
+        "event_start": {"default_display": "popup", "default_sound": true}
+      },
+      "economy": {
+        "item_sold": {"default_display": "banner", "default_sound": false},
+        "outbid": {"default_display": "popup", "default_sound": true}
+      },
+      "system": {
+        "maintenance": {"default_display": "popup", "default_sound": true},
+        "achievement": {"default_display": "banner", "default_sound": true}
+      }
+    },
+    "display_types": ["popup", "banner", "toast", "badge", "sound", "none"],
+    "do_not_disturb_modes": ["off", "auto", "on", "scheduled"],
+    "history_retention_days": 7
+  }
+}
+```
+
+
+================================================================================
+                              FIN DU DOCUMENT
+================================================================================

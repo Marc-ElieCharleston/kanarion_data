@@ -1,0 +1,475 @@
+================================================================================
+                 KANARION ONLINE - SUGGESTIONS SYSTEMES SOCIAUX
+                      Guildes, Housing, Mentorat & Social
+                          Version 1.0 - 2026-01-22
+================================================================================
+
+Ce document detaille les suggestions pour les systemes sociaux du jeu.
+
+================================================================================
+                              TABLE DES MATIERES
+================================================================================
+1. Extension du Systeme de Guilde
+2. Guild Hall (QG de Guilde)
+3. Systeme de Housing Personnel
+4. Systeme de Mentorat
+5. Systeme Social General
+6. Systeme de Reputation
+7. Events Sociaux
+
+================================================================================
+                      1. EXTENSION DU SYSTEME DE GUILDE
+================================================================================
+
+Note: Le systeme de base existe dans guilds.json (ranks, levels, missions)
+
+EXTENSIONS PROPOSEES
+--------------------
+
+A) RANGS PERSONNALISABLES
+   Actuellement: 4 rangs fixes (Leader, Officer, Member, Recruit)
+
+   Proposition:
+   - Permettre au Leader de creer jusqu'a 8 rangs custom
+   - Nommer chaque rang librement
+   - Assigner des permissions granulaires
+
+   Permissions disponibles:
+   - guild_invite: Inviter des joueurs
+   - guild_kick: Expulser des membres (jusqu'au rang X)
+   - guild_promote: Promouvoir (jusqu'au rang X)
+   - guild_demote: Retrograder (jusqu'au rang X)
+   - guild_motd: Editer le Message of the Day
+   - guild_bank_deposit: Deposer dans la banque
+   - guild_bank_withdraw: Retirer de la banque (avec limite?)
+   - guild_bank_manage: Gerer les onglets/permissions banque
+   - guild_war_declare: Declarer la guerre
+   - guild_war_surrender: Capituler
+   - guild_recruit_toggle: Activer/desactiver le recrutement
+   - guild_hall_edit: Modifier le Guild Hall
+   - guild_mission_start: Lancer des missions
+   - guild_alliance_manage: Gerer les alliances
+
+B) BANQUE DE GUILDE AVANCEE
+   Structure:
+   - Onglets (tabs): 1 de base, jusqu'a 5 max
+   - Cout par onglet supplementaire: 10,000 gold (guild.json)
+   - Slots par onglet: 50
+
+   Permissions par onglet:
+   - Qui peut voir
+   - Qui peut deposer
+   - Qui peut retirer
+   - Limite de retrait par jour par rang
+
+   Logs:
+   - Historique complet des transactions
+   - Filtrable par joueur, date, type
+   - Visible par Officers+
+
+C) ALLIANCES
+   Concept: Guildes peuvent former des alliances
+
+   Regles:
+   - Max 3 guildes par alliance
+   - Chat d'alliance partage
+   - Pas de PvP entre allies (en GvG)
+   - Bonus partages pour certains contenus (raids?)
+
+   Formation:
+   - Leader ou Officer avec permission
+   - Invitation + acceptation
+   - Cooldown de 7 jours apres avoir quitte une alliance
+
+D) MISSIONS DE GUILDE ETENDUES
+   Missions existantes: Weekly et Monthly (guilds.json)
+
+   Ajouts proposes:
+
+   Missions Quotidiennes (nouvelles):
+   - Simples, completables en groupe ou solo
+   - XP guilde reduite mais reguliere
+   - 3 missions random par jour
+
+   Examples:
+   - "Tuer 50 monstres en groupe": 100 XP guilde
+   - "Completer 3 quetes": 80 XP guilde
+   - "Gagner 1 match PvP": 120 XP guilde
+   - "Crafter 10 items": 60 XP guilde
+
+   Missions de Guilde Speciales (Raids):
+   - Require X membres connectes
+   - Objectif unique difficile
+   - Rewards massifs
+
+   Example:
+   - "Vaincre le World Boss Leviathan avec 10+ membres": 5000 XP guilde
+
+E) GUERRE DE GUILDE (GvG)
+   Deja detaille dans 01_pvp_systems.txt
+
+
+================================================================================
+                       2. GUILD HALL (QG DE GUILDE)
+================================================================================
+
+CONCEPT
+-------
+Zone instanciee privee pour chaque guilde. Deblocke au niveau 20 de guilde.
+Un espace de rassemblement, de preparation, et de fierte.
+
+ACCES
+-----
+- Teleportation depuis n'importe ou (cooldown 10min)
+- Portail permanent dans la capitale
+- Spell de teleport Guild Hall (achetable)
+
+STRUCTURE DE BASE
+-----------------
+Le Guild Hall commence petit et s'upgrade.
+
+Niveau 1 (gratuit avec unlock):
+- Hall principal (spawn point)
+- Tableau de missions
+- Banque de guilde (acces)
+- NPC reparation
+
+Niveau 2 (100,000 gold):
+- Salle de reunion (table ronde avec places pour 20)
+- Dummy d'entrainement (test DPS)
+- Teleporteur vers capitales
+
+Niveau 3 (500,000 gold):
+- Quartiers des membres (lits, customisables)
+- Jardin (peut faire pousser des plantes pour mats)
+- Forge de guilde (bonus craft pour membres)
+
+Niveau 4 (1,000,000 gold):
+- Arene d'entrainement (duels prives)
+- Salle des trophees (affiche les achievements de guilde)
+- Portail de donjon (acces rapide aux donjons)
+
+Niveau 5 (2,500,000 gold):
+- Throne room (leader peut s'asseoir sur le trone)
+- NPC marchands exclusifs
+- Buff de guilde permanent (+3% XP dans le hall)
+
+CUSTOMISATION
+-------------
+- Bannieres et drapeaux (couleurs de guilde)
+- Statues (membres distingues)
+- Trophees (boss vaincus, PvP victories)
+- Decorations saisonnieres (events)
+- Musique d'ambiance (selection)
+
+MAINTENANCE
+-----------
+- Cout hebdomadaire: 1000 gold de base + 500 par niveau
+- Si non paye: fonctionnalites desactivees progressivement
+- Apres 30 jours non payes: Guild Hall reset au niveau 1
+
+
+================================================================================
+                    3. SYSTEME DE HOUSING PERSONNEL
+================================================================================
+
+Note: Idee "housing_system" dans ideas_to_integrate.json
+
+CONCEPT
+-------
+Chaque joueur peut posseder une maison personnelle, un espace prive
+decorable et fonctionnel.
+
+OBTENTION
+---------
+- Quete de deblockage a partir du niveau 20
+- Cout initial: 50,000 gold
+- Emplacement: Instance personnelle (pas dans le monde)
+
+TYPES DE MAISONS
+----------------
+
+1. Petite Maison (base)
+   - 1 piece principale
+   - 20 slots de decoration
+   - Stockage: +20 slots prives
+   - Prix: 50,000 gold
+
+2. Maison Moyenne
+   - 3 pieces (salon, chambre, atelier)
+   - 50 slots de decoration
+   - Stockage: +50 slots prives
+   - Jardin petit (5 plots)
+   - Prix: 200,000 gold
+
+3. Grande Maison
+   - 5 pieces + grenier + cave
+   - 100 slots de decoration
+   - Stockage: +100 slots prives
+   - Jardin moyen (10 plots)
+   - Station de craft personnelle
+   - Prix: 500,000 gold
+
+4. Manoir
+   - 8 pieces sur 2 etages
+   - 200 slots de decoration
+   - Stockage: +200 slots prives
+   - Grand jardin (20 plots)
+   - Toutes les stations de craft
+   - Serviteur NPC (reparation, vente)
+   - Prix: 2,000,000 gold
+
+FONCTIONNALITES
+---------------
+
+A) Decoration
+   - Meubles: achetes chez NPCs, craftes, ou drops
+   - Placement libre en 3D (ou grille si plus simple)
+   - Categories: Mobilier, Eclairage, Art, Plantes, Trophees
+   - Items speciaux: Trophees de boss, items commemoratifs
+
+B) Stockage
+   - Coffres personnels (augmentent avec la maison)
+   - Separe de la banque standard
+   - Acces uniquement depuis la maison
+
+C) Jardinage
+   - Planter des graines pour recolter des materiaux
+   - Temps de pousse: 6h - 48h selon la plante
+   - Rendement: 1-5 items par recolte
+   - Pas de pay-to-skip (ou tres cher en gold)
+
+D) Crafting
+   - Stations de craft (selon upgrade de maison)
+   - Bonus si craft depuis la maison: +5% qualite
+   - File d'attente etendue
+
+E) Repos
+   - Se reposer dans son lit: bonus XP +10% pendant 1h
+   - Cooldown: 12h entre chaque repos
+   - Incite a retourner "chez soi"
+
+INVITATIONS
+-----------
+- Inviter des amis dans sa maison
+- Liste de permissions: qui peut visiter librement
+- Mode "Visite guidee": owner peut montrer sa maison
+- Mode "Porte ouverte": n'importe qui peut visiter
+
+INTEGRATION SOCIALE
+-------------------
+- Classement des plus belles maisons (votes)
+- Events de decoration (themes saisonniers)
+- Trophees pour collectionneurs de meubles
+
+
+================================================================================
+                        4. SYSTEME DE MENTORAT
+================================================================================
+
+Note: Idee "mentor_system" dans ideas_to_integrate.json
+
+CONCEPT
+-------
+Les joueurs experimentes peuvent devenir Mentors et guider les nouveaux joueurs.
+Les deux parties recoivent des avantages.
+
+DEVENIR MENTOR
+--------------
+Requirements:
+- Niveau 50+
+- 30 jours de jeu total
+- Au moins 1 personnage avec sous-classe tier 3
+- Reputation "Bon Samaritain" niveau 3
+- Aucune sanction recente
+
+Processus:
+- Passer un "examen" (quiz sur les mecaniques du jeu)
+- 80% de bonnes reponses minimum
+- Badge "Mentor" visible sur le profil
+
+TROUVER UN MENTOR/APPRENTI
+--------------------------
+- Systeme de matching automatique
+- Liste des mentors disponibles avec specialites
+- Specialites: Combat, Craft, PvP, Exploration, Social
+
+BENEFICES MENTOR
+----------------
+- +10% XP quand groupe avec apprenti
+- Monnaie de mentor (pour acheter cosmetics exclusifs)
+- Titre "Grand Mentor" apres 10 apprentis diplomes
+- Acces a un salon de chat Mentor exclusif
+
+BENEFICES APPRENTI
+------------------
+- +15% XP jusqu'au niveau 30
+- Acces prioritaire au chat Mentor pour poser des questions
+- Bonus de 5000 gold a la "graduation" (niveau 30)
+- Teleportation gratuite vers le mentor 1x/jour
+
+GRADUATION
+----------
+- Quand l'apprenti atteint niveau 30
+- Ceremony in-game (petit event)
+- Les deux recoivent des rewards
+- L'apprenti peut rester en contact (friend list)
+
+LIMITES
+-------
+- 1 mentor peut avoir max 3 apprentis actifs
+- 1 apprenti peut avoir max 1 mentor actif
+- Mentor peut "liberer" un apprenti inactif apres 7 jours
+
+
+================================================================================
+                       5. SYSTEME SOCIAL GENERAL
+================================================================================
+
+A) LISTE D'AMIS
+   Fonctionnalites:
+   - Ajouter/Supprimer des amis (max 100)
+   - Voir le statut: Online, Offline, Occupé, Invisible
+   - Voir la localisation (si autorise)
+   - Voir l'activite actuelle (donjon, PvP, AFK, etc.)
+   - Notes personnelles sur chaque ami
+   - Groupes d'amis (categories custom)
+
+B) LISTE NOIRE
+   - Bloquer des joueurs
+   - Bloque: whispers, invitations, vue de position
+   - Ne bloque PAS: trade, AH, GvG (c'est un jeu)
+
+C) CHAT SYSTEM
+   Canaux:
+   - /say: Local (rayon 50 unites)
+   - /yell: Zone entiere
+   - /whisper ou /w: Prive
+   - /party: Groupe
+   - /guild: Guilde
+   - /alliance: Alliance
+   - /trade: Commerce (capitale seulement)
+   - /lfg: Looking for Group
+   - /pvp: Canal PvP
+   - /world: Global (optionnel, peut etre mute)
+
+   Moderation:
+   - Report bouton sur chaque message
+   - Filtre de mots automatique
+   - Mute temporaire par les moderateurs
+   - Mute permanent pour recidivistes
+
+D) EMOTES
+   - /wave, /bow, /dance, /sit, /sleep, etc.
+   - Emotes achetables (cosmetiques)
+   - Emotes ciblées (/wave @player)
+
+E) STATUTS PERSONNALISES
+   - Message de statut (50 caracteres max)
+   - Affiches sur le profil
+   - Visible par les amis
+
+
+================================================================================
+                        6. SYSTEME DE REPUTATION
+================================================================================
+
+CONCEPT
+-------
+Differentes factions dans le monde ont des reputations separees.
+Augmenter la reputation debloque des avantages.
+
+FACTIONS PRINCIPALES
+--------------------
+
+1. La Garde Royale (Protecteurs du royaume)
+   - Gagne: Quetes, tuer des bandits, events
+   - Rewards: Equipement de garde, acces a la caserne, montures
+
+2. Le Cercle des Mages (Academie de magie)
+   - Gagne: Quetes magiques, collecter des artefacts
+   - Rewards: Recettes d'enchantement, teleportation discount, robes
+
+3. La Guilde des Marchands (Commerce)
+   - Gagne: Transactions AH, quetes de livraison
+   - Rewards: Reduction taxes AH, acces au marche noir, montures
+
+4. Les Chasseurs de Monstres (PvE)
+   - Gagne: Tuer des monstres elites/boss, bounties
+   - Rewards: Bestiaire, bonus vs monstres, trophees
+
+5. L'Ordre de la Faille (Lore principal)
+   - Gagne: Quetes principales, exploration de donjons
+   - Rewards: Acces au lore cache, cosmetics, titres
+
+NIVEAUX DE REPUTATION
+---------------------
+1. Inconnu (0 points)
+2. Neutre (0-1000 points)
+3. Amical (1000-5000 points)
+4. Respecte (5000-15000 points)
+5. Honore (15000-35000 points)
+6. Revere (35000-70000 points)
+7. Exalte (70000+ points)
+
+Chaque niveau debloque de nouveaux items chez le vendeur de faction.
+
+REPUTATION NEGATIVE (optionnel)
+-------------------------------
+- Certaines actions reduisent la reputation
+- Tomber en-dessous de Neutre = Hostile
+- NPCs de faction attaquent
+- Possibilite de racheter sa reputation (quetes, gold)
+
+
+================================================================================
+                          7. EVENTS SOCIAUX
+================================================================================
+
+A) FETES IN-GAME
+   - Nouvel An: Feux d'artifice, countdown, buff XP
+   - Festival de Printemps: Chasse aux oeufs, cosmetics
+   - Ete: Event plage, maillots de bain cosmetics
+   - Halloween: Monstres speciaux, cosmetics spooky
+   - Hiver: Neige, cadeaux, Koro de Noel
+
+B) MARIAGE IN-GAME
+   Fonctionnalite optionnelle:
+   - Deux joueurs peuvent se marier
+   - Ceremonie dans un lieu special
+   - Rings equipables (cosmetic + petit buff quand ensemble)
+   - Teleport vers le conjoint 1x/jour
+   - Titre "Marie(e) a [Nom]"
+   - Divorce possible (cout en gold, cooldown)
+
+C) ANNIVERSAIRE DE PERSONNAGE
+   - Chaque annee a la date de creation du personnage
+   - Mail avec cadeau (cosmetic, items)
+   - Titre "Veteran X ans"
+
+D) CONCERTS/SPECTACLES
+   - Events ponctuels avec musique in-game
+   - Artisans peuvent jouer des instruments
+   - Emotes de danse speciales
+   - Rewards de participation
+
+E) COMPETITIONS SOCIALES
+   - Concours de decoration de maison
+   - Concours de screenshot
+   - Concours de cosplay (apparence)
+   - Vote communautaire, rewards pour gagnants
+
+
+================================================================================
+                            QUESTIONS OUVERTES
+================================================================================
+
+1. Housing: Instance ou monde ouvert? (Impact serveur)
+2. Mariage: Feature serieuse ou trop "casual"?
+3. Mentorat: Rewards suffisants pour motiver les veterans?
+4. Reputation: Combien de factions au lancement?
+5. Guild Hall: Priorite haute ou post-launch?
+
+================================================================================
+                              FIN DU DOCUMENT
+================================================================================

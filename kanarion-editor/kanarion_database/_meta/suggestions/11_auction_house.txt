@@ -1,0 +1,619 @@
+================================================================================
+                   KANARION ONLINE - SYSTEME D'HOTEL DES VENTES
+                         Auction House & Marche Joueur
+                          Version 1.0 - 2026-01-23
+================================================================================
+
+Ce document detaille le systeme d'Hotel des Ventes (HDV) permettant
+aux joueurs d'acheter et vendre des objets entre eux.
+
+================================================================================
+                              TABLE DES MATIERES
+================================================================================
+1. Vue d'Ensemble
+2. Interface Utilisateur
+3. Mise en Vente
+4. Achat d'Objets
+5. Systeme d'Encheres
+6. Categories et Filtres
+7. Historique et Statistiques
+8. Frais et Taxes
+9. Regles et Restrictions
+10. Integration Technique
+
+================================================================================
+                          1. VUE D'ENSEMBLE
+================================================================================
+
+CONCEPT
+-------
+L'Hotel des Ventes (HDV) est un marche centralise ou les joueurs peuvent:
+- Vendre des objets a prix fixe ou aux encheres
+- Acheter des objets d'autres joueurs
+- Consulter l'historique des prix
+- Rechercher des objets specifiques
+
+ACCES
+-----
+- NPC: Marcus le Commissaire-Priseur (Capitale)
+- Interface: Touche "H" ou menu principal
+- Niveau requis: 10+
+- Zone: Disponible partout (consultation), vente en ville uniquement
+
+AVANTAGES PAR RAPPORT AU TRADE DIRECT
+-------------------------------------
+| Aspect          | Trade Direct    | Hotel des Ventes          |
+|-----------------|-----------------|---------------------------|
+| Disponibilite   | Les deux online | 24/7, meme offline        |
+| Confiance       | Risque arnaque  | Transaction securisee     |
+| Prix            | Negociation     | Prix du marche visible    |
+| Portee          | 1 joueur        | Tous les joueurs serveur  |
+| Frais           | Aucun           | Taxe de vente (5%)        |
+
+
+================================================================================
+                      2. INTERFACE UTILISATEUR
+================================================================================
+
+ONGLETS PRINCIPAUX
+------------------
+```
++----------------------------------------------------------+
+|  [Acheter] [Vendre] [Mes Ventes] [Historique] [Favoris]  |
++----------------------------------------------------------+
+```
+
+ONGLET ACHETER
+--------------
+```
++----------------------------------------------------------+
+| Recherche: [_______________] [Rechercher]                |
+| Categories: [Equipement v] [Armes v] [Epee v]            |
+| Filtres:    Niveau [10]-[50]  Rarete [★★★☆☆]            |
+|             Prix max: [_____]  Encheres: [x]             |
++----------------------------------------------------------+
+| Objet              | Vendeur   | Prix    | Temps  | Achat|
+|--------------------|-----------|---------|--------|------|
+| Epee du Guerrier   | DarkKnig  | 5,000g  | 23:45  | [>]  |
+| Epee de Feu +3     | FireLord  | 12,500g | 2j 5h  | [>]  |
+| Epee Celeste T3    | TopSeller | 45,000g | Enchere| [>]  |
++----------------------------------------------------------+
+| Pages: [<] 1 2 3 4 5 [>]           Resultats: 127 objets |
++----------------------------------------------------------+
+```
+
+ONGLET VENDRE
+-------------
+```
++----------------------------------------------------------+
+| INVENTAIRE                    | MISE EN VENTE            |
+|-------------------------------|--------------------------|
+| [Epee du Heros]               | Objet: Epee du Heros     |
+| [Casque Fer]                  | Prix initial: [10000]    |
+| [Potion HP x50]               | Prix Achat Immed: [15000]|
+| [Mat: Fer x100]               | Duree: [48h v]           |
+| ...                           | Type: [Prix fixe v]      |
+|                               |                          |
+|                               | Frais estimes: 500g      |
+|                               | [Mettre en vente]        |
++----------------------------------------------------------+
+```
+
+ONGLET MES VENTES
+-----------------
+- Liste des objets en vente
+- Temps restant
+- Encheres actuelles (si applicable)
+- Bouton annuler (avec frais de remboursement)
+- Objets expires a recuperer
+
+ONGLET HISTORIQUE
+-----------------
+- Mes ventes passees (30 derniers jours)
+- Mes achats passes
+- Total gold gagne/depense
+- Graphique de revenus
+
+ONGLET FAVORIS
+--------------
+- Objets sauvegardes pour suivre les prix
+- Alertes de prix (notification si prix < seuil)
+- Vendeurs favoris
+
+
+================================================================================
+                          3. MISE EN VENTE
+================================================================================
+
+TYPES DE VENTE
+--------------
+
+A) Prix Fixe (Achat Immediat)
+   - Le premier acheteur obtient l'objet au prix fixe
+   - Transaction instantanee
+   - Recommande pour objets communs
+
+B) Enchere
+   - Prix de depart + duree
+   - Les joueurs encherissent
+   - Plus offrant gagne a la fin
+   - Recommande pour objets rares/uniques
+
+C) Mixte (Enchere + Achat Immediat)
+   - Enchere avec option achat direct
+   - Achat direct termine l'enchere immediatement
+   - Recommande pour objets de valeur
+
+PROCESSUS DE MISE EN VENTE
+--------------------------
+1. Selectionner l'objet dans l'inventaire
+2. Choisir le type de vente
+3. Definir le prix (initial et/ou achat immediat)
+4. Choisir la duree: 12h, 24h, 48h, 72h
+5. Payer les frais de depot (2% du prix initial, min 10g)
+6. Confirmer la mise en vente
+
+PRIX SUGGERE
+------------
+Le systeme suggere un prix base sur:
+- Prix moyen des ventes recentes (7 derniers jours)
+- Rarete de l'objet
+- Niveau de l'objet
+- Enchantement/amelioration
+
+Affichage:
+```
+Prix suggere: 12,500g
+Fourchette: 10,000g - 15,000g (basee sur 23 ventes)
+```
+
+QUANTITE (STACKABLES)
+---------------------
+Pour les objets empilables (mats, pots):
+- Vendre par unite ou par stack
+- Prix affiche: par unite ou total
+- Achat partiel possible (acheter 50 sur 100)
+
+
+================================================================================
+                          4. ACHAT D'OBJETS
+================================================================================
+
+ACHAT IMMEDIAT
+--------------
+1. Cliquer sur l'objet
+2. Voir les details (stats, vendeur, historique prix)
+3. Cliquer "Acheter"
+4. Confirmer le montant
+5. L'objet arrive dans la boite aux lettres
+
+PROCESSUS
+---------
+- Gold deduit immediatement
+- Objet envoye par courrier (mailbox)
+- Vendeur recoit gold (moins taxes) par courrier
+- Transaction enregistree dans l'historique
+
+ACHAT PARTIEL (Stackables)
+--------------------------
+```
+Potion HP (x100) - 50g/unite
+Quantite a acheter: [25]
+Prix total: 1,250g
+[Acheter]
+```
+
+
+================================================================================
+                      5. SYSTEME D'ENCHERES
+================================================================================
+
+REGLES D'ENCHERE
+----------------
+- Enchere minimale: Prix initial ou derniere enchere + 5%
+- Enchere max: Pas de limite (si gold disponible)
+- Prolongation: +5 minutes si enchere dans les 2 dernieres minutes
+- Anonymat: Les encherisseurs sont anonymes (optionnel par serveur)
+
+PLACEMENT D'ENCHERE
+-------------------
+1. Ouvrir l'objet en enchere
+2. Entrer le montant de l'enchere
+3. Le gold est RESERVE (bloque) mais pas preleve
+4. Si surenchere: gold rendu, notification recue
+5. Si gagnant: gold preleve, objet envoye
+
+ENCHERE AUTOMATIQUE
+-------------------
+Systeme de proxy bidding:
+- Definir un montant maximum
+- Le systeme encherit automatiquement pour vous
+- Jusqu'a votre maximum, par increments minimums
+
+Exemple:
+```
+Enchere actuelle: 10,000g
+Votre max auto: 15,000g
+Quelqu'un encherit 11,000g -> Vous encherissez auto 11,550g
+Quelqu'un encherit 16,000g -> Vous etes surpasse (notification)
+```
+
+NOTIFICATIONS ENCHERES
+----------------------
+- "Vous avez ete surpasse sur [Objet]"
+- "5 minutes restantes sur [Objet] ou vous encherissez"
+- "Vous avez remporte l'enchere sur [Objet]!"
+- "L'enchere sur [Objet] s'est terminee sans vente"
+
+
+================================================================================
+                     6. CATEGORIES ET FILTRES
+================================================================================
+
+CATEGORIES PRINCIPALES
+----------------------
+| Categorie     | Sous-categories                              |
+|---------------|----------------------------------------------|
+| Equipement    | Armes, Armures, Accessoires                  |
+| Consommables  | Potions, Nourriture, Buffs                   |
+| Materiaux     | Craft, Enhancement, Quest                    |
+| Koros         | Par element, par rarete                      |
+| Montures      | Terrestre, Volante, Aquatique                |
+| Pets          | Combat, Utility, Cosmetic                    |
+| Cosmetiques   | Skins, Auras, Titres                         |
+| Divers        | Cles, Tickets, Miscellaneous                 |
+
+SOUS-CATEGORIES ARMES
+---------------------
+- Epees (1H, 2H)
+- Haches
+- Masses
+- Dagues
+- Arcs
+- Baguettes
+- Batons
+- Boucliers
+- Outils (Artisan)
+
+SOUS-CATEGORIES ARMURES
+-----------------------
+- Tete
+- Torse
+- Mains
+- Jambes
+- Pieds
+- Epaules
+
+FILTRES AVANCES
+---------------
+| Filtre              | Options                           |
+|---------------------|-----------------------------------|
+| Niveau              | Slider min-max (1-100)            |
+| Rarete              | 1-5 etoiles (multi-select)        |
+| Tier                | T1-T5                             |
+| Prix                | Slider min-max                    |
+| Type vente          | Prix fixe / Enchere / Tous        |
+| Duree restante      | < 1h / < 6h / < 24h / Tous        |
+| Classe utilisable   | Warrior / Mage / etc.             |
+| Stat principale     | ATK / MAG / DEF / etc.            |
+| Amelioration        | +0 a +15                          |
+
+TRI
+---
+- Par prix (croissant/decroissant)
+- Par temps restant
+- Par niveau
+- Par rarete
+- Par date d'ajout
+- Par popularite (ventes similaires)
+
+
+================================================================================
+                    7. HISTORIQUE ET STATISTIQUES
+================================================================================
+
+HISTORIQUE DES PRIX
+-------------------
+Pour chaque type d'objet:
+- Prix moyen (7j, 30j, 90j)
+- Prix min/max
+- Volume de ventes
+- Graphique d'evolution
+
+Interface:
+```
++------------------------------------------+
+| Epee du Guerrier T3                      |
+|------------------------------------------|
+| Prix actuel moyen: 12,500g               |
+| Evolution 7j: +5% ↑                       |
+|                                          |
+| [Graphique prix sur 30 jours]            |
+|    15k |      ___                        |
+|    12k | ___/    \___                    |
+|    10k |/            \___                |
+|        |----------------------           |
+|         J  J+7  J+14  J+21  J+30         |
+|                                          |
+| Ventes recentes: 47 (7 derniers jours)   |
++------------------------------------------+
+```
+
+ALERTES DE PRIX
+---------------
+Configurer des alertes:
+- "Notifier si Epee X < 10,000g"
+- "Notifier si Mat Y disponible"
+- Max 10 alertes actives
+
+MES STATISTIQUES
+----------------
+- Total gold gagne via HDV
+- Total gold depense via HDV
+- Nombre d'objets vendus
+- Objets les plus vendus
+- Meilleure vente (profit)
+
+
+================================================================================
+                       8. FRAIS ET TAXES
+================================================================================
+
+STRUCTURE DES FRAIS
+-------------------
+
+A) Frais de Depot (au moment de la mise en vente)
+   - 2% du prix initial
+   - Minimum: 10 gold
+   - Maximum: 5,000 gold
+   - NON remboursable si annulation/expiration
+
+B) Taxe de Vente (si l'objet se vend)
+   - 5% du prix de vente final
+   - Preleve automatiquement
+   - Visible dans le recapitulatif
+
+EXEMPLE DE CALCUL
+-----------------
+```
+Mise en vente: Epee a 10,000g
+- Frais de depot: 200g (2%)
+- Gold depense: 200g
+
+Si vente reussie a 10,000g:
+- Taxe de vente: 500g (5%)
+- Gold recu: 9,500g
+- Profit net: 9,300g (apres depot)
+
+Si vente echoue:
+- Gold perdu: 200g (depot)
+- Objet recupere via mailbox
+```
+
+REDUCTION DE FRAIS
+------------------
+Bonus possibles:
+- Membre Guilde niveau 10: -10% frais
+- Pass Premium actif: -20% frais
+- Achievement "Marchand Experimente": -5% frais permanent
+- Event special: Frais reduits temporairement
+
+GOLD SINK
+---------
+L'HDV sert de gold sink:
+- 2% depot + 5% vente = 7% du gold en circulation
+- Aide a maintenir l'equilibre economique
+- Frais ajustables par l'equipe de dev si besoin
+
+
+================================================================================
+                     9. REGLES ET RESTRICTIONS
+================================================================================
+
+OBJETS NON VENDABLES
+--------------------
+- Objets "Lie au personnage" (Soulbound)
+- Objets de quete (Quest items)
+- Monnaies (Gold, Honor, etc.)
+- Objets d'event exclusifs (certains)
+- Objets expires ou temporaires
+
+RESTRICTIONS JOUEUR
+-------------------
+| Restriction              | Limite                        |
+|--------------------------|-------------------------------|
+| Ventes simultanées       | 20 (base), 30 (premium)       |
+| Niveau minimum HDV       | 10                            |
+| Gold minimum compte      | 100g (pour frais)             |
+| Cooldown annulation      | 1 heure                       |
+
+ANTI-MANIPULATION
+-----------------
+Mesures contre la manipulation de marche:
+- Detecter les achats/reventes rapides suspects
+- Limiter les variations de prix extremes (>500% du moyen)
+- Bloquer les transactions entre memes IP/comptes
+- Review automatique des gros volumes
+
+FRAUDE ET SANCTIONS
+-------------------
+| Infraction                   | Sanction                    |
+|------------------------------|------------------------------|
+| RMT (Real Money Trading)     | Ban permanent               |
+| Manipulation de prix         | Suspension HDV 7 jours      |
+| Duplication exploit          | Ban + rollback              |
+| Multi-compte abuse           | Suspension + merge gold     |
+
+
+================================================================================
+                    10. INTEGRATION TECHNIQUE
+================================================================================
+
+STRUCTURE JSON SUGGEREE
+-----------------------
+Fichier: systems/auction_house.json
+
+```json
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "Systeme d'Hotel des Ventes"
+  },
+
+  "general": {
+    "enabled": true,
+    "min_level": 10,
+    "max_listings_per_player": 20,
+    "max_listings_premium": 30,
+    "listing_durations_hours": [12, 24, 48, 72]
+  },
+
+  "fees": {
+    "deposit_percent": 2,
+    "deposit_min": 10,
+    "deposit_max": 5000,
+    "sale_tax_percent": 5,
+    "fee_reductions": {
+      "guild_level_10": 0.10,
+      "premium_pass": 0.20,
+      "achievement_merchant": 0.05
+    }
+  },
+
+  "auction": {
+    "min_increment_percent": 5,
+    "extension_minutes": 5,
+    "extension_threshold_minutes": 2,
+    "anonymous_bidders": false
+  },
+
+  "categories": {
+    "equipment": {
+      "icon": "sword_shield",
+      "subcategories": ["weapons", "armor", "accessories"]
+    },
+    "consumables": {
+      "icon": "potion",
+      "subcategories": ["potions", "food", "buffs"]
+    },
+    "materials": {
+      "icon": "gem",
+      "subcategories": ["craft", "enhancement", "quest"]
+    },
+    "koros": {
+      "icon": "card",
+      "subcategories": ["by_element", "by_rarity"]
+    },
+    "mounts": {
+      "icon": "horse",
+      "subcategories": ["ground", "flying", "aquatic"]
+    },
+    "pets": {
+      "icon": "paw",
+      "subcategories": ["combat", "utility", "cosmetic"]
+    },
+    "cosmetics": {
+      "icon": "sparkle",
+      "subcategories": ["skins", "auras", "titles"]
+    },
+    "misc": {
+      "icon": "box",
+      "subcategories": ["keys", "tickets", "other"]
+    }
+  },
+
+  "filters": {
+    "level": {"type": "range", "min": 1, "max": 100},
+    "rarity": {"type": "multi_select", "values": [1, 2, 3, 4, 5]},
+    "tier": {"type": "multi_select", "values": ["T1", "T2", "T3", "T4", "T5"]},
+    "price": {"type": "range", "min": 0, "max": 999999999},
+    "sale_type": {"type": "select", "values": ["fixed", "auction", "all"]},
+    "time_remaining": {"type": "select", "values": ["1h", "6h", "24h", "all"]},
+    "class": {"type": "multi_select", "values": ["warrior", "mage", "archer", "rogue", "healer", "artisan"]},
+    "enhancement": {"type": "range", "min": 0, "max": 15}
+  },
+
+  "price_history": {
+    "retention_days": 90,
+    "aggregation_periods": ["7d", "30d", "90d"]
+  },
+
+  "alerts": {
+    "max_per_player": 10,
+    "types": ["price_below", "item_available"]
+  },
+
+  "restrictions": {
+    "non_tradeable_tags": ["soulbound", "quest", "event_exclusive"],
+    "cancel_cooldown_minutes": 60,
+    "max_price_variance_percent": 500
+  },
+
+  "anti_fraud": {
+    "same_account_trade_block": true,
+    "rapid_flip_detection_hours": 24,
+    "volume_review_threshold": 50
+  }
+}
+```
+
+INTEGRATION MAILBOX
+-------------------
+Tous les echanges passent par la mailbox:
+- Achat: Objet envoye a l'acheteur
+- Vente: Gold envoye au vendeur
+- Expiration: Objet renvoye au vendeur
+- Surenchere: Gold rendu a l'ancien encherisseur
+
+RECHERCHE
+---------
+Indexation pour recherche rapide:
+- Par nom d'objet (fuzzy search)
+- Par ID d'objet
+- Par vendeur
+- Full-text sur description
+
+CACHE ET PERFORMANCE
+--------------------
+- Liste des objets: Cache 30 secondes
+- Prix historique: Cache 5 minutes
+- Recherche: Cache par requete
+- Invalidation: Sur nouvelle vente/achat
+
+
+================================================================================
+                    ANNEXE: OBJETS RECOMMANDES AU LANCEMENT
+================================================================================
+
+OBJETS POPULAIRES A INCLURE
+---------------------------
+
+Equipement:
+- Toutes les armes T1-T3
+- Toutes les armures T1-T3
+- Accessoires (anneaux, amulettes)
+
+Consommables:
+- Potions HP/MP (toutes tailles)
+- Nourriture buff
+- Elixirs temporaires
+- Parchemins de teleportation
+
+Materiaux:
+- Tous les materiaux de craft
+- Pierres d'amelioration (Even)
+- Composants de fusion
+
+Koros:
+- Tous les Koros dropables
+- Pas les Koros d'event exclusifs
+
+Autres:
+- Cles de donjon
+- Tickets d'arene
+- Cosmetiques echangeables
+
+
+================================================================================
+                              FIN DU DOCUMENT
+================================================================================

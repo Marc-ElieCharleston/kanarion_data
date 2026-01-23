@@ -1,0 +1,581 @@
+================================================================================
+                   KANARION ONLINE - SYSTEME KORO COMPLET
+                     Lore, Drops, Liste des Koros & Mecaniques
+                          Version 1.0 - 2026-01-22
+================================================================================
+
+Ce document detaille le systeme complet des Koros: leur lore, leur
+obtention, la liste complete des cartes, et les mecaniques avancees.
+
+================================================================================
+                              TABLE DES MATIERES
+================================================================================
+1. Lore des Koros
+2. Systeme de Base (Rappel)
+3. Liste Complete des Koros
+4. Systeme de Drop
+5. Rangs et Upgrade
+6. Fusion et Evolution
+7. Builds et Synergies
+8. Collection et Codex
+9. Integration Gameplay
+
+================================================================================
+                           1. LORE DES KOROS
+================================================================================
+
+ORIGINE DES KOROS
+-----------------
+"Chaque Koro porte l'echo d'une bataille ancienne."
+                                    - Yuki, Collectionneur de Koro
+
+Avant la Chute, les guerriers les plus puissants de Kanarion possedaient
+des techniques uniques, transmises de maitre a eleve pendant des generations.
+Quand la Chute a frappe, beaucoup de ces guerriers ont peri, emportant
+leurs secrets avec eux.
+
+Mais la magie du monde a preserve quelque chose: l'essence de leur dernier
+souffle, cristallisee dans des cartes mystiques appelees "Koros" - du
+vieux Kanarian signifiant "Echo de l'Ame".
+
+DECOUVERTE
+----------
+Les premiers Koros ont ete decouverts par des chasseurs de monstres.
+En tuant certaines creatures, ils ont trouve ces cartes etranges,
+emanant d'une energie familiere mais differente.
+
+Les erudits ont vite compris: les monstres absorbent l'energie residuelle
+du monde. Quand un monstre est vaincu, cette energie est parfois liberee
+sous forme de Koro - un fragment de memoire de combat.
+
+NATURE DES KOROS
+----------------
+Un Koro n'est pas un objet ordinaire:
+- C'est une memoire vivante
+- Elle contient une technique specifique
+- Elle resonne avec le porteur
+- Elle peut etre renforcee par l'usage
+
+"Les anciens les appelaient 'Echos'.
+Chaque Koro contient la memoire d'un guerrier.
+Son dernier souffle. Sa derniere technique.
+On ne les capture pas. On les libere."
+                                    - Yuki, Collectionneur de Koro
+
+LIEN AVEC LA FAILLE
+-------------------
+Depuis l'ouverture de la Faille, les Koros sont devenus plus frequents.
+L'energie de la Faille perturbe le monde, liberant des Echos qui
+auraient du rester endormis pour l'eternite.
+
+Certains murmurent que les Koros les plus puissants proviennent de
+guerriers qui sont tombes DANS la Faille, et dont l'essence a ete
+corrompue avant de revenir...
+
+TYPES DE KOROS
+--------------
+Les Koros sont classes par l'origine de leur technique:
+
+- Koros de Monstres: Techniques bestiales, instinctives
+- Koros de Guerriers: Techniques martiales, disciplinees
+- Koros de Mages: Sorts et incantations
+- Koros Corrompus: Techniques de la Faille (rares, puissants)
+
+
+================================================================================
+                       2. SYSTEME DE BASE (RAPPEL)
+================================================================================
+
+Extrait de koro.json existant:
+
+CONCEPT
+-------
+Les Koros sont des CARTES (pas des pets) qui permettent d'utiliser
+un skill d'une AUTRE classe.
+
+Exemple: Un Guerrier avec un Koro de Mage peut lancer Blizzard.
+Inspiration: Systeme de cartes Ragnarok Online
+
+EQUIPEMENT
+----------
+- Slot: Accessoires (rings, amulets)
+- Max equipe: 2 Koros simultanes
+- Chaque Koro = 1 skill supplementaire
+
+RANGS
+-----
+| Rang | Puissance Skill | Poids Drop |
+|------|-----------------|------------|
+| C    | 50-60%          | 40%        |
+| B    | 61-75%          | 35%        |
+| A    | 76-90%          | 20%        |
+| S    | 91-100%         | 4.5%       |
+| SS   | 101-120%        | 0.5%       |
+
+Perfect Roll (SS): 0.01% chance sur un drop
+Un Koro SS fait le skill a 120% de sa puissance originale!
+
+USAGE
+-----
+- Utilise les stats du JOUEUR (pas du Koro)
+- Cooldown SEPARE du skill original
+- Cout MP: Identique au skill original
+- Formule: skill_power * (koro_rank% / 100)
+
+
+================================================================================
+                       3. LISTE COMPLETE DES KOROS
+================================================================================
+
+KOROS TIER 1 (Niveau 1-10)
+--------------------------
+Pool: koro_pool_t1
+Drop zones: Plaines, Foret debutante
+
+| ID           | Nom               | Monstre Source | Skill               | Type    |
+|--------------|-------------------|----------------|---------------------|---------|
+| koro_rat     | Echo du Rat       | mob_rat        | Morsure Rapide      | ATK     |
+|              |                   |                | (small dmg + bleed) |         |
+| koro_blobus  | Echo du Blobus    | mob_blobus     | Corps Gelatineux    | DEF     |
+|              |                   |                | (+10% dmg absorb 5s)|         |
+| koro_goblin  | Echo du Gobelin   | mob_goblin     | Coup Sournois       | ATK     |
+|              |                   |                | (backstab bonus)    |         |
+| koro_boar    | Echo du Sanglier  | mob_boar       | Charge Bestiale     | ATK     |
+|              |                   |                | (dash + stun 1s)    |         |
+| koro_scarab  | Echo du Scarabee  | mob_scarab     | Carapace            | DEF     |
+|              |                   |                | (+15 armor 10s)     |         |
+
+KOROS TIER 2 (Niveau 7-15)
+--------------------------
+Pool: koro_pool_t2
+Drop zones: Foret profonde, Collines
+
+| ID              | Nom                 | Monstre Source    | Skill               | Type    |
+|-----------------|---------------------|-------------------|---------------------|---------|
+| koro_wolf       | Echo du Loup        | mob_wolf          | Hurlement           | BUFF    |
+|                 |                     |                   | (+15% ATK team 8s)  |         |
+| koro_goblin_war | Echo Gobelin Guerre | mob_goblin_warior | Frenzy              | ATK     |
+|                 |                     |                   | (+30% AS 6s)        |         |
+| koro_hyene      | Echo de la Hyene    | mob_hyene         | Rire Dement         | DEBUFF  |
+|                 |                     |                   | (fear 2s)           |         |
+| koro_lizardman  | Echo Homme-Lezard   | mob_lizardman     | Queue Fouet         | ATK     |
+|                 |                     |                   | (line AOE + slow)   |         |
+| koro_belier     | Echo du Belier      | mob_belier        | Coup de Corne       | ATK     |
+|                 |                     |                   | (knockback + stun)  |         |
+
+KOROS TIER 3 (Niveau 13-18)
+---------------------------
+Pool: koro_pool_t3
+Drop zones: Montagnes, Marais
+
+| ID                | Nom                   | Monstre Source      | Skill               | Type    |
+|-------------------|-----------------------|---------------------|---------------------|---------|
+| koro_taureau      | Echo du Taureau       | mob_taureau         | Pietinement         | ATK     |
+|                   |                       |                     | (AOE + stun area)   |         |
+| koro_tortue       | Echo Tortue Pierre    | mob_tortue_de_pierre| Coquille            | DEF     |
+|                   |                       |                     | (invuln 2s, immob)  |         |
+| koro_squelette    | Echo de l'Archer Mort | mob_archer_squelette| Tir Maudit          | ATK     |
+|                   |                       |                     | (ranged + curse)    |         |
+| koro_cerf_obscur  | Echo du Cerf Obscur   | mob_cerf_obscur     | Brume Sombre        | DEBUFF  |
+|                   |                       |                     | (blind area 4s)     |         |
+
+KOROS TIER 4 (Niveau 17-20+)
+----------------------------
+Pool: koro_pool_t4
+Drop zones: Zones endgame, Donjons
+
+| ID                 | Nom                   | Monstre Source      | Skill               | Type    |
+|--------------------|-----------------------|---------------------|---------------------|---------|
+| koro_spectral_wolf | Echo Loup Spectral    | mob_spectral_wolf   | Morsure Fantome     | ATK     |
+|                    |                       |                     | (ignore armor 50%)  |         |
+| koro_guerrier_maudit| Echo Guerrier Maudit | mob_guerrier_skull  | Frappe Maudite      | ATK     |
+|                    |                       |                     | (dmg + heal block)  |         |
+| koro_golem         | Echo du Golem         | mob_golem           | Poing de Pierre     | ATK     |
+|                    |                       |                     | (huge dmg, slow)    |         |
+| koro_golem_rune    | Echo Golem Runique    | mob_golem_runique   | Explosion Runique   | MAG     |
+|                    |                       |                     | (AOE magic burst)   |         |
+| koro_ember_hound   | Echo Chien de Braise  | mob_ember_hound     | Souffle de Feu      | MAG     |
+|                    |                       |                     | (cone fire DOT)     |         |
+| koro_crystal_wolf  | Echo Loup de Cristal  | mob_crystal_wolf    | Eclat Glacial       | MAG     |
+|                    |                       |                     | (ice dmg + freeze)  |         |
+| koro_loup_garou    | Echo du Loup-Garou    | mob_loup_humain     | Transformation      | BUFF    |
+|                    |                       |                     | (+25% all stats 8s) |         |
+
+KOROS DE BOSS (Rares)
+---------------------
+Drop: Boss uniquement, taux tres faible
+
+| ID                 | Nom                   | Boss Source         | Skill               | Type    |
+|--------------------|-----------------------|---------------------|---------------------|---------|
+| koro_nature_shield | Echo Gardien Nature   | Gardien de la Foret | Bouclier Nature     | DEF     |
+|                    |                       |                     | (absorb + heal)     |         |
+| koro_summon_goblin | Echo Roi Gobelin      | Roi Gobelin         | Invocation Gobelin  | SUMMON  |
+|                    |                       |                     | (summon 2 goblins)  |         |
+| koro_poison_spray  | Echo Reine Araignee   | Reine Araignee      | Spray Venimeux      | DEBUFF  |
+|                    |                       |                     | (cone poison heavy) |         |
+| koro_shadow_step   | Echo Assassin Ombre   | Assassin des Ombres | Pas de l'Ombre      | MOVE    |
+|                    |                       |                     | (teleport behind)   |         |
+| koro_meteor        | Echo Dragon Ancien    | Dragon Ancien       | Mini-Meteore        | MAG     |
+|                    |                       |                     | (huge AOE fire)     |         |
+
+KOROS CORROMPUS (Faille)
+------------------------
+Drop: Creatures de la Faille, Events speciaux
+
+| ID                 | Nom                   | Source              | Skill               | Type    |
+|--------------------|-----------------------|---------------------|---------------------|---------|
+| koro_void_touch    | Echo du Vide          | Creatures Faille    | Toucher du Vide     | ATK     |
+|                    |                       |                     | (% HP dmg)          |         |
+| koro_corruption    | Echo de Corruption    | Elite Faille        | Corruption          | DEBUFF  |
+|                    |                       |                     | (DoT + heal to dmg) |         |
+| koro_imitator      | Echo de l'Imitateur   | Avatar Imitateur    | Copie               | SPECIAL |
+|                    |                       |                     | (copy last enemy sk)|         |
+
+
+================================================================================
+                          4. SYSTEME DE DROP
+================================================================================
+
+TAUX DE DROP DE BASE
+--------------------
+Les Koros sont des drops RARES. Taux de base:
+
+| Type Monstre    | Chance Koro |
+|-----------------|-------------|
+| Monstre normal  | 0.5%        |
+| Monstre 1-2*    | 1%          |
+| Monstre 3*      | 2%          |
+| Elite           | 5%          |
+| Boss 5*         | 15%         |
+| Boss Donjon     | 25%         |
+| Raid Boss       | 50%         |
+
+MODIFICATEURS
+-------------
+Les chances sont affectees par:
+
+| Modificateur        | Effet           |
+|---------------------|-----------------|
+| Luck stat           | +0.5% par 10 LCK|
+| Group bonus         | +10% par membre |
+| Event bonus         | +50-100%        |
+| First kill du jour  | +25%            |
+| Star level zone     | +star * 5%      |
+
+Formule:
+```
+final_chance = base_chance
+             * (1 + luck_bonus)
+             * (1 + group_bonus)
+             * (1 + event_bonus)
+             * (1 + first_kill_bonus)
+             * (1 + star_bonus)
+```
+
+POOL DE KORO PAR ZONE
+---------------------
+Chaque zone a un pool de Koros possibles:
+
+| Zone ID    | Niveau  | Pool           | Koro Chance |
+|------------|---------|----------------|-------------|
+| lt_zone_01 | 1-3     | koro_pool_t1   | 5%          |
+| lt_zone_02 | 3-5     | koro_pool_t1   | 3%          |
+| lt_zone_03 | 5-7     | koro_pool_t1   | 4%          |
+| lt_zone_04 | 7-9     | koro_pool_t2   | 6%          |
+| lt_zone_05 | 9-11    | koro_pool_t2   | 6%          |
+| lt_zone_06 | 11-13   | koro_pool_t2   | 7%          |
+| lt_zone_07 | 13-15   | koro_pool_t3   | 7%          |
+| lt_zone_08 | 15-17   | koro_pool_t3   | 8%          |
+| lt_zone_09 | 17-19   | koro_pool_t4   | 10%         |
+| lt_zone_10 | 19-20   | koro_pool_t4   | 12%         |
+
+DETERMINATION DU RANG
+---------------------
+Quand un Koro drop, son rang est determine:
+
+Roll initial:
+| Rang | Poids | Probabilite |
+|------|-------|-------------|
+| C    | 40    | 40%         |
+| B    | 35    | 35%         |
+| A    | 20    | 20%         |
+| S    | 4.5   | 4.5%        |
+| SS   | 0.5   | 0.5%        |
+
+Puis pour chaque rang, un roll de puissance:
+| Rang | Range      |
+|------|------------|
+| C    | 50-60%     |
+| B    | 61-75%     |
+| A    | 76-90%     |
+| S    | 91-100%    |
+| SS   | 101-120%   |
+
+Exemple: Tu drop un Koro rang B
+         Roll: 68% → Ton Koro fait le skill a 68% de sa puissance
+
+
+================================================================================
+                        5. RANGS ET UPGRADE
+================================================================================
+
+MATERIAUX D'UPGRADE
+-------------------
+| Item        | Source                    | Prix NPC | Usage            |
+|-------------|---------------------------|----------|------------------|
+| Koro Dust   | Drop monstres, achat      | 20g      | +1-3% puissance  |
+| Koro Core   | Drop rares, boss, achat   | 120g     | Fusion           |
+
+UPGRADE AVEC KORO DUST
+----------------------
+Utiliser de la Koro Dust pour augmenter la puissance d'un Koro.
+
+| Rang Actuel | Dust Requise | Gain        | Chance Succes |
+|-------------|--------------|-------------|---------------|
+| C           | 10           | +1-3%       | 100%          |
+| B           | 20           | +1-2%       | 90%           |
+| A           | 40           | +1-2%       | 70%           |
+| S           | 80           | +1%         | 50%           |
+| SS          | -            | Non upgradable               |
+
+Note: L'upgrade ne peut pas changer le rang.
+      Un C peut aller de 50% a 60% max.
+      Pour depasser 60%, il faut un rang B.
+
+ECHEC D'UPGRADE
+---------------
+En cas d'echec:
+- La Dust est perdue
+- Le Koro reste intact (pas de perte de %)
+- Cooldown: 1 heure avant nouvel essai sur ce Koro
+
+
+================================================================================
+                       6. FUSION ET EVOLUTION
+================================================================================
+
+FUSION DE KOROS
+---------------
+Combiner 2 Koros IDENTIQUES pour avoir une chance d'obtenir un rang superieur.
+
+Cout: 200g + 5 Koro Cores
+
+Regles:
+- Les 2 Koros doivent etre du MEME type (meme ID)
+- Les 2 sont consommes
+- Resultat: 1 Koro du meme type
+
+Chances de resultat:
+
+| Rang Input | Rang Output Possible | Chances                    |
+|------------|----------------------|----------------------------|
+| C + C      | C (70%), B (30%)     | Upgrade possible           |
+| B + B      | B (60%), A (40%)     | Meilleur chance            |
+| A + A      | A (50%), S (50%)     | 50/50                      |
+| S + S      | S (70%), SS (30%)    | Rare mais possible         |
+| SS + SS    | SS ameliore          | +5% puissance garantie     |
+
+Exemple:
+- Tu as 2 koro_wolf rang C (55% et 58%)
+- Tu fais une fusion
+- 70% chance: koro_wolf rang C avec nouvelle puissance (roll 50-60%)
+- 30% chance: koro_wolf rang B avec nouvelle puissance (roll 61-75%)
+
+STRATEGIE DE FUSION
+-------------------
+- Farm beaucoup de Koros C
+- Fusionne jusqu'a obtenir des B
+- Continue pour A, S, SS
+- Le grind est long mais rewarding
+
+
+================================================================================
+                       7. BUILDS ET SYNERGIES
+================================================================================
+
+BUILDS KORO PAR CLASSE
+----------------------
+
+WARRIOR:
+- koro_blobus (Corps Gelatineux) - Survie
+- koro_wolf (Hurlement) - Buff equipe
+- koro_spectral_wolf (Morsure Fantome) - Burst damage
+Synergies: Tanky warrior avec un skill de buff ou burst surprise
+
+MAGE:
+- koro_tortue (Coquille) - Survie d'urgence
+- koro_shadow_step (Pas de l'Ombre) - Repositionnement
+- koro_loup_garou (Transformation) - Burst window
+Synergies: Mage avec mobilite ou defense d'urgence
+
+ARCHER:
+- koro_hyene (Rire Dement) - CC supplementaire
+- koro_cerf_obscur (Brume Sombre) - Zone control
+- koro_goblin_war (Frenzy) - Attack speed burst
+Synergies: Archer avec plus de CC ou DPS burst
+
+ROGUE:
+- koro_boar (Charge Bestiale) - Gap closer
+- koro_ember_hound (Souffle de Feu) - AOE damage
+- koro_crystal_wolf (Eclat Glacial) - CC + damage
+Synergies: Rogue avec AOE ou CC supplementaire
+
+HEALER:
+- koro_tortue (Coquille) - Self-defense
+- koro_golem (Poing de Pierre) - Damage surprise
+- koro_nature_shield (Bouclier Nature) - Plus de defense
+Synergies: Healer avec protection ou damage surprise
+
+ARTISAN:
+- koro_summon_goblin (Invocation) - Summon help
+- koro_wolf (Hurlement) - Team buff
+- koro_belier (Coup de Corne) - CC
+Synergies: Support avec utility supplementaire
+
+COMBOS KORO
+-----------
+Certains Koros se combinent bien:
+
+Combo Burst:
+- koro_loup_garou (+25% all stats) + High damage skill
+- Activer transformation puis burst
+
+Combo CC Chain:
+- koro_boar (stun) + koro_hyene (fear)
+- Chain CC pour garantir un kill
+
+Combo Defense:
+- koro_tortue (invuln) + Heal
+- Survivre a tout burst
+
+
+================================================================================
+                       8. COLLECTION ET CODEX
+================================================================================
+
+CODEX KORO
+----------
+Interface de collection accessible chez Yuki.
+
+Sections:
+1. Collection: Tous les Koros obtenus
+2. Bestiary: Koros par monstre d'origine
+3. Skills: Liste des skills de Koro
+4. Stats: Statistiques personnelles
+
+PROGRESSION DE COLLECTION
+-------------------------
+| Milestone        | Koros Uniques | Reward                      |
+|------------------|---------------|------------------------------|
+| Debutant         | 5             | Titre "Collectionneur"       |
+| Amateur          | 15            | 500g + 10 Koro Dust          |
+| Connaisseur      | 30            | 2000g + 5 Koro Cores         |
+| Expert           | 50            | 5000g + Koro aleatoire rang A|
+| Maitre           | 75            | 10000g + Cadre special       |
+| Grand Maitre     | 100           | Titre unique + Aura Koro     |
+| Legendaire       | Tous          | Titre "Echo Vivant" + Mount  |
+
+ACHIEVEMENTS KORO
+-----------------
+| Achievement        | Condition              | Reward            |
+|--------------------|------------------------|-------------------|
+| Premier Echo       | Obtenir 1er Koro       | 100g              |
+| C'est un debut     | 10 Koros obtenus       | Titre             |
+| Chasseur d'Echos   | 100 Koros obtenus      | 1000g             |
+| Rang S             | Obtenir un Koro S      | 500g              |
+| Rang SS            | Obtenir un Koro SS     | 2000g + Titre     |
+| Fusionneur         | 10 fusions reussies    | 500g              |
+| Alchimiste Koro    | 50 fusions reussies    | Titre             |
+| Perfect Collection | 1 de chaque Koro       | Titre legendaire  |
+
+
+================================================================================
+                       9. INTEGRATION GAMEPLAY
+================================================================================
+
+DANS LE COMBAT
+--------------
+- Les skills Koro apparaissent dans la barre de skills
+- Icone distincte (cadre dore)
+- Cooldown visible separe
+- Tooltip affiche la puissance (ex: "68% power")
+
+DANS L'INTERFACE
+----------------
+- Onglet Koro dans l'inventaire
+- Preview du skill avant equip
+- Comparaison entre Koros
+- Sort par: Rang, Type, Puissance, Nom
+
+DANS L'ECONOMIE
+---------------
+- Koros tradables sur l'AH
+- Prix bases sur: Rang, Puissance, Rarete du skill
+- Estimation de prix dans le Codex
+
+DANS LE SOCIAL
+--------------
+- Partager ses Koros dans le chat (lien)
+- Comparer collections avec amis
+- Leaderboard des collectionneurs
+
+DANS LA PROGRESSION
+-------------------
+- Certaines quetes demandent des Koros specifiques
+- Debloquer du lore avec des Koros rares
+- Achievements de collection
+
+EVENTS KORO
+-----------
+Suggestions:
+- "Festival des Echos": Drop rate x2 pendant une semaine
+- "Chasse au Koro Legendaire": Boss special drop Koro unique
+- "Fusion Folle": Cout de fusion reduit 50%
+
+
+================================================================================
+                           RESUME TECHNIQUE
+================================================================================
+
+FICHIER JSON SUGGERE: items/koros.json
+--------------------------------------
+Structure:
+```json
+{
+  "_meta": {...},
+  "koros": [
+    {
+      "id": "koro_wolf",
+      "name_fr": "Echo du Loup",
+      "name_en": "Wolf Echo",
+      "tier": 2,
+      "source_monster": "mob_wolf",
+      "skill": {
+        "id": "skill_howl",
+        "name_fr": "Hurlement",
+        "effect": "+15% ATK team 8s",
+        "type": "BUFF",
+        "cooldown": 30,
+        "mp_cost": 20
+      },
+      "lore_fr": "Le dernier hurlement d'un loup alpha...",
+      "icon": "koro_wolf_icon"
+    },
+    ...
+  ],
+  "pools": {
+    "koro_pool_t1": ["koro_rat", "koro_blobus", ...],
+    "koro_pool_t2": [...],
+    ...
+  },
+  "ranks": {
+    "C": {"range": [50, 60], "weight": 40},
+    ...
+  }
+}
+```
+
+
+================================================================================
+                              FIN DU DOCUMENT
+================================================================================
