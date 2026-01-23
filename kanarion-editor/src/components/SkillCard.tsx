@@ -58,6 +58,13 @@ export interface Skill {
   self_shield?: boolean;
   self_shield_value?: number;
   shield_scaling?: string;
+  // Lifewarden-specific fields
+  conditional_bonus?: {
+    condition?: string;
+    heal_bonus_percent?: number;
+  };
+  thorn_reflect_percent?: number;
+  hot_amplify_percent?: number;
   [key: string]: unknown;
 }
 
@@ -412,6 +419,30 @@ export default function SkillCard({
           <div className="text-xs mb-1">
             <span className="text-purple-400">Cleanse:</span>{' '}
             <span className="text-zinc-300">{skill.cleanse_count} debuff{skill.cleanse_count > 1 ? 's' : ''}</span>
+          </div>
+        )}
+
+        {skill.thorn_reflect_percent && (
+          <div className="text-xs mb-1">
+            <span className="text-rose-400">Thorns:</span>{' '}
+            <span className="text-zinc-300">Reflects {skill.thorn_reflect_percent}% melee damage</span>
+          </div>
+        )}
+
+        {skill.conditional_bonus && (
+          <div className="text-xs mb-1 p-2 bg-emerald-500/10 border border-emerald-500/20 rounded">
+            <span className="text-emerald-400">Bonus:</span>{' '}
+            <span className="text-zinc-300">
+              {skill.conditional_bonus.condition === 'target_has_hot' && 'If target has HoT: '}
+              {skill.conditional_bonus.heal_bonus_percent && `+${skill.conditional_bonus.heal_bonus_percent}% heal`}
+            </span>
+          </div>
+        )}
+
+        {skill.hot_amplify_percent && (
+          <div className="text-xs mb-1">
+            <span className="text-green-400">HoT Amplify:</span>{' '}
+            <span className="text-zinc-300">+{skill.hot_amplify_percent}% to all active HoTs</span>
           </div>
         )}
 
