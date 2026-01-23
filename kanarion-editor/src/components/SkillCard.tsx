@@ -58,10 +58,13 @@ export interface Skill {
   self_shield?: boolean;
   self_shield_value?: number;
   shield_scaling?: string;
-  // Lifewarden-specific fields
+  // Lifewarden/Soulreaper conditional bonus fields
   conditional_bonus?: {
     condition?: string;
+    hp_threshold?: number;
     heal_bonus_percent?: number;
+    lifesteal_bonus_percent?: number;
+    shield_bonus_percent?: number;
   };
   thorn_reflect_percent?: number;
   hot_amplify_percent?: number;
@@ -79,6 +82,17 @@ export interface Skill {
   resurrect?: boolean;
   resurrect_hp_percent?: number;
   cast_interruptible?: boolean;
+  // Soulreaper-specific fields
+  lifesteal_target?: string;
+  sacrifice_hp_percent?: number;
+  dot_type?: string;
+  dot_percent?: number;
+  dot_duration?: number;
+  dot_heals_lowest_ally?: boolean;
+  damage_per_missing_hp_percent?: number;
+  max_missing_hp_bonus?: number;
+  drain_to_all_allies?: boolean;
+  drain_heal_percent?: number;
   [key: string]: unknown;
 }
 
@@ -462,7 +476,11 @@ export default function SkillCard({
             <span className="text-emerald-400">Bonus:</span>{' '}
             <span className="text-zinc-300">
               {skill.conditional_bonus.condition === 'target_has_hot' && 'If target has HoT: '}
+              {skill.conditional_bonus.condition === 'caster_below_hp' && `If caster <${skill.conditional_bonus.hp_threshold}% HP: `}
+              {skill.conditional_bonus.condition === 'caster_below_hp_after' && `If caster <${skill.conditional_bonus.hp_threshold}% HP after: `}
               {skill.conditional_bonus.heal_bonus_percent && `+${skill.conditional_bonus.heal_bonus_percent}% heal`}
+              {skill.conditional_bonus.lifesteal_bonus_percent && `+${skill.conditional_bonus.lifesteal_bonus_percent}% lifesteal`}
+              {skill.conditional_bonus.shield_bonus_percent && `+${skill.conditional_bonus.shield_bonus_percent}% shield`}
             </span>
           </div>
         )}
@@ -477,7 +495,49 @@ export default function SkillCard({
         {skill.lifesteal_percent && (
           <div className="text-xs mb-1">
             <span className="text-red-400">Lifesteal:</span>{' '}
-            <span className="text-zinc-300">{skill.lifesteal_percent}%</span>
+            <span className="text-zinc-300">
+              {skill.lifesteal_percent}%{skill.lifesteal_target && ` → ${skill.lifesteal_target}`}
+            </span>
+          </div>
+        )}
+
+        {/* Sacrifice HP */}
+        {skill.sacrifice_hp_percent && (
+          <div className="text-xs mb-1">
+            <span className="text-rose-500">💔 Sacrifice:</span>{' '}
+            <span className="text-zinc-300">{skill.sacrifice_hp_percent}% of your HP</span>
+          </div>
+        )}
+
+        {/* DoT that heals */}
+        {skill.dot_percent && (
+          <div className="text-xs mb-1">
+            <span className="text-purple-400">DoT:</span>{' '}
+            <span className="text-zinc-300">
+              {skill.dot_percent}% HP/s for {skill.dot_duration}s
+              {skill.dot_heals_lowest_ally && <span className="text-emerald-400"> → heals lowest ally</span>}
+            </span>
+          </div>
+        )}
+
+        {/* Damage scaling with missing HP */}
+        {skill.damage_per_missing_hp_percent && (
+          <div className="text-xs mb-1 p-2 bg-rose-500/10 border border-rose-500/20 rounded">
+            <span className="text-rose-400">🩸 Missing HP Bonus:</span>{' '}
+            <span className="text-zinc-300">
+              +{skill.damage_per_missing_hp_percent}% damage per 1% missing HP
+              {skill.max_missing_hp_bonus && ` (max +${skill.max_missing_hp_bonus}%)`}
+            </span>
+          </div>
+        )}
+
+        {/* Drain to all allies */}
+        {skill.drain_to_all_allies && (
+          <div className="text-xs mb-1">
+            <span className="text-rose-400">🩸 Drain:</span>{' '}
+            <span className="text-zinc-300">
+              {skill.drain_heal_percent}% of damage heals all allies
+            </span>
           </div>
         )}
 
