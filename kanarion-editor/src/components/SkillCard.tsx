@@ -65,6 +65,20 @@ export interface Skill {
   };
   thorn_reflect_percent?: number;
   hot_amplify_percent?: number;
+  // Mage-specific fields
+  cast_time?: number;
+  channel_time?: number;
+  generates_charges?: number;
+  consumes_charges?: boolean;
+  max_charges_consumed?: number;
+  bonus_per_charge?: number;
+  mana_regen_percent?: number;
+  mana_regen_ticks?: number;
+  // Cantor-specific fields
+  mana_regen_duration?: number;
+  resurrect?: boolean;
+  resurrect_hp_percent?: number;
+  cast_interruptible?: boolean;
   [key: string]: unknown;
 }
 
@@ -308,6 +322,20 @@ export default function SkillCard({
             <span className="text-zinc-400">CD:</span>
             <span className="text-white">{skill.cooldown}s</span>
           </div>
+          {skill.cast_time && (
+            <div className="flex items-center gap-1">
+              <span className="text-amber-400">🔮</span>
+              <span className="text-zinc-400">Cast:</span>
+              <span className="text-amber-300">{skill.cast_time}s</span>
+            </div>
+          )}
+          {skill.channel_time && (
+            <div className="flex items-center gap-1">
+              <span className="text-cyan-400">🔄</span>
+              <span className="text-zinc-400">Channel:</span>
+              <span className="text-cyan-300">{skill.channel_time}s</span>
+            </div>
+          )}
           {skill.hit_count && skill.hit_count > 1 && (
             <div className="flex items-center gap-1">
               <span className="text-zinc-400">Hits:</span>
@@ -450,6 +478,47 @@ export default function SkillCard({
           <div className="text-xs mb-1">
             <span className="text-red-400">Lifesteal:</span>{' '}
             <span className="text-zinc-300">{skill.lifesteal_percent}%</span>
+          </div>
+        )}
+
+        {/* Arcane Charges system */}
+        {skill.generates_charges && (
+          <div className="text-xs mb-1">
+            <span className="text-indigo-400">⚡ Generates:</span>{' '}
+            <span className="text-indigo-300">{skill.generates_charges} Arcane Charge{skill.generates_charges > 1 ? 's' : ''}</span>
+          </div>
+        )}
+
+        {skill.consumes_charges && (
+          <div className="text-xs mb-1 p-2 bg-indigo-500/10 border border-indigo-500/20 rounded">
+            <span className="text-indigo-400">⚡ Consumes Charges:</span>{' '}
+            <span className="text-zinc-300">
+              Up to {skill.max_charges_consumed || '?'} charges
+              {skill.bonus_per_charge && ` (+${skill.bonus_per_charge}% damage/charge)`}
+            </span>
+          </div>
+        )}
+
+        {/* Mana regen */}
+        {skill.mana_regen_percent && (
+          <div className="text-xs mb-1">
+            <span className="text-sky-400">💧 Mana Regen:</span>{' '}
+            <span className="text-sky-300">
+              {skill.mana_regen_percent}% max MP/s
+              {skill.mana_regen_ticks && ` (${skill.mana_regen_percent * skill.mana_regen_ticks}% total)`}
+              {skill.mana_regen_duration && ` for ${skill.mana_regen_duration}s`}
+            </span>
+          </div>
+        )}
+
+        {/* Resurrect */}
+        {skill.resurrect && (
+          <div className="text-xs mb-1 p-2 bg-amber-500/10 border border-amber-500/20 rounded">
+            <span className="text-amber-400">✝️ Resurrect:</span>{' '}
+            <span className="text-zinc-300">
+              Revives at {skill.resurrect_hp_percent || 50}% HP
+              {skill.cast_interruptible && ' (interruptible)'}
+            </span>
           </div>
         )}
 
