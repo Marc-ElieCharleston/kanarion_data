@@ -320,7 +320,7 @@
       ]
     },
     "weaponmaster": {
-      "identity": "Technique melee + armor break",
+      "identity": "Technique melee + armor break + stance combos",
       "signature": "skill_warrior_weaponmaster_titan_slam",
       "skills": [
         {
@@ -337,9 +337,14 @@
           "mana_cost": 14,
           "cooldown": 6.0,
           "vfx_type": "melee_slash",
-          "description_fr": "Combo de 3 frappes (10 + 25% ATK chacune).",
-          "description_en": "Combo of 3 strikes (10 + 25% ATK each).",
-          "tags": ["damage", "combo", "multi_hit"]
+          "conditional": {
+            "requires_buff": "blade_stance",
+            "bonus_hit_count": 1,
+            "bonus_double_hit_chance": 10
+          },
+          "description_fr": "Combo de 3 frappes (10 + 25% ATK chacune). Sous Blade Stance: +1 hit, +10% double hit.",
+          "description_en": "Combo of 3 strikes (10 + 25% ATK each). Under Blade Stance: +1 hit, +10% double hit.",
+          "tags": ["damage", "combo", "multi_hit", "conditional"]
         },
         {
           "id": "skill_warrior_weaponmaster_armor_break",
@@ -379,21 +384,23 @@
           "tags": ["damage", "aoe", "melee"]
         },
         {
-          "id": "skill_warrior_weaponmaster_column_cleave",
-          "name": "Column Cleave",
-          "tier": "basic",
-          "target": "enemies",
-          "pattern": "col_2",
-          "damage_type": "physical",
-          "scaling_stat": "atk",
-          "base_power": 18,
-          "scaling_percent": 40,
-          "mana_cost": 15,
-          "cooldown": 7.0,
-          "vfx_type": "melee_slash",
-          "description_fr": "Frappe verticale (18 + 40% ATK) sur 2 ennemis en colonne.",
-          "description_en": "Vertical strike (18 + 40% ATK) on 2 enemies in a column.",
-          "tags": ["damage", "aoe", "melee"]
+          "id": "skill_warrior_weaponmaster_blade_stance",
+          "name": "Blade Stance",
+          "tier": "standard",
+          "target": "self",
+          "pattern": "single",
+          "damage_type": "none",
+          "base_power": 0,
+          "mana_cost": 18,
+          "cooldown": 16.0,
+          "buff": "blade_stance",
+          "buff_value_crit": 25,
+          "buff_value_attack_speed": 15,
+          "buff_duration": 8.0,
+          "vfx_type": "buff_aura",
+          "description_fr": "Posture de combat: +25% crit rate et +15% attack speed pendant 8s.",
+          "description_en": "Combat stance: +25% crit rate and +15% attack speed for 8s.",
+          "tags": ["buff", "self", "crit", "attack_speed"]
         },
         {
           "id": "skill_warrior_weaponmaster_titan_slam",
@@ -419,7 +426,7 @@
       ]
     },
     "warlord": {
-      "identity": "Leader support + buffs",
+      "identity": "Offensive leader + buffs/debuffs + armor break",
       "signature": "skill_warrior_warlord_war_banner",
       "skills": [
         {
@@ -441,22 +448,22 @@
           "tags": ["buff", "attack", "aoe", "support"]
         },
         {
-          "id": "skill_warrior_warlord_intimidate",
-          "name": "Intimidate",
+          "id": "skill_warrior_warlord_weakening_roar",
+          "name": "Weakening Roar",
           "tier": "basic",
           "target": "enemies",
-          "pattern": "row_2",
+          "pattern": "row_3",
           "damage_type": "none",
           "base_power": 0,
-          "mana_cost": 14,
-          "cooldown": 8.0,
-          "debuff": "atk_down",
-          "debuff_value": 15,
+          "mana_cost": 16,
+          "cooldown": 10.0,
+          "debuff": "def_down",
+          "debuff_value": 20,
           "debuff_duration": 8.0,
           "vfx_type": "debuff_aura",
-          "description_fr": "Reduit l'ATK de 2 ennemis en ligne de 15% pendant 8s.",
-          "description_en": "Reduces ATK of 2 enemies in a row by 15% for 8s.",
-          "tags": ["debuff", "attack_down", "aoe"]
+          "description_fr": "Cri affaiblissant qui reduit la DEF de 3 ennemis en ligne de 20% pendant 8s.",
+          "description_en": "Weakening roar that reduces DEF of 3 enemies in a row by 20% for 8s.",
+          "tags": ["debuff", "defense_down", "aoe", "support"]
         },
         {
           "id": "skill_warrior_warlord_rally",
@@ -477,22 +484,23 @@
           "tags": ["buff", "defense", "support", "aoe"]
         },
         {
-          "id": "skill_warrior_warlord_hold_the_line",
-          "name": "Hold the Line",
+          "id": "skill_warrior_warlord_piercing_strike",
+          "name": "Piercing Strike",
           "tier": "strong",
-          "target": "allies",
-          "pattern": "col_2",
-          "damage_type": "none",
-          "base_power": 0,
-          "scaling_stat": "max_hp",
-          "mana_cost": 28,
-          "cooldown": 16.0,
-          "shield_value": 10,
-          "shield_duration": 8.0,
-          "vfx_type": "shield",
-          "description_fr": "Donne un shield de 10% max HP a 2 allies en colonne pendant 8s.",
-          "description_en": "Grants 10% max HP shield to 2 allies in a column for 8s.",
-          "tags": ["buff", "shield", "aoe", "support"]
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 35,
+          "scaling_percent": 60,
+          "armor_pen": 30,
+          "shield_break": 50,
+          "mana_cost": 24,
+          "cooldown": 12.0,
+          "vfx_type": "melee_slash",
+          "description_fr": "Frappe percante (35 + 60% ATK) avec 30% pen armure et 50% ignore shield.",
+          "description_en": "Piercing strike (35 + 60% ATK) with 30% armor pen and 50% shield ignore.",
+          "tags": ["damage", "melee", "armor_pen", "shield_break"]
         },
         {
           "id": "skill_warrior_warlord_war_banner",

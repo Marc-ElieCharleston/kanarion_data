@@ -35,6 +35,19 @@ export interface Skill {
   hit_count?: number;
   lifesteal_percent?: number;
   execute_threshold?: number;
+  // Guardian-specific fields
+  buff_scaling?: string;
+  secondary_buff?: string;
+  secondary_buff_value?: number;
+  // Warlord-specific fields
+  armor_pen?: number;
+  shield_break?: number;
+  // Weaponmaster-specific fields
+  conditional?: {
+    requires_buff?: string;
+    bonus_hit_count?: number;
+    bonus_double_hit_chance?: number;
+  };
   [key: string]: unknown;
 }
 
@@ -224,7 +237,9 @@ export default function SkillCard({
               <div className="flex items-center gap-1">
                 <span className="text-amber-400">📈</span>
                 <span className="text-zinc-400">Scaling:</span>
-                <span className="text-white">{skill.scaling_percent}% {skill.scaling_stat.toUpperCase()}</span>
+                <span className={`text-white ${skill.scaling_stat === 'current_shield' ? 'text-sky-300' : ''}`}>
+                  {skill.scaling_percent}% {skill.scaling_stat === 'current_shield' ? 'Current Shield' : skill.scaling_stat.toUpperCase()}
+                </span>
                 {skillLevel > 1 && (
                   <span className="text-emerald-400 text-xs">→ {scalingPercentAtLevel}%</span>
                 )}
@@ -301,7 +316,11 @@ export default function SkillCard({
           <div className="text-xs mb-1">
             <span className="text-emerald-400">Buff:</span>{' '}
             <span className="text-zinc-300">{skill.buff}</span>
-            {skill.buff_value && <span className="text-zinc-500"> ({skill.buff_value})</span>}
+            {skill.buff_value && (
+              <span className="text-zinc-500">
+                {' '}({skill.buff_value}{skill.buff_scaling ? `% ${skill.buff_scaling.replace('_', ' ')}` : ''})
+              </span>
+            )}
             {skill.buff_duration && (
               <>
                 <span className="text-zinc-500"> {skill.buff_duration}s</span>
@@ -310,6 +329,14 @@ export default function SkillCard({
                 )}
               </>
             )}
+          </div>
+        )}
+
+        {skill.secondary_buff && (
+          <div className="text-xs mb-1">
+            <span className="text-teal-400">+ Buff:</span>{' '}
+            <span className="text-zinc-300">{skill.secondary_buff.replace('_', ' ')}</span>
+            {skill.secondary_buff_value && <span className="text-zinc-500"> ({skill.secondary_buff_value}%)</span>}
           </div>
         )}
 
@@ -351,6 +378,38 @@ export default function SkillCard({
           <div className="text-xs mb-1">
             <span className="text-red-400">Execute:</span>{' '}
             <span className="text-zinc-300">&lt;{skill.execute_threshold}% HP</span>
+          </div>
+        )}
+
+        {(skill.armor_pen || skill.shield_break) && (
+          <div className="text-xs mb-1 flex flex-wrap gap-2">
+            {skill.armor_pen && (
+              <span>
+                <span className="text-orange-400">Armor Pen:</span>{' '}
+                <span className="text-zinc-300">{skill.armor_pen}%</span>
+              </span>
+            )}
+            {skill.shield_break && (
+              <span>
+                <span className="text-sky-400">Shield Break:</span>{' '}
+                <span className="text-zinc-300">{skill.shield_break}%</span>
+              </span>
+            )}
+          </div>
+        )}
+
+        {skill.conditional && (
+          <div className="text-xs mb-1 p-2 bg-violet-500/10 border border-violet-500/20 rounded">
+            <span className="text-violet-400">Conditional:</span>{' '}
+            {skill.conditional.requires_buff && (
+              <span className="text-zinc-300">
+                Under <span className="text-violet-300">{skill.conditional.requires_buff.replace('_', ' ')}</span>:
+              </span>
+            )}
+            <span className="text-zinc-300">
+              {skill.conditional.bonus_hit_count && ` +${skill.conditional.bonus_hit_count} hit`}
+              {skill.conditional.bonus_double_hit_chance && `, +${skill.conditional.bonus_double_hit_chance}% double hit`}
+            </span>
           </div>
         )}
 
