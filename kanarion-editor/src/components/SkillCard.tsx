@@ -99,6 +99,36 @@ export interface Skill {
   max_missing_hp_bonus?: number;
   drain_to_all_allies?: boolean;
   drain_heal_percent?: number;
+  // Archer-specific fields
+  marked_bonus_percent?: number;
+  applies_bleed?: boolean;
+  bleed_stacks?: number;
+  bleed_duration?: number;
+  mark_refresh_on_hit?: boolean;
+  mark_spread_on_kill?: boolean;
+  // Ranger-specific fields
+  crit_damage_bonus?: number;
+  ignore_shields?: boolean;
+  execute_bonus_percent?: number;
+  guaranteed_crit?: boolean;
+  cd_reset_on_kill?: boolean;
+  // Falconer-specific fields
+  damage_per_bleed_stack?: number;
+  // Ballmaster-specific fields
+  bounce_count?: number;
+  can_bounce_same_target?: boolean;
+  damage_per_bounce?: number;
+  bounce_if_adjacent?: boolean;
+  bounce_returns?: boolean;
+  few_targets_bonus?: number;
+  few_targets_threshold?: number;
+  // Gunslinger-specific fields
+  interrupts_cast?: boolean;
+  each_hit_can_crit?: boolean;
+  tertiary_buff?: string;
+  tertiary_buff_value?: number;
+  secondary_effect?: string;
+  secondary_effect_duration?: number;
   [key: string]: unknown;
 }
 
@@ -607,6 +637,141 @@ export default function SkillCard({
           <div className="text-xs mb-1">
             <span className="text-red-400">Execute:</span>{' '}
             <span className="text-zinc-300">&lt;{skill.execute_threshold}% HP</span>
+          </div>
+        )}
+
+        {/* Archer - Mark bonus */}
+        {skill.marked_bonus_percent && (
+          <div className="text-xs mb-1 p-2 bg-amber-500/10 border border-amber-500/20 rounded">
+            <span className="text-amber-400">🎯 Mark Synergy:</span>{' '}
+            <span className="text-zinc-300">+{skill.marked_bonus_percent}% damage if target is Marked</span>
+          </div>
+        )}
+
+        {/* Archer - Bleed application */}
+        {skill.applies_bleed && (
+          <div className="text-xs mb-1">
+            <span className="text-red-400">🩸 Bleed:</span>{' '}
+            <span className="text-zinc-300">
+              Applies {skill.bleed_stacks || 1} stack{(skill.bleed_stacks || 1) > 1 ? 's' : ''} ({skill.bleed_duration}s)
+            </span>
+          </div>
+        )}
+
+        {/* Falconer - Damage per bleed stack */}
+        {skill.damage_per_bleed_stack && (
+          <div className="text-xs mb-1 p-2 bg-red-500/10 border border-red-500/20 rounded">
+            <span className="text-red-400">🩸 Bleed Synergy:</span>{' '}
+            <span className="text-zinc-300">+{skill.damage_per_bleed_stack}% damage per bleed stack on target</span>
+          </div>
+        )}
+
+        {/* Archer - Mark mechanics */}
+        {(skill.mark_refresh_on_hit || skill.mark_spread_on_kill) && (
+          <div className="text-xs mb-1">
+            <span className="text-amber-400">🎯 Mark:</span>{' '}
+            <span className="text-zinc-300">
+              {skill.mark_refresh_on_hit && 'Refreshes on hit'}
+              {skill.mark_refresh_on_hit && skill.mark_spread_on_kill && ' • '}
+              {skill.mark_spread_on_kill && 'Spreads on kill'}
+            </span>
+          </div>
+        )}
+
+        {/* Ranger - Crit damage bonus */}
+        {skill.crit_damage_bonus && (
+          <div className="text-xs mb-1">
+            <span className="text-orange-400">💥 Crit Bonus:</span>{' '}
+            <span className="text-zinc-300">+{skill.crit_damage_bonus}% crit damage</span>
+          </div>
+        )}
+
+        {/* Ranger - Guaranteed crit */}
+        {skill.guaranteed_crit && (
+          <div className="text-xs mb-1">
+            <span className="text-yellow-400">⚡ Guaranteed Crit</span>
+          </div>
+        )}
+
+        {/* Ranger - Ignore shields */}
+        {skill.ignore_shields && (
+          <div className="text-xs mb-1">
+            <span className="text-sky-400">🛡️ Ignores Shields</span>
+          </div>
+        )}
+
+        {/* Ranger - Execute bonus */}
+        {skill.execute_bonus_percent && skill.execute_threshold && (
+          <div className="text-xs mb-1 p-2 bg-red-500/10 border border-red-500/20 rounded">
+            <span className="text-red-400">💀 Execute:</span>{' '}
+            <span className="text-zinc-300">+{skill.execute_bonus_percent}% damage if target &lt;{skill.execute_threshold}% HP</span>
+          </div>
+        )}
+
+        {/* Ranger - CD reset on kill */}
+        {skill.cd_reset_on_kill && (
+          <div className="text-xs mb-1">
+            <span className="text-emerald-400">🔄 CD resets on kill</span>
+          </div>
+        )}
+
+        {/* Ballmaster - Bounce mechanics */}
+        {skill.bounce_count && (
+          <div className="text-xs mb-1 p-2 bg-cyan-500/10 border border-cyan-500/20 rounded">
+            <span className="text-cyan-400">🔄 Bounce:</span>{' '}
+            <span className="text-zinc-300">
+              {skill.bounce_count} bounces
+              {skill.can_bounce_same_target && ' (can rehit)'}
+              {skill.damage_per_bounce && ` • +${skill.damage_per_bounce}% dmg/bounce`}
+            </span>
+          </div>
+        )}
+
+        {/* Ballmaster - Conditional bounce */}
+        {skill.bounce_if_adjacent && (
+          <div className="text-xs mb-1">
+            <span className="text-cyan-400">↩️ Ricochet:</span>{' '}
+            <span className="text-zinc-300">
+              Bounces if adjacent enemy{skill.bounce_returns && ' (returns = 2 hits)'}
+            </span>
+          </div>
+        )}
+
+        {/* Ballmaster - Few targets bonus */}
+        {skill.few_targets_bonus && (
+          <div className="text-xs mb-1">
+            <span className="text-amber-400">🎯 Concentrated:</span>{' '}
+            <span className="text-zinc-300">+{skill.few_targets_bonus}% damage if ≤{skill.few_targets_threshold} targets</span>
+          </div>
+        )}
+
+        {/* Gunslinger - Interrupt */}
+        {skill.interrupts_cast && (
+          <div className="text-xs mb-1">
+            <span className="text-rose-400">⚡ Interrupts enemy casts</span>
+          </div>
+        )}
+
+        {/* Gunslinger - Each hit can crit */}
+        {skill.each_hit_can_crit && skill.hit_count && skill.hit_count > 1 && (
+          <div className="text-xs mb-1">
+            <span className="text-orange-400">💥 Each hit can crit separately</span>
+          </div>
+        )}
+
+        {/* Gunslinger - Tertiary buff */}
+        {skill.tertiary_buff && (
+          <div className="text-xs mb-1">
+            <span className="text-teal-400">+ Buff:</span>{' '}
+            <span className="text-zinc-300">{skill.tertiary_buff.replace('_', ' ')} +{skill.tertiary_buff_value}%</span>
+          </div>
+        )}
+
+        {/* Gunslinger - Secondary effect (CC) */}
+        {skill.secondary_effect && (
+          <div className="text-xs mb-1">
+            <span className="text-violet-400">+ Effect:</span>{' '}
+            <span className="text-zinc-300">{skill.secondary_effect} ({skill.secondary_effect_duration}s)</span>
           </div>
         )}
 
