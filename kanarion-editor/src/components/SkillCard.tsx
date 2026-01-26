@@ -137,6 +137,80 @@ export interface Skill {
   mana_restore_base?: number;
   mana_restore_scaling_stat?: string;
   mana_restore_scaling_percent?: number;
+  // Blacksmith-specific fields
+  bonus_if_armor_broken?: number;
+  debuff_stacks?: number;
+  double_damage_if_armor_broken?: boolean;
+  // Alchemist-specific fields
+  applies_toxin?: boolean;
+  toxin_stacks?: number;
+  toxin_duration?: number;
+  toxin_refresh?: boolean;
+  detonates_toxin?: boolean;
+  detonate_damage_base?: number;
+  detonate_damage_per_stack?: number;
+  detonate_consumes_stacks?: boolean;
+  // Chef-specific fields
+  applies_burn?: boolean;
+  burn_stacks?: number;
+  burn_duration?: number;
+  hot_base?: number;
+  hot_scaling_stat?: string;
+  hot_scaling_percent?: number;
+  allies_hot_base?: number;
+  allies_hot_scaling_percent?: number;
+  allies_hot_duration?: number;
+  allies_buff?: string;
+  allies_buff_value?: number;
+  allies_buff_duration?: number;
+  dual_effect?: boolean;
+  // Musician-specific fields
+  secondary_debuff?: string;
+  secondary_debuff_value?: number;
+  secondary_debuff_duration?: number;
+  enemies_debuff?: string;
+  enemies_debuff_value?: number;
+  enemies_debuff_duration?: number;
+  // Rogue-specific fields
+  applies_bleed_stacks?: number;
+  bonus_damage_per_debuff?: number;
+  max_debuff_bonus?: number;
+  debuff_damage_taken?: number;
+  mark_ignore_los?: boolean;
+  stealth_bonus_damage?: number;
+  execute_bonus_damage?: number;
+  armor_penetration?: number;
+  disarm_blocks_auto?: boolean;
+  disarm_blocks_spells?: boolean;
+  buff_steal_count?: number;
+  buff_steal_per_level?: number;
+  stun_chance?: number;
+  stun_chance_per_level?: number;
+  stun_duration?: number;
+  disarm_chance?: number;
+  disarm_chance_per_level?: number;
+  disarm_duration?: number;
+  steals_mana?: number;
+  steals_mana_per_level?: number;
+  steals_buff_chance?: number;
+  steals_mana_percent?: number;
+  steals_all_buffs?: boolean;
+  applies_blind?: boolean;
+  blind_duration?: number;
+  // Duelist-specific fields
+  applies_debuff?: string;
+  bonus_damage_vs_challenged?: number;
+  counter_chance?: number;
+  counter_chance_vs_challenged?: number;
+  counter_type?: string;
+  reflects_damage?: number;
+  reflects_debuffs?: boolean;
+  reflect_bonus_vs_challenged?: number;
+  defense_reduction?: number;
+  defense_reduction_per_level?: number;
+  damage_mult_if_challenged?: number;
+  damage_mult_if_challenged_and_exposed?: number;
+  damage_ramp_per_hit?: number;
   [key: string]: unknown;
 }
 
@@ -816,6 +890,112 @@ export default function SkillCard({
             <span className="text-sky-400">💧 Mana Restore:</span>{' '}
             <span className="text-zinc-300">
               {skill.mana_restore_base} + {skill.mana_restore_scaling_percent}% {skill.mana_restore_scaling_stat?.toUpperCase()}
+            </span>
+          </div>
+        )}
+
+        {/* Blacksmith - Armor break synergy */}
+        {skill.bonus_if_armor_broken && (
+          <div className="text-xs mb-1 p-2 bg-orange-500/10 border border-orange-500/20 rounded">
+            <span className="text-orange-400">🔨 Armor Synergy:</span>{' '}
+            <span className="text-zinc-300">+{skill.bonus_if_armor_broken}% damage if target has -armor debuff</span>
+          </div>
+        )}
+
+        {/* Blacksmith - Debuff stacks */}
+        {skill.debuff_stacks && (
+          <div className="text-xs mb-1">
+            <span className="text-violet-400">📚 Stackable:</span>{' '}
+            <span className="text-zinc-300">Can stack up to {skill.debuff_stacks}x</span>
+          </div>
+        )}
+
+        {/* Blacksmith - Double damage if armor broken */}
+        {skill.double_damage_if_armor_broken && (
+          <div className="text-xs mb-1 p-2 bg-red-500/10 border border-red-500/20 rounded">
+            <span className="text-red-400">💥 Shatter:</span>{' '}
+            <span className="text-zinc-300">Double damage if targets have -armor debuff</span>
+          </div>
+        )}
+
+        {/* Alchemist - Toxin application */}
+        {skill.applies_toxin && (
+          <div className="text-xs mb-1">
+            <span className="text-lime-400">🧪 Toxin:</span>{' '}
+            <span className="text-zinc-300">
+              {skill.toxin_stacks} stack{(skill.toxin_stacks || 0) > 1 ? 's' : ''} ({skill.toxin_duration}s)
+              {skill.toxin_refresh && <span className="text-lime-300"> • refreshes</span>}
+            </span>
+          </div>
+        )}
+
+        {/* Alchemist - Detonate toxin */}
+        {skill.detonates_toxin && (
+          <div className="text-xs mb-1 p-2 bg-lime-500/10 border border-lime-500/20 rounded">
+            <span className="text-lime-400">💥 Detonate Toxin:</span>{' '}
+            <span className="text-zinc-300">
+              {skill.detonate_damage_base} + {skill.detonate_damage_per_stack}% MAG per stack
+              {skill.detonate_consumes_stacks && <span className="text-amber-300"> • consumes stacks</span>}
+            </span>
+          </div>
+        )}
+
+        {/* Chef - Burn application */}
+        {skill.applies_burn && (
+          <div className="text-xs mb-1">
+            <span className="text-orange-400">🔥 Burn:</span>{' '}
+            <span className="text-zinc-300">
+              {skill.burn_stacks} stack{(skill.burn_stacks || 0) > 1 ? 's' : ''} ({skill.burn_duration}s)
+            </span>
+          </div>
+        )}
+
+        {/* Chef - Flat HoT */}
+        {skill.hot_base && (
+          <div className="text-xs mb-1">
+            <span className="text-green-400">💚 HoT:</span>{' '}
+            <span className="text-zinc-300">
+              {skill.hot_base} + {skill.hot_scaling_percent}% {skill.hot_scaling_stat?.toUpperCase()}/s ({skill.hot_duration}s)
+            </span>
+          </div>
+        )}
+
+        {/* Chef - Dual effect (enemies + allies) */}
+        {skill.dual_effect && skill.allies_hot_base && (
+          <div className="text-xs mb-1 p-2 bg-emerald-500/10 border border-emerald-500/20 rounded">
+            <span className="text-emerald-400">👥 Allies:</span>{' '}
+            <span className="text-zinc-300">
+              HoT {skill.allies_hot_base} + {skill.allies_hot_scaling_percent}% MAG/s ({skill.allies_hot_duration}s)
+              {skill.allies_buff && ` + ${skill.allies_buff_value}% ${skill.allies_buff.replace('_', ' ')} (${skill.allies_buff_duration}s)`}
+            </span>
+          </div>
+        )}
+
+        {/* Musician - Secondary debuff */}
+        {skill.secondary_debuff && (
+          <div className="text-xs mb-1">
+            <span className="text-red-400">+ Debuff:</span>{' '}
+            <span className="text-zinc-300">
+              -{skill.secondary_debuff_value}% {skill.secondary_debuff.replace('_', ' ')} ({skill.secondary_debuff_duration}s)
+            </span>
+          </div>
+        )}
+
+        {/* Musician - Grand Performance dual effect */}
+        {skill.dual_effect && skill.allies_buff && !skill.allies_hot_base && (
+          <div className="text-xs mb-1 p-2 bg-emerald-500/10 border border-emerald-500/20 rounded">
+            <span className="text-emerald-400">👥 Allies:</span>{' '}
+            <span className="text-zinc-300">
+              +{skill.allies_buff_value}% {skill.allies_buff.replace('_', ' ')} ({skill.allies_buff_duration}s)
+            </span>
+          </div>
+        )}
+
+        {skill.dual_effect && skill.enemies_debuff && (
+          <div className="text-xs mb-1 p-2 bg-red-500/10 border border-red-500/20 rounded">
+            <span className="text-red-400">👹 Enemies:</span>{' '}
+            <span className="text-zinc-300">
+              -{skill.enemies_debuff_value}% {skill.enemies_debuff.replace('_', ' ')} ({skill.enemies_debuff_duration}s)
             </span>
           </div>
         )}
