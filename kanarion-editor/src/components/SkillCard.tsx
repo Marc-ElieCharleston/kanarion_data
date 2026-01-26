@@ -129,6 +129,14 @@ export interface Skill {
   tertiary_buff_value?: number;
   secondary_effect?: string;
   secondary_effect_duration?: number;
+  // Artisan-specific fields
+  damage_per_adjacent_ally?: number;
+  max_adjacent_bonus?: number;
+  shield_on_cross?: boolean;
+  team_damage_amp?: number;
+  mana_restore_base?: number;
+  mana_restore_scaling_stat?: string;
+  mana_restore_scaling_percent?: number;
   [key: string]: unknown;
 }
 
@@ -772,6 +780,43 @@ export default function SkillCard({
           <div className="text-xs mb-1">
             <span className="text-violet-400">+ Effect:</span>{' '}
             <span className="text-zinc-300">{skill.secondary_effect} ({skill.secondary_effect_duration}s)</span>
+          </div>
+        )}
+
+        {/* Artisan - Adjacent ally bonus */}
+        {skill.damage_per_adjacent_ally && (
+          <div className="text-xs mb-1 p-2 bg-amber-500/10 border border-amber-500/20 rounded">
+            <span className="text-amber-400">👥 Teamwork:</span>{' '}
+            <span className="text-zinc-300">
+              +{skill.damage_per_adjacent_ally}% damage per adjacent ally
+              {skill.max_adjacent_bonus && ` (max +${skill.max_adjacent_bonus}%)`}
+            </span>
+          </div>
+        )}
+
+        {/* Artisan - Shield on cross */}
+        {skill.shield_on_cross && (
+          <div className="text-xs mb-1">
+            <span className="text-sky-400">🛡️ Cross Shield:</span>{' '}
+            <span className="text-zinc-300">Shields allies in cross pattern</span>
+          </div>
+        )}
+
+        {/* Artisan - Team damage amp */}
+        {skill.team_damage_amp && (
+          <div className="text-xs mb-1">
+            <span className="text-orange-400">⚔️ Team Amp:</span>{' '}
+            <span className="text-zinc-300">Team deals +{skill.team_damage_amp}% damage to target</span>
+          </div>
+        )}
+
+        {/* Artisan - Mana restore */}
+        {skill.mana_restore_base && (
+          <div className="text-xs mb-1">
+            <span className="text-sky-400">💧 Mana Restore:</span>{' '}
+            <span className="text-zinc-300">
+              {skill.mana_restore_base} + {skill.mana_restore_scaling_percent}% {skill.mana_restore_scaling_stat?.toUpperCase()}
+            </span>
           </div>
         )}
 
