@@ -1,55 +1,53 @@
 {
   "_meta": {
-    "version": "2.0",
+    "version": "3.0",
     "last_updated": "2026-01-27",
-    "description": "Systeme de ciblage: grille 2x5, patterns, et Line of Sight"
+    "description": "Systeme de ciblage multi-grilles (2x5, 3x5, 4x4)"
   },
 
-  "grid": {
-    "rows": 2,
-    "cols": 5,
-    "total_slots": 10,
-    "max_players_per_team": 10,
-    "description": "Deux grilles 2x5 separees qui se font face. Combat temps reel.",
-    "layout": {
-      "allies": "Grille 2x5 a gauche (slots 0-4 front, 5-9 back)",
-      "enemies": "Grille 2x5 a droite",
-      "facing": "Front rows se font face"
-    },
-    "coordinate_system": {
-      "format": "[row, col]",
-      "row_0": "front",
-      "row_1": "back",
-      "col_range": "0 to 4"
-    },
-    "slot_mapping": {
-      "front_row": [0, 1, 2, 3, 4],
-      "back_row": [5, 6, 7, 8, 9],
-      "by_slot": {
-        "0": [0, 0], "1": [0, 1], "2": [0, 2], "3": [0, 3], "4": [0, 4],
-        "5": [1, 0], "6": [1, 1], "7": [1, 2], "8": [1, 3], "9": [1, 4]
+  "grids": {
+    "_comment": "Configurations de grilles disponibles",
+    
+    "2x5": {
+      "rows": 2,
+      "cols": 5,
+      "total_slots": 10,
+      "rows_names": ["front", "back"],
+      "slot_mapping": {
+        "front": [0, 1, 2, 3, 4],
+        "back": [5, 6, 7, 8, 9]
       }
     },
-    "typical_positioning": {
-      "front": "Tanks, melee DPS, bruisers",
-      "back": "Healers, ranged DPS, mages, squishy casters"
-    }
-  },
-
-  "combat_system": {
-    "type": "real_time",
-    "gcd": 2.0,
-    "description": "Combat temps reel avec GCD de 2 secondes. Spells en drag-and-drop.",
-    "targeting": {
-      "method": "drag_and_drop",
-      "click_select": true,
-      "valid_targets_only": "Seules les cibles valides (selon LoS) sont cliquables"
+    
+    "3x5": {
+      "rows": 3,
+      "cols": 5,
+      "total_slots": 15,
+      "rows_names": ["front", "mid", "back"],
+      "slot_mapping": {
+        "front": [0, 1, 2, 3, 4],
+        "mid": [5, 6, 7, 8, 9],
+        "back": [10, 11, 12, 13, 14]
+      }
+    },
+    
+    "4x4": {
+      "rows": 4,
+      "cols": 4,
+      "total_slots": 16,
+      "rows_names": ["front", "mid_front", "mid_back", "back"],
+      "slot_mapping": {
+        "front": [0, 1, 2, 3],
+        "mid_front": [4, 5, 6, 7],
+        "mid_back": [8, 9, 10, 11],
+        "back": [12, 13, 14, 15]
+      }
     }
   },
 
   "line_of_sight": {
-    "description": "Systeme de ligne de vue - check sur la grille ENNEMIE",
-    "core_rule": "Une cible en back est bloquee si un ennemi est devant elle (meme colonne, front row)",
+    "description": "Systeme de ligne de vue",
+    "core_rule": "Une cible est bloquee si elle a une unite DEVANT ELLE dans sa propre grille",
     "rules": {
       "auto_attack": {
         "needs_los": true,
@@ -59,28 +57,17 @@
         "default": false,
         "description": "Par defaut les spells ignorent LoS (needs_los sur le spell pour forcer)"
       }
-    },
-    "los_check": {
-      "check_on": "target_grid",
-      "description": "Pour cible en back row: check si front row meme colonne a une unite",
-      "example": {
-        "scenario": "Tu veux taper slot 7 (back row, col 2)",
-        "check": "Slot 2 (front row, col 2) a une unite?",
-        "result": "Si oui = slot 7 bloque pour auto-attack"
-      }
     }
   },
 
   "patterns": {
-    "_comment": "Patterns pour grille 2x5. Format: [row_offset, col_offset] depuis la cible",
-
+    "_comment": "Patterns utilisant offsets relatifs [row, col]. S'adaptent a la grille active.",
+    
     "single": {
       "name": "Single Target",
-      "description": "Cible unique",
       "category": "basic",
       "tiles": [[0, 0]],
-      "needs_los": true,
-      "tile_count": 1
+      "needs_los": true
     },
 
     "row_3": {
@@ -88,55 +75,116 @@
       "description": "3 cases horizontales centrees",
       "category": "line",
       "tiles": [[0, -1], [0, 0], [0, 1]],
-      "needs_los": false,
-      "tile_count": 3
+      "needs_los": false
     },
     "row_5": {
-      "name": "Row Full",
-      "description": "Ligne complete (5 cases)",
+      "name": "Row Full (5)",
+      "description": "Ligne complete 5 cases",
       "category": "line",
       "tiles": [[0, -2], [0, -1], [0, 0], [0, 1], [0, 2]],
-      "needs_los": false,
-      "tile_count": 5
+      "needs_los": false
+    },
+    "row_all": {
+      "name": "Row All",
+      "description": "Toute la ligne (s'adapte a la grille)",
+      "category": "line",
+      "tiles": "row",
+      "needs_los": false
     },
 
     "col_2": {
-      "name": "Column Full",
-      "description": "Colonne complete (2 cases: front + back)",
+      "name": "Column 2",
+      "description": "2 cases verticales",
       "category": "line",
       "tiles": [[0, 0], [1, 0]],
-      "needs_los": false,
-      "tile_count": 2
+      "needs_los": false
+    },
+    "col_3": {
+      "name": "Column 3",
+      "description": "3 cases verticales",
+      "category": "line",
+      "tiles": [[-1, 0], [0, 0], [1, 0]],
+      "needs_los": false
+    },
+    "col_4": {
+      "name": "Column 4",
+      "description": "4 cases verticales",
+      "category": "line",
+      "tiles": [[-1, 0], [0, 0], [1, 0], [2, 0]],
+      "needs_los": false
+    },
+    "col_all": {
+      "name": "Column All",
+      "description": "Toute la colonne (s'adapte a la grille)",
+      "category": "line",
+      "tiles": "column",
+      "needs_los": false
     },
 
     "adjacent": {
-      "name": "Adjacent",
-      "description": "Cible + 4 adjacents (croix)",
+      "name": "Adjacent (Cross)",
+      "description": "Cible + 4 adjacents cardinaux",
       "category": "area",
-      "tiles": [[0, 0], [0, -1], [0, 1], [1, 0], [-1, 0]],
-      "needs_los": false,
-      "tile_count": 5,
-      "note": "Row offset -1 ou +1 peut sortir de grille (ignore)"
+      "tiles": [[0, 0], [0, -1], [0, 1], [-1, 0], [1, 0]],
+      "needs_los": false
     },
-
-    "rect_2x3": {
-      "name": "Rect 2x3",
-      "description": "Rectangle 2 rows x 3 cols",
-      "category": "area",
-      "tiles": [[0, -1], [0, 0], [0, 1], [1, -1], [1, 0], [1, 1]],
-      "needs_los": false,
-      "tile_count": 6
-    },
-    "rect_2x5": {
-      "name": "Full Grid",
-      "description": "Grille complete (2x5 = 10 cases)",
+    "adjacent_8": {
+      "name": "Adjacent 8",
+      "description": "Cible + 8 cases autour",
       "category": "area",
       "tiles": [
-        [0, -2], [0, -1], [0, 0], [0, 1], [0, 2],
-        [1, -2], [1, -1], [1, 0], [1, 1], [1, 2]
+        [-1, -1], [-1, 0], [-1, 1],
+        [0, -1], [0, 0], [0, 1],
+        [1, -1], [1, 0], [1, 1]
       ],
-      "needs_los": false,
-      "tile_count": 10
+      "needs_los": false
+    },
+
+    "rect_2x2": {
+      "name": "Rect 2x2",
+      "category": "area",
+      "tiles": [[0, 0], [0, 1], [1, 0], [1, 1]],
+      "needs_los": false
+    },
+    "rect_2x3": {
+      "name": "Rect 2x3",
+      "category": "area",
+      "tiles": [[0, -1], [0, 0], [0, 1], [1, -1], [1, 0], [1, 1]],
+      "needs_los": false
+    },
+    "rect_3x3": {
+      "name": "Rect 3x3",
+      "category": "area",
+      "tiles": [
+        [-1, -1], [-1, 0], [-1, 1],
+        [0, -1], [0, 0], [0, 1],
+        [1, -1], [1, 0], [1, 1]
+      ],
+      "needs_los": false
+    },
+
+    "cross": {
+      "name": "Cross",
+      "description": "Croix (centre + lignes verticale/horizontale)",
+      "category": "special",
+      "tiles": [
+        [-2, 0], [-1, 0], [0, 0], [1, 0], [2, 0],
+        [0, -2], [0, -1], [0, 1], [0, 2]
+      ],
+      "needs_los": false
+    },
+    
+    "diagonal_down": {
+      "name": "Diagonal \\",
+      "category": "diagonal",
+      "tiles": [[0, 0], [1, 1], [2, 2], [3, 3]],
+      "needs_los": false
+    },
+    "diagonal_up": {
+      "name": "Diagonal /",
+      "category": "diagonal",
+      "tiles": [[0, 0], [1, -1], [2, -2], [3, -3]],
+      "needs_los": false
     },
 
     "chain_2": {
@@ -144,122 +192,101 @@
       "description": "Rebondit sur 2 cibles adjacentes",
       "category": "chain",
       "tiles": "dynamic",
-      "needs_los": true,
       "bounces": 2,
       "bounce_damage_reduction": 0.15,
-      "tile_count": 3
+      "needs_los": true
     },
     "chain_3": {
       "name": "Chain 3",
       "description": "Rebondit sur 3 cibles adjacentes",
       "category": "chain",
       "tiles": "dynamic",
-      "needs_los": true,
       "bounces": 3,
       "bounce_damage_reduction": 0.15,
-      "tile_count": 4
+      "needs_los": true
+    },
+    "chain_4": {
+      "name": "Chain 4",
+      "description": "Rebondit sur 4 cibles adjacentes",
+      "category": "chain",
+      "tiles": "dynamic",
+      "bounces": 4,
+      "bounce_damage_reduction": 0.15,
+      "needs_los": true
     },
 
     "random_2": {
       "name": "Random 2",
-      "description": "2 cibles aleatoires",
       "category": "random",
       "tiles": "dynamic",
-      "needs_los": false,
       "random_targets": 2,
-      "can_hit_same_target": false,
-      "tile_count": 2
+      "needs_los": false
     },
     "random_3": {
       "name": "Random 3",
-      "description": "3 cibles aleatoires",
       "category": "random",
       "tiles": "dynamic",
-      "needs_los": false,
       "random_targets": 3,
-      "can_hit_same_target": false,
-      "tile_count": 3
+      "needs_los": false
+    },
+    "random_4": {
+      "name": "Random 4",
+      "category": "random",
+      "tiles": "dynamic",
+      "random_targets": 4,
+      "needs_los": false
     },
 
     "all": {
       "name": "All",
-      "description": "Toutes les cibles (10 cases)",
+      "description": "Toutes les cibles de la grille",
       "category": "basic",
       "tiles": "all",
-      "needs_los": false,
-      "tile_count": 10
+      "needs_los": false
     },
 
     "front_row": {
       "name": "Front Row",
-      "description": "Ligne front ennemie (5 cases)",
+      "description": "Premiere ligne (row 0)",
       "category": "positional",
-      "tiles": [[0, -2], [0, -1], [0, 0], [0, 1], [0, 2]],
-      "needs_los": false,
+      "tiles": "front_row",
       "fixed_row": 0,
-      "tile_count": 5
+      "needs_los": false
     },
     "back_row": {
       "name": "Back Row",
-      "description": "Ligne back ennemie (5 cases)",
+      "description": "Derniere ligne",
       "category": "positional",
-      "tiles": [[1, -2], [1, -1], [1, 0], [1, 1], [1, 2]],
-      "needs_los": false,
-      "fixed_row": 1,
-      "tile_count": 5
+      "tiles": "back_row",
+      "fixed_row": -1,
+      "needs_los": false
     }
   },
 
   "categories": {
-    "basic": {
-      "name": "Basique",
-      "description": "Single target et full grid",
-      "color": "#71717a"
-    },
-    "line": {
-      "name": "Ligne",
-      "description": "Patterns lineaires (row/col)",
-      "color": "#38bdf8"
-    },
-    "area": {
-      "name": "Zone",
-      "description": "Rectangles",
-      "color": "#fb923c"
-    },
-    "chain": {
-      "name": "Chain",
-      "description": "Rebondissent entre cibles",
-      "color": "#34d399"
-    },
-    "random": {
-      "name": "Random",
-      "description": "Cibles aleatoires",
-      "color": "#fbbf24"
-    },
-    "positional": {
-      "name": "Positionnel",
-      "description": "Ciblent des lignes fixes",
-      "color": "#f87171"
-    }
+    "basic": { "name": "Basique", "color": "#71717a" },
+    "line": { "name": "Ligne", "color": "#38bdf8" },
+    "area": { "name": "Zone", "color": "#fb923c" },
+    "special": { "name": "Special", "color": "#a78bfa" },
+    "diagonal": { "name": "Diagonal", "color": "#f472b6" },
+    "chain": { "name": "Chain", "color": "#34d399" },
+    "random": { "name": "Random", "color": "#fbbf24" },
+    "positional": { "name": "Positionnel", "color": "#f87171" }
   },
 
   "balance_guidelines": {
-    "description": "Guidelines pour equilibrer les skills selon leur pattern",
     "by_tile_count": {
       "1": { "mp_cost": "8-12", "power_ratio": "1.0-1.2", "cooldown": "3-5s" },
       "2-3": { "mp_cost": "12-16", "power_ratio": "0.8-1.0", "cooldown": "6-8s" },
       "4-6": { "mp_cost": "16-22", "power_ratio": "0.6-0.8", "cooldown": "10-14s" },
-      "7-10": { "mp_cost": "22-30", "power_ratio": "0.5-0.7", "cooldown": "14-20s" }
-    },
-    "los_bonus": {
-      "description": "Skills avec needs_los=true peuvent avoir +10% power car plus restrictifs",
-      "power_bonus": "+10%"
+      "7-10": { "mp_cost": "22-28", "power_ratio": "0.5-0.7", "cooldown": "14-18s" },
+      "11+": { "mp_cost": "28-35", "power_ratio": "0.4-0.6", "cooldown": "18-25s" }
     },
     "chain_scaling": {
-      "description": "Chaque bounce fait moins de degats",
       "bounce_1": "100%",
       "bounce_2": "85%",
-      "bounce_3": "70%"
+      "bounce_3": "70%",
+      "bounce_4": "55%"
     }
   }
 }
