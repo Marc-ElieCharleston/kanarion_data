@@ -139,9 +139,6 @@ Reset: Soft reset (Rang / 2 + 500)
 #### 5.6 PvP Balance Adjustments
 ```
 PvP-specific modifiers (vs PvE):
-- All damage: -30% (longer fights)
-- Healing: -20% (anti-heal meta)
-- CC duration: -40% (less frustrating)
 - CC diminishing returns: 50% → 25% → immune (10s reset)
 
 Cooldown adjustments:
