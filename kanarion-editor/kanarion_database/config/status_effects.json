@@ -87,61 +87,37 @@
     }
   },
 
-  "diminishing_returns": {
-    "_comment": "System anti-CC chain - prevents permastun",
-    "enabled": true,
-    "dr_window": 15.0,
-    "dr_window_note": "Time window in seconds for tracking CC applications",
-    "reduction_per_hit": 0.5,
-    "reduction_per_hit_note": "Each subsequent CC = duration * this value",
-    "max_hits": 3,
-    "max_hits_note": "After this many CCs, become immune",
-    "immunity_duration": 8.0,
-    "immunity_duration_note": "Seconds of CC immunity after max DR reached",
-    "applies_to": ["stun", "fear", "confusion"],
-    "does_not_apply_to": ["silence", "root", "slow", "blind"]
-  },
-
   "control_effects": {
+    "_note": "CC balance via cooldowns + Tenacity/Effect Resist stats (no DR system)",
     "stun": {
       "max_duration": 3,
-      "diminishing_returns": true,
-      "dr_formula": "each subsequent stun = duration * 0.5",
       "prevents": ["all_actions"],
       "allows": []
     },
     "silence": {
       "max_duration": 5,
-      "diminishing_returns": false,
       "prevents": ["skills", "spells"],
       "allows": ["auto_attack", "movement", "items"]
     },
     "root": {
       "max_duration": 4,
-      "diminishing_returns": false,
       "prevents": ["movement", "dash_skills"],
       "allows": ["skills", "auto_attack"]
     },
     "fear": {
       "max_duration": 3,
-      "diminishing_returns": true,
-      "dr_formula": "each subsequent fear = duration * 0.5",
       "effect": "random_movement + cannot_act"
     },
     "confusion": {
       "max_duration": 4,
-      "diminishing_returns": true,
-      "dr_formula": "each subsequent confusion = duration * 0.5",
       "effect": "can_attack_allies"
     },
     "blind": {
       "max_duration": 5,
-      "diminishing_returns": false,
       "effect": "hit_rate_reduced_to_25%"
     },
     "disarm": {
       "max_duration": 4,
-      "diminishing_returns": false,
       "prevents": ["auto_attack"],
       "allows": ["skills", "spells", "movement", "items"],
       "note": "Counter physical DPS, n'empeche pas les skills"
