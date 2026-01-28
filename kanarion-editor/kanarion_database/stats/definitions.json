@@ -163,6 +163,12 @@
     },
 
     "defensive": {
+      "flat_dr": {
+        "name": "Reduction Degats Fixe",
+        "description": "Stat de base de reduction de degats fixe. Chaque point retire 1 point de degats recus (min 10% du coup). Stat allocable par le joueur.",
+        "bonus_type": "both",
+        "formula": "total_flat_dr = flat_dr + damage_reduction_flat (from buffs). damage_after = max(damage × 0.1, damage - total_flat_dr)"
+      },
       "armor": {
         "name": "Armure",
         "description": "Reduction POURCENTAGE des degats PHYSIQUES (ATK-based). Scaling logarithmique: 100 armor = 50% reduc, 200 = 66%, 300 = 75%. Peut etre bypass par armor_pen.",
@@ -177,10 +183,11 @@
       },
       "damage_reduction": {
         "name": "Reduction Degats %",
-        "description": "% reduction de TOUS les degats recus (apres armor/mr).",
+        "description": "% reduction de TOUS les degats recus (apres armor/mr). BUFF UNIQUEMENT - pas une stat de base ni d'equipement.",
         "bonus_type": "flat",
         "default": 0,
         "cap": 75,
+        "source": "buff_only",
         "formula": "final_damage = damage_after_armor × (1 - damage_reduction/100)"
       },
       "damage_reduction_flat": {
@@ -377,14 +384,14 @@
       },
       "debuff": {
         "name": "Debuff",
-        "examples": ["atk_down", "def_down", "poison", "burn", "bleed"],
+        "examples": ["atk_down", "flat_dr_down", "poison", "burn", "bleed"],
         "can_resist": true,
         "affected_by_tenacity": true,
         "stacking": "Voir stacking_system"
       },
       "buff": {
         "name": "Buff",
-        "examples": ["atk_up", "def_up", "haste", "regen", "shield"],
+        "examples": ["atk_up", "flat_dr_up", "haste", "regen", "shield"],
         "can_resist": false,
         "affected_by_buff_duration": true,
         "stacking": "Voir stacking_system"
@@ -399,7 +406,7 @@
     "max_total_bonus": 100,
     "formula": "final_value = base_value × (1 + stacks × 10/100)",
     "refresh_on_reapply": true,
-    "applies_to": ["atk_up", "atk_down", "def_up", "def_down", "mag_up", "mag_down", "speed_up", "speed_down", "poison", "burn", "bleed", "regen"]
+    "applies_to": ["atk_up", "atk_down", "flat_dr_up", "flat_dr_down", "mag_up", "mag_down", "speed_up", "speed_down", "poison", "burn", "bleed", "regen"]
   },
 
   "damage_pipeline": {
