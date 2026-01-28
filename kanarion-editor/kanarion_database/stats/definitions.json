@@ -163,12 +163,6 @@
     },
 
     "defensive": {
-      "def": {
-        "name": "Defense",
-        "description": "Reduction FIXE appliquee apres armor/mr. Retire X points de degats (min 10% du coup). Efficace contre les petits coups rapides, moins contre les gros coups.",
-        "bonus_type": "both",
-        "formula": "damage_after_def = max(raw_damage × 0.1, raw_damage - def_final)"
-      },
       "armor": {
         "name": "Armure",
         "description": "Reduction POURCENTAGE des degats PHYSIQUES (ATK-based). Scaling logarithmique: 100 armor = 50% reduc, 200 = 66%, 300 = 75%. Peut etre bypass par armor_pen.",
@@ -182,12 +176,20 @@
         "formula": "magic_reduction% = mr / (mr + 100) × 100"
       },
       "damage_reduction": {
-        "name": "Reduction Degats",
+        "name": "Reduction Degats %",
         "description": "% reduction de TOUS les degats recus (apres armor/mr).",
         "bonus_type": "flat",
         "default": 0,
         "cap": 75,
         "formula": "final_damage = damage_after_armor × (1 - damage_reduction/100)"
+      },
+      "damage_reduction_flat": {
+        "name": "Reduction Degats Fixe",
+        "description": "Reduction FIXE des degats recus (apres armor/mr). Retire X points de degats (min 10% du coup). Obtenu via skills, passifs ou equipement - pas une stat de base.",
+        "bonus_type": "flat",
+        "default": 0,
+        "source": "status_effect",
+        "formula": "damage_after_flat_dr = max(raw_damage × 0.1, raw_damage - damage_reduction_flat)"
       },
       "block_chance": {
         "name": "Chance Bloquer",
@@ -407,13 +409,15 @@
       "2. Crit check: if crit, damage × (crit_dmg/100)",
       "3. Apply damage_percent bonus",
       "4. Apply penetration (armor_pen ou magic_pen)",
-      "5. Apply target defense (armor ou magic_resist)",
-      "6. Apply target damage_reduction",
-      "7. Block/Parry check",
-      "8. Apply shield absorption",
-      "9. Apply to HP",
-      "10. Trigger lifesteal/spell_vamp",
-      "11. Trigger reflect/thorns"
+      "5. Apply armor (physique) ou magic_resist (magique) - % reduction",
+      "6. Apply damage_taken_percent (marked/vulnerable)",
+      "7. Apply damage_reduction_flat (min 10% du coup) - via skills/passifs/equip",
+      "8. Block/Parry check",
+      "9. Apply reflect (reduit degats + renvoie)",
+      "10. Apply shield/barrier absorption",
+      "11. Apply to HP",
+      "12. Trigger lifesteal/spell_vamp",
+      "13. Trigger thorns"
     ]
   }
 }
