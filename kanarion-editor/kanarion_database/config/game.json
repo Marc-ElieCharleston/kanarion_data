@@ -59,13 +59,21 @@
 
   "combat_grids": {
     "_comment": "Grilles de combat dynamiques - le format dépend du type de combat",
-    "default": "3x5",
+    "default": "3x4",
+    "playtest_mode": true,
+    "playtest_grids": ["3x4", "3x5", "4x4"],
     "available": {
+      "3x4": {
+        "rows": 3,
+        "cols": 4,
+        "total_slots": 12,
+        "description": "Balanced grid (3 rows × 4 cols) - MVP default"
+      },
       "3x5": {
         "rows": 3,
         "cols": 5,
         "total_slots": 15,
-        "description": "Standard combat grid (3 rows × 5 cols)"
+        "description": "Wide grid (3 rows × 5 cols)"
       },
       "4x4": {
         "rows": 4,
@@ -77,17 +85,28 @@
         "rows": 2,
         "cols": 5,
         "total_slots": 10,
-        "description": "Compact grid for small encounters"
+        "description": "Compact grid for tutorial/small encounters"
       }
     },
+    "layout": {
+      "_comment": "Visual layout parameters for diagonal ~30° combat view",
+      "slot_spacing_x": 60.0,
+      "slot_spacing_y": 30.0,
+      "row_offset_x": -20.0,
+      "row_offset_y": -50.0,
+      "team_separation": 180.0,
+      "center_offset_player": {"x": -120, "y": 80},
+      "center_offset_monster": {"x": 60, "y": -100}
+    },
     "usage": {
-      "open_world": "3x5",
+      "open_world": "3x4",
       "dungeon": "4x4",
       "pvp_arena": "4x4",
       "boss_fight": "4x4",
-      "tutorial": "2x5"
+      "tutorial": "2x5",
+      "playtest": "random"
     },
-    "notes": "Le type de grille sera déterminé par le contexte (zone, donjon, etc.)"
+    "notes": "playtest_mode=true: combat sélectionne aléatoirement parmi playtest_grids"
   },
 
   "chat_channels": {
