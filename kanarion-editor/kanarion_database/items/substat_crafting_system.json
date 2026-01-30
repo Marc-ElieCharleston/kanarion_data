@@ -1,24 +1,106 @@
 {
   "_meta": {
-    "version": "1.0",
+    "version": "2.0",
     "last_updated": "2026-01-30",
-    "description": "Substat manipulation system using dungeon materials"
+    "description": "Substat manipulation system using dungeon materials",
+    "playtest_scope": "Act 1 (lv 1-20): Only T1 items craftable. T2/T3 reserved for future acts.",
+    "changelog": "v2.0: Simplified T1 materials to drop from all Act 1 mobs. Added Replace Tokens."
   },
 
   "system_overview": {
-    "description": "Use dungeon materials to craft stones/crystals/essences that manipulate equipment substats",
-    "three_operations": [
+    "description": "Use dungeon materials to craft stones/crystals/essences/tokens that manipulate equipment substats",
+    "four_operations": [
       "Unlock: Open a new substat slot on equipment",
       "Select: Choose which substat goes in a slot",
-      "Reroll: Change the value of an existing substat"
+      "Reroll: Change the value of an existing substat",
+      "Replace: Replace an existing substat with a different one"
     ],
-    "material_rarity": "Dungeon materials are rare and valuable, can be sold for good gold"
+    "material_rarity": "Dungeon materials are rare and valuable, can be sold for good gold",
+    "playtest_scope": "PLAYTEST: Only T1 items available in Acte 1 (lv 1-20). T2/T3 reserved for future acts."
   },
 
   "dungeon_materials": {
-    "_comment": "New materials dropped in dungeons",
+    "_comment": "Materials for substat crafting - T1 drops from all Act 1 mobs, T2/T3 for future acts",
 
-    "wolf_den_materials": [
+    "act_1_common_materials": [
+      {
+        "id": "mat_monster_essence",
+        "name": "Monster Essence",
+        "name_fr": "Essence de Monstre",
+        "rarity": "common",
+        "drop_source": "All Act 1 monsters (lv 1-20)",
+        "drop_rate": 0.15,
+        "base_value": 5,
+        "description": "Common essence from defeated monsters, used in T1 crafting"
+      },
+      {
+        "id": "mat_beast_core",
+        "name": "Beast Core",
+        "name_fr": "Noyau de Bête",
+        "rarity": "uncommon",
+        "drop_source": "All Act 1 beasts (wolf, boar, rat, etc)",
+        "drop_rate": 0.08,
+        "base_value": 12,
+        "description": "Crystallized life force from beasts"
+      },
+      {
+        "id": "mat_humanoid_token",
+        "name": "Humanoid Token",
+        "name_fr": "Jeton Humanoïde",
+        "rarity": "uncommon",
+        "drop_source": "All Act 1 humanoids (goblin, lizardman)",
+        "drop_rate": 0.08,
+        "base_value": 12,
+        "description": "Tribal token from humanoid enemies"
+      },
+      {
+        "id": "mat_undead_shard",
+        "name": "Undead Shard",
+        "name_fr": "Fragment Mort-vivant",
+        "rarity": "uncommon",
+        "drop_source": "All Act 1 undead (skeleton, spectral)",
+        "drop_rate": 0.08,
+        "base_value": 12,
+        "description": "Cursed shard from undead creatures"
+      }
+    ],
+
+    "act_1_boss_materials": [
+      {
+        "id": "mat_boss_soul",
+        "name": "Boss Soul",
+        "name_fr": "Âme de Boss",
+        "rarity": "rare",
+        "drop_source": "All Act 1 dungeon bosses",
+        "drop_rate": 1.0,
+        "base_value": 50,
+        "description": "Powerful soul from dungeon bosses"
+      }
+    ],
+
+    "act_2_materials_placeholder": [
+      {
+        "id": "mat_act2_essence",
+        "name": "Act 2 Essence",
+        "rarity": "uncommon",
+        "drop_source": "Act 2 monsters (lv 20-40)",
+        "note": "TO BE IMPLEMENTED: Act 2 materials for T2 crafting"
+      }
+    ],
+
+    "act_3_materials_placeholder": [
+      {
+        "id": "mat_act3_essence",
+        "name": "Act 3 Essence",
+        "rarity": "rare",
+        "drop_source": "Act 3 monsters (lv 40-60)",
+        "note": "TO BE IMPLEMENTED: Act 3 materials for T3 crafting"
+      }
+    ],
+
+    "_legacy_specific_materials": {
+      "_comment": "Legacy specific materials - kept for reference but not used in playtest",
+      "wolf_den_materials": [
       {
         "id": "mat_alpha_fang",
         "name": "Alpha Fang",
@@ -289,20 +371,60 @@
           "description": "Reroll substat value to 100-130% of max"
         }
       ]
+    },
+
+    "replace_tokens": {
+      "description": "Replace an existing substat with a different one (keeps the slot, changes the substat type)",
+      "usage": "Right-click token, click existing substat on equipment, choose new substat from options.",
+
+      "tiers": [
+        {
+          "id": "mat_replace_token_t1",
+          "name": "Minor Replace Token",
+          "name_fr": "Jeton de Remplacement Mineur",
+          "rarity": "uncommon",
+          "options_count": 3,
+          "craft_cost": 120,
+          "base_value": 220,
+          "description": "Replace a substat with 1 choice from 3 random options (keeps same value)"
+        },
+        {
+          "id": "mat_replace_token_t2",
+          "name": "Replace Token",
+          "name_fr": "Jeton de Remplacement",
+          "rarity": "rare",
+          "options_count": 5,
+          "craft_cost": 300,
+          "base_value": 550,
+          "description": "Replace a substat with 1 choice from 5 random options (keeps same value)"
+        },
+        {
+          "id": "mat_replace_token_t3",
+          "name": "Perfect Replace Token",
+          "name_fr": "Jeton de Remplacement Parfait",
+          "rarity": "epic",
+          "options_count": "all",
+          "craft_cost": 650,
+          "base_value": 1400,
+          "description": "Replace a substat with any substat from the full pool (keeps same value)"
+        }
+      ]
     }
   },
 
   "craft_recipes": {
-    "_comment": "Recipes to craft unlock stones, select crystals, and reroll essences",
+    "_comment": "PLAYTEST: Only T1 recipes active in Act 1. T2/T3 reserved for future acts.",
 
     "unlock_stones": [
       {
         "result": "mat_unlock_stone_t1",
         "quantity": 1,
+        "act": 1,
+        "playtest_available": true,
         "ingredients": [
-          {"id": "mat_alpha_fang", "quantity": 3},
-          {"id": "mat_wolf_essence", "quantity": 5},
-          {"id": "mat_goblin_token", "quantity": 10}
+          {"id": "mat_monster_essence", "quantity": 15},
+          {"id": "mat_beast_core", "quantity": 3},
+          {"id": "mat_humanoid_token", "quantity": 3}
         ],
         "gold_cost": 100,
         "unlock_level": 5
@@ -310,24 +432,28 @@
       {
         "result": "mat_unlock_stone_t2",
         "quantity": 1,
+        "act": 2,
+        "playtest_available": false,
         "ingredients": [
-          {"id": "mat_warlord_insignia", "quantity": 2},
-          {"id": "mat_war_trophy", "quantity": 8},
-          {"id": "mat_shaman_totem", "quantity": 5}
+          {"id": "mat_act2_essence", "quantity": 20},
+          {"id": "mat_act2_core", "quantity": 5}
         ],
         "gold_cost": 250,
-        "unlock_level": 10
+        "unlock_level": 25,
+        "note": "TO BE IMPLEMENTED: Act 2 recipe"
       },
       {
         "result": "mat_unlock_stone_t3",
         "quantity": 1,
+        "act": 3,
+        "playtest_available": false,
         "ingredients": [
-          {"id": "mat_champion_soul", "quantity": 1},
-          {"id": "mat_corruption_core", "quantity": 3},
-          {"id": "mat_cursed_essence", "quantity": 10}
+          {"id": "mat_act3_essence", "quantity": 30},
+          {"id": "mat_act3_core", "quantity": 8}
         ],
         "gold_cost": 500,
-        "unlock_level": 15
+        "unlock_level": 45,
+        "note": "TO BE IMPLEMENTED: Act 3 recipe"
       }
     ],
 
@@ -335,10 +461,13 @@
       {
         "result": "mat_select_crystal_t1",
         "quantity": 1,
+        "act": 1,
+        "playtest_available": true,
         "ingredients": [
-          {"id": "mat_alpha_pelt", "quantity": 2},
-          {"id": "mat_pack_emblem", "quantity": 4},
-          {"id": "mat_healing_herb", "quantity": 8}
+          {"id": "mat_monster_essence", "quantity": 20},
+          {"id": "mat_beast_core", "quantity": 2},
+          {"id": "mat_humanoid_token", "quantity": 2},
+          {"id": "mat_undead_shard", "quantity": 2}
         ],
         "gold_cost": 150,
         "unlock_level": 5
@@ -346,24 +475,26 @@
       {
         "result": "mat_select_crystal_t2",
         "quantity": 1,
+        "act": 2,
+        "playtest_available": false,
         "ingredients": [
-          {"id": "mat_goblin_banner", "quantity": 1},
-          {"id": "mat_war_trophy", "quantity": 10},
-          {"id": "mat_mystic_water", "quantity": 6}
+          {"id": "mat_act2_essence", "quantity": 25}
         ],
         "gold_cost": 350,
-        "unlock_level": 10
+        "unlock_level": 25,
+        "note": "TO BE IMPLEMENTED: Act 2 recipe"
       },
       {
         "result": "mat_select_crystal_t3",
         "quantity": 1,
+        "act": 3,
+        "playtest_available": false,
         "ingredients": [
-          {"id": "mat_champion_soul", "quantity": 2},
-          {"id": "mat_necromancer_orb", "quantity": 5},
-          {"id": "mat_cursed_essence", "quantity": 15}
+          {"id": "mat_act3_essence", "quantity": 40}
         ],
         "gold_cost": 700,
-        "unlock_level": 15
+        "unlock_level": 45,
+        "note": "TO BE IMPLEMENTED: Act 3 recipe"
       }
     ],
 
@@ -371,9 +502,11 @@
       {
         "result": "mat_reroll_essence_t1",
         "quantity": 1,
+        "act": 1,
+        "playtest_available": true,
         "ingredients": [
-          {"id": "mat_wolf_essence", "quantity": 4},
-          {"id": "mat_goblin_token", "quantity": 8}
+          {"id": "mat_monster_essence", "quantity": 10},
+          {"id": "mat_beast_core", "quantity": 2}
         ],
         "gold_cost": 80,
         "unlock_level": 5
@@ -381,24 +514,69 @@
       {
         "result": "mat_reroll_essence_t2",
         "quantity": 1,
+        "act": 2,
+        "playtest_available": false,
         "ingredients": [
-          {"id": "mat_warlord_insignia", "quantity": 1},
-          {"id": "mat_shaman_totem", "quantity": 6},
-          {"id": "mat_war_trophy", "quantity": 8}
+          {"id": "mat_act2_essence", "quantity": 15}
         ],
         "gold_cost": 200,
-        "unlock_level": 10
+        "unlock_level": 25,
+        "note": "TO BE IMPLEMENTED: Act 2 recipe"
       },
       {
         "result": "mat_reroll_essence_t3",
         "quantity": 1,
+        "act": 3,
+        "playtest_available": false,
         "ingredients": [
-          {"id": "mat_corruption_core", "quantity": 2},
-          {"id": "mat_necromancer_orb", "quantity": 8},
-          {"id": "mat_cursed_essence", "quantity": 12}
+          {"id": "mat_act3_essence", "quantity": 25}
         ],
         "gold_cost": 400,
-        "unlock_level": 15
+        "unlock_level": 45,
+        "note": "TO BE IMPLEMENTED: Act 3 recipe"
+      }
+    ],
+
+    "replace_tokens": [
+      {
+        "result": "mat_replace_token_t1",
+        "quantity": 1,
+        "act": 1,
+        "playtest_available": true,
+        "ingredients": [
+          {"id": "mat_monster_essence", "quantity": 12},
+          {"id": "mat_boss_soul", "quantity": 1},
+          {"id": "mat_undead_shard", "quantity": 3}
+        ],
+        "gold_cost": 120,
+        "unlock_level": 8,
+        "note": "Requires boss soul - harder to craft than other T1 items"
+      },
+      {
+        "result": "mat_replace_token_t2",
+        "quantity": 1,
+        "act": 2,
+        "playtest_available": false,
+        "ingredients": [
+          {"id": "mat_act2_essence", "quantity": 18},
+          {"id": "mat_act2_boss_soul", "quantity": 1}
+        ],
+        "gold_cost": 300,
+        "unlock_level": 25,
+        "note": "TO BE IMPLEMENTED: Act 2 recipe"
+      },
+      {
+        "result": "mat_replace_token_t3",
+        "quantity": 1,
+        "act": 3,
+        "playtest_available": false,
+        "ingredients": [
+          {"id": "mat_act3_essence", "quantity": 35},
+          {"id": "mat_act3_boss_soul", "quantity": 2}
+        ],
+        "gold_cost": 650,
+        "unlock_level": 45,
+        "note": "TO BE IMPLEMENTED: Act 3 recipe"
       }
     ]
   },
@@ -429,34 +607,75 @@
   },
 
   "economy_notes": {
-    "material_value": "Dungeon materials are rare and valuable",
-    "trading": "Players can sell materials on market for gold",
-    "demand": "High demand for T3 materials from endgame players",
-    "gold_sink": "Crafting costs provide gold sink",
-    "progression": "Substat optimization is endgame progression system"
+    "playtest_economy": {
+      "material_drops": "T1 materials drop from ALL Act 1 monsters (lv 1-20)",
+      "drop_rates": "Common essences ~15%, uncommon cores/tokens/shards ~8%",
+      "boss_souls": "Guaranteed drop from dungeon bosses (tradeable, valuable)",
+      "accessibility": "All players can farm T1 materials anywhere in Act 1"
+    },
+    "material_value": "Materials are rare enough to have market value but accessible to all players",
+    "trading": "Players can sell materials on market for gold (especially boss souls)",
+    "gold_sink": "Crafting costs (80-150g per T1 item) provide gold sink",
+    "progression": "Substat optimization is endgame progression for Act 1 playtest",
+    "future_acts": {
+      "act_2": "T2 materials will drop from Act 2 monsters (lv 20-40)",
+      "act_3": "T3 materials will drop from Act 3+ monsters (lv 40-60+)",
+      "rarity_increase": "Higher act materials will be rarer and more valuable"
+    }
   },
 
   "usage_examples": {
-    "example_1": {
-      "scenario": "Player has +8 sword with 1 substat, wants to add 2nd substat",
+    "example_1_playtest": {
+      "scenario": "PLAYTEST - Player has +3 sword with no substats, wants to add first substat",
+      "act": 1,
       "steps": [
-        "Craft mat_unlock_stone_t2 (requires Goblin Stronghold materials)",
+        "Farm Act 1 monsters for mat_monster_essence, mat_beast_core, mat_humanoid_token",
+        "Craft mat_unlock_stone_t1 (15x essence + 3x beast core + 3x humanoid token + 100 gold)",
         "Right-click stone, click sword",
-        "75% chance to unlock 2nd substat slot",
-        "If success, craft mat_select_crystal_t2 to choose substat",
-        "Choose from 5 random substats (e.g., crit, atk%, armor_pen, crit_dmg, lifesteal)",
-        "If value is low, craft mat_reroll_essence_t2 to reroll value"
-      ]
+        "60% chance to unlock 1st substat slot",
+        "If success, craft mat_select_crystal_t1 (20x essence + 2x each type + 150 gold)",
+        "Choose from 3 random substats (e.g., crit, atk%, armor_pen)",
+        "If value is low, craft mat_reroll_essence_t1 (10x essence + 2x beast core + 80 gold)",
+        "Reroll until getting 80-100% of max value"
+      ],
+      "cost_estimate": "~230 gold + ~45 monster essences + 7 cores/tokens"
     },
-    "example_2": {
-      "scenario": "Player has +15 helmet with bad substats, wants to optimize",
+    "example_2_playtest": {
+      "scenario": "PLAYTEST - Player has +4 helmet with 1 bad substat (flee), wants to replace it",
+      "act": 1,
       "steps": [
-        "Craft mat_select_crystal_t3 (requires Cursed Ruins materials)",
-        "Right-click crystal, select substat to replace",
-        "Choose perfect substat from full pool (e.g., HP%)",
-        "Craft mat_reroll_essence_t3 to maximize value",
-        "Reroll until getting 115-130% of max value"
-      ]
+        "Farm dungeons for mat_boss_soul (guaranteed drop from any boss)",
+        "Craft mat_replace_token_t1 (12x essence + 1x boss soul + 3x undead shard + 120 gold)",
+        "Right-click token, click the flee substat on helmet",
+        "Choose from 3 random substats (e.g., HP%, DEF%, damage_reduction)",
+        "Select HP% to replace flee",
+        "Value stays the same, only substat type changes"
+      ],
+      "note": "Replace is good when you have a good value but wrong substat type"
+    },
+    "example_3_future_act": {
+      "scenario": "FUTURE ACT 2 - Player has +8 armor with 1 substat, wants to add 2nd",
+      "act": 2,
+      "steps": [
+        "Farm Act 2 monsters for mat_act2_essence",
+        "Craft mat_unlock_stone_t2 (Act 2 materials)",
+        "75% chance to unlock 2nd substat slot",
+        "Craft mat_select_crystal_t2 to choose from 5 options",
+        "Craft mat_reroll_essence_t2 for 85-115% value range"
+      ],
+      "note": "NOT AVAILABLE IN PLAYTEST - Act 2+ only"
+    },
+    "example_4_future_act": {
+      "scenario": "FUTURE ACT 3+ - Player has +15 helmet with bad substats, wants to optimize",
+      "act": 3,
+      "steps": [
+        "Farm Act 3 bosses for rare materials",
+        "Craft mat_replace_token_t3 (any substat choice)",
+        "Replace bad substats one by one with perfect choices",
+        "Craft mat_reroll_essence_t3 to maximize values (100-130%)",
+        "Achieve perfect +15 equipment"
+      ],
+      "note": "NOT AVAILABLE IN PLAYTEST - Act 3+ only"
     }
   }
 }
