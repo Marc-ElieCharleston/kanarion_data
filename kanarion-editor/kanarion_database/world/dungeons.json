@@ -1,0 +1,894 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-01-30",
+    "description": "Dungeons for playtest (Lv 1-20) - 3 dungeons with 3 difficulties each"
+  },
+
+  "difficulty_modifiers": {
+    "normal": {
+      "hp_multiplier": 1.0,
+      "damage_multiplier": 1.0,
+      "xp_multiplier": 1.0,
+      "gold_multiplier": 1.0,
+      "loot_quality_bonus": 0,
+      "guaranteed_substats": 1,
+      "description": "Standard difficulty for learning dungeon mechanics"
+    },
+    "hard": {
+      "hp_multiplier": 1.4,
+      "damage_multiplier": 1.3,
+      "xp_multiplier": 1.5,
+      "gold_multiplier": 1.5,
+      "loot_quality_bonus": 1,
+      "guaranteed_substats": 2,
+      "description": "Increased challenge with better rewards"
+    },
+    "heroic": {
+      "hp_multiplier": 2.0,
+      "damage_multiplier": 1.6,
+      "xp_multiplier": 2.0,
+      "gold_multiplier": 2.0,
+      "loot_quality_bonus": 2,
+      "guaranteed_substats": 3,
+      "description": "Maximum challenge with premium rewards"
+    }
+  },
+
+  "dungeons": [
+    {
+      "id": "dungeon_wolf_den",
+      "name": "Wolf Den",
+      "name_fr": "Tanière des Loups",
+      "description": "A dark cave system inhabited by a vicious wolf pack. The Alpha Wolf leads his pack from the deepest chamber.",
+      "description_fr": "Un système de grottes sombres habité par une meute de loups vicieux. Le Loup Alpha dirige sa meute depuis la chambre la plus profonde.",
+      "level_range": [5, 8],
+      "min_level": 5,
+      "recommended_party_size": [3, 5],
+      "type": "open_world",
+      "respawn_on_wipe": true,
+      "entry_location": "zone_03_collines_venteuses",
+      "entry_coordinates": {"x": 120, "y": 85},
+      "duration_estimate_minutes": [12, 20],
+      "lore_context": "Acte I - Harmonie: Natural predator territory, wolf pack defending their den",
+
+      "floors": [
+        {
+          "floor": 1,
+          "name": "Cave Entrance",
+          "name_fr": "Entrée de la Grotte",
+          "description": "The entrance is littered with bones and carcasses. Wolf sentries patrol.",
+          "description_fr": "L'entrée est jonchée d'os et de carcasses. Des sentinelles loups patrouillent.",
+          "mob_groups": [
+            {
+              "group_id": 1,
+              "position": "entrance_left",
+              "mobs": [
+                {"id": "mob_wolf", "count": 3, "level_offset": 0},
+                {"id": "mob_wolf", "count": 1, "level_offset": 1, "is_elite": true}
+              ]
+            },
+            {
+              "group_id": 2,
+              "position": "entrance_center",
+              "mobs": [
+                {"id": "mob_wolf", "count": 4, "level_offset": 0}
+              ]
+            },
+            {
+              "group_id": 3,
+              "position": "entrance_right",
+              "mobs": [
+                {"id": "mob_wolf", "count": 2, "level_offset": 0},
+                {"id": "mob_boar", "count": 2, "level_offset": 0}
+              ]
+            }
+          ],
+          "loot_table_id": "lt_wolf_den_trash"
+        },
+        {
+          "floor": 2,
+          "name": "Hunting Grounds",
+          "name_fr": "Terrain de Chasse",
+          "description": "A wider chamber where the pack stores their prey. Boars and wolves fight for dominance.",
+          "description_fr": "Une chambre plus large où la meute stocke ses proies. Sangliers et loups se battent pour la dominance.",
+          "mob_groups": [
+            {
+              "group_id": 1,
+              "position": "west_den",
+              "mobs": [
+                {"id": "mob_wolf", "count": 3, "level_offset": 1},
+                {"id": "mob_wolf", "count": 2, "level_offset": 1, "is_elite": true}
+              ]
+            },
+            {
+              "group_id": 2,
+              "position": "center_carcass",
+              "mobs": [
+                {"id": "mob_boar", "count": 3, "level_offset": 1},
+                {"id": "mob_wolf", "count": 2, "level_offset": 1}
+              ]
+            },
+            {
+              "group_id": 3,
+              "position": "east_passage",
+              "mobs": [
+                {"id": "mob_belier", "count": 1, "level_offset": 1, "is_elite": true, "elite_type": "mini_boss"},
+                {"id": "mob_wolf", "count": 2, "level_offset": 1}
+              ]
+            }
+          ],
+          "loot_table_id": "lt_wolf_den_trash"
+        },
+        {
+          "floor": 3,
+          "name": "Inner Den",
+          "name_fr": "Tanière Intérieure",
+          "description": "The pack's main den. Elite wolves guard the path to the Alpha's chamber.",
+          "description_fr": "La tanière principale de la meute. Des loups d'élite gardent le chemin vers la chambre de l'Alpha.",
+          "mob_groups": [
+            {
+              "group_id": 1,
+              "position": "north_guard",
+              "mobs": [
+                {"id": "mob_wolf", "count": 4, "level_offset": 2, "is_elite": true},
+                {"id": "mob_boar", "count": 2, "level_offset": 2}
+              ]
+            },
+            {
+              "group_id": 2,
+              "position": "south_pack",
+              "mobs": [
+                {"id": "mob_wolf", "count": 5, "level_offset": 2, "is_elite": true}
+              ]
+            },
+            {
+              "group_id": 3,
+              "position": "alpha_approach",
+              "mobs": [
+                {"id": "mob_wolf", "count": 3, "level_offset": 2, "is_elite": true},
+                {"id": "mob_belier", "count": 1, "level_offset": 2, "is_elite": true}
+              ]
+            }
+          ],
+          "loot_table_id": "lt_wolf_den_elite"
+        },
+        {
+          "floor": 4,
+          "name": "Alpha's Lair",
+          "name_fr": "Repaire de l'Alpha",
+          "description": "The deepest chamber where the Alpha Wolf rules. His most loyal packmates stand by his side.",
+          "description_fr": "La chambre la plus profonde où règne le Loup Alpha. Ses compagnons les plus loyaux sont à ses côtés.",
+          "boss": {
+            "id": "boss_alpha_wolf",
+            "name": "Alpha Wolf",
+            "name_fr": "Loup Alpha",
+            "base_monster": "mob_wolf",
+            "level": 8,
+            "hp_multiplier": 12,
+            "damage_multiplier": 2.0,
+            "phases": [
+              {
+                "phase": 1,
+                "name": "Hunting Phase",
+                "hp_threshold": [100, 60],
+                "description": "The Alpha coordinates his pack with commanding howls",
+                "mechanics": [
+                  "skill_alpha_commanding_howl: Buffs all wolves +25% ATK for 8s (CD 20s)",
+                  "skill_alpha_savage_leap: Leap to backline, heavy damage + bleed (CD 12s)"
+                ]
+              },
+              {
+                "phase": 2,
+                "name": "Desperate Pack",
+                "hp_threshold": [60, 30],
+                "description": "Alpha summons reinforcements from deeper caves",
+                "mechanics": [
+                  "summon_wolves: Summons 2x mob_wolf every 25s (max 4 active)",
+                  "skill_alpha_feral_frenzy: Multi-hit row attack (CD 15s)"
+                ]
+              },
+              {
+                "phase": 3,
+                "name": "Death Howl",
+                "hp_threshold": [30, 0],
+                "description": "Enraged Alpha fights with reckless fury",
+                "mechanics": [
+                  "permanent_buff: +40% ATK, +30% attack_speed",
+                  "skill_alpha_death_howl: AoE fear + heavy damage (CD 22s)"
+                ]
+              }
+            ],
+            "passives": [
+              "passive_pack_leader: All wolves have +30% HP/ATK",
+              "passive_alpha_fury: Gains +5% ATK per dead wolf (max 50%)",
+              "passive_bleeding_master: All attacks apply 2 bleed stacks"
+            ],
+            "adds": [
+              {"id": "mob_wolf", "count": 4, "level_offset": 2, "is_elite": true}
+            ]
+          },
+          "loot_table_id": "lt_wolf_den_boss"
+        }
+      ],
+
+      "loot_tables": {
+        "lt_wolf_den_trash": {
+          "gold": [8, 18],
+          "xp_base": 45,
+          "equipment_chance": 25,
+          "equipment_pool": ["set_gevurah", "set_ruach", "set_oz", "set_kesher"],
+          "materials": ["mat_wolf_pelt", "mat_wolf_fang", "mat_boar_hide", "mat_ram_horn"],
+          "material_drop_rate": 0.6,
+          "koro_chance": 5,
+          "koro_pool": ["koro_wolf", "koro_boar"]
+        },
+        "lt_wolf_den_elite": {
+          "gold": [15, 30],
+          "xp_base": 80,
+          "equipment_chance": 40,
+          "equipment_pool": ["set_gevurah", "set_ruach", "set_tzayad", "set_oz"],
+          "materials": ["mat_wolf_pelt", "mat_wolf_fang", "mat_ram_horn", "mat_tough_hide"],
+          "material_drop_rate": 0.8,
+          "koro_chance": 12,
+          "koro_pool": ["koro_wolf", "koro_belier"]
+        },
+        "lt_wolf_den_boss": {
+          "gold": [80, 150],
+          "xp_base": 200,
+          "equipment_chance": 100,
+          "guaranteed_set_piece": true,
+          "equipment_pool": ["set_gevurah", "set_tzayad", "set_ruach", "set_tzel"],
+          "materials": ["mat_alpha_fang", "mat_alpha_pelt", "mat_wolf_essence"],
+          "material_drop_rate": 1.0,
+          "rare_materials": [
+            {"item": "mat_pristine_pelt", "chance": 0.25},
+            {"item": "mat_beast_core", "chance": 0.15}
+          ],
+          "koro_chance": 100,
+          "koro_pool": ["koro_alpha_wolf"],
+          "special_drops": [
+            {"item": "recipe_wolf_armor", "chance": 0.12},
+            {"item": "consumable_alpha_essence", "chance": 0.20}
+          ]
+        }
+      },
+
+      "achievements": [
+        {
+          "id": "achievement_wolf_den_clear",
+          "name": "Den Clearer",
+          "description": "Clear Wolf Den",
+          "reward": {"title": "Wolf Hunter", "gold": 50}
+        },
+        {
+          "id": "achievement_wolf_den_speed_normal",
+          "name": "Speed: Wolf Den (Normal)",
+          "description": "Clear Wolf Den (Normal) in under 15 minutes",
+          "reward": {"title": "Swift Hunter", "gold": 100}
+        },
+        {
+          "id": "achievement_wolf_den_no_death",
+          "name": "Flawless: Wolf Den",
+          "description": "Clear Wolf Den without any party deaths",
+          "reward": {"title": "Untouchable", "gold": 200}
+        },
+        {
+          "id": "achievement_wolf_den_heroic_clear",
+          "name": "Heroic: Wolf Den",
+          "description": "Clear Wolf Den on Heroic difficulty",
+          "reward": {"title": "Alpha Slayer", "gold": 300}
+        }
+      ],
+
+      "first_clear_bonus": {
+        "gold": 200,
+        "xp": 500,
+        "guaranteed_drops": ["mat_alpha_fang", "koro_alpha_wolf"]
+      }
+    },
+
+    {
+      "id": "dungeon_goblin_stronghold",
+      "name": "Goblin Stronghold",
+      "name_fr": "Forteresse Gobeline",
+      "description": "A fortified goblin military camp. The Goblin Warlord commands his troops from the throne room.",
+      "description_fr": "Un camp militaire gobelin fortifié. Le Seigneur de Guerre Gobelin commande ses troupes depuis la salle du trône.",
+      "level_range": [9, 12],
+      "min_level": 9,
+      "recommended_party_size": [3, 5],
+      "type": "open_world",
+      "respawn_on_wipe": true,
+      "entry_location": "zone_04_camp_gobelin",
+      "entry_coordinates": {"x": 200, "y": 140},
+      "duration_estimate_minutes": [15, 25],
+      "lore_context": "Acte I/II - Harmonie/Trouble: Goblin military expansion, territorial conflict",
+
+      "floors": [
+        {
+          "floor": 1,
+          "name": "Outer Barracks",
+          "name_fr": "Casernes Extérieures",
+          "description": "Wooden barricades and training grounds. Goblin soldiers patrol in organized groups.",
+          "description_fr": "Barricades en bois et terrain d'entraînement. Les soldats gobelins patrouillent en groupes organisés.",
+          "mob_groups": [
+            {
+              "group_id": 1,
+              "position": "west_barricade",
+              "mobs": [
+                {"id": "mob_goblin", "count": 4, "level_offset": 0},
+                {"id": "mob_goblin_warior", "count": 2, "level_offset": 0}
+              ]
+            },
+            {
+              "group_id": 2,
+              "position": "training_grounds",
+              "mobs": [
+                {"id": "mob_goblin", "count": 3, "level_offset": 0},
+                {"id": "mob_goblin_warior", "count": 3, "level_offset": 0}
+              ]
+            },
+            {
+              "group_id": 3,
+              "position": "east_patrol",
+              "mobs": [
+                {"id": "mob_goblin_warior", "count": 3, "level_offset": 0, "is_elite": true},
+                {"id": "mob_goblin", "count": 2, "level_offset": 0}
+              ]
+            },
+            {
+              "group_id": 4,
+              "position": "gate_guards",
+              "mobs": [
+                {"id": "mob_goblin_warior", "count": 4, "level_offset": 0},
+                {"id": "mob_hyene", "count": 2, "level_offset": 0}
+              ]
+            }
+          ],
+          "loot_table_id": "lt_goblin_stronghold_trash"
+        },
+        {
+          "floor": 2,
+          "name": "Armory",
+          "name_fr": "Armurerie",
+          "description": "Weapon racks and armor stands. Elite warriors guard the arsenal.",
+          "description_fr": "Râteliers d'armes et présentoirs d'armures. Des guerriers d'élite gardent l'arsenal.",
+          "mob_groups": [
+            {
+              "group_id": 1,
+              "position": "weapon_storage",
+              "mobs": [
+                {"id": "mob_goblin_warior", "count": 5, "level_offset": 1, "is_elite": true},
+                {"id": "mob_goblin", "count": 2, "level_offset": 1}
+              ]
+            },
+            {
+              "group_id": 2,
+              "position": "armor_vault",
+              "mobs": [
+                {"id": "mob_goblin_warior", "count": 4, "level_offset": 1, "is_elite": true},
+                {"id": "mob_hyene", "count": 2, "level_offset": 1}
+              ]
+            },
+            {
+              "group_id": 3,
+              "position": "forge_area",
+              "mobs": [
+                {"id": "mob_goblin_warior", "count": 3, "level_offset": 1, "is_elite": true, "elite_type": "berserker"},
+                {"id": "mob_goblin", "count": 3, "level_offset": 1}
+              ]
+            }
+          ],
+          "loot_table_id": "lt_goblin_stronghold_trash"
+        },
+        {
+          "floor": 3,
+          "name": "War Room",
+          "name_fr": "Salle de Guerre",
+          "description": "Strategic command center with maps and banners. Officers coordinate battle plans.",
+          "description_fr": "Centre de commandement stratégique avec cartes et bannières. Les officiers coordonnent les plans de bataille.",
+          "mob_groups": [
+            {
+              "group_id": 1,
+              "position": "tactical_table",
+              "mobs": [
+                {"id": "mob_goblin_warior", "count": 6, "level_offset": 2, "is_elite": true},
+                {"id": "mob_hyene", "count": 2, "level_offset": 2, "is_elite": true}
+              ]
+            },
+            {
+              "group_id": 2,
+              "position": "banner_guards",
+              "mobs": [
+                {"id": "mob_goblin_warior", "count": 5, "level_offset": 2, "is_elite": true, "elite_type": "captain"},
+                {"id": "mob_goblin", "count": 3, "level_offset": 2}
+              ]
+            },
+            {
+              "group_id": 3,
+              "position": "throne_approach",
+              "mobs": [
+                {"id": "mob_goblin_warior", "count": 7, "level_offset": 2, "is_elite": true},
+                {"id": "mob_hyene", "count": 3, "level_offset": 2, "is_elite": true}
+              ]
+            }
+          ],
+          "loot_table_id": "lt_goblin_stronghold_elite"
+        },
+        {
+          "floor": 4,
+          "name": "Throne Room",
+          "name_fr": "Salle du Trône",
+          "description": "The Goblin Warlord sits on his throne, surrounded by his personal guard.",
+          "description_fr": "Le Seigneur de Guerre Gobelin siège sur son trône, entouré de sa garde personnelle.",
+          "boss": {
+            "id": "boss_goblin_warlord",
+            "name": "Goblin Warlord",
+            "name_fr": "Seigneur de Guerre Gobelin",
+            "base_monster": "mob_goblin_warior",
+            "level": 12,
+            "hp_multiplier": 15,
+            "damage_multiplier": 2.2,
+            "phases": [
+              {
+                "phase": 1,
+                "name": "Tactical Commander",
+                "hp_threshold": [100, 50],
+                "description": "Warlord fights with calculated precision and military tactics",
+                "mechanics": [
+                  "skill_warlord_whirlwind: AoE spin attack hitting nearby enemies (CD 18s)",
+                  "skill_warlord_execute: High damage execute below 30% HP (CD 12s)",
+                  "skill_warlord_war_banner: Buffs all allies +20% ATK/DEF for 15s (CD 30s)"
+                ]
+              },
+              {
+                "phase": 2,
+                "name": "Warlord's Rage",
+                "hp_threshold": [50, 0],
+                "description": "Enraged Warlord calls reinforcements and attacks relentlessly",
+                "mechanics": [
+                  "permanent_buff: +50% ATK, +40% attack_speed, immune to CC",
+                  "summon_guards: Summons 2x mob_goblin_warior (elite) every 20s (max 4 active)",
+                  "skill_warlord_devastating_charge: Column charge with knockdown (CD 20s)"
+                ]
+              }
+            ],
+            "passives": [
+              "passive_iron_will: CC duration reduced by 50%",
+              "passive_goblin_king: All goblins have +40% HP/ATK/DEF",
+              "passive_bloodlust: Gains +10% lifesteal when below 50% HP"
+            ],
+            "adds": [
+              {"id": "mob_goblin_warior", "count": 4, "level_offset": 2, "is_elite": true},
+              {"id": "mob_hyene", "count": 2, "level_offset": 2, "is_elite": true}
+            ]
+          },
+          "loot_table_id": "lt_goblin_stronghold_boss"
+        }
+      ],
+
+      "loot_tables": {
+        "lt_goblin_stronghold_trash": {
+          "gold": [12, 25],
+          "xp_base": 65,
+          "equipment_chance": 30,
+          "equipment_pool": ["set_barzel", "set_gevurah", "set_even", "set_adamah"],
+          "materials": ["mat_goblin_token", "mat_rusty_blade", "mat_iron_scrap", "mat_goblin_ear"],
+          "material_drop_rate": 0.65,
+          "koro_chance": 8,
+          "koro_pool": ["koro_goblin", "koro_goblin_warior"]
+        },
+        "lt_goblin_stronghold_elite": {
+          "gold": [25, 50],
+          "xp_base": 110,
+          "equipment_chance": 45,
+          "equipment_pool": ["set_barzel", "set_adamah", "set_shomer", "set_magen"],
+          "materials": ["mat_goblin_token", "mat_iron_scrap", "mat_steel_fragment"],
+          "material_drop_rate": 0.85,
+          "koro_chance": 15,
+          "koro_pool": ["koro_goblin_warior", "koro_hyene"]
+        },
+        "lt_goblin_stronghold_boss": {
+          "gold": [120, 220],
+          "xp_base": 300,
+          "equipment_chance": 100,
+          "guaranteed_set_piece": true,
+          "equipment_pool": ["set_barzel", "set_adamah", "set_shomer", "set_gevurah"],
+          "materials": ["mat_warlord_insignia", "mat_goblin_banner", "mat_war_trophy"],
+          "material_drop_rate": 1.0,
+          "rare_materials": [
+            {"item": "mat_refined_steel", "chance": 0.30},
+            {"item": "mat_commander_medal", "chance": 0.20}
+          ],
+          "koro_chance": 100,
+          "koro_pool": ["koro_goblin_warlord"],
+          "special_drops": [
+            {"item": "recipe_goblin_armor", "chance": 0.15},
+            {"item": "blueprint_war_banner", "chance": 0.10},
+            {"item": "consumable_warlord_fury", "chance": 0.25}
+          ]
+        }
+      },
+
+      "achievements": [
+        {
+          "id": "achievement_goblin_stronghold_clear",
+          "name": "Stronghold Breaker",
+          "description": "Clear Goblin Stronghold",
+          "reward": {"title": "Goblin Slayer", "gold": 100}
+        },
+        {
+          "id": "achievement_goblin_stronghold_speed",
+          "name": "Speed: Goblin Stronghold",
+          "description": "Clear Goblin Stronghold in under 18 minutes",
+          "reward": {"title": "Swift Conqueror", "gold": 150}
+        },
+        {
+          "id": "achievement_goblin_stronghold_no_banner",
+          "name": "Banner Denial",
+          "description": "Defeat Goblin Warlord without letting him cast War Banner",
+          "reward": {"title": "Tactician", "gold": 250}
+        },
+        {
+          "id": "achievement_goblin_stronghold_heroic",
+          "name": "Heroic: Goblin Stronghold",
+          "description": "Clear Goblin Stronghold on Heroic difficulty",
+          "reward": {"title": "Warlord Slayer", "gold": 400}
+        }
+      ],
+
+      "first_clear_bonus": {
+        "gold": 300,
+        "xp": 750,
+        "guaranteed_drops": ["mat_warlord_insignia", "koro_goblin_warlord"]
+      }
+    },
+
+    {
+      "id": "dungeon_cursed_ruins",
+      "name": "Cursed Ruins",
+      "name_fr": "Ruines Maudites",
+      "description": "Ancient ruins corrupted by dark forces. Undead and corrupted beasts roam the halls. The Cursed Champion guards the deepest sanctum.",
+      "description_fr": "Ruines anciennes corrompues par les forces obscures. Morts-vivants et bêtes corrompues errent dans les couloirs. Le Champion Maudit garde le sanctuaire le plus profond.",
+      "level_range": [17, 20],
+      "min_level": 17,
+      "recommended_party_size": [4, 5],
+      "type": "open_world",
+      "respawn_on_wipe": true,
+      "entry_location": "zone_10_frontiere_maudite",
+      "entry_coordinates": {"x": 450, "y": 280},
+      "duration_estimate_minutes": [20, 35],
+      "lore_context": "Acte II/III - Trouble/Chute: First signs of corruption, undead rising",
+
+      "floors": [
+        {
+          "floor": 1,
+          "name": "Corrupted Courtyard",
+          "name_fr": "Cour Corrompue",
+          "description": "Once a grand courtyard, now twisted by shadow. Corrupted stags wander among spectral wolves.",
+          "description_fr": "Autrefois une grande cour, maintenant tordue par l'ombre. Des cerfs corrompus errent parmi des loups spectraux.",
+          "mob_groups": [
+            {
+              "group_id": 1,
+              "position": "west_garden",
+              "mobs": [
+                {"id": "mob_cerf_obscur", "count": 3, "level_offset": 0},
+                {"id": "mob_spectral_wolf", "count": 2, "level_offset": 0}
+              ]
+            },
+            {
+              "group_id": 2,
+              "position": "fountain_area",
+              "mobs": [
+                {"id": "mob_spectral_wolf", "count": 4, "level_offset": 0},
+                {"id": "mob_cerf_obscur", "count": 2, "level_offset": 0, "is_elite": true}
+              ]
+            },
+            {
+              "group_id": 3,
+              "position": "east_ruins",
+              "mobs": [
+                {"id": "mob_cerf_obscur", "count": 3, "level_offset": 0},
+                {"id": "mob_guerrier_skull", "count": 2, "level_offset": 0}
+              ]
+            },
+            {
+              "group_id": 4,
+              "position": "archway",
+              "mobs": [
+                {"id": "mob_spectral_wolf", "count": 3, "level_offset": 0, "is_elite": true},
+                {"id": "mob_guerrier_skull", "count": 3, "level_offset": 0}
+              ]
+            }
+          ],
+          "loot_table_id": "lt_cursed_ruins_trash",
+          "environment_hazard": {
+            "type": "corruption_mist",
+            "damage_per_second": 5,
+            "effect": "curse_stack_buildup",
+            "description": "Corruption mist deals magic damage and builds curse stacks over time"
+          }
+        },
+        {
+          "floor": 2,
+          "name": "Hall of Echoes",
+          "name_fr": "Salle des Échos",
+          "description": "Dark halls filled with spectral wolves and cursed warriors. Their cries echo endlessly.",
+          "description_fr": "Couloirs sombres remplis de loups spectraux et guerriers maudits. Leurs cris résonnent sans fin.",
+          "mob_groups": [
+            {
+              "group_id": 1,
+              "position": "north_corridor",
+              "mobs": [
+                {"id": "mob_spectral_wolf", "count": 5, "level_offset": 1, "is_elite": true},
+                {"id": "mob_guerrier_skull", "count": 2, "level_offset": 1}
+              ]
+            },
+            {
+              "group_id": 2,
+              "position": "chamber_of_bones",
+              "mobs": [
+                {"id": "mob_guerrier_skull", "count": 4, "level_offset": 1, "is_elite": true},
+                {"id": "mob_cerf_obscur", "count": 2, "level_offset": 1}
+              ]
+            },
+            {
+              "group_id": 3,
+              "position": "south_passage",
+              "mobs": [
+                {"id": "mob_spectral_wolf", "count": 4, "level_offset": 1, "is_elite": true},
+                {"id": "mob_cerf_obscur", "count": 3, "level_offset": 1, "is_elite": true}
+              ]
+            }
+          ],
+          "loot_table_id": "lt_cursed_ruins_trash",
+          "environment_hazard": {
+            "type": "shadow_zones",
+            "damage_per_second": 8,
+            "effect": "silence",
+            "description": "Shadow zones silence players and deal magic damage"
+          }
+        },
+        {
+          "floor": 3,
+          "name": "Sanctum Approach",
+          "name_fr": "Approche du Sanctuaire",
+          "description": "The final hall before the Champion's sanctum. Elite undead guard the threshold.",
+          "description_fr": "Le couloir final avant le sanctuaire du Champion. Des morts-vivants d'élite gardent le seuil.",
+          "mob_groups": [
+            {
+              "group_id": 1,
+              "position": "elite_guard_west",
+              "mobs": [
+                {"id": "mob_guerrier_skull", "count": 5, "level_offset": 2, "is_elite": true, "elite_type": "champion_guard"},
+                {"id": "mob_spectral_wolf", "count": 3, "level_offset": 2, "is_elite": true}
+              ]
+            },
+            {
+              "group_id": 2,
+              "position": "elite_guard_east",
+              "mobs": [
+                {"id": "mob_cerf_obscur", "count": 4, "level_offset": 2, "is_elite": true},
+                {"id": "mob_guerrier_skull", "count": 4, "level_offset": 2, "is_elite": true}
+              ]
+            },
+            {
+              "group_id": 3,
+              "position": "sanctum_threshold",
+              "mobs": [
+                {"id": "mob_spectral_wolf", "count": 4, "level_offset": 2, "is_elite": true},
+                {"id": "mob_guerrier_skull", "count": 4, "level_offset": 2, "is_elite": true},
+                {"id": "mob_cerf_obscur", "count": 2, "level_offset": 2, "is_elite": true}
+              ]
+            }
+          ],
+          "loot_table_id": "lt_cursed_ruins_elite",
+          "environment_hazard": {
+            "type": "corruption_zones",
+            "damage_per_second": 12,
+            "effect": "curse_stacks",
+            "description": "Permanent corruption zones that stack curses rapidly"
+          }
+        },
+        {
+          "floor": 4,
+          "name": "Champion's Sanctum",
+          "name_fr": "Sanctuaire du Champion",
+          "description": "The heart of corruption. The Cursed Champion awaits, surrounded by his undead army.",
+          "description_fr": "Le cœur de la corruption. Le Champion Maudit attend, entouré de son armée morte-vivante.",
+          "boss": {
+            "id": "boss_cursed_champion",
+            "name": "Cursed Champion",
+            "name_fr": "Champion Maudit",
+            "base_monster": "mob_guerrier_skull",
+            "level": 20,
+            "hp_multiplier": 18,
+            "damage_multiplier": 2.5,
+            "phases": [
+              {
+                "phase": 1,
+                "name": "Corrupted Assault",
+                "hp_threshold": [100, 70],
+                "description": "Champion attacks with corrupted dark magic and curses",
+                "mechanics": [
+                  "skill_champion_corruption_wave: Front row AoE with curse stacks + heal block (CD 15s)",
+                  "skill_champion_soul_reap: Chain attack that heals boss (CD 18s)",
+                  "skill_champion_dark_command: Buffs all undead allies +40% stats (CD 25s)"
+                ]
+              },
+              {
+                "phase": 2,
+                "name": "Desperate Summoning",
+                "hp_threshold": [70, 40],
+                "description": "Champion summons undead reinforcements from the shadows",
+                "mechanics": [
+                  "summon_undead: Summons 2x mob_spectral_wolf + 1x mob_guerrier_skull every 30s (max 6 active)",
+                  "skill_champion_shadow_prison: Root + DoT in area (CD 22s)",
+                  "skill_champion_cursed_blade: High damage single target + permanent curse (CD 14s)",
+                  "environment_mechanic: Corruption zones appear on ground (25 MAG dmg/s + curse)"
+                ]
+              },
+              {
+                "phase": 3,
+                "name": "Death's Embrace",
+                "hp_threshold": [40, 0],
+                "description": "Enraged Champion unleashes full corruption power",
+                "mechanics": [
+                  "permanent_buff: +80% ATK, +60% attack_speed, +30% damage, immune CC, -50% damage taken",
+                  "skill_champion_apocalypse: Massive AoE fear + curse (CD 30s)",
+                  "skill_champion_death_coil: Backline silence attack (CD 12s)",
+                  "environment_mechanic: Corruption zones become permanent and expand",
+                  "special_mechanic: At 1% HP, invulnerable for 3s + heal 30% (once per fight)"
+                ]
+              }
+            ],
+            "passives": [
+              "passive_cursed_king: All undead have +60% HP/ATK, +30% DEF",
+              "passive_corruption_mastery: Curse stacks reduce healing_received by 5% per stack",
+              "passive_soul_harvest: Gains +5% ATK per dead undead ally (max 100%)",
+              "passive_immortal_champion: Survives lethal damage once at 1% HP, becomes invulnerable 3s, heals 30%"
+            ],
+            "adds": [
+              {"id": "mob_spectral_wolf", "count": 3, "level_offset": 2, "is_elite": true},
+              {"id": "mob_guerrier_skull", "count": 3, "level_offset": 2, "is_elite": true},
+              {"id": "mob_cerf_obscur", "count": 2, "level_offset": 2, "is_elite": true}
+            ]
+          },
+          "loot_table_id": "lt_cursed_ruins_boss",
+          "environment_hazard": {
+            "type": "overwhelming_corruption",
+            "damage_per_second": 20,
+            "effect": "curse_stacks + heal_reduction",
+            "description": "Intense corruption that rapidly stacks curses and reduces healing"
+          }
+        }
+      ],
+
+      "loot_tables": {
+        "lt_cursed_ruins_trash": {
+          "gold": [20, 45],
+          "xp_base": 110,
+          "equipment_chance": 35,
+          "equipment_pool": ["set_tzel", "set_eshal", "set_mayim", "set_davar"],
+          "materials": ["mat_shadow_essence", "mat_cursed_bone", "mat_dark_antler", "mat_spectral_fang"],
+          "material_drop_rate": 0.70,
+          "koro_chance": 10,
+          "koro_pool": ["koro_spectral_wolf", "koro_cerf_obscur", "koro_guerrier_maudit"]
+        },
+        "lt_cursed_ruins_elite": {
+          "gold": [45, 90],
+          "xp_base": 180,
+          "equipment_chance": 50,
+          "equipment_pool": ["set_tzel", "set_eshal", "set_mayim", "set_orim", "set_magen"],
+          "materials": ["mat_shadow_essence", "mat_cursed_bone", "mat_corruption_crystal"],
+          "material_drop_rate": 0.90,
+          "koro_chance": 18,
+          "koro_pool": ["koro_spectral_wolf", "koro_guerrier_maudit"]
+        },
+        "lt_cursed_ruins_boss": {
+          "gold": [200, 400],
+          "xp_base": 500,
+          "equipment_chance": 100,
+          "guaranteed_set_piece": true,
+          "equipment_pool": ["set_tzel", "set_eshal", "set_mayim", "set_neshamah", "set_davar"],
+          "materials": ["mat_champion_soul", "mat_corruption_core", "mat_cursed_essence"],
+          "material_drop_rate": 1.0,
+          "rare_materials": [
+            {"item": "mat_pure_corruption", "chance": 0.35},
+            {"item": "mat_immortal_bone", "chance": 0.25},
+            {"item": "mat_champion_seal", "chance": 0.15}
+          ],
+          "koro_chance": 100,
+          "koro_pool": ["koro_cursed_champion"],
+          "special_drops": [
+            {"item": "recipe_cursed_armor", "chance": 0.18},
+            {"item": "blueprint_corruption_altar", "chance": 0.12},
+            {"item": "consumable_champion_essence", "chance": 0.30},
+            {"item": "scroll_curse_mastery", "chance": 0.08}
+          ]
+        }
+      },
+
+      "achievements": [
+        {
+          "id": "achievement_cursed_ruins_clear",
+          "name": "Ruin Explorer",
+          "description": "Clear Cursed Ruins",
+          "reward": {"title": "Curse Breaker", "gold": 150}
+        },
+        {
+          "id": "achievement_cursed_ruins_no_death",
+          "name": "Flawless: Cursed Ruins",
+          "description": "Clear Cursed Ruins without any party deaths",
+          "reward": {"title": "Untouched by Death", "gold": 400}
+        },
+        {
+          "id": "achievement_cursed_ruins_no_zones",
+          "name": "Zone Dodger",
+          "description": "Clear Cursed Ruins without taking damage from corruption zones",
+          "reward": {"title": "Shadow Dancer", "gold": 500}
+        },
+        {
+          "id": "achievement_cursed_ruins_heroic",
+          "name": "Heroic: Cursed Ruins",
+          "description": "Clear Cursed Ruins on Heroic difficulty",
+          "reward": {"title": "Champion Slayer", "gold": 600}
+        },
+        {
+          "id": "achievement_cursed_ruins_immortal_denied",
+          "name": "No Second Chances",
+          "description": "Defeat Cursed Champion without triggering Immortal Champion passive",
+          "reward": {"title": "Merciless", "gold": 750}
+        }
+      ],
+
+      "first_clear_bonus": {
+        "gold": 500,
+        "xp": 1200,
+        "guaranteed_drops": ["mat_champion_soul", "mat_corruption_core", "koro_cursed_champion"]
+      }
+    }
+  ],
+
+  "dungeon_systems": {
+    "respawn_mechanics": {
+      "party_wipe": "Full dungeon reset - all mobs respawn",
+      "individual_death": "Player respawns at dungeon entrance",
+      "boss_wipe": "Boss + adds reset to full HP, all floor mobs respawn"
+    },
+    "lockout_system": {
+      "daily_lockout": false,
+      "weekly_lockout": false,
+      "unlimited_runs": true,
+      "note": "Open-world dungeons can be run unlimited times, but bosses have personal loot cooldowns per difficulty"
+    },
+    "scaling_system": {
+      "level_scaling": "Mobs scale to party leader's level within dungeon level_range",
+      "party_size_scaling": "No HP/damage scaling based on party size",
+      "difficulty_selection": "Select difficulty at dungeon entrance before entering"
+    },
+    "loot_system": {
+      "loot_type": "personal_loot",
+      "guaranteed_substats": "Based on difficulty: Normal=1, Hard=2, Heroic=3",
+      "substat_quality": "Substats scale with item level and difficulty bonus",
+      "boss_loot_cooldown": "24h cooldown per boss per difficulty (can run Normal + Hard + Heroic daily)"
+    }
+  },
+
+  "substat_system": {
+    "description": "Equipment dropped in dungeons has guaranteed substats based on difficulty",
+    "substat_pools": {
+      "damage_oriented": ["atk", "atk_percent", "crit", "crit_dmg", "armor_pen", "damage_percent"],
+      "tank_oriented": ["hp_max", "def_percent", "armor", "damage_reduction", "block_chance", "hp_regen"],
+      "magic_oriented": ["mag", "mag_percent", "magic_pen", "cooldown_reduction", "mp_max", "mp_regen"],
+      "support_oriented": ["heal_power", "shield_power", "buff_duration", "mp_regen", "cooldown_reduction"],
+      "utility_oriented": ["attack_speed", "cast_speed", "flee", "hit", "luck"]
+    },
+    "substat_value_ranges": {
+      "normal": {"min_roll": 0.7, "max_roll": 1.0},
+      "hard": {"min_roll": 0.85, "max_roll": 1.15},
+      "heroic": {"min_roll": 1.0, "max_roll": 1.3}
+    },
+    "set_affinity": "Substats are weighted based on set identity (tank sets get more tank substats, etc.)"
+  }
+}

@@ -1,0 +1,675 @@
+{
+  "_meta": {
+    "version": "2.0",
+    "last_updated": "2026-01-30",
+    "description": "Monster AI archetypes with skill pools - pick skills per tier"
+  },
+
+  "cast_time_system": {
+    "description": "Cast time mechanics for monster skills - allows player interruption with CC",
+    "cast_time_categories": {
+      "instant": {
+        "cast_time": 0,
+        "interruptible": false,
+        "description": "Instant cast - cannot be interrupted"
+      },
+      "short": {
+        "cast_time_range": [0.5, 1.5],
+        "interruptible": true,
+        "telegraph_visual": "brief_glow",
+        "description": "Short cast - basic spells, can be interrupted"
+      },
+      "medium": {
+        "cast_time_range": [2.5, 3.5],
+        "interruptible": true,
+        "telegraph_visual": "channeling_aura",
+        "description": "Medium cast - powerful spells, clear interrupt window"
+      },
+      "long": {
+        "cast_time_range": [4.0, 5.0],
+        "interruptible": true,
+        "telegraph_visual": "charging_effect",
+        "description": "Long cast - ultimate abilities, must be interrupted or devastating"
+      }
+    },
+    "interrupt_mechanics": {
+      "stun": "Interrupts cast, prevents casting for stun duration",
+      "silence": "Prevents casting, interrupts current cast",
+      "disarm": "Interrupts physical skills only",
+      "knockback": "Interrupts cast",
+      "knockdown": "Interrupts cast",
+      "fear": "Interrupts cast",
+      "on_interrupt": "Skill goes on cooldown (50% CD if interrupted)"
+    }
+  },
+
+  "tier_system": {
+    "normal": {
+      "skill_pick_count": 1,
+      "passive_count": 1,
+      "description": "Normal monsters pick 1 skill from pool + 1 passive"
+    },
+    "elite": {
+      "skill_pick_count": 2,
+      "passive_count": 2,
+      "description": "Elite monsters pick 2 skills from pool + 2 passives"
+    },
+    "boss": {
+      "skill_pick_count": 3,
+      "passive_count": 3,
+      "has_signature_spell": true,
+      "description": "Boss monsters pick 3 skills from pool + signature spell + 3 passives"
+    }
+  },
+
+  "archetypes": {
+    "brute": {
+      "name": "Brute",
+      "description": "High damage melee fighter that charges into combat recklessly",
+      "playstyle": "Aggressive frontline fighter, focuses on dealing maximum damage",
+      "target_priority": ["nearest", "lowest_hp", "random"],
+      "positioning": {
+        "preferred_row": "front",
+        "alternative_row": "mid_front",
+        "never_position": "back"
+      },
+
+      "skill_pool": [
+        {
+          "id": "skill_brute_heavy_slam",
+          "name": "Heavy Slam",
+          "description": "Instant heavy strike on single target",
+          "cast_type": "instant",
+          "recommended_for": ["all_tiers"]
+        },
+        {
+          "id": "skill_brute_cleave",
+          "name": "Cleave",
+          "description": "AoE melee attack that applies bleed",
+          "cast_type": "medium",
+          "recommended_for": ["elite", "boss"]
+        },
+        {
+          "id": "skill_brute_charge",
+          "name": "Charge",
+          "description": "Charges forward in a line, knockback enemies",
+          "cast_type": "short",
+          "recommended_for": ["elite", "boss"]
+        },
+        {
+          "id": "skill_brute_execute",
+          "name": "Execute",
+          "description": "High damage on low HP targets",
+          "cast_type": "instant",
+          "recommended_for": ["elite", "boss"]
+        }
+      ],
+
+      "signature_spell": {
+        "id": "skill_brute_ground_slam",
+        "name": "Ground Slam",
+        "description": "Boss-only: Massive cross-pattern AoE with knockdown",
+        "cast_type": "long",
+        "tier_required": "boss"
+      },
+
+      "passive_pool": [
+        {
+          "id": "passive_brute_rage",
+          "name": "Rage",
+          "tier": "normal",
+          "effect": "+ATK when below 50% HP"
+        },
+        {
+          "id": "passive_brute_momentum",
+          "name": "Momentum",
+          "tier": "elite",
+          "effect": "+damage per consecutive hit on same target"
+        },
+        {
+          "id": "passive_brute_bloodlust",
+          "name": "Bloodlust",
+          "tier": "boss",
+          "effect": "Lifesteal + ATK per nearby enemy"
+        }
+      ]
+    },
+
+    "assassin": {
+      "name": "Assassin",
+      "description": "High priority target eliminator focusing on backline squishies",
+      "playstyle": "Targets healers and mages, high burst damage, mobile",
+      "target_priority": ["healer", "mage", "lowest_hp", "archer"],
+      "positioning": {
+        "preferred_row": "mid_back",
+        "alternative_row": "mid_front",
+        "never_position": "front"
+      },
+
+      "skill_pool": [
+        {
+          "id": "skill_assassin_quick_strike",
+          "name": "Quick Strike",
+          "description": "Fast instant attack",
+          "cast_type": "instant",
+          "recommended_for": ["all_tiers"]
+        },
+        {
+          "id": "skill_assassin_poison_blade",
+          "name": "Poison Blade",
+          "description": "Poison strike with DoT",
+          "cast_type": "short",
+          "recommended_for": ["all_tiers"]
+        },
+        {
+          "id": "skill_assassin_shadow_strike",
+          "name": "Shadow Strike",
+          "description": "Teleport to backline target",
+          "cast_type": "medium",
+          "recommended_for": ["elite", "boss"]
+        },
+        {
+          "id": "skill_assassin_ambush",
+          "name": "Ambush",
+          "description": "High crit chance backstab",
+          "cast_type": "instant",
+          "recommended_for": ["elite", "boss"]
+        }
+      ],
+
+      "signature_spell": {
+        "id": "skill_assassin_death_mark",
+        "name": "Death Mark",
+        "description": "Boss-only: Mark target to take massive extra damage",
+        "cast_type": "medium",
+        "tier_required": "boss"
+      },
+
+      "passive_pool": [
+        {
+          "id": "passive_assassin_backstab",
+          "name": "Backstab",
+          "tier": "normal",
+          "effect": "+damage to backline targets"
+        },
+        {
+          "id": "passive_assassin_critical_strike",
+          "name": "Critical Strike",
+          "tier": "elite",
+          "effect": "+crit chance and crit damage"
+        },
+        {
+          "id": "passive_assassin_shadow_step",
+          "name": "Shadow Step",
+          "tier": "boss",
+          "effect": "Periodic teleport attacks with silence"
+        }
+      ]
+    },
+
+    "tank": {
+      "name": "Tank",
+      "description": "Defensive protector that shields allies and controls the frontline",
+      "playstyle": "Absorbs damage, protects allies, uses taunts and CC",
+      "target_priority": ["nearest", "highest_threat", "random"],
+      "positioning": {
+        "preferred_row": "front",
+        "alternative_row": null,
+        "never_position": "back"
+      },
+
+      "skill_pool": [
+        {
+          "id": "skill_tank_shield_bash",
+          "name": "Shield Bash",
+          "description": "Quick stun attack",
+          "cast_type": "instant",
+          "recommended_for": ["all_tiers"]
+        },
+        {
+          "id": "skill_tank_defensive_stance",
+          "name": "Defensive Stance",
+          "description": "Self defense buff",
+          "cast_type": "medium",
+          "recommended_for": ["all_tiers"]
+        },
+        {
+          "id": "skill_tank_taunt_roar",
+          "name": "Taunt Roar",
+          "description": "AoE taunt to force aggro",
+          "cast_type": "medium",
+          "recommended_for": ["elite", "boss"]
+        },
+        {
+          "id": "skill_tank_shield_wall",
+          "name": "Shield Wall",
+          "description": "Powerful defense buff + block",
+          "cast_type": "medium",
+          "recommended_for": ["elite", "boss"]
+        }
+      ],
+
+      "signature_spell": {
+        "id": "skill_tank_fortress",
+        "name": "Fortress",
+        "description": "Boss-only: Ultimate defense + reflect + CC immunity",
+        "cast_type": "long",
+        "tier_required": "boss"
+      },
+
+      "passive_pool": [
+        {
+          "id": "passive_tank_thick_skin",
+          "name": "Thick Skin",
+          "tier": "normal",
+          "effect": "+DEF"
+        },
+        {
+          "id": "passive_tank_guardian",
+          "name": "Guardian",
+          "tier": "elite",
+          "effect": "Nearby allies take reduced damage"
+        },
+        {
+          "id": "passive_tank_last_stand",
+          "name": "Last Stand",
+          "tier": "boss",
+          "effect": "Below 20% HP: massive DEF + regen"
+        }
+      ]
+    },
+
+    "healer": {
+      "name": "Healer",
+      "description": "Support caster that heals allies and removes debuffs",
+      "playstyle": "Keeps allies alive, dispels debuffs, stays in backline",
+      "target_priority": ["heal_lowest_ally", "heal_critical_ally", "nearest_enemy"],
+      "positioning": {
+        "preferred_row": "back",
+        "alternative_row": "mid_back",
+        "never_position": "front"
+      },
+
+      "skill_pool": [
+        {
+          "id": "skill_healer_heal",
+          "name": "Heal",
+          "description": "Single target heal",
+          "cast_type": "medium",
+          "recommended_for": ["all_tiers"]
+        },
+        {
+          "id": "skill_healer_smite",
+          "name": "Smite",
+          "description": "Weak offensive spell",
+          "cast_type": "short",
+          "recommended_for": ["all_tiers"]
+        },
+        {
+          "id": "skill_healer_group_heal",
+          "name": "Group Heal",
+          "description": "AoE heal for multiple allies",
+          "cast_type": "long",
+          "recommended_for": ["elite", "boss"]
+        },
+        {
+          "id": "skill_healer_dispel",
+          "name": "Dispel",
+          "description": "Remove debuffs from ally",
+          "cast_type": "short",
+          "recommended_for": ["elite", "boss"]
+        }
+      ],
+
+      "signature_spell": {
+        "id": "skill_healer_resurrection",
+        "name": "Resurrection",
+        "description": "Boss-only: Revive dead ally - MUST INTERRUPT",
+        "cast_type": "long",
+        "tier_required": "boss"
+      },
+
+      "passive_pool": [
+        {
+          "id": "passive_healer_regeneration_aura",
+          "name": "Regeneration Aura",
+          "tier": "normal",
+          "effect": "Nearby allies regen HP over time"
+        },
+        {
+          "id": "passive_healer_desperate_prayer",
+          "name": "Desperate Prayer",
+          "tier": "elite",
+          "effect": "Auto-heal when ally drops below 20% HP"
+        },
+        {
+          "id": "passive_healer_divine_intervention",
+          "name": "Divine Intervention",
+          "tier": "boss",
+          "effect": "On death: full heal all allies + buff"
+        }
+      ]
+    },
+
+    "support": {
+      "name": "Support",
+      "description": "Utility caster that buffs allies and debuffs enemies",
+      "playstyle": "Force multiplier through buffs and debuffs",
+      "target_priority": ["buff_ally", "debuff_enemy", "lowest_hp_enemy"],
+      "positioning": {
+        "preferred_row": "mid_back",
+        "alternative_row": "back",
+        "never_position": "front"
+      },
+
+      "skill_pool": [
+        {
+          "id": "skill_support_haste",
+          "name": "Haste",
+          "description": "Attack speed buff for ally/allies",
+          "cast_type": "medium",
+          "recommended_for": ["all_tiers"]
+        },
+        {
+          "id": "skill_support_weaken",
+          "name": "Weaken",
+          "description": "ATK debuff on enemy/enemies",
+          "cast_type": "medium",
+          "recommended_for": ["all_tiers"]
+        },
+        {
+          "id": "skill_support_shield_barrier",
+          "name": "Shield Barrier",
+          "description": "Apply shield to allies",
+          "cast_type": "medium",
+          "recommended_for": ["elite", "boss"]
+        },
+        {
+          "id": "skill_support_dispel_magic",
+          "name": "Dispel Magic",
+          "description": "Remove buffs from enemies",
+          "cast_type": "short",
+          "recommended_for": ["elite", "boss"]
+        }
+      ],
+
+      "signature_spell": {
+        "id": "skill_support_bloodlust",
+        "name": "Bloodlust",
+        "description": "Boss-only: Party-wide ATK/speed buff - MUST INTERRUPT",
+        "cast_type": "long",
+        "tier_required": "boss"
+      },
+
+      "passive_pool": [
+        {
+          "id": "passive_support_aura",
+          "name": "Inspiring Aura",
+          "tier": "normal",
+          "effect": "Nearby allies gain +ATK/MAG"
+        },
+        {
+          "id": "passive_support_synergy",
+          "name": "Synergy",
+          "tier": "elite",
+          "effect": "Buffs/debuffs last longer"
+        },
+        {
+          "id": "passive_support_chain_reaction",
+          "name": "Chain Reaction",
+          "tier": "boss",
+          "effect": "Ally kills trigger random ally buffs"
+        }
+      ]
+    },
+
+    "artillery": {
+      "name": "Artillery",
+      "description": "Ranged caster that bombards enemies with AoE damage from backline",
+      "playstyle": "Stays in back, uses long-range AoE attacks, targets grouped enemies",
+      "target_priority": ["backline", "grouped_enemies", "lowest_hp"],
+      "positioning": {
+        "preferred_row": "back",
+        "alternative_row": "mid_back",
+        "never_position": "front"
+      },
+
+      "skill_pool": [
+        {
+          "id": "skill_artillery_fire_bolt",
+          "name": "Fire Bolt",
+          "description": "Ranged single target fire attack",
+          "cast_type": "medium",
+          "recommended_for": ["all_tiers"]
+        },
+        {
+          "id": "skill_artillery_fireball",
+          "name": "Fireball",
+          "description": "AoE explosion with burn",
+          "cast_type": "long",
+          "recommended_for": ["all_tiers"]
+        },
+        {
+          "id": "skill_artillery_lightning_bolt",
+          "name": "Lightning Bolt",
+          "description": "Chain lightning attack",
+          "cast_type": "medium",
+          "recommended_for": ["elite", "boss"]
+        },
+        {
+          "id": "skill_artillery_frost_nova",
+          "name": "Frost Nova",
+          "description": "AoE freeze around self",
+          "cast_type": "medium",
+          "recommended_for": ["elite", "boss"]
+        }
+      ],
+
+      "signature_spell": {
+        "id": "skill_artillery_meteor",
+        "name": "Meteor",
+        "description": "Boss-only: Massive AoE - party wipe if not interrupted",
+        "cast_type": "long",
+        "tier_required": "boss"
+      },
+
+      "passive_pool": [
+        {
+          "id": "passive_artillery_extended_range",
+          "name": "Extended Range",
+          "tier": "normal",
+          "effect": "Attacks ignore Line of Sight"
+        },
+        {
+          "id": "passive_artillery_blast_radius",
+          "name": "Blast Radius",
+          "tier": "elite",
+          "effect": "AoE skills have +1 range"
+        },
+        {
+          "id": "passive_artillery_bombardment",
+          "name": "Bombardment",
+          "tier": "boss",
+          "effect": "Random AoE explosions every 10s"
+        }
+      ]
+    },
+
+    "controller": {
+      "name": "Controller",
+      "description": "Crowd control specialist that disables and manipulates enemies",
+      "playstyle": "Chains CC abilities to lock down multiple targets",
+      "target_priority": ["highest_threat", "caster", "healer"],
+      "positioning": {
+        "preferred_row": "mid_back",
+        "alternative_row": "back",
+        "never_position": "front"
+      },
+
+      "skill_pool": [
+        {
+          "id": "skill_controller_root",
+          "name": "Root",
+          "description": "Root target in place",
+          "cast_type": "medium",
+          "recommended_for": ["all_tiers"]
+        },
+        {
+          "id": "skill_controller_slow",
+          "name": "Slow",
+          "description": "AoE slow effect",
+          "cast_type": "medium",
+          "recommended_for": ["all_tiers"]
+        },
+        {
+          "id": "skill_controller_fear",
+          "name": "Fear",
+          "description": "AoE fear - targets run away",
+          "cast_type": "long",
+          "recommended_for": ["elite", "boss"]
+        },
+        {
+          "id": "skill_controller_silence",
+          "name": "Silence",
+          "description": "Prevent target from casting",
+          "cast_type": "short",
+          "recommended_for": ["elite", "boss"]
+        }
+      ],
+
+      "signature_spell": {
+        "id": "skill_controller_mind_control",
+        "name": "Mind Control",
+        "description": "Boss-only: Take control of player - PRIORITY INTERRUPT",
+        "cast_type": "long",
+        "tier_required": "boss"
+      },
+
+      "passive_pool": [
+        {
+          "id": "passive_controller_cc_mastery",
+          "name": "CC Mastery",
+          "tier": "normal",
+          "effect": "CC effects last longer"
+        },
+        {
+          "id": "passive_controller_chain_cc",
+          "name": "Chain CC",
+          "tier": "elite",
+          "effect": "Reduced CD on CC'd targets"
+        },
+        {
+          "id": "passive_controller_cc_immunity",
+          "name": "CC Immunity",
+          "tier": "boss",
+          "effect": "Immune to most CC"
+        }
+      ]
+    },
+
+    "berserker": {
+      "name": "Berserker",
+      "description": "Reckless fighter that gains power as HP drops, trades defense for offense",
+      "playstyle": "Gets stronger when wounded, high risk high reward",
+      "target_priority": ["nearest", "highest_hp", "random"],
+      "positioning": {
+        "preferred_row": "front",
+        "alternative_row": "mid_front",
+        "never_position": "back"
+      },
+
+      "skill_pool": [
+        {
+          "id": "skill_berserker_wild_swing",
+          "name": "Wild Swing",
+          "description": "Fast reckless attack",
+          "cast_type": "instant",
+          "recommended_for": ["all_tiers"]
+        },
+        {
+          "id": "skill_berserker_blood_frenzy",
+          "name": "Blood Frenzy",
+          "description": "Trade defense for offense",
+          "cast_type": "medium",
+          "recommended_for": ["all_tiers"]
+        },
+        {
+          "id": "skill_berserker_rampage",
+          "name": "Rampage",
+          "description": "Wild flurry hitting multiple targets",
+          "cast_type": "short",
+          "recommended_for": ["elite", "boss"]
+        },
+        {
+          "id": "skill_berserker_execution",
+          "name": "Execution",
+          "description": "Damage scales with missing HP",
+          "cast_type": "medium",
+          "recommended_for": ["elite", "boss"]
+        }
+      ],
+
+      "signature_spell": {
+        "id": "skill_berserker_blood_ritual",
+        "name": "Blood Ritual",
+        "description": "Boss-only: Drop to 10% HP, gain massive power",
+        "cast_type": "long",
+        "tier_required": "boss"
+      },
+
+      "passive_pool": [
+        {
+          "id": "passive_berserker_bloodrage",
+          "name": "Bloodrage",
+          "tier": "normal",
+          "effect": "+ATK when low HP"
+        },
+        {
+          "id": "passive_berserker_reckless",
+          "name": "Reckless",
+          "tier": "elite",
+          "effect": "+damage dealt, +damage taken"
+        },
+        {
+          "id": "passive_berserker_death_wish",
+          "name": "Death Wish",
+          "tier": "boss",
+          "effect": "Below 20%: massive ATK, CC immune, no healing"
+        }
+      ]
+    }
+  },
+
+  "usage_guidelines": {
+    "skill_selection": {
+      "normal": "Pick 1 skill from pool (avoid long cast spells for normal mobs)",
+      "elite": "Pick 2 skills from pool (mix instant + medium cast)",
+      "boss": "Pick 3 skills from pool + signature spell (use full range of casts)"
+    },
+    "skill_naming": {
+      "description": "Rename skills based on monster race for thematic diversity",
+      "examples": {
+        "skill_tank_shield_bash": {
+          "rat": "Defensive Curl",
+          "wolf": "Protective Stance",
+          "goblin": "Shield Wall",
+          "mechanic": "Same (stun attack)"
+        },
+        "skill_healer_heal": {
+          "rat": "Pack Bond",
+          "wolf": "Regeneration Howl",
+          "goblin": "Shaman Heal",
+          "lizardman": "Swamp Blessing",
+          "mechanic": "Same (heal ally)"
+        }
+      }
+    },
+    "monster_assignment": {
+      "step_1": "Choose archetype for monster (e.g., mob_wolf → assassin)",
+      "step_2": "Set tier (normal/elite/boss)",
+      "step_3": "Pick X skills from skill_pool based on tier",
+      "step_4": "Add signature_spell if boss",
+      "step_5": "Assign passives based on tier"
+    }
+  }
+}

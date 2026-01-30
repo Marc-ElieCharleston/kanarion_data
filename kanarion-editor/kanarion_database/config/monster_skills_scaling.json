@@ -1,0 +1,1110 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-01-30",
+    "description": "Monster skill scaling formulas and balancing values by level and tier"
+  },
+
+  "scaling_formulas": {
+    "description": "Common formulas used across multiple skills",
+    "base_damage_per_level": 2,
+    "scaling_percent_per_level": 2,
+    "duration_per_level": 0.2,
+    "cooldown_reduction_per_tier": {
+      "normal_to_elite": -1,
+      "elite_to_boss": -1
+    }
+  },
+
+  "tier_multipliers": {
+    "normal": {
+      "damage_mult": 1.0,
+      "duration_mult": 1.0,
+      "effect_mult": 1.0
+    },
+    "elite": {
+      "damage_mult": 1.3,
+      "duration_mult": 1.2,
+      "effect_mult": 1.3
+    },
+    "boss": {
+      "damage_mult": 1.8,
+      "duration_mult": 1.5,
+      "effect_mult": 1.6
+    }
+  },
+
+  "cast_time_standards": {
+    "instant": 0,
+    "short": {
+      "normal": 1.5,
+      "elite": 1.2,
+      "boss": 1.0
+    },
+    "medium": {
+      "normal": 3.5,
+      "elite": 3.0,
+      "boss": 2.5
+    },
+    "long": {
+      "normal": 5.0,
+      "elite": 4.5,
+      "boss": 4.0
+    }
+  },
+
+  "skills": {
+    "_comment": "=== BRUTE ARCHETYPE ===",
+
+    "skill_brute_heavy_slam": {
+      "name": "Heavy Slam",
+      "archetype": "brute",
+      "type": "damage",
+      "pattern": "single",
+      "damage_type": "physical",
+      "base_damage": {
+        "formula": "20 + (2 * level)",
+        "example_lv1": 22,
+        "example_lv10": 40,
+        "example_lv20": 60
+      },
+      "scaling_percent": {
+        "stat": "atk",
+        "formula": "40 + (2 * level)",
+        "example_lv1": 42,
+        "example_lv10": 60,
+        "example_lv20": 80
+      },
+      "cast_time": 0,
+      "cooldown": {
+        "normal": 6,
+        "elite": 5,
+        "boss": 4
+      },
+      "mana_cost": 0
+    },
+
+    "skill_brute_cleave": {
+      "name": "Cleave",
+      "archetype": "brute",
+      "type": "damage_aoe",
+      "pattern": {
+        "normal": "row_2",
+        "elite": "row_3",
+        "boss": "row_4"
+      },
+      "damage_type": "physical",
+      "base_damage": {
+        "formula": "18 + (2 * level)",
+        "example_lv1": 20,
+        "example_lv10": 38,
+        "example_lv20": 58
+      },
+      "scaling_percent": {
+        "stat": "atk",
+        "formula": "35 + (2 * level)",
+        "example_lv1": 37,
+        "example_lv10": 55,
+        "example_lv20": 75
+      },
+      "cast_time": {
+        "normal": 3.5,
+        "elite": 3.0,
+        "boss": 2.5
+      },
+      "cooldown": {
+        "normal": 12,
+        "elite": 10,
+        "boss": 8
+      },
+      "effect": {
+        "type": "bleed",
+        "stacks": {
+          "normal": 2,
+          "elite": 3,
+          "boss": 4
+        },
+        "duration": {
+          "formula": "6 + (0.2 * level)",
+          "example_lv1": 6.2,
+          "example_lv10": 8.0,
+          "example_lv20": 10.0
+        }
+      }
+    },
+
+    "skill_brute_ground_slam": {
+      "name": "Ground Slam",
+      "archetype": "brute",
+      "type": "damage_cc",
+      "pattern": "cross",
+      "damage_type": "physical",
+      "tier_availability": "boss_only",
+      "base_damage": {
+        "formula": "35 + (3 * level)",
+        "example_lv10": 65,
+        "example_lv20": 95
+      },
+      "scaling_percent": {
+        "stat": "atk",
+        "formula": "80 + (3 * level)",
+        "example_lv10": 110,
+        "example_lv20": 140
+      },
+      "cast_time": 4.0,
+      "cooldown": 20,
+      "effect": {
+        "type": "knockdown",
+        "duration": 2.5
+      }
+    },
+
+    "_comment": "=== ASSASSIN ARCHETYPE ===",
+
+    "skill_assassin_quick_strike": {
+      "name": "Quick Strike",
+      "archetype": "assassin",
+      "type": "damage",
+      "pattern": "single",
+      "damage_type": "physical",
+      "base_damage": {
+        "formula": "18 + (2 * level)",
+        "example_lv1": 20,
+        "example_lv10": 38,
+        "example_lv20": 58
+      },
+      "scaling_percent": {
+        "stat": "atk",
+        "formula": "45 + (2 * level)",
+        "example_lv1": 47,
+        "example_lv10": 65,
+        "example_lv20": 85
+      },
+      "cast_time": 0,
+      "cooldown": {
+        "normal": 4,
+        "elite": 3,
+        "boss": 3
+      }
+    },
+
+    "skill_assassin_poison_blade": {
+      "name": "Poison Blade",
+      "archetype": "assassin",
+      "type": "damage_dot",
+      "pattern": "single",
+      "damage_type": "physical",
+      "base_damage": {
+        "formula": "16 + (2 * level)",
+        "example_lv1": 18,
+        "example_lv10": 36,
+        "example_lv20": 56
+      },
+      "scaling_percent": {
+        "stat": "atk",
+        "formula": "40 + (2 * level)",
+        "example_lv1": 42,
+        "example_lv10": 60,
+        "example_lv20": 80
+      },
+      "cast_time": {
+        "normal": 1.5,
+        "elite": 1.2,
+        "boss": 1.0
+      },
+      "cooldown": {
+        "normal": 10,
+        "elite": 8,
+        "boss": 7
+      },
+      "effect": {
+        "type": "poison",
+        "stacks": {
+          "normal": 2,
+          "elite": 3,
+          "boss": 4
+        },
+        "duration": {
+          "formula": "8 + (0.2 * level)",
+          "example_lv1": 8.2,
+          "example_lv10": 10.0,
+          "example_lv20": 12.0
+        }
+      }
+    },
+
+    "skill_assassin_shadow_strike": {
+      "name": "Shadow Strike",
+      "archetype": "assassin",
+      "type": "damage_teleport",
+      "pattern": "single_backline",
+      "damage_type": "physical",
+      "tier_availability": "elite_and_boss",
+      "base_damage": {
+        "formula": "30 + (3 * level)",
+        "example_lv10": 60,
+        "example_lv20": 90
+      },
+      "scaling_percent": {
+        "stat": "atk",
+        "formula": "75 + (3 * level)",
+        "example_lv10": 105,
+        "example_lv20": 135
+      },
+      "cast_time": {
+        "elite": 3.5,
+        "boss": 3.0
+      },
+      "cooldown": {
+        "elite": 16,
+        "boss": 14
+      },
+      "effect": {
+        "type": "teleport_to_target",
+        "description": "Teleports to backline target before striking"
+      }
+    },
+
+    "skill_assassin_death_mark": {
+      "name": "Death Mark",
+      "archetype": "assassin",
+      "type": "debuff",
+      "pattern": "single",
+      "tier_availability": "boss_only",
+      "cast_time": 3.5,
+      "cooldown": 22,
+      "effect": {
+        "type": "death_mark",
+        "damage_taken_increase": {
+          "formula": "40 + (1 * level)",
+          "example_lv10": 50,
+          "example_lv20": 60,
+          "unit": "percent"
+        },
+        "duration": {
+          "formula": "8 + (0.3 * level)",
+          "example_lv10": 11,
+          "example_lv20": 14
+        }
+      }
+    },
+
+    "_comment": "=== TANK ARCHETYPE ===",
+
+    "skill_tank_shield_bash": {
+      "name": "Shield Bash",
+      "archetype": "tank",
+      "type": "damage_cc",
+      "pattern": "single",
+      "damage_type": "physical",
+      "base_damage": {
+        "formula": "15 + (1.5 * level)",
+        "example_lv1": 16.5,
+        "example_lv10": 30,
+        "example_lv20": 45
+      },
+      "scaling_percent": {
+        "stat": "def",
+        "formula": "35 + (1.5 * level)",
+        "example_lv1": 36.5,
+        "example_lv10": 50,
+        "example_lv20": 65
+      },
+      "cast_time": 0,
+      "cooldown": {
+        "normal": 8,
+        "elite": 7,
+        "boss": 6
+      },
+      "effect": {
+        "type": "stun",
+        "duration": {
+          "normal": 1.5,
+          "elite": 2.0,
+          "boss": 2.5
+        }
+      }
+    },
+
+    "skill_tank_defensive_stance": {
+      "name": "Defensive Stance",
+      "archetype": "tank",
+      "type": "buff_self",
+      "pattern": "self",
+      "cast_time": {
+        "normal": 3.5,
+        "elite": 3.0,
+        "boss": 2.5
+      },
+      "cooldown": {
+        "normal": 20,
+        "elite": 18,
+        "boss": 16
+      },
+      "effect": {
+        "type": "defense_buff",
+        "def_increase": {
+          "formula": "25 + (1 * level)",
+          "example_lv1": 26,
+          "example_lv10": 35,
+          "example_lv20": 45,
+          "unit": "percent"
+        },
+        "duration": {
+          "formula": "8 + (0.3 * level)",
+          "example_lv1": 8.3,
+          "example_lv10": 11,
+          "example_lv20": 14
+        }
+      }
+    },
+
+    "skill_tank_fortress": {
+      "name": "Fortress",
+      "archetype": "tank",
+      "type": "buff_ultimate",
+      "pattern": "self",
+      "tier_availability": "boss_only",
+      "cast_time": 4.5,
+      "cooldown": 35,
+      "effect": {
+        "type": "fortress_buff",
+        "def_increase": {
+          "formula": "80 + (2 * level)",
+          "example_lv10": 100,
+          "example_lv20": 120,
+          "unit": "percent"
+        },
+        "damage_reflect": {
+          "value": 25,
+          "unit": "percent"
+        },
+        "cc_immunity": true,
+        "duration": {
+          "formula": "10 + (0.3 * level)",
+          "example_lv10": 13,
+          "example_lv20": 16
+        }
+      }
+    },
+
+    "_comment": "=== HEALER ARCHETYPE ===",
+
+    "skill_healer_heal": {
+      "name": "Heal",
+      "archetype": "healer",
+      "type": "heal",
+      "pattern": "single_ally",
+      "base_healing": {
+        "formula": "25 + (2.5 * level)",
+        "example_lv1": 27.5,
+        "example_lv10": 50,
+        "example_lv20": 75
+      },
+      "scaling_percent": {
+        "stat": "mag",
+        "formula": "50 + (2 * level)",
+        "example_lv1": 52,
+        "example_lv10": 70,
+        "example_lv20": 90
+      },
+      "cast_time": {
+        "normal": 3.5,
+        "elite": 3.0,
+        "boss": 2.5
+      },
+      "cooldown": {
+        "normal": 8,
+        "elite": 6,
+        "boss": 5
+      }
+    },
+
+    "skill_healer_group_heal": {
+      "name": "Group Heal",
+      "archetype": "healer",
+      "type": "heal_aoe",
+      "pattern": {
+        "normal": "rect_2x2_allies",
+        "elite": "rect_2x3_allies",
+        "boss": "all_allies"
+      },
+      "tier_availability": "elite_and_boss",
+      "base_healing": {
+        "formula": "20 + (2 * level)",
+        "example_lv10": 40,
+        "example_lv20": 60
+      },
+      "scaling_percent": {
+        "stat": "mag",
+        "formula": "45 + (2 * level)",
+        "example_lv10": 65,
+        "example_lv20": 85
+      },
+      "cast_time": {
+        "elite": 4.5,
+        "boss": 4.0
+      },
+      "cooldown": {
+        "elite": 18,
+        "boss": 15
+      }
+    },
+
+    "skill_healer_resurrection": {
+      "name": "Resurrection",
+      "archetype": "healer",
+      "type": "revive",
+      "pattern": "single_dead_ally",
+      "tier_availability": "boss_only",
+      "cast_time": 5.0,
+      "cooldown": 50,
+      "effect": {
+        "type": "revive",
+        "hp_percent_restored": {
+          "formula": "40 + (1 * level)",
+          "example_lv10": 50,
+          "example_lv20": 60
+        }
+      }
+    },
+
+    "_comment": "=== SUPPORT ARCHETYPE ===",
+
+    "skill_support_haste": {
+      "name": "Haste",
+      "archetype": "support",
+      "type": "buff",
+      "pattern": {
+        "normal": "single_ally",
+        "elite": "rect_2x2_allies",
+        "boss": "all_allies"
+      },
+      "cast_time": {
+        "normal": 3.5,
+        "elite": 3.5,
+        "boss": 3.0
+      },
+      "cooldown": {
+        "normal": 15,
+        "elite": 14,
+        "boss": 12
+      },
+      "effect": {
+        "type": "attack_speed_buff",
+        "attack_speed_increase": {
+          "formula": "20 + (1 * level)",
+          "example_lv1": 21,
+          "example_lv10": 30,
+          "example_lv20": 40,
+          "unit": "percent"
+        },
+        "duration": {
+          "formula": "8 + (0.3 * level)",
+          "example_lv1": 8.3,
+          "example_lv10": 11,
+          "example_lv20": 14
+        }
+      }
+    },
+
+    "skill_support_weaken": {
+      "name": "Weaken",
+      "archetype": "support",
+      "type": "debuff",
+      "pattern": {
+        "normal": "single",
+        "elite": "row_2",
+        "boss": "row_3"
+      },
+      "cast_time": {
+        "normal": 3.5,
+        "elite": 3.0,
+        "boss": 2.5
+      },
+      "cooldown": {
+        "normal": 14,
+        "elite": 12,
+        "boss": 10
+      },
+      "effect": {
+        "type": "atk_debuff",
+        "atk_reduction": {
+          "formula": "15 + (1 * level)",
+          "example_lv1": 16,
+          "example_lv10": 25,
+          "example_lv20": 35,
+          "unit": "percent"
+        },
+        "duration": {
+          "formula": "8 + (0.3 * level)",
+          "example_lv1": 8.3,
+          "example_lv10": 11,
+          "example_lv20": 14
+        }
+      }
+    },
+
+    "skill_support_bloodlust": {
+      "name": "Bloodlust",
+      "archetype": "support",
+      "type": "buff_ultimate",
+      "pattern": "all_allies",
+      "tier_availability": "boss_only",
+      "cast_time": 4.5,
+      "cooldown": 40,
+      "effect": {
+        "type": "party_buff",
+        "atk_increase": {
+          "formula": "40 + (1.5 * level)",
+          "example_lv10": 55,
+          "example_lv20": 70,
+          "unit": "percent"
+        },
+        "attack_speed_increase": {
+          "formula": "30 + (1 * level)",
+          "example_lv10": 40,
+          "example_lv20": 50,
+          "unit": "percent"
+        },
+        "duration": {
+          "formula": "12 + (0.4 * level)",
+          "example_lv10": 16,
+          "example_lv20": 20
+        }
+      }
+    },
+
+    "_comment": "=== ARTILLERY ARCHETYPE ===",
+
+    "skill_artillery_fire_bolt": {
+      "name": "Fire Bolt",
+      "archetype": "artillery",
+      "type": "damage_ranged",
+      "pattern": "single",
+      "damage_type": "magical",
+      "base_damage": {
+        "formula": "22 + (2.5 * level)",
+        "example_lv1": 24.5,
+        "example_lv10": 47,
+        "example_lv20": 72
+      },
+      "scaling_percent": {
+        "stat": "mag",
+        "formula": "50 + (2 * level)",
+        "example_lv1": 52,
+        "example_lv10": 70,
+        "example_lv20": 90
+      },
+      "cast_time": {
+        "normal": 3.5,
+        "elite": 3.0,
+        "boss": 2.5
+      },
+      "cooldown": {
+        "normal": 6,
+        "elite": 5,
+        "boss": 4
+      }
+    },
+
+    "skill_artillery_fireball": {
+      "name": "Fireball",
+      "archetype": "artillery",
+      "type": "damage_aoe",
+      "pattern": {
+        "normal": "around_radius_1",
+        "elite": "rect_2x2",
+        "boss": "rect_2x3"
+      },
+      "damage_type": "magical",
+      "base_damage": {
+        "formula": "25 + (3 * level)",
+        "example_lv1": 28,
+        "example_lv10": 55,
+        "example_lv20": 85
+      },
+      "scaling_percent": {
+        "stat": "mag",
+        "formula": "60 + (2.5 * level)",
+        "example_lv1": 62.5,
+        "example_lv10": 85,
+        "example_lv20": 110
+      },
+      "cast_time": {
+        "normal": 4.5,
+        "elite": 4.0,
+        "boss": 3.5
+      },
+      "cooldown": {
+        "normal": 14,
+        "elite": 12,
+        "boss": 10
+      },
+      "effect": {
+        "type": "burn",
+        "stacks": {
+          "normal": 2,
+          "elite": 3,
+          "boss": 4
+        },
+        "duration": {
+          "formula": "6 + (0.2 * level)",
+          "example_lv1": 6.2,
+          "example_lv10": 8,
+          "example_lv20": 10
+        }
+      }
+    },
+
+    "skill_artillery_meteor": {
+      "name": "Meteor",
+      "archetype": "artillery",
+      "type": "damage_aoe_ultimate",
+      "pattern": "rect_3x3",
+      "damage_type": "magical",
+      "tier_availability": "boss_only",
+      "base_damage": {
+        "formula": "50 + (5 * level)",
+        "example_lv10": 100,
+        "example_lv20": 150
+      },
+      "scaling_percent": {
+        "stat": "mag",
+        "formula": "100 + (4 * level)",
+        "example_lv10": 140,
+        "example_lv20": 180
+      },
+      "cast_time": 5.0,
+      "cooldown": 30,
+      "effect": {
+        "type": "burn",
+        "stacks": 6,
+        "duration": 12
+      }
+    },
+
+    "_comment": "=== CONTROLLER ARCHETYPE ===",
+
+    "skill_controller_root": {
+      "name": "Root",
+      "archetype": "controller",
+      "type": "cc",
+      "pattern": "single",
+      "cast_time": {
+        "normal": 3.5,
+        "elite": 3.0,
+        "boss": 2.5
+      },
+      "cooldown": {
+        "normal": 12,
+        "elite": 10,
+        "boss": 9
+      },
+      "effect": {
+        "type": "root",
+        "duration": {
+          "formula": "3 + (0.15 * level)",
+          "example_lv1": 3.15,
+          "example_lv10": 4.5,
+          "example_lv20": 6,
+          "multiplier_elite": 1.2,
+          "multiplier_boss": 1.5
+        }
+      }
+    },
+
+    "skill_controller_fear": {
+      "name": "Fear",
+      "archetype": "controller",
+      "type": "cc_aoe",
+      "pattern": {
+        "normal": "rect_2x2",
+        "elite": "rect_2x3",
+        "boss": "rect_3x3"
+      },
+      "tier_availability": "elite_and_boss",
+      "cast_time": {
+        "elite": 4.0,
+        "boss": 3.5
+      },
+      "cooldown": {
+        "elite": 22,
+        "boss": 20
+      },
+      "effect": {
+        "type": "fear",
+        "duration": {
+          "formula": "4 + (0.2 * level)",
+          "example_lv10": 6,
+          "example_lv20": 8
+        }
+      }
+    },
+
+    "skill_controller_mind_control": {
+      "name": "Mind Control",
+      "archetype": "controller",
+      "type": "cc_ultimate",
+      "pattern": "single",
+      "tier_availability": "boss_only",
+      "cast_time": 5.0,
+      "cooldown": 40,
+      "effect": {
+        "type": "mind_control",
+        "duration": {
+          "formula": "8 + (0.4 * level)",
+          "example_lv10": 12,
+          "example_lv20": 16
+        },
+        "stat_buff": "+30% all stats while controlled"
+      }
+    },
+
+    "_comment": "=== BERSERKER ARCHETYPE ===",
+
+    "skill_berserker_wild_swing": {
+      "name": "Wild Swing",
+      "archetype": "berserker",
+      "type": "damage",
+      "pattern": "single",
+      "damage_type": "physical",
+      "base_damage": {
+        "formula": "24 + (2.5 * level)",
+        "example_lv1": 26.5,
+        "example_lv10": 49,
+        "example_lv20": 74
+      },
+      "scaling_percent": {
+        "stat": "atk",
+        "formula": "50 + (2.5 * level)",
+        "example_lv1": 52.5,
+        "example_lv10": 75,
+        "example_lv20": 100
+      },
+      "cast_time": 0,
+      "cooldown": {
+        "normal": 5,
+        "elite": 4,
+        "boss": 3
+      }
+    },
+
+    "skill_berserker_blood_frenzy": {
+      "name": "Blood Frenzy",
+      "archetype": "berserker",
+      "type": "buff_self",
+      "pattern": "self",
+      "cast_time": {
+        "normal": 3.5,
+        "elite": 3.0,
+        "boss": 2.5
+      },
+      "cooldown": {
+        "normal": 22,
+        "elite": 20,
+        "boss": 18
+      },
+      "effect": {
+        "type": "berserker_buff",
+        "atk_increase": {
+          "formula": "30 + (1.5 * level)",
+          "example_lv1": 31.5,
+          "example_lv10": 45,
+          "example_lv20": 60,
+          "unit": "percent"
+        },
+        "def_decrease": {
+          "value": -20,
+          "unit": "percent"
+        },
+        "duration": {
+          "formula": "10 + (0.3 * level)",
+          "example_lv1": 10.3,
+          "example_lv10": 13,
+          "example_lv20": 16
+        }
+      }
+    },
+
+    "skill_berserker_blood_ritual": {
+      "name": "Blood Ritual",
+      "archetype": "berserker",
+      "type": "buff_ultimate",
+      "pattern": "self",
+      "tier_availability": "boss_only",
+      "cast_time": 5.0,
+      "cooldown": 50,
+      "effect": {
+        "type": "blood_ritual",
+        "hp_cost": {
+          "description": "Sets HP to 10% of max",
+          "value": "90_percent_of_current"
+        },
+        "atk_increase": {
+          "formula": "150 + (5 * level)",
+          "example_lv10": 200,
+          "example_lv20": 250,
+          "unit": "percent"
+        },
+        "attack_speed_increase": {
+          "formula": "80 + (2 * level)",
+          "example_lv10": 100,
+          "example_lv20": 120,
+          "unit": "percent"
+        },
+        "duration": {
+          "formula": "15 + (0.5 * level)",
+          "example_lv10": 20,
+          "example_lv20": 25
+        }
+      }
+    }
+  },
+
+  "passive_effects": {
+    "_comment": "Passive scaling formulas",
+
+    "passive_brute_rage": {
+      "archetype": "brute",
+      "effect": "atk_increase_below_50_percent_hp",
+      "values": {
+        "normal": {
+          "formula": "10 + (0.5 * level)",
+          "example_lv1": 10.5,
+          "example_lv10": 15,
+          "example_lv20": 20,
+          "unit": "percent"
+        },
+        "elite": {
+          "formula": "15 + (0.75 * level)",
+          "example_lv10": 22.5,
+          "example_lv20": 30,
+          "unit": "percent"
+        },
+        "boss": {
+          "formula": "25 + (1.5 * level)",
+          "example_lv10": 40,
+          "example_lv20": 55,
+          "unit": "percent"
+        }
+      }
+    },
+
+    "passive_assassin_backstab": {
+      "archetype": "assassin",
+      "effect": "damage_increase_vs_backline",
+      "values": {
+        "normal": {
+          "value": 20,
+          "unit": "percent"
+        },
+        "elite": {
+          "value": 30,
+          "unit": "percent"
+        },
+        "boss": {
+          "value": 50,
+          "unit": "percent",
+          "additional": "ignore 30% armor"
+        }
+      }
+    },
+
+    "passive_tank_fortified": {
+      "archetype": "tank",
+      "effect": "def_and_damage_reduction",
+      "values": {
+        "normal": {
+          "def_increase": 20,
+          "unit": "percent"
+        },
+        "elite": {
+          "def_increase": 30,
+          "damage_reduction": 15,
+          "unit": "percent"
+        },
+        "boss": {
+          "def_increase": 50,
+          "damage_reduction": 25,
+          "cc_immunity": "knockback",
+          "unit": "percent"
+        }
+      }
+    },
+
+    "passive_healer_regeneration_aura": {
+      "archetype": "healer",
+      "effect": "ally_regen_aura",
+      "radius": 2,
+      "values": {
+        "normal": {
+          "heal_percent": 1,
+          "tick_interval": 3,
+          "unit": "percent_max_hp"
+        },
+        "elite": {
+          "heal_percent": 2,
+          "tick_interval": 3,
+          "unit": "percent_max_hp"
+        },
+        "boss": {
+          "heal_percent": 3,
+          "tick_interval": 2,
+          "healing_received_bonus": 10,
+          "unit": "percent_max_hp"
+        }
+      }
+    },
+
+    "passive_support_aura": {
+      "archetype": "support",
+      "effect": "ally_stat_buff_aura",
+      "radius": 2,
+      "values": {
+        "normal": {
+          "atk_increase": 5,
+          "mag_increase": 5,
+          "unit": "percent"
+        },
+        "elite": {
+          "atk_increase": 10,
+          "mag_increase": 10,
+          "unit": "percent"
+        },
+        "boss": {
+          "atk_increase": 20,
+          "mag_increase": 20,
+          "def_increase": 20,
+          "attack_speed_increase": 15,
+          "unit": "percent"
+        }
+      }
+    },
+
+    "passive_artillery_extended_range": {
+      "archetype": "artillery",
+      "effect": "ignore_line_of_sight",
+      "values": {
+        "all_tiers": {
+          "ignore_los": true
+        },
+        "elite": {
+          "aoe_range_bonus": 1
+        },
+        "boss": {
+          "aoe_range_bonus": 1,
+          "backline_damage_bonus": 20,
+          "unit": "percent"
+        }
+      }
+    },
+
+    "passive_controller_cc_mastery": {
+      "archetype": "controller",
+      "effect": "cc_duration_increase",
+      "values": {
+        "normal": {
+          "duration_increase": 20,
+          "unit": "percent"
+        },
+        "elite": {
+          "duration_increase": 30,
+          "cooldown_reduction_on_cc": 2,
+          "unit": "percent_and_seconds"
+        },
+        "boss": {
+          "duration_increase": 50,
+          "ignore_diminishing_returns": true,
+          "cc_immunity": "all_except_stun_reduced",
+          "unit": "percent"
+        }
+      }
+    },
+
+    "passive_berserker_bloodrage": {
+      "archetype": "berserker",
+      "effect": "stat_increase_when_low_hp",
+      "values": {
+        "normal": {
+          "atk_increase": 15,
+          "hp_threshold": 50,
+          "unit": "percent"
+        },
+        "elite": {
+          "atk_increase": 25,
+          "attack_speed_increase": 15,
+          "hp_threshold": 50,
+          "unit": "percent"
+        },
+        "boss": {
+          "atk_per_10_percent_hp_missing": 5,
+          "max_atk_increase": 50,
+          "lifesteal_below_30": 15,
+          "unit": "percent"
+        }
+      }
+    }
+  },
+
+  "positioning_by_archetype": {
+    "brute": {
+      "preferred_row": "front",
+      "alternative_row": "mid_front",
+      "never_position": "back"
+    },
+    "assassin": {
+      "preferred_row": "mid_back",
+      "alternative_row": "mid_front",
+      "never_position": "front"
+    },
+    "tank": {
+      "preferred_row": "front",
+      "alternative_row": null,
+      "never_position": "back"
+    },
+    "healer": {
+      "preferred_row": "back",
+      "alternative_row": "mid_back",
+      "never_position": "front"
+    },
+    "support": {
+      "preferred_row": "mid_back",
+      "alternative_row": "back",
+      "never_position": "front"
+    },
+    "artillery": {
+      "preferred_row": "back",
+      "alternative_row": "mid_back",
+      "never_position": "front"
+    },
+    "controller": {
+      "preferred_row": "mid_back",
+      "alternative_row": "back",
+      "never_position": "front"
+    },
+    "berserker": {
+      "preferred_row": "front",
+      "alternative_row": "mid_front",
+      "never_position": "back"
+    }
+  },
+
+  "skill_assignment_by_tier": {
+    "normal": {
+      "skill_count": 1,
+      "passive_count": 1,
+      "description": "Basic monsters have 1 active skill and 1 passive"
+    },
+    "elite": {
+      "skill_count": 2,
+      "passive_count": 2,
+      "description": "Elite monsters have 2 active skills (same as normal but higher ratios) and 2 passives"
+    },
+    "boss": {
+      "skill_count": 3,
+      "passive_count": 3,
+      "description": "Boss monsters have 3 active skills (2 normal + 1 signature spell) and 3 passives"
+    }
+  }
+}
