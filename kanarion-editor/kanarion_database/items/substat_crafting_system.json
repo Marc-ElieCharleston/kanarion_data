@@ -1,0 +1,462 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-01-30",
+    "description": "Substat manipulation system using dungeon materials"
+  },
+
+  "system_overview": {
+    "description": "Use dungeon materials to craft stones/crystals/essences that manipulate equipment substats",
+    "three_operations": [
+      "Unlock: Open a new substat slot on equipment",
+      "Select: Choose which substat goes in a slot",
+      "Reroll: Change the value of an existing substat"
+    ],
+    "material_rarity": "Dungeon materials are rare and valuable, can be sold for good gold"
+  },
+
+  "dungeon_materials": {
+    "_comment": "New materials dropped in dungeons",
+
+    "wolf_den_materials": [
+      {
+        "id": "mat_alpha_fang",
+        "name": "Alpha Fang",
+        "name_fr": "Croc d'Alpha",
+        "rarity": "rare",
+        "drop_source": "Alpha Wolf (boss)",
+        "drop_rate": 1.0,
+        "base_value": 50,
+        "description": "Fang of the Alpha Wolf, radiates pack energy"
+      },
+      {
+        "id": "mat_alpha_pelt",
+        "name": "Alpha Pelt",
+        "name_fr": "Fourrure d'Alpha",
+        "rarity": "rare",
+        "drop_source": "Alpha Wolf (boss)",
+        "drop_rate": 1.0,
+        "base_value": 75,
+        "description": "Pristine pelt from the pack leader"
+      },
+      {
+        "id": "mat_wolf_essence",
+        "name": "Wolf Essence",
+        "name_fr": "Essence de Loup",
+        "rarity": "uncommon",
+        "drop_source": "Wolf Den elites",
+        "drop_rate": 0.3,
+        "base_value": 15,
+        "description": "Condensed essence of wolf ferocity"
+      },
+      {
+        "id": "mat_pack_emblem",
+        "name": "Pack Emblem",
+        "name_fr": "Emblème de Meute",
+        "rarity": "uncommon",
+        "drop_source": "Wolf Packleader",
+        "drop_rate": 0.5,
+        "base_value": 20,
+        "description": "Symbol of pack unity and coordination"
+      }
+    ],
+
+    "goblin_stronghold_materials": [
+      {
+        "id": "mat_warlord_insignia",
+        "name": "Warlord Insignia",
+        "name_fr": "Insigne du Seigneur de Guerre",
+        "rarity": "rare",
+        "drop_source": "Goblin Warlord (boss)",
+        "drop_rate": 1.0,
+        "base_value": 80,
+        "description": "Badge of the Goblin Warlord's authority"
+      },
+      {
+        "id": "mat_goblin_banner",
+        "name": "Goblin War Banner",
+        "name_fr": "Bannière de Guerre Gobeline",
+        "rarity": "rare",
+        "drop_source": "Goblin Warlord (boss)",
+        "drop_rate": 1.0,
+        "base_value": 100,
+        "description": "Tattered banner that rallied goblin armies"
+      },
+      {
+        "id": "mat_war_trophy",
+        "name": "War Trophy",
+        "name_fr": "Trophée de Guerre",
+        "rarity": "uncommon",
+        "drop_source": "Goblin Stronghold elites",
+        "drop_rate": 0.35,
+        "base_value": 25,
+        "description": "Trophy taken from defeated enemies"
+      },
+      {
+        "id": "mat_shaman_totem",
+        "name": "Shaman Totem",
+        "name_fr": "Totem de Shaman",
+        "rarity": "uncommon",
+        "drop_source": "Goblin Shaman",
+        "drop_rate": 0.5,
+        "base_value": 30,
+        "description": "Mystical totem infused with healing magic"
+      }
+    ],
+
+    "cursed_ruins_materials": [
+      {
+        "id": "mat_champion_soul",
+        "name": "Champion's Soul",
+        "name_fr": "Âme du Champion",
+        "rarity": "epic",
+        "drop_source": "Cursed Champion (boss)",
+        "drop_rate": 1.0,
+        "base_value": 150,
+        "description": "Tortured soul of the fallen champion"
+      },
+      {
+        "id": "mat_corruption_core",
+        "name": "Corruption Core",
+        "name_fr": "Noyau de Corruption",
+        "rarity": "rare",
+        "drop_source": "Cursed Champion (boss)",
+        "drop_rate": 1.0,
+        "base_value": 120,
+        "description": "Crystallized corruption from the ruins"
+      },
+      {
+        "id": "mat_cursed_essence",
+        "name": "Cursed Essence",
+        "name_fr": "Essence Maudite",
+        "rarity": "uncommon",
+        "drop_source": "Cursed Ruins elites",
+        "drop_rate": 0.4,
+        "base_value": 35,
+        "description": "Essence of the cursed undead"
+      },
+      {
+        "id": "mat_necromancer_orb",
+        "name": "Necromancer Orb",
+        "name_fr": "Orbe de Nécromancien",
+        "rarity": "uncommon",
+        "drop_source": "Skeleton Necromancer",
+        "drop_rate": 0.5,
+        "base_value": 40,
+        "description": "Dark orb pulsing with necrotic energy"
+      }
+    ],
+
+    "common_materials": [
+      {
+        "id": "mat_mystic_water",
+        "name": "Mystic Water",
+        "name_fr": "Eau Mystique",
+        "rarity": "uncommon",
+        "drop_source": "Lizard Priest",
+        "drop_rate": 0.5,
+        "base_value": 18,
+        "description": "Blessed water with healing properties"
+      },
+      {
+        "id": "mat_healing_herb",
+        "name": "Healing Herb",
+        "name_fr": "Herbe Curative",
+        "rarity": "common",
+        "drop_source": "All healers",
+        "drop_rate": 0.6,
+        "base_value": 8,
+        "description": "Medicinal herb used in healing magic"
+      }
+    ]
+  },
+
+  "craftable_items": {
+    "_comment": "Three types of craftables for substat manipulation",
+
+    "unlock_stones": {
+      "description": "Open a new substat slot on equipment",
+      "usage": "Right-click stone, click equipment. Success rate varies by tier.",
+
+      "tiers": [
+        {
+          "id": "mat_unlock_stone_t1",
+          "name": "Minor Unlock Stone",
+          "name_fr": "Pierre de Déverrouillage Mineure",
+          "rarity": "uncommon",
+          "rank_range": [0, 5],
+          "success_rate": 60,
+          "craft_cost": 100,
+          "base_value": 200,
+          "description": "60% chance to unlock a substat slot on equipment +0 to +5"
+        },
+        {
+          "id": "mat_unlock_stone_t2",
+          "name": "Unlock Stone",
+          "name_fr": "Pierre de Déverrouillage",
+          "rarity": "rare",
+          "rank_range": [6, 12],
+          "success_rate": 75,
+          "craft_cost": 250,
+          "base_value": 500,
+          "description": "75% chance to unlock a substat slot on equipment +6 to +12"
+        },
+        {
+          "id": "mat_unlock_stone_t3",
+          "name": "Superior Unlock Stone",
+          "name_fr": "Pierre de Déverrouillage Supérieure",
+          "rarity": "epic",
+          "rank_range": [13, 20],
+          "success_rate": 90,
+          "craft_cost": 500,
+          "base_value": 1200,
+          "description": "90% chance to unlock a substat slot on equipment +13 to +20"
+        }
+      ]
+    },
+
+    "select_crystals": {
+      "description": "Choose which substat to apply to a slot",
+      "usage": "Right-click crystal, click equipment, select from available substats.",
+
+      "tiers": [
+        {
+          "id": "mat_select_crystal_t1",
+          "name": "Minor Select Crystal",
+          "name_fr": "Cristal de Sélection Mineur",
+          "rarity": "uncommon",
+          "options_count": 3,
+          "craft_cost": 150,
+          "base_value": 250,
+          "description": "Choose 1 substat from 3 random options"
+        },
+        {
+          "id": "mat_select_crystal_t2",
+          "name": "Select Crystal",
+          "name_fr": "Cristal de Sélection",
+          "rarity": "rare",
+          "options_count": 5,
+          "craft_cost": 350,
+          "base_value": 600,
+          "description": "Choose 1 substat from 5 random options"
+        },
+        {
+          "id": "mat_select_crystal_t3",
+          "name": "Perfect Select Crystal",
+          "name_fr": "Cristal de Sélection Parfait",
+          "rarity": "epic",
+          "options_count": "all",
+          "craft_cost": 700,
+          "base_value": 1500,
+          "description": "Choose any substat from the full pool"
+        }
+      ]
+    },
+
+    "reroll_essences": {
+      "description": "Reroll the value of an existing substat",
+      "usage": "Right-click essence, click substat on equipment. Rerolls value within range.",
+
+      "tiers": [
+        {
+          "id": "mat_reroll_essence_t1",
+          "name": "Minor Reroll Essence",
+          "name_fr": "Essence de Relance Mineure",
+          "rarity": "uncommon",
+          "value_range": [70, 100],
+          "craft_cost": 80,
+          "base_value": 150,
+          "description": "Reroll substat value to 70-100% of max"
+        },
+        {
+          "id": "mat_reroll_essence_t2",
+          "name": "Reroll Essence",
+          "name_fr": "Essence de Relance",
+          "rarity": "rare",
+          "value_range": [85, 115],
+          "craft_cost": 200,
+          "base_value": 400,
+          "description": "Reroll substat value to 85-115% of max"
+        },
+        {
+          "id": "mat_reroll_essence_t3",
+          "name": "Perfect Reroll Essence",
+          "name_fr": "Essence de Relance Parfaite",
+          "rarity": "epic",
+          "value_range": [100, 130],
+          "craft_cost": 400,
+          "base_value": 1000,
+          "description": "Reroll substat value to 100-130% of max"
+        }
+      ]
+    }
+  },
+
+  "craft_recipes": {
+    "_comment": "Recipes to craft unlock stones, select crystals, and reroll essences",
+
+    "unlock_stones": [
+      {
+        "result": "mat_unlock_stone_t1",
+        "quantity": 1,
+        "ingredients": [
+          {"id": "mat_alpha_fang", "quantity": 3},
+          {"id": "mat_wolf_essence", "quantity": 5},
+          {"id": "mat_goblin_token", "quantity": 10}
+        ],
+        "gold_cost": 100,
+        "unlock_level": 5
+      },
+      {
+        "result": "mat_unlock_stone_t2",
+        "quantity": 1,
+        "ingredients": [
+          {"id": "mat_warlord_insignia", "quantity": 2},
+          {"id": "mat_war_trophy", "quantity": 8},
+          {"id": "mat_shaman_totem", "quantity": 5}
+        ],
+        "gold_cost": 250,
+        "unlock_level": 10
+      },
+      {
+        "result": "mat_unlock_stone_t3",
+        "quantity": 1,
+        "ingredients": [
+          {"id": "mat_champion_soul", "quantity": 1},
+          {"id": "mat_corruption_core", "quantity": 3},
+          {"id": "mat_cursed_essence", "quantity": 10}
+        ],
+        "gold_cost": 500,
+        "unlock_level": 15
+      }
+    ],
+
+    "select_crystals": [
+      {
+        "result": "mat_select_crystal_t1",
+        "quantity": 1,
+        "ingredients": [
+          {"id": "mat_alpha_pelt", "quantity": 2},
+          {"id": "mat_pack_emblem", "quantity": 4},
+          {"id": "mat_healing_herb", "quantity": 8}
+        ],
+        "gold_cost": 150,
+        "unlock_level": 5
+      },
+      {
+        "result": "mat_select_crystal_t2",
+        "quantity": 1,
+        "ingredients": [
+          {"id": "mat_goblin_banner", "quantity": 1},
+          {"id": "mat_war_trophy", "quantity": 10},
+          {"id": "mat_mystic_water", "quantity": 6}
+        ],
+        "gold_cost": 350,
+        "unlock_level": 10
+      },
+      {
+        "result": "mat_select_crystal_t3",
+        "quantity": 1,
+        "ingredients": [
+          {"id": "mat_champion_soul", "quantity": 2},
+          {"id": "mat_necromancer_orb", "quantity": 5},
+          {"id": "mat_cursed_essence", "quantity": 15}
+        ],
+        "gold_cost": 700,
+        "unlock_level": 15
+      }
+    ],
+
+    "reroll_essences": [
+      {
+        "result": "mat_reroll_essence_t1",
+        "quantity": 1,
+        "ingredients": [
+          {"id": "mat_wolf_essence", "quantity": 4},
+          {"id": "mat_goblin_token", "quantity": 8}
+        ],
+        "gold_cost": 80,
+        "unlock_level": 5
+      },
+      {
+        "result": "mat_reroll_essence_t2",
+        "quantity": 1,
+        "ingredients": [
+          {"id": "mat_warlord_insignia", "quantity": 1},
+          {"id": "mat_shaman_totem", "quantity": 6},
+          {"id": "mat_war_trophy", "quantity": 8}
+        ],
+        "gold_cost": 200,
+        "unlock_level": 10
+      },
+      {
+        "result": "mat_reroll_essence_t3",
+        "quantity": 1,
+        "ingredients": [
+          {"id": "mat_corruption_core", "quantity": 2},
+          {"id": "mat_necromancer_orb", "quantity": 8},
+          {"id": "mat_cursed_essence", "quantity": 12}
+        ],
+        "gold_cost": 400,
+        "unlock_level": 15
+      }
+    ]
+  },
+
+  "equipment_ranking_system": {
+    "description": "Equipment has ranks from +0 to +20, substats unlock progressively",
+    "rank_progression": [
+      {
+        "rank_range": [0, 5],
+        "max_substats": 1,
+        "tier_required": "t1",
+        "difficulty": "easy"
+      },
+      {
+        "rank_range": [6, 12],
+        "max_substats": 2,
+        "tier_required": "t2",
+        "difficulty": "medium"
+      },
+      {
+        "rank_range": [13, 20],
+        "max_substats": 3,
+        "tier_required": "t3",
+        "difficulty": "hard"
+      }
+    ],
+    "note": "Higher rank equipment requires higher tier stones/crystals/essences"
+  },
+
+  "economy_notes": {
+    "material_value": "Dungeon materials are rare and valuable",
+    "trading": "Players can sell materials on market for gold",
+    "demand": "High demand for T3 materials from endgame players",
+    "gold_sink": "Crafting costs provide gold sink",
+    "progression": "Substat optimization is endgame progression system"
+  },
+
+  "usage_examples": {
+    "example_1": {
+      "scenario": "Player has +8 sword with 1 substat, wants to add 2nd substat",
+      "steps": [
+        "Craft mat_unlock_stone_t2 (requires Goblin Stronghold materials)",
+        "Right-click stone, click sword",
+        "75% chance to unlock 2nd substat slot",
+        "If success, craft mat_select_crystal_t2 to choose substat",
+        "Choose from 5 random substats (e.g., crit, atk%, armor_pen, crit_dmg, lifesteal)",
+        "If value is low, craft mat_reroll_essence_t2 to reroll value"
+      ]
+    },
+    "example_2": {
+      "scenario": "Player has +15 helmet with bad substats, wants to optimize",
+      "steps": [
+        "Craft mat_select_crystal_t3 (requires Cursed Ruins materials)",
+        "Right-click crystal, select substat to replace",
+        "Choose perfect substat from full pool (e.g., HP%)",
+        "Craft mat_reroll_essence_t3 to maximize value",
+        "Reroll until getting 115-130% of max value"
+      ]
+    }
+  }
+}
