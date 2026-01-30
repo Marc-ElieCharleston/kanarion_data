@@ -163,11 +163,11 @@
     },
 
     "defensive": {
-      "def": {
-        "name": "Defense",
-        "description": "Reduction FIXE appliquee apres armor/mr. Retire X points de degats (min 10% du coup). Efficace contre les petits coups rapides, moins contre les gros coups.",
+      "flat_dr": {
+        "name": "Reduction Degats Fixe",
+        "description": "Stat de base de reduction de degats fixe. Chaque point retire 1 point de degats recus (min 10% du coup). Stat allocable par le joueur.",
         "bonus_type": "both",
-        "formula": "damage_after_def = max(raw_damage × 0.1, raw_damage - def_final)"
+        "formula": "total_flat_dr = flat_dr + damage_reduction_flat (from buffs). damage_after = max(damage × 0.1, damage - total_flat_dr)"
       },
       "armor": {
         "name": "Armure",
@@ -182,12 +182,21 @@
         "formula": "magic_reduction% = mr / (mr + 100) × 100"
       },
       "damage_reduction": {
-        "name": "Reduction Degats",
-        "description": "% reduction de TOUS les degats recus (apres armor/mr).",
+        "name": "Reduction Degats %",
+        "description": "% reduction de TOUS les degats recus (apres armor/mr). BUFF UNIQUEMENT - pas une stat de base ni d'equipement.",
         "bonus_type": "flat",
         "default": 0,
         "cap": 75,
+        "source": "buff_only",
         "formula": "final_damage = damage_after_armor × (1 - damage_reduction/100)"
+      },
+      "damage_reduction_flat": {
+        "name": "Reduction Degats Fixe",
+        "description": "Reduction FIXE des degats recus (apres armor/mr). Retire X points de degats (min 10% du coup). Obtenu via skills, passifs ou equipement - pas une stat de base.",
+        "bonus_type": "flat",
+        "default": 0,
+        "source": "status_effect",
+        "formula": "damage_after_flat_dr = max(raw_damage × 0.1, raw_damage - damage_reduction_flat)"
       },
       "block_chance": {
         "name": "Chance Bloquer",
@@ -375,14 +384,14 @@
       },
       "debuff": {
         "name": "Debuff",
-        "examples": ["atk_down", "def_down", "poison", "burn", "bleed"],
+        "examples": ["atk_down", "flat_dr_down", "poison", "burn", "bleed"],
         "can_resist": true,
         "affected_by_tenacity": true,
         "stacking": "Voir stacking_system"
       },
       "buff": {
         "name": "Buff",
-        "examples": ["atk_up", "def_up", "haste", "regen", "shield"],
+        "examples": ["atk_up", "flat_dr_up", "haste", "regen", "shield"],
         "can_resist": false,
         "affected_by_buff_duration": true,
         "stacking": "Voir stacking_system"
@@ -397,7 +406,7 @@
     "max_total_bonus": 100,
     "formula": "final_value = base_value × (1 + stacks × 10/100)",
     "refresh_on_reapply": true,
-    "applies_to": ["atk_up", "atk_down", "def_up", "def_down", "mag_up", "mag_down", "speed_up", "speed_down", "poison", "burn", "bleed", "regen"]
+    "applies_to": ["atk_up", "atk_down", "flat_dr_up", "flat_dr_down", "mag_up", "mag_down", "speed_up", "speed_down", "poison", "burn", "bleed", "regen"]
   },
 
   "damage_pipeline": {
@@ -407,13 +416,15 @@
       "2. Crit check: if crit, damage × (crit_dmg/100)",
       "3. Apply damage_percent bonus",
       "4. Apply penetration (armor_pen ou magic_pen)",
-      "5. Apply target defense (armor ou magic_resist)",
-      "6. Apply target damage_reduction",
-      "7. Block/Parry check",
-      "8. Apply shield absorption",
-      "9. Apply to HP",
-      "10. Trigger lifesteal/spell_vamp",
-      "11. Trigger reflect/thorns"
+      "5. Apply armor (physique) ou magic_resist (magique) - % reduction",
+      "6. Apply damage_taken_percent (marked/vulnerable)",
+      "7. Apply damage_reduction_flat (min 10% du coup) - via skills/passifs/equip",
+      "8. Block/Parry check",
+      "9. Apply reflect (reduit degats + renvoie)",
+      "10. Apply shield/barrier absorption",
+      "11. Apply to HP",
+      "12. Trigger lifesteal/spell_vamp",
+      "13. Trigger thorns"
     ]
   }
 }

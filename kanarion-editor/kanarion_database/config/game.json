@@ -53,9 +53,58 @@
     "max_level": 60,
     "max_party_size": 9,
     "max_raid_size": 19,
-    "combat_slots_per_team": 10,
     "stat_points_per_level": 5,
     "skill_points_per_level": 1
+  },
+
+  "combat_grids": {
+    "_comment": "Grilles de combat dynamiques - le format dépend du type de combat",
+    "default": "3x4",
+    "playtest_mode": true,
+    "playtest_grids": ["3x4", "3x5", "4x4"],
+    "available": {
+      "3x4": {
+        "rows": 3,
+        "cols": 4,
+        "total_slots": 12,
+        "description": "Balanced grid (3 rows × 4 cols) - MVP default"
+      },
+      "3x5": {
+        "rows": 3,
+        "cols": 5,
+        "total_slots": 15,
+        "description": "Wide grid (3 rows × 5 cols)"
+      },
+      "4x4": {
+        "rows": 4,
+        "cols": 4,
+        "total_slots": 16,
+        "description": "Square grid for special encounters"
+      },
+      "2x5": {
+        "rows": 2,
+        "cols": 5,
+        "total_slots": 10,
+        "description": "Compact grid for tutorial/small encounters"
+      }
+    },
+    "layout": {
+      "_comment": "Isometric projection - Canaan Online style. Enemy uses col_mirrored = (cols-1)-col",
+      "_formula": "anchor = team_center - ((cols-1)/2)*axis_col - ((rows-1)/2)*axis_row; pos = anchor + col*axis_col + row*axis_row",
+      "axis_col": {"x": 56, "y": 37},
+      "axis_row": {"x": 52, "y": -46},
+      "team_center_player": {"x": -120, "y": 140},
+      "team_center_enemy": {"x": 130, "y": -80}
+    },
+    "usage": {
+      "open_world": "3x4",
+      "dungeon": "4x4",
+      "pvp_arena": "4x4",
+      "boss_fight": "4x4",
+      "tutorial": "2x5",
+      "playtest": "random"
+    },
+    "notes": "playtest_mode=true: combat sélectionne aléatoirement parmi playtest_grids"
   },
 
   "chat_channels": {
@@ -89,6 +138,30 @@
     "party_enters_together": true,
     "follow_distance": 40,
     "max_members_display": 6
+  },
+
+  "afk": {
+    "warning_minutes": 30,
+    "final_warning_minutes": 45,
+    "disconnect_minutes": 60,
+    "check_interval_seconds": 60
+  },
+
+  "chat": {
+    "max_message_length": 200,
+    "max_history_size": 100,
+    "spam_cooldown_seconds": 2.0
+  },
+
+  "spawner": {
+    "_comment": "Configuration du spawner de monstres",
+    "star_roll_weights": [20.0, 20.0, 20.0, 15.0, 15.0, 10.0],
+    "star_roll_weights_note": "Weights pour 0★ à 5★ (plus de high-star pour encourager le group play)",
+    "respawn_time_min": 90.0,
+    "respawn_time_max": 180.0,
+    "max_active_monsters": 40,
+    "lazy_load_distance": 600.0,
+    "lazy_unload_distance": 800.0
   },
 
   "files_reference": {

@@ -38,24 +38,102 @@
   },
 
   "star_system": {
-    "_comment": "Pack de monstres (nombre d'etoiles = nombre dans le groupe)",
-    "stars": {
-      "0": {"count": 1, "hp_mult": 1.0, "atk_mult": 1.0, "xp_mult": 1.0},
-      "1": {"count": 2, "hp_mult": 0.9, "atk_mult": 0.95, "xp_mult": 1.8},
-      "2": {"count": 3, "hp_mult": 0.85, "atk_mult": 0.9, "xp_mult": 2.5},
-      "3": {"count": 4, "hp_mult": 0.8, "atk_mult": 0.85, "xp_mult": 3.2},
-      "4": {"count": 5, "hp_mult": 0.75, "atk_mult": 0.8, "xp_mult": 4.0},
-      "5": {"count": 6, "hp_mult": 0.7, "atk_mult": 0.75, "xp_mult": 5.0}
-    },
-    "notes": "Plus d'etoiles = plus de monstres mais chacun plus faible. XP total augmente."
+    "_comment": "High risk high reward - Plus d'etoiles = plus de mobs + stats buffees + elites/boss possibles. Encourage le grouping.",
+    "roll_weights": [25.0, 25.0, 20.0, 15.0, 10.0, 5.0],
+    "roll_weights_comment": "0★=25%, 1★=25%, 2★=20%, 3★=15%, 4★=10%, 5★=5%",
+    "max_elites_per_pack": 2,
+    "max_bosses_per_pack": 1,
+    "packs": {
+      "0": {
+        "name": "Normal",
+        "color": "white",
+        "description": "solo/duo",
+        "mob_count_min": 1,
+        "mob_count_max": 2,
+        "elite_chance": 0.0,
+        "elite_count": 0,
+        "boss_chance": 0.0,
+        "stats_mult": 1.0,
+        "xp_mult": 1.0,
+        "loot_mult": 1.0
+      },
+      "1": {
+        "name": "Pack",
+        "color": "white+",
+        "description": "petit groupe",
+        "mob_count_min": 2,
+        "mob_count_max": 3,
+        "elite_chance": 0.05,
+        "elite_count": 1,
+        "boss_chance": 0.0,
+        "stats_mult": 1.05,
+        "xp_mult": 1.5,
+        "loot_mult": 1.2
+      },
+      "2": {
+        "name": "Veteran",
+        "color": "yellow",
+        "description": "groupe moyen",
+        "mob_count_min": 3,
+        "mob_count_max": 5,
+        "elite_chance": 0.10,
+        "elite_count": 1,
+        "boss_chance": 0.0,
+        "stats_mult": 1.10,
+        "xp_mult": 2.0,
+        "loot_mult": 1.5
+      },
+      "3": {
+        "name": "Dangerous",
+        "color": "orange",
+        "description": "groupe costaud",
+        "mob_count_min": 4,
+        "mob_count_max": 6,
+        "elite_chance": 0.20,
+        "elite_count": 1,
+        "boss_chance": 0.0,
+        "stats_mult": 1.20,
+        "xp_mult": 3.0,
+        "loot_mult": 2.0
+      },
+      "4": {
+        "name": "Mythic",
+        "color": "purple",
+        "description": "gros groupe, chance de boss",
+        "mob_count_min": 6,
+        "mob_count_max": 8,
+        "elite_chance": 0.30,
+        "elite_count_min": 1,
+        "elite_count_max": 2,
+        "boss_chance": 0.10,
+        "stats_mult": 1.30,
+        "xp_mult": 5.0,
+        "loot_mult": 3.0
+      },
+      "5": {
+        "name": "Legendary",
+        "color": "red",
+        "description": "event social, boss garanti, ne respawn pas",
+        "mob_count_min": 8,
+        "mob_count_max": 10,
+        "elite_chance": 1.0,
+        "elite_count": 2,
+        "boss_chance": 1.0,
+        "stats_mult": 1.50,
+        "xp_mult": 10.0,
+        "loot_mult": 5.0
+      }
+    }
   },
 
   "elite_variant": {
     "_comment": "Version elite d'un monstre - rare spawn, much stronger",
     "name_prefix": "Elite",
-    "stats_mult": {"hp": 3.0, "atk": 2.0, "def": 1.5},
-    "xp_mult": 5.0,
-    "gold_mult": 3.0,
+    "stats_mult": {"hp": 1.8, "atk": 1.5, "def": 1.3},
+    "size_mult": 1.15,
+    "xp_mult": 2.0,
+    "gold_mult": 2.0,
+    "loot_mult": 1.7,
     "guaranteed_rare_drop": true,
     "spawn_chance": 0.02,
     "special_abilities": ["enrage_at_30_percent", "cleave_attack"]
@@ -65,16 +143,20 @@
     "_comment": "Boss version - unique spawn, end of dungeon or world boss",
     "types": {
       "dungeon_boss": {
-        "stats_mult": {"hp": 10.0, "atk": 3.0, "def": 2.0},
-        "xp_mult": 20.0,
-        "gold_mult": 10.0,
+        "stats_mult": {"hp": 5.0, "atk": 2.5, "def": 2.0},
+        "size_mult": 1.35,
+        "xp_mult": 8.0,
+        "gold_mult": 5.0,
+        "loot_mult": 3.0,
         "phases": 3,
         "special_loot_table": true
       },
       "world_boss": {
-        "stats_mult": {"hp": 50.0, "atk": 4.0, "def": 2.5},
-        "xp_mult": 50.0,
-        "gold_mult": 25.0,
+        "stats_mult": {"hp": 20.0, "atk": 4.0, "def": 2.5},
+        "size_mult": 1.5,
+        "xp_mult": 15.0,
+        "gold_mult": 10.0,
+        "loot_mult": 5.0,
         "phases": 4,
         "respawn_time_minutes": {"min": 15, "max": 60},
         "contribution_loot": true
