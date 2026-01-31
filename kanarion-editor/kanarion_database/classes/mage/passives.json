@@ -1,117 +1,123 @@
 {
   "_meta": {
-    "version": "4.0",
-    "last_updated": "2026-01-23",
+    "version": "5.0",
+    "last_updated": "2026-01-31",
     "class": "mage",
-    "description": "Tous les passifs du Mage (base + subclasses)"
+    "description": "Tous les passifs du Mage (10 class-specific passives avec max 20 niveaux)"
   },
 
-  "class_passive": {
-    "id": "p_mage_arcane_charges",
-    "name": "Arcane Charges",
-    "type": "innate",
-    "description_fr": "Passif de classe. Lancer des sorts génère des Charges Arcaniques (max 10). Certains sorts consomment ces charges pour des effets amplifiés.",
-    "description_en": "Class passive. Casting spells generates Arcane Charges (max 10). Some spells consume charges for amplified effects.",
-    "max_charges": 10,
-    "charge_duration": 15,
-    "charge_generators": ["skill_mage_magic_bolt", "skill_mage_arcane_pulse"],
-    "charge_consumers": ["skill_mage_arcane_cataclysm"]
-  },
-
-  "base_passives": [
+  "class_passives": [
     {
-      "id": "p_mage_arcane_affinity",
-      "name": "Arcane Affinity",
-      "max_rank": 5,
-      "description": "Augmente les degats magiques de 2% par rang.",
-      "effects": [{"stat": "mag", "op": "add_percent", "value_per_rank": 2}]
+      "id": "p_mage_arcane_mastery",
+      "name_fr": "Maîtrise Arcanique",
+      "name_en": "Arcane Mastery",
+      "max_level": 20,
+      "description_fr": "Augmente le MAG de 1.5% et les MP max de 1% par niveau.",
+      "description_en": "Increases MAG by 1.5% and max MP by 1% per level.",
+      "effects": [
+        {"stat": "mag", "op": "add_percent", "value_per_level": 1.5},
+        {"stat": "mp", "op": "add_percent", "value_per_level": 1}
+      ]
     },
     {
-      "id": "p_mage_mana_threads",
-      "name": "Mana Threads",
-      "max_rank": 5,
-      "description": "+3% mana max et +2% mana regen par rang.",
+      "id": "p_mage_spell_weaving",
+      "name_fr": "Tissage de Sorts",
+      "name_en": "Spell Weaving",
+      "max_level": 20,
+      "description_fr": "Augmente la vitesse d'incantation de 1% par niveau.",
+      "description_en": "Increases cast speed by 1% per level.",
       "effects": [
-        {"stat": "mp_max", "op": "add_percent", "value_per_rank": 3},
-        {"stat": "mp_regen", "op": "add_percent", "value_per_rank": 2}
+        {"stat": "cast_speed", "op": "add_percent", "value_per_level": 1}
+      ]
+    },
+    {
+      "id": "p_mage_magical_conduit",
+      "name_fr": "Conduit Magique",
+      "name_en": "Magical Conduit",
+      "max_level": 20,
+      "description_fr": "Augmente la régénération de MP de 1 par seconde par niveau.",
+      "description_en": "Increases MP regeneration by 1 per second per level.",
+      "effects": [
+        {"stat": "mp_regen", "op": "add_flat", "value_per_level": 1}
+      ]
+    },
+    {
+      "id": "p_mage_elemental_focus",
+      "name_fr": "Focus Élémentaire",
+      "name_en": "Elemental Focus",
+      "max_level": 20,
+      "description_fr": "Augmente la pénétration magique de 0.75% par niveau.",
+      "description_en": "Increases magic penetration by 0.75% per level.",
+      "effects": [
+        {"stat": "magic_pen", "op": "add_percent", "value_per_level": 0.75}
+      ]
+    },
+    {
+      "id": "p_mage_mystic_barrier",
+      "name_fr": "Barrière Mystique",
+      "name_en": "Mystic Barrier",
+      "max_level": 20,
+      "description_fr": "Augmente la résistance magique de 1% et la puissance des boucliers de 0.5% par niveau.",
+      "description_en": "Increases magic resist by 1% and shield power by 0.5% per level.",
+      "effects": [
+        {"stat": "magic_resist", "op": "add_percent", "value_per_level": 1},
+        {"stat": "shield_power", "op": "add_percent", "value_per_level": 0.5}
+      ]
+    },
+    {
+      "id": "p_mage_mana_efficiency",
+      "name_fr": "Efficacité Mana",
+      "name_en": "Mana Efficiency",
+      "max_level": 20,
+      "description_fr": "Augmente la réduction de cooldown de 0.5% par niveau.",
+      "description_en": "Increases cooldown reduction by 0.5% per level.",
+      "effects": [
+        {"stat": "cooldown_reduction", "op": "add_percent", "value_per_level": 0.5}
+      ]
+    },
+    {
+      "id": "p_mage_spell_echo",
+      "name_fr": "Écho Magique",
+      "name_en": "Spell Echo",
+      "max_level": 20,
+      "description_fr": "Augmente la chance de double frappe de 0.25% par niveau.",
+      "description_en": "Increases double hit chance by 0.25% per level.",
+      "effects": [
+        {"stat": "double_hit_chance", "op": "add_percent", "value_per_level": 0.25}
+      ]
+    },
+    {
+      "id": "p_mage_arcane_knowledge",
+      "name_fr": "Savoir Arcanique",
+      "name_en": "Arcane Knowledge",
+      "max_level": 20,
+      "description_fr": "Augmente les dégâts infligés de 0.75% par niveau.",
+      "description_en": "Increases damage dealt by 0.75% per level.",
+      "effects": [
+        {"stat": "damage_percent", "op": "add_percent", "value_per_level": 0.75}
+      ]
+    },
+    {
+      "id": "p_mage_concentration",
+      "name_fr": "Concentration",
+      "name_en": "Concentration",
+      "max_level": 20,
+      "description_fr": "Augmente la chance d'effet de 0.5% par niveau.",
+      "description_en": "Increases effect chance by 0.5% per level.",
+      "effects": [
+        {"stat": "effect_chance", "op": "add_percent", "value_per_level": 0.5}
+      ]
+    },
+    {
+      "id": "p_mage_spell_vamp",
+      "name_fr": "Vampirisme Magique",
+      "name_en": "Spell Vampirism",
+      "max_level": 20,
+      "description_fr": "Augmente le vampirisme magique de 0.5% par niveau.",
+      "description_en": "Increases spell vamp by 0.5% per level.",
+      "effects": [
+        {"stat": "spell_vamp", "op": "add_percent", "value_per_level": 0.5}
       ]
     }
-  ],
-
-  "subclass_passives": {
-    "elementalist": [
-      {
-        "id": "p_elem_elemental_mastery",
-        "name": "Elemental Mastery",
-        "max_rank": 5,
-        "description": "+2% degats sur skills elementaires par rang.",
-        "effects": [{"tag": "elemental", "op": "damage_add_percent", "value_per_rank": 2}]
-      },
-      {
-        "id": "p_elem_terrain_control",
-        "name": "Terrain Control",
-        "max_rank": 5,
-        "description": "+4% duree slow/burn par rang.",
-        "effects": [{"tag": "elemental", "op": "status_duration_add_percent", "value_per_rank": 4}]
-      }
-    ],
-    "occultist": [
-      {
-        "id": "p_occ_curse_mastery",
-        "name": "Curse Mastery",
-        "max_rank": 5,
-        "description": "+3% duree des debuffs par rang.",
-        "effects": [{"tag": "debuff", "op": "duration_add_percent", "value_per_rank": 3}]
-      },
-      {
-        "id": "p_occ_dark_pact",
-        "name": "Dark Pact",
-        "max_rank": 5,
-        "description": "+2% vol de vie sur degats magiques par rang.",
-        "effects": [{"stat": "lifesteal_magic", "op": "add_percent", "value_per_rank": 2}]
-      }
-    ],
-    "cardmaster": [
-      {
-        "id": "p_card_lucky_streak",
-        "name": "Lucky Streak",
-        "max_rank": 5,
-        "description": "+2% luck par rang (affecte crit, drops, skills RNG).",
-        "effects": [{"stat": "luck", "op": "add_percent", "value_per_rank": 2}]
-      },
-      {
-        "id": "p_card_counting",
-        "name": "Card Counting",
-        "max_rank": 5,
-        "description": "-2% cout MP par rang.",
-        "effects": [{"stat": "mp_cost", "op": "reduce_percent", "value_per_rank": 2}]
-      }
-    ],
-    "spellblade": [
-      {
-        "id": "p_sb_enchanted_blade",
-        "name": "Enchanted Blade Mastery",
-        "max_rank": 5,
-        "description_fr": "Améliore le buff Enchanted Blade: +2% AS, +3% MAG on autos, +2% magic pen par rang.",
-        "description_en": "Improves Enchanted Blade buff: +2% AS, +3% MAG on autos, +2% magic pen per rank.",
-        "effects": [
-          {"skill": "enchanted_blade", "stat": "buff_attack_speed", "op": "add", "value_per_rank": 2},
-          {"skill": "enchanted_blade", "stat": "buff_magic_on_autos", "op": "add", "value_per_rank": 3},
-          {"skill": "enchanted_blade", "stat": "buff_magic_pen", "op": "add", "value_per_rank": 2}
-        ],
-        "_comment": "At max rank: +30% AS (base 20), +40% MAG on autos (base 25), +25% magic pen (base 15)"
-      },
-      {
-        "id": "p_sb_arcane_momentum",
-        "name": "Arcane Momentum",
-        "max_rank": 5,
-        "description_fr": "Accumule des stacks en combat. +3% dégâts par stack (max 10). +0.5% bonus par rang.",
-        "description_en": "Builds stacks in combat. +3% damage per stack (max 10). +0.5% bonus per rank.",
-        "effects": [
-          {"mechanic": "arcane_momentum", "stat": "damage_bonus_per_stack", "op": "add", "value_per_rank": 0.5}
-        ],
-        "_comment": "At max rank: +5.5% damage per stack instead of +3% = +55% at 10 stacks"
-      }
-    ]
-  }
+  ]
 }

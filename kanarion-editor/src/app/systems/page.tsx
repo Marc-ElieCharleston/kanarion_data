@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useLocale } from '@/i18n/provider';
 import { TabsGroup } from '@/components/TabsGroup';
 import { LoadingState } from '@/components/LoadingState';
 import { Card } from '@/components/ui/card';
@@ -589,6 +590,7 @@ function EnhancementTab() {
 
 export default function SystemsPage() {
   const [activeSystem, setActiveSystem] = useState('encounter-stars');
+  const { locale } = useLocale();
   const enabledTabs = TABS.filter(tab => !tab.disabled);
 
   return (
@@ -596,8 +598,8 @@ export default function SystemsPage() {
       {/* Secondary Sidebar */}
       <aside className="w-64 border-r border-zinc-800 overflow-y-auto bg-zinc-900/50">
         <div className="p-4 border-b border-zinc-800">
-          <h2 className="text-lg font-semibold">Systèmes</h2>
-          <p className="text-xs text-zinc-500">Game Systems</p>
+          <h2 className="text-lg font-semibold">{locale === 'en' ? 'Systems' : 'Systèmes'}</h2>
+          <p className="text-xs text-zinc-500">{locale === 'en' ? 'Game Systems' : 'Systèmes de jeu'}</p>
         </div>
         <nav className="p-2">
           {enabledTabs.map((tab) => (
@@ -612,8 +614,8 @@ export default function SystemsPage() {
             >
               <span className="text-xl">{tab.icon}</span>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium truncate">{tab.name_fr}</div>
-                <div className="text-xs text-zinc-500 truncate">{tab.name_en}</div>
+                <div className="text-sm font-medium truncate">{locale === 'en' ? tab.name_en : tab.name_fr}</div>
+                <div className="text-xs text-zinc-500 truncate">{locale === 'en' ? tab.name_fr : tab.name_en}</div>
               </div>
             </button>
           ))}

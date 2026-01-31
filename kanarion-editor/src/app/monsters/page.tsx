@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useLocale } from '@/i18n/provider';
 import { SearchBar } from '@/components/SearchBar';
 import { ButtonGroup } from '@/components/ButtonGroup';
 import { LoadingState } from '@/components/LoadingState';
@@ -95,6 +96,7 @@ export default function MonstersPage() {
   const [filterDanger, setFilterDanger] = useState<string>('all');
   const [filterNPCType, setFilterNPCType] = useState<string>('service');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const { locale } = useLocale();
 
   useEffect(() => {
     fetch('/api/monsters')
@@ -109,7 +111,7 @@ export default function MonstersPage() {
     return <LoadingState />;
   }
 
-  if (!data) {
+  if (!data || !data.monsters?.monsters) {
     return (
       <div className="p-8">
         <div className="text-red-400">Failed to load monsters data</div>
@@ -190,9 +192,9 @@ export default function MonstersPage() {
         ${isMobileSidebarOpen ? 'fixed inset-y-0 left-0 z-40' : 'hidden'}
       `}>
         <div className="p-4 border-b border-zinc-800">
-          <h2 className="text-lg font-semibold">Bestiary</h2>
+          <h2 className="text-lg font-semibold">{locale === 'en' ? 'Bestiary' : 'Bestiaire'}</h2>
           <p className="text-xs text-zinc-500 mt-1">
-            Monsters & NPCs • v{monstersData._meta.version}
+            {locale === 'en' ? 'Monsters & NPCs' : 'Monstres & NPCs'} • v{monstersData._meta.version}
           </p>
         </div>
 
@@ -233,7 +235,7 @@ export default function MonstersPage() {
           <SearchBar
             value={searchTerm}
             onChange={setSearchTerm}
-            placeholder="Search monsters..."
+            placeholder={locale === 'en' ? 'Search...' : 'Rechercher...'}
           />
         </div>
 
@@ -241,7 +243,7 @@ export default function MonstersPage() {
         {activeTab === 'monsters' && (
           <>
             <div className="p-4 border-b border-zinc-800">
-              <label className="text-xs text-zinc-500 uppercase tracking-wider mb-2 block">Danger Level</label>
+              <label className="text-xs text-zinc-500 uppercase tracking-wider mb-2 block">{locale === 'en' ? 'Danger Level' : 'Niveau de Danger'}</label>
               <ButtonGroup
                 options={[
                   { value: 'all', label: 'All' },
@@ -257,7 +259,7 @@ export default function MonstersPage() {
             </div>
 
             <nav className="p-2">
-              <div className="text-xs text-zinc-500 uppercase tracking-wider px-2 py-1 mb-1">Category</div>
+              <div className="text-xs text-zinc-500 uppercase tracking-wider px-2 py-1 mb-1">{locale === 'en' ? 'Category' : 'Catégorie'}</div>
 
               <button
                 onClick={() => {
@@ -272,7 +274,7 @@ export default function MonstersPage() {
               >
                 <span className="flex items-center gap-2">
                   <span>📋</span>
-                  <span>All Categories</span>
+                  <span>{locale === 'en' ? 'All Categories' : 'Toutes'}</span>
                 </span>
                 <span className="text-xs text-zinc-500">({categoryCounts.all})</span>
               </button>
@@ -308,7 +310,7 @@ export default function MonstersPage() {
         {activeTab === 'npcs' && (
           <div className="p-4">
             <p className="text-sm text-zinc-400">
-              {allNPCs.length} NPCs disponibles
+              {allNPCs.length} {locale === 'en' ? 'NPCs available' : 'NPCs disponibles'}
             </p>
             <p className="text-xs text-zinc-500 mt-2">
               Services: shops, crafting, quests, teleport, etc.
@@ -322,12 +324,12 @@ export default function MonstersPage() {
         <div className="p-4 md:p-6 lg:p-8">
           <div className="mb-4">
             <h1 className="text-2xl font-bold mb-2">
-              {activeTab === 'monsters' ? 'Bestiaire' : 'NPCs'}
+              {activeTab === 'monsters' ? (locale === 'en' ? 'Bestiary' : 'Bestiaire') : 'NPCs'}
             </h1>
             <p className="text-sm text-zinc-500">
               {activeTab === 'monsters'
-                ? `${filteredMonsters.length} / ${monstersData.monsters.length} monstres affichés`
-                : `${filteredNPCs.length} / ${allNPCs.length} NPCs affichés`
+                ? `${filteredMonsters.length} / ${monstersData.monsters.length} ${locale === 'en' ? 'monsters shown' : 'monstres affichés'}`
+                : `${filteredNPCs.length} / ${allNPCs.length} ${locale === 'en' ? 'NPCs shown' : 'NPCs affichés'}`
               }
             </p>
           </div>
@@ -339,11 +341,11 @@ export default function MonstersPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-48">Monstre</TableHead>
-                  <TableHead className="w-32">Category</TableHead>
-                  <TableHead className="w-24">Level</TableHead>
-                  <TableHead className="w-24">Danger</TableHead>
-                  <TableHead className="w-32">AI Role</TableHead>
+                  <TableHead className="w-48">{locale === 'en' ? 'Monster' : 'Monstre'}</TableHead>
+                  <TableHead className="w-32">{locale === 'en' ? 'Category' : 'Catégorie'}</TableHead>
+                  <TableHead className="w-24">{locale === 'en' ? 'Level' : 'Niveau'}</TableHead>
+                  <TableHead className="w-24">{locale === 'en' ? 'Danger' : 'Danger'}</TableHead>
+                  <TableHead className="w-32">{locale === 'en' ? 'AI Role' : 'Rôle IA'}</TableHead>
                   <TableHead>Stats</TableHead>
                   <TableHead>Tags</TableHead>
                 </TableRow>
@@ -404,7 +406,7 @@ export default function MonstersPage() {
 
             {filteredMonsters.length === 0 && (
               <div className="text-center text-zinc-500 py-8">
-                Aucun monstre ne correspond aux filtres.
+                {locale === 'en' ? 'No monsters match the filters.' : 'Aucun monstre ne correspond aux filtres.'}
               </div>
             )}
             </>
@@ -437,11 +439,11 @@ export default function MonstersPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap gap-1">
-                            {npc.services.map(service => (
+                            {npc.services?.map(service => (
                               <Badge key={service} variant="secondary" className="text-xs">
                                 {service.replace(/_/g, ' ')}
                               </Badge>
-                            ))}
+                            )) || <span className="text-zinc-500">—</span>}
                           </div>
                         </TableCell>
                         <TableCell>
@@ -455,7 +457,7 @@ export default function MonstersPage() {
 
               {filteredNPCs.length === 0 && (
                 <div className="text-center text-zinc-500 py-8">
-                  Aucun NPC ne correspond à la recherche.
+                  {locale === 'en' ? 'No NPCs match the search.' : 'Aucun NPC ne correspond à la recherche.'}
                 </div>
               )}
             </>

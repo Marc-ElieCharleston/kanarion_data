@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { nameKey: 'dashboard', href: '/', icon: '🏠' },
   { nameKey: 'classes', href: '/classes', icon: '⚔️' },
   { nameKey: 'skills', href: '/skills', icon: '✨' },
+  { nameKey: 'passives', href: '/passives', icon: '🌟' },
   { nameKey: 'statsReference', href: '/stats', icon: '📊' },
   { nameKey: 'statusEffects', href: '/effects', icon: '💫' },
   { nameKey: 'patterns', href: '/patterns', icon: '🎯' },

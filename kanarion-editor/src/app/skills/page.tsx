@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useLocale } from '@/i18n/provider';
 import SkillCard, {
   Skill,
   TierScaling,
@@ -87,6 +88,7 @@ export default function SkillsPage() {
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState<string>('warrior-base');
   const [skillLevel, setSkillLevel] = useState(1);
+  const { locale } = useLocale();
 
   useEffect(() => {
     fetch('/api/skills')
@@ -177,7 +179,7 @@ export default function SkillsPage() {
       {/* Secondary Sidebar */}
       <aside className="w-64 border-r border-zinc-800 overflow-y-auto bg-zinc-900/50">
         <div className="p-4 border-b border-zinc-800">
-          <h2 className="text-lg font-semibold">Skills System</h2>
+          <h2 className="text-lg font-semibold">{locale === 'en' ? 'Skills System' : 'Système de Skills'}</h2>
           <p className="text-xs text-zinc-500 mt-1">
             {data.system.skill_points.total_points_available} points | v{data.system._meta.version}
           </p>
@@ -231,14 +233,16 @@ export default function SkillsPage() {
           {/* Skill Level Slider */}
           <Card className="mb-6 p-4">
             <RangeSlider
-              label="Skill Level"
+              label={locale === 'en' ? 'Skill Level' : 'Niveau du Skill'}
               value={skillLevel}
               onChange={setSkillLevel}
               min={1}
               max={10}
             />
             <div className="mt-2 text-xs text-zinc-600">
-              Base, %, Mana, et durees d&apos;effets scalent avec le niveau du skill
+              {locale === 'en'
+                ? 'Base, %, Mana, and effect durations scale with skill level'
+                : 'Base, %, Mana, et durées d\'effets scalent avec le niveau du skill'}
             </div>
           </Card>
 
@@ -251,7 +255,7 @@ export default function SkillsPage() {
 
           {/* Scaling Reference */}
           <Card className="mt-8 p-4">
-            <h3 className="font-semibold mb-3">Scaling par Tier (par niveau)</h3>
+            <h3 className="font-semibold mb-3">{locale === 'en' ? 'Scaling by Tier (per level)' : 'Scaling par Tier (par niveau)'}</h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 text-sm">
               {Object.entries(scalingByTier)
                 .filter(([key]) => !key.startsWith('_'))

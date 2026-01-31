@@ -1,95 +1,122 @@
 {
   "_meta": {
-    "version": "3.1",
-    "last_updated": "2026-01-12",
+    "version": "4.0",
+    "last_updated": "2026-01-31",
     "class": "archer",
-    "description": "Tous les passifs de l'Archer (base + subclasses)"
+    "description": "Tous les passifs de l'Archer (10 class-specific passives avec max 20 niveaux)"
   },
 
-  "base_passives": [
+  "class_passives": [
     {
       "id": "p_arch_eagle_eye",
-      "name": "Eagle Eye",
-      "max_rank": 5,
-      "description": "Augmente la precision (hit) de 2% par rang.",
-      "effects": [{"stat": "hit", "op": "add_percent", "value_per_rank": 2}]
+      "name_fr": "Œil d'Aigle",
+      "name_en": "Eagle Eye",
+      "max_level": 20,
+      "description_fr": "Augmente la précision de 1% et la chance de critique de 0.5% par niveau.",
+      "description_en": "Increases hit by 1% and critical chance by 0.5% per level.",
+      "effects": [
+        {"stat": "hit", "op": "add_percent", "value_per_level": 1},
+        {"stat": "crit", "op": "add_percent", "value_per_level": 0.5}
+      ]
     },
     {
-      "id": "p_arch_steady_aim",
-      "name": "Steady Aim",
-      "max_rank": 5,
-      "description": "+2% chance critique et +3% degats critiques par rang.",
+      "id": "p_arch_quick_draw",
+      "name_fr": "Tir Rapide",
+      "name_en": "Quick Draw",
+      "max_level": 20,
+      "description_fr": "Augmente la vitesse d'attaque de 1% par niveau.",
+      "description_en": "Increases attack speed by 1% per level.",
       "effects": [
-        {"stat": "crit", "op": "add_percent", "value_per_rank": 2},
-        {"stat": "crit_dmg", "op": "add_flat", "value_per_rank": 3}
+        {"stat": "attack_speed", "op": "add_percent", "value_per_level": 1}
+      ]
+    },
+    {
+      "id": "p_arch_deadly_aim",
+      "name_fr": "Visée Mortelle",
+      "name_en": "Deadly Aim",
+      "max_level": 20,
+      "description_fr": "Augmente les dégâts critiques de 1.5% par niveau.",
+      "description_en": "Increases critical damage by 1.5% per level.",
+      "effects": [
+        {"stat": "crit_dmg", "op": "add_percent", "value_per_level": 1.5}
+      ]
+    },
+    {
+      "id": "p_arch_weakpoint_exploit",
+      "name_fr": "Exploitation des Faiblesses",
+      "name_en": "Weakpoint Exploit",
+      "max_level": 20,
+      "description_fr": "Augmente la pénétration d'armure de 0.75% par niveau.",
+      "description_en": "Increases armor penetration by 0.75% per level.",
+      "effects": [
+        {"stat": "armor_pen", "op": "add_percent", "value_per_level": 0.75}
+      ]
+    },
+    {
+      "id": "p_arch_hunters_focus",
+      "name_fr": "Concentration du Chasseur",
+      "name_en": "Hunter's Focus",
+      "max_level": 20,
+      "description_fr": "Augmente les dégâts infligés de 0.75% par niveau.",
+      "description_en": "Increases damage dealt by 0.75% per level.",
+      "effects": [
+        {"stat": "damage_percent", "op": "add_percent", "value_per_level": 0.75}
+      ]
+    },
+    {
+      "id": "p_arch_evasive_maneuvers",
+      "name_fr": "Manœuvres Évasives",
+      "name_en": "Evasive Maneuvers",
+      "max_level": 20,
+      "description_fr": "Augmente l'esquive de 1% par niveau.",
+      "description_en": "Increases flee by 1% per level.",
+      "effects": [
+        {"stat": "flee", "op": "add_percent", "value_per_level": 1}
+      ]
+    },
+    {
+      "id": "p_arch_snipers_patience",
+      "name_fr": "Patience du Sniper",
+      "name_en": "Sniper's Patience",
+      "max_level": 20,
+      "description_fr": "Augmente la chance de critique de 0.5% par niveau.",
+      "description_en": "Increases critical chance by 0.5% per level.",
+      "effects": [
+        {"stat": "crit", "op": "add_percent", "value_per_level": 0.5}
+      ]
+    },
+    {
+      "id": "p_arch_marksmanship",
+      "name_fr": "Maîtrise du Tir",
+      "name_en": "Marksmanship",
+      "max_level": 20,
+      "description_fr": "Augmente l'ATK de 1% par niveau.",
+      "description_en": "Increases ATK by 1% per level.",
+      "effects": [
+        {"stat": "atk", "op": "add_percent", "value_per_level": 1}
+      ]
+    },
+    {
+      "id": "p_arch_fleet_footed",
+      "name_fr": "Pieds Agiles",
+      "name_en": "Fleet Footed",
+      "max_level": 20,
+      "description_fr": "Augmente la chance de parade de 0.5% par niveau.",
+      "description_en": "Increases parry chance by 0.5% per level.",
+      "effects": [
+        {"stat": "parry_chance", "op": "add_percent", "value_per_level": 0.5}
+      ]
+    },
+    {
+      "id": "p_arch_relentless_pursuit",
+      "name_fr": "Poursuite Acharnée",
+      "name_en": "Relentless Pursuit",
+      "max_level": 20,
+      "description_fr": "Augmente la chance de double frappe de 0.25% par niveau.",
+      "description_en": "Increases double hit chance by 0.25% per level.",
+      "effects": [
+        {"stat": "double_hit_chance", "op": "add_percent", "value_per_level": 0.25}
       ]
     }
-  ],
-
-  "subclass_passives": {
-    "ranger": [
-      {
-        "id": "p_rang_marksman",
-        "name": "Marksman",
-        "max_rank": 5,
-        "description": "+3% chance critique sur skills a distance par rang.",
-        "effects": [{"tag": "ranged", "op": "crit_add_percent", "value_per_rank": 3}]
-      },
-      {
-        "id": "p_rang_hunter",
-        "name": "Hunter's Instinct",
-        "max_rank": 5,
-        "description": "+4% degats contre les monstres par rang.",
-        "effects": [{"tag": "vs_monster", "op": "damage_add_percent", "value_per_rank": 4}]
-      }
-    ],
-    "falconer": [
-      {
-        "id": "p_falc_bond",
-        "name": "Falcon Bond",
-        "max_rank": 5,
-        "description": "+3% degats des skills faucon par rang.",
-        "effects": [{"tag": "falcon", "op": "damage_add_percent", "value_per_rank": 3}]
-      },
-      {
-        "id": "p_falc_aerial",
-        "name": "Aerial Strike",
-        "max_rank": 5,
-        "description": "+5% penetration d'armure sur skills faucon par rang.",
-        "effects": [{"tag": "falcon", "op": "armor_pen_add_percent", "value_per_rank": 5}]
-      }
-    ],
-    "ballmaster": [
-      {
-        "id": "p_ball_geometry",
-        "name": "Geometry Master",
-        "max_rank": 5,
-        "description": "+3% degats des skills bounce/ricochet par rang.",
-        "effects": [{"tag": "bounce", "op": "damage_add_percent", "value_per_rank": 3}]
-      },
-      {
-        "id": "p_ball_momentum",
-        "name": "Momentum",
-        "max_rank": 5,
-        "description": "+2% degats par cible touchee (meme skill) par rang.",
-        "effects": [{"stat": "chain_damage_bonus", "op": "add_percent", "value_per_rank": 2}]
-      }
-    ],
-    "gunslinger": [
-      {
-        "id": "p_gun_quickdraw",
-        "name": "Quick Draw",
-        "max_rank": 5,
-        "description": "+2% vitesse d'attaque par rang.",
-        "effects": [{"stat": "attack_speed", "op": "add_percent", "value_per_rank": 2}]
-      },
-      {
-        "id": "p_gun_steady_shot",
-        "name": "Steady Shot",
-        "max_rank": 5,
-        "description": "+3% chance critique apres 2s sans bouger par rang.",
-        "effects": [{"stat": "crit", "op": "add_percent", "value_per_rank": 3, "condition": "stationary_2s"}]
-      }
-    ]
-  }
+  ]
 }

@@ -1,119 +1,127 @@
 {
   "_meta": {
-    "version": "4.0",
-    "last_updated": "2026-01-26",
+    "version": "5.0",
+    "last_updated": "2026-01-31",
     "class": "rogue",
-    "description": "Tous les passifs du Rogue (base + subclasses). Le Rogue exploite les faiblesses des ennemis (debuffs)."
+    "description": "Tous les passifs du Rogue (10 class-specific passives avec max 20 niveaux)"
   },
 
-  "class_passive": {
-    "id": "p_rogue_exploit_weakness",
-    "name": "Exploit Weakness",
-    "type": "innate",
-    "description_fr": "Passif de classe. Le Rogue inflige +4% de dégâts par debuff présent sur la cible (max 5 debuffs = +20%). Lacerate bénéficie d'un bonus supplémentaire.",
-    "description_en": "Class passive. Rogue deals +4% damage per debuff on the target (max 5 debuffs = +20%). Lacerate gains additional bonus.",
-    "damage_bonus_per_debuff": 4,
-    "max_debuffs_counted": 5,
-    "max_bonus": 20,
-    "synergy_skills": ["skill_rogue_lacerate"]
-  },
-
-  "base_passives": [
+  "class_passives": [
     {
-      "id": "p_rog_shadow_step",
-      "name": "Shadow Step",
-      "max_rank": 5,
-      "description": "Augmente l'esquive (flee) de 2% par rang.",
-      "effects": [{"stat": "flee", "op": "add_percent", "value_per_rank": 2}]
+      "id": "p_rogue_shadow_strike",
+      "name_fr": "Frappe de l'Ombre",
+      "name_en": "Shadow Strike",
+      "max_level": 20,
+      "description_fr": "Augmente la chance de critique de 0.75% et les dégâts critiques de 1% par niveau.",
+      "description_en": "Increases critical chance by 0.75% and critical damage by 1% per level.",
+      "effects": [
+        {"stat": "crit", "op": "add_percent", "value_per_level": 0.75},
+        {"stat": "crit_dmg", "op": "add_percent", "value_per_level": 1}
+      ]
     },
     {
-      "id": "p_rog_cunning",
-      "name": "Cunning",
-      "max_rank": 5,
-      "description": "+2% chance critique et +3% degats critiques par rang.",
+      "id": "p_rogue_nimble_fingers",
+      "name_fr": "Doigts Agiles",
+      "name_en": "Nimble Fingers",
+      "max_level": 20,
+      "description_fr": "Augmente la vitesse d'attaque de 0.75% et l'esquive de 0.5% par niveau.",
+      "description_en": "Increases attack speed by 0.75% and flee by 0.5% per level.",
       "effects": [
-        {"stat": "crit", "op": "add_percent", "value_per_rank": 2},
-        {"stat": "crit_dmg", "op": "add_flat", "value_per_rank": 3}
-      ],
-      "_balance_note": "NERF: was +5% crit_dmg, now +3% (same as Archer)"
+        {"stat": "attack_speed", "op": "add_percent", "value_per_level": 0.75},
+        {"stat": "flee", "op": "add_percent", "value_per_level": 0.5}
+      ]
+    },
+    {
+      "id": "p_rogue_assassins_precision",
+      "name_fr": "Précision de l'Assassin",
+      "name_en": "Assassin's Precision",
+      "max_level": 20,
+      "description_fr": "Augmente l'ATK de 1% et la pénétration d'armure de 0.5% par niveau.",
+      "description_en": "Increases ATK by 1% and armor penetration by 0.5% per level.",
+      "effects": [
+        {"stat": "atk", "op": "add_percent", "value_per_level": 1},
+        {"stat": "armor_pen", "op": "add_percent", "value_per_level": 0.5}
+      ]
+    },
+    {
+      "id": "p_rogue_deadly_reflexes",
+      "name_fr": "Réflexes Mortels",
+      "name_en": "Deadly Reflexes",
+      "max_level": 20,
+      "description_fr": "Augmente la chance de parade de 0.5% et l'esquive de 0.75% par niveau.",
+      "description_en": "Increases parry chance by 0.5% and flee by 0.75% per level.",
+      "effects": [
+        {"stat": "parry_chance", "op": "add_percent", "value_per_level": 0.5},
+        {"stat": "flee", "op": "add_percent", "value_per_level": 0.75}
+      ]
+    },
+    {
+      "id": "p_rogue_exploit_weakness",
+      "name_fr": "Exploitation des Vulnérabilités",
+      "name_en": "Exploit Weakness",
+      "max_level": 20,
+      "description_fr": "Augmente les dégâts infligés de 0.75% par niveau.",
+      "description_en": "Increases damage dealt by 0.75% per level.",
+      "effects": [
+        {"stat": "damage_percent", "op": "add_percent", "value_per_level": 0.75}
+      ]
+    },
+    {
+      "id": "p_rogue_shadow_dance",
+      "name_fr": "Danse des Ombres",
+      "name_en": "Shadow Dance",
+      "max_level": 20,
+      "description_fr": "Augmente la chance de double frappe de 0.3% par niveau.",
+      "description_en": "Increases double hit chance by 0.3% per level.",
+      "effects": [
+        {"stat": "double_hit_chance", "op": "add_percent", "value_per_level": 0.3}
+      ]
+    },
+    {
+      "id": "p_rogue_poison_master",
+      "name_fr": "Maître des Poisons",
+      "name_en": "Poison Master",
+      "max_level": 20,
+      "description_fr": "Augmente la chance d'effet de 0.5% et la durée des debuffs de 0.75% par niveau.",
+      "description_en": "Increases effect chance by 0.5% and debuff duration by 0.75% per level.",
+      "effects": [
+        {"stat": "effect_chance", "op": "add_percent", "value_per_level": 0.5},
+        {"stat": "debuff_duration", "op": "add_percent", "value_per_level": 0.75}
+      ]
+    },
+    {
+      "id": "p_rogue_ambush_mastery",
+      "name_fr": "Maîtrise de l'Embuscade",
+      "name_en": "Ambush Mastery",
+      "max_level": 20,
+      "description_fr": "Augmente les dégâts critiques de 1.5% par niveau.",
+      "description_en": "Increases critical damage by 1.5% per level.",
+      "effects": [
+        {"stat": "crit_dmg", "op": "add_percent", "value_per_level": 1.5}
+      ]
+    },
+    {
+      "id": "p_rogue_evasion_training",
+      "name_fr": "Entraînement à l'Évasion",
+      "name_en": "Evasion Training",
+      "max_level": 20,
+      "description_fr": "Augmente l'esquive de 1% et la résistance aux effets de 0.5% par niveau.",
+      "description_en": "Increases flee by 1% and effect resist by 0.5% per level.",
+      "effects": [
+        {"stat": "flee", "op": "add_percent", "value_per_level": 1},
+        {"stat": "effect_resist", "op": "add_percent", "value_per_level": 0.5}
+      ]
+    },
+    {
+      "id": "p_rogue_life_drain",
+      "name_fr": "Drain de Vie",
+      "name_en": "Life Drain",
+      "max_level": 20,
+      "description_fr": "Augmente le vol de vie de 0.5% par niveau.",
+      "description_en": "Increases lifesteal by 0.5% per level.",
+      "effects": [
+        {"stat": "lifesteal", "op": "add_percent", "value_per_level": 0.5}
+      ]
     }
-  ],
-
-  "subclass_passives": {
-    "shadowblade": [
-      {
-        "id": "p_sb_assassin",
-        "name": "Assassin's Mark",
-        "max_rank": 5,
-        "description": "+4% degats contre cibles < 30% HP par rang.",
-        "effects": [{"stat": "damage", "op": "add_percent", "value_per_rank": 4, "condition": "target_hp_below_30"}],
-        "_balance_note": "NERF: was +5%, now +4%"
-      },
-      {
-        "id": "p_sb_shadow_mastery",
-        "name": "Shadow Mastery",
-        "max_rank": 5,
-        "description": "+6% degats depuis stealth par rang.",
-        "effects": [{"stat": "damage", "op": "add_percent", "value_per_rank": 6, "condition": "from_stealth"}],
-        "_balance_note": "NERF: was +10%, now +6%"
-      }
-    ],
-    "trickster": [
-      {
-        "id": "p_trick_misdirect",
-        "name": "Misdirection",
-        "max_rank": 5,
-        "description": "+3% esquive et -4% generation de menace par rang.",
-        "effects": [
-          {"stat": "flee", "op": "add_percent", "value_per_rank": 3},
-          {"stat": "threat_mult", "op": "reduce_percent", "value_per_rank": 4}
-        ]
-      },
-      {
-        "id": "p_trick_chaos",
-        "name": "Chaos Agent",
-        "max_rank": 5,
-        "description": "+3% chance d'effet des debuffs par rang.",
-        "effects": [{"tag": "debuff", "op": "effect_chance_add_percent", "value_per_rank": 3}]
-      }
-    ],
-    "corsair": [
-      {
-        "id": "p_cors_dirty",
-        "name": "Dirty Fighting",
-        "max_rank": 5,
-        "description": "+3% chance de stun/blind sur melee par rang.",
-        "effects": [{"tag": "melee", "op": "cc_chance_add_percent", "value_per_rank": 3}]
-      },
-      {
-        "id": "p_cors_sea_dog",
-        "name": "Sea Dog",
-        "max_rank": 5,
-        "description": "+2% degats et +2% armure quand un buff est actif par rang.",
-        "effects": [
-          {"stat": "damage", "op": "add_percent", "value_per_rank": 2, "condition": "has_buff"},
-          {"stat": "armor", "op": "add_percent", "value_per_rank": 2, "condition": "has_buff"}
-        ]
-      }
-    ],
-    "duelist": [
-      {
-        "id": "p_duel_riposte",
-        "name": "Riposte Master",
-        "max_rank": 5,
-        "description": "+4% chance de contre-attaque par rang.",
-        "effects": [{"stat": "counter_chance", "op": "add_flat", "value_per_rank": 4}]
-      },
-      {
-        "id": "p_duel_blade_dance",
-        "name": "Blade Dance",
-        "max_rank": 5,
-        "description": "+2% esquive et +2% crit apres une esquive par rang.",
-        "effects": [
-          {"stat": "flee", "op": "add_percent", "value_per_rank": 2},
-          {"stat": "crit", "op": "add_percent", "value_per_rank": 2, "condition": "after_dodge"}
-        ]
-      }
-    ]
-  }
+  ]
 }

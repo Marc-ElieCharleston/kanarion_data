@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useLocale } from '@/i18n/provider';
 import { LoadingState } from '@/components/LoadingState';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -387,6 +388,7 @@ function EnhancementStonesSection({ data }: { data: EnhancementStonesData }) {
 export default function LootPage() {
   const [data, setData] = useState<LootTablesData | null>(null);
   const [loading, setLoading] = useState(true);
+  const { locale } = useLocale();
 
   useEffect(() => {
     fetch('/api/loot')
@@ -413,7 +415,7 @@ export default function LootPage() {
     <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
       <div className="mb-4 md:mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2">Tables de Loot / Loot Tables</h1>
+        <h1 className="text-2xl md:text-3xl font-bold mb-2">{locale === 'en' ? 'Loot Tables' : 'Tables de Loot'}</h1>
         <p className="text-zinc-500 text-sm">{data._meta.description}</p>
         <p className="text-zinc-600 text-xs mt-1">
           v{data._meta.version} • {data._meta.last_updated}
@@ -422,7 +424,7 @@ export default function LootPage() {
 
       {/* Formula Overview */}
       <div className="mb-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-        <h2 className="text-sm font-medium mb-2">Formule Globale / Global Formula</h2>
+        <h2 className="text-sm font-medium mb-2">{locale === 'en' ? 'Global Formula' : 'Formule Globale'}</h2>
         <code className="text-xs text-emerald-400 bg-zinc-800 px-2 py-1 rounded">
           {data._meta.formula_overview}
         </code>

@@ -1,98 +1,123 @@
 {
   "_meta": {
-    "version": "3.1",
-    "last_updated": "2026-01-12",
+    "version": "4.0",
+    "last_updated": "2026-01-31",
     "class": "healer",
-    "description": "Tous les passifs du Healer (base + subclasses)"
+    "description": "Tous les passifs du Healer (10 class-specific passives avec max 20 niveaux)"
   },
 
-  "base_passives": [
+  "class_passives": [
     {
       "id": "p_heal_divine_touch",
-      "name": "Divine Touch",
-      "max_rank": 5,
-      "description": "Augmente heal_power de 3% par rang.",
-      "effects": [{"stat": "heal_power", "op": "add_percent", "value_per_rank": 3}]
+      "name_fr": "Toucher Divin",
+      "name_en": "Divine Touch",
+      "max_level": 20,
+      "description_fr": "Augmente la puissance de soin de 1.5% par niveau.",
+      "description_en": "Increases heal power by 1.5% per level.",
+      "effects": [
+        {"stat": "heal_power", "op": "add_percent", "value_per_level": 1.5}
+      ]
     },
     {
-      "id": "p_heal_inner_peace",
-      "name": "Inner Peace",
-      "max_rank": 5,
-      "description": "+3% mana regen et +2% mana max par rang.",
+      "id": "p_heal_sacred_protection",
+      "name_fr": "Protection Sacrée",
+      "name_en": "Sacred Protection",
+      "max_level": 20,
+      "description_fr": "Augmente la puissance des boucliers de 1% et les soins reçus de 0.5% par niveau.",
+      "description_en": "Increases shield power by 1% and healing received by 0.5% per level.",
       "effects": [
-        {"stat": "mp_regen", "op": "add_percent", "value_per_rank": 3},
-        {"stat": "mp_max", "op": "add_percent", "value_per_rank": 2}
+        {"stat": "shield_power", "op": "add_percent", "value_per_level": 1},
+        {"stat": "healing_received", "op": "add_percent", "value_per_level": 0.5}
+      ]
+    },
+    {
+      "id": "p_heal_blessing_of_life",
+      "name_fr": "Bénédiction de Vie",
+      "name_en": "Blessing of Life",
+      "max_level": 20,
+      "description_fr": "Augmente la régénération de HP de 1.5 par seconde par niveau.",
+      "description_en": "Increases HP regeneration by 1.5 per second per level.",
+      "effects": [
+        {"stat": "hp_regen", "op": "add_flat", "value_per_level": 1.5}
+      ]
+    },
+    {
+      "id": "p_heal_mana_font",
+      "name_fr": "Source de Mana",
+      "name_en": "Mana Font",
+      "max_level": 20,
+      "description_fr": "Augmente la régénération de MP de 1 par seconde par niveau.",
+      "description_en": "Increases MP regeneration by 1 per second per level.",
+      "effects": [
+        {"stat": "mp_regen", "op": "add_flat", "value_per_level": 1}
+      ]
+    },
+    {
+      "id": "p_heal_holy_radiance",
+      "name_fr": "Radiance Sacrée",
+      "name_en": "Holy Radiance",
+      "max_level": 20,
+      "description_fr": "Augmente la durée des buffs de 1% par niveau.",
+      "description_en": "Increases buff duration by 1% per level.",
+      "effects": [
+        {"stat": "buff_duration", "op": "add_percent", "value_per_level": 1}
+      ]
+    },
+    {
+      "id": "p_heal_cleansing_light",
+      "name_fr": "Lumière Purificatrice",
+      "name_en": "Cleansing Light",
+      "max_level": 20,
+      "description_fr": "Réduit la durée des debuffs de 1% par niveau.",
+      "description_en": "Reduces debuff duration by 1% per level.",
+      "effects": [
+        {"stat": "debuff_duration", "op": "reduce_percent", "value_per_level": 1}
+      ]
+    },
+    {
+      "id": "p_heal_mercy",
+      "name_fr": "Miséricorde",
+      "name_en": "Mercy",
+      "max_level": 20,
+      "description_fr": "Augmente la réduction de cooldown de 0.5% par niveau.",
+      "description_en": "Increases cooldown reduction by 0.5% per level.",
+      "effects": [
+        {"stat": "cooldown_reduction", "op": "add_percent", "value_per_level": 0.5}
+      ]
+    },
+    {
+      "id": "p_heal_guardian_angel",
+      "name_fr": "Ange Gardien",
+      "name_en": "Guardian Angel",
+      "max_level": 20,
+      "description_fr": "Augmente la ténacité de 1% par niveau.",
+      "description_en": "Increases tenacity by 1% per level.",
+      "effects": [
+        {"stat": "tenacity", "op": "add_percent", "value_per_level": 1}
+      ]
+    },
+    {
+      "id": "p_heal_sanctified_ground",
+      "name_fr": "Terre Sanctifiée",
+      "name_en": "Sanctified Ground",
+      "max_level": 20,
+      "description_fr": "Augmente la résistance aux effets de 0.75% par niveau.",
+      "description_en": "Increases effect resist by 0.75% per level.",
+      "effects": [
+        {"stat": "effect_resist", "op": "add_percent", "value_per_level": 0.75}
+      ]
+    },
+    {
+      "id": "p_heal_life_bond",
+      "name_fr": "Lien de Vie",
+      "name_en": "Life Bond",
+      "max_level": 20,
+      "description_fr": "Augmente les HP max de 1% et les soins reçus de 0.5% par niveau.",
+      "description_en": "Increases max HP by 1% and healing received by 0.5% per level.",
+      "effects": [
+        {"stat": "hp", "op": "add_percent", "value_per_level": 1},
+        {"stat": "healing_received", "op": "add_percent", "value_per_level": 0.5}
       ]
     }
-  ],
-
-  "subclass_passives": {
-    "lifewarden": [
-      {
-        "id": "p_lw_nature_bond",
-        "name": "Nature Bond",
-        "max_rank": 5,
-        "description": "+4% efficacite HoT par rang.",
-        "effects": [{"tag": "hot", "op": "heal_add_percent", "value_per_rank": 4}]
-      },
-      {
-        "id": "p_lw_rejuvenating",
-        "name": "Rejuvenating Spirit",
-        "max_rank": 5,
-        "description": "+2% HP regen pour toute l'equipe par rang.",
-        "effects": [{"stat": "hp_regen", "op": "add_percent", "value_per_rank": 2, "target": "team"}]
-      }
-    ],
-    "lightbringer": [
-      {
-        "id": "p_lb_holy_fervor",
-        "name": "Holy Fervor",
-        "max_rank": 5,
-        "description": "+2% degats sacres et +2% heal_power par rang.",
-        "effects": [
-          {"tag": "holy", "op": "damage_add_percent", "value_per_rank": 2},
-          {"stat": "heal_power", "op": "add_percent", "value_per_rank": 2}
-        ]
-      },
-      {
-        "id": "p_lb_purifying_light",
-        "name": "Purifying Light",
-        "max_rank": 5,
-        "description": "+10% chance de cleanse un debuff supplementaire par rang.",
-        "effects": [{"stat": "cleanse_bonus_chance", "op": "add_flat", "value_per_rank": 10}]
-      }
-    ],
-    "chantre": [
-      {
-        "id": "p_chantre_last_rites",
-        "name": "Last Rites",
-        "max_rank": 5,
-        "description": "-8% cooldown resurrection par rang.",
-        "effects": [{"tag": "resurrect", "op": "cooldown_reduce_percent", "value_per_rank": 8}]
-      },
-      {
-        "id": "p_chantre_soul_anchor",
-        "name": "Soul Anchor",
-        "max_rank": 5,
-        "description": "+4% HP restaures lors d'une resurrection par rang.",
-        "effects": [{"tag": "resurrect", "op": "heal_add_percent", "value_per_rank": 4}]
-      }
-    ],
-    "oracle": [
-      {
-        "id": "p_ora_foresight",
-        "name": "Gift of Foresight",
-        "max_rank": 5,
-        "description": "+3% esquive pour toute l'equipe par rang.",
-        "effects": [{"stat": "flee", "op": "add_percent", "value_per_rank": 3, "target": "team"}]
-      },
-      {
-        "id": "p_ora_fate_weaver",
-        "name": "Fate Weaver",
-        "max_rank": 5,
-        "description": "+2% resistance aux effets pour l'equipe par rang.",
-        "effects": [{"stat": "effect_resist", "op": "add_percent", "value_per_rank": 2, "target": "team"}]
-      }
-    ]
-  }
+  ]
 }

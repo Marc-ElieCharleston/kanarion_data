@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useLocale } from '@/i18n/provider';
 import { SearchBar } from '@/components/SearchBar';
 import { LoadingState } from '@/components/LoadingState';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -69,7 +70,7 @@ export default function StatsReferencePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [lang, setLang] = useState<'fr' | 'en'>('fr');
+  const { locale } = useLocale();
 
   useEffect(() => {
     fetch('/api/stats')
@@ -170,39 +171,12 @@ export default function StatsReferencePage() {
           </p>
         </div>
 
-        {/* Language Toggle */}
-        <div className="p-4 border-b border-zinc-800">
-          <label className="text-xs text-zinc-500 uppercase tracking-wider mb-2 block">Language</label>
-          <div className="flex gap-1">
-            <button
-              onClick={() => setLang('fr')}
-              className={`flex-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                lang === 'fr'
-                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
-                  : 'text-zinc-400 hover:bg-zinc-800/50'
-              }`}
-            >
-              FR
-            </button>
-            <button
-              onClick={() => setLang('en')}
-              className={`flex-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                lang === 'en'
-                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
-                  : 'text-zinc-400 hover:bg-zinc-800/50'
-              }`}
-            >
-              EN
-            </button>
-          </div>
-        </div>
-
         {/* Search in sidebar */}
         <div className="p-4 border-b border-zinc-800">
           <SearchBar
             value={searchTerm}
             onChange={setSearchTerm}
-            placeholder={lang === 'fr' ? 'Rechercher...' : 'Search stats...'}
+            placeholder={locale === 'fr' ? 'Rechercher...' : 'Search stats...'}
           />
         </div>
 
@@ -281,7 +255,7 @@ export default function StatsReferencePage() {
                         {/* Nom */}
                         <TableCell>
                           <div className={`font-medium ${CATEGORY_COLORS[category]?.split(' ')[0]}`}>
-                            {lang === 'en' && stat.name_en ? stat.name_en : stat.name}
+                            {locale === 'en' && stat.name_en ? stat.name_en : stat.name}
                           </div>
                           <code className="text-[10px] text-zinc-600">{key}</code>
                         </TableCell>
@@ -310,7 +284,7 @@ export default function StatsReferencePage() {
 
                         {/* Description */}
                         <TableCell className="text-sm text-zinc-300">
-                          {lang === 'en' && stat.description_en ? stat.description_en : stat.description}
+                          {locale === 'en' && stat.description_en ? stat.description_en : stat.description}
                           {stat.cap !== undefined && (
                             <Badge variant="destructive" className="ml-2">Cap: {stat.cap}</Badge>
                           )}

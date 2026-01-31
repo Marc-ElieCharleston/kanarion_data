@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useLocale } from '@/i18n/provider';
 import { TabsGroup } from '@/components/TabsGroup';
 import { LoadingState } from '@/components/LoadingState';
 import { Card } from '@/components/ui/card';
@@ -219,6 +220,7 @@ export default function EquipmentStatsPage() {
   const [scalingData, setScalingData] = useState<EquipmentScalingData | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'scaling' | 'armor' | 'accessory' | 'soul'>('scaling');
+  const { locale } = useLocale();
 
   useEffect(() => {
     Promise.all([
@@ -251,15 +253,15 @@ export default function EquipmentStatsPage() {
     <div className="p-4 md:p-6 lg:p-8">
       {/* Header */}
       <div className="mb-4 md:mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2">Systeme de Stats Equipement / Equipment Stats System</h1>
+        <h1 className="text-2xl md:text-3xl font-bold mb-2">{locale === 'en' ? 'Equipment Stats System' : 'Système de Stats Équipement'}</h1>
         <p className="text-zinc-500 text-sm">
-          Tiers, rarete, main stats, substats et Essences d&apos;Ame / Tiers, rarity, main stats, substats and Soul Essences
+          {locale === 'en' ? 'Tiers, rarity, main stats, substats and Soul Essences' : 'Tiers, rareté, main stats, substats et Essences d\'Âme'}
         </p>
       </div>
 
       {/* Rarity Tiers */}
       <Card className="mb-6 p-4">
-        <h2 className="text-lg font-semibold mb-3">Rarete et Substats</h2>
+        <h2 className="text-lg font-semibold mb-3">{locale === 'en' ? 'Rarity & Substats' : 'Rareté et Substats'}</h2>
         <div className="flex flex-wrap gap-3">
           {Object.entries(data.rarity_tiers).map(([rarity, tierData]) => (
             <RarityBadge key={rarity} rarity={rarity} data={tierData} />
