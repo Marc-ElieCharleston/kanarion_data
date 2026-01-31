@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import { LocaleProvider } from "@/i18n/provider";
+import { ViewModeProvider } from "@/contexts/ViewModeContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,12 +31,14 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-zinc-950 text-white`}
       >
         <LocaleProvider>
-          <div className="flex">
-            <Sidebar />
-            <main className="flex-1 min-h-screen pt-16 lg:pt-0">
-              {children}
-            </main>
-          </div>
+          <ViewModeProvider>
+            <div className="flex">
+              <Sidebar />
+              <main className="flex-1 min-h-screen pt-16 lg:pt-0">
+                {children}
+              </main>
+            </div>
+          </ViewModeProvider>
         </LocaleProvider>
       </body>
     </html>

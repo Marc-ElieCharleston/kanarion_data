@@ -3,6 +3,8 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { Locale, defaultLocale } from './config';
+// Import default messages synchronously to avoid null state
+import defaultMessages from '../../messages/fr.json';
 
 type LocaleContextType = {
   locale: Locale;
@@ -25,7 +27,8 @@ async function loadMessages(locale: Locale) {
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(defaultLocale);
-  const [messages, setMessages] = useState<Record<string, unknown> | null>(null);
+  // Initialize with default messages to avoid null state
+  const [messages, setMessages] = useState<Record<string, unknown>>(defaultMessages);
 
   useEffect(() => {
     // Load saved locale from localStorage
@@ -44,10 +47,6 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale);
   };
-
-  if (!messages) {
-    return null; // Loading state
-  }
 
   return (
     <LocaleContext.Provider value={{ locale, setLocale }}>
