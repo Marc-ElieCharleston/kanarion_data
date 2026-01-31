@@ -109,6 +109,8 @@ interface EncounterStarsData {
 const TABS = [
   { id: 'encounter-stars', name_fr: 'Systeme d\'Etoiles', name_en: 'Star System', icon: '⭐' },
   { id: 'enhancement', name_fr: 'Amelioration', name_en: 'Enhancement', icon: '💎' },
+  { id: 'koro', name_fr: 'Système Koro', name_en: 'Koro System', icon: '🃏', disabled: true },
+  { id: 'crafting', name_fr: 'Crafting Substats', name_en: 'Substat Crafting', icon: '⚗️', disabled: true },
   { id: 'economy', name_fr: 'Economie', name_en: 'Economy', icon: '💰', disabled: true },
   { id: 'pvp', name_fr: 'PvP', name_en: 'PvP', icon: '⚔️', disabled: true },
   { id: 'guilds', name_fr: 'Guildes', name_en: 'Guilds', icon: '🏰', disabled: true },

@@ -32,15 +32,39 @@ interface Monster {
   drops: string[];
 }
 
-interface MonstersData {
+interface NPC {
+  id: string;
+  name: string;
+  services: string[];
+  location: string;
+  lore: string;
+}
+
+interface NPCsData {
   _meta: {
     version: string;
     last_updated: string;
     description: string;
   };
-  tags_catalog: string[];
-  ai_roles_catalog: Record<string, string>;
-  monsters: Monster[];
+  types: string[];
+  priorities: string[];
+  service_npcs: NPC[];
+  quest_npcs?: NPC[];
+  class_masters?: NPC[];
+}
+
+interface MonstersData {
+  monsters: {
+    _meta: {
+      version: string;
+      last_updated: string;
+      description: string;
+    };
+    tags_catalog: string[];
+    ai_roles_catalog: Record<string, string>;
+    monsters: Monster[];
+  };
+  npcs: NPCsData;
 }
 
 const CATEGORY_CONFIG: Record<string, { name: string; icon: string; color: string }> = {
@@ -65,9 +89,11 @@ const AI_ROLE_ICONS: Record<string, string> = {
 export default function MonstersPage() {
   const [data, setData] = useState<MonstersData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'monsters' | 'npcs'>('monsters');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [filterDanger, setFilterDanger] = useState<string>('all');
+  const [filterNPCType, setFilterNPCType] = useState<string>('service');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -91,8 +117,11 @@ export default function MonstersPage() {
     );
   }
 
+  const monstersData = data.monsters;
+  const npcsData = data.npcs;
+
   // Filter monsters
-  const filteredMonsters = data.monsters.filter(monster => {
+  const filteredMonsters = monstersData.monsters.filter(monster => {
     const matchesSearch = searchTerm === '' ||
       monster.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       monster.id.toLowerCase().includes(searchTerm.toLowerCase());
@@ -101,18 +130,32 @@ export default function MonstersPage() {
     return matchesSearch && matchesCategory && matchesDanger;
   });
 
+  // Filter NPCs
+  const allNPCs = [
+    ...(npcsData.service_npcs || []),
+    ...(npcsData.quest_npcs || []),
+    ...(npcsData.class_masters || []),
+  ];
+  const filteredNPCs = allNPCs.filter(npc => {
+    const matchesSearch = searchTerm === '' ||
+      npc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      npc.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      npc.lore.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
+  });
+
   // Category counts
-  const categories = [...new Set(data.monsters.map(m => m.category))];
-  const categoryCounts: Record<string, number> = { all: data.monsters.length };
+  const categories = [...new Set(monstersData.monsters.map(m => m.category))];
+  const categoryCounts: Record<string, number> = { all: monstersData.monsters.length };
   categories.forEach(cat => {
-    categoryCounts[cat] = data.monsters.filter(m => m.category === cat).length;
+    categoryCounts[cat] = monstersData.monsters.filter(m => m.category === cat).length;
   });
 
   // Danger level counts
-  const dangerLevels = [...new Set(data.monsters.map(m => m.danger_level))].sort((a, b) => a - b);
-  const dangerCounts: Record<string, number> = { all: data.monsters.length };
+  const dangerLevels = [...new Set(monstersData.monsters.map(m => m.danger_level))].sort((a, b) => a - b);
+  const dangerCounts: Record<string, number> = { all: monstersData.monsters.length };
   dangerLevels.forEach(level => {
-    dangerCounts[level.toString()] = data.monsters.filter(m => m.danger_level === level).length;
+    dangerCounts[level.toString()] = monstersData.monsters.filter(m => m.danger_level === level).length;
   });
 
   return (
@@ -147,10 +190,42 @@ export default function MonstersPage() {
         ${isMobileSidebarOpen ? 'fixed inset-y-0 left-0 z-40' : 'hidden'}
       `}>
         <div className="p-4 border-b border-zinc-800">
-          <h2 className="text-lg font-semibold">Monsters</h2>
+          <h2 className="text-lg font-semibold">Bestiary</h2>
           <p className="text-xs text-zinc-500 mt-1">
-            {data.monsters.length} monstres • v{data._meta.version}
+            Monsters & NPCs • v{monstersData._meta.version}
           </p>
+        </div>
+
+        {/* Tab Selection */}
+        <div className="p-2 border-b border-zinc-800">
+          <div className="flex gap-1">
+            <button
+              onClick={() => {
+                setActiveTab('monsters');
+                setSearchTerm('');
+              }}
+              className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === 'monsters'
+                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                  : 'text-zinc-400 hover:bg-zinc-800/50'
+              }`}
+            >
+              👹 Monsters
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab('npcs');
+                setSearchTerm('');
+              }}
+              className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === 'npcs'
+                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                  : 'text-zinc-400 hover:bg-zinc-800/50'
+              }`}
+            >
+              🧑 NPCs
+            </button>
+          </div>
         </div>
 
         {/* Search */}
@@ -162,82 +237,104 @@ export default function MonstersPage() {
           />
         </div>
 
-        {/* Danger Level Filter */}
-        <div className="p-4 border-b border-zinc-800">
-          <label className="text-xs text-zinc-500 uppercase tracking-wider mb-2 block">Danger Level</label>
-          <ButtonGroup
-            options={[
-              { value: 'all', label: 'All' },
-              ...dangerLevels.map(level => ({
-                value: level.toString(),
-                label: `⭐${level}`,
-                count: dangerCounts[level.toString()] || 0,
-              })),
-            ]}
-            value={filterDanger}
-            onChange={setFilterDanger}
-          />
-        </div>
+        {/* Filters - Monsters only */}
+        {activeTab === 'monsters' && (
+          <>
+            <div className="p-4 border-b border-zinc-800">
+              <label className="text-xs text-zinc-500 uppercase tracking-wider mb-2 block">Danger Level</label>
+              <ButtonGroup
+                options={[
+                  { value: 'all', label: 'All' },
+                  ...dangerLevels.map(level => ({
+                    value: level.toString(),
+                    label: `⭐${level}`,
+                    count: dangerCounts[level.toString()] || 0,
+                  })),
+                ]}
+                value={filterDanger}
+                onChange={setFilterDanger}
+              />
+            </div>
 
-        {/* Category Navigation */}
-        <nav className="p-2">
-          <div className="text-xs text-zinc-500 uppercase tracking-wider px-2 py-1 mb-1">Category</div>
+            <nav className="p-2">
+              <div className="text-xs text-zinc-500 uppercase tracking-wider px-2 py-1 mb-1">Category</div>
 
-          <button
-            onClick={() => {
-              setFilterCategory('all');
-              setIsMobileSidebarOpen(false);
-            }}
-            className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg transition-colors text-left ${
-              filterCategory === 'all'
-                ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
-                : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
-            }`}
-          >
-            <span className="flex items-center gap-2">
-              <span>📋</span>
-              <span>All Categories</span>
-            </span>
-            <span className="text-xs text-zinc-500">({categoryCounts.all})</span>
-          </button>
-
-          {categories.map(cat => {
-            const config = CATEGORY_CONFIG[cat] || { name: cat, icon: '❓', color: 'text-zinc-400' };
-            return (
               <button
-                key={cat}
                 onClick={() => {
-                  setFilterCategory(cat);
+                  setFilterCategory('all');
                   setIsMobileSidebarOpen(false);
                 }}
-                className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg transition-colors text-left mt-1 ${
-                  filterCategory === cat
+                className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg transition-colors text-left ${
+                  filterCategory === 'all'
                     ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
                     : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  <span>{config.icon}</span>
-                  <span className="capitalize">{config.name}</span>
+                  <span>📋</span>
+                  <span>All Categories</span>
                 </span>
-                <span className="text-xs text-zinc-500">({categoryCounts[cat] || 0})</span>
+                <span className="text-xs text-zinc-500">({categoryCounts.all})</span>
               </button>
-            );
-          })}
-        </nav>
+
+              {categories.map(cat => {
+                const config = CATEGORY_CONFIG[cat] || { name: cat, icon: '❓', color: 'text-zinc-400' };
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => {
+                      setFilterCategory(cat);
+                      setIsMobileSidebarOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg transition-colors text-left mt-1 ${
+                      filterCategory === cat
+                        ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                        : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span>{config.icon}</span>
+                      <span className="capitalize">{config.name}</span>
+                    </span>
+                    <span className="text-xs text-zinc-500">({categoryCounts[cat] || 0})</span>
+                  </button>
+                );
+              })}
+            </nav>
+          </>
+        )}
+
+        {/* NPCs info */}
+        {activeTab === 'npcs' && (
+          <div className="p-4">
+            <p className="text-sm text-zinc-400">
+              {allNPCs.length} NPCs disponibles
+            </p>
+            <p className="text-xs text-zinc-500 mt-2">
+              Services: shops, crafting, quests, teleport, etc.
+            </p>
+          </div>
+        )}
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         <div className="p-4 md:p-6 lg:p-8">
           <div className="mb-4">
-            <h1 className="text-2xl font-bold mb-2">Bestiaire</h1>
+            <h1 className="text-2xl font-bold mb-2">
+              {activeTab === 'monsters' ? 'Bestiaire' : 'NPCs'}
+            </h1>
             <p className="text-sm text-zinc-500">
-              {filteredMonsters.length} / {data.monsters.length} monstres affichés
+              {activeTab === 'monsters'
+                ? `${filteredMonsters.length} / ${monstersData.monsters.length} monstres affichés`
+                : `${filteredNPCs.length} / ${allNPCs.length} NPCs affichés`
+              }
             </p>
           </div>
 
           {/* Monsters Table */}
+          {activeTab === 'monsters' && (
+            <>
           <Card className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -305,27 +402,82 @@ export default function MonstersPage() {
             </Table>
           </Card>
 
-          {filteredMonsters.length === 0 && (
-            <div className="text-center text-zinc-500 py-8">
-              Aucun monstre ne correspond aux filtres.
-            </div>
+            {filteredMonsters.length === 0 && (
+              <div className="text-center text-zinc-500 py-8">
+                Aucun monstre ne correspond aux filtres.
+              </div>
+            )}
+            </>
           )}
 
-          {/* AI Roles Reference */}
-          <Card className="mt-8 p-6">
-            <h3 className="text-lg font-semibold mb-4">AI Roles Reference</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.entries(data.ai_roles_catalog).filter(([key]) => !key.startsWith('_')).map(([role, description]) => (
-                <div key={role} className="bg-zinc-800/50 p-3 rounded">
-                  <div className="font-medium text-sm flex items-center gap-2">
-                    <span>{AI_ROLE_ICONS[role] || '❓'}</span>
-                    <span className="capitalize">{role}</span>
-                  </div>
-                  <p className="text-xs text-zinc-500 mt-1">{description}</p>
+          {/* NPCs Table */}
+          {activeTab === 'npcs' && (
+            <>
+              <Card className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-48">NPC</TableHead>
+                      <TableHead className="w-32">Location</TableHead>
+                      <TableHead>Services</TableHead>
+                      <TableHead>Lore</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredNPCs.map(npc => (
+                      <TableRow key={npc.id}>
+                        <TableCell>
+                          <div className="font-medium">{npc.name}</div>
+                          <code className="text-[10px] text-zinc-600">{npc.id}</code>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="text-sky-400 border-sky-500/30">
+                            📍 {npc.location}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {npc.services.map(service => (
+                              <Badge key={service} variant="secondary" className="text-xs">
+                                {service.replace(/_/g, ' ')}
+                              </Badge>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <p className="text-sm text-zinc-400 italic">{npc.lore}</p>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+
+              {filteredNPCs.length === 0 && (
+                <div className="text-center text-zinc-500 py-8">
+                  Aucun NPC ne correspond à la recherche.
                 </div>
-              ))}
-            </div>
-          </Card>
+              )}
+            </>
+          )}
+
+          {/* AI Roles Reference - Monsters only */}
+          {activeTab === 'monsters' && (
+            <Card className="mt-8 p-6">
+              <h3 className="text-lg font-semibold mb-4">AI Roles Reference</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Object.entries(monstersData.ai_roles_catalog).filter(([key]) => !key.startsWith('_')).map(([role, description]) => (
+                  <div key={role} className="bg-zinc-800/50 p-3 rounded">
+                    <div className="font-medium text-sm flex items-center gap-2">
+                      <span>{AI_ROLE_ICONS[role] || '❓'}</span>
+                      <span className="capitalize">{role}</span>
+                    </div>
+                    <p className="text-xs text-zinc-500 mt-1">{description}</p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
         </div>
       </main>
     </div>
