@@ -103,6 +103,8 @@ export default function EffectsReferencePage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterPolarity, setFilterPolarity] = useState<'all' | 'buff' | 'debuff'>('all');
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     fetch('/api/effects')
@@ -137,12 +139,13 @@ export default function EffectsReferencePage() {
     });
   });
 
-  const filteredEffects = allEffects.filter(({ key, effect }) => {
+  const filteredEffects = allEffects.filter(({ key, effect, category }) => {
     const matchesSearch = searchTerm === '' ||
       key.toLowerCase().includes(searchTerm.toLowerCase()) ||
       effect.name_fr.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesPolarity = filterPolarity === 'all' || effect.polarity === filterPolarity;
-    return matchesSearch && matchesPolarity;
+    const matchesCategory = activeCategory === 'all' || category === activeCategory;
+    return matchesSearch && matchesPolarity && matchesCategory;
   });
 
   // Group by category
@@ -154,53 +157,123 @@ export default function EffectsReferencePage() {
     groupedEffects[item.category].push(item);
   });
 
+  // Category counts
+  const categoryCounts: Record<string, number> = { all: allEffects.length };
+  Object.entries(CATEGORY_CONFIG).forEach(([key]) => {
+    categoryCounts[key] = allEffects.filter(e => e.category === key).length;
+  });
+
   return (
-    <div className="p-4 md:p-6 lg:p-8">
-      {/* Header */}
-      <div className="mb-4 md:mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2">Status Effects Reference</h1>
-        <p className="text-zinc-500 text-sm">
-          {effects._summary.total} effects ({effects._summary.done} done, {effects._summary.todo} todo, {effects._summary.v2} v2)
-          • v{effects._meta.version}
-        </p>
-      </div>
+    <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
+      {/* Mobile hamburger button */}
+      <button
+        onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+        className="lg:hidden fixed top-20 left-4 z-50 p-2 bg-zinc-800 rounded-lg border border-zinc-700 hover:bg-zinc-700 transition-colors"
+        aria-label="Toggle filters"
+      >
+        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {isMobileSidebarOpen ? (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          ) : (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          )}
+        </svg>
+      </button>
 
-      {/* Search & Filter */}
-      <div className="mb-6 flex flex-wrap gap-4">
-        <SearchBar
-          value={searchTerm}
-          onChange={setSearchTerm}
-          placeholder="Rechercher..."
-          className="w-full max-w-md"
+      {/* Mobile overlay */}
+      {isMobileSidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsMobileSidebarOpen(false)}
         />
-        <ButtonGroup
-          options={[
-            { value: 'all', label: 'Tous' },
-            { value: 'buff', label: 'Buffs' },
-            { value: 'debuff', label: 'Debuffs' },
-          ]}
-          value={filterPolarity}
-          onChange={(value) => setFilterPolarity(value as 'all' | 'buff' | 'debuff')}
-        />
-      </div>
+      )}
 
-      {/* Quick Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
-        {Object.entries(CATEGORY_CONFIG).map(([key, cat]) => {
-          const count = groupedEffects[key]?.length || 0;
-          return (
-            <Card key={key} className={`p-3 border ${cat.color}`}>
-              <div className="text-2xl mb-1">{cat.icon}</div>
-              <div className="font-medium">{cat.name}</div>
-              <div className="text-zinc-500 text-xs">{count} effects</div>
-            </Card>
-          );
-        })}
-      </div>
+      {/* Secondary Sidebar */}
+      <aside className={`
+        fixed lg:sticky top-0 left-0 z-40 h-screen
+        w-64 bg-zinc-900/50 border-r border-zinc-800 overflow-y-auto
+        transform transition-transform duration-300 ease-in-out
+        ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
+        <div className="p-4 border-b border-zinc-800">
+          <h2 className="text-lg font-semibold">Status Effects</h2>
+          <p className="text-xs text-zinc-500 mt-1">
+            {effects?._summary?.total || allEffects.length} effects • v{effects?._meta?.version || 'N/A'}
+          </p>
+        </div>
 
-      {/* Effects List by Category */}
-      <div className="space-y-8">
-        {Object.entries(groupedEffects).map(([category, categoryEffects]) => {
+        {/* Search in sidebar */}
+        <div className="p-4 border-b border-zinc-800">
+          <SearchBar
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Search effects..."
+          />
+        </div>
+
+        {/* Polarity Filter */}
+        <div className="p-4 border-b border-zinc-800">
+          <label className="text-xs text-zinc-500 uppercase tracking-wider mb-2 block">Type</label>
+          <ButtonGroup
+            options={[
+              { value: 'all', label: 'All' },
+              { value: 'buff', label: 'Buffs' },
+              { value: 'debuff', label: 'Debuffs' },
+            ]}
+            value={filterPolarity}
+            onChange={(value) => setFilterPolarity(value as 'all' | 'buff' | 'debuff')}
+          />
+        </div>
+
+        {/* Category Navigation */}
+        <nav className="p-2">
+          <button
+            onClick={() => {
+              setActiveCategory('all');
+              setIsMobileSidebarOpen(false);
+            }}
+            className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg transition-colors text-left ${
+              activeCategory === 'all'
+                ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <span>📋</span>
+              <span>All Categories</span>
+            </span>
+            <span className="text-xs text-zinc-500">({categoryCounts.all})</span>
+          </button>
+
+          {Object.entries(CATEGORY_CONFIG).map(([key, cat]) => (
+            <button
+              key={key}
+              onClick={() => {
+                setActiveCategory(key);
+                setIsMobileSidebarOpen(false);
+              }}
+              className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg transition-colors text-left mt-1 ${
+                activeCategory === key
+                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                  : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <span>{cat.icon}</span>
+                <span>{cat.name}</span>
+              </span>
+              <span className="text-xs text-zinc-500">({categoryCounts[key] || 0})</span>
+            </button>
+          ))}
+        </nav>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="p-4 md:p-6 lg:p-8">
+          {/* Effects List by Category */}
+          <div className="space-y-8">
+            {Object.entries(groupedEffects).map(([category, categoryEffects]) => {
           const catConfig = CATEGORY_CONFIG[category];
           if (!catConfig) return null;
 
@@ -450,6 +523,8 @@ export default function EffectsReferencePage() {
           </div>
         </div>
       </Card>
+        </div>
+      </main>
     </div>
   );
 }

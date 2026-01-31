@@ -65,6 +65,8 @@ export default function StatsReferencePage() {
   const [data, setData] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     fetch('/api/stats')
@@ -95,8 +97,8 @@ export default function StatsReferencePage() {
     });
   });
 
-  // Filter
-  const filteredStats = searchTerm
+  // Filter by search
+  const searchFilteredStats = searchTerm
     ? allStats.filter(
         ({ key, stat }) =>
           key.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -104,6 +106,11 @@ export default function StatsReferencePage() {
           stat.description.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : allStats;
+
+  // Filter by category
+  const filteredStats = activeCategory === 'all'
+    ? searchFilteredStats
+    : searchFilteredStats.filter(({ category }) => category === activeCategory);
 
   // Group by category for display
   const groupedStats: Record<string, typeof allStats> = {};
@@ -114,26 +121,109 @@ export default function StatsReferencePage() {
     groupedStats[item.category].push(item);
   });
 
+  // Category counts
+  const categoryCounts: Record<string, number> = { all: allStats.length };
+  Object.entries(data.stats).forEach(([category, stats]) => {
+    categoryCounts[category] = Object.keys(stats).length;
+  });
+
   return (
-    <div className="p-4 md:p-6 lg:p-8">
-      {/* Header */}
-      <div className="mb-4 md:mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2">Stats Reference</h1>
-        <p className="text-zinc-500 text-sm">
-          {allStats.length} stats • v{data._meta.version}
-        </p>
-      </div>
+    <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
+      {/* Mobile hamburger button */}
+      <button
+        onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+        className="lg:hidden fixed top-20 left-4 z-50 p-2 bg-zinc-800 rounded-lg border border-zinc-700 hover:bg-zinc-700 transition-colors"
+        aria-label="Toggle filters"
+      >
+        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {isMobileSidebarOpen ? (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          ) : (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          )}
+        </svg>
+      </button>
 
-      {/* Search */}
-      <SearchBar
-        value={searchTerm}
-        onChange={setSearchTerm}
-        className="mb-6"
-      />
+      {/* Mobile overlay */}
+      {isMobileSidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
 
-      {/* Stats List - Simple View */}
-      <div className="space-y-8">
-        {Object.entries(groupedStats).map(([category, stats]) => (
+      {/* Secondary Sidebar */}
+      <aside className={`
+        fixed lg:sticky top-0 left-0 z-40 h-screen
+        w-64 bg-zinc-900/50 border-r border-zinc-800 overflow-y-auto
+        transform transition-transform duration-300 ease-in-out
+        ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
+        <div className="p-4 border-b border-zinc-800">
+          <h2 className="text-lg font-semibold">Stats Reference</h2>
+          <p className="text-xs text-zinc-500 mt-1">
+            {allStats.length} stats • v{data._meta.version}
+          </p>
+        </div>
+
+        {/* Search in sidebar */}
+        <div className="p-4 border-b border-zinc-800">
+          <SearchBar
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Search stats..."
+          />
+        </div>
+
+        {/* Category Navigation */}
+        <nav className="p-2">
+          <button
+            onClick={() => {
+              setActiveCategory('all');
+              setIsMobileSidebarOpen(false);
+            }}
+            className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg transition-colors text-left ${
+              activeCategory === 'all'
+                ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <span>📋</span>
+              <span>All Stats</span>
+            </span>
+            <span className="text-xs text-zinc-500">({categoryCounts.all})</span>
+          </button>
+
+          {Object.entries(data.stats).map(([category]) => (
+            <button
+              key={category}
+              onClick={() => {
+                setActiveCategory(category);
+                setIsMobileSidebarOpen(false);
+              }}
+              className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg transition-colors text-left mt-1 ${
+                activeCategory === category
+                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                  : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <span>{CATEGORY_ICONS[category]}</span>
+                <span className="capitalize">{category}</span>
+              </span>
+              <span className="text-xs text-zinc-500">({categoryCounts[category] || 0})</span>
+            </button>
+          ))}
+        </nav>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="p-4 md:p-6 lg:p-8">
+          {/* Stats List */}
+          <div className="space-y-8">
+            {Object.entries(groupedStats).map(([category, stats]) => (
           <div key={category}>
             {/* Category Header */}
             <h2 className={`text-lg font-semibold mb-3 flex items-center gap-2 ${CATEGORY_COLORS[category]?.split(' ')[0]}`}>
@@ -366,6 +456,8 @@ export default function StatsReferencePage() {
           </div>
         </CardContent>
       </Card>
+        </div>
+      </main>
     </div>
   );
 }

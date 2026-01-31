@@ -232,6 +232,7 @@ export default function PanopliesPage() {
   const [filterIdentity, setFilterIdentity] = useState<string>('all');
   const [filterPieces, setFilterPieces] = useState<string>('all');
   const [filterArmorType, setFilterArmorType] = useState<string>('all');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     fetch('/api/panoplies')
@@ -268,117 +269,153 @@ export default function PanopliesPage() {
     return true;
   });
 
+  // Counts
+  const identityCounts: Record<string, number> = { all: sets.length };
+  identities.forEach(id => {
+    identityCounts[id] = sets.filter(s => s.identity === id).length;
+  });
+
   return (
-    <div className="p-4 md:p-6 lg:p-8">
-      {/* Header */}
-      <div className="mb-4 md:mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2">Panoplies</h1>
-        <p className="text-zinc-500 text-sm">
-          {data._meta.total_sets} sets - {data._meta.description}
-        </p>
-        <p className="text-zinc-600 text-xs mt-1">
-          v{data._meta.version} • Dernière mise à jour: {data._meta.last_updated}
-        </p>
-      </div>
+    <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
+      {/* Mobile hamburger button */}
+      <button
+        onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+        className="lg:hidden fixed top-20 left-4 z-50 p-2 bg-zinc-800 rounded-lg border border-zinc-700 hover:bg-zinc-700 transition-colors"
+        aria-label="Toggle filters"
+      >
+        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {isMobileSidebarOpen ? (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          ) : (
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          )}
+        </svg>
+      </button>
 
-      {/* Filters */}
-      <div className="mb-6 flex flex-wrap gap-4">
-        <FilterSelect
-          label="Identité"
-          value={filterIdentity}
-          onChange={setFilterIdentity}
-          options={[
-            { value: 'all', label: 'Toutes', count: sets.length },
-            ...identities.map(id => {
-              const config = IDENTITY_CONFIG[id] || { name: id, icon: '' };
-              const count = sets.filter(s => s.identity === id).length;
-              return {
-                value: id,
-                label: `${config.icon} ${config.name}`,
-                count,
-              };
-            }),
-          ]}
+      {/* Mobile overlay */}
+      {isMobileSidebarOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsMobileSidebarOpen(false)}
         />
-
-        <FilterSelect
-          label="Nombre de pièces"
-          value={filterPieces}
-          onChange={setFilterPieces}
-          options={[
-            { value: 'all', label: 'Toutes' },
-            { value: '2', label: '2 pièces', count: sets.filter(s => s.pieces_count === 2).length },
-            { value: '4', label: '4 pièces', count: sets.filter(s => s.pieces_count === 4).length },
-            { value: '6', label: '6 pièces', count: sets.filter(s => s.pieces_count === 6).length },
-            { value: '8', label: '8 pièces', count: sets.filter(s => s.pieces_count === 8).length },
-          ]}
-        />
-
-        <FilterSelect
-          label="Type d'armure"
-          value={filterArmorType}
-          onChange={setFilterArmorType}
-          options={[
-            { value: 'all', label: 'Tous' },
-            ...armorTypes.map(type => {
-              const config = ARMOR_TYPE_CONFIG[type] || { name_fr: type, name_en: type, color: 'text-zinc-400', icon: '' };
-              const count = sets.filter(s => s.armor_type === type).length;
-              return {
-                value: type,
-                label: `${config.icon} ${config.name_fr} / ${config.name_en}`,
-                count,
-              };
-            }),
-          ]}
-        />
-      </div>
-
-      {/* Summary by size */}
-      <Card className="mb-6 p-4">
-        <h2 className="text-sm font-medium mb-3">Par taille de set</h2>
-        <ButtonGroup
-          options={Object.entries(data._summary.by_size).map(([size, setIds]) => {
-            const sizeNum = size.replace('_pieces', '');
-            return {
-              value: sizeNum,
-              label: `${sizeNum} pièces`,
-              count: setIds.length,
-            };
-          })}
-          value={filterPieces}
-          onChange={(value) => setFilterPieces(filterPieces === value ? 'all' : value)}
-        />
-      </Card>
-
-      {/* Summary by armor type */}
-      <Card className="mb-6 p-4">
-        <h2 className="text-sm font-medium mb-3">Par type d&apos;armure</h2>
-        <ButtonGroup
-          options={Object.entries(data._summary.by_armor_type).map(([type, setIds]) => {
-            const config = ARMOR_TYPE_CONFIG[type] || { name_fr: type, name_en: type, icon: '?', color: 'text-zinc-400' };
-            return {
-              value: type,
-              label: `${config.icon} ${config.name_fr}`,
-              count: setIds.length,
-            };
-          })}
-          value={filterArmorType}
-          onChange={(value) => setFilterArmorType(filterArmorType === value ? 'all' : value)}
-        />
-      </Card>
-
-      {/* Sets grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-        {filteredSets.map(set => (
-          <SetCard key={set.id} set={set} />
-        ))}
-      </div>
-
-      {filteredSets.length === 0 && (
-        <div className="text-center text-zinc-500 py-8">
-          Aucune panoplie ne correspond aux filtres.
-        </div>
       )}
+
+      {/* Secondary Sidebar */}
+      <aside className={`
+        fixed lg:sticky top-0 left-0 z-40 h-screen
+        w-64 bg-zinc-900/50 border-r border-zinc-800 overflow-y-auto
+        transform transition-transform duration-300 ease-in-out
+        ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
+        <div className="p-4 border-b border-zinc-800">
+          <h2 className="text-lg font-semibold">Panoplies</h2>
+          <p className="text-xs text-zinc-500 mt-1">
+            {data._meta.total_sets} sets • v{data._meta.version}
+          </p>
+        </div>
+
+        {/* Piece Count Filter */}
+        <div className="p-4 border-b border-zinc-800">
+          <label className="text-xs text-zinc-500 uppercase tracking-wider mb-2 block">Nombre de pièces</label>
+          <ButtonGroup
+            options={[
+              { value: 'all', label: 'Toutes' },
+              { value: '2', label: '2p', count: sets.filter(s => s.pieces_count === 2).length },
+              { value: '4', label: '4p', count: sets.filter(s => s.pieces_count === 4).length },
+              { value: '6', label: '6p', count: sets.filter(s => s.pieces_count === 6).length },
+              { value: '8', label: '8p', count: sets.filter(s => s.pieces_count === 8).length },
+            ]}
+            value={filterPieces}
+            onChange={setFilterPieces}
+          />
+        </div>
+
+        {/* Armor Type Filter */}
+        <div className="p-4 border-b border-zinc-800">
+          <label className="text-xs text-zinc-500 uppercase tracking-wider mb-2 block">Type d&apos;armure</label>
+          <ButtonGroup
+            options={[
+              { value: 'all', label: 'Tous' },
+              ...armorTypes.map(type => {
+                const config = ARMOR_TYPE_CONFIG[type] || { name_fr: type, name_en: type, icon: '?', color: 'text-zinc-400' };
+                const count = sets.filter(s => s.armor_type === type).length;
+                return {
+                  value: type,
+                  label: `${config.icon} ${config.name_fr}`,
+                  count,
+                };
+              }),
+            ]}
+            value={filterArmorType}
+            onChange={setFilterArmorType}
+          />
+        </div>
+
+        {/* Identity Navigation */}
+        <nav className="p-2">
+          <div className="text-xs text-zinc-500 uppercase tracking-wider px-2 py-1 mb-1">Identité</div>
+
+          <button
+            onClick={() => {
+              setFilterIdentity('all');
+              setIsMobileSidebarOpen(false);
+            }}
+            className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg transition-colors text-left ${
+              filterIdentity === 'all'
+                ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <span>📋</span>
+              <span>All Sets</span>
+            </span>
+            <span className="text-xs text-zinc-500">({identityCounts.all})</span>
+          </button>
+
+          {identities.map(id => {
+            const config = IDENTITY_CONFIG[id] || { name: id, icon: '?', color: 'text-zinc-400' };
+            return (
+              <button
+                key={id}
+                onClick={() => {
+                  setFilterIdentity(id);
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg transition-colors text-left mt-1 ${
+                  filterIdentity === id
+                    ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                    : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
+                }`}
+              >
+                <span className="flex items-center gap-2 text-sm">
+                  <span>{config.icon}</span>
+                  <span>{config.name}</span>
+                </span>
+                <span className="text-xs text-zinc-500">({identityCounts[id] || 0})</span>
+              </button>
+            );
+          })}
+        </nav>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="p-4 md:p-6 lg:p-8">
+          {/* Sets grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+            {filteredSets.map(set => (
+              <SetCard key={set.id} set={set} />
+            ))}
+          </div>
+
+          {filteredSets.length === 0 && (
+            <div className="text-center text-zinc-500 py-8">
+              Aucune panoplie ne correspond aux filtres.
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 }
