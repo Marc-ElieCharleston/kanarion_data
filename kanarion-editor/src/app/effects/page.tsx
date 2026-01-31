@@ -43,9 +43,12 @@ interface EffectsData {
     effects: Record<string, Record<string, Effect>>;
     _summary: {
       total: number;
-      done: number;
-      todo: number;
-      v2: number;
+      categories: number;
+      by_polarity: {
+        buff: number;
+        debuff: number;
+      };
+      breakdown: Record<string, number>;
     };
   };
   config: {
@@ -190,16 +193,17 @@ export default function EffectsReferencePage() {
 
       {/* Secondary Sidebar */}
       <aside className={`
-        fixed lg:sticky top-0 left-0 z-40 h-screen
         w-64 bg-zinc-900/50 border-r border-zinc-800 overflow-y-auto
-        transform transition-transform duration-300 ease-in-out
-        ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        lg:block
+        ${isMobileSidebarOpen ? 'fixed inset-y-0 left-0 z-40' : 'hidden'}
       `}>
         <div className="p-4 border-b border-zinc-800">
           <h2 className="text-lg font-semibold">Status Effects</h2>
           <p className="text-xs text-zinc-500 mt-1">
-            {effects?._summary?.total || allEffects.length} effects • v{effects?._meta?.version || 'N/A'}
+            {effects?._summary?.total || allEffects.length} effects
+            {effects?._summary?.by_polarity && ` (${effects._summary.by_polarity.buff} buffs, ${effects._summary.by_polarity.debuff} debuffs)`}
           </p>
+          <p className="text-xs text-zinc-600 mt-0.5">v{effects?._meta?.version || 'N/A'}</p>
         </div>
 
         {/* Search in sidebar */}

@@ -302,10 +302,9 @@ export default function PanopliesPage() {
 
       {/* Secondary Sidebar */}
       <aside className={`
-        fixed lg:sticky top-0 left-0 z-40 h-screen
         w-64 bg-zinc-900/50 border-r border-zinc-800 overflow-y-auto
-        transform transition-transform duration-300 ease-in-out
-        ${isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        lg:block
+        ${isMobileSidebarOpen ? 'fixed inset-y-0 left-0 z-40' : 'hidden'}
       `}>
         <div className="p-4 border-b border-zinc-800">
           <h2 className="text-lg font-semibold">Panoplies</h2>
