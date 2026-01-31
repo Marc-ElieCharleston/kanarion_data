@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useLocale } from '@/i18n/provider';
-import { FilterSelect } from '@/components/FilterSelect';
-import { ButtonGroup } from '@/components/ButtonGroup';
+import { SecondarySidebar } from '@/components/SecondarySidebar';
 import { LoadingState } from '@/components/LoadingState';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -233,7 +232,6 @@ export default function PanopliesPage() {
   const [filterIdentity, setFilterIdentity] = useState<string>('all');
   const [filterPieces, setFilterPieces] = useState<string>('all');
   const [filterArmorType, setFilterArmorType] = useState<string>('all');
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const { locale } = useLocale();
 
   useEffect(() => {
@@ -277,144 +275,89 @@ export default function PanopliesPage() {
     identityCounts[id] = sets.filter(s => s.identity === id).length;
   });
 
+  // Build filters
+  const filters = [
+    {
+      id: 'pieces',
+      label: locale === 'en' ? 'Piece count' : 'Nombre de pièces',
+      options: [
+        { value: 'all', label: locale === 'en' ? 'All' : 'Toutes' },
+        { value: '2', label: '2p', count: sets.filter(s => s.pieces_count === 2).length },
+        { value: '4', label: '4p', count: sets.filter(s => s.pieces_count === 4).length },
+        { value: '6', label: '6p', count: sets.filter(s => s.pieces_count === 6).length },
+        { value: '8', label: '8p', count: sets.filter(s => s.pieces_count === 8).length },
+      ],
+      value: filterPieces,
+      onChange: setFilterPieces,
+    },
+    {
+      id: 'armorType',
+      label: locale === 'en' ? 'Armor type' : "Type d'armure",
+      options: [
+        { value: 'all', label: locale === 'en' ? 'All' : 'Tous' },
+        ...armorTypes.map(type => {
+          const config = ARMOR_TYPE_CONFIG[type] || { name_fr: type, name_en: type, icon: '?', color: 'text-zinc-400' };
+          const count = sets.filter(s => s.armor_type === type).length;
+          return {
+            value: type,
+            label: `${config.icon} ${locale === 'en' ? config.name_en : config.name_fr}`,
+            count,
+          };
+        }),
+      ],
+      value: filterArmorType,
+      onChange: setFilterArmorType,
+    },
+  ];
+
+  // Build grouped navigation
+  const sizeGroups = [
+    { size: 2, label: 'Mini Sets (2p)', identityList: ['lifesteal_link', 'crit_marker', 'hp_regen', 'mana_wisdom', 'mana_sustain', 'raw_power', 'defense_anchor'] },
+    { size: 4, label: 'Medium Sets (4p)', identityList: ['speed_evasion', 'buff_support', 'control_slow', 'armor_break', 'hot_healer', 'hp_tank', 'mage_dps', 'physical_dps'] },
+    { size: 6, label: 'Large Sets (6p)', identityList: ['rogue_assassin', 'healer_holy', 'fire_mage_dot', 'ice_mage_control', 'shield_tank', 'balanced_utility'] },
+    { size: 8, label: 'Complete Sets (8p)', identityList: ['main_tank', 'physical_dps_crit', 'sustain_regen', 'bruiser_hp_atk'] }
+  ];
+
+  const navGroups = [
+    {
+      id: 'all',
+      items: [{
+        id: 'all',
+        icon: '📋',
+        label: locale === 'en' ? 'All Sets' : 'Tous les Sets',
+        count: identityCounts.all,
+        isActive: filterIdentity === 'all',
+        onClick: () => setFilterIdentity('all'),
+      }]
+    },
+    ...sizeGroups.map(group => {
+      const groupIdentities = identities.filter(id => group.identityList.includes(id));
+      return {
+        id: `group-${group.size}`,
+        label: group.label,
+        items: groupIdentities.map(id => {
+          const config = IDENTITY_CONFIG[id] || { name: id, icon: '?', color: 'text-zinc-400' };
+          return {
+            id,
+            icon: config.icon,
+            label: config.name,
+            count: identityCounts[id] || 0,
+            isActive: filterIdentity === id,
+            onClick: () => setFilterIdentity(id),
+          };
+        }),
+      };
+    }).filter(group => group.items.length > 0),
+  ];
+
   return (
     <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
-      {/* Mobile hamburger button */}
-      <button
-        onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-        className="lg:hidden fixed top-20 left-4 z-50 p-2 bg-zinc-800 rounded-lg border border-zinc-700 hover:bg-zinc-700 transition-colors"
-        aria-label="Toggle filters"
-      >
-        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          {isMobileSidebarOpen ? (
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          ) : (
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          )}
-        </svg>
-      </button>
-
-      {/* Mobile overlay */}
-      {isMobileSidebarOpen && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-40"
-          onClick={() => setIsMobileSidebarOpen(false)}
-        />
-      )}
-
-      {/* Secondary Sidebar */}
-      <aside className={`
-        w-64 bg-zinc-900/50 border-r border-zinc-800 overflow-y-auto
-        lg:block
-        ${isMobileSidebarOpen ? 'fixed inset-y-0 left-0 z-40' : 'hidden'}
-      `}>
-        <div className="p-4 border-b border-zinc-800">
-          <h2 className="text-lg font-semibold">{locale === 'en' ? 'Equipment Sets' : 'Panoplies'}</h2>
-          <p className="text-xs text-zinc-500 mt-1">
-            {data._meta.total_sets} sets • v{data._meta.version}
-          </p>
-        </div>
-
-        {/* Piece Count Filter */}
-        <div className="p-4 border-b border-zinc-800">
-          <label className="text-xs text-zinc-500 uppercase tracking-wider mb-2 block">Nombre de pièces</label>
-          <ButtonGroup
-            options={[
-              { value: 'all', label: 'Toutes' },
-              { value: '2', label: '2p', count: sets.filter(s => s.pieces_count === 2).length },
-              { value: '4', label: '4p', count: sets.filter(s => s.pieces_count === 4).length },
-              { value: '6', label: '6p', count: sets.filter(s => s.pieces_count === 6).length },
-              { value: '8', label: '8p', count: sets.filter(s => s.pieces_count === 8).length },
-            ]}
-            value={filterPieces}
-            onChange={setFilterPieces}
-          />
-        </div>
-
-        {/* Armor Type Filter */}
-        <div className="p-4 border-b border-zinc-800">
-          <label className="text-xs text-zinc-500 uppercase tracking-wider mb-2 block">Type d&apos;armure</label>
-          <ButtonGroup
-            options={[
-              { value: 'all', label: 'Tous' },
-              ...armorTypes.map(type => {
-                const config = ARMOR_TYPE_CONFIG[type] || { name_fr: type, name_en: type, icon: '?', color: 'text-zinc-400' };
-                const count = sets.filter(s => s.armor_type === type).length;
-                return {
-                  value: type,
-                  label: `${config.icon} ${config.name_fr}`,
-                  count,
-                };
-              }),
-            ]}
-            value={filterArmorType}
-            onChange={setFilterArmorType}
-          />
-        </div>
-
-        {/* Identity Navigation */}
-        <nav className="p-2">
-          <div className="text-xs text-zinc-500 uppercase tracking-wider px-2 py-1 mb-1">Identité</div>
-
-          <button
-            onClick={() => {
-              setFilterIdentity('all');
-              setIsMobileSidebarOpen(false);
-            }}
-            className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg transition-colors text-left ${
-              filterIdentity === 'all'
-                ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
-                : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
-            }`}
-          >
-            <span className="flex items-center gap-2">
-              <span>📋</span>
-              <span>All Sets</span>
-            </span>
-            <span className="text-xs text-zinc-500">({identityCounts.all})</span>
-          </button>
-
-          {/* Group by size */}
-          {[
-            { size: 2, label: 'Mini Sets (2p)', identities: ['lifesteal_link', 'crit_marker', 'hp_regen', 'mana_wisdom', 'mana_sustain', 'raw_power', 'defense_anchor'] },
-            { size: 4, label: 'Medium Sets (4p)', identities: ['speed_evasion', 'buff_support', 'control_slow', 'armor_break', 'hot_healer', 'hp_tank', 'mage_dps', 'physical_dps'] },
-            { size: 6, label: 'Large Sets (6p)', identities: ['rogue_assassin', 'healer_holy', 'fire_mage_dot', 'ice_mage_control', 'shield_tank', 'balanced_utility'] },
-            { size: 8, label: 'Complete Sets (8p)', identities: ['main_tank', 'physical_dps_crit', 'sustain_regen', 'bruiser_hp_atk'] }
-          ].map(group => {
-            const groupIdentities = identities.filter(id => group.identities.includes(id));
-            if (groupIdentities.length === 0) return null;
-
-            return (
-              <div key={group.size} className="mt-3">
-                <div className="text-[10px] text-zinc-600 uppercase tracking-wider px-2 py-1">{group.label}</div>
-                {groupIdentities.map(id => {
-                  const config = IDENTITY_CONFIG[id] || { name: id, icon: '?', color: 'text-zinc-400' };
-                  return (
-                    <button
-                      key={id}
-                      onClick={() => {
-                        setFilterIdentity(id);
-                        setIsMobileSidebarOpen(false);
-                      }}
-                      className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg transition-colors text-left mt-0.5 ${
-                        filterIdentity === id
-                          ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
-                          : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
-                      }`}
-                    >
-                      <span className="flex items-center gap-2 text-sm">
-                        <span>{config.icon}</span>
-                        <span className="text-xs">{config.name}</span>
-                      </span>
-                      <span className="text-xs text-zinc-500">({identityCounts[id] || 0})</span>
-                    </button>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </nav>
-      </aside>
+      <SecondarySidebar
+        title={locale === 'en' ? 'Equipment Sets' : 'Panoplies'}
+        subtitle={`${data._meta.total_sets} sets • v${data._meta.version}`}
+        filters={filters}
+        navGroups={navGroups}
+      />
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">

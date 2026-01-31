@@ -59,9 +59,35 @@ export async function GET() {
       }
     }
 
+    // Read keystones
+    const keystones = readJsonFile<{
+      _meta: {
+        version: string;
+        last_updated: string;
+        description: string;
+      };
+      rules: {
+        max_active_keystones: number;
+        max_rank: number;
+        internal_cooldown_required: boolean;
+        design_notes: string[];
+      };
+      archetypes: {
+        striker: string[];
+        bulwark: string[];
+        conductor: string[];
+      };
+      class_keystones: Record<string, {
+        mvp: string[];
+        post_mvp: string[];
+      }>;
+      utility_keystones: string[];
+    }>('systems/keystones.json');
+
     return NextResponse.json({
       common: commonPassives,
       classes: classPassives,
+      keystones: keystones,
     });
   } catch (error) {
     console.error('Error in passives API:', error);
