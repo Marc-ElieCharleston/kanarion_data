@@ -5,8 +5,8 @@ import path from 'path';
 export async function GET() {
   try {
     // Read both status effects files
-    const effectsPath = path.join(process.cwd(), '..', 'kanarion_database', 'stats', 'status_effects.json');
-    const configPath = path.join(process.cwd(), '..', 'kanarion_database', 'config', 'status_effects.json');
+    const effectsPath = path.join(process.cwd(), 'kanarion_database', 'stats', 'status_effects.json');
+    const configPath = path.join(process.cwd(), 'kanarion_database', 'config', 'status_effects.json');
 
     const effectsData = JSON.parse(fs.readFileSync(effectsPath, 'utf-8'));
     const configData = JSON.parse(fs.readFileSync(configPath, 'utf-8'));

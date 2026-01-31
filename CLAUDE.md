@@ -20,50 +20,29 @@ No test suite is currently configured.
 
 ## Architecture
 
-### Two-Part Structure
+### Structure
 
-1. **`kanarion_database/`** - JSON files containing all game data (classes, skills, stats, monsters, items, etc.)
-2. **`kanarion-editor/`** - Next.js 16 (App Router) frontend that reads/writes the JSON database
+The project is a **Next.js 16 (App Router)** web editor in `kanarion-editor/` that reads/writes a JSON database stored in `kanarion-editor/kanarion_database/`.
 
-### Editor Architecture (Next.js)
+### Editor Architecture
 
 - **API Routes** (`src/app/api/*/route.ts`): Server-side handlers that read from JSON database
-  - `GET /api/classes` - All classes with stats
-  - `GET /api/classes/[classId]` - Single class details
-  - `GET /api/classes/[classId]/skills` - Skills for a class
-  - `GET /api/effects` - Status effects
-  - `GET /api/stats` - Stat definitions
-  - `GET /api/panoplies` - Equipment sets
-  - `GET /api/ideas` - Game ideas/proposals
-- **Pages** (`src/app/*/page.tsx`): Route pages for classes, stats, effects, patterns, panoplies, ideas
-- **Components** (`src/components/`): Reusable UI (Sidebar, AoeGrid, SkillCard, etc.)
-- **Database Utility** (`src/lib/database.ts`): Centralized file I/O for JSON read/write operations
+- **Pages** (`src/app/*/page.tsx`): Route pages (classes, stats, effects, patterns, panoplies, skills, loot, systems, equipment-stats, ideas)
+- **Components** (`src/components/`): Custom components (Sidebar, AoeGrid, SkillCard, StatsDisplay, etc.)
+- **UI Components** (`src/components/ui/`): shadcn/ui primitives (Button, Card, Tabs, Select, Dialog, etc.)
+- **Database Utility** (`src/lib/database.ts`): Centralized JSON file I/O with TypeScript interfaces
 
-### Key Components
+### Database Structure (`kanarion-editor/kanarion_database/`)
 
-- **AoeGrid.tsx**: Visualizes combat patterns on 4x4 grid
-- **SkillCard.tsx**: Displays skill details with patterns and VFX
-- **Sidebar.tsx**: Navigation with class submenu
-- **StatsDisplay.tsx**: Renders class stats tables
-- **LevelSlider.tsx**: Level adjustment control for stat calculations
-
-### Database Structure
-
-```
-kanarion_database/
-├── _meta/         # Project metadata and version info
-├── classes/       # 6 base classes (warrior, mage, healer, archer, rogue, artisan)
-│                  # Each has skills.json and passives.json
-├── combat/        # Targeting system (4x4 grid), Line of Sight mechanics
-├── config/        # Combat formulas, monster AI, status effects rules
-├── entities/      # Monsters (50+), NPCs, boss mechanics
-├── items/         # Equipment, consumables, materials, affixes, panoplies
-├── stats/         # 40+ stat definitions, class base stats, growth rates
-├── systems/       # Economy, guilds, achievements, PvP, leaderboards
-├── world/         # Zones, quests, maps
-├── ui/            # UI configuration and layouts
-└── schemas/       # JSON Schema validation
-```
+- **`_meta/`** - Project metadata, version info, ideas backlog
+- **`classes/`** - 6 base classes (warrior, mage, healer, archer, rogue, artisan), each with `skills.json` and `passives.json`
+- **`combat/`** - Targeting system (4x4 grid), Line of Sight mechanics
+- **`config/`** - Combat formulas (`combat.json`), game constants (`game.json`), monster AI (`monster_ai.json`), status effects rules
+- **`entities/`** - Monsters, NPCs, boss mechanics, monster archetypes
+- **`items/`** - Equipment, consumables, materials, affixes, panoplies, loot tables
+- **`stats/`** - 40+ stat definitions, class base stats, growth rates, status effects
+- **`systems/`** - Economy, guilds, achievements, PvP, leaderboards, enhancement, keystones
+- **`world/`** - Zones, quests, dungeons, lore
 
 ## Game Systems Knowledge
 
@@ -83,7 +62,7 @@ kanarion_database/
 
 ### Status Effects
 - Stacking system: 10% per stack, max 10 stacks (+100%), duration refreshes on reapply
-- Hard CC: stun, freeze, sleep, petrify, knockdown (diminishing returns on some)
+- Hard CC: stun, freeze, sleep, petrify, knockdown
 - Soft CC: slow, silence, blind, taunt, root, fear, confusion, disarm
 - DoTs: poison (% max HP), bleed (ATK-based), burn (MAG-based) - each has max stacks
 - Counter effects: heal_reduction, heal_block, shield_block
@@ -100,16 +79,10 @@ kanarion_database/
 
 In the editor, `@/*` maps to `./src/*` (configured in tsconfig.json).
 
-### Key Config Files
-
-- `config/game.json` - Global game constants
-- `config/combat.json` - Damage formulas and combat parameters
-- `config/monster_ai.json` - Monster AI behaviors
-- `config/status_effects.json` - Buff/debuff rules
-
 ## Notes
 
-- Database path from editor: `../kanarion_database/` (relative)
+- Database path in code: `process.cwd()/kanarion_database/` (see `src/lib/database.ts`)
+- The `prebuild` script copies the database into the editor directory for production builds
 - Some content has bilingual FR/EN text
 - Combat balance formulas are complex - review `config/combat.json` before modifying damage calculations
-- Database types are defined in `src/lib/database.ts` (ClassStats, ClassGrowth, Skill, SkillsFile interfaces)
+- TypeScript interfaces for database types are in `src/lib/database.ts`

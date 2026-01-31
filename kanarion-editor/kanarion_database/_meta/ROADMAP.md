@@ -138,9 +138,6 @@ Reset: Soft reset (Rang / 2 + 500)
 
 #### 5.6 PvP Balance Adjustments
 ```
-PvP-specific modifiers (vs PvE):
-- CC diminishing returns: 50% → 25% → immune (10s reset)
-
 Cooldown adjustments:
 - Resurrection: DISABLED in arena
 - Ultimate skills: +50% CD
