@@ -1,6 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { SearchBar } from '@/components/SearchBar';
+import { LoadingState } from '@/components/LoadingState';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 interface StatDefinition {
   name: string;
@@ -64,11 +76,7 @@ export default function StatsReferencePage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="p-8 flex items-center justify-center">
-        <div className="text-zinc-400">Loading...</div>
-      </div>
-    );
+    return <LoadingState type="table" count={5} />;
   }
 
   if (!data) {
@@ -117,15 +125,11 @@ export default function StatsReferencePage() {
       </div>
 
       {/* Search */}
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Rechercher..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2 text-white placeholder-zinc-500 focus:outline-none focus:border-violet-500 w-full max-w-md"
-        />
-      </div>
+      <SearchBar
+        value={searchTerm}
+        onChange={setSearchTerm}
+        className="mb-6"
+      />
 
       {/* Stats List - Simple View */}
       <div className="space-y-8">
@@ -139,114 +143,119 @@ export default function StatsReferencePage() {
             </h2>
 
             {/* Stats Table */}
-            <div className="bg-zinc-900 rounded-lg border border-zinc-800 overflow-x-auto">
-              <table className="w-full min-w-[600px]">
-                <thead>
-                  <tr className="border-b border-zinc-800 text-left text-xs text-zinc-500 uppercase">
-                    <th className="px-4 py-3 w-36">Stat</th>
-                    <th className="px-4 py-3 w-20">Bonus</th>
-                    <th className="px-4 py-3 w-1/4">Description</th>
-                    <th className="px-4 py-3">Calcul / Formule</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {stats.map(({ key, stat }) => (
-                    <tr key={key} className="border-b border-zinc-800/50 hover:bg-zinc-800/30">
-                      {/* Nom */}
-                      <td className="px-4 py-3">
-                        <div className={`font-medium ${CATEGORY_COLORS[category]?.split(' ')[0]}`}>
-                          {stat.name}
-                        </div>
-                        <code className="text-[10px] text-zinc-600">{key}</code>
-                      </td>
+            <Card>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-36">Stat</TableHead>
+                      <TableHead className="w-20">Bonus</TableHead>
+                      <TableHead className="w-1/4">Description</TableHead>
+                      <TableHead>Calcul / Formule</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {stats.map(({ key, stat }) => (
+                      <TableRow key={key}>
+                        {/* Nom */}
+                        <TableCell>
+                          <div className={`font-medium ${CATEGORY_COLORS[category]?.split(' ')[0]}`}>
+                            {stat.name}
+                          </div>
+                          <code className="text-[10px] text-zinc-600">{key}</code>
+                        </TableCell>
 
-                      {/* Bonus Type */}
-                      <td className="px-4 py-3">
-                        {stat.bonus_type === 'both' && (
-                          <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded">
-                            flat + %
-                          </span>
-                        )}
-                        {stat.bonus_type === 'flat' && (
-                          <span className="text-xs bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded">
-                            flat
-                          </span>
-                        )}
-                        {stat.bonus_type === 'percent' && (
-                          <span className="text-xs bg-violet-500/20 text-violet-400 px-2 py-0.5 rounded">
-                            %
-                          </span>
-                        )}
-                        {stat.bonus_type === 'none' && (
-                          <span className="text-xs bg-zinc-500/20 text-zinc-400 px-2 py-0.5 rounded">
-                            —
-                          </span>
-                        )}
-                      </td>
+                        {/* Bonus Type */}
+                        <TableCell>
+                          {stat.bonus_type === 'both' && (
+                            <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30">
+                              flat + %
+                            </Badge>
+                          )}
+                          {stat.bonus_type === 'flat' && (
+                            <Badge variant="secondary" className="bg-sky-500/20 text-sky-400 hover:bg-sky-500/30">
+                              flat
+                            </Badge>
+                          )}
+                          {stat.bonus_type === 'percent' && (
+                            <Badge variant="secondary" className="bg-violet-500/20 text-violet-400 hover:bg-violet-500/30">
+                              %
+                            </Badge>
+                          )}
+                          {stat.bonus_type === 'none' && (
+                            <Badge variant="secondary">—</Badge>
+                          )}
+                        </TableCell>
 
-                      {/* Description */}
-                      <td className="px-4 py-3 text-sm text-zinc-300">
-                        {stat.description}
-                        {stat.cap !== undefined && (
-                          <span className="ml-2 text-xs text-red-400">(Cap: {stat.cap})</span>
-                        )}
-                        {stat.clamp && (
-                          <span className="ml-2 text-xs text-amber-400">
-                            (Clamp: {stat.clamp.min}-{stat.clamp.max}%)
-                          </span>
-                        )}
-                      </td>
+                        {/* Description */}
+                        <TableCell className="text-sm text-zinc-300">
+                          {stat.description}
+                          {stat.cap !== undefined && (
+                            <Badge variant="destructive" className="ml-2">Cap: {stat.cap}</Badge>
+                          )}
+                          {stat.clamp && (
+                            <Badge variant="outline" className="ml-2 text-amber-400 border-amber-400">
+                              Clamp: {stat.clamp.min}-{stat.clamp.max}%
+                            </Badge>
+                          )}
+                        </TableCell>
 
-                      {/* Calcul / Formula */}
-                      <td className="px-4 py-3">
-                        {stat.formula ? (
-                          <code className="text-xs text-emerald-400 bg-zinc-800 px-2 py-1 rounded">
-                            {stat.formula}
-                          </code>
-                        ) : stat.default !== undefined ? (
-                          <span className="text-xs text-zinc-500">
-                            Default: <span className="text-zinc-300">{stat.default}</span>
-                          </span>
-                        ) : stat.base_value !== undefined ? (
-                          <span className="text-xs text-zinc-500">
-                            Base: <span className="text-zinc-300">{stat.base_value}</span>
-                          </span>
-                        ) : stat.derived ? (
-                          <span className="text-xs text-violet-400">Derived</span>
-                        ) : (
-                          <span className="text-xs text-zinc-600">—</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                        {/* Calcul / Formula */}
+                        <TableCell>
+                          {stat.formula ? (
+                            <code className="text-xs text-emerald-400 bg-zinc-800 px-2 py-1 rounded">
+                              {stat.formula}
+                            </code>
+                          ) : stat.default !== undefined ? (
+                            <span className="text-xs text-zinc-500">
+                              Default: <span className="text-zinc-300">{stat.default}</span>
+                            </span>
+                          ) : stat.base_value !== undefined ? (
+                            <span className="text-xs text-zinc-500">
+                              Base: <span className="text-zinc-300">{stat.base_value}</span>
+                            </span>
+                          ) : stat.derived ? (
+                            <Badge variant="outline" className="text-violet-400 border-violet-400">Derived</Badge>
+                          ) : (
+                            <span className="text-xs text-zinc-600">—</span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </Card>
           </div>
         ))}
       </div>
 
       {/* Quick Summary */}
-      <div className="mt-8 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-        <h3 className="font-semibold mb-3">Résumé rapide</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 text-center text-sm">
-          {Object.entries(data.stats).map(([category, stats]) => (
-            <div key={category} className={`p-2 rounded border ${CATEGORY_COLORS[category]}`}>
-              <div className="text-lg">{CATEGORY_ICONS[category]}</div>
-              <div className="font-medium capitalize">{category}</div>
-              <div className="text-zinc-500 text-xs">{Object.keys(stats).length} stats</div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <Card className="mt-8">
+        <CardContent className="p-4">
+          <h3 className="font-semibold mb-3">Résumé rapide</h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 text-center text-sm">
+            {Object.entries(data.stats).map(([category, stats]) => (
+              <Card key={category} className={`p-2 ${CATEGORY_COLORS[category]}`}>
+                <div className="text-lg">{CATEGORY_ICONS[category]}</div>
+                <div className="font-medium capitalize">{category}</div>
+                <div className="text-zinc-500 text-xs">{Object.keys(stats).length} stats</div>
+              </Card>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Effect System */}
       {data.effect_system && (
-        <div className="mt-8 p-6 bg-zinc-900 rounded-lg border border-violet-500/30">
-          <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 text-violet-400">
-            <span>🎯</span> Système d'Effets (CC/Debuffs)
-          </h3>
-          <p className="text-zinc-400 mb-4">{data.effect_system.description}</p>
+        <Card className="mt-8 border-violet-500/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-violet-400">
+              <span>🎯</span> Système d'Effets (CC/Debuffs)
+            </CardTitle>
+            <CardDescription>{data.effect_system.description}</CardDescription>
+          </CardHeader>
+          <CardContent>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             {/* Application Formula */}
@@ -298,24 +307,30 @@ export default function StatsReferencePage() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {Object.entries(data.effect_system.effect_categories).map(([key, cat]: [string, any]) => (
-              <div key={key} className="bg-zinc-800/50 p-3 rounded">
-                <div className="font-medium text-sm">{cat.name}</div>
-                <div className="text-xs text-zinc-500 mt-1">
-                  {cat.examples.join(', ')}
-                </div>
-              </div>
+              <Card key={key} className="bg-zinc-800/50">
+                <CardContent className="p-3">
+                  <div className="font-medium text-sm">{cat.name}</div>
+                  <div className="text-xs text-zinc-500 mt-1">
+                    {cat.examples.join(', ')}
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Damage Pipeline */}
       {data.damage_pipeline && (
-        <div className="mt-8 p-6 bg-zinc-900 rounded-lg border border-orange-500/30">
-          <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 text-orange-400">
-            <span>⚔️</span> Pipeline de Dégâts
-          </h3>
-          <p className="text-zinc-400 mb-4">{data.damage_pipeline.description}</p>
+        <Card className="mt-8 border-orange-500/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-orange-400">
+              <span>⚔️</span> Pipeline de Dégâts
+            </CardTitle>
+            <CardDescription>{data.damage_pipeline.description}</CardDescription>
+          </CardHeader>
+          <CardContent>
 
           <div className="space-y-2">
             {data.damage_pipeline.steps.map((step: string, index: number) => (
@@ -325,27 +340,32 @@ export default function StatsReferencePage() {
               </div>
             ))}
           </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Bonus Types Legend */}
-      <div className="mt-8 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-        <h3 className="font-semibold mb-3">Types de bonus</h3>
-        <div className="flex flex-wrap gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <span className="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-xs">flat + %</span>
-            <span className="text-zinc-400">Supporte bonus flat ET pourcentage</span>
+      <Card className="mt-8">
+        <CardHeader>
+          <CardTitle>Types de bonus</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-400">flat + %</Badge>
+              <span className="text-zinc-400">Supporte bonus flat ET pourcentage</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="bg-sky-500/20 text-sky-400">flat</Badge>
+              <span className="text-zinc-400">Bonus en points uniquement</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="bg-violet-500/20 text-violet-400">%</Badge>
+              <span className="text-zinc-400">Multiplicateur uniquement</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded text-xs">flat</span>
-            <span className="text-zinc-400">Bonus en points uniquement</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="bg-violet-500/20 text-violet-400 px-2 py-0.5 rounded text-xs">%</span>
-            <span className="text-zinc-400">Multiplicateur uniquement</span>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
