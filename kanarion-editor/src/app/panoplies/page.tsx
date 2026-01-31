@@ -136,16 +136,16 @@ const STAT_LABELS: Record<string, { fr: string; en: string }> = {
   cast_speed: { fr: 'Vitesse Incant.', en: 'Cast Speed' },
 };
 
-function formatBonus(stat: string, value: number): string {
+function formatBonus(stat: string, value: number, lang: 'fr' | 'en'): string {
   const label = STAT_LABELS[stat];
-  const labelText = label ? `${label.fr}` : stat;
+  const labelText = label ? label[lang] : stat;
   const isFlat = stat.includes('_max') || stat === 'armor' || stat.includes('_bonus');
   const prefix = value > 0 ? '+' : '';
   const suffix = isFlat ? '' : '%';
   return `${prefix}${value}${suffix} ${labelText}`;
 }
 
-function SetCard({ set }: { set: PanoplieSet }) {
+function SetCard({ set, lang }: { set: PanoplieSet; lang: 'fr' | 'en' }) {
   const identity = IDENTITY_CONFIG[set.identity] || { name: set.identity, color: 'text-zinc-400 border-zinc-500/30', icon: '?' };
   const armorType = ARMOR_TYPE_CONFIG[set.armor_type] || { name_fr: set.armor_type, name_en: set.armor_type, color: 'text-zinc-400 border-zinc-500/30', icon: '?' };
   const bonusLevels = Object.keys(set.bonuses).sort((a, b) => parseInt(a) - parseInt(b));
@@ -155,26 +155,26 @@ function SetCard({ set }: { set: PanoplieSet }) {
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div>
-          <h3 className="font-semibold text-lg">{set.name_fr}</h3>
-          <p className="text-xs text-zinc-500">{set.name_en} • <span className="text-zinc-400 italic">&quot;{set.meaning}&quot;</span></p>
+          <h3 className="font-semibold text-lg">{lang === 'en' ? set.name_en : set.name_fr}</h3>
+          <p className="text-xs text-zinc-500">{lang === 'en' ? set.name_fr : set.name_en} • <span className="text-zinc-400 italic">&quot;{set.meaning}&quot;</span></p>
         </div>
         <div className="flex flex-col gap-1 items-end">
           <Badge variant="outline" className={identity.color}>
             {identity.icon} {identity.name}
           </Badge>
           <Badge variant="outline" className={`text-[10px] ${armorType.color}`}>
-            {armorType.icon} {armorType.name_fr} / {armorType.name_en}
+            {armorType.icon} {lang === 'en' ? armorType.name_en : armorType.name_fr}
           </Badge>
         </div>
       </div>
 
       {/* Description */}
-      <p className="text-sm text-zinc-400 mb-3 italic">{set.description_fr}</p>
+      <p className="text-sm text-zinc-400 mb-3 italic">{lang === 'en' ? set.description_en : set.description_fr}</p>
 
       {/* Meta info */}
       <div className="flex gap-3 mb-4 text-xs">
         <Badge variant="secondary">
-          {set.pieces_count} pièces
+          {set.pieces_count} {lang === 'en' ? 'pieces' : 'pièces'}
         </Badge>
       </div>
 
@@ -182,11 +182,11 @@ function SetCard({ set }: { set: PanoplieSet }) {
       <div className="space-y-2 mb-4">
         {bonusLevels.map((level) => (
           <div key={level} className="bg-zinc-800/50 rounded p-2">
-            <div className="text-xs font-medium text-violet-400 mb-1">{level} pièces:</div>
+            <div className="text-xs font-medium text-violet-400 mb-1">{level} {lang === 'en' ? 'pieces' : 'pièces'}:</div>
             <div className="flex flex-wrap gap-1">
               {Object.entries(set.bonuses[level]).map(([stat, value]) => (
                 <span key={stat} className="text-xs bg-zinc-700/50 px-1.5 py-0.5 rounded text-zinc-300">
-                  {formatBonus(stat, value)}
+                  {formatBonus(stat, value, lang)}
                 </span>
               ))}
             </div>
@@ -202,7 +202,7 @@ function SetCard({ set }: { set: PanoplieSet }) {
         <div className="flex flex-wrap gap-1">
           {Object.entries(set.total_at_max).map(([stat, value]) => (
             <span key={stat} className="text-xs bg-emerald-500/10 border border-emerald-500/30 px-1.5 py-0.5 rounded text-emerald-300">
-              {formatBonus(stat, value)}
+              {formatBonus(stat, value, lang)}
             </span>
           ))}
         </div>
@@ -211,13 +211,13 @@ function SetCard({ set }: { set: PanoplieSet }) {
       {/* Pieces list */}
       <details className="mt-3">
         <summary className="text-xs text-zinc-500 cursor-pointer hover:text-zinc-400">
-          Voir les {set.pieces_count} pièces
+          {lang === 'en' ? `View ${set.pieces_count} pieces` : `Voir les ${set.pieces_count} pièces`}
         </summary>
         <div className="mt-2 grid grid-cols-2 gap-1 text-xs text-zinc-500">
           {Object.entries(set.pieces).map(([slot, piece]) => (
             <div key={slot} className="bg-zinc-800/30 px-2 py-1 rounded">
               <span className="text-zinc-400 capitalize">{slot.replace('_', ' ')}:</span>{' '}
-              <span className="text-zinc-300">{piece.name_fr}</span>
+              <span className="text-zinc-300">{lang === 'en' ? piece.name_en : piece.name_fr}</span>
             </div>
           ))}
         </div>
@@ -233,6 +233,7 @@ export default function PanopliesPage() {
   const [filterPieces, setFilterPieces] = useState<string>('all');
   const [filterArmorType, setFilterArmorType] = useState<string>('all');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [lang, setLang] = useState<'fr' | 'en'>('fr');
 
   useEffect(() => {
     fetch('/api/panoplies')
@@ -307,10 +308,37 @@ export default function PanopliesPage() {
         ${isMobileSidebarOpen ? 'fixed inset-y-0 left-0 z-40' : 'hidden'}
       `}>
         <div className="p-4 border-b border-zinc-800">
-          <h2 className="text-lg font-semibold">Panoplies</h2>
+          <h2 className="text-lg font-semibold">{lang === 'en' ? 'Equipment Sets' : 'Panoplies'}</h2>
           <p className="text-xs text-zinc-500 mt-1">
             {data._meta.total_sets} sets • v{data._meta.version}
           </p>
+        </div>
+
+        {/* Language Toggle */}
+        <div className="p-4 border-b border-zinc-800">
+          <label className="text-xs text-zinc-500 uppercase tracking-wider mb-2 block">Language</label>
+          <div className="flex gap-1">
+            <button
+              onClick={() => setLang('fr')}
+              className={`flex-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                lang === 'fr'
+                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                  : 'text-zinc-400 hover:bg-zinc-800/50'
+              }`}
+            >
+              FR
+            </button>
+            <button
+              onClick={() => setLang('en')}
+              className={`flex-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                lang === 'en'
+                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                  : 'text-zinc-400 hover:bg-zinc-800/50'
+              }`}
+            >
+              EN
+            </button>
+          </div>
         </div>
 
         {/* Piece Count Filter */}
@@ -420,13 +448,13 @@ export default function PanopliesPage() {
           {/* Sets grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {filteredSets.map(set => (
-              <SetCard key={set.id} set={set} />
+              <SetCard key={set.id} set={set} lang={lang} />
             ))}
           </div>
 
           {filteredSets.length === 0 && (
             <div className="text-center text-zinc-500 py-8">
-              Aucune panoplie ne correspond aux filtres.
+              {lang === 'en' ? 'No equipment sets match the filters.' : 'Aucune panoplie ne correspond aux filtres.'}
             </div>
           )}
         </div>

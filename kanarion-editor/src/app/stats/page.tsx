@@ -16,7 +16,9 @@ import {
 
 interface StatDefinition {
   name: string;
+  name_en?: string;
   description: string;
+  description_en?: string;
   bonus_type?: string;
   default?: number;
   cap?: number;
@@ -67,6 +69,7 @@ export default function StatsReferencePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [lang, setLang] = useState<'fr' | 'en'>('fr');
 
   useEffect(() => {
     fetch('/api/stats')
@@ -97,13 +100,15 @@ export default function StatsReferencePage() {
     });
   });
 
-  // Filter by search
+  // Filter by search (search in both languages)
   const searchFilteredStats = searchTerm
     ? allStats.filter(
         ({ key, stat }) =>
           key.toLowerCase().includes(searchTerm.toLowerCase()) ||
           stat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          stat.description.toLowerCase().includes(searchTerm.toLowerCase())
+          (stat.name_en?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          stat.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (stat.description_en?.toLowerCase().includes(searchTerm.toLowerCase()))
       )
     : allStats;
 
@@ -165,12 +170,39 @@ export default function StatsReferencePage() {
           </p>
         </div>
 
+        {/* Language Toggle */}
+        <div className="p-4 border-b border-zinc-800">
+          <label className="text-xs text-zinc-500 uppercase tracking-wider mb-2 block">Language</label>
+          <div className="flex gap-1">
+            <button
+              onClick={() => setLang('fr')}
+              className={`flex-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                lang === 'fr'
+                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                  : 'text-zinc-400 hover:bg-zinc-800/50'
+              }`}
+            >
+              FR
+            </button>
+            <button
+              onClick={() => setLang('en')}
+              className={`flex-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                lang === 'en'
+                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                  : 'text-zinc-400 hover:bg-zinc-800/50'
+              }`}
+            >
+              EN
+            </button>
+          </div>
+        </div>
+
         {/* Search in sidebar */}
         <div className="p-4 border-b border-zinc-800">
           <SearchBar
             value={searchTerm}
             onChange={setSearchTerm}
-            placeholder="Search stats..."
+            placeholder={lang === 'fr' ? 'Rechercher...' : 'Search stats...'}
           />
         </div>
 
@@ -249,7 +281,7 @@ export default function StatsReferencePage() {
                         {/* Nom */}
                         <TableCell>
                           <div className={`font-medium ${CATEGORY_COLORS[category]?.split(' ')[0]}`}>
-                            {stat.name}
+                            {lang === 'en' && stat.name_en ? stat.name_en : stat.name}
                           </div>
                           <code className="text-[10px] text-zinc-600">{key}</code>
                         </TableCell>
@@ -278,7 +310,7 @@ export default function StatsReferencePage() {
 
                         {/* Description */}
                         <TableCell className="text-sm text-zinc-300">
-                          {stat.description}
+                          {lang === 'en' && stat.description_en ? stat.description_en : stat.description}
                           {stat.cap !== undefined && (
                             <Badge variant="destructive" className="ml-2">Cap: {stat.cap}</Badge>
                           )}

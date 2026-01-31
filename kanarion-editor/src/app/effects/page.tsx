@@ -108,6 +108,7 @@ export default function EffectsReferencePage() {
   const [filterPolarity, setFilterPolarity] = useState<'all' | 'buff' | 'debuff'>('all');
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [lang, setLang] = useState<'fr' | 'en'>('fr');
 
   useEffect(() => {
     fetch('/api/effects')
@@ -145,7 +146,8 @@ export default function EffectsReferencePage() {
   const filteredEffects = allEffects.filter(({ key, effect, category }) => {
     const matchesSearch = searchTerm === '' ||
       key.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      effect.name_fr.toLowerCase().includes(searchTerm.toLowerCase());
+      effect.name_fr.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (effect.name_en?.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesPolarity = filterPolarity === 'all' || effect.polarity === filterPolarity;
     const matchesCategory = activeCategory === 'all' || category === activeCategory;
     return matchesSearch && matchesPolarity && matchesCategory;
@@ -206,12 +208,39 @@ export default function EffectsReferencePage() {
           <p className="text-xs text-zinc-600 mt-0.5">v{effects?._meta?.version || 'N/A'}</p>
         </div>
 
+        {/* Language Toggle */}
+        <div className="p-4 border-b border-zinc-800">
+          <label className="text-xs text-zinc-500 uppercase tracking-wider mb-2 block">Language</label>
+          <div className="flex gap-1">
+            <button
+              onClick={() => setLang('fr')}
+              className={`flex-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                lang === 'fr'
+                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                  : 'text-zinc-400 hover:bg-zinc-800/50'
+              }`}
+            >
+              FR
+            </button>
+            <button
+              onClick={() => setLang('en')}
+              className={`flex-1 px-3 py-1.5 text-sm rounded-lg transition-colors ${
+                lang === 'en'
+                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                  : 'text-zinc-400 hover:bg-zinc-800/50'
+              }`}
+            >
+              EN
+            </button>
+          </div>
+        </div>
+
         {/* Search in sidebar */}
         <div className="p-4 border-b border-zinc-800">
           <SearchBar
             value={searchTerm}
             onChange={setSearchTerm}
-            placeholder="Search effects..."
+            placeholder={lang === 'fr' ? 'Rechercher...' : 'Search effects...'}
           />
         </div>
 
@@ -293,11 +322,11 @@ export default function EffectsReferencePage() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-48">Effet</TableHead>
+                      <TableHead className="w-48">{lang === 'en' ? 'Effect' : 'Effet'}</TableHead>
                       <TableHead className="w-24">Type</TableHead>
                       <TableHead className="w-28">Stacking</TableHead>
                       <TableHead className="w-20">Status</TableHead>
-                      <TableHead>Formula / Description</TableHead>
+                      <TableHead>{lang === 'en' ? 'Formula / Description' : 'Formule / Description'}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -305,10 +334,14 @@ export default function EffectsReferencePage() {
                       <TableRow key={key}>
                         <TableCell>
                           <div className={`font-medium ${catConfig.color.split(' ')[0]}`}>
-                            {effect.name_fr}
+                            {lang === 'en' && effect.name_en ? effect.name_en : effect.name_fr}
                           </div>
-                          {effect.name_en && effect.name_en !== effect.name_fr && (
-                            <div className="text-xs text-zinc-500">{effect.name_en}</div>
+                          {lang === 'en' ? (
+                            effect.name_fr && <div className="text-xs text-zinc-500">{effect.name_fr}</div>
+                          ) : (
+                            effect.name_en && effect.name_en !== effect.name_fr && (
+                              <div className="text-xs text-zinc-500">{effect.name_en}</div>
+                            )
                           )}
                           <code className="text-[10px] text-zinc-600">{key}</code>
                         </TableCell>
@@ -340,10 +373,12 @@ export default function EffectsReferencePage() {
                           {effect.formula && (
                             <code className="text-xs text-amber-400 block mb-1">{effect.formula}</code>
                           )}
-                          {effect.description_fr && (
-                            <p className="text-zinc-400 text-xs">{effect.description_fr}</p>
+                          {(lang === 'en' ? effect.description_en : effect.description_fr) && (
+                            <p className="text-zinc-400 text-xs">
+                              {lang === 'en' && effect.description_en ? effect.description_en : effect.description_fr}
+                            </p>
                           )}
-                          {!effect.formula && !effect.description_fr && (
+                          {!effect.formula && !(lang === 'en' ? effect.description_en : effect.description_fr) && (
                             <span className="text-zinc-600">—</span>
                           )}
                         </TableCell>
