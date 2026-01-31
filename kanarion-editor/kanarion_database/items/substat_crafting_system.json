@@ -1,10 +1,10 @@
 {
   "_meta": {
-    "version": "2.0",
-    "last_updated": "2026-01-30",
+    "version": "3.0",
+    "last_updated": "2026-01-31",
     "description": "Substat manipulation system using dungeon materials",
     "playtest_scope": "Act 1 (lv 1-20): Only T1 items craftable. T2/T3 reserved for future acts.",
-    "changelog": "v2.0: Simplified T1 materials to drop from all Act 1 mobs. Added Replace Tokens."
+    "changelog": "v3.0: Added complete substat_pools organized by tier (T1/T2/T3) with value ranges and weights."
   },
 
   "system_overview": {
@@ -17,6 +17,363 @@
     ],
     "material_rarity": "Dungeon materials are rare and valuable, can be sold for good gold",
     "playtest_scope": "PLAYTEST: Only T1 items available in Acte 1 (lv 1-20). T2/T3 reserved for future acts."
+  },
+
+  "substat_pools": {
+    "_comment": "Complete list of available substats organized by tier. Determines what substats can appear on equipment and be selected via Select Crystals.",
+
+    "tier_1": {
+      "act": 1,
+      "level_range": [1, 20],
+      "playtest_available": true,
+      "description": "Basic substats for early game. Available via T1 Select Crystals (3 random options).",
+
+      "resources": [
+        {
+          "stat": "hp",
+          "name": "Points de Vie",
+          "value_range": [10, 100],
+          "weight": 25,
+          "allowed_slots": ["head", "chest", "legs", "feet", "accessory"]
+        },
+        {
+          "stat": "mp",
+          "name": "Points de Mana",
+          "value_range": [5, 50],
+          "weight": 20,
+          "allowed_slots": ["head", "chest", "accessory"]
+        },
+        {
+          "stat": "hp_regen",
+          "name": "Régénération HP",
+          "value_range": [1, 5],
+          "weight": 15,
+          "allowed_slots": ["chest", "feet", "accessory"]
+        },
+        {
+          "stat": "mp_regen",
+          "name": "Régénération MP",
+          "value_range": [1, 3],
+          "weight": 15,
+          "allowed_slots": ["head", "accessory"]
+        }
+      ],
+
+      "offensive": [
+        {
+          "stat": "atk",
+          "name": "Attaque",
+          "value_range": [2, 10],
+          "weight": 22,
+          "allowed_slots": ["weapon", "accessory"]
+        },
+        {
+          "stat": "mag",
+          "name": "Magie",
+          "value_range": [2, 12],
+          "weight": 22,
+          "allowed_slots": ["weapon", "head", "accessory"]
+        },
+        {
+          "stat": "crit",
+          "name": "Chance Critique",
+          "value_range": [1, 5],
+          "weight": 18,
+          "allowed_slots": ["weapon", "feet", "accessory"]
+        },
+        {
+          "stat": "crit_dmg",
+          "name": "Dégâts Critiques",
+          "value_range": [5, 20],
+          "weight": 14,
+          "allowed_slots": ["weapon", "accessory"]
+        }
+      ],
+
+      "defensive": [
+        {
+          "stat": "armor",
+          "name": "Armure",
+          "value_range": [2, 10],
+          "weight": 24,
+          "allowed_slots": ["head", "chest", "legs", "feet"]
+        },
+        {
+          "stat": "magic_resist",
+          "name": "Résistance Magique",
+          "value_range": [2, 10],
+          "weight": 20,
+          "allowed_slots": ["head", "chest", "legs", "accessory"]
+        },
+        {
+          "stat": "flat_dr",
+          "name": "Réduction Dégâts Fixe",
+          "value_range": [1, 5],
+          "weight": 16,
+          "allowed_slots": ["chest", "legs"]
+        }
+      ],
+
+      "precision": [
+        {
+          "stat": "hit",
+          "name": "Précision",
+          "value_range": [2, 8],
+          "weight": 18,
+          "allowed_slots": ["weapon", "head", "accessory"]
+        },
+        {
+          "stat": "flee",
+          "name": "Esquive",
+          "value_range": [2, 8],
+          "weight": 18,
+          "allowed_slots": ["feet", "head", "accessory"]
+        }
+      ],
+
+      "support": [
+        {
+          "stat": "heal_power",
+          "name": "Puissance de Soin",
+          "value_range": [3, 15],
+          "weight": 12,
+          "allowed_slots": ["weapon", "accessory"]
+        },
+        {
+          "stat": "shield_power",
+          "name": "Puissance de Bouclier",
+          "value_range": [3, 15],
+          "weight": 12,
+          "allowed_slots": ["weapon", "accessory"]
+        }
+      ],
+
+      "special": [
+        {
+          "stat": "lifesteal",
+          "name": "Vol de Vie",
+          "value_range": [1, 4],
+          "weight": 10,
+          "allowed_slots": ["weapon", "accessory"]
+        },
+        {
+          "stat": "spell_vamp",
+          "name": "Vampirisme Magique",
+          "value_range": [1, 4],
+          "weight": 10,
+          "allowed_slots": ["weapon", "accessory"]
+        },
+        {
+          "stat": "luck",
+          "name": "Chance",
+          "value_range": [1, 10],
+          "weight": 8,
+          "allowed_slots": ["feet", "accessory"]
+        }
+      ]
+    },
+
+    "tier_2": {
+      "act": 2,
+      "level_range": [20, 40],
+      "playtest_available": false,
+      "description": "Advanced substats for mid game. Available via T2 Select Crystals (5 random options). Includes all T1 substats with higher values + new stats.",
+
+      "note": "TO BE IMPLEMENTED: Act 2 substats. Will include all T1 stats with higher ranges (hp: 50-200, atk: 5-20, etc.) plus the following new stats:",
+
+      "new_offensive": [
+        {
+          "stat": "damage_percent",
+          "name": "Bonus Dégâts %",
+          "value_range": [3, 12],
+          "weight": 14,
+          "allowed_slots": ["weapon", "accessory"]
+        },
+        {
+          "stat": "armor_pen",
+          "name": "Pénétration Armure",
+          "value_range": [2, 10],
+          "weight": 12,
+          "allowed_slots": ["weapon", "accessory"]
+        },
+        {
+          "stat": "magic_pen",
+          "name": "Pénétration Magique",
+          "value_range": [2, 10],
+          "weight": 12,
+          "allowed_slots": ["weapon", "accessory"]
+        },
+        {
+          "stat": "effect_chance",
+          "name": "Chance d'Effet",
+          "value_range": [3, 15],
+          "weight": 10,
+          "allowed_slots": ["weapon", "accessory"]
+        },
+        {
+          "stat": "double_hit_chance",
+          "name": "Chance Double Frappe",
+          "value_range": [2, 8],
+          "weight": 8,
+          "allowed_slots": ["weapon", "accessory"]
+        }
+      ],
+
+      "new_defensive": [
+        {
+          "stat": "block_chance",
+          "name": "Chance Bloquer",
+          "value_range": [2, 10],
+          "weight": 14,
+          "allowed_slots": ["chest", "accessory"]
+        },
+        {
+          "stat": "parry_chance",
+          "name": "Chance Parer",
+          "value_range": [1, 5],
+          "weight": 10,
+          "allowed_slots": ["weapon", "accessory"]
+        },
+        {
+          "stat": "effect_resist",
+          "name": "Résistance aux Effets",
+          "value_range": [3, 15],
+          "weight": 12,
+          "allowed_slots": ["head", "chest", "accessory"]
+        },
+        {
+          "stat": "tenacity",
+          "name": "Ténacité",
+          "value_range": [2, 10],
+          "weight": 10,
+          "allowed_slots": ["chest", "accessory"]
+        }
+      ],
+
+      "new_support": [
+        {
+          "stat": "healing_received",
+          "name": "Soins Reçus",
+          "value_range": [3, 15],
+          "weight": 10,
+          "allowed_slots": ["chest", "accessory"]
+        },
+        {
+          "stat": "buff_duration",
+          "name": "Durée Buffs",
+          "value_range": [3, 15],
+          "weight": 8,
+          "allowed_slots": ["accessory"]
+        }
+      ],
+
+      "new_special": [
+        {
+          "stat": "thorns",
+          "name": "Épines",
+          "value_range": [5, 25],
+          "weight": 8,
+          "allowed_slots": ["chest", "accessory"]
+        },
+        {
+          "stat": "reflect",
+          "name": "Reflet",
+          "value_range": [2, 8],
+          "weight": 8,
+          "allowed_slots": ["chest", "accessory"]
+        },
+        {
+          "stat": "cast_speed",
+          "name": "Vitesse Incantation",
+          "value_range": [3, 12],
+          "weight": 10,
+          "allowed_slots": ["weapon", "accessory"]
+        },
+        {
+          "stat": "cooldown_reduction",
+          "name": "Réduction Cooldown",
+          "value_range": [2, 8],
+          "weight": 12,
+          "allowed_slots": ["weapon", "head", "accessory"]
+        }
+      ]
+    },
+
+    "tier_3": {
+      "act": 3,
+      "level_range": [40, 60],
+      "playtest_available": false,
+      "description": "Rare and powerful substats for endgame. Available via T3 Perfect Select Crystals (choose any). Includes all T1/T2 substats with highest values + rare stats.",
+
+      "note": "TO BE IMPLEMENTED: Act 3 substats. Will include all T1/T2 stats with highest ranges (hp: 100-400, atk: 10-40, etc.) plus the following rare stats:",
+
+      "rare_offensive": [
+        {
+          "stat": "shield_pierce",
+          "name": "Perce-Bouclier",
+          "value_range": [5, 20],
+          "weight": 6,
+          "allowed_slots": ["weapon", "accessory"]
+        },
+        {
+          "stat": "shield_break",
+          "name": "Brise-Bouclier",
+          "value_range": [5, 25],
+          "weight": 6,
+          "allowed_slots": ["weapon", "accessory"]
+        },
+        {
+          "stat": "debuff_duration",
+          "name": "Durée Debuffs",
+          "value_range": [5, 20],
+          "weight": 6,
+          "allowed_slots": ["weapon", "accessory"]
+        },
+        {
+          "stat": "attack_speed",
+          "name": "Vitesse d'Attaque %",
+          "value_range": [3, 15],
+          "weight": 8,
+          "allowed_slots": ["weapon", "accessory"]
+        }
+      ],
+
+      "rare_defensive": [
+        {
+          "stat": "hp_regen_combat",
+          "name": "Régén HP Combat",
+          "value_range": [2, 10],
+          "weight": 6,
+          "allowed_slots": ["chest", "accessory"]
+        },
+        {
+          "stat": "mp_regen_combat",
+          "name": "Régén MP Combat",
+          "value_range": [1, 5],
+          "weight": 6,
+          "allowed_slots": ["head", "accessory"]
+        }
+      ]
+    },
+
+    "selection_rules": {
+      "description": "How Select Crystals work with these pools",
+      "t1_crystal": {
+        "pool": "All T1 substats",
+        "selection_count": 3,
+        "mechanism": "Shows 3 random substats appropriate for the equipment slot"
+      },
+      "t2_crystal": {
+        "pool": "All T1 + T2 substats (with T2 value ranges)",
+        "selection_count": 5,
+        "mechanism": "Shows 5 random substats with higher tier available"
+      },
+      "t3_crystal": {
+        "pool": "All T1 + T2 + T3 substats",
+        "selection_count": "all",
+        "mechanism": "Shows complete list of all substats appropriate for the equipment slot"
+      }
+    }
   },
 
   "dungeon_materials": {
