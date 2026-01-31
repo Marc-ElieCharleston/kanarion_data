@@ -1,5 +1,8 @@
 import Link from 'next/link';
 import { getClassList, getAllBaseStats } from '@/lib/database';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ClassStatBox } from '@/components/ClassStatBox';
 
 const CLASS_ICONS: Record<string, string> = {
   warrior: '🗡️',
@@ -38,49 +41,31 @@ export default function ClassesPage() {
           if (!stats) return null;
 
           return (
-            <Link
-              key={classId}
-              href={`/classes/${classId}`}
-              className={`bg-gradient-to-br ${CLASS_COLORS[classId]} p-6 rounded-lg border hover:scale-[1.02] transition-transform`}
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-4xl">{CLASS_ICONS[classId]}</span>
-                <div>
-                  <h2 className="text-xl font-bold capitalize">{classId}</h2>
-                  <p className="text-xs text-zinc-400">{stats.identity}</p>
+            <Link key={classId} href={`/classes/${classId}`}>
+              <Card className={`bg-gradient-to-br ${CLASS_COLORS[classId]} p-6 border hover:scale-[1.02] transition-transform`}>
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-4xl">{CLASS_ICONS[classId]}</span>
+                  <div>
+                    <h2 className="text-xl font-bold capitalize">{classId}</h2>
+                    <Badge variant="outline" className="text-xs mt-1">
+                      {stats.identity}
+                    </Badge>
+                  </div>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-3 gap-1.5 sm:gap-2 text-center">
-                <div className="bg-zinc-900/50 rounded p-1.5 sm:p-2">
-                  <div className="text-base sm:text-lg font-bold text-rose-400">{stats.hp}</div>
-                  <div className="text-[9px] sm:text-[10px] text-zinc-500">HP</div>
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+                  <ClassStatBox label="MP" value={stats.mp} color="text-blue-400" />
+                  <ClassStatBox label="HP" value={stats.hp} color="text-rose-400" />
+                  <ClassStatBox label="ATK" value={stats.atk} color="text-orange-400" />
+                  <ClassStatBox label="MAG" value={stats.mag} color="text-violet-400" />
+                  <ClassStatBox label="ARMOR" value={stats.armor} color="text-slate-400" />
+                  <ClassStatBox label="M.RES" value={stats.magic_resist} color="text-cyan-400" />
                 </div>
-                <div className="bg-zinc-900/50 rounded p-1.5 sm:p-2">
-                  <div className="text-base sm:text-lg font-bold text-orange-400">{stats.atk}</div>
-                  <div className="text-[9px] sm:text-[10px] text-zinc-500">ATK</div>
-                </div>
-                <div className="bg-zinc-900/50 rounded p-1.5 sm:p-2">
-                  <div className="text-base sm:text-lg font-bold text-violet-400">{stats.mag}</div>
-                  <div className="text-[9px] sm:text-[10px] text-zinc-500">MAG</div>
-                </div>
-                <div className="bg-zinc-900/50 rounded p-1.5 sm:p-2">
-                  <div className="text-base sm:text-lg font-bold text-sky-400">{stats.def}</div>
-                  <div className="text-[9px] sm:text-[10px] text-zinc-500">DEF</div>
-                </div>
-                <div className="bg-zinc-900/50 rounded p-1.5 sm:p-2">
-                  <div className="text-base sm:text-lg font-bold text-amber-400">{stats.crit}%</div>
-                  <div className="text-[9px] sm:text-[10px] text-zinc-500">CRIT</div>
-                </div>
-                <div className="bg-zinc-900/50 rounded p-1.5 sm:p-2">
-                  <div className="text-base sm:text-lg font-bold text-emerald-400">{stats.flee}</div>
-                  <div className="text-[9px] sm:text-[10px] text-zinc-500">FLEE</div>
-                </div>
-              </div>
 
-              <div className="mt-4 text-sm text-zinc-400 text-center">
-                Click to view skills & details →
-              </div>
+                <div className="mt-4 text-sm text-zinc-400 text-center">
+                  Click to view skills & details →
+                </div>
+              </Card>
             </Link>
           );
         })}

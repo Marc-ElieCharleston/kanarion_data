@@ -8,6 +8,9 @@ import SkillCard, {
   DEFAULT_TIER_SCALING,
   DEFAULT_DURATION_SCALING
 } from '@/components/SkillCard';
+import { RangeSlider } from '@/components/RangeSlider';
+import { LoadingState } from '@/components/LoadingState';
+import { Card } from '@/components/ui/card';
 
 interface SkillsFile {
   _meta: {
@@ -82,8 +85,7 @@ const CLASS_ICONS: Record<string, string> = {
 export default function SkillsPage() {
   const [data, setData] = useState<SkillsData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedClass, setSelectedClass] = useState<string>('warrior');
-  const [selectedSubclass, setSelectedSubclass] = useState<string | null>(null);
+  const [activeView, setActiveView] = useState<string>('warrior-base');
   const [skillLevel, setSkillLevel] = useState(1);
 
   useEffect(() => {
@@ -96,11 +98,7 @@ export default function SkillsPage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="p-8 flex items-center justify-center">
-        <div className="text-zinc-400">Loading skills...</div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (!data) {
@@ -111,174 +109,189 @@ export default function SkillsPage() {
     );
   }
 
-  const classData = data.classes[selectedClass];
-  const subclasses = classData ? Object.keys(classData.subclass_skills) : [];
   const scalingByTier = data.system.scaling_by_tier || DEFAULT_TIER_SCALING;
   const durationScaling = data.system.duration_scaling || DEFAULT_DURATION_SCALING;
 
-  return (
-    <div className="p-4 md:p-6 lg:p-8">
-      {/* Header */}
-      <div className="mb-4 md:mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2">Skills System</h1>
-        <p className="text-zinc-500 text-sm">
-          {data.system.skill_points.total_points_available} skill points | Max level {data.system.skill_levels.max_level} | v{data.system._meta.version}
-        </p>
-        <p className="text-zinc-600 text-xs mt-1">
-          Double scaling: Base flat + % stat. Both increase with level.
-        </p>
-      </div>
+  // Parse activeView to get class and subclass
+  const [selectedClass, viewType] = activeView.split('-');
+  const classData = data.classes[selectedClass];
+  const isBaseView = viewType === 'base';
+  const selectedSubclass = isBaseView ? null : viewType;
 
-      {/* Skill Level Slider */}
-      <div className="mb-6 bg-zinc-900 rounded-lg border border-zinc-800 p-4">
-        <div className="flex items-center gap-4">
-          <span className="text-zinc-400">Skill Level:</span>
-          <input
-            type="range"
-            min="1"
-            max="10"
-            value={skillLevel}
-            onChange={(e) => setSkillLevel(parseInt(e.target.value))}
-            className="flex-1 max-w-xs"
-          />
-          <span className="text-2xl font-bold text-violet-400 w-8">{skillLevel}</span>
-        </div>
-        <div className="mt-2 text-xs text-zinc-600">
-          Base, %, Mana, et durees d&apos;effets scalent avec le niveau du skill
-        </div>
-      </div>
+  // Content Components
+  const BaseSkillsContent = ({ className }: { className: string }) => {
+    const classInfo = data.classes[className];
+    if (!classInfo) return null;
 
-      {/* Class Selection */}
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold mb-3">Select Class</h2>
-        <div className="flex flex-wrap gap-2">
-          {Object.keys(data.classes).map((className) => (
-            <button
-              key={className}
-              onClick={() => {
-                setSelectedClass(className);
-                setSelectedSubclass(null);
-              }}
-              className={`px-4 py-2 rounded-lg border transition-all ${
-                selectedClass === className
-                  ? `${CLASS_COLORS[className]} bg-zinc-800`
-                  : 'border-zinc-700 text-zinc-400 hover:border-zinc-600'
-              }`}
-            >
-              {CLASS_ICONS[className]} {className.charAt(0).toUpperCase() + className.slice(1)}
-            </button>
+    return (
+      <div>
+        <h2 className={`text-xl font-semibold mb-4 ${CLASS_COLORS[className]?.split(' ')[0]}`}>
+          {CLASS_ICONS[className]} Base Skills ({classInfo.base_skills.length})
+        </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+          {classInfo.base_skills.map((skill) => (
+            <SkillCard
+              key={skill.id}
+              skill={skill}
+              skillLevel={skillLevel}
+              scalingByTier={scalingByTier}
+              durationScaling={durationScaling}
+            />
           ))}
         </div>
       </div>
+    );
+  };
 
-      {classData && (
-        <>
-          {/* Base Skills */}
-          <div className="mb-8">
-            <h2 className={`text-xl font-semibold mb-4 ${CLASS_COLORS[selectedClass]?.split(' ')[0]}`}>
-              {CLASS_ICONS[selectedClass]} Base Skills ({classData.base_skills.length})
-            </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-              {classData.base_skills.map((skill) => (
-                <SkillCard
-                  key={skill.id}
-                  skill={skill}
-                  skillLevel={skillLevel}
-                  scalingByTier={scalingByTier}
-                  durationScaling={durationScaling}
-                />
-              ))}
-            </div>
-          </div>
+  const SubclassSkillsContent = ({ className, subclass }: { className: string; subclass: string }) => {
+    const classInfo = data.classes[className];
+    if (!classInfo || !classInfo.subclass_skills[subclass]) return null;
 
-          {/* Subclass Selection */}
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold mb-3">Subclasses</h2>
-            <div className="flex flex-wrap gap-2">
-              {subclasses.map((subclass) => (
+    const subclassData = classInfo.subclass_skills[subclass];
+
+    return (
+      <div>
+        <div className="mb-4">
+          <h2 className="text-xl font-semibold text-violet-400 capitalize">
+            {subclass} Skills
+          </h2>
+          <p className="text-sm text-zinc-500">{subclassData.identity}</p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+          {subclassData.skills.map((skill) => (
+            <SkillCard
+              key={skill.id}
+              skill={skill}
+              skillLevel={skillLevel}
+              scalingByTier={scalingByTier}
+              durationScaling={durationScaling}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
+      {/* Secondary Sidebar */}
+      <aside className="w-64 border-r border-zinc-800 overflow-y-auto bg-zinc-900/50">
+        <div className="p-4 border-b border-zinc-800">
+          <h2 className="text-lg font-semibold">Skills System</h2>
+          <p className="text-xs text-zinc-500 mt-1">
+            {data.system.skill_points.total_points_available} points | v{data.system._meta.version}
+          </p>
+        </div>
+
+        <nav className="p-2">
+          {Object.keys(data.classes).map((className) => {
+            const classInfo = data.classes[className];
+            const subclasses = Object.keys(classInfo.subclass_skills);
+
+            return (
+              <div key={className} className="mb-2">
+                {/* Base Skills Button */}
                 <button
-                  key={subclass}
-                  onClick={() => setSelectedSubclass(selectedSubclass === subclass ? null : subclass)}
-                  className={`px-4 py-2 rounded-lg border transition-all ${
-                    selectedSubclass === subclass
-                      ? 'border-violet-500/50 bg-violet-500/10 text-violet-400'
-                      : 'border-zinc-700 text-zinc-400 hover:border-zinc-600'
+                  onClick={() => setActiveView(`${className}-base`)}
+                  className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-lg transition-colors text-left ${
+                    activeView === `${className}-base`
+                      ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                      : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
                   }`}
                 >
-                  {subclass.charAt(0).toUpperCase() + subclass.slice(1)}
+                  <span>{CLASS_ICONS[className]}</span>
+                  <span className="capitalize">{className}</span>
                 </button>
-              ))}
-            </div>
-          </div>
 
-          {/* Subclass Skills */}
-          {selectedSubclass && classData.subclass_skills[selectedSubclass] && (
-            <div className="mb-8">
-              <div className="mb-4">
-                <h2 className="text-xl font-semibold text-violet-400">
-                  {selectedSubclass.charAt(0).toUpperCase() + selectedSubclass.slice(1)} Skills
-                </h2>
-                <p className="text-sm text-zinc-500">
-                  {classData.subclass_skills[selectedSubclass].identity}
-                </p>
+                {/* Subclasses */}
+                <div className="ml-4 mt-1 space-y-0.5">
+                  {subclasses.map((subclass) => (
+                    <button
+                      key={subclass}
+                      onClick={() => setActiveView(`${className}-${subclass}`)}
+                      className={`w-full flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors text-left text-sm ${
+                        activeView === `${className}-${subclass}`
+                          ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                          : 'text-zinc-500 hover:bg-zinc-800/30 hover:text-zinc-400'
+                      }`}
+                    >
+                      <span className="capitalize">{subclass}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-                {classData.subclass_skills[selectedSubclass].skills.map((skill) => (
-                  <SkillCard
-                    key={skill.id}
-                    skill={skill}
-                    skillLevel={skillLevel}
-                    scalingByTier={scalingByTier}
-                    durationScaling={durationScaling}
-                  />
+            );
+          })}
+        </nav>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="p-4 md:p-6 lg:p-8">
+          {/* Skill Level Slider */}
+          <Card className="mb-6 p-4">
+            <RangeSlider
+              label="Skill Level"
+              value={skillLevel}
+              onChange={setSkillLevel}
+              min={1}
+              max={10}
+            />
+            <div className="mt-2 text-xs text-zinc-600">
+              Base, %, Mana, et durees d&apos;effets scalent avec le niveau du skill
+            </div>
+          </Card>
+
+          {/* Skills Display */}
+          {isBaseView ? (
+            <BaseSkillsContent className={selectedClass} />
+          ) : selectedSubclass ? (
+            <SubclassSkillsContent className={selectedClass} subclass={selectedSubclass} />
+          ) : null}
+
+          {/* Scaling Reference */}
+          <Card className="mt-8 p-4">
+            <h3 className="font-semibold mb-3">Scaling par Tier (par niveau)</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 text-sm">
+              {Object.entries(scalingByTier)
+                .filter(([key]) => !key.startsWith('_'))
+                .map(([tier, config]) => (
+                  <div key={tier} className="p-2 bg-zinc-800 rounded">
+                    <div className="font-medium text-zinc-300 capitalize">{tier}</div>
+                    <div className="text-xs text-zinc-500">
+                      +{config.power_per_level} base, +{config.percent_per_level || 4}%
+                    </div>
+                    <div className="text-xs text-zinc-600">
+                      +{config.mana_per_level} mana
+                    </div>
+                  </div>
                 ))}
-              </div>
             </div>
-          )}
-        </>
-      )}
+          </Card>
 
-      {/* Scaling Reference */}
-      <div className="mt-8 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-        <h3 className="font-semibold mb-3">Scaling par Tier (par niveau)</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 text-sm">
-          {Object.entries(scalingByTier)
-            .filter(([key]) => !key.startsWith('_'))
-            .map(([tier, config]) => (
-              <div key={tier} className="p-2 bg-zinc-800 rounded">
-                <div className="font-medium text-zinc-300 capitalize">{tier}</div>
-                <div className="text-xs text-zinc-500">
-                  +{config.power_per_level} base, +{config.percent_per_level || 4}%
-                </div>
-                <div className="text-xs text-zinc-600">
-                  +{config.mana_per_level} mana
-                </div>
-              </div>
-            ))}
+          {/* Duration Scaling Reference */}
+          <Card className="mt-4 p-4">
+            <h3 className="font-semibold mb-3">Duration Scaling par Type</h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 text-sm">
+              {Object.entries(durationScaling)
+                .filter(([key]) => !key.startsWith('_'))
+                .map(([type, config]) => (
+                  <div key={type} className="p-2 bg-zinc-800 rounded">
+                    <div className="font-medium text-zinc-300 capitalize">{type.replace('_', ' ')}</div>
+                    <div className="text-xs text-zinc-500">
+                      {config.duration_per_level > 0
+                        ? `+${config.duration_per_level}s/lvl`
+                        : config.value_per_level
+                          ? `+${config.value_per_level} value/lvl`
+                          : 'fixed'
+                      }
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </Card>
         </div>
-      </div>
-
-      {/* Duration Scaling Reference */}
-      <div className="mt-4 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
-        <h3 className="font-semibold mb-3">Duration Scaling par Type</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 text-sm">
-          {Object.entries(durationScaling)
-            .filter(([key]) => !key.startsWith('_'))
-            .map(([type, config]) => (
-              <div key={type} className="p-2 bg-zinc-800 rounded">
-                <div className="font-medium text-zinc-300 capitalize">{type.replace('_', ' ')}</div>
-                <div className="text-xs text-zinc-500">
-                  {config.duration_per_level > 0
-                    ? `+${config.duration_per_level}s/lvl`
-                    : config.value_per_level
-                      ? `+${config.value_per_level} value/lvl`
-                      : 'fixed'
-                  }
-                </div>
-              </div>
-            ))}
-        </div>
-      </div>
+      </main>
     </div>
   );
 }

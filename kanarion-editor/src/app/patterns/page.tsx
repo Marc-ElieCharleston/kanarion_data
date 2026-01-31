@@ -1,10 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { ButtonGroup } from '@/components/ButtonGroup';
+import { Card } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 
 // Grid configurations to compare
 const GRID_CONFIGS = {
   '3x4': { rows: 3, cols: 4, slots: 12, name: '3x4' },
+  '3x5': { rows: 3, cols: 5, slots: 15, name: '3x5' },
   '4x4': { rows: 4, cols: 4, slots: 16, name: '4x4 (Recommandé)' },
 };
 
@@ -478,7 +482,7 @@ export default function PatternsPage() {
       </div>
 
       {/* Grid Comparison */}
-      <div className="mb-8 p-6 bg-zinc-900 rounded-lg border border-zinc-800">
+      <Card className="mb-8 p-6">
         <h2 className="text-xl font-semibold mb-4">Comparaison des Grilles</h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -501,36 +505,22 @@ export default function PatternsPage() {
           ))}
         </div>
 
-      </div>
+      </Card>
 
       {/* Category Filter */}
-      <div className="mb-6 flex flex-wrap gap-2">
-        <button
-          onClick={() => setSelectedCategory(null)}
-          className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-            !selectedCategory
-              ? 'bg-violet-500 text-white'
-              : 'bg-zinc-800 text-zinc-400 hover:text-white'
-          }`}
-        >
-          Tous ({Object.keys(PATTERNS).length})
-        </button>
-        {Object.entries(CATEGORIES).map(([key, cat]) => {
-          const count = Object.values(PATTERNS).filter(p => p.category === key).length;
-          return (
-            <button
-              key={key}
-              onClick={() => setSelectedCategory(key)}
-              className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                selectedCategory === key
-                  ? 'bg-violet-500 text-white'
-                  : `bg-zinc-800 ${cat.color} hover:text-white`
-              }`}
-            >
-              {cat.name} ({count})
-            </button>
-          );
-        })}
+      <div className="mb-6">
+        <ButtonGroup
+          options={[
+            { value: 'all', label: 'Tous', count: Object.keys(PATTERNS).length },
+            ...Object.entries(CATEGORIES).map(([key, cat]) => ({
+              value: key,
+              label: cat.name,
+              count: Object.values(PATTERNS).filter(p => p.category === key).length,
+            })),
+          ]}
+          value={selectedCategory || 'all'}
+          onChange={(value) => setSelectedCategory(value === 'all' ? null : value)}
+        />
       </div>
 
       {/* Patterns Grid */}
@@ -540,9 +530,9 @@ export default function PatternsPage() {
           const category = CATEGORIES[patternDef.category as keyof typeof CATEGORIES];
 
           return (
-            <div
+            <Card
               key={key}
-              className="bg-zinc-900 rounded-lg border border-zinc-800 p-4 hover:border-zinc-700 transition-colors"
+              className="p-4 hover:border-zinc-700 transition-colors"
             >
               <div className="flex justify-between items-start mb-2">
                 <div>
@@ -565,13 +555,13 @@ export default function PatternsPage() {
               <div className="text-xs text-zinc-500 text-center">
                 {patternDef.description}
               </div>
-            </div>
+            </Card>
           );
         })}
       </div>
 
       {/* Line of Sight System */}
-      <div className="mt-8 p-6 bg-gradient-to-r from-violet-500/10 to-emerald-500/10 rounded-lg border border-violet-500/30">
+      <Card className="mt-8 p-6 bg-gradient-to-r from-violet-500/10 to-emerald-500/10 border-violet-500/30">
         <h2 className="text-xl font-semibold mb-4 text-violet-400">Systeme Line of Sight (LoS)</h2>
 
         {/* Two grids visualization */}
@@ -630,7 +620,7 @@ export default function PatternsPage() {
             <li>• 16 slots avec 10 joueurs = place pour summons + mouvement</li>
           </ul>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

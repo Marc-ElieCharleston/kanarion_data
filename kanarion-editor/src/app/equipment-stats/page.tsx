@@ -1,6 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { TabsGroup } from '@/components/TabsGroup';
+import { LoadingState } from '@/components/LoadingState';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface RarityTier {
   name_fr: string;
@@ -230,11 +234,7 @@ export default function EquipmentStatsPage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="p-8">
-        <div className="animate-pulse text-zinc-500">Chargement...</div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (!data) {
@@ -258,14 +258,14 @@ export default function EquipmentStatsPage() {
       </div>
 
       {/* Rarity Tiers */}
-      <div className="mb-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
+      <Card className="mb-6 p-4">
         <h2 className="text-lg font-semibold mb-3">Rarete et Substats</h2>
         <div className="flex flex-wrap gap-3">
           {Object.entries(data.rarity_tiers).map(([rarity, tierData]) => (
             <RarityBadge key={rarity} rarity={rarity} data={tierData} />
           ))}
         </div>
-      </div>
+      </Card>
 
       {/* Tabs */}
       <div className="mb-4 md:mb-6 flex flex-wrap gap-2">
@@ -323,7 +323,7 @@ export default function EquipmentStatsPage() {
       {activeTab === 'scaling' && scalingData && (
         <div className="space-y-6">
           {/* Tier System */}
-          <div className="p-4 bg-zinc-900 rounded-lg border border-zinc-800">
+          <Card className="p-4">
             <h3 className="text-lg font-semibold mb-2">Systeme de Tiers / Tier System</h3>
             <p className="text-sm text-zinc-400 mb-4">{scalingData.tier_system.description_fr}</p>
             <p className="text-xs text-zinc-500 mb-4">{scalingData.tier_system.description_en}</p>
@@ -355,7 +355,7 @@ export default function EquipmentStatsPage() {
                 </tbody>
               </table>
             </div>
-          </div>
+          </Card>
 
           {/* Rarity Roll Ranges */}
           <div className="p-4 bg-zinc-900 rounded-lg border border-zinc-800">

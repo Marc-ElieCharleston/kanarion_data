@@ -1,6 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { LoadingState } from '@/components/LoadingState';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface RarityTier {
   name: string;
@@ -99,7 +102,7 @@ function RarityBadge({ tier, data }: { tier: string; data: RarityTier }) {
 
 function MultiplierTable({ title, data }: { title: string; data: Record<string, MultiplierValue> }) {
   return (
-    <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4">
+    <Card className="p-4">
       <h3 className="font-semibold mb-3">{title}</h3>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
@@ -125,7 +128,7 @@ function MultiplierTable({ title, data }: { title: string; data: Record<string, 
           </tbody>
         </table>
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -146,7 +149,7 @@ function Calculator({ data }: { data: LootTablesData }) {
   const finalChance = Math.min(0.95, baseChance * stateMult * dungeonMult * groupMult * luckMult * eventMult);
 
   return (
-    <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4">
+    <Card className="p-4">
       <h3 className="font-semibold mb-4">Calculateur de Drop / Drop Calculator</h3>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
@@ -239,13 +242,13 @@ function Calculator({ data }: { data: LootTablesData }) {
           <span className="text-zinc-500 ml-2">chance de drop / drop chance</span>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
 
 function LootFlowDiagram() {
   return (
-    <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4">
+    <Card className="p-4">
       <h3 className="font-semibold mb-4">Flow du Loot / Loot Flow (Equipment)</h3>
       <div className="space-y-2 text-sm">
         <div className="flex items-center gap-2">
@@ -283,7 +286,7 @@ function LootFlowDiagram() {
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -295,7 +298,7 @@ const STONE_TYPE_CONFIG: Record<string, { icon: string; color: string; name_fr: 
 
 function EnhancementStonesSection({ data }: { data: EnhancementStonesData }) {
   return (
-    <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4 xl:col-span-2">
+    <Card className="p-4 xl:col-span-2">
       <h3 className="font-semibold mb-2">Pierres d&apos;Amélioration / Enhancement Stones</h3>
       <p className="text-xs text-zinc-500 mb-4">{data.description_fr}</p>
 
@@ -377,7 +380,7 @@ function EnhancementStonesSection({ data }: { data: EnhancementStonesData }) {
       <div className="mt-4 p-3 bg-zinc-800/50 rounded text-xs text-zinc-400">
         <strong className="text-zinc-300">Note:</strong> Les taux sont multipliés par monster_state (Elite ×2, Boss ×5) et les rangs supérieurs ont des multiplicateurs par acte.
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -395,11 +398,7 @@ export default function LootPage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="p-8">
-        <div className="animate-pulse text-zinc-500">Chargement des tables de loot...</div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (!data) {
@@ -437,17 +436,17 @@ export default function LootPage() {
         <LootFlowDiagram />
 
         {/* Rarity System */}
-        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4">
+        <Card className="p-4">
           <h3 className="font-semibold mb-3">Système de Rareté / Rarity System</h3>
           <div className="space-y-2">
             {Object.entries(data.rarity_system.tiers).map(([tier, tierData]) => (
               <RarityBadge key={tier} tier={tier} data={tierData} />
             ))}
           </div>
-        </div>
+        </Card>
 
         {/* Group Size */}
-        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4">
+        <Card className="p-4">
           <h3 className="font-semibold mb-3">Bonus de Groupe / Group Bonus</h3>
           <p className="text-xs text-zinc-500 mb-3">Max: +{data.multipliers.group_size.max_bonus_percent}%</p>
           <div className="grid grid-cols-5 gap-2">
@@ -458,7 +457,7 @@ export default function LootPage() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
 
         {/* Monster State Multipliers */}
         <MultiplierTable
@@ -473,7 +472,7 @@ export default function LootPage() {
         />
 
         {/* Events */}
-        <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4 xl:col-span-2">
+        <Card className="p-4 xl:col-span-2">
           <h3 className="font-semibold mb-3">Événements Spéciaux / Special Events</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {Object.entries(data.events.event_types).map(([key, event]) => (
@@ -494,7 +493,7 @@ export default function LootPage() {
               </div>
             ))}
           </div>
-        </div>
+        </Card>
 
         {/* Enhancement Stones */}
         {data.base_drops?.enhancement_stones && (

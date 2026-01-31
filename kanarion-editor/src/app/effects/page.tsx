@@ -1,6 +1,19 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { SearchBar } from '@/components/SearchBar';
+import { ButtonGroup } from '@/components/ButtonGroup';
+import { LoadingState } from '@/components/LoadingState';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 interface Effect {
   name_fr: string;
@@ -101,11 +114,7 @@ export default function EffectsReferencePage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="p-8 flex items-center justify-center">
-        <div className="text-zinc-400">Loading...</div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (!data) {
@@ -120,7 +129,7 @@ export default function EffectsReferencePage() {
 
   // Flatten and filter effects
   const allEffects: { key: string; effect: Effect; category: string }[] = [];
-  Object.entries(effects.effects).forEach(([category, categoryEffects]) => {
+  Object.entries(effects?.effects || {}).forEach(([category, categoryEffects]) => {
     if (category.startsWith('_')) return;
     Object.entries(categoryEffects).forEach(([key, effect]) => {
       if (key.startsWith('_')) return;
@@ -158,33 +167,21 @@ export default function EffectsReferencePage() {
 
       {/* Search & Filter */}
       <div className="mb-6 flex flex-wrap gap-4">
-        <input
-          type="text"
-          placeholder="Rechercher..."
+        <SearchBar
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2 text-white placeholder-zinc-500 focus:outline-none focus:border-violet-500 w-full max-w-md"
+          onChange={setSearchTerm}
+          placeholder="Rechercher..."
+          className="w-full max-w-md"
         />
-        <div className="flex gap-2">
-          <button
-            onClick={() => setFilterPolarity('all')}
-            className={`px-3 py-2 rounded-lg text-sm ${filterPolarity === 'all' ? 'bg-zinc-700 text-white' : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800'}`}
-          >
-            Tous
-          </button>
-          <button
-            onClick={() => setFilterPolarity('buff')}
-            className={`px-3 py-2 rounded-lg text-sm ${filterPolarity === 'buff' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800'}`}
-          >
-            Buffs
-          </button>
-          <button
-            onClick={() => setFilterPolarity('debuff')}
-            className={`px-3 py-2 rounded-lg text-sm ${filterPolarity === 'debuff' ? 'bg-red-500/20 text-red-400' : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800'}`}
-          >
-            Debuffs
-          </button>
-        </div>
+        <ButtonGroup
+          options={[
+            { value: 'all', label: 'Tous' },
+            { value: 'buff', label: 'Buffs' },
+            { value: 'debuff', label: 'Debuffs' },
+          ]}
+          value={filterPolarity}
+          onChange={(value) => setFilterPolarity(value as 'all' | 'buff' | 'debuff')}
+        />
       </div>
 
       {/* Quick Summary Cards */}
@@ -192,11 +189,11 @@ export default function EffectsReferencePage() {
         {Object.entries(CATEGORY_CONFIG).map(([key, cat]) => {
           const count = groupedEffects[key]?.length || 0;
           return (
-            <div key={key} className={`p-3 rounded-lg border bg-zinc-900 ${cat.color}`}>
+            <Card key={key} className={`p-3 border ${cat.color}`}>
               <div className="text-2xl mb-1">{cat.icon}</div>
               <div className="font-medium">{cat.name}</div>
               <div className="text-zinc-500 text-xs">{count} effects</div>
-            </div>
+            </Card>
           );
         })}
       </div>
@@ -215,21 +212,21 @@ export default function EffectsReferencePage() {
                 <span className="text-zinc-600 text-sm font-normal">({categoryEffects.length})</span>
               </h2>
 
-              <div className="bg-zinc-900 rounded-lg border border-zinc-800 overflow-x-auto">
-                <table className="w-full min-w-[600px]">
-                  <thead>
-                    <tr className="border-b border-zinc-800 text-left text-xs text-zinc-500 uppercase">
-                      <th className="px-4 py-3 w-48">Effet</th>
-                      <th className="px-4 py-3 w-24">Type</th>
-                      <th className="px-4 py-3 w-28">Stacking</th>
-                      <th className="px-4 py-3 w-20">Status</th>
-                      <th className="px-4 py-3">Formula / Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+              <Card className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-48">Effet</TableHead>
+                      <TableHead className="w-24">Type</TableHead>
+                      <TableHead className="w-28">Stacking</TableHead>
+                      <TableHead className="w-20">Status</TableHead>
+                      <TableHead>Formula / Description</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {categoryEffects.map(({ key, effect }) => (
-                      <tr key={key} className="border-b border-zinc-800/50 hover:bg-zinc-800/30">
-                        <td className="px-4 py-3">
+                      <TableRow key={key}>
+                        <TableCell>
                           <div className={`font-medium ${catConfig.color.split(' ')[0]}`}>
                             {effect.name_fr}
                           </div>
@@ -237,18 +234,18 @@ export default function EffectsReferencePage() {
                             <div className="text-xs text-zinc-500">{effect.name_en}</div>
                           )}
                           <code className="text-[10px] text-zinc-600">{key}</code>
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className={`text-xs px-2 py-0.5 rounded border ${POLARITY_COLORS[effect.polarity]}`}>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className={POLARITY_COLORS[effect.polarity]}>
                             {effect.polarity}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
                           {effect.stacking ? (
                             <div>
-                              <span className={`text-xs px-2 py-0.5 rounded ${STACKING_COLORS[effect.stacking] || STACKING_COLORS.unique}`}>
+                              <Badge className={STACKING_COLORS[effect.stacking] || STACKING_COLORS.unique}>
                                 {effect.stacking}
-                              </span>
+                              </Badge>
                               {effect.max_stacks && effect.max_stacks > 1 && (
                                 <span className="text-[10px] text-zinc-500 ml-1">({effect.max_stacks})</span>
                               )}
@@ -256,13 +253,13 @@ export default function EffectsReferencePage() {
                           ) : (
                             <span className="text-xs text-zinc-600">—</span>
                           )}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className={`text-xs px-2 py-0.5 rounded ${IMPL_COLORS[effect.impl]}`}>
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={IMPL_COLORS[effect.impl]}>
                             {effect.impl}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-sm">
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-sm">
                           {effect.formula && (
                             <code className="text-xs text-amber-400 block mb-1">{effect.formula}</code>
                           )}
@@ -272,19 +269,19 @@ export default function EffectsReferencePage() {
                           {!effect.formula && !effect.description_fr && (
                             <span className="text-zinc-600">—</span>
                           )}
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
-              </div>
+                  </TableBody>
+                </Table>
+              </Card>
             </div>
           );
         })}
       </div>
 
       {/* Stacking System */}
-      <div className="mt-8 p-6 bg-zinc-900 rounded-lg border border-blue-500/30">
+      <Card className="mt-8 p-6 border-blue-500/30">
         <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 text-blue-400">
           <span>📊</span> Systeme de Stacking
         </h3>
@@ -318,10 +315,10 @@ export default function EffectsReferencePage() {
             ))}
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* DoT Balance */}
-      <div className="mt-8 p-6 bg-zinc-900 rounded-lg border border-red-500/30">
+      <Card className="mt-8 p-6 border-red-500/30">
         <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 text-red-400">
           <span>🔥</span> DoT Balance
         </h3>
@@ -341,10 +338,10 @@ export default function EffectsReferencePage() {
             </div>
           ))}
         </div>
-      </div>
+      </Card>
 
       {/* Control Effects */}
-      <div className="mt-8 p-6 bg-zinc-900 rounded-lg border border-purple-500/30">
+      <Card className="mt-8 p-6 border-purple-500/30">
         <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 text-purple-400">
           <span>🔒</span> Control Effects (CC)
         </h3>
@@ -379,10 +376,10 @@ export default function EffectsReferencePage() {
             </div>
           ))}
         </div>
-      </div>
+      </Card>
 
       {/* Counter Effects */}
-      <div className="mt-8 p-6 bg-zinc-900 rounded-lg border border-amber-500/30">
+      <Card className="mt-8 p-6 border-amber-500/30">
         <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 text-amber-400">
           <span>🎯</span> Counter Effects (Anti-Tank/Healer)
         </h3>
@@ -418,10 +415,10 @@ export default function EffectsReferencePage() {
             </div>
           ))}
         </div>
-      </div>
+      </Card>
 
       {/* Duration Balance */}
-      <div className="mt-8 p-6 bg-zinc-900 rounded-lg border border-zinc-700">
+      <Card className="mt-8 p-6">
         <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 text-zinc-300">
           <span>⏱️</span> Duration Balance
         </h3>
@@ -452,7 +449,7 @@ export default function EffectsReferencePage() {
             </div>
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

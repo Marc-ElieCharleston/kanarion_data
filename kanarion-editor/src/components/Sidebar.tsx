@@ -16,7 +16,7 @@ const NAV_ITEMS = [
   { nameKey: 'panoplies', href: '/panoplies', icon: '👕' },
   { nameKey: 'equipmentStats', href: '/equipment-stats', icon: '⚔️' },
   { nameKey: 'lootTables', href: '/loot', icon: '🎁' },
-  { nameKey: 'monsters', href: '/monsters', icon: '👹', disabled: true },
+  { nameKey: 'monsters', href: '/monsters', icon: '👹' },
   { nameKey: 'items', href: '/items', icon: '🎒', disabled: true },
   { nameKey: 'world', href: '/world', icon: '🗺️', disabled: true },
   { nameKey: 'systems', href: '/systems', icon: '⚙️' },
@@ -24,20 +24,89 @@ const NAV_ITEMS = [
 ];
 
 const CLASSES = [
-  { id: 'warrior', name: 'Warrior', icon: '🗡️' },
-  { id: 'mage', name: 'Mage', icon: '🔮' },
-  { id: 'healer', name: 'Healer', icon: '💚' },
-  { id: 'archer', name: 'Archer', icon: '🏹' },
-  { id: 'rogue', name: 'Rogue', icon: '🗡️' },
-  { id: 'artisan', name: 'Artisan', icon: '🔧' },
+  {
+    id: 'warrior',
+    name: 'Warrior',
+    icon: '🗡️',
+    subclasses: [
+      { id: 'berserker', name: 'Berserker' },
+      { id: 'guardian', name: 'Guardian' },
+      { id: 'duelist', name: 'Duelist' },
+      { id: 'knight', name: 'Knight' }
+    ]
+  },
+  {
+    id: 'mage',
+    name: 'Mage',
+    icon: '🔮',
+    subclasses: [
+      { id: 'elementalist', name: 'Elementalist' },
+      { id: 'occultist', name: 'Occultist' },
+      { id: 'chronomancer', name: 'Chronomancer' },
+      { id: 'arcanist', name: 'Arcanist' }
+    ]
+  },
+  {
+    id: 'healer',
+    name: 'Healer',
+    icon: '💚',
+    subclasses: [
+      { id: 'priest', name: 'Priest' },
+      { id: 'druid', name: 'Druid' },
+      { id: 'shaman', name: 'Shaman' },
+      { id: 'monk', name: 'Monk' }
+    ]
+  },
+  {
+    id: 'archer',
+    name: 'Archer',
+    icon: '🏹',
+    subclasses: [
+      { id: 'ranger', name: 'Ranger' },
+      { id: 'sniper', name: 'Sniper' },
+      { id: 'trapper', name: 'Trapper' },
+      { id: 'beastmaster', name: 'Beastmaster' }
+    ]
+  },
+  {
+    id: 'rogue',
+    name: 'Rogue',
+    icon: '🗡️',
+    subclasses: [
+      { id: 'assassin', name: 'Assassin' },
+      { id: 'shadowblade', name: 'Shadowblade' },
+      { id: 'trickster', name: 'Trickster' },
+      { id: 'bounty_hunter', name: 'Bounty Hunter' }
+    ]
+  },
+  {
+    id: 'artisan',
+    name: 'Artisan',
+    icon: '🔧',
+    subclasses: [
+      { id: 'alchemist', name: 'Alchemist' },
+      { id: 'engineer', name: 'Engineer' },
+      { id: 'runesmith', name: 'Runesmith' },
+      { id: 'enchanter', name: 'Enchanter' }
+    ]
+  },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [expandedClasses, setExpandedClasses] = useState<string[]>([]);
   const t = useTranslations('nav');
   const tCommon = useTranslations('common');
   const { locale, setLocale } = useLocale();
+
+  const toggleClass = (classId: string) => {
+    setExpandedClasses(prev =>
+      prev.includes(classId)
+        ? prev.filter(id => id !== classId)
+        : [...prev, classId]
+    );
+  };
 
   // Close sidebar on route change (mobile)
   useEffect(() => {
@@ -157,20 +226,55 @@ export default function Sidebar() {
               )}
 
               {item.href === '/classes' && pathname.startsWith('/classes') && (
-                <div className="ml-4 mt-1 space-y-1">
+                <div className="ml-2 mt-1 space-y-0.5">
                   {CLASSES.map((cls) => (
-                    <Link
-                      key={cls.id}
-                      href={`/classes/${cls.id}`}
-                      className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg transition-colors ${
-                        pathname === `/classes/${cls.id}`
-                          ? 'bg-zinc-700 text-white'
-                          : 'text-zinc-500 hover:bg-zinc-800/50 hover:text-zinc-300'
-                      }`}
-                    >
-                      <span>{cls.icon}</span>
-                      <span>{cls.name}</span>
-                    </Link>
+                    <div key={cls.id}>
+                      <div className="flex items-center">
+                        <button
+                          onClick={() => toggleClass(cls.id)}
+                          className="p-1 hover:bg-zinc-800 rounded transition-colors"
+                        >
+                          <svg
+                            className={`w-3 h-3 text-zinc-500 transition-transform ${
+                              expandedClasses.includes(cls.id) ? 'rotate-90' : ''
+                            }`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                        <Link
+                          href={`/classes/${cls.id}`}
+                          className={`flex-1 flex items-center gap-2 px-2 py-1.5 text-sm rounded-lg transition-colors ${
+                            pathname === `/classes/${cls.id}`
+                              ? 'bg-zinc-700 text-white'
+                              : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-300'
+                          }`}
+                        >
+                          <span>{cls.icon}</span>
+                          <span>{cls.name}</span>
+                        </Link>
+                      </div>
+                      {expandedClasses.includes(cls.id) && (
+                        <div className="ml-8 space-y-0.5 mt-0.5">
+                          {cls.subclasses.map((subclass) => (
+                            <Link
+                              key={subclass.id}
+                              href={`/classes/${cls.id}#${subclass.id}`}
+                              className={`block px-3 py-1 text-xs rounded-lg transition-colors ${
+                                pathname.includes(subclass.id)
+                                  ? 'bg-zinc-700/50 text-violet-300'
+                                  : 'text-zinc-500 hover:bg-zinc-800/30 hover:text-zinc-400'
+                              }`}
+                            >
+                              {subclass.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               )}

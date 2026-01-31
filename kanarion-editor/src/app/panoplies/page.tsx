@@ -1,6 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { FilterSelect } from '@/components/FilterSelect';
+import { ButtonGroup } from '@/components/ButtonGroup';
+import { LoadingState } from '@/components/LoadingState';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface SetBonus {
   [key: string]: number;
@@ -146,7 +151,7 @@ function SetCard({ set }: { set: PanoplieSet }) {
   const bonusLevels = Object.keys(set.bonuses).sort((a, b) => parseInt(a) - parseInt(b));
 
   return (
-    <div className="bg-zinc-900 rounded-lg border border-zinc-800 p-4 hover:border-zinc-700 transition-colors">
+    <Card className="p-4 hover:border-zinc-700 transition-colors">
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div>
@@ -154,12 +159,12 @@ function SetCard({ set }: { set: PanoplieSet }) {
           <p className="text-xs text-zinc-500">{set.name_en} • <span className="text-zinc-400 italic">&quot;{set.meaning}&quot;</span></p>
         </div>
         <div className="flex flex-col gap-1 items-end">
-          <div className={`px-2 py-1 rounded border text-xs ${identity.color}`}>
+          <Badge variant="outline" className={identity.color}>
             {identity.icon} {identity.name}
-          </div>
-          <div className={`px-2 py-0.5 rounded border text-[10px] ${armorType.color}`}>
+          </Badge>
+          <Badge variant="outline" className={`text-[10px] ${armorType.color}`}>
             {armorType.icon} {armorType.name_fr} / {armorType.name_en}
-          </div>
+          </Badge>
         </div>
       </div>
 
@@ -168,9 +173,9 @@ function SetCard({ set }: { set: PanoplieSet }) {
 
       {/* Meta info */}
       <div className="flex gap-3 mb-4 text-xs">
-        <span className="bg-zinc-800 px-2 py-1 rounded">
+        <Badge variant="secondary">
           {set.pieces_count} pièces
-        </span>
+        </Badge>
       </div>
 
       {/* Bonus levels */}
@@ -217,7 +222,7 @@ function SetCard({ set }: { set: PanoplieSet }) {
           ))}
         </div>
       </details>
-    </div>
+    </Card>
   );
 }
 
@@ -238,11 +243,7 @@ export default function PanopliesPage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="p-8">
-        <div className="animate-pulse text-zinc-500">Chargement des panoplies...</div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (!data) {
@@ -282,107 +283,89 @@ export default function PanopliesPage() {
 
       {/* Filters */}
       <div className="mb-6 flex flex-wrap gap-4">
-        <div>
-          <label className="text-xs text-zinc-500 block mb-1">Identité</label>
-          <select
-            value={filterIdentity}
-            onChange={(e) => setFilterIdentity(e.target.value)}
-            className="bg-zinc-800 border border-zinc-700 rounded px-3 py-1.5 text-sm"
-          >
-            <option value="all">Toutes ({sets.length})</option>
-            {identities.map(id => {
+        <FilterSelect
+          label="Identité"
+          value={filterIdentity}
+          onChange={setFilterIdentity}
+          options={[
+            { value: 'all', label: 'Toutes', count: sets.length },
+            ...identities.map(id => {
               const config = IDENTITY_CONFIG[id] || { name: id, icon: '' };
               const count = sets.filter(s => s.identity === id).length;
-              return (
-                <option key={id} value={id}>
-                  {config.icon} {config.name} ({count})
-                </option>
-              );
-            })}
-          </select>
-        </div>
+              return {
+                value: id,
+                label: `${config.icon} ${config.name}`,
+                count,
+              };
+            }),
+          ]}
+        />
 
-        <div>
-          <label className="text-xs text-zinc-500 block mb-1">Nombre de pièces</label>
-          <select
-            value={filterPieces}
-            onChange={(e) => setFilterPieces(e.target.value)}
-            className="bg-zinc-800 border border-zinc-700 rounded px-3 py-1.5 text-sm"
-          >
-            <option value="all">Toutes</option>
-            <option value="2">2 pièces ({sets.filter(s => s.pieces_count === 2).length})</option>
-            <option value="4">4 pièces ({sets.filter(s => s.pieces_count === 4).length})</option>
-            <option value="6">6 pièces ({sets.filter(s => s.pieces_count === 6).length})</option>
-            <option value="8">8 pièces ({sets.filter(s => s.pieces_count === 8).length})</option>
-          </select>
-        </div>
+        <FilterSelect
+          label="Nombre de pièces"
+          value={filterPieces}
+          onChange={setFilterPieces}
+          options={[
+            { value: 'all', label: 'Toutes' },
+            { value: '2', label: '2 pièces', count: sets.filter(s => s.pieces_count === 2).length },
+            { value: '4', label: '4 pièces', count: sets.filter(s => s.pieces_count === 4).length },
+            { value: '6', label: '6 pièces', count: sets.filter(s => s.pieces_count === 6).length },
+            { value: '8', label: '8 pièces', count: sets.filter(s => s.pieces_count === 8).length },
+          ]}
+        />
 
-        <div>
-          <label className="text-xs text-zinc-500 block mb-1">Type d&apos;armure</label>
-          <select
-            value={filterArmorType}
-            onChange={(e) => setFilterArmorType(e.target.value)}
-            className="bg-zinc-800 border border-zinc-700 rounded px-3 py-1.5 text-sm"
-          >
-            <option value="all">Tous</option>
-            {armorTypes.map(type => {
+        <FilterSelect
+          label="Type d'armure"
+          value={filterArmorType}
+          onChange={setFilterArmorType}
+          options={[
+            { value: 'all', label: 'Tous' },
+            ...armorTypes.map(type => {
               const config = ARMOR_TYPE_CONFIG[type] || { name_fr: type, name_en: type, color: 'text-zinc-400', icon: '' };
               const count = sets.filter(s => s.armor_type === type).length;
-              return (
-                <option key={type} value={type}>
-                  {config.icon} {config.name_fr} / {config.name_en} ({count})
-                </option>
-              );
-            })}
-          </select>
-        </div>
+              return {
+                value: type,
+                label: `${config.icon} ${config.name_fr} / ${config.name_en}`,
+                count,
+              };
+            }),
+          ]}
+        />
       </div>
 
       {/* Summary by size */}
-      <div className="mb-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
+      <Card className="mb-6 p-4">
         <h2 className="text-sm font-medium mb-3">Par taille de set</h2>
-        <div className="flex flex-wrap gap-2">
-          {Object.entries(data._summary.by_size).map(([size, setIds]) => {
+        <ButtonGroup
+          options={Object.entries(data._summary.by_size).map(([size, setIds]) => {
             const sizeNum = size.replace('_pieces', '');
-            return (
-              <button
-                key={size}
-                onClick={() => setFilterPieces(filterPieces === sizeNum ? 'all' : sizeNum)}
-                className={`px-3 py-1.5 rounded text-xs transition-colors border ${
-                  filterPieces === sizeNum
-                    ? 'bg-violet-500/20 border-violet-500 text-violet-300'
-                    : 'bg-zinc-800/50 border-zinc-700 text-zinc-400'
-                }`}
-              >
-                {sizeNum} pièces ({setIds.length})
-              </button>
-            );
+            return {
+              value: sizeNum,
+              label: `${sizeNum} pièces`,
+              count: setIds.length,
+            };
           })}
-        </div>
-      </div>
+          value={filterPieces}
+          onChange={(value) => setFilterPieces(filterPieces === value ? 'all' : value)}
+        />
+      </Card>
 
       {/* Summary by armor type */}
-      <div className="mb-6 p-4 bg-zinc-900 rounded-lg border border-zinc-800">
+      <Card className="mb-6 p-4">
         <h2 className="text-sm font-medium mb-3">Par type d&apos;armure</h2>
-        <div className="flex flex-wrap gap-2">
-          {Object.entries(data._summary.by_armor_type).map(([type, setIds]) => {
+        <ButtonGroup
+          options={Object.entries(data._summary.by_armor_type).map(([type, setIds]) => {
             const config = ARMOR_TYPE_CONFIG[type] || { name_fr: type, name_en: type, icon: '?', color: 'text-zinc-400' };
-            return (
-              <button
-                key={type}
-                onClick={() => setFilterArmorType(filterArmorType === type ? 'all' : type)}
-                className={`px-3 py-1.5 rounded text-xs transition-colors border ${
-                  filterArmorType === type
-                    ? 'bg-violet-500/20 border-violet-500 text-violet-300'
-                    : `bg-zinc-800/50 ${config.color}`
-                }`}
-              >
-                {config.icon} {config.name_fr} ({setIds.length})
-              </button>
-            );
+            return {
+              value: type,
+              label: `${config.icon} ${config.name_fr}`,
+              count: setIds.length,
+            };
           })}
-        </div>
-      </div>
+          value={filterArmorType}
+          onChange={(value) => setFilterArmorType(filterArmorType === value ? 'all' : value)}
+        />
+      </Card>
 
       {/* Sets grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">

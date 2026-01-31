@@ -1,6 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { TabsGroup } from '@/components/TabsGroup';
+import { LoadingState } from '@/components/LoadingState';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 interface StarTier {
   name_fr: string;
@@ -106,8 +118,8 @@ function StarTierCard({ tier, data }: { tier: string; data: StarTier }) {
   const rarityBoost = tier === '3' ? 1 : tier === '4' ? 1 : tier === '5' ? 2 : 0;
 
   return (
-    <div
-      className="bg-zinc-900 rounded-lg border border-zinc-800 p-4 hover:border-zinc-700 transition-colors"
+    <Card
+      className="p-4 hover:border-zinc-700 transition-colors"
       style={{ borderLeftColor: data.color, borderLeftWidth: '4px' }}
     >
       {/* Header */}
@@ -120,9 +132,9 @@ function StarTierCard({ tier, data }: { tier: string; data: StarTier }) {
           </div>
         </div>
         {data.guaranteed_loot && (
-          <span className="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-1 rounded">
+          <Badge className="bg-yellow-500/20 text-yellow-400">
             Loot Garanti
-          </span>
+          </Badge>
         )}
       </div>
 
@@ -158,22 +170,22 @@ function StarTierCard({ tier, data }: { tier: string; data: StarTier }) {
 
       {/* Multipliers */}
       <div className="flex flex-wrap gap-2">
-        <span className="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded">
+        <Badge className="bg-green-500/20 text-green-400">
           Loot ×{data.loot_multiplier}
-        </span>
-        <span className="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded">
+        </Badge>
+        <Badge className="bg-blue-500/20 text-blue-400">
           XP ×{data.xp_multiplier}
-        </span>
-        <span className="bg-yellow-500/20 text-yellow-400 text-xs px-2 py-1 rounded">
+        </Badge>
+        <Badge className="bg-yellow-500/20 text-yellow-400">
           Gold ×{data.gold_multiplier}
-        </span>
+        </Badge>
         {rarityBoost > 0 && (
-          <span className="bg-purple-500/20 text-purple-400 text-xs px-2 py-1 rounded">
+          <Badge className="bg-purple-500/20 text-purple-400">
             Rareté +{rarityBoost}
-          </span>
+          </Badge>
         )}
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -192,7 +204,7 @@ function EncounterStarsTab() {
   }, []);
 
   if (loading) {
-    return <div className="animate-pulse text-zinc-500">Chargement...</div>;
+    return <LoadingState />;
   }
 
   if (!data) {
@@ -395,7 +407,7 @@ function EnhancementTab() {
   }, []);
 
   if (loading) {
-    return <div className="animate-pulse text-zinc-500">Chargement...</div>;
+    return <LoadingState />;
   }
 
   if (!data) {
@@ -574,43 +586,45 @@ function EnhancementTab() {
 }
 
 export default function SystemsPage() {
-  const [activeTab, setActiveTab] = useState('encounter-stars');
+  const [activeSystem, setActiveSystem] = useState('encounter-stars');
+  const enabledTabs = TABS.filter(tab => !tab.disabled);
 
   return (
-    <div className="p-4 md:p-6 lg:p-8">
-      {/* Header */}
-      <div className="mb-4 md:mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold mb-2">Systemes / Systems</h1>
-        <p className="text-zinc-500 text-sm">
-          Mecaniques de jeu et systemes globaux / Game mechanics and global systems
-        </p>
-      </div>
+    <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
+      {/* Secondary Sidebar */}
+      <aside className="w-64 border-r border-zinc-800 overflow-y-auto bg-zinc-900/50">
+        <div className="p-4 border-b border-zinc-800">
+          <h2 className="text-lg font-semibold">Systèmes</h2>
+          <p className="text-xs text-zinc-500">Game Systems</p>
+        </div>
+        <nav className="p-2">
+          {enabledTabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveSystem(tab.id)}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left ${
+                activeSystem === tab.id
+                  ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                  : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
+              }`}
+            >
+              <span className="text-xl">{tab.icon}</span>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium truncate">{tab.name_fr}</div>
+                <div className="text-xs text-zinc-500 truncate">{tab.name_en}</div>
+              </div>
+            </button>
+          ))}
+        </nav>
+      </aside>
 
-      {/* Tabs */}
-      <div className="mb-6 flex flex-wrap gap-2">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => !tab.disabled && setActiveTab(tab.id)}
-            disabled={tab.disabled}
-            className={`px-4 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 ${
-              activeTab === tab.id
-                ? 'bg-violet-500/20 border border-violet-500 text-violet-300'
-                : tab.disabled
-                ? 'bg-zinc-800/30 text-zinc-600 cursor-not-allowed'
-                : 'bg-zinc-800/50 border border-zinc-700 text-zinc-400 hover:text-white hover:border-zinc-600'
-            }`}
-          >
-            <span>{tab.icon}</span>
-            <span>{tab.name_fr} / {tab.name_en}</span>
-            {tab.disabled && <span className="text-[10px] bg-zinc-700 px-1.5 py-0.5 rounded">Soon</span>}
-          </button>
-        ))}
-      </div>
-
-      {/* Tab Content */}
-      {activeTab === 'encounter-stars' && <EncounterStarsTab />}
-      {activeTab === 'enhancement' && <EnhancementTab />}
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="p-4 md:p-6 lg:p-8">
+          {activeSystem === 'encounter-stars' && <EncounterStarsTab />}
+          {activeSystem === 'enhancement' && <EnhancementTab />}
+        </div>
+      </main>
     </div>
   );
 }

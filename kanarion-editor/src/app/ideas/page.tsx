@@ -1,6 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { ButtonGroup } from '@/components/ButtonGroup';
+import { ExpandableCard } from '@/components/ExpandableCard';
+import { LoadingState } from '@/components/LoadingState';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface Idea {
   id: string;
@@ -55,7 +60,6 @@ export default function IdeasPage() {
   const [loading, setLoading] = useState(true);
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [expandedIdea, setExpandedIdea] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/ideas')
@@ -67,11 +71,7 @@ export default function IdeasPage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="p-8 flex items-center justify-center">
-        <div className="text-zinc-400">Loading...</div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (!data) {
@@ -126,47 +126,38 @@ export default function IdeasPage() {
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         {Object.entries(STATUS_CONFIG).map(([status, config]) => (
-          <div
+          <Card
             key={status}
             onClick={() => setFilterStatus(filterStatus === status ? 'all' : status)}
-            className={`p-3 rounded-lg border cursor-pointer transition-all ${
-              filterStatus === status ? config.color + ' ring-2 ring-offset-2 ring-offset-zinc-900' : 'bg-zinc-900 border-zinc-800 hover:border-zinc-700'
+            className={`p-3 cursor-pointer transition-all ${
+              filterStatus === status ? config.color + ' ring-2 ring-offset-2 ring-offset-zinc-900' : 'hover:border-zinc-700'
             }`}
           >
             <div className="text-2xl mb-1">{config.icon}</div>
             <div className="font-medium capitalize">{status}</div>
             <div className="text-zinc-500 text-xs">{stats.byStatus[status as keyof typeof stats.byStatus]} ideas</div>
-          </div>
+          </Card>
         ))}
       </div>
 
       {/* Category Filter */}
-      <div className="mb-6 flex flex-wrap gap-2">
-        <button
-          onClick={() => setFilterCategory('all')}
-          className={`px-3 py-1.5 rounded-lg text-sm ${
-            filterCategory === 'all' ? 'bg-zinc-700 text-white' : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800'
-          }`}
-        >
-          All Categories
-        </button>
-        {data._meta.categories.map(cat => {
-          const config = CATEGORY_CONFIG[cat] || { icon: '📦', color: 'text-zinc-400' };
-          const count = data.ideas.filter(i => i.category === cat).length;
-          return (
-            <button
-              key={cat}
-              onClick={() => setFilterCategory(filterCategory === cat ? 'all' : cat)}
-              className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 ${
-                filterCategory === cat ? 'bg-zinc-700 text-white' : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800'
-              }`}
-            >
-              <span>{config.icon}</span>
-              <span className="capitalize">{cat}</span>
-              <span className="text-zinc-600">({count})</span>
-            </button>
-          );
-        })}
+      <div className="mb-6">
+        <ButtonGroup
+          options={[
+            { value: 'all', label: 'All Categories' },
+            ...data._meta.categories.map(cat => {
+              const config = CATEGORY_CONFIG[cat] || { icon: '📦', color: 'text-zinc-400' };
+              const count = data.ideas.filter(i => i.category === cat).length;
+              return {
+                value: cat,
+                label: `${config.icon} ${cat.charAt(0).toUpperCase() + cat.slice(1)}`,
+                count,
+              };
+            }),
+          ]}
+          value={filterCategory}
+          onChange={(value) => setFilterCategory(value)}
+        />
       </div>
 
       {/* Ideas List */}
@@ -185,52 +176,43 @@ export default function IdeasPage() {
                 {ideas.map(idea => {
                   const statusConfig = STATUS_CONFIG[idea.status];
                   const priorityConfig = PRIORITY_CONFIG[idea.priority];
-                  const isExpanded = expandedIdea === idea.id;
 
                   return (
-                    <div
-                      key={idea.id}
-                      className="bg-zinc-900 rounded-lg border border-zinc-800 overflow-hidden"
-                    >
-                      <div
-                        className="p-4 cursor-pointer hover:bg-zinc-800/50 transition-colors"
-                        onClick={() => setExpandedIdea(isExpanded ? null : idea.id)}
-                      >
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className={`text-xs px-2 py-0.5 rounded border ${statusConfig.color}`}>
-                                {statusConfig.icon} {idea.status}
-                              </span>
-                              <span className={`text-xs ${priorityConfig.color}`}>
-                                [{priorityConfig.label}]
-                              </span>
-                              {idea.inspiration && (
-                                <span className="text-xs text-zinc-600">
-                                  via {idea.inspiration}
-                                </span>
-                              )}
-                            </div>
-                            <h3 className="font-medium text-white">{idea.title}</h3>
-                            <p className="text-sm text-zinc-400 mt-1">{idea.description}</p>
-                          </div>
-                          <div className="text-zinc-600 text-xl">
-                            {isExpanded ? '−' : '+'}
-                          </div>
+                    <Card key={idea.id} className="overflow-hidden">
+                      <div className="p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline" className={statusConfig.color}>
+                            {statusConfig.icon} {idea.status}
+                          </Badge>
+                          <Badge variant="outline" className={priorityConfig.color}>
+                            {priorityConfig.label}
+                          </Badge>
+                          {idea.inspiration && (
+                            <span className="text-xs text-zinc-600">
+                              via {idea.inspiration}
+                            </span>
+                          )}
                         </div>
-                      </div>
+                        <h3 className="font-medium text-white mb-1">{idea.title}</h3>
+                        <p className="text-sm text-zinc-400">{idea.description}</p>
 
-                      {isExpanded && idea.details && (
-                        <div className="px-4 pb-4 border-t border-zinc-800 pt-3">
-                          <pre className="text-xs text-zinc-400 bg-zinc-950 p-3 rounded overflow-x-auto">
-                            {JSON.stringify(idea.details, null, 2)}
-                          </pre>
-                          <div className="mt-2 text-xs text-zinc-600">
-                            Added: {idea.added_date}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                        {idea.details && (
+                          <details className="mt-3">
+                            <summary className="text-xs text-zinc-500 cursor-pointer hover:text-zinc-400">
+                              View details
+                            </summary>
+                            <div className="mt-2">
+                              <pre className="text-xs text-zinc-400 bg-zinc-950 p-3 rounded overflow-x-auto">
+                                {JSON.stringify(idea.details, null, 2)}
+                              </pre>
+                              <div className="mt-2 text-xs text-zinc-600">
+                                Added: {idea.added_date}
+                              </div>
+                            </div>
+                          </details>
+                        )}
+                      </div>
+                    </Card>
                   );
                 })}
               </div>
