@@ -372,27 +372,43 @@ export default function PanopliesPage() {
             <span className="text-xs text-zinc-500">({identityCounts.all})</span>
           </button>
 
-          {identities.map(id => {
-            const config = IDENTITY_CONFIG[id] || { name: id, icon: '?', color: 'text-zinc-400' };
+          {/* Group by size */}
+          {[
+            { size: 2, label: 'Mini Sets (2p)', identities: ['lifesteal_link', 'crit_marker', 'hp_regen', 'mana_wisdom', 'mana_sustain', 'raw_power', 'defense_anchor'] },
+            { size: 4, label: 'Medium Sets (4p)', identities: ['speed_evasion', 'buff_support', 'control_slow', 'armor_break', 'hot_healer', 'hp_tank', 'mage_dps', 'physical_dps'] },
+            { size: 6, label: 'Large Sets (6p)', identities: ['rogue_assassin', 'healer_holy', 'fire_mage_dot', 'ice_mage_control', 'shield_tank', 'balanced_utility'] },
+            { size: 8, label: 'Complete Sets (8p)', identities: ['main_tank', 'physical_dps_crit', 'sustain_regen', 'bruiser_hp_atk'] }
+          ].map(group => {
+            const groupIdentities = identities.filter(id => group.identities.includes(id));
+            if (groupIdentities.length === 0) return null;
+
             return (
-              <button
-                key={id}
-                onClick={() => {
-                  setFilterIdentity(id);
-                  setIsMobileSidebarOpen(false);
-                }}
-                className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg transition-colors text-left mt-1 ${
-                  filterIdentity === id
-                    ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
-                    : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
-                }`}
-              >
-                <span className="flex items-center gap-2 text-sm">
-                  <span>{config.icon}</span>
-                  <span>{config.name}</span>
-                </span>
-                <span className="text-xs text-zinc-500">({identityCounts[id] || 0})</span>
-              </button>
+              <div key={group.size} className="mt-3">
+                <div className="text-[10px] text-zinc-600 uppercase tracking-wider px-2 py-1">{group.label}</div>
+                {groupIdentities.map(id => {
+                  const config = IDENTITY_CONFIG[id] || { name: id, icon: '?', color: 'text-zinc-400' };
+                  return (
+                    <button
+                      key={id}
+                      onClick={() => {
+                        setFilterIdentity(id);
+                        setIsMobileSidebarOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg transition-colors text-left mt-0.5 ${
+                        filterIdentity === id
+                          ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30'
+                          : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-white'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2 text-sm">
+                        <span>{config.icon}</span>
+                        <span className="text-xs">{config.name}</span>
+                      </span>
+                      <span className="text-xs text-zinc-500">({identityCounts[id] || 0})</span>
+                    </button>
+                  );
+                })}
+              </div>
             );
           })}
         </nav>
