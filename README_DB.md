@@ -1,54 +1,86 @@
-# KanarionDB
+# KanarionDB — Source de Verite
 
-Base de données JSON pour **Kanarion Online** - MMORPG mobile 2D avec combat en grille.
+Base de donnees JSON pour **Kanarion Online** — MMORPG mobile 2D avec combat en grille.
+
+Ce repo est la **source de verite unique** pour toutes les donnees de jeu. Il est consomme par le client Godot et le serveur C++ via git submodule (`kanarion-meta/`).
 
 ## Version
 
-- **Version**: 0.9.0-alpha
-- **Database Version**: 3.0
-- **Dernière mise à jour**: 2026-01-20
+- **Version**: 3.1.0
+- **Schema Version**: 1.0
+- **Content Hash**: SHA-256 dans `_meta/version.json` (regenere automatiquement)
 
 ## Structure
 
 ```
 kanarion_database/
-├── _meta/          # Métadonnées du projet
-├── schemas/        # JSON Schemas (validation)
-├── config/         # Configuration globale du jeu
-├── classes/        # Classes jouables (6 classes)
-├── stats/          # Système de statistiques
-├── entities/       # Monstres, NPCs, boss
-├── items/          # Équipements, consommables, matériaux
-├── world/          # Zones, quêtes, carte du monde
-├── systems/        # Systèmes de jeu (économie, PvP, guildes...)
-└── ui/             # Interface utilisateur
+├── _meta/          # Metadonnees (version.json, index.json, changelog)
+├── classes/        # 6 classes × 4 sous-classes (skills.json + passives.json)
+├── combat/         # Targeting, Line of Sight
+├── config/         # Combat formulas, game constants, monster AI, status effects
+├── entities/       # Monstres, NPCs, boss mechanics, variantes
+├── items/          # Equipements, consommables, materiaux, loot tables, affixes
+├── stats/          # 40+ stats, class base stats, growth rates
+├── systems/        # Economie, progression, guildes, PvP, achievements
+├── ui/             # Icons
+├── world/          # Zones, quetes, donjons, carte du monde
+├── scripts/        # gen_hash.sh, pre-commit hook
+└── kanarion-editor/ # Editeur web Next.js 16
 ```
+
+## Workflow : modifier les donnees
+
+```bash
+# 1. Editer un JSON
+vim entities/monsters.json
+
+# 2. Regenerer le content_hash
+./scripts/gen_hash.sh
+
+# 3. Commit (le pre-commit hook verifie que le hash est frais)
+git add . && git commit -m "feat: add mob_dragon"
+
+# 4. Push
+git push origin master
+
+# 5. Synchroniser front + back (depuis la racine Kanarion Online/)
+cd .. && ./sync_db.sh
+```
+
+Le pre-commit hook bloque tout commit ou le `content_hash` ne correspond pas aux fichiers JSON modifies.
+
+## Editeur web
+
+```bash
+cd kanarion-editor
+cp .env.example .env   # DB_ROOT=..
+npm install
+npm run dev            # localhost:3000
+```
+
+L'editeur lit/ecrit directement les fichiers JSON du repo parent.
+
+## Consommation par les projets
+
+| Projet | Chemin submodule | Lecture |
+|--------|-----------------|---------|
+| Client Godot (`kanarion_front`) | `kanarion-meta/` | GDScript `DataDB` charge les JSON au boot |
+| Serveur C++ (`kanarion_back`) | `kanarion-meta/` | `ContentLoader` charge les JSON au demarrage |
+
+Les deux repos pinnent le **meme commit exact** — jamais de `--remote`, toujours `git checkout <hash>`.
 
 ## Contenu
 
-| Catégorie | Contenu |
+| Categorie | Contenu |
 |-----------|---------|
-| Classes | 6 base + 24 sous-classes + 48 évolutions tier 3 |
-| Monstres | 50+ types uniques avec variantes |
-| Skills | 100+ compétences |
-| Zones | 10 zones MVP (niveau 1-20) |
-| Stats | 40+ statistiques trackées |
+| Classes | 6 base + 24 sous-classes |
+| Monstres | 50+ types avec variantes |
+| Skills | 100+ competences |
+| Zones | 10 zones MVP (niveaux 1-20) |
+| Stats | 40+ statistiques |
+| Items | Equipements, materiaux, consommables, loot tables |
 
-## Combat
-
-- **Grille**: 4×4 (16 slots, max 10 joueurs par équipe)
-- **Rows**: front, mid_front, mid_back, back
-- **Système**: Temps réel avec GCD 2.0s, drag-and-drop
-- **Line of Sight**: Auto-attacks bloquées si la cible a des unités devant (même colonne)
-
-## Pour les développeurs
-
-### Validation des données
-
-Les fichiers dans `schemas/` définissent la structure attendue de chaque type de données.
-Utilisez un validateur JSON Schema pour vérifier l'intégrité des fichiers.
-
-### Convention de nommage
+## Conventions de nommage
 
 - Monstres: `mob_*`
 - Skills: `skill_*`
@@ -56,13 +88,6 @@ Utilisez un validateur JSON Schema pour vérifier l'intégrité des fichiers.
 - Items: `item_*`, `mat_*`, `cons_*`
 - NPCs: `npc_*`
 
-### Fichiers de configuration
-
-- `config/game.json` - Constantes globales du jeu
-- `config/combat.json` - Formules et paramètres de combat
-- `config/monster_ai.json` - Comportements IA des monstres
-- `config/status_effects.json` - Règles des buffs/debuffs
-
 ## Licence
 
-Propriétaire - Tous droits réservés.
+Proprietaire — Tous droits reserves.
