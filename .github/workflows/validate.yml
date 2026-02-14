@@ -1,0 +1,208 @@
+name: Validate Game Database
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. Hash integrity: content_hash must match actual JSON files
+      - name: Verify content_hash is up to date
+        run: |
+          EXPECTED=$(find . -name "*.json" \
+            -not -path "./.git/*" \
+            -not -path "./kanarion-editor/*" \
+            -not -path "./scripts/*" \
+            -not -path "./_meta/version.json" \
+            -not -path "./_meta/statistics.json" \
+            -not -path "./_meta/index.json" \
+            -not -path "./_meta/changelog.json" \
+            -not -path "./_meta/ideas_to_integrate.json" \
+            | sort \
+            | while read f; do echo "$f"; cat "$f"; done \
+            | sha256sum | cut -d' ' -f1)
+
+          ACTUAL=$(python3 -c "import json; print(json.load(open('_meta/version.json')).get('content_hash','').replace('sha256:',''))")
+
+          echo "Expected: $EXPECTED"
+          echo "Actual:   $ACTUAL"
+
+          if [ "$EXPECTED" != "$ACTUAL" ]; then
+            echo "::error::content_hash is stale! Run ./scripts/gen_hash.sh before committing."
+            exit 1
+          fi
+          echo "Hash OK"
+
+      # 2. JSON syntax: all files must parse without errors
+      - name: Validate JSON syntax
+        run: |
+          ERRORS=0
+          for f in $(find . -name "*.json" -not -path "./.git/*" -not -path "./kanarion-editor/*" -not -path "./node_modules/*"); do
+            if ! python3 -c "import json; json.load(open('$f'))" 2>/dev/null; then
+              echo "::error file=$f::Invalid JSON syntax"
+              ERRORS=$((ERRORS + 1))
+            fi
+          done
+          if [ $ERRORS -gt 0 ]; then
+            echo "::error::$ERRORS JSON files have syntax errors"
+            exit 1
+          fi
+          echo "All JSON files valid"
+
+      # 3. Reference integrity: skill IDs, monster IDs, item IDs exist where referenced
+      - name: Validate cross-references
+        run: |
+          python3 - <<'PYEOF'
+          import json, glob, sys
+
+          errors = []
+
+          # Load all data
+          def load(path):
+              try:
+                  with open(path) as f:
+                      return json.load(f)
+              except:
+                  return {}
+
+          # Collect all known item IDs
+          item_ids = set()
+          for rarity_file in ["items/materials.json", "items/consumables.json", "items/equipment.json"]:
+              data = load(rarity_file)
+              for key, val in data.items():
+                  if key.startswith("_"):
+                      continue
+                  if isinstance(val, list):
+                      for item in val:
+                          if isinstance(item, dict) and "id" in item:
+                              item_ids.add(item["id"])
+                  elif isinstance(val, dict):
+                      for sub_key, sub_val in val.items():
+                          if isinstance(sub_val, list):
+                              for item in sub_val:
+                                  if isinstance(item, dict) and "id" in item:
+                                      item_ids.add(item["id"])
+                          elif isinstance(sub_val, dict):
+                              for sub2_key, sub2_val in sub_val.items():
+                                  if isinstance(sub2_val, list):
+                                      for item in sub2_val:
+                                          if isinstance(item, dict) and "id" in item:
+                                              item_ids.add(item["id"])
+
+          # Validate loot table references
+          loot = load("items/loot_tables.json")
+          tables = loot.get("monster_loot_tables", {})
+          for monster_type, drops in tables.items():
+              if monster_type.startswith("_"):
+                  continue
+              if isinstance(drops, list):
+                  for drop in drops:
+                      item_id = drop.get("item_id", "")
+                      if item_id and item_id not in item_ids:
+                          errors.append(f"loot_tables.json: monster '{monster_type}' references unknown item '{item_id}'")
+
+          # Validate monster IDs exist
+          monsters = load("entities/monsters.json")
+          monster_ids = set()
+          for m in monsters.get("monsters", []):
+              if "id" in m:
+                  monster_ids.add(m["id"])
+
+          # Collect all skill IDs
+          skill_ids = set()
+          for skills_file in glob.glob("classes/*/skills.json"):
+              data = load(skills_file)
+              for skill in data.get("base_skills", []):
+                  if isinstance(skill, dict) and "id" in skill:
+                      skill_ids.add(skill["id"])
+              for sub_id, sub_data in data.get("subclass_skills", {}).items():
+                  skills_list = sub_data if isinstance(sub_data, list) else sub_data.get("skills", [])
+                  for skill in skills_list:
+                      if isinstance(skill, dict) and "id" in skill:
+                          skill_ids.add(skill["id"])
+
+          # Validate status effect references in skills
+          effects = load("stats/status_effects.json")
+          effect_ids = set()
+          for cat, cat_data in effects.get("effects", {}).items():
+              if isinstance(cat_data, dict):
+                  effect_ids.update(cat_data.keys())
+
+          for skills_file in glob.glob("classes/*/skills.json"):
+              data = load(skills_file)
+              all_skills = data.get("base_skills", [])
+              for sub_data in data.get("subclass_skills", {}).values():
+                  if isinstance(sub_data, list):
+                      all_skills.extend(sub_data)
+                  elif isinstance(sub_data, dict):
+                      all_skills.extend(sub_data.get("skills", []))
+
+              for skill in all_skills:
+                  if not isinstance(skill, dict):
+                      continue
+                  for ref_field in ["effect", "buff", "debuff"]:
+                      ref = skill.get(ref_field, "")
+                      if ref and ref not in effect_ids:
+                          errors.append(f"{skills_file}: skill '{skill.get('id','?')}' references unknown {ref_field} '{ref}'")
+
+          if errors:
+              print(f"\n{len(errors)} reference errors found:")
+              for e in errors:
+                  print(f"  ::error::{e}")
+              sys.exit(1)
+          else:
+              print(f"Cross-references OK ({len(item_ids)} items, {len(monster_ids)} monsters, {len(skill_ids)} skills, {len(effect_ids)} effects)")
+          PYEOF
+
+      # 4. Schema version present
+      - name: Verify schema_version exists
+        run: |
+          python3 -c "
+          import json, sys
+          v = json.load(open('_meta/version.json'))
+          for field in ['schema_version', 'content_hash', 'database_version']:
+              if field not in v or not v[field]:
+                  print(f'::error::Missing required field: {field}')
+                  sys.exit(1)
+          print(f'schema_version={v[\"schema_version\"]} database_version={v[\"database_version\"]}')
+          "
+
+      # 5. Version bump enforcement: gameplay JSON changes require database_version bump
+      - name: Check version bump on gameplay changes
+        if: github.event_name == 'pull_request'
+        run: |
+          # Get changed files (gameplay JSON only, exclude metadata)
+          GAMEPLAY_CHANGES=$(git diff --name-only ${{ github.event.pull_request.base.sha }}..HEAD \
+            | grep '\.json$' \
+            | grep -v '^_meta/' \
+            | grep -v '^kanarion-editor/' \
+            | grep -v '^scripts/' \
+            || true)
+
+          if [ -z "$GAMEPLAY_CHANGES" ]; then
+            echo "No gameplay JSON changes — version bump not required"
+            exit 0
+          fi
+
+          echo "Gameplay files changed:"
+          echo "$GAMEPLAY_CHANGES"
+
+          # Check if version.json was also modified (version bump)
+          VERSION_CHANGED=$(git diff --name-only ${{ github.event.pull_request.base.sha }}..HEAD \
+            | grep '^_meta/version.json$' || true)
+
+          if [ -z "$VERSION_CHANGED" ]; then
+            echo "::error::Gameplay JSON files were modified but _meta/version.json was NOT updated!"
+            echo "You must bump database_version (or at minimum regenerate content_hash) when changing gameplay data."
+            echo ""
+            echo "Run: ./scripts/gen_hash.sh && git add _meta/version.json"
+            exit 1
+          fi
+
+          echo "version.json updated — OK"
