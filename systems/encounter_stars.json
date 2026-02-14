@@ -185,6 +185,64 @@
     "notes": "À définir avec le système de zones"
   },
 
+  "encounter_templates": {
+    "_comment": "Templates de groupes 5-star pre-designes. Chaque template force une strategie specifique.",
+    "5star_tank_control": {
+      "name_fr": "Bastion Gobelin",
+      "name_en": "Goblin Bastion",
+      "zone_level_range": [5, 10],
+      "star": 5,
+      "strategy_required": "Focus healer first, CC tanks, then DPS boss",
+      "fail_condition": "If shaman survives >30s, boss becomes unkillable",
+      "composition": [
+        {"mob_id": "mob_tortue_de_pierre", "rank": "boss", "role": "tank", "count": 1, "notes": "Massive HP, taunt, frontline anchor"},
+        {"mob_id": "mob_shaman_goblin", "rank": "elite", "role": "healer", "count": 1, "notes": "Heals boss — KILL FIRST"},
+        {"mob_id": "mob_totem_wolf", "rank": "elite", "role": "support", "count": 1, "notes": "Buffs DEF on boss"},
+        {"mob_id": "mob_belier", "rank": "normal", "role": "tank", "count": 2, "notes": "Frontline wall"},
+        {"mob_id": "mob_goblin", "rank": "normal", "role": "brute", "count": 3, "notes": "DPS fodder"},
+        {"mob_id": "mob_wolf", "rank": "elite", "role": "assassin", "count": 1, "notes": "Targets player backline"}
+      ],
+      "total_mobs": 9,
+      "anti_zerg": ["healer_priority", "buff_cascade"]
+    },
+    "5star_burst_assassin": {
+      "name_fr": "Meute Obscure",
+      "name_en": "Dark Pack",
+      "zone_level_range": [10, 15],
+      "star": 5,
+      "strategy_required": "Protect your healer, kill hyenas first, focus boss last",
+      "fail_condition": "If player healer dies, wipe is probable",
+      "composition": [
+        {"mob_id": "mob_cerf_obscur", "rank": "boss", "role": "assassin", "count": 1, "notes": "Targets player healer"},
+        {"mob_id": "mob_hyene", "rank": "elite", "role": "assassin", "count": 2, "notes": "Target player mage"},
+        {"mob_id": "mob_archer_squelette", "rank": "elite", "role": "artillery", "count": 1, "notes": "Ranged silence"},
+        {"mob_id": "mob_wolf", "rank": "normal", "role": "assassin", "count": 2, "notes": "Harassment"},
+        {"mob_id": "mob_goblin_warior", "rank": "normal", "role": "brute", "count": 2, "notes": "Front DPS"},
+        {"mob_id": "mob_spider", "rank": "normal", "role": "assassin", "count": 1, "notes": "Slow/web"}
+      ],
+      "total_mobs": 9,
+      "anti_zerg": ["backline_threat", "focus_required"]
+    },
+    "5star_sustain_heal": {
+      "name_fr": "Bastion Ancestral",
+      "name_en": "Ancestral Bastion",
+      "zone_level_range": [15, 20],
+      "star": 5,
+      "strategy_required": "Kill healers → support → boss. Coordinated burst required.",
+      "fail_condition": "If both healers survive, golem never drops below 50%",
+      "composition": [
+        {"mob_id": "mob_golem", "rank": "boss", "role": "tank", "count": 1, "notes": "Enormous HP pool"},
+        {"mob_id": "mob_shaman_goblin", "rank": "elite", "role": "healer", "count": 2, "notes": "Heal loop — KILL BOTH"},
+        {"mob_id": "mob_totem_wolf", "rank": "elite", "role": "support", "count": 1, "notes": "Shield + DEF buff on allies"},
+        {"mob_id": "mob_lizardman", "rank": "normal", "role": "brute", "count": 2, "notes": "DPS threat"},
+        {"mob_id": "mob_skeleton", "rank": "normal", "role": "brute", "count": 2, "notes": "DPS filler"},
+        {"mob_id": "mob_mummy", "rank": "normal", "role": "tank", "count": 1, "notes": "Secondary soak"}
+      ],
+      "total_mobs": 9,
+      "anti_zerg": ["healer_priority", "buff_cascade", "sustain_wall"]
+    }
+  },
+
   "loot_integration": {
     "description": "Comment les étoiles affectent le loot",
     "formula": "Le loot_multiplier s'applique à la chance de drop finale",
