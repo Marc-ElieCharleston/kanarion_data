@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-const DB_PATH = path.join(process.cwd(), 'kanarion_database');
+const DB_ROOT = process.env.DB_ROOT || '..';
+const DB_PATH = path.resolve(process.cwd(), DB_ROOT);
 
 export function readJsonFile<T>(relativePath: string): T {
   const filePath = path.join(DB_PATH, relativePath);
