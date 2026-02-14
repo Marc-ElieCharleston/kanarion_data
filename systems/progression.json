@@ -1,23 +1,60 @@
 {
   "_meta": {
-    "version": "3.0",
-    "last_updated": "2026-01-10",
+    "version": "3.1",
+    "last_updated": "2026-02-14",
     "description": "Systeme de progression - niveaux, XP, tiers de classe"
   },
 
   "leveling": {
     "max_level": 100,
     "mvp_cap": 20,
-    "xp_base": 100,
-    "xp_growth_multiplier": 1.15,
-    "formula": "xp_needed = xp_base * (xp_growth_multiplier ^ (level - 1))",
-    "example_xp_table": {
-      "level_2": 100,
-      "level_10": 230,
-      "level_25": 950,
-      "level_50": 5500,
-      "level_75": 32000,
-      "level_100": 185000
+    "xp_source": "lookup_table",
+    "xp_source_note": "La lookup table est la source de verite. La formule polynomiale sert d'interpolation pour les niveaux non definis.",
+    "xp_formula_fallback": "xp_base * level^xp_exponent",
+    "xp_base": 18,
+    "xp_exponent": 1.45,
+    "xp_table": {
+      "2": 100,
+      "3": 120,
+      "4": 145,
+      "5": 175,
+      "6": 210,
+      "7": 250,
+      "8": 295,
+      "9": 345,
+      "10": 400,
+      "11": 460,
+      "12": 525,
+      "13": 600,
+      "14": 680,
+      "15": 770,
+      "16": 870,
+      "17": 980,
+      "18": 1100,
+      "19": 1240,
+      "20": 1400,
+      "25": 2200,
+      "30": 3200,
+      "35": 4400,
+      "40": 5800,
+      "45": 7500,
+      "50": 9500,
+      "55": 12000,
+      "60": 15000,
+      "65": 20000,
+      "70": 28000,
+      "75": 40000,
+      "80": 55000,
+      "85": 75000,
+      "90": 100000,
+      "95": 135000,
+      "100": 185000
+    },
+    "pacing_notes": {
+      "target": "3 a 6h pour level 20",
+      "early_1_5": "4-6 combats par level, rapide et gratifiant",
+      "mid_6_12": "6-8 combats par level, le joueur apprend sa classe",
+      "late_13_20": "8-10 combats par level, preparation tier 2"
     }
   },
 
@@ -37,7 +74,7 @@
   },
 
   "stat_allocation": {
-    "points_per_level": 3,
+    "points_per_level": 5,
     "skill_points_per_level": 1,
     "allocatable_stats": ["hp", "mp", "atk", "def", "mag"],
     "cost_formula": {
@@ -56,6 +93,8 @@
     "enabled": true,
     "reference_level": "highest_mob_level",
     "reduction_per_level": 2.0,
+    "xp_division": false,
+    "xp_division_note": "Chaque joueur recoit 100% de l'XP. Pas de division.",
     "tier_bonuses": {
       "tier_1": {"gap": "0-10", "bonus_reduction": 0},
       "tier_2": {"gap": "11-20", "bonus_reduction": 5},
