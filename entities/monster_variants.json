@@ -34,7 +34,28 @@
       "xp_mult": 2.0,
       "loot_bonus": 0.40,
       "special": "increased_size"
+    },
+    "swift": {
+      "name_prefix": "Swift",
+      "stats_mult": {"hp": 1.0, "atk": 1.0, "def": 1.0},
+      "xp_mult": 1.3,
+      "loot_bonus": 0.15,
+      "special": "cooldown_reduction_20",
+      "cooldown_mult": 0.8
     }
+  },
+
+  "stacking_rules": {
+    "_comment": "REGLE ANTI-STACKING: rank (elite/boss) et prefix NE MULTIPLIENT PAS leurs stats. Seul le rank s'applique sur les stats. Le prefix apporte uniquement son 'special' effect.",
+    "rule": "rank_overrides_prefix_stats",
+    "details": [
+      "Un 'Giant Elite' = Elite stats (x1.5 HP, x1.2 ATK) + Giant special (increased_size)",
+      "Un 'Swift Boss' = Boss stats (x2.2 HP, x1.3 ATK) + Swift special (cooldown_reduction_20)",
+      "Les prefix stats_mult sont IGNORES quand un rank est present",
+      "Seul le champ 'special' du prefix s'applique en plus du rank"
+    ],
+    "max_hp_mult_cap": 2.5,
+    "max_atk_mult_cap": 1.5
   },
 
   "star_system": {
@@ -127,9 +148,9 @@
   },
 
   "elite_variant": {
-    "_comment": "Version elite d'un monstre - rare spawn, much stronger",
+    "_comment": "Version elite d'un monstre - rare spawn, stronger. Stats normalisees (CTO v2).",
     "name_prefix": "Elite",
-    "stats_mult": {"hp": 1.8, "atk": 1.5, "def": 1.3},
+    "stats_mult": {"hp": 1.5, "atk": 1.2, "def": 1.2},
     "size_mult": 1.15,
     "xp_mult": 2.0,
     "gold_mult": 2.0,
@@ -140,8 +161,19 @@
   },
 
   "boss_variant": {
-    "_comment": "Boss version - unique spawn, end of dungeon or world boss",
+    "_comment": "Boss version - 3 tiers: field (open world mini-boss), dungeon (end of instance), world (raid event). Stats normalisees (CTO v2).",
     "types": {
+      "field_boss": {
+        "_comment": "Mini-boss en open world, soloable par un bon groupe. Stats CTO: HP x2.2, ATK x1.3.",
+        "stats_mult": {"hp": 2.2, "atk": 1.3, "def": 1.3},
+        "size_mult": 1.25,
+        "xp_mult": 4.0,
+        "gold_mult": 3.0,
+        "loot_mult": 2.0,
+        "phases": 2,
+        "special_loot_table": true,
+        "respawn_time_minutes": {"min": 5, "max": 15}
+      },
       "dungeon_boss": {
         "stats_mult": {"hp": 5.0, "atk": 2.5, "def": 2.0},
         "size_mult": 1.35,
@@ -294,10 +326,11 @@
   "spawn_rules": {
     "prefix_spawn_chance": 0.15,
     "prefix_weights": {
-      "corrupted": 35,
-      "angry": 30,
-      "armored": 25,
-      "giant": 10
+      "corrupted": 30,
+      "angry": 25,
+      "armored": 20,
+      "giant": 10,
+      "swift": 15
     },
     "elite_spawn_chance": 0.02,
     "boss_spawn": "scripted_only"
