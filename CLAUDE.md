@@ -4,35 +4,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-KanarionDB is a JSON-based game database for "Kanarion Online" (a mobile 2D MMORPG) paired with a Next.js web editor for viewing and managing the data.
+KanarionDB (`kanarion_data`) is a JSON-based game database for "Kanarion Online" (a mobile 2D MMORPG). This repo contains **only the JSON data** — the web editor is in a separate repo: [`kanarion-tool`](https://github.com/Marc-ElieCharleston/kanarion-tool).
 
 ## Commands
 
-All commands run from the `kanarion-editor/` directory:
-
 ```bash
-npm run dev      # Start development server (localhost:3000)
-npm run build    # Production build
-npm run lint     # Run ESLint
-```
+# Regenerate content hash after editing JSON
+./scripts/gen_hash.sh
 
-No test suite is currently configured.
+# Commit (pre-commit hook validates hash)
+git add . && git commit -m "feat: add mob_dragon"
+```
 
 ## Architecture
 
 ### Structure
 
-The project is a **Next.js 16 (App Router)** web editor in `kanarion-editor/` that reads/writes a JSON database stored in `kanarion-editor/kanarion_database/`.
+This repo is **pure data** (JSON). No application code.
 
-### Editor Architecture
-
-- **API Routes** (`src/app/api/*/route.ts`): Server-side handlers that read from JSON database
-- **Pages** (`src/app/*/page.tsx`): Route pages (classes, stats, effects, patterns, panoplies, skills, loot, systems, equipment-stats, ideas)
-- **Components** (`src/components/`): Custom components (Sidebar, AoeGrid, SkillCard, StatsDisplay, etc.)
-- **UI Components** (`src/components/ui/`): shadcn/ui primitives (Button, Card, Tabs, Select, Dialog, etc.)
-- **Database Utility** (`src/lib/database.ts`): Centralized JSON file I/O with TypeScript interfaces
-
-### Database Structure (`kanarion-editor/kanarion_database/`)
+### Database Structure
 
 - **`_meta/`** - Project metadata, version info, ideas backlog
 - **`classes/`** - 6 base classes (warrior, mage, healer, archer, rogue, artisan), each with `skills.json` and `passives.json`
@@ -75,14 +65,9 @@ The project is a **Next.js 16 (App Router)** web editor in `kanarion-editor/` th
 - Items: `item_*`, `mat_*`, `cons_*`
 - NPCs: `npc_*`
 
-## Path Alias
-
-In the editor, `@/*` maps to `./src/*` (configured in tsconfig.json).
-
 ## Notes
 
-- Database path in code: `process.cwd()/kanarion_database/` (see `src/lib/database.ts`)
-- The `prebuild` script copies the database into the editor directory for production builds
-- Some content has bilingual FR/EN text
+- Some content has bilingual FR/EN text (name_en / name_fr)
 - Combat balance formulas are complex - review `config/combat.json` before modifying damage calculations
-- TypeScript interfaces for database types are in `src/lib/database.ts`
+- Content hash in `_meta/version.json` is validated by pre-commit hook — run `./scripts/gen_hash.sh` after edits
+- The web editor ([kanarion-tool](https://github.com/Marc-ElieCharleston/kanarion-tool)) reads this data via `DB_ROOT` env var

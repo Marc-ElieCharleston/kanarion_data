@@ -13,7 +13,7 @@ Ce repo est la **source de verite unique** pour toutes les donnees de jeu. Il es
 ## Structure
 
 ```
-kanarion_database/
+kanarion_data/
 ├── _meta/          # Metadonnees (version.json, index.json, changelog)
 ├── classes/        # 6 classes × 4 sous-classes (skills.json + passives.json)
 ├── combat/         # Targeting, Line of Sight
@@ -24,9 +24,10 @@ kanarion_database/
 ├── systems/        # Economie, progression, guildes, PvP, achievements
 ├── ui/             # Icons
 ├── world/          # Zones, quetes, donjons, carte du monde
-├── scripts/        # gen_hash.sh, pre-commit hook
-└── kanarion-editor/ # Editeur web Next.js 16
+└── scripts/        # gen_hash.sh, pre-commit hook
 ```
+
+> **Note** : L'editeur web est dans un repo separe : [`kanarion-tool`](https://github.com/Marc-ElieCharleston/kanarion-tool)
 
 ## Workflow : modifier les donnees
 
@@ -43,22 +44,24 @@ git add . && git commit -m "feat: add mob_dragon"
 # 4. Push
 git push origin master
 
-# 5. Synchroniser front + back (depuis la racine Kanarion Online/)
-cd .. && ./sync_db.sh
+# 5. Synchroniser front + back
+cd ../kanarion_front && ./sync_data.sh
 ```
 
 Le pre-commit hook bloque tout commit ou le `content_hash` ne correspond pas aux fichiers JSON modifies.
 
 ## Editeur web
 
+L'editeur est dans un repo separe : [`kanarion-tool`](https://github.com/Marc-ElieCharleston/kanarion-tool)
+
 ```bash
-cd kanarion-editor
-cp .env.example .env   # DB_ROOT=..
+cd kanarion-tool/kanarion-editor
+cp .env.example .env   # DB_ROOT=../kanarion_data
 npm install
 npm run dev            # localhost:3000
 ```
 
-L'editeur lit/ecrit directement les fichiers JSON du repo parent.
+L'editeur lit/ecrit les fichiers JSON de `kanarion_data` via le chemin configure dans `.env`.
 
 ## Consommation par les projets
 
