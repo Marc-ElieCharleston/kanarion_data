@@ -4,6 +4,8 @@ Base de donnees JSON pour **Kanarion Online** — MMORPG mobile 2D avec combat e
 
 Ce repo est la **source de verite unique** pour toutes les donnees de jeu. Il est consomme par le client Godot et le serveur C++ via git submodule (`kanarion-meta/`).
 
+> **Avertissement** : Ce repo contient des donnees de game design en cours de developpement. Toutes les valeurs (stats, formules, drop rates, etc.) sont susceptibles de changer a tout moment sans preavis. Ne vous basez pas sur ces donnees pour des outils ou des analyses — elles ne refletent pas le produit final.
+
 ## Version
 
 - **Version**: 3.1.0
@@ -13,7 +15,7 @@ Ce repo est la **source de verite unique** pour toutes les donnees de jeu. Il es
 ## Structure
 
 ```
-kanarion_data/
+kanarion_database/
 ├── _meta/          # Metadonnees (version.json, index.json, changelog)
 ├── classes/        # 6 classes × 4 sous-classes (skills.json + passives.json)
 ├── combat/         # Targeting, Line of Sight
@@ -69,6 +71,8 @@ L'editeur lit/ecrit les fichiers JSON de `kanarion_data` via le chemin configure
 |--------|-----------------|---------|
 | Client Godot (`kanarion_front`) | `kanarion-meta/` | GDScript `DataDB` charge les JSON au boot |
 | Serveur C++ (`kanarion_back`) | `kanarion-meta/` | `ContentLoader` charge les JSON au demarrage |
+| Site web (`kanarion_web`) | `kanarion_database/` | `database.ts` lit les JSON via `fs.readFileSync` |
+| Editeur (`kanarion-tool`) | via `DB_ROOT` env var | `database.ts` lit/ecrit les JSON |
 
 Les deux repos pinnent le **meme commit exact** — jamais de `--remote`, toujours `git checkout <hash>`.
 
@@ -77,8 +81,8 @@ Les deux repos pinnent le **meme commit exact** — jamais de `--remote`, toujou
 | Categorie | Contenu |
 |-----------|---------|
 | Classes | 6 base + 24 sous-classes |
-| Monstres | 50+ types avec variantes |
-| Skills | 100+ competences |
+| Monstres | 26 types avec variantes |
+| Skills | 130 competences |
 | Zones | 10 zones MVP (niveaux 1-20) |
 | Stats | 40+ statistiques |
 | Items | Equipements, materiaux, consommables, loot tables |
@@ -93,4 +97,4 @@ Les deux repos pinnent le **meme commit exact** — jamais de `--remote`, toujou
 
 ## Licence
 
-Proprietaire — Tous droits reserves.
+Proprietaire — Tous droits reserves. Ce repo est public a des fins de transparence et d'integration technique. Les donnees restent la propriete de Kanarion Online et ne peuvent etre reutilisees dans un autre projet sans autorisation.
