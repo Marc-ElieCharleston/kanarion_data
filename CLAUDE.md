@@ -41,7 +41,7 @@ Validation happens at three levels:
 - **`config/`** — Combat formulas (`combat.json`), game constants (`game.json`), monster AI (`monster_ai.json`), skill system (`skill_system.json`), skill templates (`skill_templates.json`), role tags (`roles.json`), monster archetypes, monster skill scaling, status effect rules
 - **`entities/`** — Monsters (`monsters.json`), NPCs, boss mechanics, summons (`summons.json`: max 6/team), monster archetypes/variants, healer/support monsters
 - **`items/`** — Equipment (10 slots, 5 rarities, T1-T5 scaling), consumables, materials, affixes, panoplies (25 sets with intentional Hebrew names), loot tables, currencies, substat crafting system
-- **`stats/`** — 40+ stat definitions, class base stats, growth rates, status effects with formulas
+- **`stats/`** — 40+ stat definitions, class base stats, growth rates, status effect definitions with IDs (referenced by skills — `stats/status_effects.json` defines effect IDs, while `config/status_effects.json` defines balance rules like durations and stacking)
 - **`systems/`** — Economy, guilds, achievements, PvP, leaderboards, enhancement, keystones (max 1 active, radical gameplay modifiers), Koro cards (cross-class skills, C/B/A/S/SS ranks), encounter stars (0-5 difficulty), boutique/battle pass, daily rewards, social, progression
 - **`ui/`** — Icon definitions (`icons.json`: 496 icons with priority/status/category/hint)
 - **`world/`** — Zones, quests, dungeons, lore, whispers (found-text), world map
@@ -53,6 +53,41 @@ Validation happens at three levels:
 - Fields: `name_fr` / `name_en`, `description_fr` / `description_en`
 - `correction_traduction.md` contains the canonical FR/EN glossary for stats, status effects, and internal terms — internal code terms (e.g. `row_3`, `rect_2x3`) must NEVER appear in player-facing text
 - Panoplies' Hebrew names are intentional lore — do not translate
+- **Resource:** The universal resource is called **Souffle** (FR) / **Breath** (EN), NOT "Mana". Field key `mp` and `mana_cost` remain as technical abbreviations but all player-facing text uses Souffle/Breath.
+
+### Lore-Aligned Class Naming
+The game is Bible-inspired but NOT preachy — dark themes exist (Occultist, Cardmaster) because the message is about love and grace, not avoidance. The lore shows consequences and redemption, not condemnation.
+
+| Old name | New name | Reason |
+|----------|----------|--------|
+| Soulreaper (Healer) | **Martyr** | Self-sacrifice healing, not blood magic — fits the "no greater love" theme |
+
+Classes kept as-is (game-sounding names, nuanced lore):
+- **Occultist** — Studies the Abyss, walks a fine line between mastery and ruin
+- **Cardmaster** — Reads probability patterns the Rifts introduced, card visual identity is core to the class (NOT linked to Koros)
+
+Three sources of power in the lore:
+1. **Martial mastery** (training, discipline) — Warrior, Archer, Rogue, Artisan
+2. **Arcane study** (understanding Rift/Abyss forces, risky path) — Mage (Occultist is the most dangerous)
+3. **Sacred gift** (inherited from the Creator's Alliance) — Healer
+
+### Subclass Design Fields
+Each subclass in `_classes_index.json` has two design-only fields:
+- **`fissure_relation`** (EN) — How the subclass relates to the Fissures/Rifts. Each subclass represents a different response.
+- **`souffle_usage`** (EN) — How the subclass channels Breath. Informs the writing style of player-facing descriptions.
+
+These fields are **NOT player-facing**. They are internal design notes used to maintain lore coherence when writing `description`, `lore`, `wiki_intro`, and skill descriptions.
+
+### Le Lien / The Bond
+The thematic opposite of the Fissures. Fissures = separation, corruption, isolation. Lien = connection between beings, the Creator's other gift.
+
+**CRITICAL:** Le Lien must NEVER be named as a game system, a stat, or an explicit mechanic. It is a narrative undercurrent woven naturally into descriptions. Examples of natural Lien expression:
+- Warlord: "Avec les leurs, ils sont invincibles"
+- Martyr: "donner sa vie pour ceux qu'on protège"
+- Healer passive "Lien de Vie" / "Life Bond" (already exists)
+
+### Faction System (Level 60)
+Players choose a faction at level 60. Subclass lore must NOT lock players into a "good" or "bad" alignment. Descriptions should focus on technique and approach, not morality. The moral dimension comes from the faction choice.
 
 ### ID Conventions
 | Entity | Prefix | Example |

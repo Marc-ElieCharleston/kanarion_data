@@ -84,7 +84,7 @@ Ce glossaire est la **reference unique**. Toute deviation est un bug.
 | Concept | FR (in-game) | EN (in-game) | Abrev. |
 |---------|-------------|-------------|--------|
 | Points de vie | Points de vie | Health Points | PV / HP |
-| Points de mana | Points de mana | Mana Points | PM / MP |
+| Points de souffle | Points de souffle | Breath Points | PS / BP |
 | Attaque | Attaque | Attack | ATK |
 | Magie | Magie | Magic | MAG |
 | Armure | Armure | Armor | ARM |
@@ -285,7 +285,7 @@ Meme format que Phase 2 : flavor court + mecanique claire.
 |--------|---------|--------|
 | Focus Elementaire | Focalisation Elementaire | "Focus" est anglais |
 | Conduit Magique | Canal Magique | "Conduit" = tuyau en FR |
-| Efficacite Mana | Maitrise du Mana | Nom et effet incoherents |
+| Efficacite Souffle | Maitrise du Souffle | Nom et effet incoherents |
 | Patience du Sniper | Patience de l'Embusque | "Sniper" casse l'immersion fantasy |
 | Pieds Agiles | Jeu de Jambes | Le nom dit esquive, l'effet est parade |
 | Mains Stables | Mains Fermes | Plus idiomatique en FR |
@@ -298,14 +298,13 @@ Meme format que Phase 2 : flavor court + mecanique claire.
 
 ---
 
-## Phase 4 : Noms FR pour l'equipement
+## Phase 4 : Noms FR pour l'equipement — COMPLETE
 
-**Effort estime : 2-3h**
-**Impact : Les items ne sont plus en anglais**
+**Statut : TERMINE** — Les `name_fr` ont ete ajoutes a tous les items (ex: "Rusty Sword" → "Epee Rouillee", "Iron Sword" → "Epee de Fer").
 
-### Probleme
+### Probleme (resolu)
 
-**Aucun** des ~45 items n'a de `name_fr`. Tout est en anglais : "Rusty Sword", "Iron Helm", "Leather Tunic".
+Les ~45 items avaient ete completes avec des `name_fr`.
 
 ### Convention de nommage
 
