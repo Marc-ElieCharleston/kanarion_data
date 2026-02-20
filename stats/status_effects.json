@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "version": "3.1",
-    "last_updated": "2026-01-20",
+    "version": "3.2",
+    "last_updated": "2026-02-20",
     "description": "Tous les buffs/debuffs/DoTs du jeu",
     "damage_types": {
       "physical": "Dégâts physiques (ATK-based)",
@@ -138,7 +138,10 @@
       "damage_percent_up": {"name_fr": "Dégâts % +", "name_en": "Damage Up", "polarity": "buff", "stacking": "stackable", "impl": "todo", "formula": "+10% all damage per stack", "description_fr": "Augmente tous les dégâts infligés", "description_en": "Increases all damage dealt"},
       "damage_percent_down": {"name_fr": "Dégâts % -", "name_en": "Damage Down", "polarity": "debuff", "stacking": "stackable", "impl": "todo", "formula": "-10% all damage per stack", "description_fr": "Réduit tous les dégâts infligés", "description_en": "Reduces all damage dealt"},
       "damage_reduction_up": {"name_fr": "Réduction Dégâts +", "name_en": "Damage Reduction Up", "polarity": "buff", "stacking": "stackable", "impl": "todo", "formula": "+10% damage reduction per stack", "description_fr": "Réduit tous les dégâts reçus", "description_en": "Reduces all damage taken"},
-      "damage_reduction_down": {"name_fr": "Réduction Dégâts -", "name_en": "Damage Reduction Down", "polarity": "debuff", "stacking": "stackable", "impl": "todo", "formula": "-10% damage reduction per stack", "description_fr": "Augmente tous les dégâts reçus", "description_en": "Increases all damage taken"}
+      "damage_reduction_down": {"name_fr": "Réduction Dégâts -", "name_en": "Damage Reduction Down", "polarity": "debuff", "stacking": "stackable", "impl": "todo", "formula": "-10% damage reduction per stack", "description_fr": "Augmente tous les dégâts reçus", "description_en": "Increases all damage taken"},
+      "flat_dr_up": {"name_fr": "Réduction Fixe +", "name_en": "Flat DR Up", "polarity": "buff", "stacking": "stackable", "impl": "done", "formula": "+[skill_value] flat damage reduction", "description_fr": "Réduit les dégâts reçus d'un montant fixe (non %). Se cumule.", "description_en": "Reduces damage taken by a flat amount (not %). Stacks.", "sources": ["Warrior Warlord", "Healer Lightbringer", "Artisan Blacksmith", "Artisan Chef"]},
+      "flat_dr_down": {"name_fr": "Réduction Fixe -", "name_en": "Flat DR Down", "polarity": "debuff", "stacking": "stackable", "impl": "done", "formula": "-[skill_value] flat damage reduction", "description_fr": "Augmente les dégâts reçus en retirant de la réduction fixe. Se cumule.", "description_en": "Increases damage taken by removing flat damage reduction. Stacks.", "sources": ["Warrior Warlord", "Artisan"]},
+      "all_stats": {"name_fr": "Toutes Stats", "name_en": "All Stats", "polarity": "buff", "stacking": "stackable", "impl": "todo", "formula": "+/- [skill_value]% all stats per stack", "description_fr": "Modifie toutes les statistiques simultanément. Utilisé comme buff allié ou debuff ennemi selon le sort.", "description_en": "Modifies all stats simultaneously. Used as ally buff or enemy debuff depending on the skill.", "sources": ["Artisan Musician"]}
     },
 
     "tempo": {
@@ -157,7 +160,9 @@
       "root": {"name_fr": "Immobilisation", "name_en": "Root", "polarity": "debuff", "stacking": "refresh", "impl": "done", "formula": "max 4s", "description_fr": "Impossible de se déplacer ou utiliser des compétences de dash. Peut auto-attaquer et lancer des compétences.", "description_en": "Cannot move or use dash skills. Can auto-attack and cast skills."},
       "fear": {"name_fr": "Peur", "name_en": "Fear", "polarity": "debuff", "stacking": "refresh", "impl": "todo", "formula": "max 3s", "description_fr": "Mouvement aléatoire incontrôlé + impossible d'agir. Contrôle de disruption.", "description_en": "Random uncontrolled movement + cannot act. Disruption CC."},
       "confusion": {"name_fr": "Confusion", "name_en": "Confusion", "polarity": "debuff", "stacking": "refresh", "impl": "todo", "formula": "max 4s", "description_fr": "Peut attaquer ses alliés au lieu des ennemis. Peut agir normalement sinon. Contrôle PvP chaos.", "description_en": "May attack allies instead of enemies. Can act normally otherwise. PvP chaos CC."},
-      "blind": {"name_fr": "Aveuglement", "name_en": "Blind", "polarity": "debuff", "stacking": "refresh", "impl": "todo", "formula": "hit rate = 25%, max 5s", "description_fr": "Précision réduite à 25%. 75% chance de miss sur chaque attaque. Contrôle léger, n'empêche pas d'agir.", "description_en": "Accuracy reduced to 25%. 75% chance to miss each attack. Soft CC, doesn't prevent actions."}
+      "blind": {"name_fr": "Aveuglement", "name_en": "Blind", "polarity": "debuff", "stacking": "refresh", "impl": "todo", "formula": "hit rate = 25%, max 5s", "description_fr": "Précision réduite à 25%. 75% chance de miss sur chaque attaque. Contrôle léger, n'empêche pas d'agir.", "description_en": "Accuracy reduced to 25%. 75% chance to miss each attack. Soft CC, doesn't prevent actions."},
+      "freeze": {"name_fr": "Gel", "name_en": "Freeze", "polarity": "debuff", "stacking": "refresh", "impl": "done", "formula": "max 3s", "description_fr": "Impossible d'agir (comme étourdissement). Brisé si la cible reçoit un coup critique. Contrôle fragile mais puissant.", "description_en": "Cannot act (like stun). Broken if target takes a critical hit. Fragile but powerful CC.", "sources": ["Mage Elementalist"]},
+      "slow": {"name_fr": "Ralentissement", "name_en": "Slow", "polarity": "debuff", "stacking": "stackable", "impl": "done", "formula": "-[skill_value]% movement/attack speed", "description_fr": "Réduit la vitesse de déplacement et d'action. Se cumule. Contrôle léger mais gênant.", "description_en": "Reduces movement and action speed. Stacks. Soft CC but disruptive.", "sources": ["Mage Cardmaster", "Boss", "monstres"]}
     },
 
     "defensive": {
@@ -170,7 +175,8 @@
       "thorns": {"name_fr": "Épines", "name_en": "Thorns", "polarity": "buff", "stacking": "stackable", "impl": "done", "formula": "DEF * 0.1 per stack to melee attackers", "description_fr": "Inflige des dégâts fixes aux attaquants mêlée. Se cumule. Passif, ne consomme pas l'effet.", "description_en": "Deals flat damage to melee attackers. Stacks. Passive, doesn't consume effect."},
       "sacrifice": {"name_fr": "Sacrifice", "name_en": "Sacrifice", "polarity": "buff", "stacking": "refresh", "impl": "todo", "formula": "redirects [skill_value]% damage from linked ally", "description_fr": "Lié à un allié. Reçoit un % de ses dégâts à sa place. Lien visible. Compétence de tank.", "description_en": "Links to an ally. Takes % of their damage instead. Link visible. Tank/Guardian skill."},
       "cover": {"name_fr": "Couverture", "name_en": "Cover", "polarity": "buff", "stacking": "refresh", "impl": "todo", "formula": "intercepts next single-target attack on ally", "description_fr": "Se place devant un allié. Intercepte la prochaine attaque mono-cible le ciblant. 1 charge.", "description_en": "Steps in front of ally. Intercepts next single-target attack targeting them. 1 charge."},
-      "aoe_reflect": {"name_fr": "Renvoi AoE", "name_en": "AoE Reflect", "polarity": "buff", "stacking": "refresh", "impl": "todo", "formula": "reflects [skill_value]% of AoE damage to caster", "description_fr": "Renvoie un % des dégâts AoE reçus au lanceur. Anti-zerg : punit les joueurs qui spamment AoE sans stratégie. % défini par le sort (30% typique).", "description_en": "Reflects % of AoE damage taken back to caster. Anti-zerg: punishes AoE spam without strategy. % set by spell (30% typical).", "notes": "Only triggers on AoE/multi-target skills. Single-target attacks are not reflected. Elite/boss passive."}
+      "aoe_reflect": {"name_fr": "Renvoi AoE", "name_en": "AoE Reflect", "polarity": "buff", "stacking": "refresh", "impl": "todo", "formula": "reflects [skill_value]% of AoE damage to caster", "description_fr": "Renvoie un % des dégâts AoE reçus au lanceur. Anti-zerg : punit les joueurs qui spamment AoE sans stratégie. % défini par le sort (30% typique).", "description_en": "Reflects % of AoE damage taken back to caster. Anti-zerg: punishes AoE spam without strategy. % set by spell (30% typical).", "notes": "Only triggers on AoE/multi-target skills. Single-target attacks are not reflected. Elite/boss passive."},
+      "damage_transfer": {"name_fr": "Transfert de Dégâts", "name_en": "Damage Transfer", "polarity": "buff", "stacking": "refresh", "impl": "done", "formula": "redirects [skill_value]% damage from linked ally to self", "description_fr": "Lié à un allié. Reçoit un % de ses dégâts à sa place. Similaire à sacrifice mais actif sur soi-même.", "description_en": "Links to an ally. Takes % of their damage instead. Similar to sacrifice but self-cast.", "sources": ["Warrior Guardian"]}
     },
 
     "immunity": {
@@ -179,7 +185,8 @@
       "untargetable": {"name_fr": "Intouchable", "name_en": "Untargetable", "polarity": "buff", "stacking": "refresh", "impl": "done", "description_fr": "Ne peut pas être ciblé par mono-cible. Subit les AOE zone. Position VISIBLE sur la map. Peut agir.", "description_en": "Cannot be targeted by single-target. Takes zone AOE. Position VISIBLE on map. Can act."},
       "invisible": {"name_fr": "Invisible", "name_en": "Invisible", "polarity": "buff", "stacking": "refresh", "impl": "todo", "description_fr": "Position INCONNUE de l'ennemi. Peut se repositionner. Subit AOE si dedans. Brisé si action offensive. Compétence de Rogue.", "description_en": "Position UNKNOWN to enemy. Can reposition. Takes AOE if inside. Breaks on offensive action. Rogue skill."},
       "cc_immune": {"name_fr": "Immunité CC", "name_en": "CC Immunity", "polarity": "buff", "stacking": "refresh", "impl": "todo", "description_fr": "Immune aux étourdissements, silences, immobilisations, peurs, confusions, aveuglements et désarmements. Reçoit toujours les dégâts. Amélioration personnelle.", "description_en": "Immune to stun, silence, root, fear, confusion, blind, disarm. Still takes damage. Personal buff."},
-      "cc_immune_zone": {"name_fr": "Zone Anti-CC", "name_en": "CC Immunity Zone", "polarity": "buff", "stacking": "refresh", "impl": "todo", "is_aura": true, "description_fr": "Crée une zone. Alliés dans la zone immuns aux contrôles. Zone fixe, ne bouge pas. Compétence de Soigneur.", "description_en": "Creates a zone. Allies inside immune to CC. Zone is fixed, doesn't move. Healer/Support skill."}
+      "cc_immune_zone": {"name_fr": "Zone Anti-CC", "name_en": "CC Immunity Zone", "polarity": "buff", "stacking": "refresh", "impl": "todo", "is_aura": true, "description_fr": "Crée une zone. Alliés dans la zone immuns aux contrôles. Zone fixe, ne bouge pas. Compétence de Soigneur.", "description_en": "Creates a zone. Allies inside immune to CC. Zone is fixed, doesn't move. Healer/Support skill."},
+      "stealth": {"name_fr": "Furtivité", "name_en": "Stealth", "polarity": "buff", "stacking": "refresh", "impl": "done", "description_fr": "Furtif et intouchable. Position inconnue de l'ennemi. Brisé par action offensive ou AOE reçue. Compétence de Rogue.", "description_en": "Stealthy and untargetable. Position unknown to enemy. Broken by offensive action or AOE received. Rogue skill.", "sources": ["Rogue Shadowblade"], "notes": "Distinct from invisible: stealth grants both stealth detection bypass AND untargetable status."}
     },
 
     "aggro": {
@@ -203,27 +210,37 @@
       "lifesteal": {"name_fr": "Vol de vie", "name_en": "Lifesteal", "polarity": "buff", "stacking": "stackable", "impl": "done", "formula": "heals [skill_value]% of damage dealt per stack", "description_fr": "Soigne un % des dégâts physiques infligés par charge. S'applique aux auto-attaques et compétences physiques.", "description_en": "Heals % of physical damage dealt per stack. Applies to auto-attacks and physical skills."},
       "heal_block": {"name_fr": "Blocage Soin", "name_en": "Heal Block", "polarity": "debuff", "stacking": "refresh", "impl": "todo", "formula": "100% healing reduction", "description_fr": "Bloque 100% des soins reçus. Durée courte (2-4s). Très rare. PvP décisif pour finir une cible.", "description_en": "Blocks 100% of healing received. Short duration (2-4s). Very rare. PvP clutch to finish a target."},
       "heal_reduction": {"name_fr": "Anti-Soin", "name_en": "Healing Reduction", "polarity": "debuff", "stacking": "stackable", "impl": "todo", "formula": "-50% healing received per stack (cap 95%)", "description_fr": "-50% soins reçus par charge. Cap à 95% (5% soins minimum). Efficace contre les healers et builds lifesteal.", "description_en": "-50% healing received per stack. Capped at 95% (5% healing minimum). Counters healers and lifesteal builds."},
-      "shield_block": {"name_fr": "Brise-Bouclier", "name_en": "Shield Block", "polarity": "debuff", "stacking": "refresh", "impl": "todo", "description_fr": "Empêche de recevoir de NOUVEAUX boucliers. N'affecte pas les boucliers existants. Efficace contre le spam de boucliers Guardian.", "description_en": "Prevents receiving NEW shields. Doesn't affect existing shields. Counters Guardian/shield spam."}
+      "shield_block": {"name_fr": "Brise-Bouclier", "name_en": "Shield Block", "polarity": "debuff", "stacking": "refresh", "impl": "todo", "description_fr": "Empêche de recevoir de NOUVEAUX boucliers. N'affecte pas les boucliers existants. Efficace contre le spam de boucliers Guardian.", "description_en": "Prevents receiving NEW shields. Doesn't affect existing shields. Counters Guardian/shield spam."},
+      "frenzy": {"name_fr": "Frénésie", "name_en": "Frenzy", "polarity": "buff", "stacking": "refresh", "impl": "done", "formula": "+ATK%, +ATK_SPEED%, -15% DEF", "description_fr": "Augmente l'attaque et la vitesse d'attaque mais réduit la défense de 15%. Risque/récompense offensif.", "description_en": "Increases attack and attack speed but reduces defense by 15%. Offensive risk/reward.", "sources": ["Warrior Berserker"]},
+      "war_banner": {"name_fr": "Bannière de Guerre", "name_en": "War Banner", "polarity": "buff", "stacking": "refresh", "impl": "done", "is_aura": true, "formula": "+ATK%, +DEF% to nearby allies, tick heal", "description_fr": "Aura de zone. Augmente ATK et DEF des alliés proches + soin par tick. Compétence signature du Warlord.", "description_en": "Zone aura. Increases nearby allies' ATK and DEF + tick heal. Warlord signature skill.", "sources": ["Warrior Warlord"]},
+      "enchanted_blade": {"name_fr": "Lame Enchantée", "name_en": "Enchanted Blade", "polarity": "buff", "stacking": "refresh", "impl": "done", "formula": "+bonus_magic_flat, +20% ATK_SPEED, +magic_pen", "description_fr": "Enchante l'arme. Ajoute des dégâts magiques fixes aux auto-attaques + vitesse d'attaque + pénétration magique.", "description_en": "Enchants weapon. Adds flat magic damage to auto-attacks + attack speed + magic penetration.", "sources": ["Mage Spellblade"]},
+      "double_hit_chance": {"name_fr": "Double Frappe", "name_en": "Double Hit", "polarity": "buff", "stacking": "refresh", "impl": "done", "formula": "+[skill_value]% chance to hit twice", "description_fr": "Chance de frapper deux fois par auto-attaque. Chaque coup est indépendant (crit, effets).", "description_en": "Chance to strike twice per auto-attack. Each hit is independent (crit, effects).", "sources": ["Warrior Weaponmaster"]},
+      "double_attack_chance": {"name_fr": "Tir Double", "name_en": "Double Shot", "polarity": "buff", "stacking": "refresh", "impl": "done", "formula": "+[skill_value]% chance to attack twice", "description_fr": "Chance de tirer deux fois par auto-attaque. Même mécanique que double frappe, version à distance.", "description_en": "Chance to fire twice per auto-attack. Same mechanic as double hit, ranged version.", "sources": ["Archer Gunslinger"]},
+      "en_garde_stance": {"name_fr": "Posture En Garde", "name_en": "En Garde Stance", "polarity": "buff", "stacking": "refresh", "impl": "done", "formula": "+25% parry chance, +50% riposte chance", "description_fr": "Posture défensive. 25% de chance de parer les attaques mêlée + 50% de chance de riposter après une parade.", "description_en": "Defensive stance. 25% chance to parry melee attacks + 50% chance to riposte after parrying.", "sources": ["Rogue Duelist"]},
+      "riposte_active": {"name_fr": "Riposte Active", "name_en": "Active Riposte", "polarity": "buff", "stacking": "refresh", "impl": "done", "formula": "+[skill_value]% riposte chance on next attack received", "description_fr": "Garantit une riposte sur la prochaine attaque mêlée reçue. Consommé après déclenchement.", "description_en": "Guarantees a riposte on the next melee attack received. Consumed after triggering.", "sources": ["Rogue Duelist"]},
+      "taunt_redirect": {"name_fr": "Misdirection", "name_en": "Taunt Redirect", "polarity": "debuff", "stacking": "refresh", "impl": "done", "formula": "redirects target's attacks to another enemy", "description_fr": "La cible attaque un autre ennemi au lieu de ses cibles normales. Redirection de menace inversée.", "description_en": "Target attacks another enemy instead of normal targets. Reverse threat redirection.", "sources": ["Rogue Trickster"]},
+      "challenged": {"name_fr": "Provoqué en Duel", "name_en": "Challenged", "polarity": "debuff", "stacking": "refresh", "impl": "done", "formula": "forced duel with caster", "description_fr": "La cible est forcée en duel avec le lanceur. Bonus de dégâts mutuels. Isolement tactique.", "description_en": "Target is forced into a duel with the caster. Mutual damage bonus. Tactical isolation.", "sources": ["Rogue Duelist"]},
+      "exposed": {"name_fr": "Faille Exposée", "name_en": "Exposed", "polarity": "debuff", "stacking": "stackable", "impl": "done", "formula": "+[skill_value]% damage taken from all sources", "description_fr": "Les défenses de la cible sont percées. Reçoit plus de dégâts de toutes sources. Se cumule.", "description_en": "Target's defenses are pierced. Takes increased damage from all sources. Stacks.", "sources": ["Rogue Duelist"]}
     }
   },
 
   "_summary": {
-    "total": 70,
+    "total": 88,
     "categories": 9,
     "by_polarity": {
-      "buff": 35,
-      "debuff": 35
+      "buff": 47,
+      "debuff": 41
     },
     "breakdown": {
       "dot": 5,
       "hot": 1,
-      "stat_modifiers": 24,
+      "stat_modifiers": 27,
       "tempo": 4,
-      "control": 7,
-      "defensive": 9,
-      "immunity": 5,
+      "control": 9,
+      "defensive": 10,
+      "immunity": 6,
       "aggro": 3,
-      "special": 13
+      "special": 23
     }
   }
 }
