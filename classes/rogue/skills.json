@@ -48,8 +48,8 @@
       "name_en": "Throw Dagger",
       "name_fr": "Lancer de Dague",
       "tier": "basic",
-      "target": "enemy",
-      "pattern": "single",
+      "target": "enemies",
+      "pattern": "pierce_column",
       "damage_type": "physical",
       "scaling_stat": "atk",
       "base_power": 15,
@@ -58,10 +58,10 @@
       "cooldown": 5.0,
       "applies_bleed_stacks": 1,
       "vfx_type": "projectile",
-      "description_fr": "Lance une dague (15 + 40% ATK). Applique 1 stack de Bleed. Ignore LoS.",
-      "description_en": "Throws a dagger (15 + 40% ATK). Applies 1 Bleed stack. Ignores LoS.",
+      "description_fr": "Lance une dague qui traverse la colonne (15 + 40% ATK, -40% par cible traversée). Applique 1 Bleed par cible touchée. Perce la LoS.",
+      "description_en": "Throws a dagger that pierces through the column (15 + 40% ATK, -40% per target pierced). Applies 1 Bleed per target hit. Pierces LoS.",
       "ignore_los": true,
-      "tags": ["damage", "ranged", "bleed"]
+      "tags": ["damage", "ranged", "bleed", "pierce", "pattern:pierce_column"]
     },
     {
       "id": "skill_rogue_smoke_bomb",
@@ -69,7 +69,7 @@
       "name_fr": "Bombe Fumigène",
       "tier": "basic",
       "target": "enemies",
-      "pattern": "rect_2x2",
+      "pattern": "cone_2x3",
       "damage_type": "physical",
       "scaling_stat": "atk",
       "base_power": 10,
@@ -81,9 +81,9 @@
       "debuff_duration": 4.0,
       "debuff_duration_per_level": 0.3,
       "vfx_type": "debuff_aura",
-      "description_fr": "Bombe fumigène (10 + 25% ATK) en zone 2x2. Blind -30% hit pendant 4s (+0.3s/lvl).",
-      "description_en": "Smoke bomb (10 + 25% ATK) in 2x2 area. Blind -30% hit for 4s (+0.3s/lvl).",
-      "tags": ["damage", "debuff", "blind", "aoe"]
+      "description_fr": "Bombe fumigène (10 + 25% ATK) en cône. La fumée se disperse vers l'avant, aveuglant jusqu'à 7 cibles. Blind -30% hit pendant 4s (+0.3s/lvl).",
+      "description_en": "Smoke bomb (10 + 25% ATK) in a cone. Smoke spreads forward, blinding up to 7 targets. Blind -30% hit for 4s (+0.3s/lvl).",
+      "tags": ["damage", "debuff", "blind", "aoe", "pattern:cone_2x3"]
     },
     {
       "id": "skill_rogue_mark_target",
@@ -247,8 +247,8 @@
           "name_en": "Confuse",
           "name_fr": "Confusion",
           "tier": "standard",
-          "target": "enemy",
-          "pattern": "single",
+          "target": "enemies",
+          "pattern": "random_2",
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 8,
@@ -260,9 +260,9 @@
           "debuff_duration_per_level": 0.2,
           "vfx_type": "debuff_aura",
           "tres": "res://resources/skills/rogue/trickster/confuse.tres",
-          "description_fr": "Embrouille (8 + 20% ATK). Confusion 3s (+0.2s/lvl): la cible attaque aléatoirement.",
-          "description_en": "Confuse (8 + 20% ATK). Confusion 3s (+0.2s/lvl): target attacks randomly.",
-          "tags": ["damage", "debuff", "cc", "confusion"]
+          "description_fr": "Embrouille (8 + 20% ATK) sur 2 ennemis aléatoires. Confusion 3s (+0.2s/lvl): les cibles attaquent aléatoirement. Le chaos est une arme.",
+          "description_en": "Confuse (8 + 20% ATK) on 2 random enemies. Confusion 3s (+0.2s/lvl): targets attack randomly. Chaos is a weapon.",
+          "tags": ["damage", "debuff", "cc", "confusion", "pattern:random_2"]
         },
         {
           "id": "mislead",
@@ -316,8 +316,8 @@
           "name_en": "Misdirection",
           "name_fr": "Diversion",
           "tier": "strong",
-          "target": "enemy",
-          "pattern": "single",
+          "target": "enemies",
+          "pattern": "back_row",
           "damage_type": "none",
           "base_power": 0,
           "mana_cost": 25,
@@ -327,9 +327,9 @@
           "redirect_to": "random_enemy",
           "vfx_type": "debuff_aura",
           "tres": "res://resources/skills/rogue/trickster/misdirection.tres",
-          "description_fr": "Détourne l'attention: la cible attaque un allié aléatoire pendant 4s. Pas de dégâts directs.",
-          "description_en": "Misdirection: target attacks a random ally for 4s. No direct damage.",
-          "tags": ["debuff", "cc", "redirect", "utility"]
+          "description_fr": "Sème la confusion dans la back row ennemie: toutes les cibles du dernier rang attaquent un allié aléatoire pendant 4s. Ignore la LoS.",
+          "description_en": "Sows chaos in the enemy back row: all targets in the last row attack a random ally for 4s. Ignores LoS.",
+          "tags": ["debuff", "cc", "redirect", "utility", "pattern:back_row"]
         },
         {
           "id": "grand_swindle",
@@ -407,8 +407,8 @@
           "name_en": "Dirty Trick",
           "name_fr": "Coup Bas",
           "tier": "basic",
-          "target": "enemy",
-          "pattern": "single",
+          "target": "enemies",
+          "pattern": "adjacent_random_1",
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 10,
@@ -421,17 +421,17 @@
           "debuff_duration_per_level": 0.25,
           "vfx_type": "debuff_aura",
           "tres": "res://resources/skills/rogue/corsair/dirty_trick.tres",
-          "description_fr": "Coup bas (10 + 25% ATK). Sable dans les yeux: Blind -25% hit pendant 3s (+0.25s/lvl).",
-          "description_en": "Dirty trick (10 + 25% ATK). Sand in eyes: Blind -25% hit for 3s (+0.25s/lvl).",
-          "tags": ["damage", "debuff", "blind", "dirty"]
+          "description_fr": "Coup bas (10 + 25% ATK) sur la cible + 1 adjacent aléatoire. Sable dans les yeux: Blind -25% hit pendant 3s (+0.25s/lvl). Le combat sale touche toujours un innocent.",
+          "description_en": "Dirty trick (10 + 25% ATK) on target + 1 random adjacent. Sand in eyes: Blind -25% hit for 3s (+0.25s/lvl). Dirty fighting always hits a bystander.",
+          "tags": ["damage", "debuff", "blind", "dirty", "pattern:adjacent_random_1"]
         },
         {
           "id": "plunder",
           "name_en": "Plunder",
           "name_fr": "Pillage",
           "tier": "standard",
-          "target": "enemy",
-          "pattern": "single",
+          "target": "enemies",
+          "pattern": "chain_2",
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 12,
@@ -442,9 +442,9 @@
           "steal_buff_count": 1,
           "vfx_type": "life_steal",
           "tres": "res://resources/skills/rogue/corsair/plunder.tres",
-          "description_fr": "Pillage (12 + 30% ATK). Vole 15 (+2/lvl) souffle. 30% de voler aussi 1 buff à la cible.",
-          "description_en": "Plunder (12 + 30% ATK). Steals 15 (+2/lvl) breath. 30% chance to also steal 1 buff from target.",
-          "tags": ["damage", "mana_steal", "buff_steal", "pillage"]
+          "description_fr": "Pillage (12 + 30% ATK) qui rebondit sur 2 cibles (-15% par rebond). Vole du Souffle et 30% de voler 1 buff par cible touchée. Le pirate ratisse large.",
+          "description_en": "Plunder (12 + 30% ATK) bouncing to 2 targets (-15% per bounce). Steals Breath and 30% chance to steal 1 buff per target hit. Pirates cast a wide net.",
+          "tags": ["damage", "mana_steal", "buff_steal", "pillage", "pattern:chain_2"]
         },
         {
           "id": "raid",
@@ -550,8 +550,8 @@
           "name_en": "Expose Weakness",
           "name_fr": "Exposer la Faiblesse",
           "tier": "standard",
-          "target": "enemy",
-          "pattern": "single",
+          "target": "enemies",
+          "pattern": "col_2",
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 10,
@@ -565,9 +565,9 @@
           "defense_reduction_per_level": 1,
           "vfx_type": "debuff_aura",
           "tres": "res://resources/skills/rogue/duelist/expose_weakness.tres",
-          "description_fr": "Expose (10 + 30% ATK). Applique 'Exposed' 6s (+0.4s/lvl): -25% DEF (-1%/lvl). Combo avec Challenged.",
-          "description_en": "Expose (10 + 30% ATK). Applies 'Exposed' 6s (+0.4s/lvl): -25% DEF (-1%/lvl). Combos with Challenged.",
-          "tags": ["damage", "debuff", "armor_break", "exposed"]
+          "description_fr": "Expose (10 + 30% ATK) sur 2 cases verticales. Applique 'Exposed' 6s (+0.4s/lvl): -25% DEF (-1%/lvl). Perce la garde sur toute la profondeur. Combo avec Challenged.",
+          "description_en": "Expose (10 + 30% ATK) on 2 vertical tiles. Applies 'Exposed' 6s (+0.4s/lvl): -25% DEF (-1%/lvl). Breaks guard through depth. Combos with Challenged.",
+          "tags": ["damage", "debuff", "armor_break", "exposed", "pattern:col_2"]
         },
         {
           "id": "coup_de_grace",
