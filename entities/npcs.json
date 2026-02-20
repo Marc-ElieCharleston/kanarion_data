@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "version": "3.0",
-    "last_updated": "2026-01-10",
-    "description": "NPCs: service, quest, class_master, ambient"
+    "version": "3.1",
+    "last_updated": "2026-02-20",
+    "description": "NPCs: service, quest, class_master, ambient. Enriched profiles with dialogues, shop inventory, bilingual text."
   },
 
   "types": ["service", "quest", "class_master", "ambient", "arena"],
@@ -18,10 +18,107 @@
     },
     {
       "id": "npc_vendor_milo",
-      "name": "Milo the Trader",
+      "name_fr": "Milo",
+      "name_en": "Milo",
+      "role_fr": "Marchand",
+      "role_en": "Merchant",
       "services": ["buy_sell_general", "sell_junk_auto"],
       "location": "town_start",
-      "lore": "Always at the right place, right time. Knows the value of everything."
+
+      "lore_fr": "Milo n'a jamais tenu une épée de sa vie. Ancien colporteur des routes du sud, il a appris très jeune que les gens qui se battent ont toujours besoin de quelqu'un qui ne se bat pas. Il s'est installé là où les ennuis commencent, pas par courage, mais parce que c'est là que l'or circule. Il connaît le prix de chaque chose, et le coût de chaque erreur. Il ne juge personne. Il vend.",
+      "lore_en": "Milo has never held a sword in his life. A former peddler from the southern roads, he learned early that people who fight always need someone who doesn't. He set up shop where trouble begins, not out of courage, but because that's where gold flows. He knows the price of everything, and the cost of every mistake. He doesn't judge. He sells.",
+
+      "dialogues": {
+        "greeting": [
+          {
+            "zone": "town_start",
+            "lines_fr": [
+              "Tiens, un visage que j'ai pas encore vu. T'as besoin de quelque chose ou tu fais que passer ?",
+              "Le monde change dehors, mais ici les prix restent les mêmes. Pour l'instant.",
+              "J'ai ce qu'il faut pour tenir debout. Le reste, c'est ton affaire."
+            ],
+            "lines_en": [
+              "Well, a face I haven't seen yet. Need something or just passing through?",
+              "The world's changing out there, but prices stay the same in here. For now.",
+              "I've got what you need to stay on your feet. The rest is your business."
+            ]
+          },
+          {
+            "zone": "zone_forest",
+            "lines_fr": [
+              "Les bêtes de cette forêt mordent plus fort qu'avant. Fais le plein, crois-moi.",
+              "J'ai suivi la route jusqu'ici. Tant qu'il y a des gens, il y a du commerce."
+            ],
+            "lines_en": [
+              "The beasts in this forest bite harder than before. Stock up, trust me.",
+              "I followed the road here. Where there's people, there's trade."
+            ]
+          }
+        ],
+        "buy": [
+          {
+            "lines_fr": [
+              "Regarde, tout est là. Pas de surprises, pas d'arnaques.",
+              "Prends ce qu'il te faut. Je fais pas crédit."
+            ],
+            "lines_en": [
+              "Have a look, it's all here. No surprises, no tricks.",
+              "Take what you need. I don't do credit."
+            ]
+          }
+        ],
+        "sell": [
+          {
+            "lines_fr": [
+              "Voyons ce que t'as... Je rachète tout, mais au juste prix.",
+              "Pose ça là. Je te donne ce que ça vaut, ni plus ni moins."
+            ],
+            "lines_en": [
+              "Let's see what you've got... I'll buy anything, but at a fair price.",
+              "Put it down. I'll give you what it's worth, no more no less."
+            ]
+          }
+        ],
+        "farewell": [
+          {
+            "lines_fr": [
+              "Fais attention dehors. Les morts, ça achète rien.",
+              "Reviens quand t'as besoin. Je bouge pas."
+            ],
+            "lines_en": [
+              "Watch yourself out there. Dead folks don't buy anything.",
+              "Come back when you need me. I'm not going anywhere."
+            ]
+          }
+        ]
+      },
+
+      "shop_inventory": {
+        "_comment": "Items available for purchase. Organized by category. All prices from consumables.json.",
+        "potions": [
+          {"item_id": "cons_hp_potion_small", "stock": -1, "min_level": 1},
+          {"item_id": "cons_hp_potion_medium", "stock": -1, "min_level": 10},
+          {"item_id": "cons_hp_potion_large", "stock": -1, "min_level": 25},
+          {"item_id": "cons_mp_potion_small", "stock": -1, "min_level": 1},
+          {"item_id": "cons_mp_potion_medium", "stock": -1, "min_level": 10},
+          {"item_id": "cons_mp_potion_large", "stock": -1, "min_level": 25},
+          {"item_id": "cons_antidote", "stock": -1, "min_level": 1},
+          {"item_id": "cons_cleanse_potion", "stock": -1, "min_level": 15},
+          {"item_id": "revive_potion", "stock": 5, "min_level": 20, "restock_hours": 24}
+        ],
+        "food": [
+          {"item_id": "food_bread", "stock": -1, "min_level": 1},
+          {"item_id": "food_apple", "stock": -1, "min_level": 1},
+          {"item_id": "food_meat_skewer", "stock": -1, "min_level": 5},
+          {"item_id": "food_fish_grilled", "stock": -1, "min_level": 5}
+        ]
+      },
+
+      "buy_config": {
+        "accepts": ["equipment", "materials", "consumables", "junk"],
+        "sell_price_ratio": 0.35,
+        "junk_auto_sell": true
+      }
     },
     {
       "id": "npc_blacksmith_borin",
