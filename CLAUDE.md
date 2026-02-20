@@ -146,9 +146,125 @@ Players choose a faction at level 60. Subclass lore must NOT lock players into a
 - Counter effects: heal_reduction, heal_block, shield_block
 - Immunity effects: evasion, invulnerable, untargetable, cc_immune
 
+## Claude Code on Windows — Known Issues & Workarounds
+
+This project runs on **Windows 11** with Git Bash. Claude Code's Bash tool has specific quirks on this platform. Follow these rules strictly to avoid wasting time on broken commands.
+
+### Bash Tool Behavior
+
+| Issue | Detail |
+|-------|--------|
+| **Output swallowed** | Many commands return empty stdout/stderr even on success. `pwd`, `echo`, `ls` are unreliable. |
+| **Exit code 1 on success** | The Bash tool often reports `exit code 1` for commands that actually succeeded. Don't retry blindly — check the actual state. |
+| **HEREDOC syntax broken** | `$(cat <<'EOF'...)` and multi-line heredocs **do not work**. Always use simple inline `-m "message"` for git commits. |
+| **Piped commands fragile** | Complex pipelines (`find | sort | while read`) may silently fail or return no output. |
+
+### Shell Scripts (.sh) — CRLF Problem
+
+All `.sh` files have CRLF line endings (`\r\n`) because Git checks them out on Windows. Bash cannot execute them directly:
+```
+scripts/gen_hash.sh: line 6: $'\r': command not found
+```
+
+**Never run shell scripts directly** (`bash scripts/gen_hash.sh` → FAILS). Use the Python workaround below.
+
+### gen_hash.sh — Use Python Replacement
+
+The `gen_hash.sh` script **does not work** on this Windows setup (CRLF + `dirname` issues). Use this pure-Python equivalent instead:
+
+```bash
+python -c "
+import hashlib, json, os, datetime
+os.chdir(r'C:\Users\Charl\Documents\Kanarion Online\kanarion_database')
+exclude_files = {'./_meta/version.json', './_meta/statistics.json', './_meta/index.json', './_meta/changelog.json', './_meta/ideas_to_integrate.json'}
+exclude_dirs = {'.git', 'kanarion-editor', 'scripts'}
+json_files = []
+for root, dirs, files in os.walk('.'):
+    dirs[:] = [d for d in dirs if d not in exclude_dirs]
+    for f in files:
+        if f.endswith('.json'):
+            path = os.path.join(root, f).replace(os.sep, '/')
+            if path not in exclude_files:
+                json_files.append(path)
+json_files.sort()
+content = b''
+for fp in json_files:
+    content += (fp + '\n').encode()
+    with open(fp, 'rb') as fh:
+        content += fh.read()
+h = hashlib.sha256(content).hexdigest()
+with open('_meta/version.json', 'r', encoding='utf-8') as f:
+    v = json.load(f)
+v['content_hash'] = f'sha256:{h}'
+v['last_updated'] = datetime.date.today().isoformat()
+with open('_meta/version.json', 'w', encoding='utf-8') as f:
+    json.dump(v, f, indent=2, ensure_ascii=False)
+    f.write('\n')
+print(f'Updated content_hash: sha256:{h}')
+"
+```
+
+### Git Commands — What Works
+
+**Works reliably:**
+```bash
+git status
+git add <file1> <file2>
+git commit -m "short message"
+git push
+git push origin master
+git log --oneline -5
+git diff --name-only
+git rm --cached <file>
+```
+
+**Does NOT work (avoid):**
+```bash
+# HEREDOC commit messages — BROKEN
+git commit -m "$(cat <<'EOF'
+message
+EOF
+)"
+
+# Complex pipelines — OUTPUT SWALLOWED
+git log --oneline | head -5
+
+# Interactive flags — NOT SUPPORTED
+git add -i
+git rebase -i
+```
+
+### Commit Workflow (Correct Sequence)
+
+```bash
+# 1. Regenerate hash (Python — NOT gen_hash.sh)
+python -c "... (see above) ..."
+
+# 2. Stage files explicitly
+git add _meta/version.json classes/warrior/skills.json  # list specific files
+
+# 3. Commit with simple -m
+git commit -m "feat(data): add new warrior skills"
+
+# 4. Push if requested
+git push origin master
+```
+
+### When Bash Fails — Use Python as Fallback
+
+For any command where the Bash tool returns empty output or unexplained exit code 1, wrap it in Python:
+```bash
+python -c "
+import subprocess
+r = subprocess.run(['git', 'status'], capture_output=True, text=True)
+print(r.stdout)
+print(r.stderr)
+"
+```
+
 ## Notes
 
 - Review `config/combat.json` before modifying damage calculations — formulas are complex
 - The web editor reads this data via `DB_ROOT` env var
-- `gen_hash.sh` uses `sha256sum` (Linux/Git Bash) and `python` — both must be available
-- On Windows, run scripts via Git Bash (not cmd/PowerShell)
+- `gen_hash.sh` uses `sha256sum` (Linux/Git Bash) and `python` — both must be available but **the script itself fails on Windows due to CRLF** — use the Python replacement above
+- On Windows, shell scripts require CRLF stripping before execution — prefer Python alternatives
