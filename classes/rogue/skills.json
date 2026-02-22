@@ -48,8 +48,8 @@
       "name_en": "Throw Dagger",
       "name_fr": "Lancer de Dague",
       "tier": "basic",
-      "target": "enemies",
-      "pattern": "pierce_column",
+      "target": "enemy",
+      "pattern": "single",
       "damage_type": "physical",
       "scaling_stat": "atk",
       "base_power": 15,
@@ -58,10 +58,10 @@
       "cooldown": 5.0,
       "applies_bleed_stacks": 1,
       "vfx_type": "projectile",
-      "description_fr": "Lance une dague qui traverse la colonne (15 + 40% ATK, -40% par cible traversée). Applique 1 Bleed par cible touchée. Perce la LoS.",
-      "description_en": "Throws a dagger that pierces through the column (15 + 40% ATK, -40% per target pierced). Applies 1 Bleed per target hit. Pierces LoS.",
+      "description_fr": "Lance une dague (15 + 40% ATK). Applique 1 stack de Bleed. Ignore LoS.",
+      "description_en": "Throws a dagger (15 + 40% ATK). Applies 1 Bleed stack. Ignores LoS.",
       "ignore_los": true,
-      "tags": ["damage", "ranged", "bleed", "pierce", "pattern:pierce_column"]
+      "tags": ["damage", "ranged", "bleed"]
     },
     {
       "id": "skill_rogue_smoke_bomb",
@@ -69,7 +69,7 @@
       "name_fr": "Bombe Fumigène",
       "tier": "basic",
       "target": "enemies",
-      "pattern": "cone_2x3",
+      "pattern": "rect_2x2",
       "damage_type": "physical",
       "scaling_stat": "atk",
       "base_power": 10,
@@ -81,9 +81,9 @@
       "debuff_duration": 4.0,
       "debuff_duration_per_level": 0.3,
       "vfx_type": "debuff_aura",
-      "description_fr": "Bombe fumigène (10 + 25% ATK) en cône. La fumée se disperse vers l'avant, aveuglant jusqu'à 7 cibles. Blind -30% hit pendant 4s (+0.3s/lvl).",
-      "description_en": "Smoke bomb (10 + 25% ATK) in a cone. Smoke spreads forward, blinding up to 7 targets. Blind -30% hit for 4s (+0.3s/lvl).",
-      "tags": ["damage", "debuff", "blind", "aoe", "pattern:cone_2x3"]
+      "description_fr": "Bombe fumigène (10 + 25% ATK) en zone 2x2. Blind -30% hit pendant 4s (+0.3s/lvl).",
+      "description_en": "Smoke bomb (10 + 25% ATK) in 2x2 area. Blind -30% hit for 4s (+0.3s/lvl).",
+      "tags": ["damage", "debuff", "blind", "aoe"]
     },
     {
       "id": "skill_rogue_mark_target",
@@ -134,7 +134,7 @@
       "signature": "death_blossom",
       "skills": [
         {
-          "id": "backstab",
+          "id": "skill_rogue_shadowblade_backstab",
           "name_en": "Backstab",
           "name_fr": "Coup dans le Dos",
           "tier": "standard",
@@ -147,15 +147,14 @@
           "mana_cost": 20,
           "cooldown": 10.0,
           "stealth_bonus_damage": 100,
-          "applies_bleed_stacks": 2,
           "vfx_type": "melee_slash",
           "tres": "res://resources/skills/rogue/shadowblade/backstab.tres",
-          "description_fr": "Attaque vicieuse (25 + 70% ATK). +100% dégâts si en Stealth.\nApplique 2 charges de Saignement.",
-          "description_en": "Vicious attack (25 + 70% ATK). +100% damage if Stealthed.\nApplies 2 Bleed stacks.",
-          "tags": ["damage", "melee", "stealth", "burst", "bleed"]
+          "description_fr": "Attaque vicieuse (25 + 70% ATK). +100% dégâts si en Stealth. Le skill idéal après Vanish.",
+          "description_en": "Vicious attack (25 + 70% ATK). +100% damage if Stealthed. The ideal skill after Vanish.",
+          "tags": ["damage", "melee", "stealth", "burst"]
         },
         {
-          "id": "vanish",
+          "id": "skill_rogue_shadowblade_vanish",
           "name_en": "Vanish",
           "name_fr": "Disparition",
           "tier": "standard",
@@ -176,7 +175,7 @@
           "tags": ["stealth", "buff", "utility"]
         },
         {
-          "id": "assassinate",
+          "id": "skill_rogue_shadowblade_assassinate",
           "name_en": "Assassinate",
           "name_fr": "Assassinat",
           "tier": "strong",
@@ -189,7 +188,8 @@
           "mana_cost": 28,
           "cooldown": 14.0,
           "execute_threshold": 30,
-          "execute_bonus_damage": 50,
+          "execute_bonus_percent": 5,
+          "execute_bonus_per_level": 0.55,
           "vfx_type": "melee_slash",
           "tres": "res://resources/skills/rogue/shadowblade/assassinate.tres",
           "description_fr": "Exécution (30 + 65% ATK). +50% dégâts si cible < 30% HP. Finisher mortel.",
@@ -197,7 +197,7 @@
           "tags": ["damage", "execute", "finisher"]
         },
         {
-          "id": "shadow_strike",
+          "id": "skill_rogue_shadowblade_shadow_strike",
           "name_en": "Shadow Strike",
           "name_fr": "Frappe d'Ombre",
           "tier": "standard",
@@ -217,7 +217,7 @@
           "tags": ["damage", "armor_pierce", "anti_tank"]
         },
         {
-          "id": "death_blossom",
+          "id": "skill_rogue_shadowblade_death_blossom",
           "name_en": "Death Blossom",
           "name_fr": "Floraison Mortelle",
           "tier": "signature",
@@ -243,12 +243,12 @@
       "signature": "grand_swindle",
       "skills": [
         {
-          "id": "confuse",
+          "id": "skill_rogue_trickster_confuse",
           "name_en": "Confuse",
           "name_fr": "Confusion",
           "tier": "standard",
-          "target": "enemies",
-          "pattern": "random_2",
+          "target": "enemy",
+          "pattern": "single",
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 8,
@@ -260,12 +260,12 @@
           "debuff_duration_per_level": 0.2,
           "vfx_type": "debuff_aura",
           "tres": "res://resources/skills/rogue/trickster/confuse.tres",
-          "description_fr": "Embrouille (8 + 20% ATK) sur 2 ennemis aléatoires. Confusion 3s (+0.2s/lvl): les cibles attaquent aléatoirement. Le chaos est une arme.",
-          "description_en": "Confuse (8 + 20% ATK) on 2 random enemies. Confusion 3s (+0.2s/lvl): targets attack randomly. Chaos is a weapon.",
-          "tags": ["damage", "debuff", "cc", "confusion", "pattern:random_2"]
+          "description_fr": "Embrouille (8 + 20% ATK). Confusion 3s (+0.2s/lvl): la cible attaque aléatoirement.",
+          "description_en": "Confuse (8 + 20% ATK). Confusion 3s (+0.2s/lvl): target attacks randomly.",
+          "tags": ["damage", "debuff", "cc", "confusion"]
         },
         {
-          "id": "mislead",
+          "id": "skill_rogue_trickster_mislead",
           "name_en": "Mislead",
           "name_fr": "Tromperie",
           "tier": "standard",
@@ -288,7 +288,7 @@
           "tags": ["damage", "debuff", "blind", "aoe", "pattern:row_3"]
         },
         {
-          "id": "disarm",
+          "id": "skill_rogue_trickster_disarm",
           "name_en": "Disarm",
           "name_fr": "Désarmement",
           "tier": "strong",
@@ -307,17 +307,17 @@
           "disarm_blocks_spells": true,
           "vfx_type": "debuff_aura",
           "tres": "res://resources/skills/rogue/trickster/disarm.tres",
-          "description_fr": "Désarme (5 + 15% ATK). Disarm 2.5s (+0.2s/lvl): la cible ne peut NI auto-attack NI lancer de sorts. CC ultime.",
-          "description_en": "Disarm (5 + 15% ATK). Disarm 2.5s (+0.2s/lvl): target can NEITHER auto-attack NOR cast spells. Ultimate CC.",
+          "description_fr": "Désarme (5 + 15% ATK). Disarm 2.5s (+0.2s/lvl) : la cible ne peut plus auto-attaquer. Les sorts restent utilisables.",
+          "description_en": "Disarm (5 + 15% ATK). Disarm 2.5s (+0.2s/lvl): target cannot auto-attack. Spells remain usable.",
           "tags": ["damage", "cc", "disarm", "debuff", "utility"]
         },
         {
-          "id": "misdirection",
+          "id": "skill_rogue_trickster_misdirection",
           "name_en": "Misdirection",
           "name_fr": "Diversion",
           "tier": "strong",
-          "target": "enemies",
-          "pattern": "back_row",
+          "target": "enemy",
+          "pattern": "single",
           "damage_type": "none",
           "base_power": 0,
           "mana_cost": 25,
@@ -327,12 +327,12 @@
           "redirect_to": "random_enemy",
           "vfx_type": "debuff_aura",
           "tres": "res://resources/skills/rogue/trickster/misdirection.tres",
-          "description_fr": "Sème la confusion dans la back row ennemie: toutes les cibles du dernier rang attaquent un allié aléatoire pendant 4s. Ignore la LoS.",
-          "description_en": "Sows chaos in the enemy back row: all targets in the last row attack a random ally for 4s. Ignores LoS.",
-          "tags": ["debuff", "cc", "redirect", "utility", "pattern:back_row"]
+          "description_fr": "Détourne l'attention: la cible attaque un allié aléatoire pendant 4s. Pas de dégâts directs.",
+          "description_en": "Misdirection: target attacks a random ally for 4s. No direct damage.",
+          "tags": ["debuff", "cc", "redirect", "utility"]
         },
         {
-          "id": "grand_swindle",
+          "id": "skill_rogue_trickster_grand_swindle",
           "name_en": "Grand Swindle",
           "name_fr": "Grande Arnaque",
           "tier": "signature",
@@ -357,7 +357,7 @@
       "signature": "raid",
       "skills": [
         {
-          "id": "cutlass_slash",
+          "id": "skill_rogue_corsair_cutlass_slash",
           "name_en": "Cutlass Slash",
           "name_fr": "Taille au Coutelas",
           "tier": "basic",
@@ -380,7 +380,7 @@
           "tags": ["damage", "bleed", "melee", "disarm"]
         },
         {
-          "id": "pistol_shot",
+          "id": "skill_rogue_corsair_pistol_shot",
           "name_en": "Pistol Shot",
           "name_fr": "Tir de Pistolet",
           "tier": "standard",
@@ -403,12 +403,12 @@
           "tags": ["damage", "ranged", "stun", "ignore_los"]
         },
         {
-          "id": "dirty_trick",
+          "id": "skill_rogue_corsair_dirty_trick",
           "name_en": "Dirty Trick",
           "name_fr": "Coup Bas",
           "tier": "basic",
-          "target": "enemies",
-          "pattern": "adjacent_random_1",
+          "target": "enemy",
+          "pattern": "single",
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 10,
@@ -421,17 +421,17 @@
           "debuff_duration_per_level": 0.25,
           "vfx_type": "debuff_aura",
           "tres": "res://resources/skills/rogue/corsair/dirty_trick.tres",
-          "description_fr": "Coup bas (10 + 25% ATK) sur la cible + 1 adjacent aléatoire. Sable dans les yeux: Blind -25% hit pendant 3s (+0.25s/lvl). Le combat sale touche toujours un innocent.",
-          "description_en": "Dirty trick (10 + 25% ATK) on target + 1 random adjacent. Sand in eyes: Blind -25% hit for 3s (+0.25s/lvl). Dirty fighting always hits a bystander.",
-          "tags": ["damage", "debuff", "blind", "dirty", "pattern:adjacent_random_1"]
+          "description_fr": "Coup bas (10 + 25% ATK). Sable dans les yeux: Blind -25% hit pendant 3s (+0.25s/lvl).",
+          "description_en": "Dirty trick (10 + 25% ATK). Sand in eyes: Blind -25% hit for 3s (+0.25s/lvl).",
+          "tags": ["damage", "debuff", "blind", "dirty"]
         },
         {
-          "id": "plunder",
+          "id": "skill_rogue_corsair_plunder",
           "name_en": "Plunder",
           "name_fr": "Pillage",
           "tier": "standard",
-          "target": "enemies",
-          "pattern": "chain_2",
+          "target": "enemy",
+          "pattern": "single",
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 12,
@@ -442,12 +442,12 @@
           "steal_buff_count": 1,
           "vfx_type": "life_steal",
           "tres": "res://resources/skills/rogue/corsair/plunder.tres",
-          "description_fr": "Pillage (12 + 30% ATK) qui rebondit sur 2 cibles (-15% par rebond). Vole du Souffle et 30% de voler 1 buff par cible touchée. Le pirate ratisse large.",
-          "description_en": "Plunder (12 + 30% ATK) bouncing to 2 targets (-15% per bounce). Steals Breath and 30% chance to steal 1 buff per target hit. Pirates cast a wide net.",
-          "tags": ["damage", "mana_steal", "buff_steal", "pillage", "pattern:chain_2"]
+          "description_fr": "Pillage (12 + 30% ATK). Vole 15 (+2/lvl) mana. 30% de voler aussi 1 buff à la cible.",
+          "description_en": "Plunder (12 + 30% ATK). Steals 15 (+2/lvl) mana. 30% chance to also steal 1 buff from target.",
+          "tags": ["damage", "mana_steal", "buff_steal", "pillage"]
         },
         {
-          "id": "raid",
+          "id": "skill_rogue_corsair_raid",
           "name_en": "Raid",
           "name_fr": "Raid Pirate",
           "tier": "signature",
@@ -465,8 +465,8 @@
           "blind_duration": 2.0,
           "vfx_type": "aoe_pulse",
           "tres": "res://resources/skills/rogue/corsair/raid.tres",
-          "description_fr": "SIGNATURE - Raid pirate (28 + 55% ATK) en 2x2. Vole 10% souffle + TOUS les buffs des cibles + Blind 2s. Pillage total.",
-          "description_en": "SIGNATURE - Pirate raid (28 + 55% ATK) in 2x2. Steals 10% breath + ALL buffs from targets + Blind 2s. Total plunder.",
+          "description_fr": "SIGNATURE - Raid pirate (28 + 55% ATK) en 2x2. Vole 10% mana + TOUS les buffs des cibles + Blind 2s. Pillage total.",
+          "description_en": "SIGNATURE - Pirate raid (28 + 55% ATK) in 2x2. Steals 10% mana + ALL buffs from targets + Blind 2s. Total plunder.",
           "is_signature": true,
           "tags": ["damage", "aoe", "mana_steal", "buff_steal", "blind", "signature", "pattern:rect_2x2"]
         }
@@ -474,10 +474,10 @@
     },
     "duelist": {
       "identity": "1v1 specialist + counter + conditional damage",
-      "signature": "coup_de_grace",
+      "signature": "skill_rogue_duelist_coup_de_grace",
       "skills": [
         {
-          "id": "lunge",
+          "id": "skill_rogue_duelist_lunge",
           "name_en": "Lunge",
           "name_fr": "Fente",
           "tier": "basic",
@@ -500,7 +500,7 @@
           "tags": ["damage", "melee", "debuff", "challenged"]
         },
         {
-          "id": "en_garde",
+          "id": "skill_rogue_duelist_en_garde",
           "name_en": "En Garde",
           "name_fr": "En Garde",
           "tier": "standard",
@@ -523,7 +523,7 @@
           "tags": ["buff", "stance", "counter", "defensive"]
         },
         {
-          "id": "riposte",
+          "id": "skill_rogue_duelist_riposte",
           "name_en": "Riposte",
           "name_fr": "Riposte",
           "tier": "strong",
@@ -546,12 +546,12 @@
           "tags": ["buff", "reflect", "counter", "defensive"]
         },
         {
-          "id": "expose_weakness",
+          "id": "skill_rogue_duelist_expose_weakness",
           "name_en": "Expose Weakness",
           "name_fr": "Exposer la Faiblesse",
           "tier": "standard",
-          "target": "enemies",
-          "pattern": "col_2",
+          "target": "enemy",
+          "pattern": "single",
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 10,
@@ -565,12 +565,12 @@
           "defense_reduction_per_level": 1,
           "vfx_type": "debuff_aura",
           "tres": "res://resources/skills/rogue/duelist/expose_weakness.tres",
-          "description_fr": "Expose (10 + 30% ATK) sur 2 cases verticales. Applique 'Exposed' 6s (+0.4s/lvl): -25% DEF (-1%/lvl). Perce la garde sur toute la profondeur. Combo avec Challenged.",
-          "description_en": "Expose (10 + 30% ATK) on 2 vertical tiles. Applies 'Exposed' 6s (+0.4s/lvl): -25% DEF (-1%/lvl). Breaks guard through depth. Combos with Challenged.",
-          "tags": ["damage", "debuff", "armor_break", "exposed", "pattern:col_2"]
+          "description_fr": "Expose (10 + 30% ATK). Applique 'Exposed' 6s (+0.4s/lvl): -25% DEF (-1%/lvl). Combo avec Challenged.",
+          "description_en": "Expose (10 + 30% ATK). Applies 'Exposed' 6s (+0.4s/lvl): -25% DEF (-1%/lvl). Combos with Challenged.",
+          "tags": ["damage", "debuff", "armor_break", "exposed"]
         },
         {
-          "id": "coup_de_grace",
+          "id": "skill_rogue_duelist_coup_de_grace",
           "name_en": "Coup de Grâce",
           "name_fr": "Coup de Grâce",
           "tier": "signature",
