@@ -12,7 +12,8 @@
     "kill_mobs": {"fields": ["mob_ids", "count"], "counts_by_bracket": [[1, 5, 10], [6, 10, 15], [11, 15, 18], [16, 20, 20]]},
     "defeat_elite": {"fields": ["count"], "recommended_count": 1},
     "defeat_boss": {"fields": ["boss_mob_id"], "recommended_count": 1},
-    "clear_star_packs": {"fields": ["min_star", "count"]}
+    "clear_star_packs": {"fields": ["min_star", "count"]},
+    "reach_level": {"fields": ["level"], "description": "Reach a specific character level"}
   },
 
   "quests": [
@@ -190,13 +191,49 @@
       "summary": "Triumph over a legendary pack (5 stars).",
       "objectives": [{"template": "clear_star_packs", "min_star": 5, "count": 1}],
       "rewards": {"xp_percent": 25, "gold": 200, "extra_loot_rolls": 3}
+    },
+    {
+      "id": "quest_playtest_intro",
+      "type": "main",
+      "zone": "village",
+      "title_fr": "Bienvenue, testeur !",
+      "title_en": "Welcome, Tester!",
+      "summary_fr": "Marc le Villageois t'a confié une mission : explorer le désert au sud et devenir plus fort. Atteins le niveau 20 pour prouver ta valeur.",
+      "summary_en": "Marc the Villager has given you a mission: explore the desert to the south and grow stronger. Reach level 20 to prove your worth.",
+      "objectives": [{"template": "reach_level", "level": 20, "count": 1, "description_fr": "Atteindre le niveau 20", "description_en": "Reach level 20"}],
+      "rewards": {"xp": 5000},
+      "npc_giver": "npc_marc_le_villageois"
+    },
+    {
+      "id": "quest_playtest_1",
+      "type": "side",
+      "zone": "desert_playtest",
+      "title_fr": "Extermination",
+      "title_en": "Extermination",
+      "summary_fr": "Élimine 20 monstres dans le désert pour prouver ta valeur.",
+      "summary_en": "Eliminate 20 monsters in the desert to prove your worth.",
+      "objectives": [{"template": "kill_mobs", "mobs": ["any"], "count": 20, "description_fr": "Monstres tués", "description_en": "Monsters killed"}],
+      "rewards": {"xp": 500},
+      "npc_giver": "npc_naya"
+    },
+    {
+      "id": "quest_playtest_2",
+      "type": "side",
+      "zone": "desert_playtest",
+      "title_fr": "Combattant aguerri",
+      "title_en": "Seasoned Fighter",
+      "summary_fr": "Remporte 10 combats dans le désert.",
+      "summary_en": "Win 10 combats in the desert.",
+      "objectives": [{"template": "win_combats", "count": 10, "description_fr": "Combats gagnés", "description_en": "Combats won"}],
+      "rewards": {"xp": 1500},
+      "npc_giver": "npc_naya"
     }
   ],
 
   "_summary": {
-    "total_quests": 18,
-    "main_quests": 10,
-    "side_quests": 5,
+    "total_quests": 21,
+    "main_quests": 11,
+    "side_quests": 7,
     "repeatable_quests": 3
   }
 }
