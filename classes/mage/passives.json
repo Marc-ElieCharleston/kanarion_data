@@ -11,15 +11,18 @@
     "name_fr": "Charges Arcaniques",
     "name_en": "Arcane Charges",
     "type": "resource",
-    "description_fr": "Certains sorts génèrent des Charges Arcaniques (max 3). Les sorts puissants consomment ces charges pour des effets amplifiés. Le Souffle du Mage s'accumule à chaque incantation, prêt à être libéré.",
-    "description_en": "Certain spells generate Arcane Charges (max 3). Powerful spells consume these charges for amplified effects. The Mage's Breath accumulates with each cast, ready to be unleashed.",
+    "description_fr": "Certains sorts génèrent des Charges Arcaniques (max 3). Chaque charge octroie +4% MAG. Les sorts puissants consomment ces charges pour des effets amplifiés. Le Souffle du Mage s'accumule à chaque incantation, prêt à être libéré.",
+    "description_en": "Certain spells generate Arcane Charges (max 3). Each charge grants +4% MAG. Powerful spells consume these charges for amplified effects. The Mage's Breath accumulates with each cast, ready to be unleashed.",
     "trigger_rule": "on_skill_cast",
     "conditions": {
       "generate": {
         "check": "skill_has_generates_charges",
         "effect_id": "arcane_charge",
         "stacks": 1,
-        "max_stacks": 3
+        "max_stacks": 3,
+        "value_per_stack": 4,
+        "stat": "mag",
+        "op": "add_percent"
       },
       "consume": {
         "check": "skill_has_consumes_charges",
@@ -27,6 +30,12 @@
         "consume_up_to": 3,
         "bonus": "varies_by_skill"
       }
+    },
+    "passive_scaling": {
+      "passive_id": "p_mage_arcane_mastery",
+      "bonus_per_level": 0.1,
+      "description_fr": "+0.1% MAG par charge par niveau de Maîtrise Arcanique",
+      "description_en": "+0.1% MAG per charge per level of Arcane Mastery"
     },
     "lore_note": "Le Souffle du Mage n'est jamais gaspillé — chaque sort nourrit le suivant."
   },
