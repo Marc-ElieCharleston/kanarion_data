@@ -164,10 +164,11 @@
           "cooldown": 2.5,
           "applies_burn_stacks": 1,
           "applies_chill_stacks": 1,
+          "generates_charges": 1,
           "vfx_type": "fireball",
-          "description_fr": "Projectile élémentaire (20 + 50% MAG). Applique 1 stack Burn et 1 stack Chill.",
-          "description_en": "Elemental projectile (20 + 50% MAG). Applies 1 Burn and 1 Chill stack.",
-          "tags": ["damage", "filler", "elemental", "burn", "chill"]
+          "description_fr": "Projectile élémentaire (20 + 50% MAG). Applique 1 stack Burn et 1 stack Chill. Génère 1 Charge Arcanique.",
+          "description_en": "Elemental projectile (20 + 50% MAG). Applies 1 Burn and 1 Chill stack. Generates 1 Arcane Charge.",
+          "tags": ["damage", "filler", "elemental", "burn", "chill", "charge_generator"]
         },
         {
           "id": "skill_mage_elem_inferno",
@@ -183,10 +184,11 @@
           "mana_cost": 22,
           "cooldown": 10.0,
           "applies_burn_stacks": 2,
+          "generates_charges": 1,
           "vfx_type": "fireball",
-          "description_fr": "Vague de feu (25 + 45% MAG) sur 3 cibles en ligne. Applique 2 stacks Burn.",
-          "description_en": "Fire wave (25 + 45% MAG) on 3 targets in a row. Applies 2 Burn stacks.",
-          "tags": ["damage", "aoe", "fire", "elemental", "burn"]
+          "description_fr": "Vague de feu (25 + 45% MAG) sur 3 cibles en ligne. Applique 2 stacks Burn. Génère 1 Charge Arcanique.",
+          "description_en": "Fire wave (25 + 45% MAG) on 3 targets in a row. Applies 2 Burn stacks. Generates 1 Arcane Charge.",
+          "tags": ["damage", "aoe", "fire", "elemental", "burn", "charge_generator"]
         },
         {
           "id": "skill_mage_elem_frost_spike",
@@ -243,11 +245,14 @@
           "cast_time": 3.0,
           "applies_burn_stacks": 1,
           "applies_chill_stacks": 1,
+          "consumes_charges": true,
+          "max_charges_consumed": 3,
+          "bonus_stacks_per_charge": 1,
           "vfx_type": "blizzard",
           "is_signature": true,
-          "description_fr": "SIGNATURE - Tempête élémentaire (20 + 35% MAG) sur TOUT le terrain. Cast 3s. Applique 1 Burn + 1 Chill à toutes les cibles.",
-          "description_en": "SIGNATURE - Elemental storm (20 + 35% MAG) on ALL enemies. 3s cast. Applies 1 Burn + 1 Chill to all targets.",
-          "tags": ["damage", "aoe", "elemental", "burn", "chill", "signature", "cast_time"]
+          "description_fr": "SIGNATURE - Tempête élémentaire (20 + 35% MAG) sur TOUT le terrain. Cast 3s. Applique 1 Burn + 1 Chill. Consomme jusqu'à 3 charges: +1 stack Burn/Chill par charge.",
+          "description_en": "SIGNATURE - Elemental storm (20 + 35% MAG) on ALL enemies. 3s cast. Applies 1 Burn + 1 Chill. Consumes up to 3 charges: +1 Burn/Chill stack per charge.",
+          "tags": ["damage", "aoe", "elemental", "burn", "chill", "signature", "cast_time", "charge_consumer"]
         }
       ]
     },
@@ -277,10 +282,11 @@
           "mana_cost": 12,
           "cooldown": 2.5,
           "applies_corruption_stacks": 1,
+          "generates_charges": 1,
           "vfx_type": "magic_bolt",
-          "description_fr": "Projectile d'ombre (18 + 45% MAG). Applique 1 stack de Corruption.",
-          "description_en": "Shadow projectile (18 + 45% MAG). Applies 1 Corruption stack.",
-          "tags": ["damage", "filler", "dark", "occult", "corruption"]
+          "description_fr": "Projectile d'ombre (18 + 45% MAG). Applique 1 stack de Corruption. Génère 1 Charge Arcanique.",
+          "description_en": "Shadow projectile (18 + 45% MAG). Applies 1 Corruption stack. Generates 1 Arcane Charge.",
+          "tags": ["damage", "filler", "dark", "occult", "corruption", "charge_generator"]
         },
         {
           "id": "skill_mage_occ_curse_of_weakness",
@@ -301,10 +307,11 @@
           "secondary_debuff": "def_down",
           "secondary_debuff_value": 20,
           "secondary_debuff_duration": 8.0,
+          "generates_charges": 1,
           "vfx_type": "debuff_aura",
-          "description_fr": "Malédiction (10 + 25% MAG) réduisant ATK et DEF de 20% pendant 8s.",
-          "description_en": "Curse (10 + 25% MAG) reducing ATK and DEF by 20% for 8s.",
-          "tags": ["damage", "debuff", "dark", "occult", "curse"]
+          "description_fr": "Malédiction (10 + 25% MAG) réduisant ATK et DEF de 20% pendant 8s. Génère 1 Charge Arcanique.",
+          "description_en": "Curse (10 + 25% MAG) reducing ATK and DEF by 20% for 8s. Generates 1 Arcane Charge.",
+          "tags": ["damage", "debuff", "dark", "occult", "curse", "charge_generator"]
         },
         {
           "id": "skill_mage_occ_life_drain",
@@ -363,11 +370,14 @@
           "lifesteal_per_level": 1.5,
           "bonus_damage_per_debuff": 10,
           "max_debuff_bonus": 30,
+          "consumes_charges": true,
+          "max_charges_consumed": 3,
+          "bonus_lifesteal_per_charge": 10,
           "vfx_type": "life_steal",
           "is_signature": true,
-          "description_fr": "SIGNATURE - Pacte sombre (35 + 60% MAG) en zone 2x2. Vole 25% HP (+1.5%/lvl). +10% dégâts par debuff sur les cibles (max +30%).",
-          "description_en": "SIGNATURE - Shadow pact (35 + 60% MAG) in 2x2 area. Steals 25% HP (+1.5%/lvl). +10% damage per debuff on targets (max +30%).",
-          "tags": ["damage", "aoe", "lifesteal", "dark", "occult", "signature"]
+          "description_fr": "SIGNATURE - Pacte sombre (35 + 60% MAG) en zone 2x2. Vole 25% HP (+1.5%/lvl). +10% dégâts par debuff (max +30%). Consomme jusqu'à 3 charges: +10% lifesteal par charge.",
+          "description_en": "SIGNATURE - Shadow pact (35 + 60% MAG) in 2x2 area. Steals 25% HP (+1.5%/lvl). +10% damage per debuff (max +30%). Consumes up to 3 charges: +10% lifesteal per charge.",
+          "tags": ["damage", "aoe", "lifesteal", "dark", "occult", "signature", "charge_consumer"]
         }
       ]
     },
@@ -395,10 +405,11 @@
           "mana_cost": 12,
           "cooldown": 2.5,
           "double_hit_chance": 0.5,
+          "generates_charges": 1,
           "vfx_type": "card",
-          "description_fr": "Lance une carte tranchante infligeant 20 (+50% MAG) dégâts magiques.\n50% de chance de double frappe.",
-          "description_en": "A razor-sharp card flies toward the enemy.\nDeals 20 (+50% MAG) magic damage.\n50% chance to strike twice.",
-          "tags": ["damage", "filler", "cards", "double_hit"]
+          "description_fr": "Lance une carte tranchante infligeant 20 (+50% MAG) dégâts magiques.\n50% de chance de double frappe. Génère 1 Charge Arcanique.",
+          "description_en": "A razor-sharp card flies toward the enemy.\nDeals 20 (+50% MAG) magic damage.\n50% chance to strike twice. Generates 1 Arcane Charge.",
+          "tags": ["damage", "filler", "cards", "double_hit", "charge_generator"]
         },
         {
           "id": "skill_mage_card_lucky_draw",
@@ -475,10 +486,11 @@
             {"debuff": "mag_down", "value": 20},
             {"debuff": "armor_down", "value": 15}
           ],
+          "generates_charges": 1,
           "vfx_type": "card",
-          "description_fr": "Inflige 15 (+35% MAG) dégâts magiques en zone 2x2.\nApplique 1 à 3 débuffs aléatoires (minimum 2 au niveau 5).\nDurée : 5s (+0.3s par niveau).",
-          "description_en": "Ill fortune rains upon your foes.\nDeals 15 (+35% MAG) magic damage in a 2x2 area.\nApplies 1 to 3 random debuffs (minimum 2 at level 5).\nDuration: 5s (+0.3s per level).",
-          "tags": ["damage", "debuff", "aoe", "cards"]
+          "description_fr": "Inflige 15 (+35% MAG) dégâts magiques en zone 2x2.\nApplique 1 à 3 débuffs aléatoires (minimum 2 au niveau 5).\nDurée : 5s (+0.3s par niveau). Génère 1 Charge Arcanique.",
+          "description_en": "Ill fortune rains upon your foes.\nDeals 15 (+35% MAG) magic damage in a 2x2 area.\nApplies 1 to 3 random debuffs (minimum 2 at level 5).\nDuration: 5s (+0.3s per level). Generates 1 Arcane Charge.",
+          "tags": ["damage", "debuff", "aoe", "cards", "charge_generator"]
         },
         {
           "id": "skill_mage_card_fate_flip",
@@ -499,11 +511,14 @@
           "random_debuff_count_max": 2,
           "status_duration": 3.0,
           "status_chance": 1.0,
+          "consumes_charges": true,
+          "max_charges_consumed": 3,
+          "bonus_double_hit_per_charge": 0.25,
           "vfx_type": "card",
           "is_signature": true,
-          "description_fr": "Inverse le destin en zone 2x2.\nInflige 30 (+55% MAG) dégâts magiques avec 50% de chance de double frappe.\nApplique 1-2 altérations aléatoires (stun, slow, burn ou confusion).\nSort signature.",
-          "description_en": "Fate itself bends to the Cardmaster's will.\nDeals 30 (+55% MAG) magic damage in a 2x2 area.\n50% chance to strike twice.\nApplies 1-2 random debuffs (stun, slow, burn, or confusion).\nSignature skill.",
-          "tags": ["damage", "aoe", "cards", "double_hit", "debuff", "signature"]
+          "description_fr": "SIGNATURE - Inverse le destin en zone 2x2.\nInflige 30 (+55% MAG) dégâts magiques avec 50% de chance de double frappe.\nApplique 1-2 altérations aléatoires (stun, slow, burn ou confusion).\nConsomme jusqu'à 3 charges: +25% double frappe par charge.",
+          "description_en": "SIGNATURE - Fate itself bends to the Cardmaster's will.\nDeals 30 (+55% MAG) magic damage in a 2x2 area.\n50% chance to strike twice.\nApplies 1-2 random debuffs (stun, slow, burn, or confusion).\nConsumes up to 3 charges: +25% double hit per charge.",
+          "tags": ["damage", "aoe", "cards", "double_hit", "debuff", "signature", "charge_consumer"]
         }
       ]
     },
@@ -534,10 +549,11 @@
           "mana_cost": 10,
           "cooldown": 2.5,
           "generates_momentum": 1,
+          "generates_charges": 1,
           "vfx_type": "melee_slash",
-          "description_fr": "Frappe arcanique (15 + 50% MAG). Génère 1 stack Arcane Momentum.",
-          "description_en": "Arcane strike (15 + 50% MAG). Generates 1 Arcane Momentum stack.",
-          "tags": ["damage", "filler", "melee", "momentum"]
+          "description_fr": "Frappe arcanique (15 + 50% MAG). Génère 1 Arcane Momentum et 1 Charge Arcanique.",
+          "description_en": "Arcane strike (15 + 50% MAG). Generates 1 Arcane Momentum and 1 Arcane Charge.",
+          "tags": ["damage", "filler", "melee", "momentum", "charge_generator"]
         },
         {
           "id": "skill_mage_sb_enchanted_blade",
@@ -601,10 +617,11 @@
           "debuff": "magic_resist_down",
           "debuff_value": 25,
           "debuff_duration": 6.0,
+          "generates_charges": 1,
           "vfx_type": "aoe_pulse",
-          "description_fr": "Brise les défenses magiques (18 + 40% MAG) en zone 2x2. -25% résistance magique pendant 6s.",
-          "description_en": "Shatters magic defenses (18 + 40% MAG) in 2x2 area. -25% magic resist for 6s.",
-          "tags": ["damage", "aoe", "debuff", "magic_shred"]
+          "description_fr": "Brise les défenses magiques (18 + 40% MAG) en zone 2x2. -25% résistance magique pendant 6s. Génère 1 Charge Arcanique.",
+          "description_en": "Shatters magic defenses (18 + 40% MAG) in 2x2 area. -25% magic resist for 6s. Generates 1 Arcane Charge.",
+          "tags": ["damage", "aoe", "debuff", "magic_shred", "charge_generator"]
         },
         {
           "id": "skill_mage_sb_arcane_cleave",
@@ -620,11 +637,14 @@
           "mana_cost": 40,
           "cooldown": 18.0,
           "bonus_damage_per_momentum": 5,
+          "consumes_charges": true,
+          "max_charges_consumed": 3,
+          "bonus_damage_per_charge": 15,
           "vfx_type": "melee_slash",
           "is_signature": true,
-          "description_fr": "SIGNATURE - Balayage arcanique (35 + 60% MAG) sur 3 cibles. +5% dégâts par stack Arcane Momentum.",
-          "description_en": "SIGNATURE - Arcane cleave (35 + 60% MAG) on 3 targets. +5% damage per Arcane Momentum stack.",
-          "tags": ["damage", "aoe", "melee", "signature", "momentum_consumer"]
+          "description_fr": "SIGNATURE - Balayage arcanique (35 + 60% MAG) sur 3 cibles. +5% dégâts par Momentum. Consomme jusqu'à 3 charges: +15% dégâts par charge.",
+          "description_en": "SIGNATURE - Arcane cleave (35 + 60% MAG) on 3 targets. +5% damage per Momentum. Consumes up to 3 charges: +15% damage per charge.",
+          "tags": ["damage", "aoe", "melee", "signature", "momentum_consumer", "charge_consumer"]
         }
       ]
     }
