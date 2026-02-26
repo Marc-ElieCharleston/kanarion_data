@@ -159,6 +159,77 @@
       }
     },
 
+    "skill_brute_charge": {
+      "name": "Charge",
+      "archetype": "brute",
+      "type": "damage_cc",
+      "pattern": "single",
+      "damage_type": "physical",
+      "base_damage": {
+        "formula": "16 + (1.5 * level)",
+        "example_lv1": 17.5,
+        "example_lv10": 31,
+        "example_lv20": 46
+      },
+      "scaling_percent": {
+        "stat": "atk",
+        "formula": "35 + (2 * level)",
+        "example_lv1": 37,
+        "example_lv10": 55,
+        "example_lv20": 75
+      },
+      "cast_time": 0,
+      "cooldown": {
+        "normal": 8,
+        "elite": 7,
+        "boss": 6
+      },
+      "effect": {
+        "type": "stun",
+        "duration": {
+          "normal": 1.0,
+          "elite": 1.5,
+          "boss": 2.0
+        }
+      }
+    },
+
+    "skill_brute_execute": {
+      "name": "Execute",
+      "archetype": "brute",
+      "type": "damage",
+      "pattern": "single",
+      "damage_type": "physical",
+      "tier_availability": "elite_and_boss",
+      "description": "Deals bonus damage to targets below 30% HP",
+      "base_damage": {
+        "formula": "25 + (2.5 * level)",
+        "example_lv1": 27.5,
+        "example_lv10": 50,
+        "example_lv20": 75
+      },
+      "scaling_percent": {
+        "stat": "atk",
+        "formula": "50 + (3 * level)",
+        "example_lv1": 53,
+        "example_lv10": 80,
+        "example_lv20": 110
+      },
+      "cast_time": {
+        "elite": 2.0,
+        "boss": 1.5
+      },
+      "cooldown": {
+        "elite": 14,
+        "boss": 12
+      },
+      "effect": {
+        "type": "execute_bonus",
+        "threshold": 30,
+        "bonus_damage_percent": 50
+      }
+    },
+
     "_comment": "=== ASSASSIN ARCHETYPE ===",
 
     "skill_assassin_quick_strike": {
@@ -289,6 +360,43 @@
       }
     },
 
+    "skill_assassin_ambush": {
+      "name": "Ambush",
+      "archetype": "assassin",
+      "type": "damage",
+      "pattern": "single",
+      "damage_type": "physical",
+      "description": "Strikes from the shadows. Higher crit chance.",
+      "base_damage": {
+        "formula": "22 + (2 * level)",
+        "example_lv1": 24,
+        "example_lv10": 42,
+        "example_lv20": 62
+      },
+      "scaling_percent": {
+        "stat": "atk",
+        "formula": "45 + (2.5 * level)",
+        "example_lv1": 47.5,
+        "example_lv10": 70,
+        "example_lv20": 95
+      },
+      "cast_time": 0,
+      "cooldown": {
+        "normal": 10,
+        "elite": 8,
+        "boss": 6
+      },
+      "effect": {
+        "type": "bonus_crit",
+        "crit_chance_bonus": {
+          "normal": 25,
+          "elite": 35,
+          "boss": 50,
+          "unit": "percent"
+        }
+      }
+    },
+
     "_comment": "=== TANK ARCHETYPE ===",
 
     "skill_tank_shield_bash": {
@@ -384,6 +492,68 @@
           "formula": "10 + (0.3 * level)",
           "example_lv10": 13,
           "example_lv20": 16
+        }
+      }
+    },
+
+    "skill_tank_taunt_roar": {
+      "name": "Taunt Roar",
+      "archetype": "tank",
+      "type": "taunt",
+      "pattern": {
+        "normal": "row_2",
+        "elite": "row_3",
+        "boss": "all_enemies"
+      },
+      "cast_time": 0,
+      "cooldown": {
+        "normal": 12,
+        "elite": 10,
+        "boss": 8
+      },
+      "effect": {
+        "type": "taunt",
+        "duration": {
+          "normal": 3.0,
+          "elite": 4.0,
+          "boss": 5.0
+        },
+        "def_increase": {
+          "formula": "15 + (0.5 * level)",
+          "example_lv1": 15.5,
+          "example_lv10": 20,
+          "example_lv20": 25,
+          "unit": "percent"
+        }
+      }
+    },
+
+    "skill_tank_shield_wall": {
+      "name": "Shield Wall",
+      "archetype": "tank",
+      "type": "buff_team",
+      "pattern": "all_allies",
+      "tier_availability": "elite_and_boss",
+      "cast_time": {
+        "elite": 3.5,
+        "boss": 3.0
+      },
+      "cooldown": {
+        "elite": 25,
+        "boss": 20
+      },
+      "effect": {
+        "type": "damage_reduction_buff",
+        "damage_reduction": {
+          "formula": "20 + (1 * level)",
+          "example_lv10": 30,
+          "example_lv20": 40,
+          "unit": "percent"
+        },
+        "duration": {
+          "formula": "6 + (0.2 * level)",
+          "example_lv10": 8,
+          "example_lv20": 10
         }
       }
     },
@@ -859,6 +1029,73 @@
           "example_lv20": 25
         }
       }
+    },
+
+    "skill_berserker_rampage": {
+      "name": "Rampage",
+      "archetype": "berserker",
+      "type": "damage_aoe",
+      "pattern": {
+        "elite": "row_3",
+        "boss": "row_4"
+      },
+      "damage_type": "physical",
+      "tier_availability": "elite_and_boss",
+      "base_damage": {
+        "formula": "20 + (2 * level)",
+        "example_lv10": 40,
+        "example_lv20": 60
+      },
+      "scaling_percent": {
+        "stat": "atk",
+        "formula": "55 + (2.5 * level)",
+        "example_lv10": 80,
+        "example_lv20": 105
+      },
+      "cast_time": {
+        "elite": 3.0,
+        "boss": 2.5
+      },
+      "cooldown": {
+        "elite": 14,
+        "boss": 12
+      },
+      "effect": {
+        "type": "bleed",
+        "stacks": {
+          "elite": 2,
+          "boss": 3
+        },
+        "duration": 6.0
+      }
+    },
+
+    "skill_berserker_execution": {
+      "name": "Execution",
+      "archetype": "berserker",
+      "type": "damage",
+      "pattern": "single",
+      "damage_type": "physical",
+      "tier_availability": "boss_only",
+      "description": "Massive single-target strike. Bonus damage to targets below 25% HP.",
+      "base_damage": {
+        "formula": "35 + (3 * level)",
+        "example_lv10": 65,
+        "example_lv20": 95
+      },
+      "scaling_percent": {
+        "stat": "atk",
+        "formula": "80 + (3 * level)",
+        "example_lv10": 110,
+        "example_lv20": 140
+      },
+      "cast_time": 3.5,
+      "cooldown": 18,
+      "effect": {
+        "type": "execute_bonus",
+        "threshold": 25,
+        "bonus_damage_percent": 75
+      }
     }
   },
 
@@ -1091,19 +1328,19 @@
 
   "skill_assignment_by_tier": {
     "normal": {
-      "skill_count": 1,
+      "skill_count": 2,
       "passive_count": 1,
-      "description": "Basic monsters have 1 active skill and 1 passive"
+      "description": "Basic monsters have 2 active skills and 1 passive"
     },
     "elite": {
-      "skill_count": 2,
+      "skill_count": 3,
       "passive_count": 2,
-      "description": "Elite monsters have 2 active skills (same as normal but higher ratios) and 2 passives"
+      "description": "Elite monsters have 3 active skills and 2 passives"
     },
     "boss": {
-      "skill_count": 3,
+      "skill_count": 4,
       "passive_count": 3,
-      "description": "Boss monsters have 3 active skills (2 normal + 1 signature spell) and 3 passives"
+      "description": "Boss monsters have 4 active skills (3 normal + 1 signature spell) and 3 passives"
     }
   }
 }
