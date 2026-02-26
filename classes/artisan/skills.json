@@ -1453,34 +1453,39 @@
       }
     },
     "musician": {
-      "identity": "Tempo Controller + Team Buffs + Debuff Disruption",
+      "identity": "Tempo Controller + Dual-Effect Specialist + Sound bypasses LoS",
       "signature": "skill_artisan_musician_grand_performance",
+      "class_los_note": "Sound-based skills ignore LoS — music travels through everything",
       "skills": [
         {
-          "id": "skill_artisan_musician_battle_hymn",
-          "name_en": "Battle Hymn",
-          "name_fr": "Hymne de Bataille",
-          "tier": "standard",
-          "target": "allies",
-          "pattern": "row_3",
-          "damage_type": "none",
-          "mana_cost": 16,
-          "cooldown": 12.0,
-          "vfx_type": "buff_aura",
-          "description_fr": "Le Musicien insuffle son Souffle dans un hymne guerrier — chaque note amplifie la puissance de frappe de ses alliés.\n+20% ATK sur 3 alliés en ligne pendant 10s.",
-          "description_en": "The Musician breathes their Breath into a war hymn — every note amplifies the striking power of allies.\n+20% ATK to 3 allies in a row for 10s.",
+          "id": "skill_artisan_musician_riff",
+          "name_en": "Riff",
+          "name_fr": "Riff",
+          "tier": "filler",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "magical",
+          "scaling_stat": "mag",
+          "base_power": 12,
+          "scaling_percent": 35,
+          "mana_cost": 8,
+          "cooldown": 3.5,
+          "ignore_los": true,
+          "vfx_type": "debuff_aura",
+          "description_fr": "Le Musicien joue un riff rapide — une note discordante qui frappe l'ennemi et ralentit son rythme.\nInflige 12 (+35% MAG) dégâts magiques. -10% vitesse d'attaque pendant 4s.",
+          "description_en": "The Musician plays a quick riff — a jarring note that strikes the enemy and slows their rhythm.\nDeals 12 (+35% MAG) magic damage. -10% attack speed for 4s.",
           "tags": [
-            "buff",
-            "atk",
-            "aoe",
-            "support"
+            "damage",
+            "debuff",
+            "atk_speed",
+            "tempo"
           ],
           "effects": [
             {
-              "type": "buff",
-              "stat": "atk_up",
-              "value": 20,
-              "duration": 10.0
+              "type": "debuff",
+              "stat": "atk_speed_down",
+              "value": 10,
+              "duration": 4.0
             }
           ]
         },
@@ -1497,10 +1502,11 @@
           "scaling_percent": 35,
           "mana_cost": 18,
           "cooldown": 10.0,
+          "ignore_los": true,
           "purge_count": 1,
           "vfx_type": "debuff_aura",
-          "description_fr": "Le Musicien joue un accord qui déchire l'harmonie ennemie — son Souffle devenu dissonance brise concentration et protections.\nInflige 14 (+35% MAG) sur 3 ennemis en ligne. -20% précision et -15% vitesse d'attaque pendant 6s. Retire 1 buff de chaque cible.",
-          "description_en": "The Musician plays a chord that tears enemy harmony apart — their Breath turned to dissonance shatters focus and protections.\nDeals 14 (+35% MAG) on 3 enemies in a row. -20% accuracy and -15% attack speed for 6s. Removes 1 buff from each target.",
+          "description_fr": "Le Musicien joue un accord qui déchire l'harmonie ennemie — son Souffle devenu dissonance brise concentration et protections.\nInflige 14 (+35% MAG) sur 3 ennemis en ligne. -20% précision et -15% vitesse d'attaque pendant 6s. Retire 1 buff de chaque cible. Ignore la ligne de vue.",
+          "description_en": "The Musician plays a chord that tears enemy harmony apart — their Breath turned to dissonance shatters focus and protections.\nDeals 14 (+35% MAG) on 3 enemies in a row. -20% accuracy and -15% attack speed for 6s. Removes 1 buff from each target. Ignores line of sight.",
           "tags": [
             "damage",
             "debuff",
@@ -1525,24 +1531,65 @@
           ]
         },
         {
+          "id": "skill_artisan_musician_rallying_melody",
+          "name_en": "Rallying Melody",
+          "name_fr": "Mélodie de Ralliement",
+          "tier": "standard",
+          "target": "all",
+          "pattern": "row_3",
+          "damage_type": "none",
+          "mana_cost": 18,
+          "cooldown": 12.0,
+          "ignore_los": true,
+          "hot_base": 8,
+          "hot_scaling_stat": "mag",
+          "hot_scaling_percent": 20,
+          "hot_duration": 8.0,
+          "dual_effect": true,
+          "vfx_type": "buff_aura",
+          "description_fr": "Le Musicien joue une mélodie à double tranchant — son Souffle soigne les alliés et étouffe les soins ennemis simultanément.\nAlliés row_3 : soin continu 8 (+20% MAG)/s pendant 8s.\nEnnemis row_3 : -15% soins reçus pendant 8s. Ignore la ligne de vue.",
+          "description_en": "The Musician plays a double-edged melody — their Breath heals allies and smothers enemy healing simultaneously.\nAllies row_3: HoT 8 (+20% MAG)/s for 8s.\nEnemies row_3: -15% healing received for 8s. Ignores line of sight.",
+          "tags": [
+            "hot",
+            "regen",
+            "debuff",
+            "heal_reduction",
+            "aoe",
+            "dual_effect",
+            "support"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "heal_received_down",
+              "value": 15,
+              "duration": 8.0
+            }
+          ]
+        },
+        {
           "id": "skill_artisan_musician_tempo_shift",
           "name_en": "Tempo Shift",
           "name_fr": "Changement de Tempo",
           "tier": "strong",
-          "target": "allies",
+          "target": "all",
           "pattern": "all",
           "damage_type": "none",
           "mana_cost": 24,
           "cooldown": 16.0,
           "cast_time": 1.5,
+          "ignore_los": true,
+          "dual_effect": true,
           "vfx_type": "buff_aura",
-          "description_fr": "Le Musicien change le tempo du combat entier — son Souffle résonne dans chaque allié, accélérant leurs gestes.\n+20% vitesse d'attaque sur tous les alliés pendant 8s. Incantation 1.5s.",
-          "description_en": "The Musician shifts the tempo of the entire battle — their Breath resonates through every ally, quickening their actions.\n+20% attack speed to all allies for 8s. 1.5s cast.",
+          "description_fr": "Le Musicien change le tempo du combat entier — son Souffle accélère ses alliés et ralentit ses ennemis dans le même mouvement.\nAlliés : +20% vitesse d'attaque. Ennemis : -15% vitesse d'attaque pendant 8s. Incantation 1.5s. Ignore la ligne de vue.",
+          "description_en": "The Musician shifts the tempo of the entire battle — their Breath quickens allies and slows enemies in the same motion.\nAllies: +20% attack speed. Enemies: -15% attack speed for 8s. 1.5s cast. Ignores line of sight.",
           "tags": [
             "buff",
+            "debuff",
             "haste",
             "atk_speed",
             "all",
+            "dual_effect",
             "support"
           ],
           "effects": [
@@ -1551,40 +1598,12 @@
               "stat": "atk_speed_up",
               "value": 20,
               "duration": 8.0
-            }
-          ]
-        },
-        {
-          "id": "skill_artisan_musician_inspiring_verse",
-          "name_en": "Inspiring Verse",
-          "name_fr": "Vers Inspirant",
-          "tier": "standard",
-          "target": "allies",
-          "pattern": "row_2",
-          "damage_type": "none",
-          "mana_cost": 14,
-          "cooldown": 12.0,
-          "hot_base": 6,
-          "hot_scaling_stat": "mag",
-          "hot_scaling_percent": 15,
-          "hot_duration": 10.0,
-          "vfx_type": "buff_aura",
-          "description_fr": "Le Musicien chante un vers qui insuffle confiance — son Souffle soigne lentement et aiguise l'instinct critique.\nSoin continu 6 (+15% MAG)/s + +10% critique sur 2 alliés en ligne pendant 10s.",
-          "description_en": "The Musician sings a verse that breathes confidence — their Breath heals slowly and sharpens critical instinct.\nHoT 6 (+15% MAG)/s + +10% crit to 2 allies in a row for 10s.",
-          "tags": [
-            "hot",
-            "regen",
-            "buff",
-            "crit",
-            "aoe",
-            "support"
-          ],
-          "effects": [
+            },
             {
-              "type": "buff",
-              "stat": "crit_chance_up",
-              "value": 10,
-              "duration": 10.0
+              "type": "debuff",
+              "stat": "atk_speed_down",
+              "value": 15,
+              "duration": 8.0
             }
           ]
         },
@@ -1599,6 +1618,7 @@
           "mana_cost": 45,
           "cooldown": 28.0,
           "cast_time": 2.0,
+          "ignore_los": true,
           "allies_buff": "all_stats",
           "allies_buff_value": 15,
           "allies_buff_duration": 12.0,
@@ -1608,8 +1628,8 @@
           "dual_effect": true,
           "is_signature": true,
           "vfx_type": "buff_aura",
-          "description_fr": "Le Musicien déploie son chef-d'œuvre — une mélodie dont le Souffle touche chaque être sur le champ de bataille, élevant les alliés et écrasant les ennemis.\nAlliés : +15% toutes les stats. Ennemis : -15% toutes les stats pendant 12s. Incantation 2.0s.",
-          "description_en": "The Musician unleashes their masterpiece — a melody whose Breath touches every being on the battlefield, elevating allies and crushing enemies.\nAllies: +15% all stats. Enemies: -15% all stats for 12s. 2.0s cast.",
+          "description_fr": "Le Musicien déploie son chef-d'œuvre — une mélodie dont le Souffle touche chaque être sur le champ de bataille, élevant les alliés et écrasant les ennemis.\nAlliés : +15% toutes les stats. Ennemis : -15% toutes les stats pendant 12s. Incantation 2.0s. Ignore la ligne de vue.",
+          "description_en": "The Musician unleashes their masterpiece — a melody whose Breath touches every being on the battlefield, elevating allies and crushing enemies.\nAllies: +15% all stats. Enemies: -15% all stats for 12s. 2.0s cast. Ignores line of sight.",
           "tags": [
             "buff",
             "debuff",
