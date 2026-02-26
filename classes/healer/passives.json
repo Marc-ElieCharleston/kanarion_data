@@ -1,9 +1,40 @@
 {
   "_meta": {
-    "version": "4.0",
-    "last_updated": "2026-01-31",
+    "version": "5.0",
+    "last_updated": "2026-02-26",
     "class": "healer",
-    "description": "Tous les passifs du Healer (10 class-specific passives avec max 20 niveaux)"
+    "description": "Tous les passifs du Healer (10 class-specific passives avec max 20 niveaux) + 1 class passive innée"
+  },
+
+  "innate_passive": {
+    "id": "p_heal_guardian_breath",
+    "name_fr": "Souffle Protecteur",
+    "name_en": "Guardian Breath",
+    "type": "combat_proc",
+    "description_fr": "Toutes les 3 compétences ciblant des alliés, applique un HoT (8 + 10% MAG par seconde, 4s, max 3 charges) sur l'allié avec le moins de HP. Le don du Soigneur ne s'arrête jamais — même entre deux sorts, son Souffle veille.",
+    "description_en": "Every 3 ally-targeting spells, applies a HoT (8 + 10% MAG per second, 4s, max 3 stacks) on the lowest HP ally. The Healer's gift never rests — even between spells, their Breath watches over.",
+    "trigger_rule": "on_skill_cast",
+    "conditions": {
+      "count_trigger": {
+        "check": "skill_target_is_ally_or_self",
+        "count_required": 3,
+        "effect_id": "guardian_breath",
+        "target_rule": "lowest_hp_ally",
+        "stacks": 1,
+        "max_stacks": 3,
+        "duration": 4.0,
+        "heal_flat": 8,
+        "heal_scaling_stat": "mag",
+        "heal_scaling_percent": 10
+      }
+    },
+    "passive_scaling": {
+      "passive_id": "p_heal_divine_touch",
+      "bonus_per_level": 0.1,
+      "description_fr": "+0.1 soin/s par charge par niveau de Toucher Divin",
+      "description_en": "+0.1 heal/s per stack per level of Divine Touch"
+    },
+    "lore_note": "Le Souffle du Soigneur est un don sacré — il trouve toujours celui qui en a le plus besoin."
   },
 
   "class_passives": [
