@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "version": "4.1",
-    "last_updated": "2026-02-15",
+    "version": "5.0",
+    "last_updated": "2026-02-26",
     "class": "archer",
     "description": "Skills de l'Archer. DOUBLE scaling: base + scaling_percent (% ATK). Ignore LoS par défaut (ranged).",
     "scaling_note": "Damage: base_power + (scaling_percent% * ATK). Archers ignorent la LoS.",
@@ -47,12 +47,21 @@
       "ignore_los": true,
       "marked_bonus_percent": 50,
       "vfx_type": "projectile",
-      "description_fr": "Tir précis (22 + 60% ATK). Si la cible est Marquée: +50% dégâts.",
-      "description_en": "Precise shot (22 + 60% ATK). If target is Marked: +50% damage.",
+      "description_fr": "L'Archer concentre son Souffle dans son regard et libère un tir d'une précision mortelle — la flèche trouve les failles de l'armure.\nInflige 22 (+60% ATK). -10% armure 4s. Si marqué : +50% dégâts.",
+      "description_en": "The Archer focuses their Breath into their gaze and releases a shot of lethal precision — the arrow finds the gaps in armor.\nDeals 22 (+60% ATK). -10% armor for 4s. If Marked: +50% damage.",
       "tags": [
         "damage",
         "single",
-        "mark_synergy"
+        "mark_synergy",
+        "armor_down"
+      ],
+      "effects": [
+        {
+          "type": "debuff",
+          "stat": "armor_down",
+          "value": 10,
+          "duration": 4.0
+        }
       ]
     },
     {
@@ -68,16 +77,26 @@
       "scaling_percent": 45,
       "mana_cost": 20,
       "cooldown": 10.0,
+      "cast_time": 1.0,
       "ignore_los": true,
       "applies_bleed_stacks": 1,
       "vfx_type": "projectile",
-      "description_fr": "Volée de flèches (18 + 45% ATK) sur 3 cibles en ligne. Applique 1 stack de bleed (3s).",
-      "description_en": "Arrow volley (18 + 45% ATK) on 3 targets in a row. Applies 1 bleed stack (3s).",
+      "description_fr": "L'Archer expire son Souffle dans un arc tendu et libère une volée de flèches qui s'abat comme la grêle sur la ligne ennemie.\nInflige 18 (+45% ATK) sur 3 cibles en ligne. 1 charge Saignement. -10% vitesse d'attaque 3s. Incantation 1.0s.",
+      "description_en": "The Archer breathes out through a drawn bow and releases a volley that rains down like hail upon the enemy line.\nDeals 18 (+45% ATK) on 3 targets in a row. 1 Bleed stack. -10% attack speed for 3s. 1.0s cast.",
       "tags": [
         "damage",
         "aoe",
         "bleed",
-        "dot"
+        "dot",
+        "atk_speed_down"
+      ],
+      "effects": [
+        {
+          "type": "debuff",
+          "stat": "atk_speed_down",
+          "value": 10,
+          "duration": 3.0
+        }
       ]
     },
     {
@@ -93,15 +112,16 @@
       "scaling_percent": 40,
       "mana_cost": 18,
       "cooldown": 12.0,
+      "cast_time": 1.5,
       "ignore_los": true,
       "vfx_type": "projectile",
-      "description_fr": "Flèches paralysantes sur la ligne de front ennemie (15 + 40% ATK). -20% atk speed (5s) + root (2s).",
-      "description_en": "Crippling arrows rain on the enemy front row (15 + 40% ATK). -20% atk speed (5s) + root (2s).",
+      "description_fr": "L'Archer vise les articulations et les mains — ses flèches paralysent la ligne de front, rendant les ennemis incapables de frapper.\nInflige 15 (+40% ATK) sur la front row. -20% vitesse d'attaque 5s + désarmement 2s. Incantation 1.5s.",
+      "description_en": "The Archer aims for joints and hands — their arrows paralyze the front line, leaving enemies unable to strike.\nDeals 15 (+40% ATK) on front row. -20% attack speed for 5s + disarm for 2s. 1.5s cast.",
       "tags": [
         "damage",
         "debuff",
         "cc",
-        "root",
+        "disarm",
         "atk_speed_down"
       ],
       "effects": [
@@ -110,6 +130,11 @@
           "stat": "atk_speed_down",
           "value": 20,
           "duration": 5.0
+        },
+        {
+          "type": "debuff",
+          "stat": "disarm",
+          "duration": 2.0
         }
       ]
     },
@@ -122,11 +147,10 @@
       "pattern": "single",
       "damage_type": "none",
       "mana_cost": 14,
-      "cooldown": 18.0,
-      "ignore_los": true,
+      "cooldown": 14.0,
       "vfx_type": "buff_aura",
-      "description_fr": "Concentration: +25% crit chance + +15% accuracy pendant 12s.",
-      "description_en": "Focus: +25% crit chance + +15% accuracy for 12s.",
+      "description_fr": "L'Archer canalise tout son Souffle dans ses yeux — le monde ralentit, chaque faille devient visible, chaque point vital exposé.\n+25% chance de critique + +15% précision pendant 8s (+0.3s/niv).",
+      "description_en": "The Archer channels all their Breath into their eyes — the world slows, every gap becomes visible, every vital point exposed.\n+25% crit chance + +15% accuracy for 8s (+0.3s/lvl).",
       "tags": [
         "buff",
         "crit",
@@ -138,13 +162,15 @@
           "type": "buff",
           "stat": "crit_chance_up",
           "value": 25,
-          "duration": 12.0
+          "duration": 8.0,
+          "duration_per_level": 0.3
         },
         {
           "type": "buff",
           "stat": "accuracy_up",
           "value": 15,
-          "duration": 12.0
+          "duration": 8.0,
+          "duration_per_level": 0.3
         }
       ]
     },
@@ -162,8 +188,8 @@
       "mark_refresh_on_hit": true,
       "mark_spread_on_kill": true,
       "vfx_type": "debuff_aura",
-      "description_fr": "Marque la cible: +20% dégâts reçus (10s). Se refresh quand touchée. Se propage si la cible meurt.",
-      "description_en": "Marks target: +20% damage taken (10s). Refreshes on hit. Spreads on kill.",
+      "description_fr": "L'Archer insuffle son Souffle dans la marque — la cible est révélée, ses faiblesses exposées à chaque allié. La marque persiste et se propage si la proie tombe.\n+20% dégâts reçus (10s). Refresh on hit. Se propage si la cible meurt.",
+      "description_en": "The Archer breathes their power into the mark — the target is revealed, their weaknesses exposed to every ally. The mark persists and spreads if the prey falls.\n+20% damage taken (10s). Refreshes on hit. Spreads on kill.",
       "tags": [
         "debuff",
         "mark",
@@ -201,28 +227,36 @@
           "ignore_los": true,
           "crit_damage_bonus": 30,
           "vfx_type": "projectile",
-          "description_fr": "Tir de précision (28 + 70% ATK). +30% dégâts critiques sur ce skill.",
-          "description_en": "Precision shot (28 + 70% ATK). +30% crit damage on this skill.",
+          "description_fr": "Le Ranger retient son Souffle, patiente... et lâche un tir d'une précision chirurgicale qui fragilise les défenses critiques de la cible.\nInflige 28 (+70% ATK). +30% dégâts critiques. -15% résistance critique 6s.",
+          "description_en": "The Ranger holds their Breath, waits... then releases a surgically precise shot that weakens the target's critical defenses.\nDeals 28 (+70% ATK). +30% crit damage. -15% crit resistance for 6s.",
           "tags": [
             "damage",
             "single",
-            "crit"
+            "crit",
+            "crit_resistance_down"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "crit_resistance_down",
+              "value": 15,
+              "duration": 6.0
+            }
           ]
         },
         {
           "id": "skill_archer_ranger_steady_aim",
           "name_en": "Steady Aim",
           "name_fr": "Visée Stable",
-          "tier": "standard",
+          "tier": "strong",
           "target": "self",
           "pattern": "single",
           "damage_type": "none",
-          "mana_cost": 18,
-          "cooldown": 20.0,
-          "ignore_los": true,
+          "mana_cost": 22,
+          "cooldown": 16.0,
           "vfx_type": "buff_aura",
-          "description_fr": "Concentration totale: +50% dégâts critiques pendant 8s.",
-          "description_en": "Total focus: +50% crit damage for 8s.",
+          "description_fr": "Le Ranger canalise tout son Souffle dans un calme absolu — chaque battement de cœur est une cible, chaque expiration un tir létal.\n+50% dégâts critiques pendant 5s (+0.3s/niv).",
+          "description_en": "The Ranger channels all their Breath into absolute stillness — every heartbeat is a target, every exhale a lethal shot.\n+50% crit damage for 5s (+0.3s/lvl).",
           "tags": [
             "buff",
             "crit",
@@ -234,7 +268,8 @@
               "type": "buff",
               "stat": "crit_damage_up",
               "value": 50,
-              "duration": 8.0
+              "duration": 5.0,
+              "duration_per_level": 0.3
             }
           ]
         },
@@ -255,13 +290,22 @@
           "armor_pen": 30,
           "ignore_shields": true,
           "vfx_type": "projectile",
-          "description_fr": "Flèche perçante (25 + 65% ATK). 30% armor pen + ignore les shields.",
-          "description_en": "Piercing arrow (25 + 65% ATK). 30% armor pen + ignores shields.",
+          "description_fr": "Le Ranger concentre son Souffle en un point — la flèche transperce boucliers et armures, laissant une blessure que la magie peine à refermer.\nInflige 25 (+65% ATK). 30% pénétration d'armure. Ignore les boucliers. -25% soins reçus 6s.",
+          "description_en": "The Ranger focuses their Breath to a single point — the arrow pierces shields and armor, leaving a wound that magic struggles to close.\nDeals 25 (+65% ATK). 30% armor pen. Ignores shields. -25% healing received for 6s.",
           "tags": [
             "damage",
             "single",
             "armor_pen",
-            "anti_tank"
+            "anti_tank",
+            "heal_reduction"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "heal_received_down",
+              "value": 25,
+              "duration": 6.0
+            }
           ]
         },
         {
@@ -277,17 +321,27 @@
           "scaling_percent": 80,
           "mana_cost": 24,
           "cooldown": 14.0,
+          "cast_time": 1.5,
           "ignore_los": true,
           "execute_threshold": 30,
           "execute_bonus_percent": 100,
           "vfx_type": "projectile",
-          "description_fr": "Tir mortel (30 + 80% ATK). Execute: +100% dégâts si cible <30% HP.",
-          "description_en": "Kill shot (30 + 80% ATK). Execute: +100% damage if target <30% HP.",
+          "description_fr": "Le Ranger expire une dernière fois et libère le tir de grâce — quand le Souffle quitte l'arc, il quitte aussi la proie.\nInflige 30 (+80% ATK). Execute : +100% dégâts si cible <30% HP. Bloque les soins 2s si exécution. Incantation 1.5s.",
+          "description_en": "The Ranger exhales one final time and releases the killing blow — when the Breath leaves the bow, it leaves the prey as well.\nDeals 30 (+80% ATK). Execute: +100% damage if target <30% HP. Blocks healing for 2s on execute. 1.5s cast.",
           "tags": [
             "damage",
             "single",
             "execute",
-            "finisher"
+            "finisher",
+            "heal_block"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "heal_block",
+              "duration": 2.0,
+              "condition": "target_below_30_percent"
+            }
           ]
         },
         {
@@ -303,13 +357,14 @@
           "scaling_percent": 100,
           "mana_cost": 35,
           "cooldown": 22.0,
+          "cast_time": 2.0,
           "ignore_los": true,
           "guaranteed_crit": true,
           "cd_reset_on_kill": true,
           "is_signature": true,
           "vfx_type": "projectile",
-          "description_fr": "SIGNATURE - Headshot (45 + 100% ATK). Crit garanti + stun 2s. CD reset si kill.",
-          "description_en": "SIGNATURE - Headshot (45 + 100% ATK). Guaranteed crit + 2s stun. CD resets on kill.",
+          "description_fr": "Le Ranger retient son Souffle jusqu'au silence parfait — un seul tir, un seul point d'impact, un seul résultat possible. Si la cible tombe, le chasseur n'a pas fini.\nInflige 45 (+100% ATK). Crit garanti + étourdissement 2s. CD reset si kill. Incantation 2.0s.",
+          "description_en": "The Ranger holds their Breath until perfect silence — one shot, one impact, one inevitable outcome. If the target falls, the hunter isn't done.\nDeals 45 (+100% ATK). Guaranteed crit + stun 2s. CD resets on kill. 2.0s cast.",
           "tags": [
             "damage",
             "single",
@@ -348,8 +403,8 @@
           "ignore_los": true,
           "applies_bleed_stacks": 1,
           "vfx_type": "falcon",
-          "description_fr": "Le faucon plonge (20 + 55% ATK). Applique 1 stack bleed (5s).",
-          "description_en": "Falcon dives (20 + 55% ATK). Applies 1 bleed stack (5s).",
+          "description_fr": "Le Fauconnier partage son Souffle avec son rapace — le faucon plonge, serres ouvertes, et laisse une entaille sanguinolente.\nInflige 20 (+55% ATK). 1 charge de Saignement (5s).",
+          "description_en": "The Falconer shares their Breath with their raptor — the falcon dives, talons open, leaving a bleeding gash.\nDeals 20 (+55% ATK). 1 Bleed stack (5s).",
           "tags": [
             "damage",
             "pet",
@@ -374,8 +429,8 @@
           "applies_bleed_stacks": 2,
           "damage_per_bleed_stack": 10,
           "vfx_type": "falcon",
-          "description_fr": "Lacération (18 + 50% ATK). +2 charges de Saignement (6s). +10% dégâts par charge existante.\nRéduit l'armure de 10% pendant 6s.",
-          "description_en": "Rend (18 + 50% ATK). +2 Bleed stacks (6s). +10% damage per existing bleed.\nReduces armor by 10% for 6s.",
+          "description_fr": "Le Souffle du Fauconnier guide les serres de son compagnon — chaque lacération approfondit la blessure, chaque charge de sang affaiblit l'armure.\nInflige 18 (+50% ATK). +2 charges Saignement (6s). +10% dégâts par charge existante. -10% armure 6s.",
+          "description_en": "The Falconer's Breath guides their companion's talons — each rend deepens the wound, each stack of blood weakens the armor.\nDeals 18 (+50% ATK). +2 Bleed stacks (6s). +10% damage per existing bleed. -10% armor for 6s.",
           "tags": [
             "damage",
             "pet",
@@ -408,14 +463,14 @@
           "cooldown": 12.0,
           "ignore_los": true,
           "vfx_type": "falcon",
-          "description_fr": "Le faucon plonge en diagonale ascendante (15 + 40% ATK). -20% accuracy (5s).",
-          "description_en": "The falcon swoops along an ascending diagonal (15 + 40% ATK). -20% accuracy (5s).",
+          "description_fr": "D'un battement d'ailes chargé de Souffle, le faucon balaye la diagonale ennemie — ses ailes aveuglent ceux qu'elles frappent.\nInflige 15 (+40% ATK) en diagonale. -20% précision 5s.",
+          "description_en": "With a Breath-charged wingbeat, the falcon sweeps the enemy diagonal — its wings blind those it strikes.\nDeals 15 (+40% ATK) in diagonal. -20% accuracy for 5s.",
           "tags": [
             "damage",
             "pet",
             "aoe",
             "debuff",
-            "blind"
+            "accuracy_down"
           ],
           "effects": [
             {
@@ -430,16 +485,15 @@
           "id": "skill_archer_falconer_wing_guard",
           "name_en": "Wing Guard",
           "name_fr": "Garde Ailée",
-          "tier": "standard",
+          "tier": "strong",
           "target": "ally",
           "pattern": "single",
           "damage_type": "none",
-          "mana_cost": 16,
-          "cooldown": 18.0,
-          "ignore_los": true,
+          "mana_cost": 22,
+          "cooldown": 16.0,
           "vfx_type": "buff_aura",
-          "description_fr": "Le faucon protège un allié: +30% evasion (6s).",
-          "description_en": "Falcon guards an ally: +30% evasion (6s).",
+          "description_fr": "Le Fauconnier insuffle son Souffle dans les ailes de son rapace — le faucon se poste en sentinelle au-dessus d'un allié, déviant les coups de ses ailes.\n+30% évasion pendant 5s (+0.3s/niv).",
+          "description_en": "The Falconer breathes their power into their raptor's wings — the falcon stations itself as sentinel above an ally, deflecting blows with its wings.\n+30% evasion for 5s (+0.3s/lvl).",
           "tags": [
             "buff",
             "pet",
@@ -451,7 +505,8 @@
               "type": "buff",
               "stat": "evasion_up",
               "value": 30,
-              "duration": 6.0
+              "duration": 5.0,
+              "duration_per_level": 0.3
             }
           ]
         },
@@ -468,20 +523,30 @@
           "scaling_percent": 85,
           "mana_cost": 40,
           "cooldown": 24.0,
+          "cast_time": 2.0,
           "ignore_los": true,
           "applies_bleed_stacks": 3,
           "damage_per_bleed_stack": 15,
           "is_signature": true,
           "vfx_type": "falcon",
-          "description_fr": "SIGNATURE - Furie (35 + 85% ATK) zone 2x3. +3 bleed stacks. +15% dmg par bleed existant.",
-          "description_en": "SIGNATURE - Fury (35 + 85% ATK) 2x3 zone. +3 bleed stacks. +15% damage per existing bleed.",
+          "description_fr": "Le Fauconnier libère tout son Souffle dans son faucon — l'oiseau entre en furie, déchiquetant une zone entière de serres et de plumes acérées. L'armure fond sous l'assaut.\nInflige 35 (+85% ATK) zone 2x3. +3 charges Saignement. +15% dégâts par charge existante. -20% armure 6s. Incantation 2.0s.",
+          "description_en": "The Falconer releases all their Breath into their falcon — the bird enters a frenzy, shredding an entire zone with talons and razor feathers. Armor crumbles under the assault.\nDeals 35 (+85% ATK) 2x3 zone. +3 Bleed stacks. +15% damage per existing bleed. -20% armor for 6s. 2.0s cast.",
           "tags": [
             "damage",
             "pet",
             "aoe",
             "bleed",
             "signature",
-            "bleed_synergy"
+            "bleed_synergy",
+            "armor_down"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "armor_down",
+              "value": 20,
+              "duration": 6.0
+            }
           ]
         }
       ]
@@ -508,8 +573,8 @@
           "can_bounce_same_target": true,
           "applies_bleed_stacks": 1,
           "vfx_type": "ricochet",
-          "description_fr": "Tir rebondissant (15 + 45% ATK). 4 rebonds, peut retoucher les mêmes cibles.\nApplique 1 charge de Saignement par impact.",
-          "description_en": "Bouncing shot (15 + 45% ATK). 4 bounces, can hit same targets again.\nApplies 1 Bleed stack per hit.",
+          "description_fr": "Le Ballmaster insuffle son Souffle dans un tir imprévisible — la flèche ricoche d'ennemi en ennemi, chaque rebond traçant un rythme que lui seul comprend.\nInflige 15 (+45% ATK). 4 rebonds, peut retoucher. 1 charge Saignement par impact.",
+          "description_en": "The Ballmaster breathes their power into an unpredictable shot — the arrow ricochets from enemy to enemy, each bounce tracing a rhythm only they understand.\nDeals 15 (+45% ATK). 4 bounces, can rehit. 1 Bleed stack per hit.",
           "tags": [
             "damage",
             "bounce",
@@ -522,27 +587,35 @@
           "id": "skill_archer_ballmaster_pinball",
           "name_en": "Pinball",
           "name_fr": "Flipper",
-          "tier": "standard",
+          "tier": "basic",
           "target": "enemies",
           "pattern": "bounce_2",
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 12,
           "scaling_percent": 40,
-          "mana_cost": 16,
-          "cooldown": 7.0,
+          "mana_cost": 12,
+          "cooldown": 6.0,
           "ignore_los": true,
           "chain_bounces": 6,
           "can_bounce_same_target": true,
           "damage_per_bounce": 5,
           "vfx_type": "ricochet",
-          "description_fr": "Pinball (12 + 40% ATK). Rebondit 6 fois entre 2 cibles. +5% dmg par rebond.",
-          "description_en": "Pinball (12 + 40% ATK). Bounces 6 times between 2 targets. +5% damage per bounce.",
+          "description_fr": "Le Souffle du Ballmaster alimente une trajectoire folle — la flèche rebondit entre deux ennemis comme une balle de flipper, les désorientant à chaque impact.\nInflige 12 (+40% ATK). 6 rebonds entre 2 cibles. +5% dégâts/rebond. Confusion 1.5s.",
+          "description_en": "The Ballmaster's Breath fuels a wild trajectory — the arrow bounces between two enemies like a pinball, disorienting them with each impact.\nDeals 12 (+40% ATK). 6 bounces between 2 targets. +5% damage/bounce. Confusion 1.5s.",
           "tags": [
             "damage",
             "bounce",
             "scaling",
-            "2_target_specialist"
+            "2_target_specialist",
+            "confusion"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "confusion",
+              "duration": 1.5
+            }
           ]
         },
         {
@@ -561,14 +634,16 @@
           "ignore_los": true,
           "bounce_if_adjacent": true,
           "bounce_returns": true,
+          "interrupts_on_double_hit": true,
           "vfx_type": "ricochet",
-          "description_fr": "Ricochet (25 + 65% ATK). Si ennemi adjacent: rebond + retour = 2 hits.",
-          "description_en": "Ricochet (25 + 65% ATK). If adjacent enemy: bounces back = 2 hits.",
+          "description_fr": "Le Ballmaster lit les angles avec son Souffle et place un tir calculé — si la flèche rebondit et frappe deux fois, le double impact interrompt l'incantation ennemie.\nInflige 25 (+65% ATK). Double hit si adjacent. Interrompt l'ennemi si double hit.",
+          "description_en": "The Ballmaster reads the angles with their Breath and places a calculated shot — if the arrow bounces and hits twice, the double impact interrupts enemy casting.\nDeals 25 (+65% ATK). Double hit if adjacent. Interrupts enemy on double hit.",
           "tags": [
             "damage",
             "bounce",
             "conditional",
-            "double_hit"
+            "double_hit",
+            "interrupt"
           ]
         },
         {
@@ -590,13 +665,22 @@
           "few_targets_bonus": 30,
           "few_targets_threshold": 2,
           "vfx_type": "ricochet",
-          "description_fr": "Barrage (20 + 55% ATK). 3 rebonds. +30% dmg si ≤2 cibles touchées.",
-          "description_en": "Barrage (20 + 55% ATK). 3 bounces. +30% damage if ≤2 targets hit.",
+          "description_fr": "Le Ballmaster concentre son Souffle en un barrage ciblé — chaque rebond martèle les mêmes cibles, fracturant leur armure sous la répétition.\nInflige 20 (+55% ATK). 3 rebonds. +30% dégâts si ≤2 cibles. -15% armure par cible touchée 5s.",
+          "description_en": "The Ballmaster focuses their Breath into a targeted barrage — each bounce hammers the same targets, fracturing their armor through repetition.\nDeals 20 (+55% ATK). 3 bounces. +30% damage if ≤2 targets. -15% armor per target hit for 5s.",
           "tags": [
             "damage",
             "bounce",
             "few_target_bonus",
-            "concentrated"
+            "concentrated",
+            "armor_down"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "armor_down",
+              "value": 15,
+              "duration": 5.0
+            }
           ]
         },
         {
@@ -612,20 +696,30 @@
           "scaling_percent": 50,
           "mana_cost": 42,
           "cooldown": 24.0,
+          "cast_time": 1.5,
           "ignore_los": true,
           "chain_bounces": 10,
           "can_bounce_same_target": true,
           "damage_per_bounce": 8,
           "is_signature": true,
           "vfx_type": "ricochet",
-          "description_fr": "SIGNATURE - Volée (18 + 50% ATK). 10 rebonds, +8% dmg/bounce, peut retoucher.",
-          "description_en": "SIGNATURE - Volley (18 + 50% ATK). 10 bounces, +8% damage/bounce, can rehit.",
+          "description_fr": "Le Ballmaster libère tout son Souffle d'un coup — les flèches fusent, rebondissent, s'entrechoquent dans un chaos orchestré. Plus ça dure, plus ça fait mal. L'ennemi ralentit sous le barrage.\nInflige 18 (+50% ATK). 10 rebonds, +8% dégâts/rebond, peut retoucher. -15% vitesse d'attaque 4s. Incantation 1.5s.",
+          "description_en": "The Ballmaster releases all their Breath at once — arrows fly, bounce, collide in orchestrated chaos. The longer it lasts, the more it hurts. Enemies slow under the barrage.\nDeals 18 (+50% ATK). 10 bounces, +8% damage/bounce, can rehit. -15% attack speed for 4s. 1.5s cast.",
           "tags": [
             "damage",
             "bounce",
             "signature",
             "multi_hit",
-            "scaling"
+            "scaling",
+            "atk_speed_down"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "atk_speed_down",
+              "value": 15,
+              "duration": 4.0
+            }
           ]
         }
       ]
@@ -650,8 +744,8 @@
           "ignore_los": true,
           "interrupts_cast": true,
           "vfx_type": "projectile",
-          "description_fr": "Tir rapide (15 + 40% ATK). CD 2s. Interrompt les casts ennemis.",
-          "description_en": "Quick shot (15 + 40% ATK). 2s CD. Interrupts enemy casts.",
+          "description_fr": "Le Gunslinger tire au rythme de son Souffle — rapide, instinctif, implacable. Chaque tir coupe net l'incantation ennemie.\nInflige 15 (+40% ATK). CD 2s. Interrompt les casts.",
+          "description_en": "The Gunslinger fires to the rhythm of their Breath — fast, instinctive, relentless. Each shot cuts enemy casting short.\nDeals 15 (+40% ATK). 2s CD. Interrupts casts.",
           "tags": [
             "damage",
             "fast",
@@ -671,34 +765,35 @@
           "base_power": 20,
           "scaling_percent": 50,
           "mana_cost": 14,
-          "cooldown": 4.0,
+          "cooldown": 6.0,
           "ignore_los": true,
           "hit_count": 2,
           "each_hit_can_crit": true,
+          "applies_bleed_stacks": 1,
           "vfx_type": "projectile",
-          "description_fr": "Double tir (20 + 50% ATK) x2. Chaque hit peut crit séparément.",
-          "description_en": "Double tap (20 + 50% ATK) x2. Each hit can crit separately.",
+          "description_fr": "Deux tirs explosifs dans le même Souffle — le Gunslinger ne laisse aucun répit, chaque impact ouvre une plaie.\nInflige 20 (+50% ATK) x2. Chaque hit peut crit. 1 charge Saignement par hit.",
+          "description_en": "Two explosive shots in a single Breath — the Gunslinger gives no respite, each impact opens a wound.\nDeals 20 (+50% ATK) x2. Each hit can crit. 1 Bleed stack per hit.",
           "tags": [
             "damage",
             "multi_hit",
             "crit",
-            "single"
+            "single",
+            "bleed"
           ]
         },
         {
           "id": "skill_archer_gunslinger_rapid_fire",
           "name_en": "Rapid Fire",
           "name_fr": "Tir en Rafale",
-          "tier": "standard",
+          "tier": "strong",
           "target": "self",
           "pattern": "single",
           "damage_type": "none",
-          "mana_cost": 12,
+          "mana_cost": 20,
           "cooldown": 16.0,
-          "ignore_los": true,
           "vfx_type": "buff_aura",
-          "description_fr": "Frénésie: +30% atk speed + +15% crit + +10% double attack (8s).",
-          "description_en": "Frenzy: +30% atk speed + +15% crit + +10% double attack (8s).",
+          "description_fr": "Le Gunslinger accélère son Souffle jusqu'à la frénésie — ses mains deviennent un flou, chaque tir se confond avec le suivant.\n+30% vitesse d'attaque + +15% crit + +10% double attaque pendant 5s (+0.3s/niv).",
+          "description_en": "The Gunslinger accelerates their Breath to a frenzy — their hands become a blur, each shot blending into the next.\n+30% attack speed + +15% crit + +10% double attack for 5s (+0.3s/lvl).",
           "tags": [
             "buff",
             "self",
@@ -711,19 +806,22 @@
               "type": "buff",
               "stat": "atk_speed_up",
               "value": 30,
-              "duration": 8.0
+              "duration": 5.0,
+              "duration_per_level": 0.3
             },
             {
               "type": "buff",
               "stat": "crit_chance_up",
               "value": 15,
-              "duration": 8.0
+              "duration": 5.0,
+              "duration_per_level": 0.3
             },
             {
               "type": "buff",
               "stat": "double_attack_chance",
               "value": 10,
-              "duration": 8.0
+              "duration": 5.0,
+              "duration_per_level": 0.3
             }
           ]
         },
@@ -740,10 +838,11 @@
           "scaling_percent": 38,
           "mana_cost": 20,
           "cooldown": 10.0,
+          "cast_time": 1.5,
           "ignore_los": true,
           "vfx_type": "projectile",
-          "description_fr": "Tir de suppression couvrant toute la ligne ennemie (14 + 38% ATK).\n-25% ATK et -20% vitesse d'incantation pendant 6s.",
-          "description_en": "Suppressing fire covering the full enemy row (14 + 38% ATK).\n-25% ATK and -20% cast speed for 6s.",
+          "description_fr": "Le Gunslinger expire son Souffle en un barrage continu — une pluie de tirs qui cloue la ligne ennemie, réduisant leur puissance et leur capacité à incanter.\nInflige 14 (+38% ATK) sur toute la ligne. -25% ATK et -20% vitesse d'incantation 6s. Incantation 1.5s.",
+          "description_en": "The Gunslinger exhales their Breath into a continuous barrage — a rain of shots that pins the enemy line, reducing their power and ability to cast.\nDeals 14 (+38% ATK) on full row. -25% ATK and -20% cast speed for 6s. 1.5s cast.",
           "tags": [
             "damage",
             "aoe",
@@ -779,26 +878,30 @@
           "scaling_percent": 70,
           "mana_cost": 36,
           "cooldown": 20.0,
+          "cast_time": 2.0,
           "ignore_los": true,
-          "secondary_effect": "silence",
-          "secondary_effect_duration": 2.0,
           "is_signature": true,
           "vfx_type": "projectile",
-          "description_fr": "SIGNATURE - Tir clouant (28 + 70% ATK) sur 4 ennemis en ligne. Root 3s + Silence 2s.",
-          "description_en": "SIGNATURE - Pin Down (28 + 70% ATK) on 4 enemies in a line. Root 3s + Silence 2s.",
+          "description_fr": "Le Gunslinger vide tout son Souffle dans une rafale finale — chaque tir cloue un ennemi, les étourdissant et les réduisant au silence. Une ligne entière neutralisée.\nInflige 28 (+70% ATK) sur 4 ennemis en ligne. Étourdissement 2s + Silence 2s. Incantation 2.0s.",
+          "description_en": "The Gunslinger empties all their Breath into a final burst — each shot pins an enemy down, stunning and silencing them. An entire line neutralized.\nDeals 28 (+70% ATK) on 4 enemies in a line. Stun 2s + Silence 2s. 2.0s cast.",
           "tags": [
             "damage",
             "aoe",
             "cc",
-            "root",
+            "stun",
             "silence",
             "signature"
           ],
           "effects": [
             {
               "type": "debuff",
-              "stat": "root",
-              "duration": 3.0
+              "stat": "stun",
+              "duration": 2.0
+            },
+            {
+              "type": "debuff",
+              "stat": "silence",
+              "duration": 2.0
             }
           ]
         }

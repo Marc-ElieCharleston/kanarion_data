@@ -1,9 +1,38 @@
 {
   "_meta": {
-    "version": "4.0",
-    "last_updated": "2026-01-31",
+    "version": "5.0",
+    "last_updated": "2026-02-26",
     "class": "archer",
-    "description": "Tous les passifs de l'Archer (10 class-specific passives avec max 20 niveaux)"
+    "description": "Tous les passifs de l'Archer (10 class-specific passives avec max 20 niveaux) + 1 class passive innée"
+  },
+
+  "innate_passive": {
+    "id": "p_arch_predator_mark",
+    "name_fr": "Marque du Prédateur",
+    "name_en": "Predator's Mark",
+    "type": "combat_proc",
+    "description_fr": "Toutes les 4 auto-attaques sur la même cible, pose une Marque du Prédateur (+5% dégâts reçus par charge, max 4 charges, 8s). 16 auto-attaques = marque complète. Le Souffle du chasseur ne lâche jamais sa proie.",
+    "description_en": "Every 4 auto-attacks on the same target, applies a Predator's Mark (+5% damage taken per stack, max 4 stacks, 8s). 16 auto-attacks = full mark. The hunter's Breath never releases its prey.",
+    "trigger_rule": "on_auto_attack",
+    "conditions": {
+      "count_trigger": {
+        "check": "same_target_auto_attack",
+        "count_required": 4,
+        "effect_id": "predator_mark",
+        "target_rule": "current_target",
+        "stacks": 1,
+        "max_stacks": 4,
+        "duration": 8.0,
+        "damage_taken_increase_per_stack": 5
+      }
+    },
+    "passive_scaling": {
+      "passive_id": "p_arch_hunters_focus",
+      "bonus_per_level": 0.5,
+      "description_fr": "+0.5% dégâts reçus par charge par niveau de Concentration du Chasseur",
+      "description_en": "+0.5% damage taken per stack per level of Hunter's Focus"
+    },
+    "lore_note": "Le Prédateur marque sa proie — chaque flèche est un rappel que la chasse ne fait que commencer."
   },
 
   "class_passives": [
