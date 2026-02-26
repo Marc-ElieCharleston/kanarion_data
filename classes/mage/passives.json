@@ -1,9 +1,34 @@
 {
   "_meta": {
-    "version": "5.0",
-    "last_updated": "2026-01-31",
+    "version": "5.1",
+    "last_updated": "2026-02-26",
     "class": "mage",
-    "description": "Tous les passifs du Mage (10 class-specific passives avec max 20 niveaux)"
+    "description": "Tous les passifs du Mage (10 class-specific passives avec max 20 niveaux) + 1 class passive innée"
+  },
+
+  "innate_passive": {
+    "id": "p_mage_arcane_charges",
+    "name_fr": "Charges Arcaniques",
+    "name_en": "Arcane Charges",
+    "type": "resource",
+    "description_fr": "Certains sorts génèrent des Charges Arcaniques (max 3). Les sorts puissants consomment ces charges pour des effets amplifiés. Le Souffle du Mage s'accumule à chaque incantation, prêt à être libéré.",
+    "description_en": "Certain spells generate Arcane Charges (max 3). Powerful spells consume these charges for amplified effects. The Mage's Breath accumulates with each cast, ready to be unleashed.",
+    "trigger_rule": "on_skill_cast",
+    "conditions": {
+      "generate": {
+        "check": "skill_has_generates_charges",
+        "effect_id": "arcane_charge",
+        "stacks": 1,
+        "max_stacks": 3
+      },
+      "consume": {
+        "check": "skill_has_consumes_charges",
+        "effect_id": "arcane_charge",
+        "consume_up_to": 3,
+        "bonus": "varies_by_skill"
+      }
+    },
+    "lore_note": "Le Souffle du Mage n'est jamais gaspillé — chaque sort nourrit le suivant."
   },
 
   "class_passives": [
