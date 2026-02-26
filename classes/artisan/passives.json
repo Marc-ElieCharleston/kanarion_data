@@ -1,9 +1,43 @@
 {
   "_meta": {
-    "version": "4.0",
-    "last_updated": "2026-01-31",
+    "version": "5.0",
+    "last_updated": "2026-02-26",
     "class": "artisan",
-    "description": "Tous les passifs de l'Artisan (10 class-specific passives avec max 20 niveaux)"
+    "description": "Tous les passifs de l'Artisan (10 class-specific passives avec max 20 niveaux) + 1 class passive innée"
+  },
+
+  "innate_passive": {
+    "id": "p_art_savoir_faire",
+    "name_fr": "Savoir-Faire",
+    "name_en": "Expertise",
+    "type": "combat_proc",
+    "description_fr": "Chaque fois que l'Artisan applique un buff, un soin ou un bouclier sur un allié, il gagne 1 charge de Savoir-Faire (+3% durée des effets et +2% puissance de soin/bouclier par charge, max 5, 10s). À 5 charges : le prochain debuff infligé à un ennemi a +50% de durée. Consomme toutes les charges. Les mains du maître ne se trompent jamais.",
+    "description_en": "Each time the Artisan applies a buff, heal, or shield to an ally, gain 1 stack of Expertise (+3% effect duration and +2% heal/shield power per stack, max 5, 10s). At 5 stacks: next debuff applied to an enemy has +50% duration. Consumes all stacks. The master's hands never falter.",
+    "trigger_rule": "on_support_skill",
+    "conditions": {
+      "count_trigger": {
+        "check": "support_skill_on_ally",
+        "count_required": 1,
+        "effect_id": "savoir_faire",
+        "target_rule": "self",
+        "stacks": 1,
+        "max_stacks": 5,
+        "duration": 10.0,
+        "effect_duration_per_stack": 3,
+        "heal_shield_power_per_stack": 2,
+        "at_max_stacks": {
+          "next_debuff_duration_bonus": 50,
+          "consume_all": true
+        }
+      }
+    },
+    "passive_scaling": {
+      "passive_id": "p_art_tactical_genius",
+      "bonus_per_level": 0.5,
+      "description_fr": "+0.5% durée des effets par charge par niveau de Génie Tactique",
+      "description_en": "+0.5% effect duration per stack per level of Tactical Genius"
+    },
+    "lore_note": "Le Savoir-Faire est la marque de celui qui a tout vu, tout appris — et qui transforme chaque geste en perfection."
   },
 
   "class_passives": [
