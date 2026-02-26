@@ -1,9 +1,47 @@
 {
   "_meta": {
-    "version": "5.0",
-    "last_updated": "2026-01-31",
+    "version": "6.0",
+    "last_updated": "2026-02-26",
     "class": "rogue",
-    "description": "Tous les passifs du Rogue (10 class-specific passives avec max 20 niveaux)"
+    "description": "Tous les passifs du Rogue (10 class-specific passives avec max 20 niveaux) + 1 class passive innée"
+  },
+
+  "innate_passive": {
+    "id": "p_rogue_predation",
+    "name_fr": "Prédation",
+    "name_en": "Predation",
+    "type": "combat_proc",
+    "description_fr": "Chaque fois que le Rogue frappe un ennemi qui a au moins 1 debuff, il gagne 1 charge de Prédation (+3% dégâts et +2% pénétration d'armure par charge, max 5, 10s). À 5 charges : consomme tout et accorde Concentration du Prédateur pendant 10s (+20% dégâts, +15% pénétration d'armure, +10% chance de critique). Le prédateur ne chasse pas au hasard — il sent la faiblesse.",
+    "description_en": "Each time the Rogue hits an enemy with at least 1 debuff, gain 1 stack of Predation (+3% damage and +2% armor penetration per stack, max 5, 10s). At 5 stacks: consumes all and grants Predator's Focus for 10s (+20% damage, +15% armor penetration, +10% critical chance). The predator doesn't hunt at random — they sense weakness.",
+    "trigger_rule": "on_hit_debuffed_target",
+    "conditions": {
+      "count_trigger": {
+        "check": "hit_enemy_with_debuffs",
+        "debuffs_required": 1,
+        "effect_id": "predation",
+        "target_rule": "self",
+        "stacks": 1,
+        "max_stacks": 5,
+        "duration": 10.0,
+        "damage_per_stack": 3,
+        "armor_pen_per_stack": 2,
+        "at_max_stacks": {
+          "consume_all": true,
+          "grant_buff": "predators_focus",
+          "buff_duration": 10.0,
+          "buff_damage": 20,
+          "buff_armor_pen": 15,
+          "buff_crit_chance": 10
+        }
+      }
+    },
+    "passive_scaling": {
+      "passive_id": "p_rogue_assassins_precision",
+      "bonus_per_level": 0.3,
+      "description_fr": "+0.3% dégâts par charge par niveau de Précision de l'Assassin",
+      "description_en": "+0.3% damage per stack per level of Assassin's Precision"
+    },
+    "lore_note": "Le prédateur ne chasse pas au hasard — il sent la faiblesse et frappe quand sa proie est la plus vulnérable."
   },
 
   "class_passives": [
