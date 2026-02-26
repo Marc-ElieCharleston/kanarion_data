@@ -26,9 +26,17 @@
       "chain_3": "Rebond 3 cibles",
       "all": "Toutes les cibles (16 cases)"
     },
-    "vfx_available": ["melee_slash", "shield", "buff_aura", "debuff_aura", "whirlwind", "dash_trail", "falling", "life_steal"]
+    "vfx_available": [
+      "melee_slash",
+      "shield",
+      "buff_aura",
+      "debuff_aura",
+      "whirlwind",
+      "dash_trail",
+      "falling",
+      "life_steal"
+    ]
   },
-
   "base_skills": [
     {
       "id": "skill_warrior_heavy_strike",
@@ -47,7 +55,12 @@
       "vfx_type": "melee_slash",
       "description_fr": "Inflige 22 (+40% ATK) dégâts physiques à un ennemi.\nApplique 1 charge de Saignement.",
       "description_en": "A direct, brutal blow.\nDeals 22 (+40% ATK) damage to a single target.\nApplies 1 Bleed stack.",
-      "tags": ["damage", "melee", "filler", "bleed"]
+      "tags": [
+        "damage",
+        "melee",
+        "filler",
+        "bleed"
+      ]
     },
     {
       "id": "skill_warrior_shield_bash",
@@ -62,12 +75,22 @@
       "scaling_percent": 35,
       "mana_cost": 12,
       "cooldown": 10.0,
-      "effect": "stun",
-      "effect_duration": 2.0,
       "vfx_type": "melee_slash",
       "description_fr": "Inflige 18 (+35% ATK) dégâts physiques à un ennemi.\nÉtourdissement de 2s.",
       "description_en": "The shield speaks first.\nDeals 18 (+35% ATK) damage to a single target.\nStuns for 2s.",
-      "tags": ["damage", "stun", "melee", "cc"]
+      "tags": [
+        "damage",
+        "stun",
+        "melee",
+        "cc"
+      ],
+      "effects": [
+        {
+          "type": "debuff",
+          "stat": "stun",
+          "duration": 2.0
+        }
+      ]
     },
     {
       "id": "skill_warrior_defensive_stance",
@@ -80,13 +103,22 @@
       "base_power": 0,
       "mana_cost": 15,
       "cooldown": 12.0,
-      "buff": "damage_reduction_up",
-      "buff_value": 25,
-      "buff_duration": 6.0,
       "vfx_type": "shield",
       "description_fr": "Réduit les dégâts reçus de 25% pendant 6s.",
       "description_en": "The warrior plants his feet.\nReduces damage taken by 25% for 6s.",
-      "tags": ["defense", "buff", "tank"]
+      "tags": [
+        "defense",
+        "buff",
+        "tank"
+      ],
+      "effects": [
+        {
+          "type": "buff",
+          "stat": "damage_reduction_up",
+          "value": 25,
+          "duration": 6.0
+        }
+      ]
     },
     {
       "id": "skill_warrior_taunting_shout",
@@ -100,12 +132,22 @@
       "mana_cost": 18,
       "cooldown": 12.0,
       "ignore_los": true,
-      "effect": "taunt",
-      "effect_duration": 4.0,
       "vfx_type": "buff_aura",
       "description_fr": "Provoque 3 ennemis en ligne pendant 4s.\nIgnore la Ligne de Mire.",
       "description_en": "A roar that shakes the enemy ranks.\nTaunts 3 enemies in a row for 4s.\nIgnores Line of Sight.",
-      "tags": ["taunt", "aggro", "aoe", "tank"]
+      "tags": [
+        "taunt",
+        "aggro",
+        "aoe",
+        "tank"
+      ],
+      "effects": [
+        {
+          "type": "debuff",
+          "stat": "taunt",
+          "duration": 4.0
+        }
+      ]
     },
     {
       "id": "skill_warrior_cleave",
@@ -123,10 +165,13 @@
       "vfx_type": "melee_slash",
       "description_fr": "Inflige 15 (+30% ATK) dégâts physiques à toute la rangée ennemie.",
       "description_en": "Steel sweeps through everything in its path.\nDeals 15 (+30% ATK) damage to the entire enemy row.",
-      "tags": ["damage", "melee", "aoe"]
+      "tags": [
+        "damage",
+        "melee",
+        "aoe"
+      ]
     }
   ],
-
   "subclass_skills": {
     "guardian": {
       "identity": "Pure tank protector + shields + shield-based damage",
@@ -144,16 +189,24 @@
           "scaling_stat": "max_hp",
           "mana_cost": 20,
           "cooldown": 10.0,
-          "shield_value": 10,
-          "shield_scaling": "caster_max_hp",
-          "shield_duration": 8.0,
-          "buff": "damage_transfer",
-          "buff_value": 30,
-          "buff_duration": 8.0,
           "vfx_type": "shield",
           "description_fr": "Octroie un bouclier de 10% HP max à un allié et intercepte 30% de ses dégâts pendant 8s.",
           "description_en": "No blow shall pass.\nGrants a shield equal to 10% max HP to an ally and intercepts 30% of their damage for 8s.",
-          "tags": ["defense", "support", "tank", "shield"]
+          "tags": [
+            "defense",
+            "support",
+            "tank",
+            "shield"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "damage_transfer",
+              "value": 30,
+              "duration": 8.0,
+              "scaling": "caster_max_hp"
+            }
+          ]
         },
         {
           "id": "skill_warrior_guardian_iron_stance",
@@ -168,16 +221,31 @@
           "scaling_percent": 15,
           "mana_cost": 25,
           "cooldown": 18.0,
-          "buff": "shield",
-          "buff_value": 15,
-          "buff_scaling": "max_hp",
-          "buff_duration": 5.0,
-          "secondary_buff": "damage_reduction_up",
-          "secondary_buff_value": 50,
           "vfx_type": "shield",
           "description_fr": "Octroie un bouclier de 15% HP max et 50% de réduction de dégâts pendant 5s.\nImmobilise le lanceur.",
           "description_en": "Immovable as a fortress.\nGrants a shield equal to 15% max HP and 50% damage reduction for 5s.\nRoots the caster.",
-          "tags": ["defense", "buff", "tank", "root_self", "shield"]
+          "tags": [
+            "defense",
+            "buff",
+            "tank",
+            "root_self",
+            "shield"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "shield",
+              "value": 15,
+              "duration": 5.0,
+              "scaling": "max_hp"
+            },
+            {
+              "type": "buff",
+              "stat": "damage_reduction_up",
+              "value": 50,
+              "duration": 5.0
+            }
+          ]
         },
         {
           "id": "skill_warrior_guardian_barrier",
@@ -192,12 +260,24 @@
           "scaling_percent": 10,
           "mana_cost": 26,
           "cooldown": 12.0,
-          "shield_value": 10,
-          "shield_duration": 8.0,
           "vfx_type": "shield",
           "description_fr": "Octroie un bouclier de 10% HP max à un allié et tous les alliés adjacents (9 cases max) pendant 8s.",
           "description_en": "A wall of will shields the allies.\nGrants a shield equal to 10% max HP to a target and all adjacent allies (9 tiles max) for 8s.",
-          "tags": ["defense", "shield", "aoe", "support"]
+          "tags": [
+            "defense",
+            "shield",
+            "aoe",
+            "support"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "shield",
+              "value": 10,
+              "duration": 8.0,
+              "scaling": "max_hp"
+            }
+          ]
         },
         {
           "id": "skill_warrior_guardian_shield_crush",
@@ -212,13 +292,23 @@
           "scaling_percent": 80,
           "mana_cost": 18,
           "cooldown": 8.0,
-          "debuff": "atk_down",
-          "debuff_value": 15,
-          "debuff_duration": 4.0,
           "vfx_type": "melee_slash",
           "description_fr": "Inflige 15 (+80% du bouclier actuel) dégâts physiques à un ennemi.\nRéduit l'ATK de 15% pendant 4s.",
           "description_en": "The shield becomes a weapon.\nDeals 15 (+80% of current shield) damage to a single target.\nReduces ATK by 15% for 4s.",
-          "tags": ["damage", "melee", "shield_scaling", "atk_down"]
+          "tags": [
+            "damage",
+            "melee",
+            "shield_scaling",
+            "atk_down"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "atk_down",
+              "value": 15,
+              "duration": 4.0
+            }
+          ]
         },
         {
           "id": "skill_warrior_guardian_aegis_of_the_realm",
@@ -229,16 +319,29 @@
           "pattern": "all",
           "damage_type": "none",
           "scaling_stat": "max_hp",
-          "shield_value": 20,
           "shield_value_per_level": 1,
-          "shield_duration": 8.0,
           "mana_cost": 60,
           "cooldown": 30.0,
           "vfx_type": "shield",
           "is_signature": true,
           "description_fr": "SIGNATURE - Octroie un bouclier de 20% HP max (+1%/niv, max 30%) du Guardian à TOUS les alliés pendant 8s.",
           "description_en": "SIGNATURE - The Guardian raises his shield and protects the entire group.\nGrants a shield equal to 20% max HP (+1%/lvl, max 30%) to ALL allies for 8s.",
-          "tags": ["defense", "shield", "aoe", "signature", "support"]
+          "tags": [
+            "defense",
+            "shield",
+            "aoe",
+            "signature",
+            "support"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "shield",
+              "value": 20,
+              "duration": 8.0,
+              "scaling": "max_hp"
+            }
+          ]
         }
       ]
     },
@@ -264,7 +367,11 @@
           "vfx_type": "melee_slash",
           "description_fr": "Inflige 20 (+45% ATK) dégâts physiques à un ennemi.\n+40% de dégâts si le lanceur est sous 50% HP.",
           "description_en": "Pain feeds the rage.\nDeals 20 (+45% ATK) damage to a single target.\n+40% damage if the caster is below 50% HP.",
-          "tags": ["damage", "rage", "melee"]
+          "tags": [
+            "damage",
+            "rage",
+            "melee"
+          ]
         },
         {
           "id": "skill_warrior_berserker_bloodlust",
@@ -277,15 +384,25 @@
           "base_power": 0,
           "mana_cost": 18,
           "cooldown": 10.0,
-          "buff": "lifesteal",
-          "buff_value": 25,
-          "buff_scaling": "atk",
           "buff_scaling_percent": 15,
-          "buff_duration": 8.0,
           "vfx_type": "life_steal",
           "description_fr": "Octroie 25% de vol de vie (+15% ATK) pendant 8s.\nToutes les attaques soignent le lanceur.",
           "description_en": "Enemy blood becomes vitality.\nGrants 25% lifesteal (+15% ATK) for 8s.\nAll attacks heal the caster.",
-          "tags": ["buff", "lifesteal", "self", "sustain"]
+          "tags": [
+            "buff",
+            "lifesteal",
+            "self",
+            "sustain"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "lifesteal",
+              "value": 25,
+              "duration": 8.0,
+              "scaling": "atk"
+            }
+          ]
         },
         {
           "id": "skill_warrior_berserker_whirlwind",
@@ -303,7 +420,11 @@
           "vfx_type": "whirlwind",
           "description_fr": "Inflige 30 (+45% ATK) dégâts physiques à l'ennemi ciblé et aux ennemis adjacents.",
           "description_en": "A tornado of steel.\nDeals 30 (+45% ATK) damage to the target and adjacent enemies.",
-          "tags": ["damage", "aoe", "melee"]
+          "tags": [
+            "damage",
+            "aoe",
+            "melee"
+          ]
         },
         {
           "id": "skill_warrior_berserker_frenzy",
@@ -316,14 +437,24 @@
           "base_power": 0,
           "mana_cost": 25,
           "cooldown": 20.0,
-          "buff": "frenzy",
           "buff_value_atk": 30,
           "buff_value_speed": 20,
-          "buff_duration": 10.0,
           "vfx_type": "buff_aura",
           "description_fr": "+30% ATK et +20% vitesse d'attaque pendant 10s.",
           "description_en": "Fury takes over.\n+30% ATK and +20% attack speed for 10s.",
-          "tags": ["buff", "attack", "speed", "self"]
+          "tags": [
+            "buff",
+            "attack",
+            "speed",
+            "self"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "frenzy",
+              "duration": 10.0
+            }
+          ]
         },
         {
           "id": "skill_warrior_berserker_decimate",
@@ -338,16 +469,27 @@
           "scaling_percent": 70,
           "mana_cost": 50,
           "cooldown": 22.0,
-          "execute_threshold": 30,
+          "execute_threshold": 20,
           "execute_bonus_percent": 50,
-          "debuff": "vulnerable",
-          "debuff_value": 15,
-          "debuff_duration": 6.0,
           "vfx_type": "melee_slash",
           "is_signature": true,
-          "description_fr": "Inflige 55 (+70% ATK) dégâts physiques à l'ennemi ciblé et 2 ennemis adjacents.\n+50% de dégâts si l'ennemi ciblé est sous 30% HP.\nApplique Vulnérable (-15% résistances) pendant 6s.",
-          "description_en": "Signature skill. The Berserker brings down his blade without mercy.\nDeals 55 (+70% ATK) damage to the target and 2 adjacent enemies.\n+50% damage if the target is below 30% HP.\nApplies Vulnerable (-15% resistances) for 6s.",
-          "tags": ["damage", "execute", "aoe", "signature", "vulnerable"]
+          "description_fr": "SIGNATURE - Inflige 55 (+70% ATK) dégâts physiques à l'ennemi ciblé et 2 ennemis adjacents.\n+50% de dégâts si l'ennemi ciblé est sous 20% HP.\nApplique Vulnérable (-15% résistances) pendant 6s.",
+          "description_en": "SIGNATURE - The Berserker brings down his blade without mercy.\nDeals 55 (+70% ATK) damage to the target and 2 adjacent enemies.\n+50% damage if the target is below 20% HP.\nApplies Vulnerable (-15% resistances) for 6s.",
+          "tags": [
+            "damage",
+            "execute",
+            "aoe",
+            "signature",
+            "vulnerable"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "vulnerable",
+              "value": 15,
+              "duration": 6.0
+            }
+          ]
         }
       ]
     },
@@ -365,14 +507,18 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 5,
-          "scaling_percent": 100,
+          "scaling_percent": 35,
           "hit_count": 3,
           "mana_cost": 14,
           "cooldown": 6.0,
           "vfx_type": "melee_slash",
-          "description_fr": "Inflige 3 frappes de 5 (+100% ATK) dégâts physiques chacune à un ennemi.",
-          "description_en": "Three strikes, one purpose.\nDeals 3 hits of 5 (+100% ATK) damage each to a single target.",
-          "tags": ["damage", "combo", "multi_hit"]
+          "description_fr": "Inflige 3 frappes de 5 (+35% ATK) dégâts physiques chacune à un ennemi.",
+          "description_en": "Three strikes, one purpose.\nDeals 3 hits of 5 (+35% ATK) damage each to a single target.",
+          "tags": [
+            "damage",
+            "combo",
+            "multi_hit"
+          ]
         },
         {
           "id": "skill_warrior_weaponmaster_armor_break",
@@ -387,13 +533,23 @@
           "scaling_percent": 40,
           "mana_cost": 16,
           "cooldown": 10.0,
-          "debuff": "armor_down",
-          "debuff_value": 20,
-          "debuff_duration": 8.0,
           "vfx_type": "melee_slash",
           "description_fr": "Frappe perçant 2 rangs en colonne (20 + 40% ATK).\nRéduit l'armure des ennemis de 20 pendant 8s.",
           "description_en": "The strike cleaves through two ranks.\nDeals 20 (+40% ATK) damage to 2 targets in a column.\nReduces armor by 20 for 8s.",
-          "tags": ["damage", "armor_break", "debuff", "column"]
+          "tags": [
+            "damage",
+            "armor_break",
+            "debuff",
+            "column"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "armor_down",
+              "value": 20,
+              "duration": 8.0
+            }
+          ]
         },
         {
           "id": "skill_warrior_weaponmaster_sweeping_line",
@@ -411,7 +567,11 @@
           "vfx_type": "melee_slash",
           "description_fr": "Inflige 22 (+45% ATK) dégâts physiques à 3 ennemis en ligne.",
           "description_en": "The blade carves a deadly arc.\nDeals 22 (+45% ATK) damage to 3 enemies in a row.",
-          "tags": ["damage", "aoe", "melee"]
+          "tags": [
+            "damage",
+            "aoe",
+            "melee"
+          ]
         },
         {
           "id": "skill_warrior_weaponmaster_blade_stance",
@@ -424,13 +584,23 @@
           "base_power": 0,
           "mana_cost": 18,
           "cooldown": 16.0,
-          "buff": "double_hit_chance",
-          "buff_value": 15,
-          "buff_duration": 10.0,
           "vfx_type": "buff_aura",
           "description_fr": "+15% de chance de double frappe sur les auto-attaques pendant 10s.",
           "description_en": "The discipline of a weapon master.\n+15% double hit chance on auto-attacks for 10s.",
-          "tags": ["buff", "self", "double_hit", "auto_attack"]
+          "tags": [
+            "buff",
+            "self",
+            "double_hit",
+            "auto_attack"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "double_hit_chance",
+              "value": 15,
+              "duration": 10.0
+            }
+          ]
         },
         {
           "id": "skill_warrior_weaponmaster_titan_slam",
@@ -445,13 +615,23 @@
           "scaling_percent": 75,
           "mana_cost": 45,
           "cooldown": 20.0,
-          "effect": "stun",
-          "effect_duration": 2.0,
           "vfx_type": "falling",
           "is_signature": true,
           "description_fr": "Inflige 45 (+75% ATK) dégâts physiques en zone 2x2.\nÉtourdissement de 2s.",
           "description_en": "Signature skill. The ground trembles under the titan's impact.\nDeals 45 (+75% ATK) damage in a 2x2 area.\nStuns for 2s.",
-          "tags": ["damage", "aoe", "stun", "signature"]
+          "tags": [
+            "damage",
+            "aoe",
+            "stun",
+            "signature"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "stun",
+              "duration": 2.0
+            }
+          ]
         }
       ]
     },
@@ -470,15 +650,30 @@
           "base_power": 0,
           "mana_cost": 20,
           "cooldown": 12.0,
-          "buff": "atk_up",
-          "buff_value": 20,
-          "buff_duration": 10.0,
-          "secondary_buff": "atk_speed_up",
-          "secondary_buff_value": 10,
           "vfx_type": "buff_aura",
-          "description_fr": "+20% ATK et +10% vitesse d'attaque à 3 alliés en ligne pendant 10s.",
-          "description_en": "The Warlord's command galvanizes his troops.\n+20% ATK and +10% attack speed to 3 allies in a row for 10s.",
-          "tags": ["buff", "attack", "atk_speed", "aoe", "support"]
+          "description_fr": "+20% Dégâts et +10% vitesse d'attaque à 3 alliés en ligne pendant 10s.",
+          "description_en": "The Warlord's command galvanizes his troops.\n+20% Damage and +10% attack speed to 3 allies in a row for 10s.",
+          "tags": [
+            "buff",
+            "damage",
+            "atk_speed",
+            "aoe",
+            "support"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "damage_percent_up",
+              "value": 20,
+              "duration": 10.0
+            },
+            {
+              "type": "buff",
+              "stat": "atk_speed_up",
+              "value": 10,
+              "duration": 10.0
+            }
+          ]
         },
         {
           "id": "skill_warrior_warlord_weakening_roar",
@@ -491,13 +686,23 @@
           "base_power": 0,
           "mana_cost": 16,
           "cooldown": 10.0,
-          "debuff": "flat_dr_down",
-          "debuff_value": 20,
-          "debuff_duration": 8.0,
           "vfx_type": "debuff_aura",
           "description_fr": "Rugissement en cône affaiblissant les ennemis. -20% réduction de dégâts pendant 8s.",
           "description_en": "A roar that fans out and shatters resolve.\nReduces damage reduction of enemies in a cone by 20% for 8s.",
-          "tags": ["debuff", "defense_down", "aoe", "support"]
+          "tags": [
+            "debuff",
+            "defense_down",
+            "aoe",
+            "support"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "flat_dr_down",
+              "value": 20,
+              "duration": 8.0
+            }
+          ]
         },
         {
           "id": "skill_warrior_warlord_rally",
@@ -510,13 +715,23 @@
           "base_power": 0,
           "mana_cost": 22,
           "cooldown": 14.0,
-          "buff": "flat_dr_up",
-          "buff_value": 25,
-          "buff_duration": 10.0,
           "vfx_type": "buff_aura",
           "description_fr": "+25% de réduction de dégâts sur la cible et 2 alliés proches pendant 10s.",
           "description_en": "The Warlord rallies his companions.\n+25% damage reduction on target and 2 nearby allies for 10s.",
-          "tags": ["buff", "defense", "support", "aoe"]
+          "tags": [
+            "buff",
+            "defense",
+            "support",
+            "aoe"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "flat_dr_up",
+              "value": 25,
+              "duration": 10.0
+            }
+          ]
         },
         {
           "id": "skill_warrior_warlord_piercing_strike",
@@ -533,13 +748,24 @@
           "shield_break": 50,
           "mana_cost": 24,
           "cooldown": 12.0,
-          "debuff": "armor_down",
-          "debuff_value": 15,
-          "debuff_duration": 6.0,
           "vfx_type": "melee_slash",
           "description_fr": "Inflige 35 (+60% ATK) dégâts physiques à un ennemi.\n30% de pénétration d'armure. Ignore 50% du bouclier.\nRéduit l'armure de 15 pendant 6s.",
           "description_en": "A strike that pierces through everything.\nDeals 35 (+60% ATK) damage to a single target.\n30% armor penetration and ignores 50% of the shield.\nReduces armor by 15 for 6s.",
-          "tags": ["damage", "melee", "armor_pen", "shield_break", "armor_down"]
+          "tags": [
+            "damage",
+            "melee",
+            "armor_pen",
+            "shield_break",
+            "armor_down"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "armor_down",
+              "value": 15,
+              "duration": 6.0
+            }
+          ]
         },
         {
           "id": "skill_warrior_warlord_war_banner",
@@ -552,17 +778,35 @@
           "base_power": 0,
           "mana_cost": 50,
           "cooldown": 25.0,
-          "buff": "war_banner",
-          "buff_value_atk": 15,
+          "buff_value_damage_percent": 15,
           "buff_value_flat_dr": 15,
           "hot_percent": 0.5,
           "hot_scaling": "caster_max_hp",
-          "buff_duration": 12.0,
           "vfx_type": "buff_aura",
           "is_signature": true,
-          "description_fr": "Zone 2x3 : +15% ATK et +15% de réduction de dégâts aux alliés.\nRégénère 0.5% des HP max du lanceur par seconde pendant 12s.",
-          "description_en": "Signature skill. The Warlord's banner inspires and protects.\n2x3 area: +15% ATK and +15% damage reduction to allies.\nRegenerates 0.5% of the caster's max HP per second for 12s.",
-          "tags": ["buff", "hot", "aoe", "signature", "support"]
+          "description_fr": "SIGNATURE - Zone 2x3 : +15% Dégâts et +15% de réduction de dégâts aux alliés.\nRégénère 0.5% des HP max du lanceur par seconde pendant 12s.",
+          "description_en": "SIGNATURE - The Warlord's banner inspires and protects.\n2x3 area: +15% Damage and +15% damage reduction to allies.\nRegenerates 0.5% of the caster's max HP per second for 12s.",
+          "tags": [
+            "buff",
+            "hot",
+            "aoe",
+            "signature",
+            "support"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "damage_percent_up",
+              "value": 15,
+              "duration": 12.0
+            },
+            {
+              "type": "buff",
+              "stat": "flat_dr_up",
+              "value": 15,
+              "duration": 12.0
+            }
+          ]
         }
       ]
     }
