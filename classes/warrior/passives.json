@@ -1,9 +1,38 @@
 {
   "_meta": {
-    "version": "4.0",
-    "last_updated": "2026-01-31",
+    "version": "5.0",
+    "last_updated": "2026-02-26",
     "class": "warrior",
-    "description": "Tous les passifs du Warrior (10 class-specific passives avec max 20 niveaux)"
+    "description": "Tous les passifs du Warrior (10 class-specific passives avec max 20 niveaux) + 1 class passive innée"
+  },
+
+  "innate_passive": {
+    "id": "p_war_martial_discipline",
+    "name_fr": "Discipline Martiale",
+    "name_en": "Martial Discipline",
+    "type": "combat_proc",
+    "description_fr": "Chaque sort offensif (ciblant des ennemis) octroie +5% ATK pendant 10s (max 3 charges). Chaque sort de soutien ou défensif (ciblant soi-même ou des alliés) octroie +5% DEF pendant 10s (max 3 charges). La maîtrise naît de la répétition.",
+    "description_en": "Each offensive spell (targeting enemies) grants +5% ATK for 10s (max 3 stacks). Each support or defensive spell (targeting self or allies) grants +5% DEF for 10s (max 3 stacks). Mastery is born from repetition.",
+    "trigger_rule": "on_skill_cast",
+    "conditions": {
+      "offensive": {
+        "check": "skill_target_is_enemy",
+        "effect_id": "martial_discipline_atk",
+        "stacks": 1,
+        "max_stacks": 3,
+        "duration": 10.0,
+        "value_per_stack": 5
+      },
+      "defensive": {
+        "check": "skill_target_is_ally_or_self",
+        "effect_id": "martial_discipline_def",
+        "stacks": 1,
+        "max_stacks": 3,
+        "duration": 10.0,
+        "value_per_stack": 5
+      }
+    },
+    "lore_note": "La discipline du guerrier est le reflet de sa maîtrise — chaque action renforce sa prochaine."
   },
 
   "class_passives": [
