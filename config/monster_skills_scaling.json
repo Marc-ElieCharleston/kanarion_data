@@ -409,6 +409,42 @@
       }
     },
 
+    "skill_assassin_silencing_strike": {
+      "name": "Silencing Strike",
+      "archetype": "assassin",
+      "type": "damage_cc",
+      "pattern": "single",
+      "damage_type": "physical",
+      "tier_availability": "elite_and_boss",
+      "description": "A precise strike to the throat that silences the target.",
+      "base_damage": {
+        "formula": "20 + (2 * level)",
+        "example_lv10": 40,
+        "example_lv20": 60
+      },
+      "scaling_percent": {
+        "stat": "atk",
+        "formula": "40 + (2 * level)",
+        "example_lv10": 60,
+        "example_lv20": 80
+      },
+      "cast_time": {
+        "elite": 1.0,
+        "boss": 0.8
+      },
+      "cooldown": {
+        "elite": 20,
+        "boss": 18
+      },
+      "effect": {
+        "type": "silence",
+        "duration": {
+          "elite": 4.0,
+          "boss": 6.0
+        }
+      }
+    },
+
     "_comment": "=== TANK ARCHETYPE ===",
 
     "skill_tank_shield_bash": {
@@ -578,6 +614,34 @@
       }
     },
 
+    "skill_tank_commanding_shout": {
+      "name": "Commanding Shout",
+      "archetype": "tank",
+      "type": "taunt",
+      "pattern": "back_row_ignore_los",
+      "tier_availability": "boss_only",
+      "description": "A thunderous shout that forces the entire back row to attack this unit. Ignores line of sight.",
+      "cast_time": 2.0,
+      "cooldown": 25,
+      "effect": {
+        "type": "taunt",
+        "ignore_los": true,
+        "duration": 6.0,
+        "def_increase": {
+          "formula": "20 + (1 * level)",
+          "example_lv10": 30,
+          "example_lv20": 40,
+          "unit": "percent"
+        },
+        "def_debuff_on_targets": {
+          "value": -15,
+          "unit": "percent",
+          "duration": 6.0,
+          "description": "Taunted targets have reduced defense from fear"
+        }
+      }
+    },
+
     "_comment": "=== HEALER ARCHETYPE ===",
 
     "skill_healer_heal": {
@@ -655,6 +719,110 @@
           "formula": "40 + (1 * level)",
           "example_lv10": 50,
           "example_lv20": 60
+        }
+      }
+    },
+
+    "skill_healer_smite": {
+      "name": "Smite",
+      "archetype": "healer",
+      "type": "damage_ranged",
+      "pattern": "single",
+      "damage_type": "magical",
+      "description": "Holy damage. Used as filler when no ally needs healing.",
+      "base_damage": {
+        "formula": "14 + (1.5 * level)",
+        "example_lv1": 15.5,
+        "example_lv10": 29,
+        "example_lv20": 44
+      },
+      "scaling_percent": {
+        "stat": "mag",
+        "formula": "30 + (1.5 * level)",
+        "example_lv1": 31.5,
+        "example_lv10": 45,
+        "example_lv20": 60
+      },
+      "cast_time": {
+        "normal": 1.5,
+        "elite": 1.2,
+        "boss": 1.0
+      },
+      "cooldown": {
+        "normal": 5,
+        "elite": 4,
+        "boss": 3
+      }
+    },
+
+    "skill_healer_purify": {
+      "name": "Purify",
+      "archetype": "healer",
+      "type": "cleanse",
+      "pattern": {
+        "elite": "single_ally",
+        "boss": "rect_2x2_allies"
+      },
+      "tier_availability": "elite_and_boss",
+      "description": "Removes all debuffs from target ally (or zone for boss). Counters poison, bleed, root, fear.",
+      "cast_time": {
+        "elite": 3.0,
+        "boss": 2.5
+      },
+      "cooldown": {
+        "elite": 16,
+        "boss": 14
+      },
+      "effect": {
+        "type": "cleanse_debuffs",
+        "removes": "all_debuffs",
+        "heal_on_cleanse": {
+          "formula": "10 + (0.5 * level)",
+          "example_lv10": 15,
+          "example_lv20": 20,
+          "unit": "percent_max_hp"
+        }
+      }
+    },
+
+    "skill_healer_divine_wave": {
+      "name": "Divine Wave",
+      "archetype": "healer",
+      "type": "heal_aoe_damage_aoe",
+      "pattern": {
+        "heal": "all_allies",
+        "damage": "all_enemies"
+      },
+      "tier_availability": "boss_only",
+      "description": "Signature boss healer spell. A wave of holy energy heals all allies and burns all enemies with sacred fire.",
+      "base_healing": {
+        "formula": "30 + (3 * level)",
+        "example_lv10": 60,
+        "example_lv20": 90
+      },
+      "healing_scaling_percent": {
+        "stat": "mag",
+        "formula": "60 + (2.5 * level)",
+        "example_lv10": 85,
+        "example_lv20": 110
+      },
+      "base_damage": {
+        "formula": "15 + (1.5 * level)",
+        "example_lv10": 30,
+        "example_lv20": 45
+      },
+      "damage_type": "magical",
+      "cast_time": 5.0,
+      "cooldown": 35,
+      "effect": {
+        "type": "holy_burn",
+        "stacks": 4,
+        "duration": 10,
+        "tick_damage": {
+          "formula": "3 + (0.3 * level)",
+          "example_lv10": 6,
+          "example_lv20": 9,
+          "unit": "percent_max_hp"
         }
       }
     },
@@ -761,6 +929,86 @@
           "formula": "12 + (0.4 * level)",
           "example_lv10": 16,
           "example_lv20": 20
+        }
+      }
+    },
+
+    "skill_support_energy_drain": {
+      "name": "Energy Drain",
+      "archetype": "support",
+      "type": "damage_drain",
+      "pattern": "single",
+      "damage_type": "magical",
+      "description": "Drains energy from target, dealing damage and stealing MP.",
+      "base_damage": {
+        "formula": "12 + (1.5 * level)",
+        "example_lv1": 13.5,
+        "example_lv10": 27,
+        "example_lv20": 42
+      },
+      "scaling_percent": {
+        "stat": "mag",
+        "formula": "25 + (1.5 * level)",
+        "example_lv1": 26.5,
+        "example_lv10": 40,
+        "example_lv20": 55
+      },
+      "cast_time": {
+        "normal": 1.5,
+        "elite": 1.2,
+        "boss": 1.0
+      },
+      "cooldown": {
+        "normal": 8,
+        "elite": 7,
+        "boss": 6
+      },
+      "effect": {
+        "type": "mp_drain",
+        "mp_stolen": {
+          "formula": "8 + (0.5 * level)",
+          "example_lv1": 8.5,
+          "example_lv10": 13,
+          "example_lv20": 18
+        }
+      }
+    },
+
+    "skill_support_shield_barrier": {
+      "name": "Shield Barrier",
+      "archetype": "support",
+      "type": "buff_shield",
+      "pattern": {
+        "elite": "rect_2x2_allies",
+        "boss": "cross_allies"
+      },
+      "tier_availability": "elite_and_boss",
+      "description": "Creates a protective barrier that absorbs damage for allies in the area.",
+      "cast_time": {
+        "elite": 3.5,
+        "boss": 3.0
+      },
+      "cooldown": {
+        "elite": 20,
+        "boss": 16
+      },
+      "effect": {
+        "type": "shield",
+        "shield_value": {
+          "formula": "30 + (3 * level)",
+          "example_lv10": 60,
+          "example_lv20": 90,
+          "scaling_stat": "mag",
+          "scaling_percent": {
+            "formula": "40 + (2 * level)",
+            "example_lv10": 60,
+            "example_lv20": 80
+          }
+        },
+        "duration": {
+          "formula": "8 + (0.3 * level)",
+          "example_lv10": 11,
+          "example_lv20": 14
         }
       }
     },
@@ -874,6 +1122,49 @@
       }
     },
 
+    "skill_artillery_frost_nova": {
+      "name": "Frost Nova",
+      "archetype": "artillery",
+      "type": "damage_aoe_cc",
+      "pattern": {
+        "elite": "rect_2x2",
+        "boss": "rect_2x3"
+      },
+      "damage_type": "magical",
+      "tier_availability": "elite_and_boss",
+      "description": "Unleashes a blast of frost that damages and slows all targets in the area.",
+      "base_damage": {
+        "formula": "20 + (2.5 * level)",
+        "example_lv10": 45,
+        "example_lv20": 70
+      },
+      "scaling_percent": {
+        "stat": "mag",
+        "formula": "50 + (2 * level)",
+        "example_lv10": 70,
+        "example_lv20": 90
+      },
+      "cast_time": {
+        "elite": 3.5,
+        "boss": 3.0
+      },
+      "cooldown": {
+        "elite": 16,
+        "boss": 14
+      },
+      "effect": {
+        "type": "slow",
+        "slow_percent": {
+          "elite": 30,
+          "boss": 40
+        },
+        "duration": {
+          "elite": 5.0,
+          "boss": 6.0
+        }
+      }
+    },
+
     "_comment": "=== CONTROLLER ARCHETYPE ===",
 
     "skill_controller_root": {
@@ -948,6 +1239,80 @@
           "example_lv20": 16
         },
         "stat_buff": "+30% all stats while controlled"
+      }
+    },
+
+    "skill_controller_hex_bolt": {
+      "name": "Hex Bolt",
+      "archetype": "controller",
+      "type": "damage_debuff",
+      "pattern": "single",
+      "damage_type": "magical",
+      "description": "A cursed bolt that deals damage and applies a random debuff (ATK down, DEF down, or slow).",
+      "base_damage": {
+        "formula": "16 + (2 * level)",
+        "example_lv1": 18,
+        "example_lv10": 36,
+        "example_lv20": 56
+      },
+      "scaling_percent": {
+        "stat": "mag",
+        "formula": "35 + (2 * level)",
+        "example_lv1": 37,
+        "example_lv10": 55,
+        "example_lv20": 75
+      },
+      "cast_time": {
+        "normal": 1.5,
+        "elite": 1.2,
+        "boss": 1.0
+      },
+      "cooldown": {
+        "normal": 6,
+        "elite": 5,
+        "boss": 4
+      },
+      "effect": {
+        "type": "random_debuff",
+        "possible_effects": ["atk_down", "def_down", "slow"],
+        "debuff_value": {
+          "normal": 15,
+          "elite": 20,
+          "boss": 25,
+          "unit": "percent"
+        },
+        "duration": {
+          "normal": 6.0,
+          "elite": 8.0,
+          "boss": 10.0
+        }
+      }
+    },
+
+    "skill_controller_silence": {
+      "name": "Silence",
+      "archetype": "controller",
+      "type": "cc",
+      "pattern": {
+        "elite": "single",
+        "boss": "rect_2x2"
+      },
+      "tier_availability": "elite_and_boss",
+      "description": "Silences target, preventing all skill usage. Long cooldown.",
+      "cast_time": {
+        "elite": 3.0,
+        "boss": 2.5
+      },
+      "cooldown": {
+        "elite": 22,
+        "boss": 20
+      },
+      "effect": {
+        "type": "silence",
+        "duration": {
+          "elite": 4.0,
+          "boss": 6.0
+        }
       }
     },
 
