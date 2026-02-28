@@ -2,7 +2,7 @@
   "_meta": {
     "version": "3.0",
     "last_updated": "2026-01-22",
-    "description": "Systeme de skills - base damage + % stat scaling"
+    "description": "Systeme de skills - pure % stat scaling (damage = stat * scaling%)"
   },
 
   "skill_points": {
@@ -54,16 +54,15 @@
   },
 
   "scaling": {
-    "_comment": "DOUBLE scaling: base flat + % stat. Les deux augmentent avec le niveau.",
-    "type": "linear_dual",
-    "formula_base_power": "base_at_level = base_power + (skill_level - 1) * power_per_level",
+    "_comment": "Pure % stat scaling. Damage = stat * (scaling_percent + (level-1)*percent_per_level) / 100",
+    "type": "pure_percent",
     "formula_scaling_percent": "percent_at_level = scaling_percent + (skill_level - 1) * percent_per_level",
-    "formula_final_damage": "final = base_at_level + (percent_at_level% * scaling_stat)",
+    "formula_final_damage": "final = percent_at_level% * scaling_stat",
     "formula_mana": "mana_at_level = base_mana + (skill_level - 1) * mana_per_level",
     "formula_duration": "duration_at_level = base_duration + (skill_level - 1) * duration_per_level",
     "effect_chance": "fixed - geree par stats (effect_precision, tenacity, resist_debuff)",
     "cooldown": "fixed - vient de l'equipement/CDR",
-    "design_note": "Early game: base damage matters. Late game: % scaling matters. Leveling always impactful."
+    "design_note": "Physical skills: lower %, auto-attacks supplement. Magical skills: higher %, skills ARE the DPS. Cast time adds ~30%/sec bonus."
   },
 
   "stat_scaling": {
@@ -112,79 +111,85 @@
   },
 
   "scaling_by_tier": {
-    "_comment": "Scaling par niveau: base_power, scaling_percent, souffle",
+    "_comment": "Scaling par niveau: percent_per_level (physical defaults), souffle. Magical skills override percent_per_level per-skill (higher values).",
     "filler": {
-      "power_per_level": 2,
-      "percent_per_level": 4,
-      "mana_per_level": 1,
-      "description": "Skill spam - lvl10: +18 base, +36% stat"
-    },
-    "basic": {
-      "power_per_level": 3,
+      "power_per_level": 0,
       "percent_per_level": 5,
       "mana_per_level": 1,
-      "description": "Skill polyvalent - lvl10: +27 base, +45% stat"
+      "description": "Skill spam - lvl10: +45% stat"
+    },
+    "basic": {
+      "power_per_level": 0,
+      "percent_per_level": 6,
+      "mana_per_level": 1,
+      "description": "Skill polyvalent - lvl10: +54% stat"
     },
     "standard": {
-      "power_per_level": 4,
-      "percent_per_level": 6,
-      "mana_per_level": 2,
-      "description": "Skill standard - lvl10: +36 base, +54% stat"
-    },
-    "strong": {
-      "power_per_level": 5,
+      "power_per_level": 0,
       "percent_per_level": 7,
       "mana_per_level": 2,
-      "description": "Skill puissant - lvl10: +45 base, +63% stat"
+      "description": "Skill standard - lvl10: +63% stat"
+    },
+    "strong": {
+      "power_per_level": 0,
+      "percent_per_level": 8,
+      "mana_per_level": 2,
+      "description": "Skill puissant - lvl10: +72% stat"
     },
     "signature": {
-      "power_per_level": 7,
-      "percent_per_level": 8,
+      "power_per_level": 0,
+      "percent_per_level": 9,
       "mana_per_level": 3,
-      "description": "Signature - lvl10: +63 base, +72% stat"
+      "description": "Signature - lvl10: +81% stat"
     },
     "ultimate": {
-      "power_per_level": 10,
+      "power_per_level": 0,
       "percent_per_level": 10,
       "mana_per_level": 4,
-      "description": "Ultimate - lvl10: +90 base, +90% stat"
+      "description": "Ultimate - lvl10: +90% stat"
     }
   },
 
   "skill_tiers": {
-    "_comment": "Classification des skills - valeurs de BASE (niveau 1)",
+    "_comment": "Classification des skills - scaling_percent de BASE (niveau 1). Physical = lower %, Magical = higher %.",
     "filler": {
-      "power_range": [18, 25],
+      "scaling_range_phys": [110, 130],
+      "scaling_range_mag": [140, 160],
       "cooldown_range": [3.0, 4.5],
       "mana_range": [6, 10],
       "description": "Skill spammable, faible CD"
     },
     "basic": {
-      "power_range": [15, 30],
+      "scaling_range_phys": [130, 170],
+      "scaling_range_mag": [170, 210],
       "cooldown_range": [5.0, 8.0],
       "mana_range": [10, 15],
       "description": "Skill de base polyvalent"
     },
     "standard": {
-      "power_range": [25, 45],
+      "scaling_range_phys": [150, 200],
+      "scaling_range_mag": [200, 260],
       "cooldown_range": [8.0, 12.0],
       "mana_range": [14, 22],
       "description": "Skill standard equilibre"
     },
     "strong": {
-      "power_range": [40, 60],
+      "scaling_range_phys": [200, 280],
+      "scaling_range_mag": [280, 380],
       "cooldown_range": [12.0, 18.0],
       "mana_range": [20, 32],
       "description": "Skill puissant, CD moyen"
     },
     "signature": {
-      "power_range": [55, 80],
+      "scaling_range_phys": [250, 350],
+      "scaling_range_mag": [350, 450],
       "cooldown_range": [18.0, 30.0],
       "mana_range": [35, 50],
       "description": "Skill signature de subclass"
     },
     "ultimate": {
-      "power_range": [75, 110],
+      "scaling_range_phys": [300, 450],
+      "scaling_range_mag": [450, 600],
       "cooldown_range": [25.0, 45.0],
       "mana_range": [45, 70],
       "description": "Ultimate, long CD, impact massif"
@@ -192,22 +197,22 @@
   },
 
   "example_scaling": {
-    "_comment": "Exemple: Heavy Strike (filler) - 22 base + 40% ATK a lvl 1",
+    "_comment": "Exemple: Heavy Strike (filler, physical) - 120% ATK a lvl 1, +5%/lvl",
     "skill": "Heavy Strike",
     "tier": "filler",
-    "base_values": { "base_power": 22, "scaling_percent": 40, "scaling_stat": "atk", "mana": 8 },
+    "base_values": { "scaling_percent": 120, "percent_per_level": 5, "scaling_stat": "atk", "mana": 8 },
     "levels": {
-      "1":  { "base": 22, "percent": 40, "mana": 8,  "total_100atk": 62 },
-      "2":  { "base": 24, "percent": 44, "mana": 9,  "total_100atk": 68 },
-      "3":  { "base": 26, "percent": 48, "mana": 10, "total_100atk": 74 },
-      "4":  { "base": 28, "percent": 52, "mana": 11, "total_100atk": 80 },
-      "5":  { "base": 30, "percent": 56, "mana": 12, "total_100atk": 86 },
-      "6":  { "base": 32, "percent": 60, "mana": 13, "total_100atk": 92 },
-      "7":  { "base": 34, "percent": 64, "mana": 14, "total_100atk": 98 },
-      "8":  { "base": 36, "percent": 68, "mana": 15, "total_100atk": 104 },
-      "9":  { "base": 38, "percent": 72, "mana": 16, "total_100atk": 110 },
-      "10": { "base": 40, "percent": 76, "mana": 17, "total_100atk": 116 }
+      "1":  { "percent": 120, "mana": 8,  "dmg_16atk": 19,  "dmg_100atk": 120 },
+      "2":  { "percent": 125, "mana": 9,  "dmg_16atk": 20,  "dmg_100atk": 125 },
+      "3":  { "percent": 130, "mana": 10, "dmg_16atk": 21,  "dmg_100atk": 130 },
+      "4":  { "percent": 135, "mana": 11, "dmg_16atk": 22,  "dmg_100atk": 135 },
+      "5":  { "percent": 140, "mana": 12, "dmg_16atk": 22,  "dmg_100atk": 140 },
+      "6":  { "percent": 145, "mana": 13, "dmg_16atk": 23,  "dmg_100atk": 145 },
+      "7":  { "percent": 150, "mana": 14, "dmg_16atk": 24,  "dmg_100atk": 150 },
+      "8":  { "percent": 155, "mana": 15, "dmg_16atk": 25,  "dmg_100atk": 155 },
+      "9":  { "percent": 160, "mana": 16, "dmg_16atk": 26,  "dmg_100atk": 160 },
+      "10": { "percent": 165, "mana": 17, "dmg_16atk": 26,  "dmg_100atk": 165 }
     },
-    "_note": "A 100 ATK: lvl1 = 62 dmg, lvl10 = 116 dmg (+87%). A 500 ATK: lvl1 = 222 dmg, lvl10 = 420 dmg (+89%)"
+    "_note": "Pure % scaling: ATK=16 (lv1): 19 dmg. ATK=100 (mid): 120 dmg. ATK=180 (lv60 geared): 297 dmg."
   }
 }
