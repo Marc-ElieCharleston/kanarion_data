@@ -47,16 +47,25 @@
       "scaling_percent": 120,
       "percent_per_level": 5,
       "mana_cost": 8,
-      "mana_cost_per_level": 3,
+      "mana_cost_per_level": 1,
       "cooldown": 4.5,
       "vfx_type": "melee_slash",
-      "description_fr": "Le Rogue frappe d'instinct. Son Souffle guide la lame avant même que l'ennemi ne réagisse.\nCoup de dague rapide infligeant 120% ATK dégâts physiques.",
-      "description_en": "The Rogue strikes on instinct. Their Breath guides the blade before the enemy can react.\nQuick dagger strike dealing 120% ATK physical damage.",
+      "description_fr": "Le Rogue frappe d'instinct. Son Souffle guide la lame avant même que l'ennemi ne réagisse. Le coup déstabilise la cible.\nCoup de dague rapide infligeant 120% ATK dégâts physiques. -5% esquive 3s.",
+      "description_en": "The Rogue strikes on instinct. Their Breath guides the blade before the enemy can react. The strike throws the target off balance.\nQuick dagger strike dealing 120% ATK physical damage. -5% evasion for 3s.",
       "tags": [
         "damage",
         "filler",
         "melee",
-        "fast"
+        "fast",
+        "evasion_down"
+      ],
+      "effects": [
+        {
+          "type": "debuff",
+          "stat": "evasion_down",
+          "value": 5,
+          "duration": 3.0
+        }
       ]
     },
     {
@@ -72,7 +81,7 @@
       "scaling_percent": 140,
       "percent_per_level": 6,
       "mana_cost": 12,
-      "mana_cost_per_level": 4,
+      "mana_cost_per_level": 1,
       "cooldown": 5.0,
       "applies_bleed_stacks": 1,
       "ignore_los": true,
@@ -98,13 +107,12 @@
       "scaling_percent": 120,
       "percent_per_level": 8,
       "mana_cost": 18,
-      "mana_cost_per_level": 5,
-      "cooldown": 12.0,
+      "mana_cost_per_level": 2,
+      "cooldown": 14.0,
       "cast_time": 1.0,
-      "debuff_duration_per_level": 0.3,
       "vfx_type": "debuff_aura",
-      "description_fr": "Le Rogue libère son Souffle en une brume épaisse qui dévore la vision. Personne ne voit venir le coup suivant.\n120% ATK dégâts physiques en zone 2x2. Aveuglement -30% précision pendant 4s (+0.3s/niv). Incantation 1.0s.",
-      "description_en": "The Rogue releases their Breath in a thick mist that devours sight. No one sees the next strike coming.\n120% ATK physical damage in 2x2 area. Blind -30% accuracy for 4s (+0.3s/lvl). 1.0s cast.",
+      "description_fr": "Le Rogue libère son Souffle en une brume épaisse qui dévore la vision. Personne ne voit venir le coup suivant.\n120% ATK dégâts physiques en zone 2x2. Aveuglement -30% précision (+2%/niv) pendant 4s (+0.1s/niv). Incantation 1.0s.",
+      "description_en": "The Rogue releases their Breath in a thick mist that devours sight. No one sees the next strike coming.\n120% ATK physical damage in 2x2 area. Blind -30% accuracy (+2%/lvl) for 4s (+0.1s/lvl). 1.0s cast.",
       "tags": [
         "damage",
         "debuff",
@@ -116,7 +124,9 @@
           "type": "debuff",
           "stat": "blind",
           "value": 30,
-          "duration": 4.0
+          "value_per_level": 2,
+          "duration": 4.0,
+          "duration_per_level": 0.1
         }
       ]
     },
@@ -130,14 +140,15 @@
       "damage_type": "none",
       "base_power": 0,
       "mana_cost": 18,
-      "mana_cost_per_level": 6,
-      "cooldown": 14.0,
+      "mana_cost_per_level": 2,
+      "cooldown": 20.0,
+      "cooldown_per_level": -0.5,
       "debuff_damage_taken": 10,
       "debuff_duration_per_level": 0.5,
       "mark_ignore_los": true,
       "vfx_type": "debuff_aura",
-      "description_fr": "Le Souffle du Rogue marque la proie. Une fois désignée, aucune défense ne peut la cacher de l'équipe.\n+10% dégâts subis. Toute l'équipe ignore la ligne de vue sur la cible marquée. Durée 4s (+0.5s/niv).",
-      "description_en": "The Rogue's Breath marks the prey. Once designated, no defense can hide them from the team.\n+10% damage taken. Entire team ignores line of sight on marked target. Duration 4s (+0.5s/lvl).",
+      "description_fr": "Le Souffle du Rogue marque la proie. Une fois désignée, aucune défense ne peut la cacher de l'équipe.\n+10% dégâts subis (+1%/niv). Toute l'équipe ignore la ligne de vue sur la cible marquée. Durée 4s (+0.5s/niv). CD 20s (-0.5s/niv).",
+      "description_en": "The Rogue's Breath marks the prey. Once designated, no defense can hide them from the team.\n+10% damage taken (+1%/lvl). Entire team ignores line of sight on marked target. Duration 4s (+0.5s/lvl). CD 20s (-0.5s/lvl).",
       "tags": [
         "debuff",
         "mark",
@@ -148,6 +159,8 @@
         {
           "type": "debuff",
           "stat": "marked",
+          "value": 10,
+          "value_per_level": 1,
           "duration": 4.0
         }
       ]
@@ -162,20 +175,30 @@
       "damage_type": "physical",
       "scaling_stat": "atk",
       "base_power": 0,
-      "scaling_percent": 170,
+      "scaling_percent": 200,
       "percent_per_level": 7,
       "mana_cost": 16,
-      "mana_cost_per_level": 7,
+      "mana_cost_per_level": 2,
       "cooldown": 8.0,
       "bonus_damage_per_debuff": 8,
       "max_debuff_bonus": 40,
+      "apply_debuff_before_damage": true,
       "vfx_type": "melee_slash",
-      "description_fr": "Le Souffle du Rogue sent la faiblesse. Plus la proie souffre, plus la lame s'enfonce.\n170% ATK dégâts physiques. +8% dégâts par debuff sur la cible (max +40%).",
-      "description_en": "The Rogue's Breath senses weakness. The more the prey suffers, the deeper the blade goes.\n170% ATK physical damage. +8% damage per debuff on target (max +40%).",
+      "description_fr": "Le Souffle du Rogue sent la faiblesse. La lame lacère les défenses avant de s'enfoncer. Plus la proie souffre, plus le coup est dévastateur.\n200% ATK dégâts physiques. Applique -10% DEF 5s puis +8% dégâts par debuff sur la cible (max +40%).",
+      "description_en": "The Rogue's Breath senses weakness. The blade shreds defenses before striking deep. The more the prey suffers, the more devastating the blow.\n200% ATK physical damage. Applies -10% DEF for 5s then +8% damage per debuff on target (max +40%).",
       "tags": [
         "damage",
         "melee",
-        "exploit_weakness"
+        "exploit_weakness",
+        "def_down"
+      ],
+      "effects": [
+        {
+          "type": "debuff",
+          "stat": "def_down",
+          "value": 10,
+          "duration": 5.0
+        }
       ]
     }
   ],

@@ -1,8 +1,9 @@
 {
   "_meta": {
-    "version": "1.0",
-    "last_updated": "2026-01-31",
-    "description": "Common passives available to all classes - 10 passives with max 20 levels each"
+    "version": "2.0",
+    "last_updated": "2026-03-03",
+    "description": "Common passives available to all classes — 10 passives, max 20 levels each, 100 points total (5 maxed). All percentage-based for late-game scaling. Stats grouped by synergy.",
+    "budget_note": "100 points to distribute. Class-specific passives are separate. Future: possibly 2pts/lv or reduce max to 10."
   },
 
   "common_passives": [
@@ -11,28 +12,38 @@
       "name_fr": "Vitalité",
       "name_en": "Vitality",
       "max_level": 20,
-      "description_fr": "Augmente les PV max de 2% par niveau.",
-      "description_en": "Increases max HP by 2% per level.",
+      "description_fr": "Augmente les PV max de 1% et la régénération de PV de 0.25% par niveau.",
+      "description_en": "Increases max HP by 1% and HP regeneration by 0.25% per level.",
       "effects": [
         {
           "stat": "hp",
           "op": "add_percent",
-          "value_per_level": 2
+          "value_per_level": 1
+        },
+        {
+          "stat": "hp_regen",
+          "op": "add_percent",
+          "value_per_level": 0.25
         }
       ]
     },
     {
-      "id": "p_common_focus",
-      "name_fr": "Concentration",
-      "name_en": "Focus",
+      "id": "p_common_deep_breath",
+      "name_fr": "Souffle Profond",
+      "name_en": "Deep Breath",
       "max_level": 20,
-      "description_fr": "Augmente les PM max de 2% par niveau.",
-      "description_en": "Increases max MP by 2% per level.",
+      "description_fr": "Augmente les PM max de 1% et la régénération de PM de 0.25% par niveau.",
+      "description_en": "Increases max MP by 1% and MP regeneration by 0.25% per level.",
       "effects": [
         {
           "stat": "mp",
           "op": "add_percent",
-          "value_per_level": 2
+          "value_per_level": 1
+        },
+        {
+          "stat": "mp_regen",
+          "op": "add_percent",
+          "value_per_level": 0.25
         }
       ]
     },
@@ -67,77 +78,42 @@
       ]
     },
     {
-      "id": "p_common_iron_skin",
-      "name_fr": "Peau de Fer",
-      "name_en": "Iron Skin",
+      "id": "p_common_resistance",
+      "name_fr": "Résistance",
+      "name_en": "Resistance",
       "max_level": 20,
-      "description_fr": "Augmente l'armure de 1% par niveau.",
-      "description_en": "Increases armor by 1% per level.",
+      "description_fr": "Augmente l'armure et la résistance magique de 0.75% par niveau.",
+      "description_en": "Increases armor and magic resist by 0.75% per level.",
       "effects": [
         {
           "stat": "armor",
           "op": "add_percent",
-          "value_per_level": 1
-        }
-      ]
-    },
-    {
-      "id": "p_common_warding",
-      "name_fr": "Protection Magique",
-      "name_en": "Magical Warding",
-      "max_level": 20,
-      "description_fr": "Augmente la résistance magique de 1% par niveau.",
-      "description_en": "Increases magic resist by 1% per level.",
-      "effects": [
+          "value_per_level": 0.75
+        },
         {
           "stat": "magic_resist",
           "op": "add_percent",
-          "value_per_level": 1
+          "value_per_level": 0.75
         }
       ]
     },
     {
-      "id": "p_common_precision",
-      "name_fr": "Précision",
-      "name_en": "Precision",
+      "id": "p_common_critical_instinct",
+      "name_fr": "Instinct Critique",
+      "name_en": "Critical Instinct",
       "max_level": 20,
-      "description_fr": "Augmente la chance de coup critique de 0.5% par niveau.",
-      "description_en": "Increases critical hit chance by 0.5% per level.",
+      "description_fr": "Augmente la chance de critique de 0.5% et les dégâts critiques de 0.25% par niveau.",
+      "description_en": "Increases critical chance by 0.5% and critical damage by 0.25% per level.",
       "effects": [
         {
           "stat": "crit",
           "op": "add_percent",
           "value_per_level": 0.5
-        }
-      ]
-    },
-    {
-      "id": "p_common_regeneration",
-      "name_fr": "Régénération",
-      "name_en": "Regeneration",
-      "max_level": 20,
-      "description_fr": "Augmente la régénération de PV de 1 par seconde par niveau.",
-      "description_en": "Increases HP regeneration by 1 per second per level.",
-      "effects": [
+        },
         {
-          "stat": "hp_regen",
-          "op": "add_flat",
-          "value_per_level": 1
-        }
-      ]
-    },
-    {
-      "id": "p_common_meditation",
-      "name_fr": "Méditation",
-      "name_en": "Meditation",
-      "max_level": 20,
-      "description_fr": "Augmente la régénération de PM de 0.5 par seconde par niveau.",
-      "description_en": "Increases MP regeneration by 0.5 per second per level.",
-      "effects": [
-        {
-          "stat": "mp_regen",
-          "op": "add_flat",
-          "value_per_level": 0.5
+          "stat": "crit_dmg",
+          "op": "add_percent",
+          "value_per_level": 0.25
         }
       ]
     },
@@ -153,6 +129,51 @@
           "stat": "attack_speed",
           "op": "add_percent",
           "value_per_level": 1
+        }
+      ]
+    },
+    {
+      "id": "p_common_vampirism",
+      "name_fr": "Vampirisme",
+      "name_en": "Vampirism",
+      "max_level": 20,
+      "description_fr": "Vole 0.5% des dégâts infligés sous forme de PV par niveau.",
+      "description_en": "Steals 0.5% of damage dealt as HP per level.",
+      "effects": [
+        {
+          "stat": "lifesteal",
+          "op": "add_percent",
+          "value_per_level": 0.5
+        }
+      ]
+    },
+    {
+      "id": "p_common_agility",
+      "name_fr": "Agilité",
+      "name_en": "Agility",
+      "max_level": 20,
+      "description_fr": "Augmente l'esquive de 0.5% par niveau.",
+      "description_en": "Increases evasion by 0.5% per level.",
+      "effects": [
+        {
+          "stat": "flee",
+          "op": "add_percent",
+          "value_per_level": 0.5
+        }
+      ]
+    },
+    {
+      "id": "p_common_tenacity",
+      "name_fr": "Ténacité",
+      "name_en": "Tenacity",
+      "max_level": 20,
+      "description_fr": "Réduit la durée des contrôles et affaiblissements subis de 0.5% par niveau.",
+      "description_en": "Reduces duration of CC and debuffs received by 0.5% per level.",
+      "effects": [
+        {
+          "stat": "tenacity",
+          "op": "add_percent",
+          "value_per_level": 0.5
         }
       ]
     }
