@@ -6,9 +6,72 @@
   },
 
   "design_notes": {
-    "principe": "Le joueur ne sait jamais avec certitude d'où vient la voix. Est-ce lui-même ? Est-ce X qui l'encourage ? Est-ce l'Imitateur qui le manipule ? Cette ambiguïté est intentionnelle.",
-    "evolution": "Avant la Faille, les murmures questionnent et fatiguent. Après la Faille, ils affirment et enferment.",
-    "frequence": "Les murmures deviennent plus fréquents à mesure que le joueur avance dans l'histoire."
+    "principe": "Le joueur ne sait jamais avec certitude d'ou vient la voix. Est-ce lui-meme ? Est-ce X qui l'encourage ? Est-ce l'Imitateur qui le manipule ? Cette ambiguite est intentionnelle.",
+    "evolution": "Avant la Faille, les murmures questionnent et fatiguent. Apres la Faille, ils affirment et enferment.",
+    "frequence": "Les murmures deviennent plus frequents a mesure que le joueur avance dans l'histoire.",
+    "correction_faction": "Ceux d'en Bas ne sont pas 'les mechants honnetes'. Ce sont des hommes blesses qui ne se controlent plus. Malgre cela, X envoie toujours une parole d'encouragement, meme la-bas."
+  },
+
+  "display_system": {
+    "description": "Regles d'affichage des murmures en jeu",
+    "triggers": {
+      "loading_screen": {
+        "description": "Affiche un murmure sur l'ecran de chargement",
+        "frequency": "a_chaque_chargement",
+        "pool": "age_courant + rares",
+        "note": "Phrase visible propre a chaque joueur"
+      },
+      "after_defeat": {
+        "description": "Affiche un murmure apres une defaite en combat",
+        "frequency": "a_chaque_defaite",
+        "pool": "contextuel_mort + age_courant",
+        "delay_seconds": 2,
+        "note": "Le murmure apparait apres le fondu, avant le respawn"
+      },
+      "after_quest_failure": {
+        "description": "Affiche un murmure apres un echec de quete",
+        "frequency": "a_chaque_echec",
+        "pool": "contextuel_echec"
+      },
+      "combat_streak": {
+        "description": "Apres X combats consecutifs sans pause",
+        "threshold": 8,
+        "pool": "contextuel_violence",
+        "cooldown_minutes": 15
+      },
+      "compassion_act": {
+        "description": "Apres une action de compassion (quete d'aide, epargner un ennemi)",
+        "pool": "contextuel_compassion"
+      },
+      "idle": {
+        "description": "Quand le joueur reste immobile longtemps",
+        "threshold_seconds": 120,
+        "pool": "contextuel_immobilite",
+        "cooldown_minutes": 10
+      },
+      "ambient": {
+        "description": "Murmure aleatoire pendant l'exploration",
+        "frequency_minutes_min": 8,
+        "frequency_minutes_max": 20,
+        "pool": "age_courant",
+        "note": "Devient plus frequent en zone corrompue"
+      }
+    },
+    "pool_selection": {
+      "description": "Le pool de murmures depend de l'age narratif du joueur",
+      "age_harmonie": {"level_range": [1, 20], "pool": "age_harmonie"},
+      "age_discernement": {"level_range": [20, 40], "pool": "age_discernement"},
+      "pre_faille": {"level_range": [35, 50], "pool": "pre_faille"},
+      "post_faille": {"level_range": [50, 80], "pool": "post_faille_haut ou post_faille_bas selon le choix de faction"}
+    },
+    "display_format": {
+      "style": "texte italique, leger, au centre de l'ecran ou en bas",
+      "duration_seconds": 5,
+      "fade_in": 1.0,
+      "fade_out": 1.5,
+      "font": "meme police que les dialogues, taille reduite",
+      "color": "blanc transparent (alpha 0.7), pas de fond"
+    }
   },
 
   "sources": {
@@ -45,7 +108,10 @@
         {"id": "h009", "text": "Tout ce qui est hostile n'est pas mauvais.", "source": "X"},
         {"id": "h010", "text": "La violence laisse toujours une trace.", "source": "X"},
         {"id": "h011", "text": "Est-ce que tout le monde ressent cette fatigue, ou juste toi ?", "source": "self"},
-        {"id": "h012", "text": "Tu fais ce qu'on te demande. Mais est-ce que tu le veux ?", "source": "self"}
+        {"id": "h012", "text": "Tu fais ce qu'on te demande. Mais est-ce que tu le veux ?", "source": "self"},
+        {"id": "h013", "text": "Ce chemin est le tien ? Ou celui qu'on a trace pour toi ?", "source": "self"},
+        {"id": "h014", "text": "Tu ne sais pas encore ce que tu cherches. Et c'est normal.", "source": "self"},
+        {"id": "h015", "text": "Les autres ont l'air si surs d'eux.", "source": "self"}
       ]
     },
 
@@ -120,7 +186,10 @@
         {"id": "pb013", "text": "Ce chemin n'est pas sans retour... mais il a un coût.", "source": "X"},
         {"id": "pb014", "text": "Tu n'as pas été oublié.", "source": "X"},
         {"id": "pb015", "text": "Tu ne te reconnais plus.", "source": "self"},
-        {"id": "pb016", "text": "Est-ce que c'est encore toi qui décides ?", "source": "self"}
+        {"id": "pb016", "text": "Est-ce que c'est encore toi qui decides ?", "source": "self"},
+        {"id": "pb017", "text": "Tu avais des raisons. Mais les raisons s'effacent.", "source": "self"},
+        {"id": "pb018", "text": "Ce n'est pas ce que tu voulais au depart.", "source": "self"},
+        {"id": "pb019", "text": "Il y avait quelqu'un avant. Ou est-il ?", "source": "self"}
       ]
     },
 
@@ -133,8 +202,10 @@
         {"id": "m004", "text": "Tu peux te relever... différemment.", "source": "X"},
         {"id": "m005", "text": "La douleur n'efface pas ce que tu as fait.", "source": "self"},
         {"id": "m006", "text": "Ce n'est pas une punition.", "source": "X"},
-        {"id": "m007", "text": "La mort ne répond pas aux questions.", "source": "self"},
-        {"id": "m008", "text": "Ils t'ont laissé tomber. Souviens-toi de ça.", "source": "imitator"}
+        {"id": "m007", "text": "La mort ne repond pas aux questions.", "source": "self"},
+        {"id": "m008", "text": "Ils t'ont laisse tomber. Souviens-toi de ca.", "source": "imitator"},
+        {"id": "m009", "text": "Tu as fait confiance. Regarde ou ca t'a mene.", "source": "imitator"},
+        {"id": "m010", "text": "Personne ne viendra te chercher.", "source": "imitator"}
       ]
     },
 
@@ -147,7 +218,9 @@
         {"id": "e004", "text": "L'échec n'est pas toujours une erreur.", "source": "X"},
         {"id": "e005", "text": "Tu n'avais pas toutes les cartes.", "source": "self"},
         {"id": "e006", "text": "Vouloir bien faire ne suffit pas toujours.", "source": "X"},
-        {"id": "e007", "text": "Tu aurais réussi si on ne t'avait pas freiné.", "source": "imitator"}
+        {"id": "e007", "text": "Tu aurais reussi si on ne t'avait pas freine.", "source": "imitator"},
+        {"id": "e008", "text": "Ils ont les moyens de t'aider. Ils ne le font pas.", "source": "imitator"},
+        {"id": "e009", "text": "Le systeme n'est pas fait pour toi.", "source": "imitator"}
       ]
     },
 
@@ -160,8 +233,10 @@
         {"id": "v004", "text": "La colère donne de l'élan. Pas une direction.", "source": "X"},
         {"id": "v005", "text": "Tu t'endurcis. Est-ce voulu ?", "source": "self"},
         {"id": "v006", "text": "Ce combat te change.", "source": "X"},
-        {"id": "v007", "text": "La facilité laisse des traces.", "source": "X"},
-        {"id": "v008", "text": "Tu es devenu efficace. C'est tout ce qui compte.", "source": "imitator"}
+        {"id": "v007", "text": "La facilite laisse des traces.", "source": "X"},
+        {"id": "v008", "text": "Tu es devenu efficace. C'est tout ce qui compte.", "source": "imitator"},
+        {"id": "v009", "text": "Ils ne meritent pas ta pitie.", "source": "imitator"},
+        {"id": "v010", "text": "Plus vite c'est fini, mieux c'est. Non ?", "source": "imitator"}
       ]
     },
 
