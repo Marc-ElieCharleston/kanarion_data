@@ -123,33 +123,33 @@
         },
         {
           "floor": 3,
-          "name": "Spider Territory",
-          "name_fr": "Territoire des Araignees",
-          "description": "Thick webs coat the walls. The air is heavy with venom. Elite hornets and spiders guard the path to the queen's lair.",
-          "description_fr": "D'epaisses toiles tapissent les murs. L'air est charge de venin. Des frelons d'elite et des araignees gardent le chemin vers le repaire de la reine.",
+          "name": "Deep Caves",
+          "name_fr": "Grottes Profondes",
+          "description": "The deepest caverns echo with the bellowing of massive beasts. Elite bulls and hornets fiercely defend their territory.",
+          "description_fr": "Les cavernes les plus profondes resonnent des mugissements de betes massives. Des taureaux et frelons d'elite defendent ferocementleur territoire.",
           "mob_groups": [
             {
               "group_id": 1,
-              "position": "web_corridor",
+              "position": "narrow_pass",
               "mobs": [
-                {"id": "mob_spider", "count": 5, "level_offset": 2},
-                {"id": "mob_giant_hornet", "count": 2, "level_offset": 2, "is_elite": true}
+                {"id": "mob_taureau", "count": 3, "level_offset": 2, "is_elite": true},
+                {"id": "mob_giant_hornet", "count": 3, "level_offset": 2, "is_elite": true}
               ]
             },
             {
               "group_id": 2,
-              "position": "venom_chamber",
+              "position": "bone_pit",
               "mobs": [
-                {"id": "mob_spider", "count": 4, "level_offset": 2, "is_elite": true},
-                {"id": "mob_taureau", "count": 2, "level_offset": 2}
+                {"id": "mob_taureau", "count": 2, "level_offset": 2, "is_elite": true},
+                {"id": "mob_hyene", "count": 4, "level_offset": 2}
               ]
             },
             {
               "group_id": 3,
-              "position": "queen_approach",
+              "position": "den_approach",
               "mobs": [
-                {"id": "mob_spider", "count": 6, "level_offset": 2, "is_elite": true},
-                {"id": "mob_giant_hornet", "count": 2, "level_offset": 2, "is_elite": true}
+                {"id": "mob_taureau", "count": 3, "level_offset": 2, "is_elite": true},
+                {"id": "mob_alpha_hyena", "count": 2, "level_offset": 2, "is_elite": true}
               ]
             }
           ],
@@ -157,61 +157,64 @@
         },
         {
           "floor": 4,
-          "name": "Queen's Lair",
-          "name_fr": "Repaire de la Reine",
-          "description": "The deepest chamber, draped in silk and bones. The Weaver Queen sits at the center of her web, surrounded by her brood.",
-          "description_fr": "La chambre la plus profonde, drapee de soie et d'os. La Reine Tissarde trone au centre de sa toile, entouree de sa progeniture.",
+          "name": "Ancient Bull's Domain",
+          "name_fr": "Domaine du Taureau Ancestral",
+          "description": "The deepest chamber, littered with the bones of challengers. The Ancient Bull, the oldest and most massive beast of the marshlands, stands guard over his territory.",
+          "description_fr": "La chambre la plus profonde, jonchee d'os de challengers. Le Taureau Ancestral, la bete la plus ancienne et massive du marais, veille sur son territoire.",
           "boss": {
-            "id": "boss_weaver_queen",
-            "name": "Weaver Queen",
-            "name_fr": "Reine Tissarde",
-            "base_monster": "mob_spider_queen",
+            "id": "boss_ancient_bull",
+            "name": "Ancient Bull",
+            "name_fr": "Taureau Ancestral",
+            "base_monster": "mob_taureau",
             "level": 14,
             "hp_multiplier": 15,
             "damage_multiplier": 2.2,
             "phases": [
               {
                 "phase": 1,
-                "name": "Web Mistress",
+                "name": "Territorial Fury",
+                "name_fr": "Furie Territoriale",
                 "hp_threshold": [100, 60],
-                "description": "The Queen coordinates her brood with pheromones, trapping prey in webs",
+                "description": "The Ancient Bull charges with devastating force, defending its domain",
                 "mechanics": [
-                  "skill_queen_web_trap: Root + DoT on 2 random targets (CD 15s)",
-                  "skill_queen_venom_spit: Front row AoE poison (CD 12s)",
-                  "skill_queen_pheromone_call: Buffs all spiders +25% ATK/SPD for 10s (CD 25s)"
+                  "skill_bull_devastating_charge: Column charge + knockback (CD 12s)",
+                  "skill_bull_ground_stomp: AoE around self, stun 2s (CD 18s)",
+                  "skill_bull_territorial_roar: Buffs self +30% ATK/DEF for 10s, fear on front row (CD 25s)"
                 ]
               },
               {
                 "phase": 2,
-                "name": "Brood Mother",
+                "name": "Stampede",
+                "name_fr": "Ruee",
                 "hp_threshold": [60, 30],
-                "description": "The Queen summons waves of spiderlings and hornets from the walls",
+                "description": "The Bull calls its herd, trampling everything in its path",
                 "mechanics": [
-                  "summon_brood: Summons 3x mob_spider every 20s (max 6 active)",
-                  "skill_queen_silk_cocoon: Encases 1 target, removing them for 5s (CD 30s)",
-                  "skill_queen_frenzy_bite: Heavy single target + bleed (CD 10s)"
+                  "summon_herd: Summons 2x mob_taureau every 25s (max 4 active)",
+                  "skill_bull_stampede: Multi-hit row attack (CD 15s)",
+                  "skill_bull_horn_toss: Throws 1 target to back row + heavy damage (CD 20s)"
                 ]
               },
               {
                 "phase": 3,
-                "name": "Cornered Predator",
+                "name": "Last Stand",
+                "name_fr": "Dernier Retranchement",
                 "hp_threshold": [30, 0],
-                "description": "Desperate, the Queen becomes frenzied, attacking with reckless fury",
+                "description": "Cornered and wounded, the Ancient Bull fights with primal desperation",
                 "mechanics": [
-                  "permanent_buff: +50% ATK, +30% attack_speed, poison on all attacks",
-                  "skill_queen_death_spray: AoE poison + fear (CD 20s)",
-                  "skill_queen_burrow: Becomes untargetable 3s, resurfaces behind backline (CD 25s)"
+                  "permanent_buff: +50% ATK, +30% attack_speed, +20% damage",
+                  "skill_bull_berserk_charge: Full row charge + bleed (CD 18s)",
+                  "skill_bull_earthquake: Full AoE + stun 1.5s (CD 30s)"
                 ]
               }
             ],
             "passives": [
-              "passive_brood_queen: All spiders have +30% HP/ATK",
-              "passive_venomous: All attacks apply 1 poison stack",
-              "passive_web_sense: Cannot be flanked, +20% evasion"
+              "passive_herd_alpha: All bulls have +30% HP/ATK",
+              "passive_thick_hide: Damage reduction 15%, immune to bleed",
+              "passive_primal_fury: Gains +5% ATK per hit taken (max 50%, resets per phase)"
             ],
             "adds": [
-              {"id": "mob_spider", "count": 4, "level_offset": 2, "is_elite": true},
-              {"id": "mob_giant_hornet", "count": 2, "level_offset": 2}
+              {"id": "mob_taureau", "count": 2, "level_offset": 2, "is_elite": true},
+              {"id": "mob_giant_hornet", "count": 3, "level_offset": 2}
             ]
           },
           "loot_table_id": "lt_wild_den_boss"
@@ -245,17 +248,17 @@
           "equipment_chance": 100,
           "guaranteed_set_piece": true,
           "equipment_pool": ["set_gevurah", "set_tzayad", "set_ruach", "set_oz", "set_kesher"],
-          "materials": ["mat_queen_venom", "mat_spider_egg", "mat_spider_silk"],
+          "materials": ["mat_bull_horn", "mat_tough_hide", "mat_raw_meat"],
           "material_drop_rate": 1.0,
           "rare_materials": [
-            {"item": "mat_spider_venom", "chance": 0.30},
+            {"item": "mat_boar_tusk", "chance": 0.30},
             {"item": "mat_fissure_shard", "chance": 0.15}
           ],
           "koro_chance": 100,
-          "koro_pool": ["koro_spider_queen"],
+          "koro_pool": ["koro_ancient_bull"],
           "special_drops": [
-            {"item": "recipe_venom_weapon", "chance": 0.12},
-            {"item": "consumable_queen_pheromone", "chance": 0.20}
+            {"item": "recipe_beast_armor", "chance": 0.12},
+            {"item": "consumable_primal_essence", "chance": 0.20}
           ]
         }
       },
@@ -291,14 +294,14 @@
           "name_fr": "Heroique : Taniere Sauvage",
           "description": "Clear Wild Den on Heroic difficulty",
           "description_fr": "Terminer la Taniere Sauvage en difficulte heroique",
-          "reward": {"title_en": "Queen Slayer", "title_fr": "Tueur de Reine", "gold": 400}
+          "reward": {"title_en": "Beast Slayer", "title_fr": "Tueur de Betes", "gold": 400}
         }
       ],
 
       "first_clear_bonus": {
         "gold": 300,
         "xp": 750,
-        "guaranteed_drops": ["mat_queen_venom", "koro_spider_queen"]
+        "guaranteed_drops": ["mat_bull_horn", "koro_ancient_bull"]
       }
     },
 
