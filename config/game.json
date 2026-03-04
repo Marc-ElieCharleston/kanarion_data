@@ -285,6 +285,7 @@
       "gold": 50,
       "items": ["cons_health_potion"]
     },
+    "_step_phases": "Phase1=welcome..combat_placement, Phase2=first_combat_won..screens_opened, Phase3=group_dialogue..group_combat_won, Phase4=potions_dialogue..quickbar_info, Phase5=tutorial_exit",
     "steps": [
       {
         "id": "welcome",
@@ -301,18 +302,21 @@
       },
       {
         "id": "combat_hp",
-        "type": "info_popup",
+        "type": "highlight_sequence",
         "trigger": "combat_countdown",
-        "title_key": "TUT_COMBAT_HP_TITLE",
-        "content_key": "TUT_COMBAT_HP_BODY",
-        "pause_combat": true
+        "pause_combat": true,
+        "highlights": [
+          {"target_id": "hp_bar", "text_key": "TUT_HL_HP"},
+          {"target_id": "souffle_bar", "text_key": "TUT_HL_SOUFFLE"}
+        ]
       },
       {
         "id": "combat_skills",
-        "type": "info_popup",
-        "title_key": "TUT_COMBAT_SKILLS_TITLE",
-        "content_key": "TUT_COMBAT_SKILLS_BODY",
-        "pause_combat": true
+        "type": "highlight_sequence",
+        "pause_combat": true,
+        "highlights": [
+          {"target_id": "skill_bar", "text_key": "TUT_HL_SKILLS"}
+        ]
       },
       {
         "id": "combat_placement",
@@ -329,6 +333,34 @@
         "content_key": "TUT_COMBAT_WON_BODY"
       },
       {
+        "id": "levelup_dialogue",
+        "type": "deferred"
+      },
+      {
+        "id": "open_stats_arrow",
+        "type": "info_popup",
+        "trigger": "levelup_popup_shown",
+        "title_key": "TUT_SKIP_TITLE",
+        "content_key": "TUT_HL_OPEN_STATS"
+      },
+      {
+        "id": "open_skills_arrow",
+        "type": "info_popup",
+        "trigger": "stats_done",
+        "title_key": "TUT_SKIP_TITLE",
+        "content_key": "TUT_HL_OPEN_SKILLS"
+      },
+      {
+        "id": "screens_opened",
+        "type": "deferred",
+        "trigger": "skills_done"
+      },
+      {
+        "id": "group_dialogue",
+        "type": "deferred",
+        "trigger": "npc_interacted"
+      },
+      {
         "id": "meet_allies",
         "type": "info_popup",
         "trigger": "allies_visible",
@@ -341,6 +373,13 @@
         "trigger": "party_member_added",
         "title_key": "TUT_ALLY_RECRUITED_TITLE",
         "content_key": "TUT_ALLY_RECRUITED_BODY"
+      },
+      {
+        "id": "observe_prompt",
+        "type": "info_popup",
+        "trigger": "allies_recruited",
+        "title_key": "TUT_OBSERVE_TITLE",
+        "content_key": "TUT_OBSERVE_BODY"
       },
       {
         "id": "group_combat_placement",
@@ -365,8 +404,21 @@
         "content_key": "TUT_COMBAT2_WON_BODY"
       },
       {
+        "id": "potions_dialogue",
+        "type": "deferred",
+        "trigger": "npc_interacted"
+      },
+      {
+        "id": "quickbar_info",
+        "type": "info_popup",
+        "trigger": "potions_given",
+        "title_key": "TUT_QUICKBAR_TITLE",
+        "content_key": "TUT_QUICKBAR_CONTENT"
+      },
+      {
         "id": "tutorial_exit",
         "type": "info_popup",
+        "trigger": "potion_equipped",
         "title_key": "TUT_EXIT_TITLE",
         "content_key": "TUT_EXIT_BODY",
         "auto_complete_seconds": 5
