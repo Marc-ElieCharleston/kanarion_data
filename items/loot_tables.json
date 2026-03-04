@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "version": "1.1",
-    "last_updated": "2026-01-27",
-    "description": "Système de loot global avec multiplicateurs",
+    "version": "2.0",
+    "last_updated": "2026-03-04",
+    "description": "Système de loot global avec multiplicateurs. Inclut drops de matériaux, équipements, panoplies et uniques.",
     "formula_overview": "final_drop_chance = base_chance × encounter_stars_mult × state_mult × dungeon_mult × group_mult × luck_mult × event_mult × level_penalty"
   },
 
@@ -402,6 +402,128 @@
       "level_penalty": 0,
       "final_chance": "0.10 × 2.0 × 2.5 × 1.20 × 1.35 × 1.0 × 1.0 = 0.81 (81%)"
     }
+  },
+
+  "equipment_drops": {
+    "_comment": "Drop d'équipement classique (armure, accessoires, armes). Chance par mob, rareté rollée séparément.",
+    "base_equipment_chance": {
+      "description": "Chance de base qu'un mob drop une pièce d'équipement",
+      "normal": 0.03,
+      "elite": 0.10,
+      "mini_boss": 0.20,
+      "boss": 0.50,
+      "world_boss": 1.00
+    },
+    "rarity_weights_by_danger": {
+      "_comment": "Poids de rareté ajustés par danger level du mob. Plus le danger est élevé, plus les raretés hautes sont possibles.",
+      "danger_1": { "common": 800, "uncommon": 180, "rare": 20, "epic": 0, "legendary": 0 },
+      "danger_2": { "common": 700, "uncommon": 220, "rare": 70, "epic": 10, "legendary": 0 },
+      "danger_3": { "common": 600, "uncommon": 250, "rare": 120, "epic": 28, "legendary": 2 },
+      "danger_4": { "common": 500, "uncommon": 280, "rare": 160, "epic": 50, "legendary": 10 },
+      "danger_5": { "common": 400, "uncommon": 280, "rare": 200, "epic": 100, "legendary": 20 },
+      "danger_6": { "common": 300, "uncommon": 250, "rare": 250, "epic": 150, "legendary": 50 }
+    },
+    "slot_weights": {
+      "_comment": "Poids pour déterminer quel slot l'équipement occupe",
+      "weapon": 12, "helmet": 12, "chest": 12, "legs": 12, "boots": 12,
+      "cape": 8, "belt": 8, "ring": 12, "necklace": 12
+    }
+  },
+
+  "panoplie_drops": {
+    "_comment": "Drop de pièces de panoplie. Les pièces de pano sont des versions set des items classiques. Le rang dépend du danger level.",
+    "base_panoplie_chance": {
+      "description": "Chance de base qu'un mob drop une pièce de panoplie (en plus du loot normal)",
+      "normal": 0.005,
+      "elite": 0.025,
+      "mini_boss": 0.08,
+      "boss": 0.20,
+      "world_boss": 0.50
+    },
+    "rank_by_danger": {
+      "_comment": "Le rang de la panoplie droppée dépend du danger level du mob",
+      "danger_1": { "rang_1": 100 },
+      "danger_2": { "rang_1": 70, "rang_2": 30 },
+      "danger_3": { "rang_2": 80, "rang_3": 20 },
+      "danger_4": { "rang_2": 30, "rang_3": 70 },
+      "danger_5": { "rang_3": 60, "rang_4": 40 },
+      "danger_6": { "rang_3": 20, "rang_4": 80 }
+    },
+    "set_size_drop_multiplier": {
+      "_comment": "Les sets avec plus de pièces ont un mult sur la chance (plus dur à compléter = drop plus fréquent par pièce)",
+      "2_pieces": 1.0,
+      "4_pieces": 1.0,
+      "6_pieces": 0.7,
+      "8_pieces": 0.5
+    },
+    "notes": [
+      "Le set droppé est aléatoire parmi les sets dont l'armor_type correspond à la classe du joueur",
+      "La pièce droppée est aléatoire parmi les pièces du set",
+      "Les pièces de pano ont les mêmes substats aléatoires que l'équipement classique",
+      "Zone-specific drops à ajouter quand les zones seront implémentées"
+    ]
+  },
+
+  "unique_drops": {
+    "_comment": "Drop d'objets uniques. Chaque unique a une source spécifique (monstre ou quête). Voir uniques.json pour le détail.",
+    "star_multiplier": {
+      "_comment": "Multiplicateur de chance de drop d'unique selon les étoiles de la rencontre. Max 5 étoiles.",
+      "0_star": 1.0,
+      "1_star": 1.2,
+      "2_star": 1.5,
+      "3_star": 2.0,
+      "4_star": 3.5,
+      "5_star": 7.0
+    },
+    "monster_state_multiplier": {
+      "_comment": "Multiplicateur additionnel selon le type de monstre",
+      "normal": 1.0,
+      "elite": 2.0,
+      "mini_boss": 3.0,
+      "boss": 5.0,
+      "world_boss": 10.0
+    },
+    "rank_by_danger": {
+      "_comment": "Le rang de l'unique droppé dépend du danger level du mob source",
+      "danger_1": { "rang_1": 80, "rang_2": 20 },
+      "danger_2": { "rang_1": 40, "rang_2": 60 },
+      "danger_3": { "rang_2": 70, "rang_3": 30 },
+      "danger_4": { "rang_2": 20, "rang_3": 70, "rang_4": 10 },
+      "danger_5": { "rang_3": 60, "rang_4": 40 },
+      "danger_6": { "rang_3": 20, "rang_4": 80 }
+    },
+    "max_unique_per_combat": 1,
+    "formula": "final_chance = base_drop_chance (from uniques.json) × star_mult × monster_state_mult × luck_mult",
+    "examples": {
+      "wolf_normal_0star": {
+        "scenario": "Loup normal, 0 étoile",
+        "base": 0.005,
+        "star_mult": 1.0,
+        "state_mult": 1.0,
+        "final": "0.5%"
+      },
+      "wolf_elite_3star": {
+        "scenario": "Loup elite, 3 étoiles",
+        "base": 0.005,
+        "star_mult": 2.0,
+        "state_mult": 2.0,
+        "final": "2.0%"
+      },
+      "bell_guardian_boss_5star": {
+        "scenario": "Gardien de la Cloche boss, 5 étoiles (Koro)",
+        "base": 0.008,
+        "star_mult": 7.0,
+        "state_mult": 5.0,
+        "final": "28.0% (capped to 25%)"
+      }
+    },
+    "max_drop_chance": 0.25,
+    "notes": [
+      "Les quêtes qui donnent des uniques sont 100% et one-time (Patish Edric, Ruach HaRefuah)",
+      "Un seul unique peut drop par combat, même si plusieurs mobs sources sont présents",
+      "Les uniques ont toujours 2-4 substats aléatoires en plus de l'effet fixe",
+      "Le rang de l'unique affecte les valeurs de l'effet ET les substats"
+    ]
   },
 
   "_notes": {

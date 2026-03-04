@@ -1,0 +1,563 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-03-04",
+    "description": "Objets uniques avec effets spéciaux fixes. Nommés en hébreu. Chaque unique a un effet fixe qui scale avec le rang + des substats aléatoires comme tout équipement.",
+    "total_uniques": 14,
+    "naming_convention": "Hébreu — cohérent avec les panoplies et l'univers de Kanarion",
+    "rank_system": {
+      "_comment": "Les valeurs marquées [R] scalent avec le rang. Les valeurs base listées = Rang 2 (x1.0).",
+      "rang_1": { "effect_multiplier": 0.7 },
+      "rang_2": { "effect_multiplier": 1.0 },
+      "rang_3": { "effect_multiplier": 1.3 },
+      "rang_4": { "effect_multiplier": 1.6 }
+    },
+    "rarity": "unique",
+    "rarity_color": "#e6cc80",
+    "substat_count": "2-4 substats aléatoires (même pools que equipment_stats.json selon le slot)",
+    "notes": [
+      "L'effet spécial est FIXE et ne change jamais (pas reroll possible)",
+      "Les substats sont aléatoires et reroll possible via forgeron",
+      "Un seul unique équipé par slot (pas de double unique sur ring_1 + ring_2)",
+      "Les uniques ne font PAS partie d'une panoplie (pas de bonus set)"
+    ]
+  },
+
+  "uniques": [
+    {
+      "id": "unique_dam_rishon",
+      "name_fr": "Dam Rishon",
+      "name_en": "Dam Rishon",
+      "meaning": "Premier Sang / First Blood",
+      "slot": "ring",
+      "role": "offensive",
+      "description_fr": "Le premier sang versé ouvre la voie. Cet anneau taillé dans un croc de loup confère une précision meurtrière à celui qui frappe le premier.",
+      "description_en": "The first blood spilled opens the way. This ring carved from a wolf fang grants deadly precision to the one who strikes first.",
+      "effect": {
+        "description_fr": "Les 8 premières secondes du combat : +[R]100% chance de critique. +[R]5 précision permanent.",
+        "description_en": "First 8 seconds of combat: +[R]100% crit chance. +[R]5 accuracy permanent.",
+        "type": "combat_proc",
+        "trigger": "combat_start",
+        "effects": [
+          { "stat": "crit", "value": 100, "duration": 8.0, "scalable": true },
+          { "stat": "hit", "value": 5, "duration": -1, "scalable": true }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": { "crit_buff": 70, "accuracy": 3 },
+        "rang_2": { "crit_buff": 100, "accuracy": 5 },
+        "rang_3": { "crit_buff": 130, "accuracy": 6 },
+        "rang_4": { "crit_buff": 160, "accuracy": 8 }
+      },
+      "source": {
+        "type": "monster_drop",
+        "monster_ids": ["mob_wolf", "mob_frothing_wolf", "mob_crystal_wolf"],
+        "base_drop_chance": 0.005,
+        "description_fr": "Drop par les loups (toutes variantes)",
+        "description_en": "Dropped by wolves (all variants)"
+      },
+      "lore_note": "On raconte que le premier chasseur forgea cet anneau à partir du croc du premier loup qu'il tua. Le sang versé ce jour-là coule encore dans le métal."
+    },
+
+    {
+      "id": "unique_patish_edric",
+      "name_fr": "Patish Edric",
+      "name_en": "Patish Edric",
+      "meaning": "Marteau d'Edric / Edric's Hammer",
+      "slot": "weapon",
+      "role": "offensive",
+      "weapon_type": "sword",
+      "description_fr": "Le marteau du fils du constructeur. Edric croyait être le remède. Son arme porte encore cette conviction — une force qui grandit avec chaque ennemi abattu.",
+      "description_en": "The hammer of the builder's son. Edric believed he was the cure. His weapon still carries that conviction — a force that grows with each enemy felled.",
+      "effect": {
+        "description_fr": "À chaque kill : +[R]8% ATK pendant 10s (cumulable 3x). Sous 30% HP : +[R]25% DEF et MR pendant 6s (CD 30s).",
+        "description_en": "On kill: +[R]8% ATK for 10s (stacks 3x). Below 30% HP: +[R]25% DEF and MR for 6s (CD 30s).",
+        "type": "combat_proc",
+        "triggers": [
+          {
+            "trigger": "on_kill",
+            "effect": { "stat": "atk_percent", "value": 8, "duration": 10.0, "max_stacks": 3, "scalable": true }
+          },
+          {
+            "trigger": "on_hp_threshold",
+            "threshold": 0.30,
+            "effect": [
+              { "stat": "flat_dr_percent", "value": 25, "duration": 6.0, "scalable": true },
+              { "stat": "magic_resist_percent", "value": 25, "duration": 6.0, "scalable": true }
+            ],
+            "cooldown": 30.0
+          }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": { "atk_per_kill": 5, "def_mr_buff": 17 },
+        "rang_2": { "atk_per_kill": 8, "def_mr_buff": 25 },
+        "rang_3": { "atk_per_kill": 10, "def_mr_buff": 32 },
+        "rang_4": { "atk_per_kill": 12, "def_mr_buff": 40 }
+      },
+      "source": {
+        "type": "quest_reward",
+        "quest_chain": "chain_4_tower_asher",
+        "one_time": true,
+        "description_fr": "Récompense de la chaîne de quêtes 'La Tour d'Asher' (Acte 1)",
+        "description_en": "Reward from 'The Tower of Asher' quest chain (Act 1)"
+      },
+      "lore_note": "Edric n'était pas un méchant. Il croyait sincèrement que ses méthodes sauveraient le monde. Son marteau porte cette dualité : la force de protéger et la folie de croire qu'on est seul à pouvoir le faire."
+    },
+
+    {
+      "id": "unique_esh_kadma",
+      "name_fr": "Esh Kadma",
+      "name_en": "Esh Kadma",
+      "meaning": "Feu Primordial / Primordial Fire",
+      "slot": "necklace",
+      "role": "offensive",
+      "description_fr": "Une flamme qui brûlait avant la création elle-même. L'amulette irradie une chaleur qui ne s'éteint jamais.",
+      "description_en": "A flame that burned before creation itself. The amulet radiates a heat that never fades.",
+      "effect": {
+        "description_fr": "Les brûlures infligées font +[R]20% de dégâts. Les auto-attaques ont [R]10% de chance d'appliquer une brûlure (3s).",
+        "description_en": "Burns you inflict deal +[R]20% damage. Auto-attacks have [R]10% chance to apply burn (3s).",
+        "type": "passive_modifier",
+        "effects": [
+          { "modifier": "burn_damage_bonus", "value": 20, "scalable": true },
+          { "trigger": "on_auto_attack", "chance": 10, "apply_status": "burn", "duration": 3.0, "scalable": true }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": { "burn_bonus": 14, "burn_chance": 7 },
+        "rang_2": { "burn_bonus": 20, "burn_chance": 10 },
+        "rang_3": { "burn_bonus": 26, "burn_chance": 13 },
+        "rang_4": { "burn_bonus": 32, "burn_chance": 16 }
+      },
+      "source": {
+        "type": "monster_drop",
+        "monster_ids": ["mob_ember_hound"],
+        "base_drop_chance": 0.006,
+        "description_fr": "Drop par Chien de Braise",
+        "description_en": "Dropped by Ember Hound"
+      }
+    },
+
+    {
+      "id": "unique_etzem_hatzayad",
+      "name_fr": "Etzem HaTzayad",
+      "name_en": "Etzem HaTzayad",
+      "meaning": "Os du Chasseur / Hunter's Bone",
+      "slot": "ring",
+      "role": "offensive",
+      "description_fr": "Un os poli par des années de chasse, transformé en anneau. Chaque frappe successive trouve une faiblesse nouvelle.",
+      "description_en": "A bone polished by years of hunting, turned into a ring. Each successive strike finds a new weakness.",
+      "effect": {
+        "description_fr": "Les skills multi-hit gagnent +[R]8% de dégâts par touche (max +[R]40%).",
+        "description_en": "Multi-hit skills gain +[R]8% damage per hit (max +[R]40%).",
+        "type": "passive_modifier",
+        "effects": [
+          { "modifier": "multi_hit_damage_escalation", "value_per_hit": 8, "max_bonus": 40, "scalable": true }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": { "per_hit": 5, "max": 28 },
+        "rang_2": { "per_hit": 8, "max": 40 },
+        "rang_3": { "per_hit": 10, "max": 52 },
+        "rang_4": { "per_hit": 12, "max": 64 }
+      },
+      "source": {
+        "type": "monster_drop",
+        "monster_ids": ["mob_alpha_hyena", "mob_hyene"],
+        "base_drop_chance": 0.005,
+        "description_fr": "Drop par les hyènes",
+        "description_en": "Dropped by hyenas"
+      }
+    },
+
+    {
+      "id": "unique_krav_shachar",
+      "name_fr": "Krav Shachar",
+      "name_en": "Krav Shachar",
+      "meaning": "Frappe de l'Aube / Dawn Strike",
+      "slot": "weapon",
+      "role": "offensive",
+      "weapon_type": "any",
+      "description_fr": "La première frappe de l'aube est toujours la plus dévastatrice. Cette arme canalise cette vérité primordiale.",
+      "description_en": "The first strike of dawn is always the most devastating. This weapon channels that primordial truth.",
+      "effect": {
+        "description_fr": "Le premier skill utilisé en combat inflige +[R]50% de dégâts. +[R]10% de dégâts permanent.",
+        "description_en": "First skill used in combat deals +[R]50% damage. +[R]10% damage permanent.",
+        "type": "combat_proc",
+        "effects": [
+          { "trigger": "first_skill_cast", "modifier": "damage_bonus", "value": 50, "one_time": true, "scalable": true },
+          { "stat": "damage_percent", "value": 10, "duration": -1, "scalable": true }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": { "first_skill_bonus": 35, "permanent_dmg": 7 },
+        "rang_2": { "first_skill_bonus": 50, "permanent_dmg": 10 },
+        "rang_3": { "first_skill_bonus": 65, "permanent_dmg": 13 },
+        "rang_4": { "first_skill_bonus": 80, "permanent_dmg": 16 }
+      },
+      "source": {
+        "type": "monster_drop",
+        "monster_ids": ["mob_guerrier_skull", "mob_archer_squelette"],
+        "base_drop_chance": 0.005,
+        "description_fr": "Drop par les morts-vivants guerriers",
+        "description_en": "Dropped by undead warriors"
+      }
+    },
+
+    {
+      "id": "unique_shoresh_oz",
+      "name_fr": "Shoresh Oz",
+      "name_en": "Shoresh Oz",
+      "meaning": "Racine de Force / Root of Strength",
+      "slot": "belt",
+      "role": "defensive",
+      "description_fr": "Enraciné comme un chêne centenaire. Cette ceinture puise dans les profondeurs de la terre quand tout semble perdu.",
+      "description_en": "Rooted like a centuries-old oak. This belt draws from the depths of the earth when all seems lost.",
+      "effect": {
+        "description_fr": "Sous 30% HP : +[R]25% DEF et MR pendant 6s (CD 30s). +[R]50 HP max permanent.",
+        "description_en": "Below 30% HP: +[R]25% DEF and MR for 6s (CD 30s). +[R]50 max HP permanent.",
+        "type": "combat_proc",
+        "effects": [
+          {
+            "trigger": "on_hp_threshold",
+            "threshold": 0.30,
+            "effect": [
+              { "stat": "flat_dr_percent", "value": 25, "duration": 6.0, "scalable": true },
+              { "stat": "magic_resist_percent", "value": 25, "duration": 6.0, "scalable": true }
+            ],
+            "cooldown": 30.0
+          },
+          { "stat": "hp_max", "value": 50, "duration": -1, "scalable": true }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": { "def_mr_buff": 17, "hp_max": 35 },
+        "rang_2": { "def_mr_buff": 25, "hp_max": 50 },
+        "rang_3": { "def_mr_buff": 32, "hp_max": 65 },
+        "rang_4": { "def_mr_buff": 40, "hp_max": 80 }
+      },
+      "source": {
+        "type": "monster_drop",
+        "monster_ids": ["mob_golem", "mob_golem_runique"],
+        "base_drop_chance": 0.006,
+        "description_fr": "Drop par les golems",
+        "description_en": "Dropped by golems"
+      }
+    },
+
+    {
+      "id": "unique_magen_hasela",
+      "name_fr": "Magen HaSela",
+      "name_en": "Magen HaSela",
+      "meaning": "Bouclier du Rocher / Shield of Rock",
+      "slot": "helmet",
+      "role": "defensive",
+      "description_fr": "Taillé dans la carapace d'une tortue de pierre ancienne. Chaque coup bloqué renforce celui qui le porte.",
+      "description_en": "Carved from the shell of an ancient stone turtle. Each blocked blow strengthens the wearer.",
+      "effect": {
+        "description_fr": "+[R]15% chance de bloc. En cas de bloc : gain d'un bouclier = [R]10% HP max.",
+        "description_en": "+[R]15% block chance. On block: gain shield = [R]10% max HP.",
+        "type": "passive_modifier",
+        "effects": [
+          { "stat": "block_chance", "value": 15, "scalable": true },
+          { "trigger": "on_block", "apply_shield_percent_max_hp": 10, "scalable": true }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": { "block_chance": 10, "shield_percent": 7 },
+        "rang_2": { "block_chance": 15, "shield_percent": 10 },
+        "rang_3": { "block_chance": 19, "shield_percent": 13 },
+        "rang_4": { "block_chance": 24, "shield_percent": 16 }
+      },
+      "source": {
+        "type": "monster_drop",
+        "monster_ids": ["mob_tortue_de_pierre"],
+        "base_drop_chance": 0.006,
+        "description_fr": "Drop par la Tortue de Pierre",
+        "description_en": "Dropped by Stone Turtle"
+      }
+    },
+
+    {
+      "id": "unique_or_hashomer",
+      "name_fr": "Or HaShomer",
+      "name_en": "Or HaShomer",
+      "meaning": "Lumière du Gardien / Guardian's Light",
+      "slot": "cape",
+      "role": "defensive",
+      "description_fr": "La lumière de ceux qui veillent sur les autres. Cette cape irradie une protection qui s'étend aux alliés proches.",
+      "description_en": "The light of those who watch over others. This cape radiates protection that extends to nearby allies.",
+      "effect": {
+        "description_fr": "En recevant des dégâts : [R]8% de chance d'appliquer un bouclier sur l'allié le plus proche = [R]5% de tes HP max. +[R]30 armor permanent.",
+        "description_en": "On taking damage: [R]8% chance to shield nearest ally for [R]5% of your max HP. +[R]30 armor permanent.",
+        "type": "combat_proc",
+        "effects": [
+          {
+            "trigger": "on_damage_taken",
+            "chance": 8,
+            "target_rule": "nearest_ally",
+            "apply_shield_percent_max_hp": 5,
+            "scalable": true
+          },
+          { "stat": "armor", "value": 30, "duration": -1, "scalable": true }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": { "proc_chance": 5, "shield_percent": 3, "armor": 21 },
+        "rang_2": { "proc_chance": 8, "shield_percent": 5, "armor": 30 },
+        "rang_3": { "proc_chance": 10, "shield_percent": 6, "armor": 39 },
+        "rang_4": { "proc_chance": 12, "shield_percent": 8, "armor": 48 }
+      },
+      "source": {
+        "type": "monster_drop",
+        "monster_ids": ["mob_bell_guardian"],
+        "base_drop_chance": 0.008,
+        "description_fr": "Drop par le Gardien de la Cloche",
+        "description_en": "Dropped by Bell Guardian"
+      }
+    },
+
+    {
+      "id": "unique_keter_barzel",
+      "name_fr": "Keter Barzel",
+      "name_en": "Keter Barzel",
+      "meaning": "Couronne de Fer / Iron Crown",
+      "slot": "helmet",
+      "role": "defensive",
+      "description_fr": "La couronne de celui qui tient la ligne. Plus les ennemis se concentrent sur toi, plus tu deviens inébranlable.",
+      "description_en": "The crown of the one who holds the line. The more enemies focus on you, the more unshakeable you become.",
+      "effect": {
+        "description_fr": "+[R]20% génération d'aggro. +[R]3% réduction de dégâts par ennemi qui te cible (max [R]15%).",
+        "description_en": "+[R]20% aggro generation. +[R]3% damage reduction per enemy targeting you (max [R]15%).",
+        "type": "passive_modifier",
+        "effects": [
+          { "stat": "aggro_generation", "value": 20, "scalable": true },
+          { "modifier": "dr_per_targeting_enemy", "value": 3, "max_bonus": 15, "scalable": true }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": { "aggro_gen": 14, "dr_per_enemy": 2, "dr_max": 10 },
+        "rang_2": { "aggro_gen": 20, "dr_per_enemy": 3, "dr_max": 15 },
+        "rang_3": { "aggro_gen": 26, "dr_per_enemy": 3, "dr_max": 19 },
+        "rang_4": { "aggro_gen": 32, "dr_per_enemy": 4, "dr_max": 24 }
+      },
+      "source": {
+        "type": "monster_drop",
+        "monster_ids": ["mob_tribal_warlord"],
+        "base_drop_chance": 0.008,
+        "description_fr": "Drop par le Seigneur de Guerre Tribal",
+        "description_en": "Dropped by Tribal Warlord"
+      }
+    },
+
+    {
+      "id": "unique_seter_halayla",
+      "name_fr": "Seter HaLayla",
+      "name_en": "Seter HaLayla",
+      "meaning": "Refuge de la Nuit / Night's Refuge",
+      "slot": "cape",
+      "role": "support",
+      "description_fr": "Dans la nuit, une cape qui efface ta présence. Quand la douleur dépasse le seuil, l'ombre t'enveloppe pour te protéger.",
+      "description_en": "In the night, a cape that erases your presence. When pain exceeds the threshold, shadow wraps around to protect you.",
+      "effect": {
+        "description_fr": "Après avoir reçu plus de [R]20% de tes HP max en dégâts en 3s : furtivité [R]3s (CD 20s). +[R]8% évasion permanent.",
+        "description_en": "After taking more than [R]20% max HP in damage within 3s: stealth for [R]3s (CD 20s). +[R]8% evasion permanent.",
+        "type": "combat_proc",
+        "effects": [
+          {
+            "trigger": "on_damage_threshold",
+            "threshold_percent_max_hp": 20,
+            "window": 3.0,
+            "apply_status": "stealth",
+            "duration": 3.0,
+            "cooldown": 20.0,
+            "scalable": true
+          },
+          { "stat": "flee", "value": 8, "duration": -1, "scalable": true }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": { "stealth_duration": 2, "evasion": 5 },
+        "rang_2": { "stealth_duration": 3, "evasion": 8 },
+        "rang_3": { "stealth_duration": 3.5, "evasion": 10 },
+        "rang_4": { "stealth_duration": 4, "evasion": 12 }
+      },
+      "source": {
+        "type": "monster_drop",
+        "monster_ids": ["mob_cerf_obscur"],
+        "base_drop_chance": 0.006,
+        "description_fr": "Drop par le Cerf Obscur",
+        "description_en": "Dropped by Dark Stag"
+      }
+    },
+
+    {
+      "id": "unique_neshimat_chayim",
+      "name_fr": "Neshimat Chayim",
+      "name_en": "Neshimat Chayim",
+      "meaning": "Souffle de Vie / Breath of Life",
+      "slot": "necklace",
+      "role": "support",
+      "description_fr": "Le souffle qui donne la vie. Chaque bénédiction que tu accordes porte aussi une étincelle de guérison.",
+      "description_en": "The breath that gives life. Every blessing you grant also carries a spark of healing.",
+      "effect": {
+        "description_fr": "Les buffs que tu appliques soignent aussi la cible pour [R]5% de ta MAG. +[R]8% puissance de soin permanent.",
+        "description_en": "Buffs you apply also heal the target for [R]5% of your MAG. +[R]8% heal power permanent.",
+        "type": "passive_modifier",
+        "effects": [
+          { "trigger": "on_buff_applied", "heal_percent_mag": 5, "scalable": true },
+          { "stat": "heal_power", "value": 8, "duration": -1, "scalable": true }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": { "heal_on_buff": 3, "heal_power": 5 },
+        "rang_2": { "heal_on_buff": 5, "heal_power": 8 },
+        "rang_3": { "heal_on_buff": 6, "heal_power": 10 },
+        "rang_4": { "heal_on_buff": 8, "heal_power": 12 }
+      },
+      "source": {
+        "type": "monster_drop",
+        "monster_ids": ["mob_spider_queen"],
+        "base_drop_chance": 0.008,
+        "description_fr": "Drop par la Reine Araignée",
+        "description_en": "Dropped by Spider Queen"
+      }
+    },
+
+    {
+      "id": "unique_ruach_harefuah",
+      "name_fr": "Ruach HaRefuah",
+      "name_en": "Ruach HaRefuah",
+      "meaning": "Vent de Guérison / Wind of Healing",
+      "slot": "weapon",
+      "role": "support",
+      "weapon_type": "staff",
+      "description_fr": "Un bâton qui porte le vent de la guérison. Chaque soin accélère le rythme du soigneur.",
+      "description_en": "A staff that carries the wind of healing. Each heal accelerates the healer's rhythm.",
+      "effect": {
+        "description_fr": "Les soins réduisent le CD du prochain skill de [R]1s. +[R]15 MAG permanent.",
+        "description_en": "Heals reduce next skill CD by [R]1s. +[R]15 MAG permanent.",
+        "type": "combat_proc",
+        "effects": [
+          { "trigger": "on_heal_cast", "reduce_next_cd": 1.0, "scalable": true },
+          { "stat": "mag", "value": 15, "duration": -1, "scalable": true }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": { "cd_reduction": 0.7, "mag": 10 },
+        "rang_2": { "cd_reduction": 1.0, "mag": 15 },
+        "rang_3": { "cd_reduction": 1.3, "mag": 19 },
+        "rang_4": { "cd_reduction": 1.6, "mag": 24 }
+      },
+      "source": {
+        "type": "quest_reward",
+        "quest_chain": "chain_3_fissures_convergent",
+        "one_time": true,
+        "description_fr": "Récompense de la chaîne 'Les Fissures Convergent' (donjon lv 10-14)",
+        "description_en": "Reward from 'The Fissures Converge' quest chain (dungeon lv 10-14)"
+      }
+    },
+
+    {
+      "id": "unique_tzel_hamidbar",
+      "name_fr": "Tzel HaMidbar",
+      "name_en": "Tzel HaMidbar",
+      "meaning": "Ombre du Désert / Desert Shadow",
+      "slot": "boots",
+      "role": "utility",
+      "description_fr": "Dans le désert, l'ombre est ton meilleur allié. Ces bottes te permettent de danser entre les attaques.",
+      "description_en": "In the desert, shadow is your best ally. These boots let you dance between attacks.",
+      "effect": {
+        "description_fr": "+[R]10% vitesse d'attaque permanent. En cas d'esquive : +[R]20% vitesse d'attaque pendant 4s.",
+        "description_en": "+[R]10% attack speed permanent. On dodge: +[R]20% attack speed for 4s.",
+        "type": "combat_proc",
+        "effects": [
+          { "stat": "attack_speed", "value": 10, "duration": -1, "scalable": true },
+          { "trigger": "on_dodge", "stat": "attack_speed", "value": 20, "duration": 4.0, "scalable": true }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": { "base_atk_speed": 7, "dodge_atk_speed": 14 },
+        "rang_2": { "base_atk_speed": 10, "dodge_atk_speed": 20 },
+        "rang_3": { "base_atk_speed": 13, "dodge_atk_speed": 26 },
+        "rang_4": { "base_atk_speed": 16, "dodge_atk_speed": 32 }
+      },
+      "source": {
+        "type": "monster_drop",
+        "monster_ids": ["mob_bandit", "mob_voleur"],
+        "base_drop_chance": 0.005,
+        "description_fr": "Drop par les bandits et voleurs",
+        "description_en": "Dropped by bandits and thieves"
+      }
+    },
+
+    {
+      "id": "unique_ein_hatzofeh",
+      "name_fr": "Ein HaTzofeh",
+      "name_en": "Ein HaTzofeh",
+      "meaning": "Oeil du Guetteur / Watcher's Eye",
+      "slot": "ring",
+      "role": "utility",
+      "description_fr": "L'oeil qui voit entre les mondes. Cet anneau convertit la résistance spirituelle en puissance arcanique.",
+      "description_en": "The eye that sees between worlds. This ring converts spiritual resistance into arcane power.",
+      "effect": {
+        "description_fr": "+[R]10% résistance magique permanent. Convertit [R]5% de ta MR en MAG.",
+        "description_en": "+[R]10% magic resist permanent. Converts [R]5% of your MR to MAG.",
+        "type": "passive_modifier",
+        "effects": [
+          { "stat": "magic_resist", "value": 10, "duration": -1, "scalable": true },
+          { "modifier": "convert_mr_to_mag", "percent": 5, "scalable": true }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": { "magic_resist": 7, "convert_percent": 3 },
+        "rang_2": { "magic_resist": 10, "convert_percent": 5 },
+        "rang_3": { "magic_resist": 13, "convert_percent": 6 },
+        "rang_4": { "magic_resist": 16, "convert_percent": 8 }
+      },
+      "source": {
+        "type": "monster_drop",
+        "monster_ids": ["mob_spectral_wolf"],
+        "base_drop_chance": 0.006,
+        "description_fr": "Drop par le Loup Spectral",
+        "description_en": "Dropped by Spectral Wolf"
+      }
+    }
+  ],
+
+  "_summary": {
+    "by_role": {
+      "offensive": ["unique_dam_rishon", "unique_patish_edric", "unique_esh_kadma", "unique_etzem_hatzayad", "unique_krav_shachar"],
+      "defensive": ["unique_shoresh_oz", "unique_magen_hasela", "unique_or_hashomer", "unique_keter_barzel"],
+      "support": ["unique_seter_halayla", "unique_neshimat_chayim", "unique_ruach_harefuah"],
+      "utility": ["unique_tzel_hamidbar", "unique_ein_hatzofeh"]
+    },
+    "by_slot": {
+      "ring": ["unique_dam_rishon", "unique_etzem_hatzayad", "unique_ein_hatzofeh"],
+      "weapon": ["unique_patish_edric", "unique_krav_shachar", "unique_ruach_harefuah"],
+      "necklace": ["unique_esh_kadma", "unique_neshimat_chayim"],
+      "helmet": ["unique_magen_hasela", "unique_keter_barzel"],
+      "cape": ["unique_or_hashomer", "unique_seter_halayla"],
+      "belt": ["unique_shoresh_oz"],
+      "boots": ["unique_tzel_hamidbar"]
+    },
+    "by_source": {
+      "monster_drop": 12,
+      "quest_reward": 2
+    },
+    "drop_monsters": [
+      "mob_wolf / mob_frothing_wolf / mob_crystal_wolf -> Dam Rishon",
+      "mob_ember_hound -> Esh Kadma",
+      "mob_alpha_hyena / mob_hyene -> Etzem HaTzayad",
+      "mob_guerrier_skull / mob_archer_squelette -> Krav Shachar",
+      "mob_golem / mob_golem_runique -> Shoresh Oz",
+      "mob_tortue_de_pierre -> Magen HaSela",
+      "mob_bell_guardian -> Or HaShomer",
+      "mob_tribal_warlord -> Keter Barzel",
+      "mob_cerf_obscur -> Seter HaLayla",
+      "mob_spider_queen -> Neshimat Chayim",
+      "mob_bandit / mob_voleur -> Tzel HaMidbar",
+      "mob_spectral_wolf -> Ein HaTzofeh"
+    ]
+  }
+}
