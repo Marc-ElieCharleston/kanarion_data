@@ -96,19 +96,29 @@ MONSTER_PROFILES = {
     "mob_ember_hound":         "MAG",        # Fire elemental
     "mob_cheval_sauvage":      "PHYS",       # Wild horse, tough
 
-    # --- Danger 4 (lv28-35) ---
+    # --- Danger 4 (lv28-43) ---
     "mob_golem":          "PHYS_TANK",  # Stone golem
     "mob_loup_humain":    "BAL",        # Werewolf - balanced
     "mob_brute_tribal":   "PHYS",       # Armored brute
     "mob_boar_wolf":      "PHYS",       # Tough hybrid
     "mob_golem_runique":  "BAL_TANK",   # Runic = balanced def/mr
+    "mob_rift_warden":    "PHYS_TANK",  # Heavy rift-plate tank
+    "mob_void_hound":     "FAST",       # Fast corrupted beast
+    "mob_rift_stalker":   "FAST",       # Agile assassin beast
 
-    # --- Danger 5 (lv36-45) ---
+    # --- Danger 5 (lv36-48) ---
     "mob_nightmare_horse":     "MAG",        # Nightmare = magical
     "mob_tribal_warlord":      "BAL_TANK",   # Elite balanced
     "mob_bell_guardian":       "PHYS_TANK",  # Elemental tank
     "mob_skeleton_necromancer":"MAG",        # Caster
     "mob_dark_priest":         "MAG",        # Caster
+    "mob_abyssal_scholar":     "MAG",        # Caster/support
+    "mob_void_executioner":    "PHYS",       # Heavy melee brute
+    "mob_nightmare_stag":      "MAG",        # Corrupted magical beast
+    "mob_rift_stitcher":       "MAG",        # Caster/healer
+    "mob_abyssal_charger":     "PHYS",       # Charging beast, thick hide
+    "mob_shattered_knight":    "FAST",       # Fast corrupted assassin
+    "mob_corrupted_paladin":   "BAL_TANK",   # Elite balanced tank
 
     # --- Danger 6 (lv48-50) ---
     "mob_dark_cultist":  "MAG",        # Boss caster
@@ -185,8 +195,8 @@ def main():
         data["scaling"]["_formula"] = "final_stat = base_stat + (per_level * (monster_level - base_level))"
 
     # Update version
-    data["_meta"]["version"] = "5.0"
-    data["_meta"]["balance_note"] = "v5.0: DEF/MR recalculated with formula (level*K+floor)*profile. Target: 10% reduction for trash, 20-30% for normals, 40-55% for tanks. Scaling: def_per_level 1.0, mr_per_level 0.8"
+    data["_meta"]["version"] = "5.1"
+    data["_meta"]["balance_note"] = "v5.1: DEF/MR recalculated with formula (level*K+floor)*profile. 71 monsters incl. Act3 rift/void mobs. Scaling: def_per_level 1.0, mr_per_level 0.8"
 
     # Write back
     with open(monsters_path, "w", encoding="utf-8") as f:
