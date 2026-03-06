@@ -76,9 +76,43 @@
   },
   "quests": [
     {
+      "id": "q_main_arrival",
+      "type": "main",
+      "zone": "town_start",
+      "min_level": 3,
+      "title_fr": "Arrivee au village",
+      "title_en": "Arrival at the Village",
+      "summary_fr": "Aldric t'attend en ville. Il a besoin de volontaires pour aller voir ce qui se passe au sud du village.",
+      "summary_en": "Aldric is waiting for you in town. He needs volunteers to go see what's happening south of the village.",
+      "npc_giver": "npc_guild_master_aldric",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_guild_master_aldric",
+          "description_fr": "Parler a Aldric",
+          "description_en": "Talk to Aldric"
+        }
+      ],
+      "rewards": {
+        "xp": 100,
+        "items": [
+          {
+            "id": "cons_hp_potion_small",
+            "qty": 5
+          }
+        ]
+      },
+      "unlocks": "q_main_zone01",
+      "dialogue_fr": "Des marques bizarres sont apparues au sol, au sud du village. Les betes sont nerveuses. On envoie des volontaires securiser les plaines. Ezra cartographie tout ca, passe le voir quand t'auras un moment. Et si t'as jamais tenu une arme, commence par les rats des plaines.",
+      "dialogue_en": "Strange marks have appeared on the ground, south of the village. The animals are restless. We're sending volunteers to secure the plains. Ezra is mapping it all, go see him when you have a moment. And if you've never held a weapon, start with the rats on the plains."
+    },
+    {
       "id": "q_main_zone01",
       "type": "main",
       "zone": "zone_01",
+      "min_level": 3,
+      "next_main_quest": "q_main_ezra_chain",
+      "next_main_level": 10,
       "title_fr": "Premieres traces",
       "title_en": "First Marks",
       "summary_fr": "Les plaines au sud du village sont normalement calmes, mais les rats et les scarabees sont anormalement agressifs. Degage la zone pour que les eclaireurs puissent examiner les marques au sol.",
@@ -482,6 +516,285 @@
         "extra_loot_rolls": 3
       }
     },
+
+    {
+      "_comment": "=== QUETE PRINCIPALE 3 — CHAINE EZRA (lv 10) ===",
+      "id": "q_main_ezra_chain",
+      "type": "main",
+      "zone": "town_start",
+      "min_level": 10,
+      "title_fr": "Le schema",
+      "title_en": "The Pattern",
+      "summary_fr": "Ezra a cartographie les marques pendant des semaines. Il a trouve un schema. Toutes les marques convergent vers le sud.",
+      "summary_en": "Ezra has been mapping the marks for weeks. He's found a pattern. All the marks converge to the south.",
+      "npc_giver": "npc_rift_scholar_ezra",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_rift_scholar_ezra",
+          "description_fr": "Parler a Ezra et examiner sa carte",
+          "description_en": "Talk to Ezra and examine his map"
+        }
+      ],
+      "rewards": {
+        "xp": 500
+      },
+      "chain_next": "q_main_ezra_verify"
+    },
+    {
+      "id": "q_main_ezra_verify",
+      "type": "main",
+      "zone": "zone_05",
+      "min_level": 10,
+      "title_fr": "Verification sur le terrain",
+      "title_en": "Field Verification",
+      "summary_fr": "Ezra a besoin que tu verifies un point precis au sud. Les marques y sont plus profondes, plus concentrees.",
+      "summary_en": "Ezra needs you to check a specific point to the south. The marks there are deeper, more concentrated.",
+      "npc_giver": "npc_rift_scholar_ezra",
+      "objectives": [
+        {
+          "template": "manual",
+          "count": 1,
+          "description_fr": "Examiner les marques profondes",
+          "description_en": "Examine the deep marks"
+        }
+      ],
+      "rewards": {
+        "xp": 800,
+        "gold": 100
+      },
+      "chain_next": "q_main_ezra_revelation"
+    },
+    {
+      "id": "q_main_ezra_revelation",
+      "type": "main",
+      "zone": "town_start",
+      "min_level": 10,
+      "title_fr": "Quelqu'un creuse",
+      "title_en": "Someone Is Digging",
+      "summary_fr": "Rapporte tes observations a Ezra. Les marques ne sont pas naturelles.",
+      "summary_en": "Report your findings to Ezra. The marks are not natural.",
+      "npc_giver": "npc_rift_scholar_ezra",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_rift_scholar_ezra",
+          "description_fr": "Parler a Ezra",
+          "description_en": "Talk to Ezra"
+        }
+      ],
+      "rewards": {
+        "xp": 500
+      },
+      "chain_next": "q_main_ezra_dungeon",
+      "dialogue_fr": "C'est ce que je craignais. Toutes les lignes pointent vers le meme endroit. Et ces marques ne sont pas naturelles. Quelqu'un creuse.",
+      "dialogue_en": "It's what I feared. All the lines point to the same place. And these marks are not natural. Someone is digging."
+    },
+    {
+      "id": "q_main_ezra_dungeon",
+      "type": "main",
+      "zone": "dungeon_spider_caves",
+      "min_level": 10,
+      "title_fr": "Les profondeurs",
+      "title_en": "The Depths",
+      "summary_fr": "Ezra a identifie une grotte ou les fissures sont concentrees. Explore-la et rapporte ce que tu trouves.",
+      "summary_en": "Ezra has identified a cave where the fissures are concentrated. Explore it and report what you find.",
+      "npc_giver": "npc_rift_scholar_ezra",
+      "objectives": [
+        {
+          "template": "defeat_boss",
+          "boss": "dungeon_spider_caves_boss",
+          "description_fr": "Explorer le donjon et vaincre la menace",
+          "description_en": "Explore the dungeon and defeat the threat"
+        }
+      ],
+      "rewards": {
+        "xp_percent": 30,
+        "gold": 200,
+        "items": [
+          {
+            "id": "cons_hp_potion_medium",
+            "qty": 5
+          }
+        ]
+      },
+      "chain_next": "q_main_ezra_conclusion"
+    },
+    {
+      "id": "q_main_ezra_conclusion",
+      "type": "main",
+      "zone": "town_start",
+      "min_level": 10,
+      "next_main_quest": "q_main_tower_shadow",
+      "next_main_level": 18,
+      "title_fr": "Ce n'est pas naturel",
+      "title_en": "This Is Not Natural",
+      "summary_fr": "Rapporte a Ezra ce que tu as vu dans la grotte. Les inscriptions, les outils, les rituels. Quelqu'un creuse vers les fissures intentionnellement.",
+      "summary_en": "Report to Ezra what you saw in the cave. The inscriptions, the tools, the rituals. Someone is digging toward the fissures intentionally.",
+      "npc_giver": "npc_rift_scholar_ezra",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_rift_scholar_ezra",
+          "description_fr": "Parler a Ezra",
+          "description_en": "Talk to Ezra"
+        }
+      ],
+      "rewards": {
+        "xp": 1000,
+        "gold": 150
+      },
+      "dialogue_fr": "Ce n'est pas naturel. Quelqu'un fait ca expres. Et ces symboles sur les murs... ils pointent vers le sud. Vers la Tour.",
+      "dialogue_en": "This is not natural. Someone is doing this on purpose. And those symbols on the walls... they point south. Toward the Tower."
+    },
+
+    {
+      "_comment": "=== QUETE PRINCIPALE 4 — CHAINE TOUR D'ASHER (lv 18-20) ===",
+      "id": "q_main_tower_shadow",
+      "type": "main",
+      "zone": "zone_09",
+      "min_level": 18,
+      "title_fr": "L'ombre de la Tour",
+      "title_en": "Shadow of the Tower",
+      "summary_fr": "Toutes les fissures convergent vers la Tour d'Asher. Ezra et Aldric sont d'accord : il faut y aller. Affronte les Zelotes qui patrouillent les abords.",
+      "summary_en": "All the fissures converge toward Asher's Tower. Ezra and Aldric agree: you have to go. Face the Zealots patrolling the outskirts.",
+      "npc_giver": "npc_rift_scholar_ezra",
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "mobs": [
+            "mob_zealot_initiate",
+            "mob_zealot_guard"
+          ],
+          "count": 15
+        }
+      ],
+      "rewards": {
+        "xp_percent": 20,
+        "gold": 200
+      },
+      "chain_next": "q_main_tower_believers"
+    },
+    {
+      "id": "q_main_tower_believers",
+      "type": "main",
+      "zone": "zone_09",
+      "min_level": 18,
+      "title_fr": "Ceux qui croient",
+      "title_en": "Those Who Believe",
+      "summary_fr": "Les Zelotes ne sont pas tous des soldats. Rencontre les villageois convertis dans les campements autour de la Tour. Comprends qui ils sont.",
+      "summary_en": "The Zealots aren't all soldiers. Meet the converted villagers in the camps around the Tower. Understand who they are.",
+      "npc_giver": "npc_rift_scholar_ezra",
+      "objectives": [
+        {
+          "template": "manual",
+          "count": 3,
+          "description_fr": "Parler aux convertis dans les campements",
+          "description_en": "Talk to converts in the camps"
+        }
+      ],
+      "rewards": {
+        "xp": 1500,
+        "gold": 150
+      },
+      "chain_next": "q_main_tower_asher_journal"
+    },
+    {
+      "id": "q_main_tower_asher_journal",
+      "type": "main",
+      "zone": "dungeon_tower_asher",
+      "min_level": 19,
+      "title_fr": "L'histoire d'Asher",
+      "title_en": "Asher's Story",
+      "summary_fr": "Entre dans les premiers etages de la Tour. Trouve le journal d'Asher pour comprendre comment tout a commence.",
+      "summary_en": "Enter the first floors of the Tower. Find Asher's journal to understand how it all began.",
+      "npc_giver": "npc_rift_scholar_ezra",
+      "objectives": [
+        {
+          "template": "manual",
+          "count": 1,
+          "description_fr": "Trouver le journal d'Asher",
+          "description_en": "Find Asher's journal"
+        }
+      ],
+      "rewards": {
+        "xp": 2000,
+        "gold": 200,
+        "items": [
+          {
+            "id": "quest_asher_journal",
+            "qty": 1
+          }
+        ]
+      },
+      "chain_next": "q_main_tower_dungeon"
+    },
+    {
+      "id": "q_main_tower_dungeon",
+      "type": "main",
+      "zone": "dungeon_tower_asher",
+      "min_level": 19,
+      "title_fr": "La Tour profanee",
+      "title_en": "The Profaned Tower",
+      "summary_fr": "Monte dans les etages superieurs de la Tour. Ce qui etait un lieu de priere est devenu autre chose. Deux modes disponibles : histoire (cinematiques, difficulte reduite) ou normal (difficulte standard, meilleures recompenses).",
+      "summary_en": "Climb the upper floors of the Tower. What was once a place of prayer has become something else. Two modes available: story (cinematics, reduced difficulty) or normal (standard difficulty, better rewards).",
+      "npc_giver": "npc_rift_scholar_ezra",
+      "dungeon_modes": ["story", "normal"],
+      "objectives": [
+        {
+          "template": "defeat_boss",
+          "boss": "boss_edric_tower",
+          "description_fr": "Traverser la Tour et affronter Edric",
+          "description_en": "Cross the Tower and face Edric"
+        }
+      ],
+      "rewards": {
+        "story_mode": {
+          "xp_percent": 35,
+          "gold": 500,
+          "items": [
+            {"id": "equip_tower_fragment", "qty": 1},
+            {"id": "cons_hp_potion_large", "qty": 5}
+          ]
+        },
+        "normal_mode": {
+          "xp_percent": 50,
+          "gold": 800,
+          "items": [
+            {"id": "equip_tower_fragment", "qty": 1},
+            {"id": "cons_hp_potion_large", "qty": 10}
+          ],
+          "extra_loot_rolls": 3
+        }
+      },
+      "chain_next": "q_main_fracture"
+    },
+    {
+      "id": "q_main_fracture",
+      "type": "main",
+      "zone": "town_start",
+      "min_level": 20,
+      "title_fr": "La Fracture",
+      "title_en": "The Fracture",
+      "summary_fr": "La Tour s'effondre. Les Fissures explosent. Le monde se brise. Retourne au village.",
+      "summary_en": "The Tower collapses. The Fissures explode. The world breaks. Return to the village.",
+      "objectives": [
+        {
+          "template": "manual",
+          "count": 1,
+          "description_fr": "Retourner au village",
+          "description_en": "Return to the village"
+        }
+      ],
+      "rewards": {
+        "xp": 5000,
+        "gold": 500,
+        "unlock": "subclass"
+      },
+      "dialogue_fr": "Le sol se dechire. L'air devient violet. Et dans le silence qui suit... quelque chose s'eveille en toi.",
+      "dialogue_en": "The ground tears open. The air turns violet. And in the silence that follows... something awakens within you."
+    },
+
     {
       "id": "quest_playtest_talk",
       "type": "main",
