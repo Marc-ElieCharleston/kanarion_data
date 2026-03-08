@@ -285,13 +285,25 @@
       "gold": 50,
       "items": ["cons_health_potion"]
     },
-    "_step_phases": "Phase1=welcome..combat_placement, Phase2=first_combat_won..screens_opened, Phase3=group_dialogue..group_combat_won, Phase4=potions_dialogue..quickbar_info, Phase5=tutorial_exit",
+    "_step_phases": "Phase1=welcome..combat_placement (includes equip_weapon), Phase2=first_combat_won..screens_opened, Phase3=group_dialogue..group_combat_won, Phase4=potions_dialogue..quickbar_info, Phase5=tutorial_exit",
     "steps": [
       {
         "id": "welcome",
         "type": "info_popup",
         "title_key": "TUT_WELCOME_TITLE",
         "content_key": "TUT_WELCOME_BODY"
+      },
+      {
+        "id": "equip_weapon",
+        "type": "info_popup",
+        "trigger": "npc_interacted",
+        "title_key": "TUT_EQUIP_WEAPON_TITLE",
+        "content_key": "TUT_EQUIP_WEAPON_BODY"
+      },
+      {
+        "id": "weapon_equipped_wait",
+        "type": "deferred",
+        "trigger": "weapon_equipped"
       },
       {
         "id": "approach_rat",
