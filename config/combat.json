@@ -146,13 +146,13 @@
         "1. raw_damage = base_power (ou atk pour auto-attack)",
         "2. Si crit: raw_damage *= (crit_dmg / 100)",
         "3. raw_damage *= (1 + damage_percent / 100)",
-        "4. effective_armor = max(0, target.armor - attacker.armor_pen)",
-        "5. raw_damage = max(raw_damage * 0.1, raw_damage - target.def)",
+        "4. effective_armor = target.armor * (1 - clamp(attacker.armor_pen, 0, 70) / 100)",
+        "5. raw_damage -= target.def * 0.5 (flat defense reduction, min 1)",
         "6. raw_damage *= (100 / (100 + effective_armor))",
         "7. raw_damage *= (1 - target.damage_reduction / 100)",
         "8. actual_damage = max(1, int(raw_damage))"
       ],
-      "formula_complete": "damage = raw * (1+dmg%) * (100/(100+armor-pen)) * (1-dr%)"
+      "formula_complete": "damage = (raw - def*0.5) * (100/(100 + armor*(1-pen/100))) * (1-dr%)"
     },
 
     "magic_damage": {
@@ -160,12 +160,13 @@
         "1. raw_damage = base_power",
         "2. Si crit: raw_damage *= (crit_dmg / 100)",
         "3. raw_damage *= (1 + damage_percent / 100)",
-        "4. effective_mr = max(0, target.magic_resist - attacker.magic_pen)",
-        "5. raw_damage *= (100 / (100 + effective_mr))",
-        "6. raw_damage *= (1 - target.damage_reduction / 100)",
-        "7. actual_damage = max(1, int(raw_damage))"
+        "4. effective_mr = target.magic_resist * (1 - clamp(attacker.magic_pen, 0, 70) / 100)",
+        "5. raw_damage -= target.magic_def * 0.5 (flat magic defense reduction, min 1)",
+        "6. raw_damage *= (100 / (100 + effective_mr))",
+        "7. raw_damage *= (1 - target.damage_reduction / 100)",
+        "8. actual_damage = max(1, int(raw_damage))"
       ],
-      "formula_complete": "damage = raw * (1+dmg%) * (100/(100+mr-pen)) * (1-dr%)"
+      "formula_complete": "damage = (raw - mdef*0.5) * (100/(100 + mr*(1-pen/100))) * (1-dr%)"
     },
 
     "critical_hit": {
