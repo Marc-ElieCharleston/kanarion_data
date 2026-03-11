@@ -4,9 +4,10 @@
     "last_updated": "2026-03-03",
     "description": "Bestiaire complet - Monstres de base (level 1-50)",
     "id_convention": "mob_<name> pour les types de base",
-    "xp_weight_note": "Float 0.5-2.0 : difficulté relative. Formule: combat_level × BASE_XP_PER_LEVEL × xp_weight",
+    "xp_weight_note": "DEPRECATED: xp_weight is no longer used. base_xp is the authoritative flat XP per monster kill.",
     "gold_weight_note": "Float 0.0-3.0 : richesse relative. Formule : combat_level × BASE_GOLD_PER_LEVEL × gold_weight",
-    "balance_note": "v5.1: DEF/MR recalculated with formula (level*K+floor)*profile. 71 monsters incl. Act3 rift/void mobs. Scaling: def_per_level 1.0, mr_per_level 0.8"
+    "balance_note": "v5.1: DEF/MR recalculated with formula (level*K+floor)*profile. 71 monsters incl. Act3 rift/void mobs. Scaling: def_per_level 1.0, mr_per_level 0.8",
+    "base_xp_note": "Flat XP per monster kill. Used directly by loot_roller. Star multipliers and group bonus applied on top."
   },
   "tags_catalog": [
     "beast",
@@ -51,7 +52,7 @@
         "melee"
       ],
       "ai_role": "brute",
-      "xp_weight": 0.8,
+      "xp_weight": 1.2,
       "gold_weight": 0.5,
       "base_stats": {
         "hp": 90,
@@ -63,7 +64,8 @@
       "drops": [
         "mat_rat_tail",
         "mat_rat_fur"
-      ]
+      ],
+      "base_xp": 8
     },
     {
       "id": "mob_scarab",
@@ -78,7 +80,7 @@
         "melee"
       ],
       "ai_role": "brute",
-      "xp_weight": 0.8,
+      "xp_weight": 1.2,
       "gold_weight": 0.5,
       "base_stats": {
         "hp": 128,
@@ -90,7 +92,231 @@
       "drops": [
         "mat_carapace",
         "mat_mandible"
-      ]
+      ],
+      "base_xp": 10
+    },
+    {
+      "id": "mob_serpent",
+      "name_fr": "Serpent",
+      "name_en": "Serpent",
+      "category": "beast",
+      "base_level": 3,
+      "danger_level": 1,
+      "tags": [
+        "beast",
+        "melee",
+        "assassin"
+      ],
+      "ai_role": "assassin",
+      "xp_weight": 1.1,
+      "gold_weight": 0.8,
+      "base_stats": {
+        "hp": 110,
+        "mp": 0,
+        "atk": 7,
+        "mag": 0,
+        "def": 12,
+        "magic_resist": 8,
+        "speed": 0.9,
+        "crit_chance": 8,
+        "crit_damage": 150
+      },
+      "skills": [
+        "skill_mob_bite"
+      ],
+      "drops": [
+        {
+          "item_id": "mat_serpent_fang",
+          "chance": 35,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "mat_beast_hide",
+          "chance": 20,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "base_xp": 12
+    },
+    {
+      "id": "mob_dust_beetle",
+      "name_fr": "Scarabee des Sables",
+      "name_en": "Dust Beetle",
+      "category": "beast",
+      "base_level": 8,
+      "danger_level": 2,
+      "tags": [
+        "beast",
+        "melee",
+        "tank"
+      ],
+      "ai_role": "tank",
+      "xp_weight": 1.2,
+      "gold_weight": 1.0,
+      "base_stats": {
+        "hp": 396,
+        "mp": 0,
+        "atk": 10,
+        "mag": 0,
+        "def": 42,
+        "magic_resist": 12,
+        "speed": 1.5,
+        "crit_chance": 3,
+        "crit_damage": 150
+      },
+      "skills": [
+        "skill_mob_slam"
+      ],
+      "drops": [
+        {
+          "item_id": "mat_chitin_shard",
+          "chance": 30,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "mat_beast_hide",
+          "chance": 20,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "base_xp": 31
+    },
+    {
+      "id": "mob_wild_dog",
+      "name_fr": "Chien Sauvage",
+      "name_en": "Wild Dog",
+      "category": "beast",
+      "base_level": 11,
+      "danger_level": 2,
+      "tags": [
+        "beast",
+        "melee",
+        "swarm"
+      ],
+      "ai_role": "brute",
+      "xp_weight": 1.1,
+      "gold_weight": 1.0,
+      "base_stats": {
+        "hp": 340,
+        "mp": 0,
+        "atk": 14,
+        "mag": 0,
+        "def": 25,
+        "magic_resist": 13,
+        "speed": 1.0,
+        "crit_chance": 6,
+        "crit_damage": 150
+      },
+      "skills": [
+        "skill_mob_bite"
+      ],
+      "drops": [
+        {
+          "item_id": "mat_beast_hide",
+          "chance": 30,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "mat_beast_fang",
+          "chance": 25,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "base_xp": 47
+    },
+    {
+      "id": "mob_poacher",
+      "name_fr": "Braconnier",
+      "name_en": "Poacher",
+      "category": "humanoid",
+      "base_level": 13,
+      "danger_level": 2,
+      "tags": [
+        "humanoid",
+        "ranged"
+      ],
+      "ai_role": "artillery",
+      "xp_weight": 1.2,
+      "gold_weight": 1.3,
+      "base_stats": {
+        "hp": 420,
+        "mp": 0,
+        "atk": 16,
+        "mag": 0,
+        "def": 22,
+        "magic_resist": 18,
+        "speed": 1.3,
+        "crit_chance": 7,
+        "crit_damage": 150
+      },
+      "skills": [
+        "skill_mob_shoot"
+      ],
+      "drops": [
+        {
+          "item_id": "mat_leather_scrap",
+          "chance": 30,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "mat_arrow_bundle",
+          "chance": 20,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "base_xp": 59
+    },
+    {
+      "id": "mob_deserter",
+      "name_fr": "Deserteur",
+      "name_en": "Deserter",
+      "category": "humanoid",
+      "base_level": 14,
+      "danger_level": 2,
+      "tags": [
+        "humanoid",
+        "melee"
+      ],
+      "ai_role": "brute",
+      "xp_weight": 1.1,
+      "gold_weight": 1.3,
+      "base_stats": {
+        "hp": 480,
+        "mp": 0,
+        "atk": 16,
+        "mag": 0,
+        "def": 30,
+        "magic_resist": 20,
+        "speed": 1.2,
+        "crit_chance": 5,
+        "crit_damage": 150
+      },
+      "skills": [
+        "skill_mob_slash"
+      ],
+      "drops": [
+        {
+          "item_id": "mat_leather_scrap",
+          "chance": 35,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "mat_iron_scrap",
+          "chance": 20,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "base_xp": 66
     },
     {
       "id": "mob_goblin",
@@ -117,7 +343,8 @@
       "drops": [
         "mat_goblin_ear",
         "mat_rusty_blade"
-      ]
+      ],
+      "base_xp": 120
     },
     {
       "id": "mob_scavenger_crow",
@@ -145,7 +372,8 @@
       "drops": [
         "mat_crow_feather",
         "mat_sharp_beak"
-      ]
+      ],
+      "base_xp": 123
     },
     {
       "id": "mob_misty_fox",
@@ -160,7 +388,7 @@
         "assassin"
       ],
       "ai_role": "assassin",
-      "xp_weight": 1.0,
+      "xp_weight": 1.3,
       "gold_weight": 0.8,
       "base_stats": {
         "hp": 144,
@@ -172,7 +400,8 @@
       "drops": [
         "mat_fox_fur",
         "mat_misty_essence"
-      ]
+      ],
+      "base_xp": 14
     },
     {
       "id": "mob_boar",
@@ -186,7 +415,7 @@
         "melee"
       ],
       "ai_role": "brute",
-      "xp_weight": 1.1,
+      "xp_weight": 1.4,
       "gold_weight": 1.0,
       "base_stats": {
         "hp": 224,
@@ -199,7 +428,8 @@
         "mat_boar_hide",
         "mat_boar_tusk",
         "mat_raw_meat"
-      ]
+      ],
+      "base_xp": 14
     },
     {
       "id": "mob_enraged_boar",
@@ -227,7 +457,8 @@
         "mat_bloodshot_eye"
       ],
       "is_aggressive": true,
-      "aggro_range": 130
+      "aggro_range": 130,
+      "base_xp": 17
     },
     {
       "id": "mob_wolf",
@@ -255,7 +486,8 @@
         "mat_wolf_fang"
       ],
       "is_aggressive": true,
-      "aggro_range": 120
+      "aggro_range": 120,
+      "base_xp": 17
     },
     {
       "id": "mob_frothing_wolf",
@@ -283,7 +515,8 @@
         "mat_foam_saliva"
       ],
       "is_aggressive": true,
-      "aggro_range": 150
+      "aggro_range": 150,
+      "base_xp": 22
     },
     {
       "id": "mob_rock_scorpion",
@@ -310,7 +543,8 @@
       "drops": [
         "mat_scorpion_shell",
         "mat_venom_gland"
-      ]
+      ],
+      "base_xp": 26
     },
     {
       "id": "mob_belier",
@@ -337,7 +571,8 @@
       "drops": [
         "mat_ram_horn",
         "mat_wool"
-      ]
+      ],
+      "base_xp": 26
     },
     {
       "id": "mob_shaman_goblin",
@@ -366,7 +601,8 @@
       "drops": [
         "mat_goblin_ear",
         "mat_magic_crystal"
-      ]
+      ],
+      "base_xp": 135
     },
     {
       "id": "mob_alpha_hyena",
@@ -394,7 +630,8 @@
         "mat_alpha_fang"
       ],
       "is_aggressive": true,
-      "aggro_range": 150
+      "aggro_range": 150,
+      "base_xp": 36
     },
     {
       "id": "mob_goblin_warior",
@@ -422,7 +659,8 @@
         "mat_goblin_ear",
         "mat_iron_blade",
         "mat_goblin_token"
-      ]
+      ],
+      "base_xp": 144
     },
     {
       "id": "mob_hyene",
@@ -450,7 +688,8 @@
         "mat_sharp_claw"
       ],
       "is_aggressive": true,
-      "aggro_range": 120
+      "aggro_range": 120,
+      "base_xp": 42
     },
     {
       "id": "mob_goblin_bomber",
@@ -479,7 +718,8 @@
       "drops": [
         "mat_goblin_ear",
         "mat_explosive_powder"
-      ]
+      ],
+      "base_xp": 144
     },
     {
       "id": "mob_archer_squelette",
@@ -505,7 +745,8 @@
       "drops": [
         "mat_bone",
         "mat_old_arrow"
-      ]
+      ],
+      "base_xp": 305
     },
     {
       "id": "mob_lizardman",
@@ -532,7 +773,8 @@
       "drops": [
         "mat_lizard_scale",
         "mat_lizard_tail"
-      ]
+      ],
+      "base_xp": 166
     },
     {
       "id": "mob_taureau",
@@ -560,7 +802,8 @@
         "mat_bull_horn",
         "mat_tough_hide",
         "mat_raw_meat"
-      ]
+      ],
+      "base_xp": 53
     },
     {
       "id": "mob_plague_doctor",
@@ -587,7 +830,8 @@
       "drops": [
         "mat_plague_vial",
         "mat_doctor_mask"
-      ]
+      ],
+      "base_xp": 58
     },
     {
       "id": "mob_lizardman_shaman",
@@ -615,7 +859,8 @@
       "drops": [
         "mat_lizard_scale",
         "mat_shaman_totem"
-      ]
+      ],
+      "base_xp": 175
     },
     {
       "id": "mob_spider_queen",
@@ -644,7 +889,8 @@
         "mat_spider_silk",
         "mat_queen_venom",
         "mat_spider_egg"
-      ]
+      ],
+      "base_xp": 148
     },
     {
       "id": "mob_tortue_de_pierre",
@@ -672,7 +918,8 @@
       "drops": [
         "mat_stone_shell",
         "mat_ancient_rock"
-      ]
+      ],
+      "base_xp": 175
     },
     {
       "id": "mob_outlaw_archer",
@@ -698,7 +945,8 @@
       "drops": [
         "mat_worn_arrow",
         "mat_outlaw_badge"
-      ]
+      ],
+      "base_xp": 74
     },
     {
       "id": "mob_bandit",
@@ -725,7 +973,8 @@
       "drops": [
         "mat_stolen_goods",
         "mat_worn_leather"
-      ]
+      ],
+      "base_xp": 81
     },
     {
       "id": "mob_crossbowman",
@@ -751,7 +1000,8 @@
       "drops": [
         "mat_crossbow_bolt",
         "mat_reinforced_leather"
-      ]
+      ],
+      "base_xp": 81
     },
     {
       "id": "mob_mercenary",
@@ -778,7 +1028,8 @@
       "drops": [
         "mat_iron_plate",
         "mat_mercenary_coin"
-      ]
+      ],
+      "base_xp": 98
     },
     {
       "id": "mob_cerf_obscur",
@@ -808,7 +1059,8 @@
         "mat_shadow_hide"
       ],
       "is_aggressive": true,
-      "aggro_range": 140
+      "aggro_range": 140,
+      "base_xp": 175
     },
     {
       "id": "mob_gang_leader",
@@ -835,7 +1087,8 @@
       "drops": [
         "mat_gang_emblem",
         "mat_stolen_goods"
-      ]
+      ],
+      "base_xp": 108
     },
     {
       "id": "mob_converted_blacksmith",
@@ -862,7 +1115,8 @@
       "drops": [
         "mat_iron_hammer",
         "mat_blacksmith_apron"
-      ]
+      ],
+      "base_xp": 108
     },
     {
       "id": "mob_converted_farmer",
@@ -888,7 +1142,8 @@
       "drops": [
         "mat_pitchfork_tine",
         "mat_roughspun_cloth"
-      ]
+      ],
+      "base_xp": 108
     },
     {
       "id": "mob_converted_herbalist",
@@ -915,7 +1170,8 @@
       "drops": [
         "mat_dried_herbs",
         "mat_healing_salve"
-      ]
+      ],
+      "base_xp": 108
     },
     {
       "id": "mob_converted_zealot",
@@ -942,7 +1198,8 @@
       "drops": [
         "mat_prayer_beads",
         "mat_torn_scripture"
-      ]
+      ],
+      "base_xp": 108
     },
     {
       "id": "mob_converted_hunter",
@@ -969,7 +1226,8 @@
       "drops": [
         "mat_hunting_knife",
         "mat_fur_pelt"
-      ]
+      ],
+      "base_xp": 108
     },
     {
       "id": "mob_converted_archer",
@@ -995,7 +1253,8 @@
       "drops": [
         "mat_crude_arrow",
         "mat_bowstring"
-      ]
+      ],
+      "base_xp": 108
     },
     {
       "id": "mob_voleur",
@@ -1022,7 +1281,8 @@
       "drops": [
         "mat_stolen_purse",
         "mat_shadow_cloth"
-      ]
+      ],
+      "base_xp": 119
     },
     {
       "id": "mob_exalted_preacher",
@@ -1049,7 +1309,8 @@
       "drops": [
         "mat_holy_scripture",
         "mat_zealot_robe"
-      ]
+      ],
+      "base_xp": 119
     },
     {
       "id": "mob_tower_fanatic",
@@ -1076,7 +1337,8 @@
       "drops": [
         "mat_tower_sigil",
         "mat_fanatic_focus"
-      ]
+      ],
+      "base_xp": 119
     },
     {
       "id": "mob_zealot_guard",
@@ -1103,7 +1365,8 @@
       "drops": [
         "mat_zealot_shield",
         "mat_blessed_iron"
-      ]
+      ],
+      "base_xp": 119
     },
     {
       "id": "mob_converted_elder",
@@ -1130,7 +1393,8 @@
       "drops": [
         "mat_elder_staff",
         "mat_village_seal"
-      ]
+      ],
+      "base_xp": 119
     },
     {
       "id": "mob_spectral_wolf",
@@ -1159,7 +1423,8 @@
         "mat_ectoplasm",
         "mat_spectral_fang",
         "mat_shadow_essence"
-      ]
+      ],
+      "base_xp": 365
     },
     {
       "id": "mob_guerrier_skull",
@@ -1185,7 +1450,8 @@
       "drops": [
         "mat_cursed_bone",
         "mat_rusted_armor"
-      ]
+      ],
+      "base_xp": 354
     },
     {
       "id": "mob_zealot_ritualist",
@@ -1212,7 +1478,8 @@
       "drops": [
         "mat_ritual_focus",
         "mat_zealot_robe"
-      ]
+      ],
+      "base_xp": 131
     },
     {
       "id": "mob_fanatic_inquisitor",
@@ -1238,7 +1505,8 @@
       "drops": [
         "mat_inquisitor_blade",
         "mat_fanatic_insignia"
-      ]
+      ],
+      "base_xp": 131
     },
     {
       "id": "mob_crystal_wolf",
@@ -1265,7 +1533,8 @@
       "drops": [
         "mat_crystal_fang",
         "mat_ice_shard"
-      ]
+      ],
+      "base_xp": 148
     },
     {
       "id": "mob_armadillo",
@@ -1292,7 +1561,8 @@
       "drops": [
         "mat_armadillo_shell",
         "mat_tough_hide"
-      ]
+      ],
+      "base_xp": 166
     },
     {
       "id": "mob_ember_hound",
@@ -1319,7 +1589,8 @@
       "drops": [
         "mat_ember_claw",
         "mat_fire_essence"
-      ]
+      ],
+      "base_xp": 175
     },
     {
       "id": "mob_cheval_sauvage",
@@ -1345,7 +1616,8 @@
       "drops": [
         "mat_horsehair",
         "mat_iron_horseshoe"
-      ]
+      ],
+      "base_xp": 184
     },
     {
       "id": "mob_golem",
@@ -1372,7 +1644,8 @@
       "drops": [
         "mat_golem_core",
         "mat_stone_shard"
-      ]
+      ],
+      "base_xp": 220
     },
     {
       "id": "mob_loup_humain",
@@ -1399,7 +1672,8 @@
       "drops": [
         "mat_werewolf_claw",
         "mat_cursed_pelt"
-      ]
+      ],
+      "base_xp": 240
     },
     {
       "id": "mob_brute_tribal",
@@ -1425,7 +1699,8 @@
       "drops": [
         "mat_tribal_totem",
         "mat_bone_necklace"
-      ]
+      ],
+      "base_xp": 240
     },
     {
       "id": "mob_boar_wolf",
@@ -1452,7 +1727,8 @@
       "drops": [
         "mat_mutated_fang",
         "mat_corrupted_hide"
-      ]
+      ],
+      "base_xp": 282
     },
     {
       "id": "mob_golem_runique",
@@ -1480,7 +1756,8 @@
       "drops": [
         "mat_rune_core",
         "mat_enchanted_stone"
-      ]
+      ],
+      "base_xp": 294
     },
     {
       "id": "mob_nightmare_horse",
@@ -1508,7 +1785,8 @@
       "drops": [
         "mat_shadow_horsehair",
         "mat_nightmare_essence"
-      ]
+      ],
+      "base_xp": 328
     },
     {
       "id": "mob_tribal_warlord",
@@ -1536,7 +1814,8 @@
       "drops": [
         "mat_warlord_crest",
         "mat_enchanted_bone"
-      ]
+      ],
+      "base_xp": 351
     },
     {
       "id": "mob_bell_guardian",
@@ -1565,7 +1844,8 @@
       "drops": [
         "mat_bell_fragment",
         "mat_sacred_metal"
-      ]
+      ],
+      "base_xp": 400
     },
     {
       "id": "mob_skeleton_necromancer",
@@ -1593,7 +1873,8 @@
         "mat_necromancer_staff",
         "mat_dark_bone",
         "mat_soul_essence"
-      ]
+      ],
+      "base_xp": 400
     },
     {
       "id": "mob_dark_priest",
@@ -1620,7 +1901,8 @@
       "drops": [
         "mat_dark_scripture",
         "mat_corrupted_relic"
-      ]
+      ],
+      "base_xp": 438
     },
     {
       "id": "mob_dark_cultist",
@@ -1649,7 +1931,8 @@
       "drops": [
         "mat_dark_ritual_focus",
         "mat_corrupted_tome"
-      ]
+      ],
+      "base_xp": 510
     },
     {
       "id": "mob_lesser_demon",
@@ -1675,7 +1958,8 @@
       "drops": [
         "mat_demon_horn",
         "mat_infernal_shard"
-      ]
+      ],
+      "base_xp": 510
     },
     {
       "id": "mob_sentinel",
@@ -1703,7 +1987,8 @@
       "drops": [
         "mat_corrupted_plate",
         "mat_sentinel_core"
-      ]
+      ],
+      "base_xp": 538
     },
     {
       "id": "mob_rift_warden",
@@ -1731,7 +2016,8 @@
       "drops": [
         "mat_rift_plate",
         "mat_void_crystal"
-      ]
+      ],
+      "base_xp": 348
     },
     {
       "id": "mob_void_hound",
@@ -1759,7 +2045,8 @@
       "drops": [
         "mat_void_fang",
         "mat_shadow_hide"
-      ]
+      ],
+      "base_xp": 360
     },
     {
       "id": "mob_abyssal_scholar",
@@ -1788,7 +2075,8 @@
       "drops": [
         "mat_abyssal_tome",
         "mat_corrupted_ink"
-      ]
+      ],
+      "base_xp": 400
     },
     {
       "id": "mob_rift_stalker",
@@ -1816,7 +2104,8 @@
       "drops": [
         "mat_rift_claw",
         "mat_shadow_pelt"
-      ]
+      ],
+      "base_xp": 384
     },
     {
       "id": "mob_void_executioner",
@@ -1843,7 +2132,8 @@
       "drops": [
         "mat_executioner_axe",
         "mat_void_metal"
-      ]
+      ],
+      "base_xp": 426
     },
     {
       "id": "mob_nightmare_stag",
@@ -1871,7 +2161,8 @@
       "drops": [
         "mat_nightmare_antler",
         "mat_shadow_essence"
-      ]
+      ],
+      "base_xp": 426
     },
     {
       "id": "mob_rift_stitcher",
@@ -1900,7 +2191,8 @@
       "drops": [
         "mat_stitcher_needle",
         "mat_void_thread"
-      ]
+      ],
+      "base_xp": 438
     },
     {
       "id": "mob_abyssal_charger",
@@ -1927,7 +2219,8 @@
       "drops": [
         "mat_abyssal_horn",
         "mat_void_hide"
-      ]
+      ],
+      "base_xp": 451
     },
     {
       "id": "mob_shattered_knight",
@@ -1955,7 +2248,8 @@
       "drops": [
         "mat_shattered_plate",
         "mat_broken_sword"
-      ]
+      ],
+      "base_xp": 463
     },
     {
       "id": "mob_corrupted_paladin",
@@ -1984,7 +2278,8 @@
       "drops": [
         "mat_fallen_emblem",
         "mat_corrupted_plate"
-      ]
+      ],
+      "base_xp": 476
     }
   ],
   "scaling": {
