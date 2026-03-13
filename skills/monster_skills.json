@@ -1,0 +1,214 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-03-13",
+    "description": "Monster skill definitions. IDs referenced by monster_archetypes.json and monsters.json. Loaded by ContentLoader::load_monster_skills() at boot.",
+    "format_note": "Same format as classes/{class}/skills.json — parsed by ContentLoader::parse_skill()",
+    "scaling_note": "Monster skills scale via tier_multipliers in monster_skills_scaling.json, NOT percent_per_level",
+    "cast_time_note": "cast_time field in seconds. 0 = instant. Interruptible if > 0. See monster_archetypes.json cast_time_system."
+  },
+
+  "basic_skills": [
+    {
+      "id": "skill_mob_bite",
+      "name_en": "Bite",
+      "name_fr": "Morsure",
+      "tier": "filler",
+      "target": "enemy",
+      "pattern": "single",
+      "damage_type": "physical",
+      "scaling_stat": "atk",
+      "base_power": 0,
+      "scaling_percent": 100,
+      "mana_cost": 0,
+      "cooldown": 3.0,
+      "cast_time": 0,
+      "vfx_type": "melee_slash",
+      "description_fr": "Morsure vicieuse qui déchire la chair.\nInflige 100% ATK dégâts physiques.",
+      "description_en": "A vicious bite that tears flesh.\nDeals 100% ATK physical damage.",
+      "tags": ["damage", "melee", "filler", "beast"]
+    },
+    {
+      "id": "skill_mob_slam",
+      "name_en": "Slam",
+      "name_fr": "Coup Écrasant",
+      "tier": "filler",
+      "target": "enemy",
+      "pattern": "single",
+      "damage_type": "physical",
+      "scaling_stat": "atk",
+      "base_power": 0,
+      "scaling_percent": 110,
+      "mana_cost": 0,
+      "cooldown": 4.0,
+      "cast_time": 0,
+      "vfx_type": "melee_slash",
+      "description_fr": "Frappe écrasante de tout le poids du corps.\nInflige 110% ATK dégâts physiques.",
+      "description_en": "A crushing blow with full body weight.\nDeals 110% ATK physical damage.",
+      "tags": ["damage", "melee", "filler"]
+    },
+    {
+      "id": "skill_mob_shoot",
+      "name_en": "Shoot",
+      "name_fr": "Tir",
+      "tier": "filler",
+      "target": "enemy",
+      "pattern": "single",
+      "damage_type": "physical",
+      "scaling_stat": "atk",
+      "base_power": 0,
+      "scaling_percent": 95,
+      "mana_cost": 0,
+      "cooldown": 3.0,
+      "cast_time": 0,
+      "vfx_type": "melee_slash",
+      "description_fr": "Projectile lancé vers la cible.\nInflige 95% ATK dégâts physiques.",
+      "description_en": "A projectile hurled at the target.\nDeals 95% ATK physical damage.",
+      "tags": ["damage", "ranged", "filler"]
+    },
+    {
+      "id": "skill_mob_slash",
+      "name_en": "Slash",
+      "name_fr": "Taillade",
+      "tier": "filler",
+      "target": "enemy",
+      "pattern": "single",
+      "damage_type": "physical",
+      "scaling_stat": "atk",
+      "base_power": 0,
+      "scaling_percent": 105,
+      "mana_cost": 0,
+      "cooldown": 3.5,
+      "cast_time": 0,
+      "vfx_type": "melee_slash",
+      "description_fr": "Coup tranchant rapide.\nInflige 105% ATK dégâts physiques.",
+      "description_en": "A swift slashing strike.\nDeals 105% ATK physical damage.",
+      "tags": ["damage", "melee", "filler", "humanoid"]
+    }
+  ],
+
+  "archetype_skills": {
+    "brute": {
+      "pool": [
+        {
+          "id": "skill_brute_heavy_slam",
+          "name_en": "Heavy Slam",
+          "name_fr": "Frappe Dévastatrice",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 150,
+          "mana_cost": 10,
+          "cooldown": 5.0,
+          "cast_time": 0,
+          "vfx_type": "melee_slash",
+          "description_fr": "Frappe dévastatrice instantanée qui ébranle la cible.\nInflige 150% ATK dégâts physiques.",
+          "description_en": "A devastating instant heavy strike that shakes the target.\nDeals 150% ATK physical damage.",
+          "tags": ["damage", "melee", "brute"]
+        },
+        {
+          "id": "skill_brute_cleave",
+          "name_en": "Cleave",
+          "name_fr": "Fendre",
+          "tier": "advanced",
+          "target": "enemy",
+          "pattern": "row_3",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 120,
+          "mana_cost": 18,
+          "cooldown": 8.0,
+          "cast_time": 3.0,
+          "vfx_type": "whirlwind",
+          "description_fr": "Frappe en arc qui touche les ennemis adjacents et fait saigner.\nInflige 120% ATK dégâts physiques en zone. Applique Saignement (3s).",
+          "description_en": "A sweeping arc that hits adjacent enemies and causes bleeding.\nDeals 120% ATK physical damage in an area. Applies Bleed (3s).",
+          "tags": ["damage", "melee", "aoe", "bleed", "brute"],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "bleed",
+              "duration": 3.0,
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "skill_brute_charge",
+          "name_en": "Charge",
+          "name_fr": "Charge",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "col_2",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 130,
+          "mana_cost": 14,
+          "cooldown": 10.0,
+          "cast_time": 1.5,
+          "vfx_type": "dash_trail",
+          "description_fr": "Charge en ligne droite, bousculant tout sur son passage.\nInflige 130% ATK dégâts physiques en colonne. Recul 1 case.",
+          "description_en": "Charges forward in a line, knocking back everything in its path.\nDeals 130% ATK physical damage in a column. Knockback 1 tile.",
+          "tags": ["damage", "melee", "knockback", "brute"],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "knockback",
+              "duration": 0,
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "skill_brute_execute",
+          "name_en": "Execute",
+          "name_fr": "Exécution",
+          "tier": "advanced",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 200,
+          "mana_cost": 22,
+          "cooldown": 12.0,
+          "cast_time": 0,
+          "vfx_type": "melee_slash",
+          "description_fr": "Coup fatal sur une cible affaiblie. Dégâts doublés sous 30% HP.\nInflige 200% ATK dégâts physiques (x2 si cible < 30% HP).",
+          "description_en": "A killing blow on a weakened target. Damage doubled below 30% HP.\nDeals 200% ATK physical damage (x2 if target < 30% HP).",
+          "tags": ["damage", "melee", "execute", "brute"]
+        }
+      ],
+      "signature": {
+        "id": "skill_brute_ground_slam",
+        "name_en": "Ground Slam",
+        "name_fr": "Fracas du Sol",
+        "tier": "ultimate",
+        "target": "enemies",
+        "pattern": "cross",
+        "damage_type": "physical",
+        "scaling_stat": "atk",
+        "base_power": 0,
+        "scaling_percent": 180,
+        "mana_cost": 35,
+        "cooldown": 20.0,
+        "cast_time": 4.5,
+        "vfx_type": "falling",
+        "description_fr": "Le brute martèle le sol, créant une onde de choc en croix.\nInflige 180% ATK dégâts physiques en croix. Renverse les cibles (2s).",
+        "description_en": "The brute hammers the ground, creating a cross-shaped shockwave.\nDeals 180% ATK physical damage in a cross pattern. Knocks down targets (2s).",
+        "tags": ["damage", "melee", "aoe", "knockdown", "brute", "boss", "signature"],
+        "effects": [
+          {
+            "type": "debuff",
+            "stat": "knockdown",
+            "duration": 2.0
+          }
+        ]
+      }
+    }
+  }
+}
