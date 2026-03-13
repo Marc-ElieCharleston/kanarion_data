@@ -6,7 +6,7 @@
     "format_note": "Same format as classes/{class}/skills.json — parsed by ContentLoader::parse_skill()",
     "scaling_note": "Monster skills scale via tier_multipliers in monster_skills_scaling.json, NOT percent_per_level",
     "cast_time_note": "cast_time field in seconds. 0 = instant. Interruptible if > 0. See monster_archetypes.json cast_time_system.",
-    "skill_count": "44 skills: 4 basic mob + 8 archetypes × (4 pool + 1 signature)"
+    "skill_count": "60 skills: 4 basic mob + 16 role basics (8 rôles × 2) + 8 archetypes × (4 pool + 1 signature)"
   },
 
   "basic_skills": [
@@ -87,6 +87,410 @@
       "tags": ["damage", "melee", "filler", "humanoid"]
     }
   ],
+
+  "role_basic_skills": {
+    "_note": "2 basic skills par rôle. basic_1 = toujours assigné. basic_2 = assigné si danger_level >= 2 ou elite/boss. Voir AUDIT_MONSTER_SKILLS_2026-03-13.md pour les règles de design.",
+
+    "brute": [
+      {
+        "id": "skill_mob_brute_smash",
+        "name_en": "Smash",
+        "name_fr": "Fracas",
+        "tier": "filler",
+        "target": "enemy",
+        "pattern": "single",
+        "damage_type": "physical",
+        "scaling_stat": "atk",
+        "base_power": 0,
+        "scaling_percent": 120,
+        "mana_cost": 0,
+        "cooldown": 4.0,
+        "cast_time": 0,
+        "vfx_type": "melee_slash",
+        "description_fr": "Coup lourd qui fait saigner.\nInflige 120% ATK dégâts physiques. Saignement (3s).",
+        "description_en": "A heavy blow that causes bleeding.\nDeals 120% ATK physical damage. Bleed (3s).",
+        "tags": ["damage", "melee", "filler", "bleed", "brute"],
+        "effects": [
+          {
+            "type": "debuff",
+            "stat": "bleed",
+            "duration": 3.0,
+            "value": 1
+          }
+        ]
+      },
+      {
+        "id": "skill_mob_brute_sweep",
+        "name_en": "Sweep",
+        "name_fr": "Balayage",
+        "tier": "filler",
+        "target": "enemy",
+        "pattern": "row_2",
+        "damage_type": "physical",
+        "scaling_stat": "atk",
+        "base_power": 0,
+        "scaling_percent": 100,
+        "mana_cost": 0,
+        "cooldown": 5.0,
+        "cast_time": 0,
+        "vfx_type": "whirlwind",
+        "description_fr": "Large coup qui frappe deux cibles adjacentes.\nInflige 100% ATK dégâts physiques en zone.",
+        "description_en": "A wide swing hitting two adjacent targets.\nDeals 100% ATK physical damage in an area.",
+        "tags": ["damage", "melee", "filler", "aoe", "brute"]
+      }
+    ],
+
+    "assassin": [
+      {
+        "id": "skill_mob_assassin_lunge",
+        "name_en": "Lunge",
+        "name_fr": "Bond",
+        "tier": "filler",
+        "target": "enemy",
+        "pattern": "single",
+        "damage_type": "physical",
+        "scaling_stat": "atk",
+        "base_power": 0,
+        "scaling_percent": 130,
+        "mana_cost": 0,
+        "cooldown": 3.0,
+        "cast_time": 0,
+        "vfx_type": "dash_trail",
+        "description_fr": "Bond rapide vers la cible.\nInflige 130% ATK dégâts physiques.",
+        "description_en": "A swift lunge at the target.\nDeals 130% ATK physical damage.",
+        "tags": ["damage", "melee", "filler", "assassin"]
+      },
+      {
+        "id": "skill_mob_assassin_venom",
+        "name_en": "Venom Bite",
+        "name_fr": "Morsure Venimeuse",
+        "tier": "filler",
+        "target": "enemy",
+        "pattern": "single",
+        "damage_type": "physical",
+        "scaling_stat": "atk",
+        "base_power": 0,
+        "scaling_percent": 100,
+        "mana_cost": 0,
+        "cooldown": 5.0,
+        "cast_time": 0,
+        "vfx_type": "melee_slash",
+        "description_fr": "Morsure empoisonnée.\nInflige 100% ATK dégâts physiques. Poison (4s).",
+        "description_en": "A venomous bite.\nDeals 100% ATK physical damage. Poison (4s).",
+        "tags": ["damage", "melee", "filler", "poison", "assassin"],
+        "effects": [
+          {
+            "type": "debuff",
+            "stat": "poison",
+            "duration": 4.0,
+            "value": 1
+          }
+        ]
+      }
+    ],
+
+    "tank": [
+      {
+        "id": "skill_mob_tank_slam",
+        "name_en": "Heavy Blow",
+        "name_fr": "Coup Pesant",
+        "tier": "filler",
+        "target": "enemy",
+        "pattern": "single",
+        "damage_type": "physical",
+        "scaling_stat": "atk",
+        "base_power": 0,
+        "scaling_percent": 80,
+        "mana_cost": 0,
+        "cooldown": 5.0,
+        "cast_time": 0,
+        "vfx_type": "melee_slash",
+        "description_fr": "Coup lourd qui ralentit la cible.\nInflige 80% ATK dégâts physiques. Ralentissement (3s).",
+        "description_en": "A heavy blow that slows the target.\nDeals 80% ATK physical damage. Slow (3s).",
+        "tags": ["damage", "melee", "filler", "slow", "tank"],
+        "effects": [
+          {
+            "type": "debuff",
+            "stat": "slow",
+            "value": 20,
+            "duration": 3.0
+          }
+        ]
+      },
+      {
+        "id": "skill_mob_tank_brace",
+        "name_en": "Brace",
+        "name_fr": "Posture Ferme",
+        "tier": "filler",
+        "target": "self",
+        "pattern": "single",
+        "damage_type": "none",
+        "scaling_stat": "def",
+        "base_power": 0,
+        "scaling_percent": 0,
+        "mana_cost": 0,
+        "cooldown": 8.0,
+        "cast_time": 0,
+        "vfx_type": "shield",
+        "description_fr": "Posture défensive. Réduction de dégâts +20% pendant 5s.",
+        "description_en": "A defensive stance. Damage reduction +20% for 5s.",
+        "tags": ["buff", "defense", "filler", "tank"],
+        "effects": [
+          {
+            "type": "buff",
+            "stat": "damage_reduction",
+            "value": 20,
+            "duration": 5.0
+          }
+        ]
+      }
+    ],
+
+    "healer": [
+      {
+        "id": "skill_mob_healer_mend",
+        "name_en": "Minor Mend",
+        "name_fr": "Soin Mineur",
+        "tier": "filler",
+        "target": "ally",
+        "pattern": "single",
+        "damage_type": "none",
+        "scaling_stat": "mag",
+        "base_power": 0,
+        "base_heal": 10,
+        "heal_scaling_percent": 80,
+        "mana_cost": 0,
+        "cooldown": 5.0,
+        "cast_time": 0,
+        "vfx_type": "buff_aura",
+        "description_fr": "Petit soin sur un allié.\nRestaure 80% MAG points de vie.",
+        "description_en": "A small heal on an ally.\nRestores 80% MAG health.",
+        "tags": ["heal", "single", "filler", "healer"]
+      },
+      {
+        "id": "skill_mob_healer_bolt",
+        "name_en": "Sacred Bolt",
+        "name_fr": "Trait Sacré",
+        "tier": "filler",
+        "target": "enemy",
+        "pattern": "single",
+        "damage_type": "magical",
+        "scaling_stat": "mag",
+        "base_power": 0,
+        "scaling_percent": 90,
+        "mana_cost": 0,
+        "cooldown": 4.0,
+        "cast_time": 0,
+        "vfx_type": "melee_slash",
+        "description_fr": "Projectile sacré.\nInflige 90% MAG dégâts magiques.",
+        "description_en": "A sacred projectile.\nDeals 90% MAG magical damage.",
+        "tags": ["damage", "ranged", "magic", "filler", "healer"]
+      }
+    ],
+
+    "support": [
+      {
+        "id": "skill_mob_support_bolster",
+        "name_en": "Bolster",
+        "name_fr": "Renforcement",
+        "tier": "filler",
+        "target": "ally",
+        "pattern": "single",
+        "damage_type": "none",
+        "scaling_stat": "mag",
+        "base_power": 0,
+        "scaling_percent": 0,
+        "mana_cost": 0,
+        "cooldown": 6.0,
+        "cast_time": 0,
+        "vfx_type": "buff_aura",
+        "description_fr": "Renforce un allié. +15% ATK pendant 5s.",
+        "description_en": "Bolsters an ally. +15% ATK for 5s.",
+        "tags": ["buff", "atk_up", "filler", "support"],
+        "effects": [
+          {
+            "type": "buff",
+            "stat": "atk",
+            "value": 15,
+            "duration": 5.0
+          }
+        ]
+      },
+      {
+        "id": "skill_mob_support_hex",
+        "name_en": "Hex",
+        "name_fr": "Malédiction",
+        "tier": "filler",
+        "target": "enemy",
+        "pattern": "single",
+        "damage_type": "magical",
+        "scaling_stat": "mag",
+        "base_power": 0,
+        "scaling_percent": 60,
+        "mana_cost": 0,
+        "cooldown": 6.0,
+        "cast_time": 0,
+        "vfx_type": "debuff_aura",
+        "description_fr": "Malédiction qui affaiblit l'ennemi.\nInflige 60% MAG dégâts magiques. -15% ATK pendant 5s.",
+        "description_en": "A curse that weakens the enemy.\nDeals 60% MAG magical damage. -15% ATK for 5s.",
+        "tags": ["damage", "debuff", "atk_down", "filler", "support"],
+        "effects": [
+          {
+            "type": "debuff",
+            "stat": "atk",
+            "value": -15,
+            "duration": 5.0
+          }
+        ]
+      }
+    ],
+
+    "artillery": [
+      {
+        "id": "skill_mob_artillery_bolt",
+        "name_en": "Fire Bolt",
+        "name_fr": "Trait de Feu",
+        "tier": "filler",
+        "target": "enemy",
+        "pattern": "single",
+        "damage_type": "magical",
+        "scaling_stat": "mag",
+        "base_power": 0,
+        "scaling_percent": 110,
+        "mana_cost": 0,
+        "cooldown": 4.0,
+        "cast_time": 0,
+        "vfx_type": "melee_slash",
+        "description_fr": "Projectile de feu.\nInflige 110% MAG dégâts magiques.",
+        "description_en": "A fire projectile.\nDeals 110% MAG magical damage.",
+        "tags": ["damage", "ranged", "magic", "fire", "filler", "artillery"]
+      },
+      {
+        "id": "skill_mob_artillery_barrage",
+        "name_en": "Barrage",
+        "name_fr": "Salve",
+        "tier": "filler",
+        "target": "enemy",
+        "pattern": "row_2",
+        "damage_type": "magical",
+        "scaling_stat": "mag",
+        "base_power": 0,
+        "scaling_percent": 80,
+        "mana_cost": 0,
+        "cooldown": 5.0,
+        "cast_time": 0,
+        "vfx_type": "falling",
+        "description_fr": "Salve magique en zone.\nInflige 80% MAG dégâts magiques en zone.",
+        "description_en": "A magical barrage in an area.\nDeals 80% MAG magical damage in an area.",
+        "tags": ["damage", "ranged", "magic", "aoe", "filler", "artillery"]
+      }
+    ],
+
+    "controller": [
+      {
+        "id": "skill_mob_controller_jinx",
+        "name_en": "Jinx",
+        "name_fr": "Maléfice",
+        "tier": "filler",
+        "target": "enemy",
+        "pattern": "single",
+        "damage_type": "magical",
+        "scaling_stat": "mag",
+        "base_power": 0,
+        "scaling_percent": 70,
+        "mana_cost": 0,
+        "cooldown": 5.0,
+        "cast_time": 0,
+        "vfx_type": "debuff_aura",
+        "description_fr": "Maléfice qui ralentit.\nInflige 70% MAG dégâts magiques. Ralentissement (3s).",
+        "description_en": "A jinx that slows.\nDeals 70% MAG magical damage. Slow (3s).",
+        "tags": ["damage", "cc", "slow", "magic", "filler", "controller"],
+        "effects": [
+          {
+            "type": "debuff",
+            "stat": "slow",
+            "value": 20,
+            "duration": 3.0
+          }
+        ]
+      },
+      {
+        "id": "skill_mob_controller_zap",
+        "name_en": "Zap",
+        "name_fr": "Décharge",
+        "tier": "filler",
+        "target": "enemy",
+        "pattern": "single",
+        "damage_type": "magical",
+        "scaling_stat": "mag",
+        "base_power": 0,
+        "scaling_percent": 90,
+        "mana_cost": 0,
+        "cooldown": 4.0,
+        "cast_time": 0,
+        "vfx_type": "melee_slash",
+        "description_fr": "Décharge magique.\nInflige 90% MAG dégâts magiques.",
+        "description_en": "A magical zap.\nDeals 90% MAG magical damage.",
+        "tags": ["damage", "ranged", "magic", "filler", "controller"]
+      }
+    ],
+
+    "berserker": [
+      {
+        "id": "skill_mob_berserker_rage_hit",
+        "name_en": "Rage Hit",
+        "name_fr": "Frappe Enragée",
+        "tier": "filler",
+        "target": "enemy",
+        "pattern": "single",
+        "damage_type": "physical",
+        "scaling_stat": "atk",
+        "base_power": 0,
+        "scaling_percent": 130,
+        "mana_cost": 0,
+        "cooldown": 4.0,
+        "cast_time": 0,
+        "vfx_type": "melee_slash",
+        "description_fr": "Frappe enragée, plus forte si blessé.\nInflige 130% ATK dégâts physiques (+30% si < 50% HP).",
+        "description_en": "An enraged strike, stronger when wounded.\nDeals 130% ATK physical damage (+30% if < 50% HP).",
+        "tags": ["damage", "melee", "filler", "conditional", "berserker"],
+        "effects": [
+          {
+            "type": "conditional_bonus",
+            "condition": "caster_hp_below_50",
+            "bonus_percent": 30
+          }
+        ]
+      },
+      {
+        "id": "skill_mob_berserker_rend",
+        "name_en": "Rend",
+        "name_fr": "Déchirure",
+        "tier": "filler",
+        "target": "enemy",
+        "pattern": "single",
+        "damage_type": "physical",
+        "scaling_stat": "atk",
+        "base_power": 0,
+        "scaling_percent": 110,
+        "mana_cost": 0,
+        "cooldown": 5.0,
+        "cast_time": 0,
+        "vfx_type": "melee_slash",
+        "description_fr": "Coup déchirant qui fait saigner.\nInflige 110% ATK dégâts physiques. Saignement (3s).",
+        "description_en": "A tearing strike that causes bleeding.\nDeals 110% ATK physical damage. Bleed (3s).",
+        "tags": ["damage", "melee", "filler", "bleed", "berserker"],
+        "effects": [
+          {
+            "type": "debuff",
+            "stat": "bleed",
+            "duration": 3.0,
+            "value": 1
+          }
+        ]
+      }
+    ]
+  },
 
   "archetype_skills": {
     "brute": {
