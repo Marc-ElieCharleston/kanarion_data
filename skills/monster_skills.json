@@ -1,11 +1,12 @@
 {
   "_meta": {
-    "version": "1.0",
+    "version": "1.1",
     "last_updated": "2026-03-13",
     "description": "Monster skill definitions. IDs referenced by monster_archetypes.json and monsters.json. Loaded by ContentLoader::load_monster_skills() at boot.",
     "format_note": "Same format as classes/{class}/skills.json — parsed by ContentLoader::parse_skill()",
     "scaling_note": "Monster skills scale via tier_multipliers in monster_skills_scaling.json, NOT percent_per_level",
-    "cast_time_note": "cast_time field in seconds. 0 = instant. Interruptible if > 0. See monster_archetypes.json cast_time_system."
+    "cast_time_note": "cast_time field in seconds. 0 = instant. Interruptible if > 0. See monster_archetypes.json cast_time_system.",
+    "skill_count": "44 skills: 4 basic mob + 8 archetypes × (4 pool + 1 signature)"
   },
 
   "basic_skills": [
@@ -206,6 +207,900 @@
             "type": "debuff",
             "stat": "knockdown",
             "duration": 2.0
+          }
+        ]
+      }
+    },
+
+    "assassin": {
+      "pool": [
+        {
+          "id": "skill_assassin_quick_strike",
+          "name_en": "Quick Strike",
+          "name_fr": "Frappe Rapide",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 130,
+          "mana_cost": 8,
+          "cooldown": 3.5,
+          "cast_time": 0,
+          "vfx_type": "melee_slash",
+          "description_fr": "Frappe furtive et rapide.\nInflige 130% ATK dégâts physiques.",
+          "description_en": "A swift, stealthy strike.\nDeals 130% ATK physical damage.",
+          "tags": ["damage", "melee", "assassin"]
+        },
+        {
+          "id": "skill_assassin_poison_blade",
+          "name_en": "Poison Blade",
+          "name_fr": "Lame Empoisonnée",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 110,
+          "mana_cost": 12,
+          "cooldown": 6.0,
+          "cast_time": 1.0,
+          "vfx_type": "melee_slash",
+          "description_fr": "Lame enduite de poison qui empoisonne la cible.\nInflige 110% ATK dégâts physiques. Poison (4s).",
+          "description_en": "A poison-coated blade that poisons the target.\nDeals 110% ATK physical damage. Poison (4s).",
+          "tags": ["damage", "melee", "poison", "dot", "assassin"],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "poison",
+              "duration": 4.0,
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "skill_assassin_shadow_strike",
+          "name_en": "Shadow Strike",
+          "name_fr": "Frappe de l'Ombre",
+          "tier": "advanced",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 170,
+          "mana_cost": 20,
+          "cooldown": 10.0,
+          "cast_time": 2.5,
+          "vfx_type": "dash_trail",
+          "description_fr": "Téléportation vers une cible du backline pour une frappe dévastatrice.\nInflige 170% ATK dégâts physiques. Cible le backline en priorité.",
+          "description_en": "Teleports to a backline target for a devastating strike.\nDeals 170% ATK physical damage. Prioritizes backline targets.",
+          "tags": ["damage", "melee", "teleport", "assassin"]
+        },
+        {
+          "id": "skill_assassin_ambush",
+          "name_en": "Ambush",
+          "name_fr": "Embuscade",
+          "tier": "advanced",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 190,
+          "mana_cost": 18,
+          "cooldown": 12.0,
+          "cast_time": 0,
+          "vfx_type": "melee_slash",
+          "description_fr": "Attaque sournoise avec un taux de critique élevé.\nInflige 190% ATK dégâts physiques. +30% chance critique.",
+          "description_en": "A sneaky backstab with high crit chance.\nDeals 190% ATK physical damage. +30% crit chance.",
+          "tags": ["damage", "melee", "crit", "assassin"]
+        }
+      ],
+      "signature": {
+        "id": "skill_assassin_death_mark",
+        "name_en": "Death Mark",
+        "name_fr": "Marque de Mort",
+        "tier": "ultimate",
+        "target": "enemy",
+        "pattern": "single",
+        "damage_type": "physical",
+        "scaling_stat": "atk",
+        "base_power": 0,
+        "scaling_percent": 160,
+        "mana_cost": 30,
+        "cooldown": 18.0,
+        "cast_time": 3.0,
+        "vfx_type": "debuff_aura",
+        "description_fr": "Marque une cible pour la mort. La cible subit 50% de dégâts supplémentaires pendant 6s.\nInflige 160% ATK dégâts physiques.",
+        "description_en": "Marks a target for death. Target takes 50% extra damage for 6s.\nDeals 160% ATK physical damage.",
+        "tags": ["damage", "melee", "debuff", "assassin", "boss", "signature"],
+        "effects": [
+          {
+            "type": "debuff",
+            "stat": "vulnerability",
+            "duration": 6.0,
+            "value": 50
+          }
+        ]
+      }
+    },
+
+    "tank": {
+      "pool": [
+        {
+          "id": "skill_tank_shield_bash",
+          "name_en": "Shield Bash",
+          "name_fr": "Coup de Bouclier",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 100,
+          "mana_cost": 10,
+          "cooldown": 6.0,
+          "cast_time": 0,
+          "vfx_type": "shield",
+          "description_fr": "Coup de bouclier qui étourdit la cible.\nInflige 100% ATK dégâts physiques. Étourdissement (1.5s).",
+          "description_en": "A shield strike that stuns the target.\nDeals 100% ATK physical damage. Stun (1.5s).",
+          "tags": ["damage", "melee", "stun", "cc", "tank"],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "stun",
+              "duration": 1.5
+            }
+          ]
+        },
+        {
+          "id": "skill_tank_defensive_stance",
+          "name_en": "Defensive Stance",
+          "name_fr": "Posture Défensive",
+          "tier": "basic",
+          "target": "self",
+          "pattern": "single",
+          "damage_type": "none",
+          "scaling_stat": "def",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 15,
+          "cooldown": 12.0,
+          "cast_time": 3.0,
+          "vfx_type": "buff_aura",
+          "description_fr": "Posture défensive qui augmente la DEF de 40% pendant 8s.",
+          "description_en": "A defensive stance that increases DEF by 40% for 8s.",
+          "tags": ["buff", "defense", "tank"],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "def",
+              "value": 40,
+              "duration": 8.0
+            }
+          ]
+        },
+        {
+          "id": "skill_tank_taunt_roar",
+          "name_en": "Taunt Roar",
+          "name_fr": "Rugissement Provocateur",
+          "tier": "advanced",
+          "target": "enemies",
+          "pattern": "row_3",
+          "damage_type": "none",
+          "scaling_stat": "def",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 18,
+          "cooldown": 14.0,
+          "cast_time": 3.0,
+          "vfx_type": "debuff_aura",
+          "description_fr": "Rugissement qui force les ennemis proches à cibler le tank pendant 4s.",
+          "description_en": "A roar that forces nearby enemies to target the tank for 4s.",
+          "tags": ["cc", "taunt", "aoe", "tank"],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "taunt",
+              "duration": 4.0
+            }
+          ]
+        },
+        {
+          "id": "skill_tank_shield_wall",
+          "name_en": "Shield Wall",
+          "name_fr": "Mur de Bouclier",
+          "tier": "advanced",
+          "target": "self",
+          "pattern": "single",
+          "damage_type": "none",
+          "scaling_stat": "def",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 22,
+          "cooldown": 16.0,
+          "cast_time": 3.0,
+          "vfx_type": "shield",
+          "description_fr": "Mur défensif absolu. Réduit les dégâts subis de 50% pendant 6s. +20% chance de blocage.",
+          "description_en": "An impenetrable shield wall. Reduces damage taken by 50% for 6s. +20% block chance.",
+          "tags": ["buff", "defense", "block", "tank"],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "damage_reduction",
+              "value": 50,
+              "duration": 6.0
+            }
+          ]
+        }
+      ],
+      "signature": {
+        "id": "skill_tank_fortress",
+        "name_en": "Fortress",
+        "name_fr": "Forteresse",
+        "tier": "ultimate",
+        "target": "self",
+        "pattern": "single",
+        "damage_type": "none",
+        "scaling_stat": "def",
+        "base_power": 0,
+        "scaling_percent": 0,
+        "mana_cost": 40,
+        "cooldown": 25.0,
+        "cast_time": 4.5,
+        "vfx_type": "shield",
+        "description_fr": "Forteresse ultime. DEF +75%, immunité CC, reflète 20% des dégâts pendant 8s.",
+        "description_en": "Ultimate fortress. DEF +75%, CC immunity, reflects 20% damage for 8s.",
+        "tags": ["buff", "defense", "reflect", "cc_immune", "tank", "boss", "signature"],
+        "effects": [
+          {
+            "type": "buff",
+            "stat": "def",
+            "value": 75,
+            "duration": 8.0
+          },
+          {
+            "type": "buff",
+            "stat": "cc_immune",
+            "duration": 8.0
+          }
+        ]
+      }
+    },
+
+    "healer": {
+      "pool": [
+        {
+          "id": "skill_healer_heal",
+          "name_en": "Heal",
+          "name_fr": "Soin",
+          "tier": "basic",
+          "target": "ally",
+          "pattern": "single",
+          "damage_type": "none",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "base_heal": 20,
+          "heal_scaling_percent": 120,
+          "mana_cost": 15,
+          "cooldown": 5.0,
+          "cast_time": 3.0,
+          "vfx_type": "buff_aura",
+          "description_fr": "Soin ciblé sur un allié.\nRestaure 120% MAG points de vie.",
+          "description_en": "A focused heal on an ally.\nRestores 120% MAG health.",
+          "tags": ["heal", "single", "healer"]
+        },
+        {
+          "id": "skill_healer_smite",
+          "name_en": "Smite",
+          "name_fr": "Châtiment",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "magical",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "scaling_percent": 90,
+          "mana_cost": 8,
+          "cooldown": 4.0,
+          "cast_time": 1.5,
+          "vfx_type": "melee_slash",
+          "description_fr": "Sort offensif faible.\nInflige 90% MAG dégâts magiques.",
+          "description_en": "A weak offensive spell.\nDeals 90% MAG magical damage.",
+          "tags": ["damage", "ranged", "magic", "healer"]
+        },
+        {
+          "id": "skill_healer_group_heal",
+          "name_en": "Group Heal",
+          "name_fr": "Soin de Groupe",
+          "tier": "advanced",
+          "target": "allies",
+          "pattern": "row_3",
+          "damage_type": "none",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "base_heal": 15,
+          "heal_scaling_percent": 80,
+          "mana_cost": 28,
+          "cooldown": 12.0,
+          "cast_time": 4.0,
+          "vfx_type": "buff_aura",
+          "description_fr": "Soin de zone sur les alliés proches.\nRestaure 80% MAG points de vie en zone.",
+          "description_en": "An area heal for nearby allies.\nRestores 80% MAG health in an area.",
+          "tags": ["heal", "aoe", "healer"]
+        },
+        {
+          "id": "skill_healer_dispel",
+          "name_en": "Dispel",
+          "name_fr": "Dissipation",
+          "tier": "advanced",
+          "target": "ally",
+          "pattern": "single",
+          "damage_type": "none",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 14,
+          "cooldown": 8.0,
+          "cast_time": 1.5,
+          "vfx_type": "buff_aura",
+          "description_fr": "Retire tous les debuffs d'un allié.",
+          "description_en": "Removes all debuffs from an ally.",
+          "tags": ["dispel", "support", "healer"],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "cleanse",
+              "duration": 0
+            }
+          ]
+        }
+      ],
+      "signature": {
+        "id": "skill_healer_resurrection",
+        "name_en": "Resurrection",
+        "name_fr": "Résurrection",
+        "tier": "ultimate",
+        "target": "ally",
+        "pattern": "single",
+        "damage_type": "none",
+        "scaling_stat": "mag",
+        "base_power": 0,
+        "base_heal": 50,
+        "heal_scaling_percent": 200,
+        "mana_cost": 50,
+        "cooldown": 30.0,
+        "cast_time": 4.5,
+        "vfx_type": "buff_aura",
+        "description_fr": "Ramène un allié mort à la vie avec 50% HP. DOIT être interrompu.",
+        "description_en": "Revives a dead ally with 50% HP. MUST be interrupted.",
+        "tags": ["heal", "revive", "healer", "boss", "signature"]
+      }
+    },
+
+    "support": {
+      "pool": [
+        {
+          "id": "skill_support_haste",
+          "name_en": "Haste",
+          "name_fr": "Hâte",
+          "tier": "basic",
+          "target": "ally",
+          "pattern": "single",
+          "damage_type": "none",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 14,
+          "cooldown": 10.0,
+          "cast_time": 3.0,
+          "vfx_type": "buff_aura",
+          "description_fr": "Augmente la vitesse d'attaque d'un allié de 25% pendant 8s.",
+          "description_en": "Increases an ally's attack speed by 25% for 8s.",
+          "tags": ["buff", "haste", "support"],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "speed",
+              "value": 25,
+              "duration": 8.0
+            }
+          ]
+        },
+        {
+          "id": "skill_support_weaken",
+          "name_en": "Weaken",
+          "name_fr": "Affaiblissement",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "none",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 12,
+          "cooldown": 8.0,
+          "cast_time": 3.0,
+          "vfx_type": "debuff_aura",
+          "description_fr": "Réduit l'ATK de la cible de 25% pendant 6s.",
+          "description_en": "Reduces the target's ATK by 25% for 6s.",
+          "tags": ["debuff", "atk_down", "support"],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "atk",
+              "value": -25,
+              "duration": 6.0
+            }
+          ]
+        },
+        {
+          "id": "skill_support_shield_barrier",
+          "name_en": "Shield Barrier",
+          "name_fr": "Barrière Protectrice",
+          "tier": "advanced",
+          "target": "ally",
+          "pattern": "single",
+          "damage_type": "none",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "shield_scaling_percent": 100,
+          "shield_duration": 8.0,
+          "mana_cost": 20,
+          "cooldown": 12.0,
+          "cast_time": 3.0,
+          "vfx_type": "shield",
+          "description_fr": "Crée un bouclier magique sur un allié absorbant 100% MAG dégâts pendant 8s.",
+          "description_en": "Creates a magic shield on an ally absorbing 100% MAG damage for 8s.",
+          "tags": ["shield", "support"]
+        },
+        {
+          "id": "skill_support_dispel_magic",
+          "name_en": "Dispel Magic",
+          "name_fr": "Dissipation Magique",
+          "tier": "advanced",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "none",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 14,
+          "cooldown": 10.0,
+          "cast_time": 1.5,
+          "vfx_type": "debuff_aura",
+          "description_fr": "Retire tous les buffs d'un ennemi.",
+          "description_en": "Removes all buffs from an enemy.",
+          "tags": ["purge", "debuff", "support"],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "purge",
+              "duration": 0
+            }
+          ]
+        }
+      ],
+      "signature": {
+        "id": "skill_support_bloodlust",
+        "name_en": "Bloodlust",
+        "name_fr": "Soif de Sang",
+        "tier": "ultimate",
+        "target": "allies",
+        "pattern": "all",
+        "damage_type": "none",
+        "scaling_stat": "mag",
+        "base_power": 0,
+        "scaling_percent": 0,
+        "mana_cost": 45,
+        "cooldown": 25.0,
+        "cast_time": 4.5,
+        "vfx_type": "buff_aura",
+        "description_fr": "Buff de groupe : +30% ATK et +20% vitesse pour tous les alliés pendant 10s. DOIT être interrompu.",
+        "description_en": "Party buff: +30% ATK and +20% speed for all allies for 10s. MUST be interrupted.",
+        "tags": ["buff", "aoe", "haste", "atk_up", "support", "boss", "signature"],
+        "effects": [
+          {
+            "type": "buff",
+            "stat": "atk",
+            "value": 30,
+            "duration": 10.0
+          },
+          {
+            "type": "buff",
+            "stat": "speed",
+            "value": 20,
+            "duration": 10.0
+          }
+        ]
+      }
+    },
+
+    "artillery": {
+      "pool": [
+        {
+          "id": "skill_artillery_fire_bolt",
+          "name_en": "Fire Bolt",
+          "name_fr": "Trait de Feu",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "magical",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "scaling_percent": 120,
+          "mana_cost": 10,
+          "cooldown": 4.0,
+          "cast_time": 3.0,
+          "vfx_type": "melee_slash",
+          "description_fr": "Projectile de feu ciblé.\nInflige 120% MAG dégâts magiques.",
+          "description_en": "A targeted fire projectile.\nDeals 120% MAG magical damage.",
+          "tags": ["damage", "ranged", "magic", "fire", "artillery"]
+        },
+        {
+          "id": "skill_artillery_fireball",
+          "name_en": "Fireball",
+          "name_fr": "Boule de Feu",
+          "tier": "advanced",
+          "target": "enemy",
+          "pattern": "rect_2x2",
+          "damage_type": "magical",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "scaling_percent": 140,
+          "mana_cost": 22,
+          "cooldown": 10.0,
+          "cast_time": 4.0,
+          "vfx_type": "falling",
+          "description_fr": "Explosion de feu en zone qui brûle les cibles.\nInflige 140% MAG dégâts magiques en zone 2x2. Brûlure (4s).",
+          "description_en": "An area fire explosion that burns targets.\nDeals 140% MAG magical damage in a 2x2 area. Burn (4s).",
+          "tags": ["damage", "ranged", "magic", "fire", "aoe", "burn", "artillery"],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "burn",
+              "duration": 4.0,
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "skill_artillery_lightning_bolt",
+          "name_en": "Lightning Bolt",
+          "name_fr": "Éclair",
+          "tier": "advanced",
+          "target": "enemy",
+          "pattern": "chain_3",
+          "damage_type": "magical",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "scaling_percent": 110,
+          "mana_cost": 20,
+          "cooldown": 8.0,
+          "cast_time": 3.0,
+          "vfx_type": "melee_slash",
+          "description_fr": "Éclair qui rebondit sur 3 cibles.\nInflige 110% MAG dégâts magiques (rebond -20% par cible).",
+          "description_en": "Lightning that bounces to 3 targets.\nDeals 110% MAG magical damage (bounce -20% per target).",
+          "tags": ["damage", "ranged", "magic", "lightning", "chain", "artillery"]
+        },
+        {
+          "id": "skill_artillery_frost_nova",
+          "name_en": "Frost Nova",
+          "name_fr": "Nova de Givre",
+          "tier": "advanced",
+          "target": "enemies",
+          "pattern": "around_radius_1",
+          "damage_type": "magical",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "scaling_percent": 100,
+          "mana_cost": 18,
+          "cooldown": 12.0,
+          "cast_time": 3.0,
+          "vfx_type": "melee_slash",
+          "description_fr": "Explosion de givre autour du lanceur. Gèle les ennemis proches (2s).\nInflige 100% MAG dégâts magiques en zone.",
+          "description_en": "A frost explosion around the caster. Freezes nearby enemies (2s).\nDeals 100% MAG magical damage in an area.",
+          "tags": ["damage", "magic", "ice", "aoe", "freeze", "cc", "artillery"],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "freeze",
+              "duration": 2.0
+            }
+          ]
+        }
+      ],
+      "signature": {
+        "id": "skill_artillery_meteor",
+        "name_en": "Meteor",
+        "name_fr": "Météore",
+        "tier": "ultimate",
+        "target": "enemies",
+        "pattern": "rect_2x3",
+        "damage_type": "magical",
+        "scaling_stat": "mag",
+        "base_power": 0,
+        "scaling_percent": 250,
+        "mana_cost": 50,
+        "cooldown": 25.0,
+        "cast_time": 7.0,
+        "vfx_type": "falling",
+        "description_fr": "Météore dévastateur. Inflige 250% MAG dégâts magiques en zone 2x3. DOIT être interrompu ou wipe garanti.",
+        "description_en": "A devastating meteor. Deals 250% MAG magical damage in a 2x3 area. MUST be interrupted or guaranteed wipe.",
+        "tags": ["damage", "ranged", "magic", "fire", "aoe", "artillery", "boss", "signature"],
+        "effects": [
+          {
+            "type": "debuff",
+            "stat": "burn",
+            "duration": 6.0,
+            "value": 2
+          }
+        ]
+      }
+    },
+
+    "controller": {
+      "pool": [
+        {
+          "id": "skill_controller_root",
+          "name_en": "Root",
+          "name_fr": "Emprise",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "magical",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "scaling_percent": 60,
+          "mana_cost": 12,
+          "cooldown": 8.0,
+          "cast_time": 3.0,
+          "vfx_type": "debuff_aura",
+          "description_fr": "Immobilise la cible pendant 3s.\nInflige 60% MAG dégâts magiques.",
+          "description_en": "Roots the target in place for 3s.\nDeals 60% MAG magical damage.",
+          "tags": ["damage", "cc", "root", "magic", "controller"],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "root",
+              "duration": 3.0
+            }
+          ]
+        },
+        {
+          "id": "skill_controller_slow",
+          "name_en": "Slow",
+          "name_fr": "Ralentissement",
+          "tier": "basic",
+          "target": "enemies",
+          "pattern": "row_3",
+          "damage_type": "magical",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "scaling_percent": 50,
+          "mana_cost": 14,
+          "cooldown": 10.0,
+          "cast_time": 3.0,
+          "vfx_type": "debuff_aura",
+          "description_fr": "Ralentit les ennemis en zone de 30% pendant 5s.\nInflige 50% MAG dégâts magiques.",
+          "description_en": "Slows enemies in an area by 30% for 5s.\nDeals 50% MAG magical damage.",
+          "tags": ["damage", "cc", "slow", "aoe", "magic", "controller"],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "slow",
+              "value": 30,
+              "duration": 5.0
+            }
+          ]
+        },
+        {
+          "id": "skill_controller_fear",
+          "name_en": "Fear",
+          "name_fr": "Terreur",
+          "tier": "advanced",
+          "target": "enemies",
+          "pattern": "row_3",
+          "damage_type": "magical",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "scaling_percent": 70,
+          "mana_cost": 22,
+          "cooldown": 14.0,
+          "cast_time": 4.0,
+          "vfx_type": "debuff_aura",
+          "description_fr": "Terrifie les ennemis en zone, les empêchant d'agir pendant 3s.\nInflige 70% MAG dégâts magiques.",
+          "description_en": "Terrifies enemies in an area, preventing action for 3s.\nDeals 70% MAG magical damage.",
+          "tags": ["damage", "cc", "fear", "aoe", "magic", "controller"],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "fear",
+              "duration": 3.0
+            }
+          ]
+        },
+        {
+          "id": "skill_controller_silence",
+          "name_en": "Silence",
+          "name_fr": "Silence",
+          "tier": "advanced",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "magical",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "scaling_percent": 80,
+          "mana_cost": 16,
+          "cooldown": 10.0,
+          "cast_time": 1.5,
+          "vfx_type": "debuff_aura",
+          "description_fr": "Réduit la cible au silence, l'empêchant de lancer des sorts pendant 4s.\nInflige 80% MAG dégâts magiques.",
+          "description_en": "Silences the target, preventing spellcasting for 4s.\nDeals 80% MAG magical damage.",
+          "tags": ["damage", "cc", "silence", "magic", "controller"],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "silence",
+              "duration": 4.0
+            }
+          ]
+        }
+      ],
+      "signature": {
+        "id": "skill_controller_mind_control",
+        "name_en": "Mind Control",
+        "name_fr": "Contrôle Mental",
+        "tier": "ultimate",
+        "target": "enemy",
+        "pattern": "single",
+        "damage_type": "magical",
+        "scaling_stat": "mag",
+        "base_power": 0,
+        "scaling_percent": 0,
+        "mana_cost": 45,
+        "cooldown": 30.0,
+        "cast_time": 4.5,
+        "vfx_type": "debuff_aura",
+        "description_fr": "Prend le contrôle d'un joueur pendant 6s. DOIT être interrompu en PRIORITÉ.",
+        "description_en": "Takes control of a player for 6s. MUST be interrupted as PRIORITY.",
+        "tags": ["cc", "charm", "magic", "controller", "boss", "signature"],
+        "effects": [
+          {
+            "type": "debuff",
+            "stat": "charm",
+            "duration": 6.0
+          }
+        ]
+      }
+    },
+
+    "berserker": {
+      "pool": [
+        {
+          "id": "skill_berserker_wild_swing",
+          "name_en": "Wild Swing",
+          "name_fr": "Frappe Sauvage",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 140,
+          "mana_cost": 8,
+          "cooldown": 3.0,
+          "cast_time": 0,
+          "vfx_type": "melee_slash",
+          "description_fr": "Frappe frénétique et imprévisible.\nInflige 140% ATK dégâts physiques.",
+          "description_en": "A frenzied, reckless strike.\nDeals 140% ATK physical damage.",
+          "tags": ["damage", "melee", "berserker"]
+        },
+        {
+          "id": "skill_berserker_blood_frenzy",
+          "name_en": "Blood Frenzy",
+          "name_fr": "Frénésie Sanguinaire",
+          "tier": "basic",
+          "target": "self",
+          "pattern": "single",
+          "damage_type": "none",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 15,
+          "cooldown": 14.0,
+          "cast_time": 3.0,
+          "vfx_type": "buff_aura",
+          "description_fr": "Sacrifie 15% de ses HP pour gagner +40% ATK pendant 8s.",
+          "description_en": "Sacrifices 15% HP to gain +40% ATK for 8s.",
+          "tags": ["buff", "self_damage", "atk_up", "berserker"],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "atk",
+              "value": 40,
+              "duration": 8.0
+            }
+          ]
+        },
+        {
+          "id": "skill_berserker_rampage",
+          "name_en": "Rampage",
+          "name_fr": "Déchaînement",
+          "tier": "advanced",
+          "target": "enemies",
+          "pattern": "row_3",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 110,
+          "mana_cost": 18,
+          "cooldown": 8.0,
+          "cast_time": 1.5,
+          "vfx_type": "whirlwind",
+          "description_fr": "Tornade de coups frappant plusieurs cibles.\nInflige 110% ATK dégâts physiques en zone.",
+          "description_en": "A wild flurry of blows hitting multiple targets.\nDeals 110% ATK physical damage in an area.",
+          "tags": ["damage", "melee", "aoe", "berserker"]
+        },
+        {
+          "id": "skill_berserker_execution",
+          "name_en": "Execution",
+          "name_fr": "Exécution Sanglante",
+          "tier": "advanced",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 180,
+          "mana_cost": 20,
+          "cooldown": 10.0,
+          "cast_time": 3.0,
+          "vfx_type": "melee_slash",
+          "description_fr": "Plus la cible est blessée, plus les dégâts augmentent.\nInflige 180% ATK dégâts physiques (+50% si cible < 50% HP).",
+          "description_en": "The lower the target's health, the more damage dealt.\nDeals 180% ATK physical damage (+50% if target < 50% HP).",
+          "tags": ["damage", "melee", "execute", "berserker"]
+        }
+      ],
+      "signature": {
+        "id": "skill_berserker_blood_ritual",
+        "name_en": "Blood Ritual",
+        "name_fr": "Rituel de Sang",
+        "tier": "ultimate",
+        "target": "self",
+        "pattern": "single",
+        "damage_type": "none",
+        "scaling_stat": "atk",
+        "base_power": 0,
+        "scaling_percent": 0,
+        "mana_cost": 0,
+        "cooldown": 30.0,
+        "cast_time": 4.5,
+        "vfx_type": "life_steal",
+        "description_fr": "Tombe à 10% HP. Gagne +100% ATK, +50% vitesse, immunité CC pendant 10s. Fin = mort si pas soigné.",
+        "description_en": "Drops to 10% HP. Gains +100% ATK, +50% speed, CC immunity for 10s. Ends = death if not healed.",
+        "tags": ["buff", "self_damage", "atk_up", "haste", "cc_immune", "berserker", "boss", "signature"],
+        "effects": [
+          {
+            "type": "buff",
+            "stat": "atk",
+            "value": 100,
+            "duration": 10.0
+          },
+          {
+            "type": "buff",
+            "stat": "speed",
+            "value": 50,
+            "duration": 10.0
+          },
+          {
+            "type": "buff",
+            "stat": "cc_immune",
+            "duration": 10.0
           }
         ]
       }
