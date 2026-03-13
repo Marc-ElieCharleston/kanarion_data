@@ -151,13 +151,65 @@ jobs:
                       if ref and ref not in effect_ids:
                           errors.append(f"{skills_file}: skill '{skill.get('id','?')}' references unknown {ref_field} '{ref}'")
 
+          # ===== NEW: Monster skill IDs must exist in skill registry =====
+          # Load monster skills from skills/monster_skills.json
+          monster_skill_ids = set()
+          ms_data = load("skills/monster_skills.json")
+          for skill in ms_data.get("basic_skills", []):
+              if isinstance(skill, dict) and "id" in skill:
+                  monster_skill_ids.add(skill["id"])
+          for arch_data in ms_data.get("archetype_skills", {}).values():
+              if isinstance(arch_data, dict):
+                  for skill in arch_data.get("pool", []):
+                      if isinstance(skill, dict) and "id" in skill:
+                          monster_skill_ids.add(skill["id"])
+                  sig = arch_data.get("signature")
+                  if isinstance(sig, dict) and "id" in sig:
+                      monster_skill_ids.add(sig["id"])
+
+          all_skill_ids = skill_ids | monster_skill_ids
+
+          # Validate: every monster skill reference exists in the combined registry
+          for m in monsters.get("monsters", []):
+              mid = m.get("id", "?")
+              for sid in m.get("skills", []):
+                  if sid not in all_skill_ids:
+                      errors.append(f"monsters.json: monster '{mid}' references unknown skill '{sid}'")
+
+          # Validate: every monster has at least 1 skill
+          for m in monsters.get("monsters", []):
+              mid = m.get("id", "?")
+              if not m.get("skills"):
+                  errors.append(f"monsters.json: monster '{mid}' has no skills assigned")
+
+          # ===== NEW: ai_role must exist in monster_ai.json =====
+          ai_config = load("config/monster_ai.json")
+          valid_roles = set(ai_config.get("ai_roles", {}).keys())
+          for m in monsters.get("monsters", []):
+              mid = m.get("id", "?")
+              role = m.get("ai_role", "")
+              if role and role not in valid_roles:
+                  errors.append(f"monsters.json: monster '{mid}' has unknown ai_role '{role}' (valid: {sorted(valid_roles)})")
+              if not role:
+                  errors.append(f"monsters.json: monster '{mid}' has no ai_role")
+
+          # ===== NEW: zone mob pools reference existing monster IDs =====
+          zones = load("world/zones.json")
+          for zone in zones.get("zones", []):
+              zid = zone.get("id", "?")
+              for pool_key in ["mob_pool", "elite_pool"]:
+                  for mob_ref in zone.get(pool_key, []):
+                      ref_id = mob_ref if isinstance(mob_ref, str) else mob_ref.get("id", "")
+                      if ref_id and ref_id not in monster_ids:
+                          errors.append(f"zones.json: zone '{zid}' {pool_key} references unknown monster '{ref_id}'")
+
           if errors:
               print(f"\n{len(errors)} reference errors found:")
               for e in errors:
                   print(f"  ::error::{e}")
               sys.exit(1)
           else:
-              print(f"Cross-references OK ({len(item_ids)} items, {len(monster_ids)} monsters, {len(skill_ids)} skills, {len(effect_ids)} effects)")
+              print(f"Cross-references OK ({len(item_ids)} items, {len(monster_ids)} monsters, {len(all_skill_ids)} skills [{len(skill_ids)} player + {len(monster_skill_ids)} monster], {len(effect_ids)} effects, {len(valid_roles)} ai_roles)")
           PYEOF
 
       # 4. Schema version present
