@@ -212,6 +212,10 @@ jobs:
               print(f"Cross-references OK ({len(item_ids)} items, {len(monster_ids)} monsters, {len(all_skill_ids)} skills [{len(skill_ids)} player + {len(monster_skill_ids)} monster], {len(effect_ids)} effects, {len(valid_roles)} ai_roles)")
           PYEOF
 
+      # 3b. Skill schema validation (Bloc 0): whitelists, effects[] cross-refs, legacy detection
+      - name: Validate skill schema (Bloc 0)
+        run: python3 scripts/validate_skills.py
+
       # 4. Schema version present
       - name: Verify schema_version exists
         run: |
