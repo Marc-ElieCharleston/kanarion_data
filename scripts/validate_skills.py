@@ -131,10 +131,10 @@ ALLOWED_METADATA_FIELDS = {
     "autos_generate_momentum",
 }
 
-# Legacy fields: KNOWN but should be migrated to effects[].
-# During coexistence phase: WARNING (not error).
-# After Bloc 5 (legacy cleanup): these become ERRORS.
-LEGACY_FIELDS_COEXISTENCE = {
+# Legacy fields: BLOCKED after Bloc 5 cleanup.
+# These fields have been migrated to effects[] pipeline.
+# Any remaining usage is an ERROR.
+LEGACY_FIELDS_BLOCKED = {
     # DoT stacks (Bloc 1.1)
     "applies_bleed_stacks",
     "applies_burn_stacks",
@@ -234,15 +234,15 @@ def extract_all_skills(data):
 def validate_skill_fields(skill, file_path, errors, warnings):
     """Check that every field in a skill is in an allowed whitelist."""
     sid = skill.get("id", "???")
-    all_allowed = ALLOWED_STANDARD_FIELDS | ALLOWED_METADATA_FIELDS | LEGACY_FIELDS_COEXISTENCE
+    all_allowed = ALLOWED_STANDARD_FIELDS | ALLOWED_METADATA_FIELDS | LEGACY_FIELDS_BLOCKED
 
     for field in skill.keys():
         if field in ALLOWED_STANDARD_FIELDS:
             continue
         if field in ALLOWED_METADATA_FIELDS:
             continue
-        if field in LEGACY_FIELDS_COEXISTENCE:
-            warnings.append(f"{file_path}: skill '{sid}' uses legacy field '{field}' (migration pending)")
+        if field in LEGACY_FIELDS_BLOCKED:
+            errors.append(f"{file_path}: skill '{sid}' uses LEGACY field '{field}' — must be migrated to effects[]")
             continue
         # Unknown field = ERROR
         errors.append(f"{file_path}: skill '{sid}' has UNKNOWN field '{field}' — not in any whitelist")
@@ -350,9 +350,9 @@ def main():
 
             # Count legacy usage
             for f in skill.keys():
-                if f in LEGACY_FIELDS_COEXISTENCE:
+                if f in LEGACY_FIELDS_BLOCKED:
                     legacy_field_usage[f] = legacy_field_usage.get(f, 0) + 1
-            has_legacy = any(f in skill for f in LEGACY_FIELDS_COEXISTENCE)
+            has_legacy = any(f in skill for f in LEGACY_FIELDS_BLOCKED)
             if has_legacy:
                 legacy_count += 1
 
