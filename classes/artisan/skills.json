@@ -58,11 +58,6 @@
       "heal_scaling_stat": "mag",
       "heal_scaling_percent": 100,
       "heal_scaling_per_level": 4,
-      "shield_scaling_stat": "mag",
-      "shield_scaling_percent": 50,
-      "shield_scaling_per_level": 2,
-      "shield_duration": 6.0,
-      "shield_duration_per_level": 0.2,
       "shield_on_cross": true,
       "mana_cost": 20,
       "mana_cost_per_level": 2,
@@ -78,6 +73,17 @@
         "support",
         "aoe",
         "cleanse"
+      ],
+      "effects": [
+        {
+          "type": "buff",
+          "stat": "shield",
+          "value": 50,
+          "scaling": "mag",
+          "duration": 6.0,
+          "duration_per_level": 0.2,
+          "value_per_level": 2
+        }
       ]
     },
     {
@@ -245,10 +251,6 @@
           "base_power": 0,
           "scaling_percent": 230,
           "percent_per_level": 8,
-          "self_shield_base": 20,
-          "self_shield_scaling_stat": "def",
-          "self_shield_scaling_percent": 70,
-          "self_shield_duration": 8.0,
           "mana_cost": 20,
           "cooldown": 12.0,
           "cast_time": 1.0,
@@ -262,6 +264,16 @@
             "self",
             "aoe",
             "tank"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "shield",
+              "target": "self",
+              "value": 70,
+              "scaling": "def",
+              "duration": 8.0
+            }
           ]
         },
         {
@@ -272,13 +284,6 @@
           "target": "allies",
           "pattern": "single_plus_adjacent_2",
           "damage_type": "none",
-          "shield_base": 30,
-          "shield_scaling_stat": "def",
-          "shield_scaling_percent": 80,
-          "ally_shield_base": 15,
-          "ally_shield_scaling_stat": "def",
-          "ally_shield_scaling_percent": 40,
-          "ally_shield_duration": 8.0,
           "mana_cost": 24,
           "cooldown": 14.0,
           "cast_time": 1.0,
@@ -298,6 +303,21 @@
               "type": "buff",
               "stat": "flat_dr_up",
               "value": 15,
+              "duration": 8.0
+            },
+            {
+              "type": "buff",
+              "stat": "shield",
+              "value": 80,
+              "scaling": "def",
+              "duration": 8.0
+            },
+            {
+              "type": "buff",
+              "stat": "shield",
+              "target": "ally",
+              "value": 40,
+              "scaling": "def",
               "duration": 8.0
             }
           ]
@@ -618,7 +638,6 @@
           "percent_per_level": 8,
           "mana_cost": 10,
           "cooldown": 6.0,
-          "applies_toxin_stacks": 2,
           "dot_type": "toxin",
           "vfx_type": "projectile",
           "description_fr": "L'Alchimiste distille son Souffle en toxine. Le flacon éclate et infecte tout ce qu'il touche.\nInflige 220% MAG dégâts magiques sur 2 ennemis en ligne. Applique 2 charges de Toxine.",
@@ -628,6 +647,14 @@
             "toxin",
             "dot",
             "aoe"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "toxin",
+              "value": 2,
+              "duration": 6.0
+            }
           ]
         },
         {
@@ -645,7 +672,6 @@
           "mana_cost": 18,
           "cooldown": 10.0,
           "cast_time": 1.0,
-          "applies_toxin_stacks": 1,
           "dot_type": "toxin",
           "vfx_type": "aoe_pulse",
           "description_fr": "Un nuage de Souffle corrosif s'élève du flacon. L'air lui-même ronge l'armure ennemie.\nInflige 280% MAG en zone 2x2. 1 charge de Toxine. -15% armure pendant 10s. Incantation 1.0s.",
@@ -664,6 +690,12 @@
               "stat": "armor_down",
               "value": 15,
               "duration": 10.0
+            },
+            {
+              "type": "debuff",
+              "stat": "toxin",
+              "value": 1,
+              "duration": 6.0
             }
           ]
         },
@@ -682,7 +714,6 @@
           "mana_cost": 16,
           "cooldown": 12.0,
           "cast_time": 1.0,
-          "applies_toxin_stacks": 1,
           "dot_type": "toxin",
           "vfx_type": "aoe_pulse",
           "description_fr": "L'Alchimiste vaporise un mélange qui sape les forces. Son Souffle, devenu fumée, empoisonne la volonté de combattre.\nInflige 230% MAG sur 3 ennemis en ligne. 1 charge de Toxine. -20% ATK pendant 8s. Incantation 1.0s.",
@@ -700,6 +731,12 @@
               "stat": "atk_down",
               "value": 20,
               "duration": 8.0
+            },
+            {
+              "type": "debuff",
+              "stat": "toxin",
+              "value": 1,
+              "duration": 6.0
             }
           ]
         },
@@ -717,7 +754,6 @@
           "percent_per_level": 7,
           "mana_cost": 18,
           "cooldown": 10.0,
-          "applies_toxin_stacks": 2,
           "dot_type": "toxin",
           "vfx_type": "aoe_pulse",
           "description_fr": "Le Souffle de l'Alchimiste explose en une réaction chimique violente. Les toxines se répandent en croix.\nInflige 280% MAG dégâts magiques en croix. Applique 2 charges de Toxine.",
@@ -727,6 +763,14 @@
             "toxin",
             "dot",
             "aoe"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "toxin",
+              "value": 2,
+              "duration": 6.0
+            }
           ]
         },
         {
@@ -1064,7 +1108,6 @@
           "percent_per_level": 8,
           "mana_cost": 12,
           "cooldown": 8.0,
-          "applies_burn_stacks": 1,
           "vfx_type": "melee_slash",
           "description_fr": "Le Chef tranche avec une lame chauffée par son Souffle. La cuisine est un art de feu et de précision.\nInflige 250% MAG dégâts magiques sur 2 ennemis en ligne. Applique 1 charge de brûlure (5s).",
           "description_en": "The Chef cuts with a blade heated by their Breath. Cooking is an art of fire and precision.\nDeals 250% MAG magic damage to 2 enemies in a row. Applies 1 burn stack (5s).",
@@ -1073,6 +1116,14 @@
             "burn",
             "dot",
             "aoe"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "burn",
+              "value": 1,
+              "duration": 6.0
+            }
           ]
         },
         {
@@ -1090,7 +1141,6 @@
           "mana_cost": 20,
           "cooldown": 12.0,
           "cast_time": 1.0,
-          "applies_burn_stacks": 2,
           "vfx_type": "aoe_pulse",
           "description_fr": "Les arômes du Chef se répandent, chargés de Souffle brûlant. L'air lui-même enflamme et affaiblit les ennemis.\nInflige 350% MAG sur 3 ennemis en ligne. 2 charges de brûlure (6s). -15% réduction de dégâts. Incantation 1.0s.",
           "description_en": "The Chef's aromas spread, charged with burning Breath. The air itself ignites and weakens enemies.\nDeals 350% MAG on 3 enemies in a row. 2 burn stacks (6s). -15% damage reduction. 1.0s cast.",
@@ -1106,6 +1156,12 @@
               "type": "debuff",
               "stat": "flat_dr_down",
               "value": 15,
+              "duration": 6.0
+            },
+            {
+              "type": "debuff",
+              "stat": "burn",
+              "value": 2,
               "duration": 6.0
             }
           ]
@@ -1156,10 +1212,6 @@
           "mana_cost": 22,
           "cooldown": 14.0,
           "cast_time": 1.0,
-          "hot_base": 8,
-          "hot_scaling_stat": "mag",
-          "hot_scaling_percent": 20,
-          "hot_duration": 10.0,
           "vfx_type": "regeneration",
           "description_fr": "Le bouillon du Chef réchauffe corps et âme. Son Souffle infuse chaque goutte d'une chaleur protectrice.\nSoin continu 8 (+20% MAG)/s + +15% réduction de dégâts sur 3 alliés en ligne pendant 10s. Incantation 1.0s.",
           "description_en": "The Chef's broth warms body and soul. Their Breath infuses every drop with protective warmth.\nHoT 8 (+20% MAG)/s + +15% damage reduction to 3 allies in a row for 10s. 1.0s cast.",
@@ -1176,6 +1228,13 @@
               "type": "buff",
               "stat": "flat_dr_up",
               "value": 15,
+              "duration": 10.0
+            },
+            {
+              "type": "buff",
+              "stat": "heal_over_time",
+              "value": 20,
+              "scaling": "mag",
               "duration": 10.0
             }
           ]
@@ -1195,13 +1254,6 @@
           "mana_cost": 42,
           "cooldown": 28.0,
           "cast_time": 2.0,
-          "applies_burn_stacks": 3,
-          "allies_hot_base": 10,
-          "allies_hot_scaling_percent": 25,
-          "allies_hot_duration": 8.0,
-          "allies_buff": "damage_percent",
-          "allies_buff_value": 20,
-          "allies_buff_duration": 10.0,
           "dual_effect": true,
           "is_signature": true,
           "vfx_type": "aoe_pulse",
@@ -1215,6 +1267,29 @@
             "dual_effect",
             "signature",
             "aoe"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "burn",
+              "value": 3,
+              "duration": 6.0
+            },
+            {
+              "type": "buff",
+              "stat": "heal_over_time",
+              "target": "allies",
+              "value": 25,
+              "scaling": "mag",
+              "duration": 8.0
+            },
+            {
+              "type": "buff",
+              "stat": "damage_percent_up",
+              "value": 20,
+              "duration": 10.0,
+              "target": "allies"
+            }
           ]
         }
       ],
@@ -1585,11 +1660,6 @@
           "mana_cost": 18,
           "cooldown": 12.0,
           "ignore_los": true,
-          "hot_base": 8,
-          "hot_scaling_stat": "mag",
-          "hot_scaling_percent": 20,
-          "hot_duration": 8.0,
-          "hot_duration_scaling": 0.3,
           "dual_effect": true,
           "vfx_type": "buff_aura",
           "description_fr": "Le Musicien joue une mélodie à double tranchant. Son Souffle soigne les alliés et étouffe les soins ennemis simultanément.\nAlliés row_3 : soin continu 8 (+20% MAG)/s pendant 8s.\nEnnemis row_3 : -15% soins reçus pendant 8s. Ignore la ligne de vue.",
@@ -1610,6 +1680,13 @@
               "value": 15,
               "duration": 8.0,
               "duration_scaling": 0.15
+            },
+            {
+              "type": "buff",
+              "stat": "heal_over_time",
+              "value": 20,
+              "scaling": "mag",
+              "duration": 8.0
             }
           ]
         },
@@ -1667,14 +1744,6 @@
           "cooldown": 28.0,
           "cast_time": 2.0,
           "ignore_los": true,
-          "allies_buff": "all_stats",
-          "allies_buff_value": 15,
-          "allies_buff_duration": 12.0,
-          "allies_buff_duration_scaling": 0.3,
-          "enemies_debuff": "all_stats",
-          "enemies_debuff_value": 15,
-          "enemies_debuff_duration": 12.0,
-          "enemies_debuff_duration_scaling": 0.15,
           "dual_effect": true,
           "is_signature": true,
           "vfx_type": "buff_aura",
@@ -1687,6 +1756,24 @@
             "dual_effect",
             "signature",
             "all"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "all_stats",
+              "value": 15,
+              "duration": 12.0,
+              "target": "allies",
+              "duration_scaling": 0.3
+            },
+            {
+              "type": "debuff",
+              "stat": "all_stats",
+              "value": 15,
+              "duration": 12.0,
+              "target": "enemies",
+              "duration_scaling": 0.15
+            }
           ]
         }
       ],
