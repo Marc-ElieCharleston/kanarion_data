@@ -456,14 +456,15 @@
           "cooldown": 12.0,
           "generates_charges": 1,
           "vfx_type": "debuff_aura",
-          "description_fr": "L'Occultiste murmure son Souffle dans une malédiction ancienne qui ronge la force et la résistance de sa victime.\nInflige 100% MAG dégâts magiques à une cible.\nRéduit ATK et DEF de 20% pendant 8s. Génère 1 Charge Arcanique.",
-          "description_en": "The Occultist whispers their Breath into an ancient curse that gnaws at the target's strength and resilience.\nDeals 100% MAG magic damage to a single target.\nReduces ATK and DEF by 20% for 8s. Generates 1 Arcane Charge.",
+          "description_fr": "L'Occultiste murmure son Souffle dans une malédiction ancienne qui ronge la force et la résistance de sa victime, la consumant de l'intérieur.\nInflige 100% MAG dégâts magiques à une cible.\nRéduit ATK et DEF de 20% pendant 8s. Malédiction : DoT dark 8s (explose à la fin). Génère 1 Charge Arcanique.",
+          "description_en": "The Occultist whispers their Breath into an ancient curse that gnaws at the target's strength and resilience, consuming them from within.\nDeals 100% MAG magic damage to a single target.\nReduces ATK and DEF by 20% for 8s. Curse: dark DoT 8s (explodes on expiry). Generates 1 Arcane Charge.",
           "tags": [
             "damage",
             "debuff",
             "dark",
             "occult",
             "curse",
+            "dot",
             "charge_generator"
           ],
           "effects": [
@@ -477,6 +478,12 @@
               "type": "debuff",
               "stat": "def_down",
               "value": 20,
+              "duration": 8.0
+            },
+            {
+              "type": "debuff",
+              "status_id": "curse_dot",
+              "value": 1,
               "duration": 8.0
             }
           ]
@@ -497,20 +504,27 @@
           "cooldown": 8.0,
           "cast_time": 1.5,
           "vfx_type": "life_steal",
-          "description_fr": "L'Occultiste retourne son Souffle contre le flux vital de sa cible, aspirant sa vie.\nInflige 260% MAG dégâts magiques à une cible. Incantation 1.5s.\nVole 30% des dégâts en HP (+2% par niveau).",
-          "description_en": "The Occultist turns their Breath against the target's life force, draining their vitality.\nDeals 260% MAG magic damage to a single target. 1.5s cast.\nSteals 30% of damage as HP (+2% per level).",
+          "description_fr": "L'Occultiste retourne son Souffle contre le flux vital de sa cible, aspirant sa vie et son Souffle.\nInflige 260% MAG dégâts magiques à une cible. Incantation 1.5s.\nVole 30% des dégâts en HP (+2%/niv). Drain de Souffle 5s.",
+          "description_en": "The Occultist turns their Breath against the target's life force, draining their vitality and Breath.\nDeals 260% MAG magic damage to a single target. 1.5s cast.\nSteals 30% of damage as HP (+2%/lvl). Breath Drain 5s.",
           "tags": [
             "damage",
             "lifesteal",
             "dark",
             "occult",
-            "sustain"
+            "sustain",
+            "mana_drain"
           ],
           "effects": [
             {
               "type": "utility",
               "stat": "lifesteal",
               "value": 30
+            },
+            {
+              "type": "debuff",
+              "status_id": "mana_drain",
+              "value": 1,
+              "duration": 5.0
             }
           ]
         },
@@ -530,8 +544,8 @@
           "cooldown": 12.0,
           "cast_time": 1.5,
           "vfx_type": "debuff_aura",
-          "description_fr": "Le Souffle de l'Occultiste déchire le lien entre ses ennemis et leurs voix, arrachant leurs protections au passage.\nInflige 210% MAG dégâts magiques sur 3 cibles en ligne. Incantation 1.5s.\nSilence pendant 2s. Retire 1 buff de chaque cible.",
-          "description_en": "The Occultist's Breath tears the bond between their enemies and their voices, ripping away their protections.\nDeals 210% MAG magic damage to 3 targets in a row. 1.5s cast.\nSilences for 2s. Removes 1 buff from each target.",
+          "description_fr": "Le Souffle de l'Occultiste déchire le lien entre ses ennemis et leurs voix, arrachant leurs protections et bloquant leur régénération de Souffle.\nInflige 210% MAG dégâts magiques sur 3 cibles en ligne. Incantation 1.5s.\nSilence pendant 2s. Retire 1 buff. Blocage de Souffle 4s.",
+          "description_en": "The Occultist's Breath tears the bond between their enemies and their voices, ripping away their protections and locking their Breath regeneration.\nDeals 210% MAG magic damage to 3 targets in a row. 1.5s cast.\nSilences for 2s. Removes 1 buff. Breath Lock 4s.",
           "tags": [
             "damage",
             "aoe",
@@ -539,7 +553,8 @@
             "occult",
             "silence",
             "cc",
-            "purge"
+            "purge",
+            "mana_lock"
           ],
           "effects": [
             {
@@ -551,6 +566,11 @@
               "type": "utility",
               "stat": "purge",
               "value": 1
+            },
+            {
+              "type": "debuff",
+              "status_id": "mana_lock",
+              "duration": 4.0
             }
           ]
         },
