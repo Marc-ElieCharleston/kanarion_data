@@ -12,6 +12,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # 0a. Guardrail: config/status_effects.json must NOT exist (deleted — canonical source is stats/status_effects.json)
+      - name: Block deleted config/status_effects.json from reappearing
+        run: |
+          if [ -f "config/status_effects.json" ]; then
+            echo "::error::config/status_effects.json must not exist! It was deleted — the canonical source is stats/status_effects.json"
+            exit 1
+          fi
+          echo "OK: config/status_effects.json does not exist"
+
+      # 0b. Validate status effect cross-references (skill→status_effects.json)
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate status effect cross-references
+        run: python scripts/validate_status_effects.py
+
       # 1. Hash integrity: content_hash must match actual JSON files
       - name: Verify content_hash is up to date
         run: |

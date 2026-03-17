@@ -38,10 +38,10 @@ Validation happens at three levels:
 - **`_meta/`** — Version info (`version.json`), roadmap (`ROADMAP.md`), ideas backlog, 15 design suggestions in `suggestions/`
 - **`classes/`** — 6 base classes (warrior, mage, healer, archer, rogue, artisan), each with `skills.json` and `passives.json`. Also `common_passives.json` (10 universal passives) and `_classes_index.json` (6 classes x 4 subclasses x 2 tier3 = 48 tier3 specs)
 - **`combat/`** — Targeting system (`targeting.json`: 4x4 grid), LoS mechanics, ability ideas
-- **`config/`** — Combat formulas (`combat.json`), game constants (`game.json`), monster AI (`monster_ai.json`), skill system (`skill_system.json`), skill templates (`skill_templates.json`), role tags (`roles.json`), monster archetypes, monster skill scaling, status effect rules
+- **`config/`** — Combat formulas (`combat.json`), game constants (`game.json`), monster AI (`monster_ai.json`), skill system (`skill_system.json`), skill templates (`skill_templates.json`), role tags (`roles.json`), monster archetypes, monster skill scaling
 - **`entities/`** — Monsters (`monsters.json`), NPCs, boss mechanics, summons (`summons.json`: max 6/team), monster archetypes/variants, healer/support monsters
 - **`items/`** — Equipment (10 slots, 5 rarities, T1-T5 scaling), consumables, materials, affixes, panoplies (25 sets with intentional Hebrew names), loot tables, currencies, substat crafting system
-- **`stats/`** — 40+ stat definitions, class base stats, growth rates, status effect definitions with IDs (referenced by skills — `stats/status_effects.json` defines effect IDs, while `config/status_effects.json` defines balance rules like durations and stacking)
+- **`stats/`** — 40+ stat definitions, class base stats, growth rates, status effect definitions with IDs (`stats/status_effects.json` is the single canonical source for all status effects — definitions, balance rules, durations, stacking, formulas)
 - **`systems/`** — Economy, guilds, achievements, PvP, leaderboards, enhancement, keystones (max 1 active, radical gameplay modifiers), Koro cards (cross-class skills, C/B/A/S/SS ranks), encounter stars (0-5 difficulty), boutique/battle pass, daily rewards, social, progression
 - **`ui/`** — Icon definitions (`icons.json`: 496 icons with priority/status/category/hint)
 - **`world/`** — Zones, quests, dungeons, lore, whispers (found-text), world map

@@ -117,7 +117,7 @@
         "polarity": "debuff",
         "stacking": "unique",
         "max_stacks": 1,
-        "impl": "todo",
+        "impl": "done",
         "damage_type": "magical",
         "formula": "MAG * 0.2 per tick, EXPLOSION at end = total_damage * 0.5",
         "tick_interval": 1.0,
@@ -130,7 +130,18 @@
           "Mage (dark)",
           "monstres corrompus"
         ],
-        "lore": "Corruption de l'Imitateur qui s'accumule et éclate"
+        "lore": "Corruption de l'Imitateur qui s'accumule et éclate",
+        "runtime": {
+          "tick_damage": "value",
+          "tick_rate": 1.0,
+          "scaling_stat": "mag",
+          "scaling_percent": 0.20,
+          "scaling_behavior": "flat",
+          "on_expire": "explosion",
+          "explosion_percent": 0.50,
+          "damage_ignores_defense": false,
+          "vfx_type": "curse_dark"
+        }
       },
       "holy_dot": {
         "name_fr": "Lumière Purificatrice",
@@ -138,7 +149,7 @@
         "polarity": "debuff",
         "stacking": "unique",
         "max_stacks": 1,
-        "impl": "todo",
+        "impl": "done",
         "damage_type": "magical",
         "formula": "tick_1: MAG * 0.1, tick_2: MAG * 0.15, tick_3: MAG * 0.2, ... (croissant)",
         "tick_interval": 1.0,
@@ -151,7 +162,17 @@
           "Healer",
           "Paladin"
         ],
-        "lore": "Lumière purificatrice du Créateur, brûle de plus en plus fort"
+        "lore": "Lumière purificatrice du Créateur, brûle de plus en plus fort",
+        "runtime": {
+          "tick_damage": "value",
+          "tick_rate": 1.0,
+          "scaling_stat": "mag",
+          "scaling_percent": 0.10,
+          "scaling_behavior": "ramp",
+          "ramp_per_tick": 0.05,
+          "damage_ignores_defense": false,
+          "vfx_type": "holy_glow"
+        }
       }
     },
     "hot": {
@@ -162,7 +183,7 @@
         "polarity": "buff",
         "stacking": "stackable",
         "max_stacks": 3,
-        "impl": "todo",
+        "impl": "done",
         "formula": "heal_power * 0.2 per tick per stack",
         "tick_interval": 1.0,
         "tooltip_fr": "Soigne la cible chaque seconde.",
@@ -172,7 +193,15 @@
         "sources": [
           "Healer",
           "potions"
-        ]
+        ],
+        "runtime": {
+          "tick_damage": "value",
+          "tick_rate": 1.0,
+          "scaling_stat": "target_max_hp",
+          "scaling_percent": 0.02,
+          "scaling_behavior": "flat",
+          "vfx_type": "heal_glow"
+        }
       }
     },
     "stat_modifiers": {
@@ -733,12 +762,22 @@
         "name_en": "All Stats",
         "polarity": "buff",
         "stacking": "stackable",
-        "impl": "todo",
+        "impl": "done",
         "formula": "+/- [skill_value]% all stats per stack",
         "tooltip_fr": "Augmente toutes les statistiques.",
         "tooltip_en": "Increases all stats.",
         "description_fr": "Modifie toutes les statistiques simultanément. Utilisé comme buff allié ou debuff ennemi selon le sort.",
         "description_en": "Modifies all stats simultaneously. Used as ally buff or enemy debuff depending on the skill.",
+        "runtime": {
+          "stat_mods": {
+            "atk_percent": "value/100",
+            "def_percent": "value/100",
+            "mag_percent": "value/100",
+            "armor_percent": "value/100",
+            "magic_resist_percent": "value/100"
+          },
+          "vfx_type": "all_stats_aura"
+        },
         "sources": [
           "Artisan Musician"
         ]
@@ -886,12 +925,17 @@
         "name_en": "Fear",
         "polarity": "debuff",
         "stacking": "refresh",
-        "impl": "todo",
+        "impl": "done",
         "formula": "max 3s",
-        "tooltip_fr": "La cible agit de manière incontrôlable sous l'effet de la peur.",
-        "tooltip_en": "The target acts uncontrollably under the effect of fear.",
-        "description_fr": "Mouvement aléatoire incontrôlé + impossible d'agir. Contrôle de disruption.",
-        "description_en": "Random uncontrolled movement + cannot act. Disruption CC."
+        "tooltip_fr": "La cible est paralysée par la peur et ne peut plus agir.",
+        "tooltip_en": "The target is paralyzed with fear and cannot act.",
+        "description_fr": "Impossible d'agir pendant la durée. Fonctionne comme un stun avec un tag distinct (immunités, VFX, passifs spécifiques).",
+        "description_en": "Cannot act for the duration. Behaves as a stun with a distinct tag (immunities, VFX, specific passives).",
+        "runtime": {
+          "cc_type": "stun",
+          "tags": ["fear"],
+          "vfx_type": "fear_icon"
+        }
       },
       "confusion": {
         "name_fr": "Confusion",
@@ -1107,12 +1151,17 @@
         "name_en": "Cover",
         "polarity": "buff",
         "stacking": "refresh",
-        "impl": "todo",
+        "impl": "done",
         "formula": "intercepts next single-target attack on ally",
         "tooltip_fr": "Le porteur protège un allié et intercepte une partie des attaques.",
         "tooltip_en": "The bearer protects an ally and intercepts some attacks.",
         "description_fr": "Se place devant un allié. Intercepte la prochaine attaque mono-cible le ciblant. 1 charge.",
-        "description_en": "Steps in front of ally. Intercepts next single-target attack targeting them. 1 charge."
+        "description_en": "Steps in front of ally. Intercepts next single-target attack targeting them. 1 charge.",
+        "runtime": {
+          "flags": ["intercept_single_target"],
+          "charges": 1,
+          "vfx_type": "shield_guard"
+        }
       },
       "damage_transfer": {
         "name_fr": "Transfert de Dégâts",
@@ -1297,11 +1346,15 @@
         "name_en": "Revealed",
         "polarity": "debuff",
         "stacking": "refresh",
-        "impl": "todo",
+        "impl": "done",
         "tooltip_fr": "Empêche l'invisibilité et révèle la cible.",
         "tooltip_en": "Prevents invisibility and reveals the target.",
         "description_fr": "Empêche d'utiliser invisible ou intouchable. Retire ces effets si actifs. Efficace contre les builds Rogue.",
-        "description_en": "Prevents using invisible or untargetable. Removes these effects if active. Counters Rogue builds."
+        "description_en": "Prevents using invisible or untargetable. Removes these effects if active. Counters Rogue builds.",
+        "runtime": {
+          "flags": ["reveals_invisible", "prevents_invisible"],
+          "vfx_type": "revealed_eye"
+        }
       },
       "vulnerable": {
         "name_fr": "Vulnérable",
@@ -1326,12 +1379,19 @@
         "name_en": "Berserk",
         "polarity": "buff",
         "stacking": "stackable",
-        "impl": "todo",
+        "impl": "done",
         "formula": "+10% damage dealt AND +10% damage taken per stack",
         "tooltip_fr": "Augmente les dégâts mais réduit la défense.",
         "tooltip_en": "Increases damage but reduces defense.",
         "description_fr": "Augmente dégâts infligés ET reçus. Risque/récompense. Pour builds offensifs. Warrior berserker.",
-        "description_en": "Increases damage dealt AND taken. Risk/reward. For offensive builds. Warrior berserker."
+        "description_en": "Increases damage dealt AND taken. Risk/reward. For offensive builds. Warrior berserker.",
+        "runtime": {
+          "stat_mods": {
+            "damage_percent": "value/100",
+            "damage_taken_percent": "value/100"
+          },
+          "vfx_type": "berserk_flames"
+        }
       },
       "amplify": {
         "name_fr": "Amplification",
@@ -1379,23 +1439,35 @@
         "name_en": "Breath Drain",
         "polarity": "debuff",
         "stacking": "stackable",
-        "impl": "todo",
+        "impl": "done",
         "formula": "max_MP * 0.03 per second per stack",
         "tooltip_fr": "Draine le Souffle de la cible.",
         "tooltip_en": "Drains the target's Breath.",
         "description_fr": "Perd 3% PM max par seconde par charge. Efficace contre les lanceurs de sorts. Rare et puissant.",
-        "description_en": "Loses 3% max MP per second per stack. Counters casters. Rare and powerful."
+        "description_en": "Loses 3% max MP per second per stack. Counters casters. Rare and powerful.",
+        "runtime": {
+          "tick_damage": "value",
+          "tick_rate": 1.0,
+          "scaling_stat": "target_max_mp",
+          "scaling_percent": 0.03,
+          "scaling_behavior": "flat",
+          "vfx_type": "mana_drain_swirl"
+        }
       },
       "mana_lock": {
         "name_fr": "Blocage Souffle",
         "name_en": "Breath Lock",
         "polarity": "debuff",
         "stacking": "refresh",
-        "impl": "todo",
+        "impl": "done",
         "tooltip_fr": "Empêche la régénération de Souffle.",
         "tooltip_en": "Prevents Breath regeneration.",
         "description_fr": "Impossible de régénérer le souffle (naturelle ou par effets). Peut toujours utiliser le souffle restant. Efficace contre les lanceurs de sorts endurance.",
-        "description_en": "Cannot regenerate breath (natural or from effects). Can still use remaining breath. Counters sustain casters."
+        "description_en": "Cannot regenerate breath (natural or from effects). Can still use remaining breath. Counters sustain casters.",
+        "runtime": {
+          "flags": ["blocks_mana_regen"],
+          "vfx_type": "mana_lock_icon"
+        }
       },
       "lifesteal": {
         "name_fr": "Vol de vie",
@@ -1687,7 +1759,7 @@
         "name_en": "Chill",
         "polarity": "debuff",
         "stacking": "stackable",
-        "impl": "todo",
+        "impl": "done",
         "formula": "-6% attack_speed per stack. At 5 stacks: Frozen (stun 1.5s)",
         "tooltip_fr": "Réduit la vitesse d'attaque et d'incantation.",
         "tooltip_en": "Reduces attack and cast speed.",
@@ -1695,14 +1767,22 @@
         "description_en": "Reduces attack speed by 6% per stack. At 5 stacks: Frozen (stun 1.5s).",
         "sources": [
           "Mage Elementalist"
-        ]
+        ],
+        "runtime": {
+          "stat_mods": {
+            "atk_speed_percent": "-0.06"
+          },
+          "on_max_stacks": "apply_freeze",
+          "max_stacks_trigger_duration": 1.5,
+          "vfx_type": "frost_aura"
+        }
       },
       "corruption": {
         "name_fr": "Corruption",
         "name_en": "Corruption",
         "polarity": "debuff",
         "stacking": "stackable",
-        "impl": "todo",
+        "impl": "done",
         "formula": "3% max HP magic damage per second per stack",
         "tooltip_fr": "Inflige des dégâts magiques sur la durée.",
         "tooltip_en": "Deals magical damage over time.",
@@ -1710,19 +1790,39 @@
         "description_en": "Deals 3% max HP magic damage per second per stack.",
         "sources": [
           "Mage Occultist"
-        ]
+        ],
+        "runtime": {
+          "tick_damage": "value",
+          "tick_rate": 1.0,
+          "scaling_stat": "target_max_hp",
+          "scaling_percent": 0.03,
+          "scaling_behavior": "flat",
+          "damage_ignores_defense": true,
+          "vfx_type": "corruption_dark"
+        }
       },
       "toxin": {
         "name_fr": "Toxine",
         "name_en": "Toxin",
         "polarity": "debuff",
         "stacking": "stackable",
-        "impl": "todo",
+        "impl": "done",
         "formula": "Poison DoT variant. Can be detonated for burst damage.",
         "tooltip_fr": "Inflige des dégâts toxiques sur la durée.",
         "tooltip_en": "Deals toxic damage over time.",
         "description_fr": "Variante de poison alchimique. Peut être détonée pour des dégâts en rafale.",
         "description_en": "Alchemical poison variant. Can be detonated for burst damage.",
+        "damage_type": "magical",
+        "tick_interval": 1.0,
+        "runtime": {
+          "tick_damage": "value",
+          "tick_rate": 1.0,
+          "scaling_stat": "mag",
+          "scaling_percent": 0.20,
+          "scaling_behavior": "flat",
+          "on_detonate": "burst_damage",
+          "vfx_type": "toxin_bubbles"
+        },
         "sources": [
           "Artisan Alchemist"
         ]
