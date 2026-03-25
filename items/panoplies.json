@@ -14,14 +14,14 @@
     "rank_formula": "final_bonus = floor(base_bonus × rank_multiplier). Ex: Kesher 2p lifesteal 5 → R1: 2, R2: 5, R3: 7, R4: 10",
     "equipment_slots": [
       { "id": "helmet", "name_fr": "Casque", "name_en": "Helmet" },
-      { "id": "amulet", "name_fr": "Amulette", "name_en": "Amulet" },
+      { "id": "necklace", "name_fr": "Collier", "name_en": "Necklace" },
       { "id": "cape", "name_fr": "Cape", "name_en": "Cape" },
       { "id": "ring_1", "name_fr": "Anneau 1", "name_en": "Ring 1" },
       { "id": "ring_2", "name_fr": "Anneau 2", "name_en": "Ring 2" },
       { "id": "belt", "name_fr": "Ceinture", "name_en": "Belt" },
       { "id": "boots", "name_fr": "Bottes", "name_en": "Boots" },
-      { "id": "armor", "name_fr": "Armure", "name_en": "Armor" },
-      { "id": "gloves", "name_fr": "Gants", "name_en": "Gloves" },
+      { "id": "chest", "name_fr": "Torse", "name_en": "Chest" },
+      { "id": "legs", "name_fr": "Jambières", "name_en": "Legs" },
       { "id": "weapon", "name_fr": "Arme", "name_en": "Weapon" }
     ],
     "min_level_by_size": {
@@ -33,8 +33,75 @@
     },
     "notes": {
       "bonuses_cumulative": "Les bonus 2p/4p/6p/8p s'additionnent",
-      "armor_types": "Implicite via stats: tissu (MAG), cuir (ATK/Crit), plaque (DEF/HP)",
+      "armor_types": "Implicite via stats: light (MAG), medium (ATK/Crit), heavy (DEF/HP)",
       "reloot": "Chaque rang doit etre farm separement. Le joueur garde l'ancien stuff en attendant de completer le rang suivant."
+    }
+  },
+
+  "piece_base_stats": {
+    "_note": "Stats de base par piece au Rang 2 (x1.0). Multiplier par stat_multiplier du rang. Les substats suivent les pools de equipment_stats.json selon la categorie (armor/accessory/weapon).",
+    "by_slot_and_weight": {
+      "helmet": {
+        "light": { "mp": 12, "mag": 3, "magic_resist": 3 },
+        "medium": { "hp": 18, "def": 3, "flee": 2 },
+        "heavy": { "hp": 25, "def": 5, "armor": 3 },
+        "mixed": { "hp": 12, "mp": 6, "def": 2 }
+      },
+      "chest": {
+        "light": { "mp": 18, "mag": 4, "magic_resist": 4 },
+        "medium": { "hp": 30, "def": 5, "armor": 4 },
+        "heavy": { "hp": 40, "def": 8, "armor": 6 },
+        "mixed": { "hp": 20, "mp": 10, "def": 3, "armor": 2 }
+      },
+      "legs": {
+        "light": { "mp": 12, "mag": 2, "flee": 2 },
+        "medium": { "hp": 20, "def": 3, "armor": 2 },
+        "heavy": { "hp": 30, "def": 5, "armor": 4 },
+        "mixed": { "hp": 15, "mp": 6, "def": 2 }
+      },
+      "boots": {
+        "light": { "flee": 3, "mp": 6, "mag": 1 },
+        "medium": { "hp": 8, "def": 2, "flee": 2 },
+        "heavy": { "hp": 20, "def": 4, "armor": 3 },
+        "mixed": { "hp": 10, "flee": 2, "def": 1 }
+      },
+      "belt": {
+        "light": { "mp": 12, "mp_regen": 1, "mag": 1 },
+        "medium": { "hp": 15, "mp": 6, "def": 2 },
+        "heavy": { "hp": 22, "def": 3, "armor": 3 },
+        "mixed": { "hp": 10, "mp": 8, "def": 1 }
+      },
+      "cape": {
+        "light": { "flee": 3, "magic_resist": 2 },
+        "medium": { "hp": 10, "def": 2 },
+        "heavy": { "hp": 15, "def": 3, "armor": 2 },
+        "mixed": { "hp": 8, "flee": 1, "magic_resist": 1 }
+      }
+    },
+    "accessories": {
+      "necklace": { "mag": 2, "hp": 8 },
+      "ring": { "hp": 10, "atk": 1 }
+    },
+    "weapon_by_identity": {
+      "_note": "Les armes de panoplie ont des stats selon l'identite du set. Le serveur choisit le template qui correspond.",
+      "melee_physical": { "atk": 12, "hp": 15 },
+      "melee_tank": { "atk": 8, "hp": 25, "def": 5 },
+      "ranged_physical": { "atk": 12, "crit": 4 },
+      "rogue": { "atk": 10, "crit": 5 },
+      "magic_offensive": { "mag": 12, "mp": 15 },
+      "magic_support": { "mag": 8, "mp": 20, "heal_power": 3 },
+      "bruiser": { "atk": 10, "hp": 20, "def": 3 },
+      "utility": { "atk": 6, "mag": 6, "hp": 10 }
+    },
+    "substats": {
+      "_note": "Les substats sont generees au drop via les pools de equipment_stats.json. Categorie: armor slots -> pool armor, ring/necklace -> pool accessory, weapon -> pool soul_essence. Nombre de substats selon la rarete de la piece (equipment_scaling.json)."
+    },
+    "rarity_at_drop": {
+      "_note": "Chaque piece de panoplie drop avec une rarete fixe determinee par le rang du set.",
+      "rank_1": "uncommon",
+      "rank_2": "rare",
+      "rank_3": "epic",
+      "rank_4": "legendary"
     }
   },
 
@@ -48,7 +115,7 @@
       "meaning": "Lien/Nœud",
       "pieces_count": 2,
       "identity": "lifesteal_link",
-      "armor_type": "leather",
+      "armor_type": "medium",
       "description_fr": "Deux anneaux liés par une magie ancienne. Ceux qui les portent tissent un lien entre leur vie et celle de leurs ennemis.",
       "description_en": "Two rings bound by ancient magic. Those who wear them weave a link between their life and their enemies'.",
       "pieces": {
@@ -68,12 +135,12 @@
       "meaning": "Signe/Marque",
       "pieces_count": 2,
       "identity": "crit_marker",
-      "armor_type": "leather",
+      "armor_type": "medium",
       "description_fr": "Un signe gravé dans le métal, transmis par les premiers chasseurs. Frappe juste, frappe une fois.",
       "description_en": "A sign engraved in metal, passed down from the first hunters. Strike true, strike once.",
       "pieces": {
         "ring_1": { "id": "item_ot_ring", "name_fr": "Anneau d'Ot", "name_en": "Ot Ring" },
-        "amulet": { "id": "item_ot_amulet", "name_fr": "Amulette d'Ot", "name_en": "Ot Amulet" }
+        "necklace": { "id": "item_ot_amulet", "name_fr": "Amulette d'Ot", "name_en": "Ot Amulet" }
       },
       "bonuses": {
         "2": { "crit": 8, "crit_dmg": 10 }
@@ -88,17 +155,17 @@
       "meaning": "Vie",
       "pieces_count": 2,
       "identity": "hp_regen",
-      "armor_type": "cloth",
+      "armor_type": "light",
       "description_fr": "Bénis par le souffle de vie, ces ornements maintiennent le corps en harmonie avec la création.",
       "description_en": "Blessed by the breath of life, these ornaments keep the body in harmony with creation.",
       "pieces": {
-        "amulet": { "id": "item_chayim_amulet", "name_fr": "Pendentif de Chayim", "name_en": "Chayim Pendant" },
+        "necklace": { "id": "item_chayim_amulet", "name_fr": "Pendentif de Chayim", "name_en": "Chayim Pendant" },
         "ring_1": { "id": "item_chayim_ring", "name_fr": "Anneau de Chayim", "name_en": "Chayim Ring" }
       },
       "bonuses": {
-        "2": { "hp_regen": 3, "hp_max": 50 }
+        "2": { "hp_regen": 3, "hp": 50 }
       },
-      "total_at_max": { "hp_regen": 3, "hp_max": 50 }
+      "total_at_max": { "hp_regen": 3, "hp": 50 }
     },
 
     "binah": {
@@ -108,17 +175,17 @@
       "meaning": "Intelligence/Compréhension",
       "pieces_count": 2,
       "identity": "mana_wisdom",
-      "armor_type": "cloth",
+      "armor_type": "light",
       "description_fr": "La sagesse des anciens coule à travers ces reliques. L'esprit s'éveille, la magie répond.",
       "description_en": "The wisdom of the ancients flows through these relics. The mind awakens, magic answers.",
       "pieces": {
-        "amulet": { "id": "item_binah_amulet", "name_fr": "Amulette de Binah", "name_en": "Binah Amulet" },
+        "necklace": { "id": "item_binah_amulet", "name_fr": "Amulette de Binah", "name_en": "Binah Amulet" },
         "ring_1": { "id": "item_binah_ring", "name_fr": "Anneau de Binah", "name_en": "Binah Ring" }
       },
       "bonuses": {
-        "2": { "mp_max": 40, "cooldown_reduction": 8 }
+        "2": { "mp": 40, "cooldown_reduction": 8 }
       },
-      "total_at_max": { "mp_max": 40, "cooldown_reduction": 8 }
+      "total_at_max": { "mp": 40, "cooldown_reduction": 8 }
     },
 
     "oz": {
@@ -128,7 +195,7 @@
       "meaning": "Force/Puissance",
       "pieces_count": 2,
       "identity": "raw_power",
-      "armor_type": "plate",
+      "armor_type": "heavy",
       "description_fr": "Forgés dans la montagne primordiale, ces ornements confèrent une force brute inégalée.",
       "description_en": "Forged in the primordial mountain, these ornaments grant unmatched raw strength.",
       "pieces": {
@@ -148,7 +215,7 @@
       "meaning": "Rocher/Refuge",
       "pieces_count": 2,
       "identity": "defense_anchor",
-      "armor_type": "plate",
+      "armor_type": "heavy",
       "description_fr": "Solides comme le roc, ces anneaux sont le refuge de ceux qui protègent.",
       "description_en": "Solid as rock, these rings are the refuge of those who protect.",
       "pieces": {
@@ -168,17 +235,17 @@
       "meaning": "Âme/Souffle vital",
       "pieces_count": 2,
       "identity": "mana_sustain",
-      "armor_type": "cloth",
+      "armor_type": "light",
       "description_fr": "Le souffle vital qui anime toute magie. Ces reliques nourrissent l'esprit et restaurent la source intérieure.",
       "description_en": "The vital breath that animates all magic. These relics nourish the mind and restore the inner source.",
       "pieces": {
-        "amulet": { "id": "item_nefesh_amulet", "name_fr": "Amulette de Nefesh", "name_en": "Nefesh Amulet" },
+        "necklace": { "id": "item_nefesh_amulet", "name_fr": "Amulette de Nefesh", "name_en": "Nefesh Amulet" },
         "ring_1": { "id": "item_nefesh_ring", "name_fr": "Anneau de Nefesh", "name_en": "Nefesh Ring" }
       },
       "bonuses": {
-        "2": { "mp_regen": 3, "mp_max": 50 }
+        "2": { "mp_regen": 3, "mp": 50 }
       },
-      "total_at_max": { "mp_regen": 3, "mp_max": 50 }
+      "total_at_max": { "mp_regen": 3, "mp": 50 }
     },
 
     "_comment_4p": "========== SETS MOYENS (4 PIÈCES) ==========",
@@ -190,13 +257,13 @@
       "meaning": "Vent/Esprit",
       "pieces_count": 4,
       "identity": "speed_evasion",
-      "armor_type": "leather",
+      "armor_type": "medium",
       "description_fr": "Léger comme le vent qui traverse les plaines. Ceux qui portent Ruach dansent entre les coups, insaisissables.",
       "description_en": "Light as the wind crossing the plains. Those who wear Ruach dance between blows, elusive.",
       "pieces": {
         "boots": { "id": "item_ruach_boots", "name_fr": "Bottes de Ruach", "name_en": "Ruach Boots" },
         "cape": { "id": "item_ruach_cape", "name_fr": "Cape de Ruach", "name_en": "Ruach Cape" },
-        "gloves": { "id": "item_ruach_gloves", "name_fr": "Gants de Ruach", "name_en": "Ruach Gloves" },
+        "legs": { "id": "item_ruach_leggings", "name_fr": "Jambières de Ruach", "name_en": "Ruach Leggings" },
         "belt": { "id": "item_ruach_belt", "name_fr": "Ceinture de Ruach", "name_en": "Ruach Belt" }
       },
       "bonuses": {
@@ -213,13 +280,13 @@
       "meaning": "Gloire/Honneur",
       "pieces_count": 4,
       "identity": "buff_support",
-      "armor_type": "cloth",
+      "armor_type": "light",
       "description_fr": "La gloire du Créateur rayonne à travers ces vêtements sacrés. Ceux qui les portent élèvent leurs alliés.",
       "description_en": "The Creator's glory radiates through these sacred garments. Those who wear them uplift their allies.",
       "pieces": {
         "helmet": { "id": "item_kavod_crown", "name_fr": "Couronne de Kavod", "name_en": "Kavod Crown" },
         "cape": { "id": "item_kavod_mantle", "name_fr": "Manteau de Kavod", "name_en": "Kavod Mantle" },
-        "amulet": { "id": "item_kavod_amulet", "name_fr": "Amulette de Kavod", "name_en": "Kavod Amulet" },
+        "necklace": { "id": "item_kavod_amulet", "name_fr": "Amulette de Kavod", "name_en": "Kavod Amulet" },
         "ring_1": { "id": "item_kavod_ring", "name_fr": "Anneau de Kavod", "name_en": "Kavod Ring" }
       },
       "bonuses": {
@@ -236,13 +303,13 @@
       "meaning": "Nuage",
       "pieces_count": 4,
       "identity": "control_slow",
-      "armor_type": "cloth",
+      "armor_type": "light",
       "description_fr": "Comme un nuage qui obscurcit le ciel, cette tenue ralentit et entrave les ennemis.",
       "description_en": "Like a cloud that darkens the sky, this attire slows and hinders enemies.",
       "pieces": {
         "helmet": { "id": "item_anan_hood", "name_fr": "Capuche d'Anan", "name_en": "Anan Hood" },
-        "armor": { "id": "item_anan_robe", "name_fr": "Robe d'Anan", "name_en": "Anan Robe" },
-        "gloves": { "id": "item_anan_gloves", "name_fr": "Gants d'Anan", "name_en": "Anan Gloves" },
+        "chest": { "id": "item_anan_robe", "name_fr": "Robe d'Anan", "name_en": "Anan Robe" },
+        "legs": { "id": "item_anan_leggings", "name_fr": "Jambières d'Anan", "name_en": "Anan Leggings" },
         "boots": { "id": "item_anan_boots", "name_fr": "Bottes d'Anan", "name_en": "Anan Boots" }
       },
       "bonuses": {
@@ -259,12 +326,13 @@
       "meaning": "Fer",
       "pieces_count": 4,
       "identity": "armor_break",
-      "armor_type": "plate",
+      "armor_type": "heavy",
+      "weapon_template": "melee_physical",
       "description_fr": "Forgé dans le fer des profondeurs, cet équipement brise les défenses les plus solides.",
       "description_en": "Forged in iron from the depths, this equipment shatters the strongest defenses.",
       "pieces": {
         "helmet": { "id": "item_barzel_helm", "name_fr": "Heaume de Barzel", "name_en": "Barzel Helm" },
-        "gloves": { "id": "item_barzel_gauntlets", "name_fr": "Gantelets de Barzel", "name_en": "Barzel Gauntlets" },
+        "legs": { "id": "item_barzel_greaves", "name_fr": "Jambières de Barzel", "name_en": "Barzel Greaves" },
         "boots": { "id": "item_barzel_boots", "name_fr": "Bottes de Barzel", "name_en": "Barzel Boots" },
         "weapon": { "id": "item_barzel_hammer", "name_fr": "Marteau de Barzel", "name_en": "Barzel Hammer" }
       },
@@ -282,13 +350,14 @@
       "meaning": "Guérison",
       "pieces_count": 4,
       "identity": "hot_healer",
-      "armor_type": "cloth",
+      "armor_type": "light",
+      "weapon_template": "magic_support",
       "description_fr": "Les guérisseurs anciens tissaient ces vêtements avec des prières. Chaque fil porte une bénédiction de restauration.",
       "description_en": "Ancient healers wove these garments with prayers. Each thread carries a blessing of restoration.",
       "pieces": {
         "helmet": { "id": "item_refuah_circlet", "name_fr": "Diadème de Refuah", "name_en": "Refuah Circlet" },
-        "armor": { "id": "item_refuah_vestment", "name_fr": "Vêtement de Refuah", "name_en": "Refuah Vestment" },
-        "amulet": { "id": "item_refuah_pendant", "name_fr": "Pendentif de Refuah", "name_en": "Refuah Pendant" },
+        "chest": { "id": "item_refuah_vestment", "name_fr": "Vêtement de Refuah", "name_en": "Refuah Vestment" },
+        "necklace": { "id": "item_refuah_pendant", "name_fr": "Pendentif de Refuah", "name_en": "Refuah Pendant" },
         "weapon": { "id": "item_refuah_staff", "name_fr": "Bâton de Refuah", "name_en": "Refuah Staff" }
       },
       "bonuses": {
@@ -305,20 +374,20 @@
       "meaning": "Pierre",
       "pieces_count": 4,
       "identity": "hp_tank",
-      "armor_type": "plate",
+      "armor_type": "heavy",
       "description_fr": "Taillé dans la pierre des montagnes anciennes. Immobile, inébranlable, éternel.",
       "description_en": "Carved from the stone of ancient mountains. Immovable, unshakeable, eternal.",
       "pieces": {
         "helmet": { "id": "item_even_helm", "name_fr": "Heaume d'Even", "name_en": "Even Helm" },
-        "armor": { "id": "item_even_plate", "name_fr": "Cuirasse d'Even", "name_en": "Even Plate" },
+        "chest": { "id": "item_even_plate", "name_fr": "Cuirasse d'Even", "name_en": "Even Plate" },
         "boots": { "id": "item_even_boots", "name_fr": "Bottes d'Even", "name_en": "Even Boots" },
         "belt": { "id": "item_even_belt", "name_fr": "Ceinture d'Even", "name_en": "Even Belt" }
       },
       "bonuses": {
-        "2": { "hp_max": 80 },
-        "4": { "hp_max": 70, "def_percent": 8, "hp_regen": 1 }
+        "2": { "hp": 80 },
+        "4": { "hp": 70, "def_percent": 8, "hp_regen": 1 }
       },
-      "total_at_max": { "hp_max": 150, "def_percent": 8, "hp_regen": 1 }
+      "total_at_max": { "hp": 150, "def_percent": 8, "hp_regen": 1 }
     },
 
     "koach": {
@@ -328,13 +397,14 @@
       "meaning": "Puissance/Force magique",
       "pieces_count": 4,
       "identity": "mage_dps",
-      "armor_type": "cloth",
+      "armor_type": "light",
+      "weapon_template": "magic_offensive",
       "description_fr": "La puissance brute des arcanes concentrée. Les mages qui portent Koach voient leur magie amplifiée au-delà des limites naturelles.",
       "description_en": "The raw power of the arcane, concentrated. Mages who wear Koach see their magic amplified beyond natural limits.",
       "pieces": {
         "helmet": { "id": "item_koach_circlet", "name_fr": "Diadème de Koach", "name_en": "Koach Circlet" },
-        "armor": { "id": "item_koach_robe", "name_fr": "Robe de Koach", "name_en": "Koach Robe" },
-        "gloves": { "id": "item_koach_gloves", "name_fr": "Gants de Koach", "name_en": "Koach Gloves" },
+        "chest": { "id": "item_koach_robe", "name_fr": "Robe de Koach", "name_en": "Koach Robe" },
+        "legs": { "id": "item_koach_leggings", "name_fr": "Jambières de Koach", "name_en": "Koach Leggings" },
         "weapon": { "id": "item_koach_staff", "name_fr": "Bâton de Koach", "name_en": "Koach Staff" }
       },
       "bonuses": {
@@ -351,13 +421,14 @@
       "meaning": "Puissance/Vaillance",
       "pieces_count": 4,
       "identity": "physical_dps",
-      "armor_type": "leather",
+      "armor_type": "medium",
+      "weapon_template": "melee_physical",
       "description_fr": "La vaillance des guerriers légendaires. Gevurah transforme chaque frappe en sentence de mort.",
       "description_en": "The valor of legendary warriors. Gevurah turns every strike into a death sentence.",
       "pieces": {
         "helmet": { "id": "item_gevurah_helm", "name_fr": "Casque de Gevurah", "name_en": "Gevurah Helm" },
-        "armor": { "id": "item_gevurah_vest", "name_fr": "Plastron de Gevurah", "name_en": "Gevurah Vest" },
-        "gloves": { "id": "item_gevurah_gloves", "name_fr": "Gants de Gevurah", "name_en": "Gevurah Gloves" },
+        "chest": { "id": "item_gevurah_vest", "name_fr": "Plastron de Gevurah", "name_en": "Gevurah Vest" },
+        "legs": { "id": "item_gevurah_leggings", "name_fr": "Jambières de Gevurah", "name_en": "Gevurah Leggings" },
         "weapon": { "id": "item_gevurah_blade", "name_fr": "Lame de Gevurah", "name_en": "Gevurah Blade" }
       },
       "bonuses": {
@@ -376,14 +447,15 @@
       "meaning": "Ombre",
       "pieces_count": 6,
       "identity": "rogue_assassin",
-      "armor_type": "leather",
+      "armor_type": "medium",
+      "weapon_template": "rogue",
       "description_fr": "Dans l'ombre, le chasseur attend. Tzel est porté par ceux qui frappent sans être vus, qui tuent avant qu'on ne les remarque.",
       "description_en": "In shadow, the hunter waits. Tzel is worn by those who strike unseen, who kill before they're noticed.",
       "pieces": {
         "helmet": { "id": "item_tzel_mask", "name_fr": "Masque de Tzel", "name_en": "Tzel Mask" },
         "cape": { "id": "item_tzel_cloak", "name_fr": "Cape de Tzel", "name_en": "Tzel Cloak" },
         "boots": { "id": "item_tzel_boots", "name_fr": "Bottes de Tzel", "name_en": "Tzel Boots" },
-        "gloves": { "id": "item_tzel_gloves", "name_fr": "Gants de Tzel", "name_en": "Tzel Gloves" },
+        "legs": { "id": "item_tzel_leggings", "name_fr": "Jambières de Tzel", "name_en": "Tzel Leggings" },
         "ring_1": { "id": "item_tzel_ring", "name_fr": "Anneau de Tzel", "name_en": "Tzel Ring" },
         "weapon": { "id": "item_tzel_daggers", "name_fr": "Dagues de Tzel", "name_en": "Tzel Daggers" }
       },
@@ -402,23 +474,24 @@
       "meaning": "Lumières",
       "pieces_count": 6,
       "identity": "healer_holy",
-      "armor_type": "cloth",
+      "armor_type": "light",
+      "weapon_template": "magic_support",
       "description_fr": "La lumière du Créateur brille à travers ces vêtements sacrés. Les Disciples d'Orim soignent corps et âme.",
       "description_en": "The Creator's light shines through these sacred garments. Disciples of Orim heal body and soul.",
       "pieces": {
         "helmet": { "id": "item_orim_diadem", "name_fr": "Diadème d'Orim", "name_en": "Orim Diadem" },
-        "armor": { "id": "item_orim_robe", "name_fr": "Robe d'Orim", "name_en": "Orim Robe" },
+        "chest": { "id": "item_orim_robe", "name_fr": "Robe d'Orim", "name_en": "Orim Robe" },
         "cape": { "id": "item_orim_stole", "name_fr": "Étole d'Orim", "name_en": "Orim Stole" },
-        "amulet": { "id": "item_orim_pendant", "name_fr": "Pendentif d'Orim", "name_en": "Orim Pendant" },
+        "necklace": { "id": "item_orim_pendant", "name_fr": "Pendentif d'Orim", "name_en": "Orim Pendant" },
         "ring_1": { "id": "item_orim_ring", "name_fr": "Anneau d'Orim", "name_en": "Orim Ring" },
         "weapon": { "id": "item_orim_scepter", "name_fr": "Sceptre d'Orim", "name_en": "Orim Scepter" }
       },
       "bonuses": {
         "2": { "heal_power": 6 },
         "4": { "shield_power": 8, "cooldown_reduction": 5 },
-        "6": { "heal_power": 10, "buff_duration": 15, "mp_max": 60 }
+        "6": { "heal_power": 10, "buff_duration": 15, "mp": 60 }
       },
-      "total_at_max": { "heal_power": 16, "shield_power": 8, "cooldown_reduction": 5, "buff_duration": 15, "mp_max": 60 }
+      "total_at_max": { "heal_power": 16, "shield_power": 8, "cooldown_reduction": 5, "buff_duration": 15, "mp": 60 }
     },
 
     "eshal": {
@@ -428,15 +501,16 @@
       "meaning": "Feu de Dieu",
       "pieces_count": 6,
       "identity": "fire_mage_dot",
-      "armor_type": "cloth",
+      "armor_type": "light",
+      "weapon_template": "magic_offensive",
       "description_fr": "Une flamme ancienne, intense et insatiable. Esh'al devore ce qu'elle touche et ne laisse que la cendre.",
       "description_en": "An ancient flame, fierce and insatiable. Esh'al devours what it touches and leaves only ash.",
       "pieces": {
         "helmet": { "id": "item_eshal_crown", "name_fr": "Couronne d'Esh'al", "name_en": "Esh'al Crown" },
-        "armor": { "id": "item_eshal_robe", "name_fr": "Robe d'Esh'al", "name_en": "Esh'al Robe" },
+        "chest": { "id": "item_eshal_robe", "name_fr": "Robe d'Esh'al", "name_en": "Esh'al Robe" },
         "cape": { "id": "item_eshal_mantle", "name_fr": "Manteau d'Esh'al", "name_en": "Esh'al Mantle" },
-        "gloves": { "id": "item_eshal_gloves", "name_fr": "Gants d'Esh'al", "name_en": "Esh'al Gloves" },
-        "amulet": { "id": "item_eshal_pendant", "name_fr": "Pendentif d'Esh'al", "name_en": "Esh'al Pendant" },
+        "legs": { "id": "item_eshal_leggings", "name_fr": "Jambières d'Esh'al", "name_en": "Esh'al Leggings" },
+        "necklace": { "id": "item_eshal_pendant", "name_fr": "Pendentif d'Esh'al", "name_en": "Esh'al Pendant" },
         "weapon": { "id": "item_eshal_orb", "name_fr": "Orbe d'Esh'al", "name_en": "Esh'al Orb" }
       },
       "bonuses": {
@@ -454,12 +528,13 @@
       "meaning": "Eaux",
       "pieces_count": 6,
       "identity": "ice_mage_control",
-      "armor_type": "cloth",
+      "armor_type": "light",
+      "weapon_template": "magic_offensive",
       "description_fr": "Les eaux primordiales qui existaient avant la création. Mayim gèle le mouvement et fige le temps.",
       "description_en": "The primordial waters that existed before creation. Mayim freezes movement and stops time.",
       "pieces": {
         "helmet": { "id": "item_mayim_tiara", "name_fr": "Tiare de Mayim", "name_en": "Mayim Tiara" },
-        "armor": { "id": "item_mayim_robe", "name_fr": "Robe de Mayim", "name_en": "Mayim Robe" },
+        "chest": { "id": "item_mayim_robe", "name_fr": "Robe de Mayim", "name_en": "Mayim Robe" },
         "cape": { "id": "item_mayim_veil", "name_fr": "Voile de Mayim", "name_en": "Mayim Veil" },
         "boots": { "id": "item_mayim_boots", "name_fr": "Bottes de Mayim", "name_en": "Mayim Boots" },
         "ring_1": { "id": "item_mayim_ring", "name_fr": "Anneau de Mayim", "name_en": "Mayim Ring" },
@@ -480,13 +555,14 @@
       "meaning": "Bouclier",
       "pieces_count": 6,
       "identity": "shield_tank",
-      "armor_type": "plate",
+      "armor_type": "heavy",
+      "weapon_template": "melee_tank",
       "description_fr": "Un rempart forge dans la patience. Magen tient bon la ou les autres cedent.",
       "description_en": "A bulwark forged in patience. Magen stands firm where others yield.",
       "pieces": {
         "helmet": { "id": "item_magen_helm", "name_fr": "Heaume de Magen", "name_en": "Magen Helm" },
-        "armor": { "id": "item_magen_plate", "name_fr": "Cuirasse de Magen", "name_en": "Magen Plate" },
-        "gloves": { "id": "item_magen_gauntlets", "name_fr": "Gantelets de Magen", "name_en": "Magen Gauntlets" },
+        "chest": { "id": "item_magen_plate", "name_fr": "Cuirasse de Magen", "name_en": "Magen Plate" },
+        "legs": { "id": "item_magen_greaves", "name_fr": "Jambières de Magen", "name_en": "Magen Greaves" },
         "belt": { "id": "item_magen_belt", "name_fr": "Ceinture de Magen", "name_en": "Magen Belt" },
         "boots": { "id": "item_magen_boots", "name_fr": "Bottes de Magen", "name_en": "Magen Boots" },
         "weapon": { "id": "item_magen_sword", "name_fr": "Épée de Magen", "name_en": "Magen Sword" }
@@ -494,9 +570,9 @@
       "bonuses": {
         "2": { "shield_power": 10 },
         "4": { "block_chance": 8, "armor": 50 },
-        "6": { "healing_received": 15, "def": 25, "hp_max": 80 }
+        "6": { "healing_received": 15, "def": 25, "hp": 80 }
       },
-      "total_at_max": { "shield_power": 10, "block_chance": 8, "armor": 50, "healing_received": 15, "def": 25, "hp_max": 80 }
+      "total_at_max": { "shield_power": 10, "block_chance": 8, "armor": 50, "healing_received": 15, "def": 25, "hp": 80 }
     },
 
     "davar": {
@@ -511,18 +587,18 @@
       "description_en": "By the Word, the world was made. Davar balances all things, perfect for those who walk between paths.",
       "pieces": {
         "helmet": { "id": "item_davar_circlet", "name_fr": "Diadème de Davar", "name_en": "Davar Circlet" },
-        "armor": { "id": "item_davar_vest", "name_fr": "Veste de Davar", "name_en": "Davar Vest" },
+        "chest": { "id": "item_davar_vest", "name_fr": "Veste de Davar", "name_en": "Davar Vest" },
         "cape": { "id": "item_davar_cloak", "name_fr": "Cape de Davar", "name_en": "Davar Cloak" },
         "belt": { "id": "item_davar_belt", "name_fr": "Ceinture de Davar", "name_en": "Davar Belt" },
-        "amulet": { "id": "item_davar_amulet", "name_fr": "Amulette de Davar", "name_en": "Davar Amulet" },
+        "necklace": { "id": "item_davar_amulet", "name_fr": "Amulette de Davar", "name_en": "Davar Amulet" },
         "ring_1": { "id": "item_davar_ring", "name_fr": "Anneau de Davar", "name_en": "Davar Ring" }
       },
       "bonuses": {
         "2": { "atk_percent": 3, "mag_percent": 3, "def_percent": 3 },
-        "4": { "hp_max": 40, "mp_max": 30 },
+        "4": { "hp": 40, "mp": 30 },
         "6": { "luck": 20, "atk_percent": 3, "mag_percent": 3, "def_percent": 3 }
       },
-      "total_at_max": { "atk_percent": 6, "mag_percent": 6, "def_percent": 6, "hp_max": 40, "mp_max": 30, "luck": 20 }
+      "total_at_max": { "atk_percent": 6, "mag_percent": 6, "def_percent": 6, "hp": 40, "mp": 30, "luck": 20 }
     },
 
     "_comment_8p": "========== SETS COMPLETS (8 PIÈCES) ==========",
@@ -534,26 +610,27 @@
       "meaning": "Gardien",
       "pieces_count": 8,
       "identity": "main_tank",
-      "armor_type": "plate",
+      "armor_type": "heavy",
+      "weapon_template": "melee_tank",
       "description_fr": "Les Gardiens des Terres portent Shomer depuis l'aube des temps. Ils sont le mur entre le chaos et l'harmonie, le dernier rempart des peuples.",
       "description_en": "The Guardians of the Lands have worn Shomer since the dawn of time. They are the wall between chaos and harmony, the last bulwark of the peoples.",
       "pieces": {
         "helmet": { "id": "item_shomer_helm", "name_fr": "Heaume de Shomer", "name_en": "Shomer Helm" },
-        "armor": { "id": "item_shomer_plate", "name_fr": "Cuirasse de Shomer", "name_en": "Shomer Plate" },
+        "chest": { "id": "item_shomer_plate", "name_fr": "Cuirasse de Shomer", "name_en": "Shomer Plate" },
         "cape": { "id": "item_shomer_cloak", "name_fr": "Cape de Shomer", "name_en": "Shomer Cloak" },
-        "gloves": { "id": "item_shomer_gauntlets", "name_fr": "Gantelets de Shomer", "name_en": "Shomer Gauntlets" },
+        "legs": { "id": "item_shomer_greaves", "name_fr": "Jambières de Shomer", "name_en": "Shomer Greaves" },
         "belt": { "id": "item_shomer_belt", "name_fr": "Ceinture de Shomer", "name_en": "Shomer Belt" },
         "boots": { "id": "item_shomer_boots", "name_fr": "Bottes de Shomer", "name_en": "Shomer Boots" },
-        "amulet": { "id": "item_shomer_amulet", "name_fr": "Amulette de Shomer", "name_en": "Shomer Amulet" },
+        "necklace": { "id": "item_shomer_amulet", "name_fr": "Amulette de Shomer", "name_en": "Shomer Amulet" },
         "weapon": { "id": "item_shomer_sword", "name_fr": "Épée de Shomer", "name_en": "Shomer Sword" }
       },
       "bonuses": {
         "2": { "def_percent": 6 },
-        "4": { "armor": 60, "hp_max": 80 },
-        "6": { "def": 25, "hp_max": 60 },
-        "8": { "def_percent": 12, "hp_max": 60, "block_chance": 10, "thorns": 15, "damage_reduction_flat": 25 }
+        "4": { "armor": 60, "hp": 80 },
+        "6": { "def": 25, "hp": 60 },
+        "8": { "def_percent": 12, "hp": 60, "block_chance": 10, "thorns": 15, "damage_reduction_flat": 25 }
       },
-      "total_at_max": { "def_percent": 18, "armor": 60, "hp_max": 200, "def": 25, "block_chance": 10, "thorns": 15, "damage_reduction_flat": 25 }
+      "total_at_max": { "def_percent": 18, "armor": 60, "hp": 200, "def": 25, "block_chance": 10, "thorns": 15, "damage_reduction_flat": 25 }
     },
 
     "tzayad": {
@@ -563,17 +640,18 @@
       "meaning": "Chasseur",
       "pieces_count": 8,
       "identity": "physical_dps_crit",
-      "armor_type": "leather",
+      "armor_type": "medium",
+      "weapon_template": "ranged_physical",
       "description_fr": "Dans les plaines infinies, les Chasseurs traquent leur proie. Tzayad est l'équipement de ceux qui ne ratent jamais leur cible.",
       "description_en": "In the endless plains, Hunters track their prey. Tzayad is the equipment of those who never miss their mark.",
       "pieces": {
         "helmet": { "id": "item_tzayad_hood", "name_fr": "Capuche de Tzayad", "name_en": "Tzayad Hood" },
-        "armor": { "id": "item_tzayad_vest", "name_fr": "Veste de Tzayad", "name_en": "Tzayad Vest" },
+        "chest": { "id": "item_tzayad_vest", "name_fr": "Veste de Tzayad", "name_en": "Tzayad Vest" },
         "cape": { "id": "item_tzayad_cloak", "name_fr": "Cape de Tzayad", "name_en": "Tzayad Cloak" },
-        "gloves": { "id": "item_tzayad_gloves", "name_fr": "Gants de Tzayad", "name_en": "Tzayad Gloves" },
+        "legs": { "id": "item_tzayad_leggings", "name_fr": "Jambières de Tzayad", "name_en": "Tzayad Leggings" },
         "belt": { "id": "item_tzayad_belt", "name_fr": "Ceinture de Tzayad", "name_en": "Tzayad Belt" },
         "boots": { "id": "item_tzayad_boots", "name_fr": "Bottes de Tzayad", "name_en": "Tzayad Boots" },
-        "amulet": { "id": "item_tzayad_fang", "name_fr": "Croc de Tzayad", "name_en": "Tzayad Fang" },
+        "necklace": { "id": "item_tzayad_fang", "name_fr": "Croc de Tzayad", "name_en": "Tzayad Fang" },
         "weapon": { "id": "item_tzayad_bow", "name_fr": "Arc de Tzayad", "name_en": "Tzayad Bow" }
       },
       "bonuses": {
@@ -593,25 +671,26 @@
       "pieces_count": 8,
       "identity": "sustain_regen",
       "armor_type": "mixed",
+      "weapon_template": "magic_support",
       "description_fr": "Le Premier Souffle, celui qui donna vie à la création. Neshamah maintient la vie là où elle devrait s'éteindre, un fil ténu mais indestructible.",
       "description_en": "The First Breath, that which gave life to creation. Neshamah sustains life where it should fade, a thin but indestructible thread.",
       "pieces": {
         "helmet": { "id": "item_neshamah_crown", "name_fr": "Couronne de Neshamah", "name_en": "Neshamah Crown" },
-        "armor": { "id": "item_neshamah_robe", "name_fr": "Robe de Neshamah", "name_en": "Neshamah Robe" },
+        "chest": { "id": "item_neshamah_robe", "name_fr": "Robe de Neshamah", "name_en": "Neshamah Robe" },
         "cape": { "id": "item_neshamah_mantle", "name_fr": "Manteau de Neshamah", "name_en": "Neshamah Mantle" },
-        "gloves": { "id": "item_neshamah_gloves", "name_fr": "Gants de Neshamah", "name_en": "Neshamah Gloves" },
+        "legs": { "id": "item_neshamah_leggings", "name_fr": "Jambières de Neshamah", "name_en": "Neshamah Leggings" },
         "belt": { "id": "item_neshamah_cord", "name_fr": "Cordon de Neshamah", "name_en": "Neshamah Cord" },
         "boots": { "id": "item_neshamah_sandals", "name_fr": "Sandales de Neshamah", "name_en": "Neshamah Sandals" },
-        "amulet": { "id": "item_neshamah_pendant", "name_fr": "Pendentif de Neshamah", "name_en": "Neshamah Pendant" },
+        "necklace": { "id": "item_neshamah_pendant", "name_fr": "Pendentif de Neshamah", "name_en": "Neshamah Pendant" },
         "weapon": { "id": "item_neshamah_staff", "name_fr": "Bâton de Neshamah", "name_en": "Neshamah Staff" }
       },
       "bonuses": {
         "2": { "hp_regen": 2 },
-        "4": { "mp_regen": 2, "hp_max": 50 },
-        "6": { "healing_received": 12, "mp_max": 40 },
-        "8": { "hp_regen": 4, "mp_regen": 3, "hp_max": 80, "lifesteal": 5, "spell_vamp": 5 }
+        "4": { "mp_regen": 2, "hp": 50 },
+        "6": { "healing_received": 12, "mp": 40 },
+        "8": { "hp_regen": 4, "mp_regen": 3, "hp": 80, "lifesteal": 5, "spell_vamp": 5 }
       },
-      "total_at_max": { "hp_regen": 6, "mp_regen": 5, "hp_max": 130, "mp_max": 40, "healing_received": 12, "lifesteal": 5, "spell_vamp": 5 }
+      "total_at_max": { "hp_regen": 6, "mp_regen": 5, "hp": 130, "mp": 40, "healing_received": 12, "lifesteal": 5, "spell_vamp": 5 }
     },
 
     "adamah": {
@@ -621,26 +700,27 @@
       "meaning": "Terre/Sol",
       "pieces_count": 8,
       "identity": "bruiser_hp_atk",
-      "armor_type": "plate",
+      "armor_type": "heavy",
+      "weapon_template": "bruiser",
       "description_fr": "De la terre fut façonné l'homme. Adamah incarne cette force primordiale : solide, endurant, implacable. Ceux qui le portent sont à la fois bouclier et épée.",
       "description_en": "From earth, man was shaped. Adamah embodies this primordial force: solid, enduring, relentless. Those who wear it are both shield and sword.",
       "pieces": {
         "helmet": { "id": "item_adamah_helm", "name_fr": "Heaume d'Adamah", "name_en": "Adamah Helm" },
-        "armor": { "id": "item_adamah_plate", "name_fr": "Cuirasse d'Adamah", "name_en": "Adamah Plate" },
+        "chest": { "id": "item_adamah_plate", "name_fr": "Cuirasse d'Adamah", "name_en": "Adamah Plate" },
         "cape": { "id": "item_adamah_cloak", "name_fr": "Cape d'Adamah", "name_en": "Adamah Cloak" },
-        "gloves": { "id": "item_adamah_gauntlets", "name_fr": "Gantelets d'Adamah", "name_en": "Adamah Gauntlets" },
+        "legs": { "id": "item_adamah_greaves", "name_fr": "Jambières d'Adamah", "name_en": "Adamah Greaves" },
         "belt": { "id": "item_adamah_belt", "name_fr": "Ceinture d'Adamah", "name_en": "Adamah Belt" },
         "boots": { "id": "item_adamah_boots", "name_fr": "Bottes d'Adamah", "name_en": "Adamah Boots" },
         "ring_1": { "id": "item_adamah_ring", "name_fr": "Anneau d'Adamah", "name_en": "Adamah Ring" },
         "weapon": { "id": "item_adamah_mace", "name_fr": "Masse d'Adamah", "name_en": "Adamah Mace" }
       },
       "bonuses": {
-        "2": { "hp_max": 60 },
+        "2": { "hp": 60 },
         "4": { "atk_percent": 6, "armor": 40 },
-        "6": { "hp_max": 80, "def": 15, "def_percent": 6 },
-        "8": { "atk_percent": 12, "hp_max": 100, "lifesteal": 6, "armor": 50 }
+        "6": { "hp": 80, "def": 15, "def_percent": 6 },
+        "8": { "atk_percent": 12, "hp": 100, "lifesteal": 6, "armor": 50 }
       },
-      "total_at_max": { "hp_max": 240, "atk_percent": 18, "armor": 90, "def": 15, "def_percent": 6, "lifesteal": 6 }
+      "total_at_max": { "hp": 240, "atk_percent": 18, "armor": 90, "def": 15, "def_percent": 6, "lifesteal": 6 }
     }
   },
 
@@ -653,9 +733,9 @@
       "8_pieces": ["shomer", "tzayad", "neshamah", "adamah"]
     },
     "by_armor_type": {
-      "cloth": ["chayim", "binah", "nefesh", "kavod", "anan", "refuah", "koach", "orim", "eshal", "mayim"],
-      "leather": ["kesher", "ot", "ruach", "gevurah", "tzel", "tzayad"],
-      "plate": ["oz", "sela", "barzel", "even", "magen", "shomer", "adamah"],
+      "light": ["chayim", "binah", "nefesh", "kavod", "anan", "refuah", "koach", "orim", "eshal", "mayim"],
+      "medium": ["kesher", "ot", "ruach", "gevurah", "tzel", "tzayad"],
+      "heavy": ["oz", "sela", "barzel", "even", "magen", "shomer", "adamah"],
       "mixed": ["davar", "neshamah"]
     },
     "by_identity": {
