@@ -90,9 +90,40 @@
           "template": "talk_to_npc",
           "npc_id": "npc_guild_master_aldric",
           "description_fr": "Parler à Aldric",
-          "description_en": "Talk to Aldric"
+          "description_en": "Talk to Aldric",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_main_arrival_find_aldric",
+                "type": "arrow",
+                "target": "npc_guild_master_aldric",
+                "priority": 70,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Trouve Aldric au village",
+                  "label_en": "Find Aldric in the village"
+                }
+              }
+            ]
+          }
         }
       ],
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_main_arrival_welcome",
+            "type": "modal",
+            "priority": 85,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Bienvenue au village",
+              "title_en": "Welcome to the Village",
+              "content_fr": "Tu viens de quitter la maison d'entraînement. Aldric t'attend en ville pour te confier ta première mission.",
+              "content_en": "You just left the training house. Aldric is waiting for you in town to give you your first mission."
+            }
+          }
+        ]
+      },
       "rewards": {
         "xp": 100,
         "items": [
@@ -128,6 +159,22 @@
           "count": 10
         }
       ],
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_main_zone01_guide",
+            "type": "modal",
+            "priority": 75,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Les plaines",
+              "title_en": "The Plains",
+              "content_fr": "Dirige-toi vers les plaines au sud du village. Élimine les rats et les scarabées pour sécuriser la zone.",
+              "content_en": "Head to the plains south of the village. Eliminate the rats and scarabs to secure the area."
+            }
+          }
+        ]
+      },
       "rewards": {
         "xp": 45,
         "gold": 15,
@@ -1679,19 +1726,22 @@
       "id": "q_tut_01",
       "type": "main",
       "zone": "tutorial_house",
+      "flags": ["tutorial"],
+      "objective_mode": "sequential",
       "title_fr": "Formation des volontaires",
       "title_en": "Volunteer Training",
       "summary_fr": "Aldric forme les volontaires avant de les envoyer dehors. Parle-lui et équipe l'arme qu'il te donne.",
       "summary_en": "Aldric trains volunteers before sending them out. Talk to him and equip the weapon he gives you.",
       "objectives": [
         {
-          "template": "manual",
+          "template": "talk_to_npc",
+          "npc_id": "npc_guide_aldric",
           "count": 1,
           "description_fr": "Parler à Aldric",
           "description_en": "Talk to Aldric"
         },
         {
-          "template": "manual",
+          "template": "equip_item",
           "count": 1,
           "description_fr": "Équiper l'arme d'Aldric",
           "description_en": "Equip Aldric's weapon"
@@ -1706,18 +1756,63 @@
       "id": "q_tut_01b",
       "type": "main",
       "zone": "tutorial_house",
+      "flags": ["tutorial"],
       "title_fr": "Première épreuve",
       "title_en": "First Trial",
       "summary_fr": "Montre à Aldric que tu sais te défendre en affrontant le rat d'entraînement.",
       "summary_en": "Show Aldric you can defend yourself by facing the training rat.",
       "objectives": [
         {
-          "template": "manual",
+          "template": "win_combats",
           "count": 1,
           "description_fr": "Vaincre le rat d'entraînement",
-          "description_en": "Defeat the training rat"
+          "description_en": "Defeat the training rat",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_01b_obj0_approach",
+                "type": "arrow",
+                "target": "world_monster",
+                "priority": 80,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Approche le rat pour combattre",
+                  "label_en": "Approach the rat to fight"
+                }
+              }
+            ],
+            "on_complete": [
+              {
+                "id": "q_tut_01b_obj0_return",
+                "type": "arrow",
+                "target": "npc_guide_aldric",
+                "priority": 80,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Retourne voir Aldric",
+                  "label_en": "Return to Aldric"
+                }
+              }
+            ]
+          }
         }
       ],
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_tut_01b_intro",
+            "type": "modal",
+            "priority": 90,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Premier combat",
+              "title_en": "First Combat",
+              "content_fr": "Approche le rat pour lancer le combat. Utilise tes compétences pour le vaincre !",
+              "content_en": "Approach the rat to start combat. Use your skills to defeat it!"
+            }
+          }
+        ]
+      },
       "rewards": {
         "xp": 120
       },
@@ -1727,19 +1822,21 @@
       "id": "q_tut_02",
       "type": "main",
       "zone": "tutorial_house",
+      "flags": ["tutorial"],
+      "objective_mode": "sequential",
       "title_fr": "Connais tes forces",
       "title_en": "Know Your Strengths",
       "summary_fr": "Avant de partir, Aldric te demande de vérifier ton équipement et tes capacités. Ceux qui partent sans savoir ce qu'ils ont sur eux ne reviennent pas toujours.",
       "summary_en": "Before you leave, Aldric asks you to check your gear and abilities. Those who leave without knowing what they have don't always come back.",
       "objectives": [
         {
-          "template": "manual",
+          "template": "open_ui_screen",
           "count": 1,
           "description_fr": "Ouvrir les statistiques",
           "description_en": "Open the stats screen"
         },
         {
-          "template": "manual",
+          "template": "open_ui_screen",
           "count": 1,
           "description_fr": "Ouvrir les compétences",
           "description_en": "Open the skills screen"
@@ -1754,24 +1851,57 @@
       "id": "q_tut_03",
       "type": "main",
       "zone": "tutorial_house",
+      "flags": ["tutorial"],
+      "objective_mode": "sequential",
       "title_fr": "On part pas seul",
       "title_en": "Nobody Goes Alone",
       "summary_fr": "D'autres volontaires se préparent aussi. Aldric insiste : on ne sort jamais seul. Recrute des alliés et entraînez-vous ensemble.",
       "summary_en": "Other volunteers are getting ready too. Aldric insists: never go out alone. Recruit allies and train together.",
       "objectives": [
         {
-          "template": "manual",
+          "template": "recruit_party_members",
           "count": 2,
           "description_fr": "Recruter tes alliés",
           "description_en": "Recruit your allies"
         },
         {
-          "template": "manual",
+          "template": "win_combats",
           "count": 1,
           "description_fr": "Vaincre le groupe de rats",
-          "description_en": "Defeat the group of rats"
+          "description_en": "Defeat the group of rats",
+          "hints": {
+            "on_complete": [
+              {
+                "id": "q_tut_03_obj1_return",
+                "type": "arrow",
+                "target": "npc_guide_aldric",
+                "priority": 80,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Retourne voir Aldric",
+                  "label_en": "Return to Aldric"
+                }
+              }
+            ]
+          }
         }
       ],
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_tut_03_intro",
+            "type": "modal",
+            "priority": 85,
+            "show_once": true,
+            "payload": {
+              "title_fr": "On part pas seul",
+              "title_en": "Nobody Goes Alone",
+              "content_fr": "Recrute des alliés avant d'affronter le groupe de rats. À plusieurs, vous serez plus forts.",
+              "content_en": "Recruit allies before facing the group of rats. Together, you'll be stronger."
+            }
+          }
+        ]
+      },
       "rewards": {
         "xp": 75
       },
@@ -1781,13 +1911,14 @@
       "id": "q_tut_04",
       "type": "main",
       "zone": "tutorial_house",
+      "flags": ["tutorial"],
       "title_fr": "Derniers préparatifs",
       "title_en": "Final Preparations",
       "summary_fr": "Aldric te donne des potions de la réserve du village. Place-les dans ta barre rapide, dehors, une seconde d'hésitation peut coûter cher.",
       "summary_en": "Aldric gives you potions from the village supply. Put them on your quickbar, out there, a moment's hesitation can cost you.",
       "objectives": [
         {
-          "template": "manual",
+          "template": "assign_quickslot",
           "count": 1,
           "description_fr": "Équiper une potion sur la barre rapide",
           "description_en": "Equip a potion on the quickbar"
@@ -1802,13 +1933,15 @@
       "id": "q_tut_05",
       "type": "main",
       "zone": "tutorial_house",
+      "flags": ["tutorial"],
       "title_fr": "Vers les plaines",
       "title_en": "To the Plains",
       "summary_fr": "Tu es prêt. Les marques au sol ont été signalées au-delà des plaines. Rejoins les autres volontaires dehors et va voir ce qu'il en est.",
       "summary_en": "You're ready. The ground marks have been reported beyond the plains. Join the other volunteers outside and go see what's out there.",
       "objectives": [
         {
-          "template": "manual",
+          "template": "enter_zone",
+          "zone_id": "desert_playtest",
           "count": 1,
           "description_fr": "Quitter la maison du tutoriel",
           "description_en": "Leave the tutorial house"
@@ -1818,7 +1951,45 @@
         "xp": 100,
         "gold": 5
       },
-      "npc_giver": "npc_guide_aldric"
+      "chain_next": "q_post_tut_naya"
+    },
+    {
+      "id": "q_post_tut_naya",
+      "type": "main",
+      "zone": "desert_playtest",
+      "title_fr": "Première mission",
+      "title_en": "First Mission",
+      "summary_fr": "Naya coordonne les volontaires dans le désert. Rejoins-la pour recevoir tes premières instructions.",
+      "summary_en": "Naya coordinates the volunteers in the desert. Meet her to receive your first instructions.",
+      "npc_giver": "npc_naya",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_naya",
+          "count": 1,
+          "description_fr": "Parler à Naya",
+          "description_en": "Talk to Naya"
+        }
+      ],
+      "rewards": {
+        "xp": 50
+      },
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_post_tut_naya_guide",
+            "type": "arrow",
+            "target": "npc_naya",
+            "priority": 85,
+            "show_once": true,
+            "payload": {
+              "label_fr": "Trouve Naya",
+              "label_en": "Find Naya"
+            }
+          }
+        ]
+      },
+      "unlocks": "q_main_arrival"
     }
   ],
   "_summary": {
