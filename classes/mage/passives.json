@@ -5,7 +5,6 @@
     "class": "mage",
     "description": "Mage passives: 1 innate + 5 class-specific (max 20 levels each). Focus: MAG, cast speed, magic pen, CDR, spell vamp."
   },
-
   "innate_passive": {
     "id": "p_mage_arcane_charges",
     "name_fr": "Charges Arcaniques",
@@ -39,7 +38,6 @@
     },
     "lore_note": "Le Souffle du Mage n'est jamais gaspillé. Chaque sort nourrit le suivant."
   },
-
   "class_passives": [
     {
       "id": "p_mage_arcane_mastery",
@@ -49,8 +47,16 @@
       "description_fr": "Augmente le MAG de 1.5% et les PM max de 1% par niveau.",
       "description_en": "Increases MAG by 1.5% and max MP by 1% per level.",
       "effects": [
-        {"stat": "mag", "op": "add_percent", "value_per_level": 1.5},
-        {"stat": "mp", "op": "add_percent", "value_per_level": 1}
+        {
+          "stat": "mag",
+          "op": "add_percent",
+          "value_per_level": 1.5
+        },
+        {
+          "stat": "mp",
+          "op": "add_percent",
+          "value_per_level": 1
+        }
       ]
     },
     {
@@ -61,7 +67,11 @@
       "description_fr": "Augmente la vitesse d'incantation de 1% par niveau.",
       "description_en": "Increases cast speed by 1% per level.",
       "effects": [
-        {"stat": "cast_speed", "op": "add_percent", "value_per_level": 1}
+        {
+          "stat": "cast_speed",
+          "op": "add_percent",
+          "value_per_level": 1
+        }
       ]
     },
     {
@@ -72,7 +82,11 @@
       "description_fr": "Augmente la pénétration magique de 0.75% par niveau.",
       "description_en": "Increases magic penetration by 0.75% per level.",
       "effects": [
-        {"stat": "magic_pen", "op": "add_percent", "value_per_level": 0.75}
+        {
+          "stat": "magic_pen",
+          "op": "add_percent",
+          "value_per_level": 0.75
+        }
       ]
     },
     {
@@ -83,7 +97,11 @@
       "description_fr": "Augmente la réduction de temps de recharge de 0.5% par niveau.",
       "description_en": "Increases cooldown reduction by 0.5% per level.",
       "effects": [
-        {"stat": "cooldown_reduction", "op": "add_percent", "value_per_level": 0.5}
+        {
+          "stat": "cooldown_reduction",
+          "op": "add_percent",
+          "value_per_level": 0.5
+        }
       ]
     },
     {
@@ -94,8 +112,38 @@
       "description_fr": "Augmente le vampirisme magique de 0.5% par niveau.",
       "description_en": "Increases spell vamp by 0.5% per level.",
       "effects": [
-        {"stat": "spell_vamp", "op": "add_percent", "value_per_level": 0.5}
+        {
+          "stat": "spell_vamp",
+          "op": "add_percent",
+          "value_per_level": 0.5
+        }
       ]
     }
-  ]
+  ],
+  "subclass_innate_passives": {
+    "spellblade": {
+      "id": "p_mage_spellblade_enchanted_edge",
+      "name_fr": "Lame Enchantee",
+      "name_en": "Enchanted Edge",
+      "type": "combat_proc",
+      "description_fr": "Les attaques de base du Spellblade ont 30% de chance d'appliquer 1 stack de brulure (4s).",
+      "description_en": "The Spellblade's basic attacks have a 30% chance to apply 1 burn stack (4s).",
+      "trigger_rule": "add_effect_to_skill",
+      "conditions": {
+        "enchant": {
+          "check": "skill_is_basic_attack",
+          "chance_percent": 30,
+          "effect_id": "burn",
+          "stacks": 1,
+          "duration": 4.0
+        }
+      },
+      "passive_scaling": {
+        "passive_id": "p_mage_arcane_mastery",
+        "bonus_per_level": 0.5,
+        "description_fr": "+0.5% chance par niveau de Maitrise Arcanique",
+        "description_en": "+0.5% chance per level of Arcane Mastery"
+      }
+    }
+  }
 }

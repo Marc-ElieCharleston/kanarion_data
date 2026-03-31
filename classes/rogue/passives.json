@@ -5,7 +5,6 @@
     "class": "rogue",
     "description": "Rogue passives: 1 innate + 5 class-specific (max 20 levels each). Focus: burst crit, armor pen, double hit, debuffs."
   },
-
   "innate_passive": {
     "id": "p_rogue_predation",
     "name_fr": "Prédation",
@@ -43,7 +42,6 @@
     },
     "lore_note": "Le prédateur ne chasse pas au hasard, il sent la faiblesse et frappe quand sa proie est la plus vulnérable."
   },
-
   "class_passives": [
     {
       "id": "p_rogue_shadow_strike",
@@ -53,8 +51,16 @@
       "description_fr": "Augmente la chance de critique de 0.75% et les dégâts critiques de 1% par niveau.",
       "description_en": "Increases critical chance by 0.75% and critical damage by 1% per level.",
       "effects": [
-        {"stat": "crit", "op": "add_percent", "value_per_level": 0.75},
-        {"stat": "crit_dmg", "op": "add_percent", "value_per_level": 1}
+        {
+          "stat": "crit",
+          "op": "add_percent",
+          "value_per_level": 0.75
+        },
+        {
+          "stat": "crit_dmg",
+          "op": "add_percent",
+          "value_per_level": 1
+        }
       ]
     },
     {
@@ -65,8 +71,16 @@
       "description_fr": "Augmente l'ATK de 1% et la pénétration d'armure de 0.5% par niveau.",
       "description_en": "Increases ATK by 1% and armor penetration by 0.5% per level.",
       "effects": [
-        {"stat": "atk", "op": "add_percent", "value_per_level": 1},
-        {"stat": "armor_pen", "op": "add_percent", "value_per_level": 0.5}
+        {
+          "stat": "atk",
+          "op": "add_percent",
+          "value_per_level": 1
+        },
+        {
+          "stat": "armor_pen",
+          "op": "add_percent",
+          "value_per_level": 0.5
+        }
       ]
     },
     {
@@ -77,7 +91,11 @@
       "description_fr": "Augmente la chance de double frappe de 0.3% par niveau.",
       "description_en": "Increases double hit chance by 0.3% per level.",
       "effects": [
-        {"stat": "double_hit_chance", "op": "add_percent", "value_per_level": 0.3}
+        {
+          "stat": "double_hit_chance",
+          "op": "add_percent",
+          "value_per_level": 0.3
+        }
       ]
     },
     {
@@ -88,8 +106,16 @@
       "description_fr": "Augmente la chance d'effet de 0.5% et la durée des affaiblissements de 0.75% par niveau.",
       "description_en": "Increases effect chance by 0.5% and debuff duration by 0.75% per level.",
       "effects": [
-        {"stat": "effect_chance", "op": "add_percent", "value_per_level": 0.5},
-        {"stat": "debuff_duration", "op": "add_percent", "value_per_level": 0.75}
+        {
+          "stat": "effect_chance",
+          "op": "add_percent",
+          "value_per_level": 0.5
+        },
+        {
+          "stat": "debuff_duration",
+          "op": "add_percent",
+          "value_per_level": 0.75
+        }
       ]
     },
     {
@@ -100,8 +126,38 @@
       "description_fr": "Augmente les dégâts infligés de 0.75% par niveau.",
       "description_en": "Increases damage dealt by 0.75% per level.",
       "effects": [
-        {"stat": "damage_percent", "op": "add_percent", "value_per_level": 0.75}
+        {
+          "stat": "damage_percent",
+          "op": "add_percent",
+          "value_per_level": 0.75
+        }
       ]
     }
-  ]
+  ],
+  "subclass_innate_passives": {
+    "shadowblade": {
+      "id": "p_rogue_shadowblade_ambush",
+      "name_fr": "Embuscade",
+      "name_en": "Ambush",
+      "type": "combat_proc",
+      "description_fr": "Au debut du combat, le Shadowblade gagne +30% de chance de critique pendant 6s.",
+      "description_en": "At combat start, the Shadowblade gains +30% critical chance for 6s.",
+      "trigger_rule": "on_combat_start",
+      "conditions": {
+        "opener": {
+          "check": "combat_start",
+          "effect_id": "crit_chance_up",
+          "stacks": 1,
+          "duration": 6.0,
+          "value_per_stack": 30
+        }
+      },
+      "passive_scaling": {
+        "passive_id": "p_rogue_assassins_precision",
+        "bonus_per_level": 0.5,
+        "description_fr": "+0.5% crit par niveau de Precision de l'Assassin",
+        "description_en": "+0.5% crit per level of Assassin's Precision"
+      }
+    }
+  }
 }
