@@ -162,10 +162,10 @@
           "tick_damage": "value",
           "tick_rate": 1.0,
           "scaling_stat": "mag",
-          "scaling_percent": 0.20,
+          "scaling_percent": 0.2,
           "scaling_behavior": "flat",
           "on_expire": "explosion",
-          "explosion_percent": 0.50,
+          "explosion_percent": 0.5,
           "damage_ignores_defense": false,
           "vfx_type": "curse_dark"
         }
@@ -194,7 +194,7 @@
           "tick_damage": "value",
           "tick_rate": 1.0,
           "scaling_stat": "mag",
-          "scaling_percent": 0.10,
+          "scaling_percent": 0.1,
           "scaling_behavior": "ramp",
           "ramp_per_tick": 0.05,
           "damage_ignores_defense": false,
@@ -270,37 +270,50 @@
         }
       },
       "def_up": {
-        "name_fr": "DEF +",
-        "name_en": "DEF Up",
+        "name_fr": "Réduction Dégâts Flat +",
+        "name_en": "Flat Damage Reduction Up",
         "polarity": "buff",
         "stacking": "stackable",
+        "max_stacks": 5,
         "impl": "done",
-        "formula": "+10% DEF per stack",
-        "tooltip_fr": "Augmente la défense.",
-        "tooltip_en": "Increases defense.",
-        "description_fr": "Augmente la défense",
-        "description_en": "Increases defense",
+        "formula": "+value flat damage reduction per stack",
+        "tooltip_fr": "Réduit les dégâts subis (valeur fixe).",
+        "tooltip_en": "Reduces damage taken (flat value).",
+        "description_fr": "Réduit les dégâts reçus d'une valeur fixe par stack",
+        "description_en": "Reduces damage taken by a flat value per stack",
+        "sources": [
+          "Warrior Warlord",
+          "Healer Lifewarden",
+          "Healer Lightbringer",
+          "Artisan Blacksmith",
+          "Artisan Chef"
+        ],
         "runtime": {
           "stat_mods": {
-            "def_percent": "value/100"
+            "damage_reduction_flat": "value"
           },
           "vfx_type": "shield_aura"
         }
       },
       "def_down": {
-        "name_fr": "DEF -",
-        "name_en": "DEF Down",
+        "name_fr": "Réduction Dégâts Flat -",
+        "name_en": "Flat Damage Reduction Down",
         "polarity": "debuff",
         "stacking": "stackable",
+        "max_stacks": 5,
         "impl": "done",
-        "formula": "-10% DEF per stack",
-        "tooltip_fr": "Réduit la défense.",
-        "tooltip_en": "Reduces defense.",
-        "description_fr": "Réduit la défense",
-        "description_en": "Reduces defense",
+        "formula": "-value flat damage reduction per stack",
+        "tooltip_fr": "Augmente les dégâts subis (valeur fixe).",
+        "tooltip_en": "Increases damage taken (flat value).",
+        "description_fr": "Augmente les dégâts reçus d'une valeur fixe par stack",
+        "description_en": "Increases damage taken by a flat value per stack",
+        "sources": [
+          "Warrior Warlord",
+          "Artisan Chef"
+        ],
         "runtime": {
           "stat_mods": {
-            "def_percent": "-value/100"
+            "damage_reduction_flat": "-value"
           },
           "vfx_type": "crack_aura"
         }
@@ -690,55 +703,6 @@
           "vfx_type": "power_aura"
         }
       },
-      "def_up": {
-        "name_fr": "Réduction Dégâts Flat +",
-        "name_en": "Flat Damage Reduction Up",
-        "polarity": "buff",
-        "stacking": "stackable",
-        "max_stacks": 5,
-        "impl": "done",
-        "formula": "+value flat damage reduction per stack",
-        "tooltip_fr": "Réduit les dégâts subis (valeur fixe).",
-        "tooltip_en": "Reduces damage taken (flat value).",
-        "description_fr": "Réduit les dégâts reçus d'une valeur fixe par stack",
-        "description_en": "Reduces damage taken by a flat value per stack",
-        "sources": [
-          "Warrior Warlord",
-          "Healer Lifewarden",
-          "Healer Lightbringer",
-          "Artisan Blacksmith",
-          "Artisan Chef"
-        ],
-        "runtime": {
-          "stat_mods": {
-            "damage_reduction_flat": "value"
-          },
-          "vfx_type": "shield_aura"
-        }
-      },
-      "def_down": {
-        "name_fr": "Réduction Dégâts Flat -",
-        "name_en": "Flat Damage Reduction Down",
-        "polarity": "debuff",
-        "stacking": "stackable",
-        "max_stacks": 5,
-        "impl": "done",
-        "formula": "-value flat damage reduction per stack",
-        "tooltip_fr": "Augmente les dégâts subis (valeur fixe).",
-        "tooltip_en": "Increases damage taken (flat value).",
-        "description_fr": "Augmente les dégâts reçus d'une valeur fixe par stack",
-        "description_en": "Increases damage taken by a flat value per stack",
-        "sources": [
-          "Warrior Warlord",
-          "Artisan Chef"
-        ],
-        "runtime": {
-          "stat_mods": {
-            "damage_reduction_flat": "-value"
-          },
-          "vfx_type": "crack_aura"
-        }
-      },
       "heal_received_down": {
         "name_fr": "Soins Reçus -",
         "name_en": "Healing Received Down",
@@ -944,7 +908,10 @@
           "stat_mods": {
             "disarmed": 1
           },
-          "vfx_type": "disarm_icon"
+          "vfx_type": "disarm_icon",
+          "cc_type": "disarm",
+          "blocks_movement": false,
+          "blocks_skills": false
         }
       },
       "fear": {
@@ -960,8 +927,13 @@
         "description_en": "Cannot act for the duration. Behaves as a stun with a distinct tag (immunities, VFX, specific passives).",
         "runtime": {
           "cc_type": "stun",
-          "tags": ["fear"],
-          "vfx_type": "fear_icon"
+          "tags": [
+            "fear"
+          ],
+          "vfx_type": "fear_icon",
+          "blocks_movement": true,
+          "blocks_skills": true,
+          "blocks_auto_attack": true
         }
       },
       "confusion": {
@@ -981,7 +953,10 @@
           },
           "is_targeting_modifier": true,
           "targeting_random_valid": true,
-          "vfx_type": "confusion_effect"
+          "vfx_type": "confusion_effect",
+          "cc_type": "confusion",
+          "blocks_movement": false,
+          "blocks_skills": false
         }
       },
       "blind": {
@@ -1052,7 +1027,10 @@
             "atk_speed_percent": "-value/100",
             "cast_speed_percent": "-value/100"
           },
-          "vfx_type": "slow_chains"
+          "vfx_type": "slow_chains",
+          "cc_type": "slow",
+          "blocks_movement": false,
+          "blocks_skills": false
         }
       }
     },
@@ -1185,7 +1163,9 @@
         "description_fr": "Se place devant un allié. Intercepte la prochaine attaque mono-cible le ciblant. 1 charge.",
         "description_en": "Steps in front of ally. Intercepts next single-target attack targeting them. 1 charge.",
         "runtime": {
-          "flags": ["intercept_single_target"],
+          "flags": [
+            "intercept_single_target"
+          ],
           "charges": 1,
           "vfx_type": "shield_guard"
         }
@@ -1379,7 +1359,10 @@
         "description_fr": "Empêche d'utiliser invisible ou intouchable. Retire ces effets si actifs. Efficace contre les builds Rogue.",
         "description_en": "Prevents using invisible or untargetable. Removes these effects if active. Counters Rogue builds.",
         "runtime": {
-          "flags": ["reveals_invisible", "prevents_invisible"],
+          "flags": [
+            "reveals_invisible",
+            "prevents_invisible"
+          ],
           "vfx_type": "revealed_eye"
         }
       },
@@ -1492,7 +1475,9 @@
         "description_fr": "Impossible de régénérer le souffle (naturelle ou par effets). Peut toujours utiliser le souffle restant. Efficace contre les lanceurs de sorts endurance.",
         "description_en": "Cannot regenerate breath (natural or from effects). Can still use remaining breath. Counters sustain casters.",
         "runtime": {
-          "flags": ["blocks_mana_regen"],
+          "flags": [
+            "blocks_mana_regen"
+          ],
           "vfx_type": "mana_lock_icon"
         }
       },
@@ -1845,7 +1830,7 @@
           "tick_damage": "value",
           "tick_rate": 1.0,
           "scaling_stat": "mag",
-          "scaling_percent": 0.20,
+          "scaling_percent": 0.2,
           "scaling_behavior": "flat",
           "on_detonate": "burst_damage",
           "vfx_type": "toxin_bubbles"
