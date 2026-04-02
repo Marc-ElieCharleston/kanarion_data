@@ -742,30 +742,36 @@
       "note": "Hard cap on all stacked multipliers to prevent guaranteed legendary drops"
     },
     "level_difference": {
-      "description": "Pénalité si le joueur est trop haut niveau par rapport au mob",
-      "no_penalty_range": 5,
-      "penalty_per_level": 0.1,
-      "max_penalty": 0.9,
-      "min_drop_rate": 0.1,
+      "description": "Pénalité XP/gold/drop si le joueur est trop haut niveau par rapport au mob. Agressive pour empêcher le farm de mobs bas level.",
+      "no_penalty_range": 3,
+      "penalty_per_level": 0.2,
+      "max_penalty": 0.95,
+      "min_drop_rate": 0.05,
       "formula": "Si (player_level - mob_level) > no_penalty_range: penalty = min(max_penalty, (diff - no_penalty_range) × penalty_per_level)",
       "examples": [
         {
+          "player": 5,
+          "mob": 1,
+          "penalty": 0.2,
+          "note": "4 niveaux d'écart, -20% (1 au-delà de la range)"
+        },
+        {
+          "player": 7,
+          "mob": 1,
+          "penalty": 0.6,
+          "note": "6 niveaux, diff-3=3 × 0.2 = -60%"
+        },
+        {
+          "player": 9,
+          "mob": 1,
+          "penalty": 0.95,
+          "note": "8+ niveaux, pénalité max -95% (quasi rien)"
+        },
+        {
           "player": 20,
           "mob": 15,
-          "penalty": 0,
-          "note": "Dans la range, pas de pénalité"
-        },
-        {
-          "player": 25,
-          "mob": 15,
-          "penalty": 0.5,
-          "note": "10 niveaux d'écart, -50%"
-        },
-        {
-          "player": 30,
-          "mob": 15,
-          "penalty": 0.9,
-          "note": "15+ niveaux, pénalité max"
+          "penalty": 0.4,
+          "note": "5 niveaux, diff-3=2 × 0.2 = -40%"
         }
       ]
     }
