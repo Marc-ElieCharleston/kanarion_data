@@ -118,7 +118,7 @@ Players choose a faction at level 60. Subclass lore must NOT lock players into a
 - **Fields:** `id`, `name_fr`, `name_en`, `max_level`, `description_fr`, `description_en`, `effects[]` (each with `stat`, `op`, `value_per_level`)
 
 ### Monster Structure
-- **Required fields:** `id`, `name_fr`, `name_en`, `category`, `base_level`, `danger_level`, `tags[]`, `ai_role`, `xp_weight` (0.5-2.0), `gold_weight` (0.0-3.0), `base_stats{}`, `drops[]`
+- **Required fields:** `id`, `name_fr`, `name_en`, `category`, `base_level`, `danger_level`, `tags[]`, `ai_role`, `base_xp` (flat XP per kill), `gold_weight` (0.0-3.0), `base_stats{}`, `drops[]`
 - **Tags catalog:** beast, humanoid, undead, elemental, demon, corrupted, ranged, melee, caster, tank, swarm, elite, boss, assassin, healer, support, artillery
 - Loot table `item_id` references must exist in items files (CI validates this)
 
