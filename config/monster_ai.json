@@ -4,7 +4,6 @@
     "last_updated": "2026-01-14",
     "description": "Configuration du systeme d'IA des monstres"
   },
-
   "intelligence_levels": {
     "_comment": "Niveau d'intelligence base sur le danger_level du monstre",
     "0": {
@@ -63,11 +62,12 @@
       "has_phases": true
     }
   },
-
   "ai_roles": {
     "brute": {
-      "name": "Brute",
-      "description": "Attaque la cible la plus proche avec un maximum de degats",
+      "name_fr": "Brute",
+      "name_en": "Brute",
+      "description_fr": "Focus l'ennemi le plus proche en melee. Pas malin, mais frappe fort.",
+      "description_en": "Focuses the closest enemy in melee. Not smart, but hits hard.",
       "preferred_row": "front",
       "priority_weights": {
         "attack_nearest": 70,
@@ -79,11 +79,16 @@
         "self_preservation": 0.2,
         "support_allies": 0.1
       },
-      "preferred_skills": ["damage", "aoe_damage"]
+      "preferred_skills": [
+        "damage",
+        "aoe_damage"
+      ]
     },
     "assassin": {
-      "name": "Assassin",
-      "description": "Cible les healers et mages (cibles fragiles en backline)",
+      "name_fr": "Assassin",
+      "name_en": "Assassin",
+      "description_fr": "Ignore les tanks et focus directement les classes fragiles de la backline (soigneurs, mages).",
+      "description_en": "Ignores tanks and focuses fragile backline classes (healers, mages).",
       "preferred_row": "front",
       "priority_weights": {
         "attack_healer": 50,
@@ -96,12 +101,23 @@
         "self_preservation": 0.4,
         "support_allies": 0.1
       },
-      "target_priority": ["healer", "mage", "archer", "rogue", "warrior"],
-      "preferred_skills": ["single_target_damage", "execute"]
+      "target_priority": [
+        "healer",
+        "mage",
+        "archer",
+        "rogue",
+        "warrior"
+      ],
+      "preferred_skills": [
+        "single_target_damage",
+        "execute"
+      ]
     },
     "tank": {
-      "name": "Tank",
-      "description": "Protege les allies, attire l'attention, position front",
+      "name_fr": "Tank",
+      "name_en": "Tank",
+      "description_fr": "Encaisse les coups en frontline et attire l'aggro pour proteger ses allies.",
+      "description_en": "Soaks damage on the frontline and pulls aggro to protect its allies.",
       "preferred_row": "front",
       "priority_weights": {
         "protect_ally": 40,
@@ -114,11 +130,17 @@
         "self_preservation": 0.6,
         "support_allies": 0.8
       },
-      "preferred_skills": ["taunt", "defense", "shield"]
+      "preferred_skills": [
+        "taunt",
+        "defense",
+        "shield"
+      ]
     },
     "healer": {
-      "name": "Soigneur",
-      "description": "Soigne l'allie le plus bas en HP",
+      "name_fr": "Soigneur",
+      "name_en": "Healer",
+      "description_fr": "Heal ses allies en priorite, en commencant par celui qui a le moins de PV. A focus en premier sinon le combat traine.",
+      "description_en": "Heals allies in priority, starting with the lowest HP. Focus it first or the fight will drag on.",
       "preferred_row": "back",
       "priority_weights": {
         "heal_lowest_ally": 60,
@@ -133,11 +155,17 @@
       },
       "heal_threshold": 0.85,
       "critical_heal_threshold": 0.3,
-      "preferred_skills": ["heal", "hot", "shield"]
+      "preferred_skills": [
+        "heal",
+        "hot",
+        "shield"
+      ]
     },
     "support": {
-      "name": "Support",
-      "description": "Buff allies, debuff ennemis",
+      "name_fr": "Support",
+      "name_en": "Support",
+      "description_fr": "Buff ses allies et debuff ton equipe. Inflige peu de degats mais peut renverser un combat.",
+      "description_en": "Buffs allies and debuffs your team. Deals little damage but can swing a fight.",
       "preferred_row": "back",
       "priority_weights": {
         "buff_ally": 35,
@@ -151,11 +179,17 @@
         "support_allies": 0.8
       },
       "heal_ally_threshold": 0.5,
-      "preferred_skills": ["buff", "debuff", "heal"]
+      "preferred_skills": [
+        "buff",
+        "debuff",
+        "heal"
+      ]
     },
     "artillery": {
-      "name": "Artilleur",
-      "description": "Cible le backline, utilise des AoE",
+      "name_fr": "Artilleur",
+      "name_en": "Artillery",
+      "description_fr": "Attaque a distance et vise la backline avec des AoE.",
+      "description_en": "Attacks from range and targets the backline with AoE.",
       "preferred_row": "back",
       "priority_weights": {
         "attack_backline": 50,
@@ -169,11 +203,16 @@
         "support_allies": 0.2
       },
       "preferred_position": "back",
-      "preferred_skills": ["aoe_damage", "ranged_damage"]
+      "preferred_skills": [
+        "aoe_damage",
+        "ranged_damage"
+      ]
     },
     "tactician": {
-      "name": "Tacticien",
-      "description": "Analyse et contre la composition du joueur",
+      "name_fr": "Tacticien",
+      "name_en": "Tactician",
+      "description_fr": "Analyse ta composition et adapte ses skills pour exploiter tes faiblesses. Tres dangereux face a une equipe mal equilibree.",
+      "description_en": "Analyzes your composition and adapts its skills to exploit weaknesses. Very dangerous against an unbalanced team.",
       "preferred_row": "mid",
       "priority_weights": {
         "counter_strategy": 40,
@@ -187,10 +226,34 @@
         "support_allies": 0.6
       },
       "analyzes_cooldowns": true,
-      "preferred_skills": ["counter", "interrupt", "debuff"]
+      "preferred_skills": [
+        "counter",
+        "interrupt",
+        "debuff"
+      ]
+    },
+    "berserker": {
+      "name_fr": "Berserker",
+      "name_en": "Berserker",
+      "description_fr": "Plus il perd de PV, plus il frappe fort. A focus rapidement avant qu'il devienne incontrolable.",
+      "description_en": "The more HP it loses, the harder it hits. Focus it down fast before it becomes unstoppable.",
+      "preferred_row": "front",
+      "priority_weights": {
+        "attack_nearest": 60,
+        "attack_lowest_hp": 30,
+        "attack_random": 10
+      },
+      "behavior": {
+        "aggression": 1.0,
+        "self_preservation": 0.1,
+        "support_allies": 0.0
+      },
+      "preferred_skills": [
+        "damage",
+        "rage"
+      ]
     }
   },
-
   "target_priority_by_class": {
     "_comment": "Priorite de ciblage selon la classe du joueur (0 = haute priorite)",
     "healer": 0,
@@ -200,14 +263,12 @@
     "artisan": 4,
     "warrior": 5
   },
-
   "survival_behaviors": {
     "flee_threshold": 0.15,
     "heal_self_threshold": 0.3,
     "defensive_threshold": 0.4,
     "desperate_threshold": 0.2
   },
-
   "boss_phases": {
     "normal": {
       "hp_threshold": 1.0,
@@ -228,7 +289,6 @@
       "behavior_modifier": "all_in"
     }
   },
-
   "coordination_rules": {
     "avoid_overkill": true,
     "max_attackers_per_target": 3,
@@ -239,7 +299,6 @@
     "spread_damage_when_aoe": true,
     "prioritize_interrupt_on_cast": true
   },
-
   "skill_decision_weights": {
     "heal_urgency_mult": 2.0,
     "execute_threshold": 0.2,
@@ -249,7 +308,6 @@
     "aoe_vs_single_threshold": 3,
     "interrupt_priority_mult": 1.8
   },
-
   "timing": {
     "min_skill_interval": 2.0,
     "max_skill_interval": 5.0,
@@ -258,7 +316,6 @@
     "batch_size": 3,
     "reaction_randomness": 0.3
   },
-
   "advanced_tactics": {
     "_comment": "Tactiques avancées pour IA intelligente (niveau 4-5)",
     "track_player_cooldowns": true,
