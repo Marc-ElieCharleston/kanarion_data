@@ -1,81 +1,1039 @@
 {
   "_meta": {
-    "version": "4.0",
-    "last_updated": "2026-01-31",
-    "description": "Keystones - Choix unique parmi plusieurs options qui changent radicalement le gameplay"
+    "version": "5.0",
+    "last_updated": "2026-04-18",
+    "description": "Keystones — Stigma-style triggers actifs. 5 slots (lv 20/40/60/80/100). Rangs C→SS. 3 variantes par keystone."
   },
 
   "rules": {
-    "max_active_keystones": 1,
-    "has_levels": false,
+    "slots_unlock_levels": [20, 40, 60, 80, 100],
+    "max_active": 5,
+    "ranks": ["C", "B", "A", "S", "SS"],
+    "rank_interpolation": "Valeurs B/A/S interpolees lineairement entre C et SS",
+    "categories": ["dps", "tank", "support", "utility"],
     "design_notes": [
-      "Un seul keystone actif à la fois",
-      "Pas de niveaux - juste actif ou non",
-      "Choix entre 3-4 options orientées (DPS, Tank, Support, Control)",
-      "Effets radicaux qui changent le gameplay",
-      "Visuels forts requis"
+      "Chaque keystone a un trigger (condition d'activation)",
+      "3 variantes par keystone — meme trigger, effet different",
+      "Le rang change les valeurs (puissance, seuil, CD, duree) — PAS la nature de l'effet",
+      "Tous les effets utilisent des mecaniques existantes (shield, DR, buff stats, heal, thorns, CDR, CC, debuff)",
+      "Pool commun (toutes classes) + pool par classe (a designer plus tard)",
+      "Les keystones se drop, se craft, se trade (comme les Koros)"
     ]
   },
 
   "common_keystones": [
+
     {
-      "id": "ks_common_berserker_rage",
-      "name_fr": "Rage du Berserker",
-      "name_en": "Berserker Rage",
-      "type": "dps",
-      "description_fr": "Lorsque vos HP descendent en dessous de 30%, vous gagnez +20% de dégâts pendant 10 secondes. 60s de cooldown.",
-      "description_en": "When your HP drops below 30%, you gain +20% damage for 10 seconds. 60s cooldown.",
-      "effects": {
-        "trigger": "hp_below_30",
-        "buff_duration": 10,
-        "damage_bonus": 20,
-        "cooldown": 60
-      }
+      "id": "ks_dps_fury",
+      "category": "dps",
+      "trigger": "hp_below_pct",
+      "name_fr": "Fureur",
+      "name_en": "Fury",
+      "trigger_description_fr": "Se declenche quand vos HP tombent sous un seuil",
+      "trigger_description_en": "Triggers when your HP drops below a threshold",
+      "variants": [
+        {
+          "id": "ks_dps_fury_blood",
+          "name_fr": "Fureur Sanguinaire",
+          "name_en": "Blood Fury",
+          "description_fr": "Sous le seuil de HP, vous gagnez un bonus d'ATK et MAG",
+          "description_en": "Below HP threshold, gain ATK and MAG bonus",
+          "effect_type": "buff_atk_mag_pct",
+          "scaling": {
+            "C":  { "trigger_pct": 25, "value": 20, "duration": 6, "cooldown": 90 },
+            "SS": { "trigger_pct": 35, "value": 50, "duration": 10, "cooldown": 45 }
+          }
+        },
+        {
+          "id": "ks_dps_fury_crit",
+          "name_fr": "Fureur Critique",
+          "name_en": "Critical Fury",
+          "description_fr": "Sous le seuil de HP, vous gagnez un bonus de chance critique",
+          "description_en": "Below HP threshold, gain critical chance bonus",
+          "effect_type": "buff_crit_pct",
+          "scaling": {
+            "C":  { "trigger_pct": 25, "value": 15, "duration": 6, "cooldown": 90 },
+            "SS": { "trigger_pct": 35, "value": 35, "duration": 10, "cooldown": 45 }
+          }
+        },
+        {
+          "id": "ks_dps_fury_lifesteal",
+          "name_fr": "Fureur Vampirique",
+          "name_en": "Vampiric Fury",
+          "description_fr": "Sous le seuil de HP, vos attaques volent de la vie",
+          "description_en": "Below HP threshold, your attacks steal life",
+          "effect_type": "buff_lifesteal_pct",
+          "scaling": {
+            "C":  { "trigger_pct": 25, "value": 10, "duration": 6, "cooldown": 90 },
+            "SS": { "trigger_pct": 35, "value": 25, "duration": 10, "cooldown": 45 }
+          }
+        }
+      ]
     },
+
     {
-      "id": "ks_common_last_stand",
-      "name_fr": "Dernier Rempart",
-      "name_en": "Last Stand",
-      "type": "tank",
-      "description_fr": "Lorsque vos HP descendent en dessous de 20%, vous gagnez +50% de réduction de dégâts pendant 8 secondes. 90s de cooldown.",
-      "description_en": "When your HP drops below 20%, you gain +50% damage reduction for 8 seconds. 90s cooldown.",
-      "effects": {
-        "trigger": "hp_below_20",
-        "buff_duration": 8,
-        "damage_reduction": 50,
-        "cooldown": 90
-      }
+      "id": "ks_dps_executioner",
+      "category": "dps",
+      "trigger": "target_hp_below_pct",
+      "name_fr": "Executeur",
+      "name_en": "Executioner",
+      "trigger_description_fr": "Se declenche quand la cible est sous un seuil de HP",
+      "trigger_description_en": "Triggers when target HP is below a threshold",
+      "variants": [
+        {
+          "id": "ks_dps_executioner_damage",
+          "name_fr": "Bourreau",
+          "name_en": "Slayer",
+          "description_fr": "Bonus de degats contre les cibles affaiblies",
+          "description_en": "Bonus damage against weakened targets",
+          "effect_type": "damage_bonus_pct",
+          "scaling": {
+            "C":  { "trigger_pct": 20, "value": 25, "duration": 0, "cooldown": 0 },
+            "SS": { "trigger_pct": 30, "value": 60, "duration": 0, "cooldown": 0 }
+          }
+        },
+        {
+          "id": "ks_dps_executioner_pen",
+          "name_fr": "Perceur",
+          "name_en": "Piercer",
+          "description_fr": "Bonus de penetration d'armure contre les cibles affaiblies",
+          "description_en": "Armor penetration bonus against weakened targets",
+          "effect_type": "buff_armor_pen_pct",
+          "scaling": {
+            "C":  { "trigger_pct": 20, "value": 15, "duration": 0, "cooldown": 0 },
+            "SS": { "trigger_pct": 30, "value": 40, "duration": 0, "cooldown": 0 }
+          }
+        },
+        {
+          "id": "ks_dps_executioner_heal",
+          "name_fr": "Faucheur",
+          "name_en": "Reaper",
+          "description_fr": "Tuer une cible affaiblie vous soigne",
+          "description_en": "Killing a weakened target heals you",
+          "effect_type": "heal_on_kill_pct_hp",
+          "scaling": {
+            "C":  { "trigger_pct": 20, "value": 8, "duration": 0, "cooldown": 20 },
+            "SS": { "trigger_pct": 30, "value": 20, "duration": 0, "cooldown": 10 }
+          }
+        }
+      ]
     },
+
     {
-      "id": "ks_common_guardian_aura",
-      "name_fr": "Aura du Gardien",
-      "name_en": "Guardian Aura",
-      "type": "support",
-      "description_fr": "Lorsque vous utilisez un soin, tous les alliés à portée gagnent +15% de résistance aux effets pendant 6 secondes.",
-      "description_en": "When you cast a heal, all nearby allies gain +15% effect resist for 6 seconds.",
-      "effects": {
-        "trigger": "on_heal_cast",
-        "buff_duration": 6,
-        "effect_resist_bonus": 15,
-        "aoe": "nearby_allies"
-      }
+      "id": "ks_dps_ignition",
+      "category": "dps",
+      "trigger": "on_critical_hit",
+      "name_fr": "Embrasement",
+      "name_en": "Ignition",
+      "trigger_description_fr": "Se declenche sur un coup critique",
+      "trigger_description_en": "Triggers on critical hit",
+      "variants": [
+        {
+          "id": "ks_dps_ignition_dot",
+          "name_fr": "Flammes",
+          "name_en": "Flames",
+          "description_fr": "Un coup critique inflige une brulure sur la cible",
+          "description_en": "A critical hit applies a burn DoT on the target",
+          "effect_type": "apply_dot_burn",
+          "scaling": {
+            "C":  { "value": 3, "duration": 4, "cooldown": 15 },
+            "SS": { "value": 8, "duration": 6, "cooldown": 8 }
+          }
+        },
+        {
+          "id": "ks_dps_ignition_shred",
+          "name_fr": "Fracture",
+          "name_en": "Shred",
+          "description_fr": "Un coup critique reduit la DEF de la cible",
+          "description_en": "A critical hit reduces the target's DEF",
+          "effect_type": "debuff_def_pct",
+          "scaling": {
+            "C":  { "value": 10, "duration": 4, "cooldown": 15 },
+            "SS": { "value": 25, "duration": 6, "cooldown": 8 }
+          }
+        },
+        {
+          "id": "ks_dps_ignition_burst",
+          "name_fr": "Detonation",
+          "name_en": "Detonation",
+          "description_fr": "Un coup critique inflige des degats magiques bonus",
+          "description_en": "A critical hit deals bonus magic damage",
+          "effect_type": "bonus_magic_damage_pct_mag",
+          "scaling": {
+            "C":  { "value": 15, "duration": 0, "cooldown": 12 },
+            "SS": { "value": 40, "duration": 0, "cooldown": 6 }
+          }
+        }
+      ]
     },
+
     {
-      "id": "ks_common_crowd_control_master",
-      "name_fr": "Maître du Contrôle",
-      "name_en": "Crowd Control Master",
-      "type": "control",
-      "description_fr": "Vos effets de contrôle (stun, freeze, root) ont +30% de durée et +10% de chance d'application.",
-      "description_en": "Your crowd control effects (stun, freeze, root) have +30% duration and +10% application chance.",
-      "effects": {
-        "cc_duration_bonus": 30,
-        "cc_chance_bonus": 10,
-        "applies_to": ["stun", "freeze", "root"]
-      }
+      "id": "ks_dps_frenzy",
+      "category": "dps",
+      "trigger": "on_kill",
+      "name_fr": "Frenesie",
+      "name_en": "Frenzy",
+      "trigger_description_fr": "Se declenche quand vous tuez un ennemi",
+      "trigger_description_en": "Triggers when you kill an enemy",
+      "variants": [
+        {
+          "id": "ks_dps_frenzy_atk",
+          "name_fr": "Carnage",
+          "name_en": "Carnage",
+          "description_fr": "Tuer un ennemi augmente votre ATK temporairement",
+          "description_en": "Killing an enemy temporarily boosts your ATK",
+          "effect_type": "buff_atk_pct",
+          "scaling": {
+            "C":  { "value": 12, "duration": 8, "cooldown": 0 },
+            "SS": { "value": 30, "duration": 12, "cooldown": 0 }
+          }
+        },
+        {
+          "id": "ks_dps_frenzy_cdr",
+          "name_fr": "Momentum",
+          "name_en": "Momentum",
+          "description_fr": "Tuer un ennemi reduit vos cooldowns temporairement",
+          "description_en": "Killing an enemy temporarily reduces your cooldowns",
+          "effect_type": "buff_cdr_pct",
+          "scaling": {
+            "C":  { "value": 10, "duration": 8, "cooldown": 0 },
+            "SS": { "value": 25, "duration": 12, "cooldown": 0 }
+          }
+        },
+        {
+          "id": "ks_dps_frenzy_free",
+          "name_fr": "Elan",
+          "name_en": "Surge",
+          "description_fr": "Tuer un ennemi rend votre prochain sort gratuit en Souffle",
+          "description_en": "Killing an enemy makes your next skill free",
+          "effect_type": "next_skill_free_souffle",
+          "scaling": {
+            "C":  { "value": 1, "duration": 6, "cooldown": 25 },
+            "SS": { "value": 1, "duration": 10, "cooldown": 12 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_dps_predator",
+      "category": "dps",
+      "trigger": "combat_start",
+      "name_fr": "Predateur",
+      "name_en": "Predator",
+      "trigger_description_fr": "Se declenche au debut du combat (premiers skills)",
+      "trigger_description_en": "Triggers at combat start (first skills)",
+      "variants": [
+        {
+          "id": "ks_dps_predator_ambush",
+          "name_fr": "Embuscade",
+          "name_en": "Ambush",
+          "description_fr": "Vos premiers sorts infligent des degats bonus",
+          "description_en": "Your first skills deal bonus damage",
+          "effect_type": "damage_bonus_pct",
+          "scaling": {
+            "C":  { "value": 30, "duration": 2, "cooldown": 0 },
+            "SS": { "value": 70, "duration": 3, "cooldown": 0 }
+          }
+        },
+        {
+          "id": "ks_dps_predator_crit",
+          "name_fr": "Frappe Decisive",
+          "name_en": "Decisive Strike",
+          "description_fr": "Vos premiers sorts ont un bonus de degats critiques",
+          "description_en": "Your first skills have bonus critical damage",
+          "effect_type": "buff_crit_damage_pct",
+          "scaling": {
+            "C":  { "value": 40, "duration": 2, "cooldown": 0 },
+            "SS": { "value": 100, "duration": 3, "cooldown": 0 }
+          }
+        },
+        {
+          "id": "ks_dps_predator_expose",
+          "name_fr": "Mise a Nu",
+          "name_en": "Expose",
+          "description_fr": "Vos premiers sorts reduisent la DEF et MR de la cible",
+          "description_en": "Your first skills reduce target's DEF and MR",
+          "effect_type": "debuff_def_mr_pct",
+          "scaling": {
+            "C":  { "value": 12, "duration": 6, "cooldown": 0 },
+            "SS": { "value": 30, "duration": 10, "cooldown": 0 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_tank_bastion",
+      "category": "tank",
+      "trigger": "hp_below_pct",
+      "name_fr": "Rempart",
+      "name_en": "Bastion",
+      "trigger_description_fr": "Se declenche quand vos HP tombent sous un seuil",
+      "trigger_description_en": "Triggers when your HP drops below a threshold",
+      "variants": [
+        {
+          "id": "ks_tank_bastion_shield",
+          "name_fr": "Aegide",
+          "name_en": "Aegis",
+          "description_fr": "Gagne un shield base sur vos HP max",
+          "description_en": "Gain a shield based on your max HP",
+          "effect_type": "shield_pct_max_hp",
+          "scaling": {
+            "C":  { "trigger_pct": 25, "value": 20, "duration": 6, "cooldown": 90 },
+            "SS": { "trigger_pct": 35, "value": 50, "duration": 10, "cooldown": 45 }
+          }
+        },
+        {
+          "id": "ks_tank_bastion_thorns",
+          "name_fr": "Epines",
+          "name_en": "Thorns",
+          "description_fr": "Gagne un shield moindre qui renvoie une partie des degats",
+          "description_en": "Gain a smaller shield that reflects some damage",
+          "effect_type": "shield_pct_max_hp_with_thorns",
+          "scaling": {
+            "C":  { "trigger_pct": 25, "shield": 12, "thorns": 8, "duration": 6, "cooldown": 90 },
+            "SS": { "trigger_pct": 35, "shield": 30, "thorns": 20, "duration": 10, "cooldown": 45 }
+          }
+        },
+        {
+          "id": "ks_tank_bastion_regen",
+          "name_fr": "Resilience",
+          "name_en": "Resilience",
+          "description_fr": "Gagne un shield moindre — quand il expire, vous soigne",
+          "description_en": "Gain a smaller shield — heals you when it expires",
+          "effect_type": "shield_pct_max_hp_heal_on_expire",
+          "scaling": {
+            "C":  { "trigger_pct": 25, "shield": 10, "heal_on_expire": 8, "duration": 6, "cooldown": 90 },
+            "SS": { "trigger_pct": 35, "shield": 25, "heal_on_expire": 20, "duration": 10, "cooldown": 45 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_tank_iron_will",
+      "category": "tank",
+      "trigger": "on_cc_received",
+      "name_fr": "Volonte de Fer",
+      "name_en": "Iron Will",
+      "trigger_description_fr": "Se declenche quand vous subissez un controle (stun, gel, etc.)",
+      "trigger_description_en": "Triggers when you receive crowd control (stun, freeze, etc.)",
+      "variants": [
+        {
+          "id": "ks_tank_iron_will_resist",
+          "name_fr": "Inebranlable",
+          "name_en": "Unyielding",
+          "description_fr": "Reduit la duree du controle subi",
+          "description_en": "Reduces the duration of the received CC",
+          "effect_type": "cc_duration_reduction_pct",
+          "scaling": {
+            "C":  { "value": 25, "cooldown": 30 },
+            "SS": { "value": 50, "cooldown": 15 }
+          }
+        },
+        {
+          "id": "ks_tank_iron_will_counter",
+          "name_fr": "Riposte",
+          "name_en": "Counter",
+          "description_fr": "Subir un CC vous donne un buff d'ATK",
+          "description_en": "Receiving CC grants you an ATK buff",
+          "effect_type": "buff_atk_pct",
+          "scaling": {
+            "C":  { "value": 15, "duration": 5, "cooldown": 30 },
+            "SS": { "value": 35, "duration": 8, "cooldown": 15 }
+          }
+        },
+        {
+          "id": "ks_tank_iron_will_absorb",
+          "name_fr": "Absorption",
+          "name_en": "Absorb",
+          "description_fr": "Subir un CC vous soigne",
+          "description_en": "Receiving CC heals you",
+          "effect_type": "heal_pct_hp",
+          "scaling": {
+            "C":  { "value": 6, "cooldown": 30 },
+            "SS": { "value": 15, "cooldown": 15 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_tank_fortress",
+      "category": "tank",
+      "trigger": "on_block_or_parry",
+      "name_fr": "Forteresse",
+      "name_en": "Fortress",
+      "trigger_description_fr": "Se declenche quand vous bloquez ou parez une attaque",
+      "trigger_description_en": "Triggers when you block or parry an attack",
+      "variants": [
+        {
+          "id": "ks_tank_fortress_wall",
+          "name_fr": "Mur",
+          "name_en": "Wall",
+          "description_fr": "Bloquer/parer vous donne une reduction de degats temporaire",
+          "description_en": "Blocking/parrying grants temporary damage reduction",
+          "effect_type": "buff_dr_pct",
+          "scaling": {
+            "C":  { "value": 10, "duration": 4, "cooldown": 12 },
+            "SS": { "value": 25, "duration": 6, "cooldown": 6 }
+          }
+        },
+        {
+          "id": "ks_tank_fortress_reflect",
+          "name_fr": "Renvoi",
+          "name_en": "Reflect",
+          "description_fr": "Bloquer/parer renvoie une partie des degats a l'attaquant",
+          "description_en": "Blocking/parrying reflects some damage back to attacker",
+          "effect_type": "reflect_damage_pct",
+          "scaling": {
+            "C":  { "value": 10, "cooldown": 12 },
+            "SS": { "value": 30, "cooldown": 6 }
+          }
+        },
+        {
+          "id": "ks_tank_fortress_regen",
+          "name_fr": "Endurance",
+          "name_en": "Endurance",
+          "description_fr": "Bloquer/parer vous soigne legerement",
+          "description_en": "Blocking/parrying heals you slightly",
+          "effect_type": "heal_pct_hp",
+          "scaling": {
+            "C":  { "value": 3, "cooldown": 10 },
+            "SS": { "value": 8, "cooldown": 5 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_tank_anchor",
+      "category": "tank",
+      "trigger": "hp_above_pct",
+      "name_fr": "Ancrage",
+      "name_en": "Anchor",
+      "trigger_description_fr": "Actif tant que vos HP sont au-dessus d'un seuil",
+      "trigger_description_en": "Active while your HP is above a threshold",
+      "variants": [
+        {
+          "id": "ks_tank_anchor_dr",
+          "name_fr": "Indomptable",
+          "name_en": "Indomitable",
+          "description_fr": "Tant que vos HP sont hauts, vous subissez moins de degats",
+          "description_en": "While HP is high, you take less damage",
+          "effect_type": "passive_dr_pct",
+          "scaling": {
+            "C":  { "trigger_pct": 70, "value": 8 },
+            "SS": { "trigger_pct": 50, "value": 18 }
+          }
+        },
+        {
+          "id": "ks_tank_anchor_aggro",
+          "name_fr": "Provocateur",
+          "name_en": "Provoker",
+          "description_fr": "Tant que vos HP sont hauts, vous attirez plus l'aggro et gagnez de la DEF",
+          "description_en": "While HP is high, you generate more aggro and gain DEF",
+          "effect_type": "passive_aggro_def",
+          "scaling": {
+            "C":  { "trigger_pct": 70, "aggro_bonus": 20, "def_bonus": 10 },
+            "SS": { "trigger_pct": 50, "aggro_bonus": 50, "def_bonus": 25 }
+          }
+        },
+        {
+          "id": "ks_tank_anchor_protector",
+          "name_fr": "Protecteur",
+          "name_en": "Protector",
+          "description_fr": "Tant que vos HP sont hauts, les allies proches subissent moins de degats",
+          "description_en": "While HP is high, nearby allies take less damage",
+          "effect_type": "aura_dr_pct_allies",
+          "scaling": {
+            "C":  { "trigger_pct": 70, "value": 5 },
+            "SS": { "trigger_pct": 50, "value": 12 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_tank_sacrifice",
+      "category": "tank",
+      "trigger": "ally_hp_below_pct",
+      "name_fr": "Sacrifice",
+      "name_en": "Sacrifice",
+      "trigger_description_fr": "Se declenche quand un allie tombe sous un seuil de HP",
+      "trigger_description_en": "Triggers when an ally drops below an HP threshold",
+      "variants": [
+        {
+          "id": "ks_tank_sacrifice_shield",
+          "name_fr": "Gardien",
+          "name_en": "Guardian",
+          "description_fr": "Place un shield sur l'allie en danger",
+          "description_en": "Places a shield on the endangered ally",
+          "effect_type": "shield_ally_pct_your_hp",
+          "scaling": {
+            "C":  { "trigger_pct": 25, "value": 10, "duration": 5, "cooldown": 45 },
+            "SS": { "trigger_pct": 35, "value": 25, "duration": 8, "cooldown": 20 }
+          }
+        },
+        {
+          "id": "ks_tank_sacrifice_redirect",
+          "name_fr": "Martyr",
+          "name_en": "Martyr",
+          "description_fr": "Redirige une partie des degats de l'allie vers vous",
+          "description_en": "Redirects some of the ally's damage to you",
+          "effect_type": "redirect_damage_pct",
+          "scaling": {
+            "C":  { "trigger_pct": 25, "value": 15, "duration": 5, "cooldown": 45 },
+            "SS": { "trigger_pct": 35, "value": 35, "duration": 8, "cooldown": 20 }
+          }
+        },
+        {
+          "id": "ks_tank_sacrifice_inspire",
+          "name_fr": "Inspiration",
+          "name_en": "Inspiration",
+          "description_fr": "L'allie en danger gagne une reduction de degats temporaire",
+          "description_en": "The endangered ally gains temporary damage reduction",
+          "effect_type": "buff_ally_dr_pct",
+          "scaling": {
+            "C":  { "trigger_pct": 25, "value": 15, "duration": 5, "cooldown": 45 },
+            "SS": { "trigger_pct": 35, "value": 35, "duration": 8, "cooldown": 20 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_support_life_link",
+      "category": "support",
+      "trigger": "on_heal_cast",
+      "name_fr": "Lien Vital",
+      "name_en": "Life Link",
+      "trigger_description_fr": "Se declenche quand vous lancez un sort de soin",
+      "trigger_description_en": "Triggers when you cast a healing skill",
+      "variants": [
+        {
+          "id": "ks_support_life_link_spread",
+          "name_fr": "Propagation",
+          "name_en": "Spread",
+          "description_fr": "Une partie du soin se propage a l'allie le plus blesse",
+          "description_en": "Part of the heal spreads to the lowest HP ally",
+          "effect_type": "spread_heal_pct",
+          "scaling": {
+            "C":  { "value": 15, "cooldown": 12 },
+            "SS": { "value": 35, "cooldown": 5 }
+          }
+        },
+        {
+          "id": "ks_support_life_link_fortify",
+          "name_fr": "Fortifiant",
+          "name_en": "Fortify",
+          "description_fr": "La cible du soin gagne un bonus de DEF temporaire",
+          "description_en": "The heal target gains a temporary DEF bonus",
+          "effect_type": "buff_target_def_pct",
+          "scaling": {
+            "C":  { "value": 10, "duration": 5, "cooldown": 12 },
+            "SS": { "value": 25, "duration": 8, "cooldown": 5 }
+          }
+        },
+        {
+          "id": "ks_support_life_link_energize",
+          "name_fr": "Energisant",
+          "name_en": "Energize",
+          "description_fr": "La cible du soin regagne du Souffle",
+          "description_en": "The heal target recovers Breath",
+          "effect_type": "restore_souffle_pct",
+          "scaling": {
+            "C":  { "value": 5, "cooldown": 12 },
+            "SS": { "value": 15, "cooldown": 5 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_support_rescue",
+      "category": "support",
+      "trigger": "ally_hp_below_pct",
+      "name_fr": "Secours",
+      "name_en": "Rescue",
+      "trigger_description_fr": "Se declenche quand un allie tombe sous un seuil de HP",
+      "trigger_description_en": "Triggers when an ally drops below an HP threshold",
+      "variants": [
+        {
+          "id": "ks_support_rescue_heal",
+          "name_fr": "Urgence",
+          "name_en": "Emergency",
+          "description_fr": "Soigne instantanement l'allie en danger",
+          "description_en": "Instantly heals the endangered ally",
+          "effect_type": "heal_ally_pct_hp",
+          "scaling": {
+            "C":  { "trigger_pct": 25, "value": 8, "cooldown": 30 },
+            "SS": { "trigger_pct": 35, "value": 20, "cooldown": 15 }
+          }
+        },
+        {
+          "id": "ks_support_rescue_shield",
+          "name_fr": "Bouclier d'Urgence",
+          "name_en": "Emergency Shield",
+          "description_fr": "Place un shield sur l'allie en danger",
+          "description_en": "Places a shield on the endangered ally",
+          "effect_type": "shield_ally_pct_hp",
+          "scaling": {
+            "C":  { "trigger_pct": 25, "value": 10, "duration": 5, "cooldown": 30 },
+            "SS": { "trigger_pct": 35, "value": 25, "duration": 8, "cooldown": 15 }
+          }
+        },
+        {
+          "id": "ks_support_rescue_cleanse",
+          "name_fr": "Purification",
+          "name_en": "Purify",
+          "description_fr": "Retire un debuff de l'allie en danger et le soigne legerement",
+          "description_en": "Removes a debuff from the endangered ally and heals slightly",
+          "effect_type": "cleanse_and_heal",
+          "scaling": {
+            "C":  { "trigger_pct": 25, "heal": 5, "cooldown": 30 },
+            "SS": { "trigger_pct": 35, "heal": 12, "cooldown": 15 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_support_blessing",
+      "category": "support",
+      "trigger": "on_buff_cast",
+      "name_fr": "Benediction",
+      "name_en": "Blessing",
+      "trigger_description_fr": "Se declenche quand vous lancez un buff sur un allie",
+      "trigger_description_en": "Triggers when you cast a buff on an ally",
+      "variants": [
+        {
+          "id": "ks_support_blessing_extend",
+          "name_fr": "Amplification",
+          "name_en": "Amplify",
+          "description_fr": "La duree de vos buffs est augmentee",
+          "description_en": "Your buff durations are increased",
+          "effect_type": "buff_duration_bonus_pct",
+          "scaling": {
+            "C":  { "value": 20, "cooldown": 0 },
+            "SS": { "value": 50, "cooldown": 0 }
+          }
+        },
+        {
+          "id": "ks_support_blessing_spread",
+          "name_fr": "Diffusion",
+          "name_en": "Diffuse",
+          "description_fr": "Votre buff se propage a un allie adjacent",
+          "description_en": "Your buff spreads to an adjacent ally",
+          "effect_type": "spread_buff_to_adjacent",
+          "scaling": {
+            "C":  { "value": 1, "cooldown": 20 },
+            "SS": { "value": 1, "cooldown": 8 }
+          }
+        },
+        {
+          "id": "ks_support_blessing_shield",
+          "name_fr": "Protection",
+          "name_en": "Protection",
+          "description_fr": "La cible du buff gagne un mini-shield",
+          "description_en": "The buff target gains a mini-shield",
+          "effect_type": "shield_pct_your_hp",
+          "scaling": {
+            "C":  { "value": 5, "duration": 6, "cooldown": 15 },
+            "SS": { "value": 15, "duration": 10, "cooldown": 6 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_support_last_breath",
+      "category": "support",
+      "trigger": "ally_reaches_zero_hp",
+      "name_fr": "Dernier Souffle",
+      "name_en": "Last Breath",
+      "trigger_description_fr": "Se declenche quand un allie atteint 0 HP (avant la mort)",
+      "trigger_description_en": "Triggers when an ally reaches 0 HP (before death)",
+      "variants": [
+        {
+          "id": "ks_support_last_breath_save",
+          "name_fr": "Sursis",
+          "name_en": "Reprieve",
+          "description_fr": "L'allie survit avec un pourcentage de HP au lieu de mourir (1 fois par combat)",
+          "description_en": "The ally survives with some HP instead of dying (once per combat)",
+          "effect_type": "prevent_death_heal_pct",
+          "scaling": {
+            "C":  { "value": 10, "uses_per_combat": 1, "cooldown": 0 },
+            "SS": { "value": 25, "uses_per_combat": 1, "cooldown": 0 }
+          }
+        },
+        {
+          "id": "ks_support_last_breath_martyr",
+          "name_fr": "Don de Soi",
+          "name_en": "Self-Sacrifice",
+          "description_fr": "L'allie survit — vous perdez des HP a sa place",
+          "description_en": "The ally survives — you lose HP in their place",
+          "effect_type": "prevent_death_transfer_hp",
+          "scaling": {
+            "C":  { "ally_heal": 10, "self_damage": 15, "uses_per_combat": 1, "cooldown": 0 },
+            "SS": { "ally_heal": 25, "self_damage": 20, "uses_per_combat": 1, "cooldown": 0 }
+          }
+        },
+        {
+          "id": "ks_support_last_breath_vengeance",
+          "name_fr": "Vengeance",
+          "name_en": "Vengeance",
+          "description_fr": "L'allie survit et gagne un buff d'ATK temporaire",
+          "description_en": "The ally survives and gains a temporary ATK buff",
+          "effect_type": "prevent_death_with_buff",
+          "scaling": {
+            "C":  { "heal": 8, "atk_bonus": 20, "buff_duration": 8, "uses_per_combat": 1, "cooldown": 0 },
+            "SS": { "heal": 20, "atk_bonus": 50, "buff_duration": 12, "uses_per_combat": 1, "cooldown": 0 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_support_harmony",
+      "category": "support",
+      "trigger": "every_n_skills",
+      "name_fr": "Harmonie",
+      "name_en": "Harmony",
+      "trigger_description_fr": "Se declenche tous les X sorts utilises",
+      "trigger_description_en": "Triggers every X skills used",
+      "variants": [
+        {
+          "id": "ks_support_harmony_heal",
+          "name_fr": "Guerison",
+          "name_en": "Healing",
+          "description_fr": "Tous les X sorts, soigne tous les allies",
+          "description_en": "Every X skills, heals all allies",
+          "effect_type": "heal_all_allies_pct",
+          "scaling": {
+            "C":  { "every_n": 5, "value": 4 },
+            "SS": { "every_n": 3, "value": 10 }
+          }
+        },
+        {
+          "id": "ks_support_harmony_shield",
+          "name_fr": "Barriere",
+          "name_en": "Barrier",
+          "description_fr": "Tous les X sorts, place un shield sur tous les allies",
+          "description_en": "Every X skills, places a shield on all allies",
+          "effect_type": "shield_all_allies_pct",
+          "scaling": {
+            "C":  { "every_n": 5, "value": 5, "duration": 5 },
+            "SS": { "every_n": 3, "value": 12, "duration": 8 }
+          }
+        },
+        {
+          "id": "ks_support_harmony_vigor",
+          "name_fr": "Vigueur",
+          "name_en": "Vigor",
+          "description_fr": "Tous les X sorts, tous les allies gagnent un buff d'ATK/MAG",
+          "description_en": "Every X skills, all allies gain an ATK/MAG buff",
+          "effect_type": "buff_all_allies_atk_mag_pct",
+          "scaling": {
+            "C":  { "every_n": 5, "value": 8, "duration": 6 },
+            "SS": { "every_n": 3, "value": 20, "duration": 10 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_util_mastery",
+      "category": "utility",
+      "trigger": "on_cc_applied",
+      "name_fr": "Maitrise",
+      "name_en": "Mastery",
+      "trigger_description_fr": "Se declenche quand vous appliquez un controle sur un ennemi",
+      "trigger_description_en": "Triggers when you apply crowd control on an enemy",
+      "variants": [
+        {
+          "id": "ks_util_mastery_extend",
+          "name_fr": "Controle Prolonge",
+          "name_en": "Extended Control",
+          "description_fr": "La duree de vos CC est augmentee",
+          "description_en": "Your CC durations are increased",
+          "effect_type": "cc_duration_bonus_pct",
+          "scaling": {
+            "C":  { "value": 15, "cooldown": 0 },
+            "SS": { "value": 40, "cooldown": 0 }
+          }
+        },
+        {
+          "id": "ks_util_mastery_drain",
+          "name_fr": "Siphon",
+          "name_en": "Siphon",
+          "description_fr": "Appliquer un CC draine le Souffle de la cible",
+          "description_en": "Applying CC drains the target's Breath",
+          "effect_type": "drain_souffle_pct",
+          "scaling": {
+            "C":  { "value": 5, "cooldown": 15 },
+            "SS": { "value": 15, "cooldown": 6 }
+          }
+        },
+        {
+          "id": "ks_util_mastery_expose",
+          "name_fr": "Vulnerabilite",
+          "name_en": "Vulnerability",
+          "description_fr": "Appliquer un CC reduit la DEF de la cible",
+          "description_en": "Applying CC reduces the target's DEF",
+          "effect_type": "debuff_def_pct",
+          "scaling": {
+            "C":  { "value": 8, "duration": 4, "cooldown": 15 },
+            "SS": { "value": 20, "duration": 8, "cooldown": 6 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_util_second_wind",
+      "category": "utility",
+      "trigger": "on_kill",
+      "name_fr": "Second Souffle",
+      "name_en": "Second Wind",
+      "trigger_description_fr": "Se declenche quand vous tuez un ennemi",
+      "trigger_description_en": "Triggers when you kill an enemy",
+      "variants": [
+        {
+          "id": "ks_util_second_wind_hp",
+          "name_fr": "Vitalite",
+          "name_en": "Vitality",
+          "description_fr": "Tuer un ennemi vous regen des HP",
+          "description_en": "Killing an enemy regenerates HP",
+          "effect_type": "heal_pct_hp",
+          "scaling": {
+            "C":  { "value": 6, "cooldown": 20 },
+            "SS": { "value": 15, "cooldown": 8 }
+          }
+        },
+        {
+          "id": "ks_util_second_wind_souffle",
+          "name_fr": "Energie",
+          "name_en": "Energy",
+          "description_fr": "Tuer un ennemi vous regen du Souffle",
+          "description_en": "Killing an enemy regenerates Breath",
+          "effect_type": "restore_souffle_pct",
+          "scaling": {
+            "C":  { "value": 8, "cooldown": 20 },
+            "SS": { "value": 20, "cooldown": 8 }
+          }
+        },
+        {
+          "id": "ks_util_second_wind_cdr",
+          "name_fr": "Recharge",
+          "name_en": "Recharge",
+          "description_fr": "Tuer un ennemi reduit vos cooldowns temporairement",
+          "description_en": "Killing an enemy temporarily reduces your cooldowns",
+          "effect_type": "buff_cdr_pct",
+          "scaling": {
+            "C":  { "value": 10, "duration": 6, "cooldown": 20 },
+            "SS": { "value": 25, "duration": 10, "cooldown": 8 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_util_tactical",
+      "category": "utility",
+      "trigger": "on_ultimate_use",
+      "name_fr": "Esprit Tactique",
+      "name_en": "Tactical Mind",
+      "trigger_description_fr": "Se declenche quand vous utilisez un sort ultime",
+      "trigger_description_en": "Triggers when you use an ultimate skill",
+      "variants": [
+        {
+          "id": "ks_util_tactical_cdr",
+          "name_fr": "Concentration",
+          "name_en": "Focus",
+          "description_fr": "Apres un ultime, tous vos cooldowns sont reduits temporairement",
+          "description_en": "After an ultimate, all your cooldowns are temporarily reduced",
+          "effect_type": "buff_cdr_pct",
+          "scaling": {
+            "C":  { "value": 15, "duration": 8, "cooldown": 60 },
+            "SS": { "value": 35, "duration": 12, "cooldown": 30 }
+          }
+        },
+        {
+          "id": "ks_util_tactical_power",
+          "name_fr": "Puissance",
+          "name_en": "Power",
+          "description_fr": "Apres un ultime, vous gagnez un buff d'ATK et MAG",
+          "description_en": "After an ultimate, you gain an ATK and MAG buff",
+          "effect_type": "buff_atk_mag_pct",
+          "scaling": {
+            "C":  { "value": 15, "duration": 8, "cooldown": 60 },
+            "SS": { "value": 40, "duration": 12, "cooldown": 30 }
+          }
+        },
+        {
+          "id": "ks_util_tactical_shield",
+          "name_fr": "Barriere Tactique",
+          "name_en": "Tactical Barrier",
+          "description_fr": "Apres un ultime, vous gagnez un shield",
+          "description_en": "After an ultimate, you gain a shield",
+          "effect_type": "shield_pct_max_hp",
+          "scaling": {
+            "C":  { "value": 12, "duration": 6, "cooldown": 60 },
+            "SS": { "value": 30, "duration": 10, "cooldown": 30 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_util_adaptation",
+      "category": "utility",
+      "trigger": "on_debuff_received",
+      "name_fr": "Adaptation",
+      "name_en": "Adaptation",
+      "trigger_description_fr": "Se declenche quand vous recevez un debuff",
+      "trigger_description_en": "Triggers when you receive a debuff",
+      "variants": [
+        {
+          "id": "ks_util_adaptation_cleanse",
+          "name_fr": "Resistance",
+          "name_en": "Resistance",
+          "description_fr": "Chance de dissiper automatiquement le debuff recu",
+          "description_en": "Chance to automatically cleanse the received debuff",
+          "effect_type": "auto_cleanse_chance_pct",
+          "scaling": {
+            "C":  { "value": 15, "cooldown": 25 },
+            "SS": { "value": 40, "cooldown": 10 }
+          }
+        },
+        {
+          "id": "ks_util_adaptation_dr",
+          "name_fr": "Endurance",
+          "name_en": "Endurance",
+          "description_fr": "Recevoir un debuff vous donne une reduction de degats temporaire",
+          "description_en": "Receiving a debuff grants temporary damage reduction",
+          "effect_type": "buff_dr_pct",
+          "scaling": {
+            "C":  { "value": 8, "duration": 4, "cooldown": 20 },
+            "SS": { "value": 20, "duration": 6, "cooldown": 8 }
+          }
+        },
+        {
+          "id": "ks_util_adaptation_heal",
+          "name_fr": "Regeneration",
+          "name_en": "Regeneration",
+          "description_fr": "Recevoir un debuff vous soigne legerement",
+          "description_en": "Receiving a debuff heals you slightly",
+          "effect_type": "heal_pct_hp",
+          "scaling": {
+            "C":  { "value": 4, "cooldown": 20 },
+            "SS": { "value": 12, "cooldown": 8 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_util_synergy",
+      "category": "utility",
+      "trigger": "skill_combo",
+      "name_fr": "Synergie",
+      "name_en": "Synergy",
+      "trigger_description_fr": "Se declenche apres avoir utilise X sorts differents d'affilee",
+      "trigger_description_en": "Triggers after using X different skills in a row",
+      "variants": [
+        {
+          "id": "ks_util_synergy_damage",
+          "name_fr": "Combo",
+          "name_en": "Combo",
+          "description_fr": "Apres un enchainement, votre prochain sort fait des degats bonus",
+          "description_en": "After a chain, your next skill deals bonus damage",
+          "effect_type": "next_skill_damage_bonus_pct",
+          "scaling": {
+            "C":  { "combo_length": 3, "value": 25, "cooldown": 15 },
+            "SS": { "combo_length": 3, "value": 60, "cooldown": 6 }
+          }
+        },
+        {
+          "id": "ks_util_synergy_free",
+          "name_fr": "Flow",
+          "name_en": "Flow",
+          "description_fr": "Apres un enchainement, votre prochain sort ne coute pas de Souffle",
+          "description_en": "After a chain, your next skill costs no Breath",
+          "effect_type": "next_skill_free_souffle",
+          "scaling": {
+            "C":  { "combo_length": 4, "value": 1, "cooldown": 20 },
+            "SS": { "combo_length": 3, "value": 1, "cooldown": 10 }
+          }
+        },
+        {
+          "id": "ks_util_synergy_crit",
+          "name_fr": "Precision",
+          "name_en": "Precision",
+          "description_fr": "Apres un enchainement, votre prochain sort est un coup critique garanti",
+          "description_en": "After a chain, your next skill is a guaranteed critical hit",
+          "effect_type": "next_skill_guaranteed_crit",
+          "scaling": {
+            "C":  { "combo_length": 4, "value": 1, "cooldown": 20 },
+            "SS": { "combo_length": 3, "value": 1, "cooldown": 10 }
+          }
+        }
+      ]
+    },
+
+    {
+      "id": "ks_util_breath",
+      "category": "utility",
+      "trigger": "souffle_below_pct",
+      "name_fr": "Source Interieure",
+      "name_en": "Inner Source",
+      "trigger_description_fr": "Se declenche quand votre Souffle tombe sous un seuil",
+      "trigger_description_en": "Triggers when your Breath drops below a threshold",
+      "variants": [
+        {
+          "id": "ks_util_breath_burst",
+          "name_fr": "Regain",
+          "name_en": "Regain",
+          "description_fr": "Recupere instantanement du Souffle",
+          "description_en": "Instantly recover Breath",
+          "effect_type": "restore_souffle_pct",
+          "scaling": {
+            "C":  { "trigger_pct": 20, "value": 15, "cooldown": 60 },
+            "SS": { "trigger_pct": 30, "value": 35, "cooldown": 30 }
+          }
+        },
+        {
+          "id": "ks_util_breath_flow",
+          "name_fr": "Flux",
+          "name_en": "Flow",
+          "description_fr": "Regen de Souffle acceleree et CDR temporaire",
+          "description_en": "Accelerated Breath regen and temporary CDR",
+          "effect_type": "buff_souffle_regen_and_cdr",
+          "scaling": {
+            "C":  { "trigger_pct": 20, "souffle_regen_bonus": 50, "cdr": 10, "duration": 8, "cooldown": 60 },
+            "SS": { "trigger_pct": 30, "souffle_regen_bonus": 120, "cdr": 25, "duration": 12, "cooldown": 30 }
+          }
+        },
+        {
+          "id": "ks_util_breath_sacrifice",
+          "name_fr": "Conversion",
+          "name_en": "Conversion",
+          "description_fr": "Sacrifie des HP pour recuperer du Souffle",
+          "description_en": "Sacrifice HP to recover Breath",
+          "effect_type": "convert_hp_to_souffle",
+          "scaling": {
+            "C":  { "trigger_pct": 20, "hp_cost": 10, "souffle_gain": 20, "cooldown": 45 },
+            "SS": { "trigger_pct": 30, "hp_cost": 8, "souffle_gain": 40, "cooldown": 20 }
+          }
+        }
+      ]
     }
   ],
 
   "class_keystones": {
+    "_note": "A designer plus tard — meme structure que common_keystones, specifiques a chaque classe",
     "warrior": [],
     "mage": [],
     "healer": [],
