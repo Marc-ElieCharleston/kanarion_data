@@ -88,8 +88,8 @@
           "description_en": "Bonus damage against weakened targets",
           "effect_type": "damage_bonus_pct",
           "scaling": {
-            "C":  { "trigger_pct": 20, "value": 25, "duration": 0, "cooldown": 0 },
-            "SS": { "trigger_pct": 30, "value": 60, "duration": 0, "cooldown": 0 }
+            "C":  { "trigger_pct": 20, "value": 20, "duration": 0, "cooldown": 15 },
+            "SS": { "trigger_pct": 30, "value": 50, "duration": 0, "cooldown": 8 }
           }
         },
         {
@@ -100,8 +100,8 @@
           "description_en": "Armor penetration bonus against weakened targets",
           "effect_type": "buff_armor_pen_pct",
           "scaling": {
-            "C":  { "trigger_pct": 20, "value": 15, "duration": 0, "cooldown": 0 },
-            "SS": { "trigger_pct": 30, "value": 40, "duration": 0, "cooldown": 0 }
+            "C":  { "trigger_pct": 20, "value": 10, "duration": 0, "cooldown": 15 },
+            "SS": { "trigger_pct": 30, "value": 30, "duration": 0, "cooldown": 8 }
           }
         },
         {
@@ -180,12 +180,12 @@
           "id": "ks_dps_frenzy_atk",
           "name_fr": "Carnage",
           "name_en": "Carnage",
-          "description_fr": "Tuer un ennemi augmente votre ATK temporairement",
-          "description_en": "Killing an enemy temporarily boosts your ATK",
+          "description_fr": "Tuer un ennemi augmente votre ATK temporairement (ne se cumule pas)",
+          "description_en": "Killing an enemy temporarily boosts your ATK (does not stack)",
           "effect_type": "buff_atk_pct",
           "scaling": {
-            "C":  { "value": 12, "duration": 8, "cooldown": 0 },
-            "SS": { "value": 30, "duration": 12, "cooldown": 0 }
+            "C":  { "value": 10, "duration": 8, "cooldown": 8 },
+            "SS": { "value": 25, "duration": 12, "cooldown": 4 }
           }
         },
         {
@@ -232,8 +232,8 @@
           "description_en": "Your first skills deal bonus damage",
           "effect_type": "damage_bonus_pct",
           "scaling": {
-            "C":  { "value": 30, "duration": 2, "cooldown": 0 },
-            "SS": { "value": 70, "duration": 3, "cooldown": 0 }
+            "C":  { "value": 15, "duration": 1, "cooldown": 0 },
+            "SS": { "value": 50, "duration": 2, "cooldown": 0 }
           }
         },
         {
@@ -244,8 +244,8 @@
           "description_en": "Your first skills have bonus critical damage",
           "effect_type": "buff_crit_damage_pct",
           "scaling": {
-            "C":  { "value": 40, "duration": 2, "cooldown": 0 },
-            "SS": { "value": 100, "duration": 3, "cooldown": 0 }
+            "C":  { "value": 20, "duration": 1, "cooldown": 0 },
+            "SS": { "value": 70, "duration": 2, "cooldown": 0 }
           }
         },
         {
@@ -256,8 +256,8 @@
           "description_en": "Your first skills reduce target's DEF and MR",
           "effect_type": "debuff_def_mr_pct",
           "scaling": {
-            "C":  { "value": 12, "duration": 6, "cooldown": 0 },
-            "SS": { "value": 30, "duration": 10, "cooldown": 0 }
+            "C":  { "value": 8, "duration": 4, "cooldown": 0 },
+            "SS": { "value": 22, "duration": 8, "cooldown": 0 }
           }
         }
       ]
@@ -410,46 +410,46 @@
     {
       "id": "ks_tank_anchor",
       "category": "tank",
-      "trigger": "hp_above_pct",
+      "trigger": "on_block_while_hp_above_pct",
       "name_fr": "Ancrage",
       "name_en": "Anchor",
-      "trigger_description_fr": "Actif tant que vos HP sont au-dessus d'un seuil",
-      "trigger_description_en": "Active while your HP is above a threshold",
+      "trigger_description_fr": "Se declenche quand vous bloquez un coup avec vos HP au-dessus d'un seuil",
+      "trigger_description_en": "Triggers when you block a hit while HP is above a threshold",
       "variants": [
         {
           "id": "ks_tank_anchor_dr",
           "name_fr": "Indomptable",
           "name_en": "Indomitable",
-          "description_fr": "Tant que vos HP sont hauts, vous subissez moins de degats",
-          "description_en": "While HP is high, you take less damage",
-          "effect_type": "passive_dr_pct",
+          "description_fr": "Bloquer un coup vous donne une reduction de degats temporaire",
+          "description_en": "Blocking a hit grants temporary damage reduction",
+          "effect_type": "buff_dr_pct",
           "scaling": {
-            "C":  { "trigger_pct": 70, "value": 8 },
-            "SS": { "trigger_pct": 50, "value": 18 }
+            "C":  { "trigger_pct": 70, "value": 5, "duration": 4, "cooldown": 15 },
+            "SS": { "trigger_pct": 50, "value": 12, "duration": 6, "cooldown": 8 }
           }
         },
         {
           "id": "ks_tank_anchor_aggro",
           "name_fr": "Provocateur",
           "name_en": "Provoker",
-          "description_fr": "Tant que vos HP sont hauts, vous attirez plus l'aggro et gagnez de la DEF",
-          "description_en": "While HP is high, you generate more aggro and gain DEF",
-          "effect_type": "passive_aggro_def",
+          "description_fr": "Bloquer un coup augmente votre aggro et votre DEF temporairement",
+          "description_en": "Blocking a hit boosts your aggro and DEF temporarily",
+          "effect_type": "buff_aggro_def",
           "scaling": {
-            "C":  { "trigger_pct": 70, "aggro_bonus": 20, "def_bonus": 10 },
-            "SS": { "trigger_pct": 50, "aggro_bonus": 50, "def_bonus": 25 }
+            "C":  { "trigger_pct": 70, "aggro_bonus": 15, "def_bonus": 6, "duration": 5, "cooldown": 15 },
+            "SS": { "trigger_pct": 50, "aggro_bonus": 35, "def_bonus": 15, "duration": 8, "cooldown": 8 }
           }
         },
         {
           "id": "ks_tank_anchor_protector",
           "name_fr": "Protecteur",
           "name_en": "Protector",
-          "description_fr": "Tant que vos HP sont hauts, les allies proches subissent moins de degats",
-          "description_en": "While HP is high, nearby allies take less damage",
-          "effect_type": "aura_dr_pct_allies",
+          "description_fr": "Bloquer un coup donne une reduction de degats temporaire aux allies proches",
+          "description_en": "Blocking a hit grants nearby allies temporary damage reduction",
+          "effect_type": "buff_allies_dr_pct",
           "scaling": {
-            "C":  { "trigger_pct": 70, "value": 5 },
-            "SS": { "trigger_pct": 50, "value": 12 }
+            "C":  { "trigger_pct": 70, "value": 3, "duration": 4, "cooldown": 15 },
+            "SS": { "trigger_pct": 50, "value": 8, "duration": 6, "cooldown": 8 }
           }
         }
       ]
@@ -664,8 +664,8 @@
           "description_en": "The ally survives with some HP instead of dying (once per combat)",
           "effect_type": "prevent_death_heal_pct",
           "scaling": {
-            "C":  { "value": 10, "uses_per_combat": 1, "cooldown": 0 },
-            "SS": { "value": 25, "uses_per_combat": 1, "cooldown": 0 }
+            "C":  { "value": 5, "uses_per_combat": 1, "cooldown": 120 },
+            "SS": { "value": 20, "uses_per_combat": 1, "cooldown": 60 }
           }
         },
         {
@@ -676,8 +676,8 @@
           "description_en": "The ally survives — you lose HP in their place",
           "effect_type": "prevent_death_transfer_hp",
           "scaling": {
-            "C":  { "ally_heal": 10, "self_damage": 15, "uses_per_combat": 1, "cooldown": 0 },
-            "SS": { "ally_heal": 25, "self_damage": 20, "uses_per_combat": 1, "cooldown": 0 }
+            "C":  { "ally_heal": 5, "self_damage": 15, "uses_per_combat": 1, "cooldown": 120 },
+            "SS": { "ally_heal": 18, "self_damage": 12, "uses_per_combat": 1, "cooldown": 60 }
           }
         },
         {
@@ -688,8 +688,8 @@
           "description_en": "The ally survives and gains a temporary ATK buff",
           "effect_type": "prevent_death_with_buff",
           "scaling": {
-            "C":  { "heal": 8, "atk_bonus": 20, "buff_duration": 8, "uses_per_combat": 1, "cooldown": 0 },
-            "SS": { "heal": 20, "atk_bonus": 50, "buff_duration": 12, "uses_per_combat": 1, "cooldown": 0 }
+            "C":  { "heal": 5, "atk_bonus": 15, "buff_duration": 6, "uses_per_combat": 1, "cooldown": 120 },
+            "SS": { "heal": 15, "atk_bonus": 35, "buff_duration": 10, "uses_per_combat": 1, "cooldown": 60 }
           }
         }
       ]
@@ -1024,8 +1024,8 @@
           "description_en": "Sacrifice HP to recover Breath",
           "effect_type": "convert_hp_to_souffle",
           "scaling": {
-            "C":  { "trigger_pct": 20, "hp_cost": 10, "souffle_gain": 20, "cooldown": 45 },
-            "SS": { "trigger_pct": 30, "hp_cost": 8, "souffle_gain": 40, "cooldown": 20 }
+            "C":  { "trigger_pct": 20, "hp_cost": 12, "souffle_gain": 15, "cooldown": 60 },
+            "SS": { "trigger_pct": 30, "hp_cost": 10, "souffle_gain": 30, "cooldown": 30 }
           }
         }
       ]
