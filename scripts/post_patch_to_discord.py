@@ -143,10 +143,16 @@ def build_embed(patch: dict) -> dict:
 
 def post_embed(webhook_url: str, embed: dict) -> None:
     payload = json.dumps({"embeds": [embed]}).encode("utf-8")
+    # Cloudflare (in front of Discord) blocks the default Python-urllib UA as
+    # bot-like and returns HTTP 403 error code 1010. A normal-looking UA fixes
+    # it without hiding what we are.
     req = urllib.request.Request(
         webhook_url,
         data=payload,
-        headers={"Content-Type": "application/json"},
+        headers={
+            "Content-Type": "application/json",
+            "User-Agent": "KanarionPatchBot/1.0 (+https://www.kanariononline.com)",
+        },
         method="POST",
     )
     try:
