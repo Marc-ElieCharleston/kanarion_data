@@ -41,26 +41,26 @@ POSTED_PATH = REPO_ROOT / "scripts" / ".posted_versions"
 # Kanarion gold — matches the UI theme so the embed ribbon is on-brand.
 EMBED_COLOR = 0xC8A84E
 
-# Map the raw entry type to a French section label. Unknown types fall
-# through into "Autres" so the script never drops an entry silently.
+# Map the raw entry type to an English section label. Unknown types fall
+# through into "Other" so the script never drops an entry silently.
 TYPE_LABELS: dict[str, str] = {
-    "feat": "Nouveautes",
-    "fix": "Corrections",
-    "balance": "Equilibrage",
-    "nerf": "Equilibrage",
-    "buff": "Equilibrage",
-    "content": "Contenu",
-    "perf": "Performances",
+    "feat": "New Features",
+    "fix": "Fixes",
+    "balance": "Balance",
+    "nerf": "Balance",
+    "buff": "Balance",
+    "content": "Content",
+    "perf": "Performance",
 }
 
 # Preferred section order — groups show up in the embed in this order.
-SECTION_ORDER = ["Nouveautes", "Contenu", "Equilibrage", "Corrections", "Performances", "Autres"]
+SECTION_ORDER = ["New Features", "Content", "Balance", "Fixes", "Performance", "Other"]
 
-# Short French month names for the footer date line.
-MONTHS_FR = [
+# English month names for the footer date line.
+MONTHS_EN = [
     "",
-    "janvier", "fevrier", "mars", "avril", "mai", "juin",
-    "juillet", "aout", "septembre", "octobre", "novembre", "decembre",
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
 ]
 
 
@@ -83,11 +83,11 @@ def pick_patch(changelog: dict, version: str | None) -> dict:
     sys.exit(f"version {version} not found in changelog")
 
 
-def format_date_fr(iso_date: str) -> str:
+def format_date_en(iso_date: str) -> str:
     # iso_date is "YYYY-MM-DD". Avoid locale pitfalls by hand-formatting.
     try:
         y, m, d = iso_date.split("-")
-        return f"{int(d)} {MONTHS_FR[int(m)]} {y}"
+        return f"{MONTHS_EN[int(m)]} {int(d)}, {y}"
     except (ValueError, IndexError):
         return iso_date
 
@@ -96,8 +96,10 @@ def group_entries(entries: list[dict]) -> dict[str, list[str]]:
     groups: dict[str, list[str]] = {}
     for e in entries:
         raw_type = str(e.get("type", "")).lower()
-        section = TYPE_LABELS.get(raw_type, "Autres")
-        text = e.get("text_fr") or e.get("text_en") or ""
+        section = TYPE_LABELS.get(raw_type, "Other")
+        # Prefer English; fall back to French so nothing is silently dropped if a
+        # translation is missing.
+        text = e.get("text_en") or e.get("text_fr") or ""
         if not text:
             continue
         groups.setdefault(section, []).append(text)
@@ -106,15 +108,15 @@ def group_entries(entries: list[dict]) -> dict[str, list[str]]:
 
 def build_embed(patch: dict) -> dict:
     version = patch.get("version", "")
-    title_fr = patch.get("title_fr") or patch.get("title_en") or ""
-    date = format_date_fr(patch.get("date", ""))
+    title_en = patch.get("title_en") or patch.get("title_fr") or ""
+    date = format_date_en(patch.get("date", ""))
     groups = group_entries(patch.get("entries", []))
 
     # Compose the embed description by stacking sections in the preferred order.
     # Each section is a bold label + bullet list. No emojis — pure text.
     lines: list[str] = []
-    if title_fr:
-        lines.append(f"*{title_fr}*")
+    if title_en:
+        lines.append(f"*{title_en}*")
         lines.append("")
     for section in SECTION_ORDER:
         items = groups.get(section)
@@ -137,7 +139,7 @@ def build_embed(patch: dict) -> dict:
         "color": EMBED_COLOR,
     }
     if date:
-        embed["footer"] = {"text": f"Patch du {date}"}
+        embed["footer"] = {"text": f"Released {date}"}
     return embed
 
 
