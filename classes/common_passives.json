@@ -1,9 +1,10 @@
 {
   "_meta": {
-    "version": "2.0",
-    "last_updated": "2026-03-03",
-    "description": "Common passives available to all classes — 10 passives, max 20 levels each, 100 points total (5 maxed). All percentage-based for late-game scaling. Stats grouped by synergy.",
-    "budget_note": "100 points to distribute. Class-specific passives are separate. Future: possibly 2pts/lv or reduce max to 10."
+    "version": "3.0",
+    "last_updated": "2026-04-21",
+    "description": "Common passives available to all classes — 10 passives, max 10 levels each. Mix flat+percent: flat gives early impact, percent scales late. Stats use DB-canonical keys.",
+    "budget_note": "100 points to distribute across 10 common + 10 class passives (max 10 each). Future: possibly 2pts/lv.",
+    "phantom_stats_warning": "tenacity, hp_regen not yet applied by combat_profile_builder. Tracked for Phase D cleanup."
   },
   "common_passives": [
     {
@@ -11,9 +12,14 @@
       "name_fr": "Vitalité",
       "name_en": "Vitality",
       "max_level": 10,
-      "description_fr": "Augmente les PV max de 1% et la régénération de PV de 0.25% par niveau.",
-      "description_en": "Increases max HP by 1% and HP regeneration by 0.25% per level.",
+      "description_fr": "+5 PV et +1% PV max par niveau. +0.5 régén PV/s par niveau.",
+      "description_en": "+5 HP and +1% max HP per level. +0.5 HP regen/s per level.",
       "effects": [
+        {
+          "stat": "hp",
+          "op": "add_flat",
+          "value_per_level": 5
+        },
         {
           "stat": "hp",
           "op": "add_percent",
@@ -21,8 +27,8 @@
         },
         {
           "stat": "hp_regen",
-          "op": "add_percent",
-          "value_per_level": 0.25
+          "op": "add_flat",
+          "value_per_level": 0.5
         }
       ]
     },
@@ -31,9 +37,14 @@
       "name_fr": "Souffle Profond",
       "name_en": "Deep Breath",
       "max_level": 10,
-      "description_fr": "Augmente le Souffle max de 1% et la regeneration de Souffle de 0.25% par niveau.",
-      "description_en": "Increases max Breath by 1% and Breath regeneration by 0.25% per level.",
+      "description_fr": "+3 Souffle et +1% Souffle max par niveau. +0.2 régén Souffle/s par niveau.",
+      "description_en": "+3 Breath and +1% max Breath per level. +0.2 Breath regen/s per level.",
       "effects": [
+        {
+          "stat": "mp",
+          "op": "add_flat",
+          "value_per_level": 3
+        },
         {
           "stat": "mp",
           "op": "add_percent",
@@ -41,8 +52,8 @@
         },
         {
           "stat": "mp_regen",
-          "op": "add_percent",
-          "value_per_level": 0.25
+          "op": "add_flat",
+          "value_per_level": 0.2
         }
       ]
     },
@@ -51,9 +62,14 @@
       "name_fr": "Force",
       "name_en": "Strength",
       "max_level": 10,
-      "description_fr": "Augmente l'ATK de 1% par niveau.",
-      "description_en": "Increases ATK by 1% per level.",
+      "description_fr": "+2 ATK et +1% ATK par niveau.",
+      "description_en": "+2 ATK and +1% ATK per level.",
       "effects": [
+        {
+          "stat": "atk",
+          "op": "add_flat",
+          "value_per_level": 2
+        },
         {
           "stat": "atk",
           "op": "add_percent",
@@ -66,9 +82,14 @@
       "name_fr": "Intellect",
       "name_en": "Intellect",
       "max_level": 10,
-      "description_fr": "Augmente le MAG de 1% par niveau.",
-      "description_en": "Increases MAG by 1% per level.",
+      "description_fr": "+2 MAG et +1% MAG par niveau.",
+      "description_en": "+2 MAG and +1% MAG per level.",
       "effects": [
+        {
+          "stat": "mag",
+          "op": "add_flat",
+          "value_per_level": 2
+        },
         {
           "stat": "mag",
           "op": "add_percent",
@@ -81,13 +102,23 @@
       "name_fr": "Résistance",
       "name_en": "Resistance",
       "max_level": 10,
-      "description_fr": "Augmente l'armure et la résistance magique de 0.75% par niveau.",
-      "description_en": "Increases armor and magic resist by 0.75% per level.",
+      "description_fr": "+1 armure et +0.75% armure par niveau. +1 résist magique et +0.75% résist magique par niveau.",
+      "description_en": "+1 armor and +0.75% armor per level. +1 magic resist and +0.75% magic resist per level.",
       "effects": [
+        {
+          "stat": "armor",
+          "op": "add_flat",
+          "value_per_level": 1
+        },
         {
           "stat": "armor",
           "op": "add_percent",
           "value_per_level": 0.75
+        },
+        {
+          "stat": "magic_resist",
+          "op": "add_flat",
+          "value_per_level": 1
         },
         {
           "stat": "magic_resist",
@@ -101,18 +132,18 @@
       "name_fr": "Instinct Critique",
       "name_en": "Critical Instinct",
       "max_level": 10,
-      "description_fr": "Augmente la chance de critique de 0.5% et les dégâts critiques de 0.25% par niveau.",
-      "description_en": "Increases critical chance by 0.5% and critical damage by 0.25% per level.",
+      "description_fr": "+0.5% chance critique et +2% dégâts critiques par niveau.",
+      "description_en": "+0.5% critical chance and +2% critical damage per level.",
       "effects": [
         {
           "stat": "crit",
-          "op": "add_percent",
+          "op": "add_flat",
           "value_per_level": 0.5
         },
         {
           "stat": "crit_dmg",
-          "op": "add_percent",
-          "value_per_level": 0.25
+          "op": "add_flat",
+          "value_per_level": 2
         }
       ]
     },
@@ -121,13 +152,13 @@
       "name_fr": "Rapidité",
       "name_en": "Swiftness",
       "max_level": 10,
-      "description_fr": "Augmente la vitesse d'attaque de 1% par niveau.",
-      "description_en": "Increases attack speed by 1% per level.",
+      "description_fr": "+0.02 vitesse d'attaque par niveau.",
+      "description_en": "+0.02 attack speed per level.",
       "effects": [
         {
           "stat": "attack_speed",
-          "op": "add_percent",
-          "value_per_level": 1
+          "op": "add_flat",
+          "value_per_level": 0.02
         }
       ]
     },
@@ -136,12 +167,12 @@
       "name_fr": "Vampirisme",
       "name_en": "Vampirism",
       "max_level": 10,
-      "description_fr": "Vole 0.5% des dégâts infligés sous forme de PV par niveau.",
-      "description_en": "Steals 0.5% of damage dealt as HP per level.",
+      "description_fr": "+0.5% vol de vie par niveau.",
+      "description_en": "+0.5% lifesteal per level.",
       "effects": [
         {
           "stat": "lifesteal",
-          "op": "add_percent",
+          "op": "add_flat",
           "value_per_level": 0.5
         }
       ]
@@ -151,13 +182,13 @@
       "name_fr": "Agilité",
       "name_en": "Agility",
       "max_level": 10,
-      "description_fr": "Augmente l'esquive de 0.5% par niveau.",
-      "description_en": "Increases evasion by 0.5% per level.",
+      "description_fr": "+1 esquive par niveau.",
+      "description_en": "+1 evasion per level.",
       "effects": [
         {
           "stat": "flee",
-          "op": "add_percent",
-          "value_per_level": 0.5
+          "op": "add_flat",
+          "value_per_level": 1
         }
       ]
     },
@@ -166,12 +197,13 @@
       "name_fr": "Ténacité",
       "name_en": "Tenacity",
       "max_level": 10,
-      "description_fr": "Réduit la durée des contrôles et affaiblissements subis de 0.5% par niveau.",
-      "description_en": "Reduces duration of CC and debuffs received by 0.5% per level.",
+      "description_fr": "+0.5% réduction de durée des contrôles par niveau.",
+      "description_en": "+0.5% CC duration reduction per level.",
+      "_warning": "PHANTOM: tenacity not yet applied by combat_profile_builder — needs Phase D cleanup",
       "effects": [
         {
           "stat": "tenacity",
-          "op": "add_percent",
+          "op": "add_flat",
           "value_per_level": 0.5
         }
       ]
