@@ -2766,61 +2766,35 @@
               "name_fr": "Hymne Héroïque",
               "tier": "advanced",
               "target": "allies",
-              "pattern": "all",
+              "pattern": "row_3",
               "damage_type": "none",
-              "secondary_buff": "crit_chance_up",
-              "secondary_buff_value": 15,
-              "secondary_buff_duration": 10.0,
-              "mana_cost": 24,
-              "cooldown": 16.0,
+              "base_power": 0,
+              "mana_cost": 10,
+              "mana_cost_per_level": 1,
+              "cooldown": 5.0,
               "vfx_type": "buff_aura",
-              "description_fr": "Confère +20% ATK et +15% chances de critique à tous les alliés pendant 10s.",
-              "description_en": "The notes resonate in every heart.\nGrants +20% ATK and +15% critical chance to all allies for 10s.",
+              "description_fr": "+10% ATK et +10% chance de critique à 3 alliés en ligne pendant 8s.",
+              "description_en": "+10% ATK and +10% crit chance to 3 allies in a row for 8s.",
               "tags": [
                 "buff",
-                "attack",
+                "support",
+                "atk_up",
                 "crit",
-                "all"
+                "filler"
               ],
-              "base_class_id": "artisan",
-              "subclass_id": "musician",
-              "tier3_id": "guitarist",
-              "source_scope": "TIER3",
-              "targeting": {
-                "selection_mode": "tile",
-                "valid_target_team": "ally",
-                "requires_line_of_sight": false,
-                "bypasses_los": false,
-                "requires_entity_on_target_tile": false,
-                "aoe_pattern_id": "all"
-              },
               "effects": [
                 {
                   "type": "buff",
                   "stat": "atk_up",
-                  "stacks_to_apply": 4,
-                  "duration": 10.0
+                  "stacks_to_apply": 2,
+                  "duration": 8.0
+                },
+                {
+                  "type": "buff",
+                  "stat": "crit_chance_up",
+                  "stacks_to_apply": 2,
+                  "duration": 8.0
                 }
-              ]
-            },
-            {
-              "id": "skill_artisan_guitarist_clear_chorus",
-              "name_en": "Clear Chorus",
-              "name_fr": "Choeur Clair",
-              "tier": "advanced",
-              "target": "allies",
-              "pattern": "row_3",
-              "damage_type": "none",
-              "dispel_debuffs": true,
-              "mana_cost": 20,
-              "cooldown": 14.0,
-              "vfx_type": "heal",
-              "description_fr": "Purifie toutes les altérations négatives de 3 alliés en ligne.",
-              "description_en": "A crystal-clear voice that dispels all ills.\nPurifies all negative effects from 3 allies in a row.",
-              "tags": [
-                "dispel",
-                "aoe",
-                "pattern:row_3"
               ],
               "base_class_id": "artisan",
               "subclass_id": "musician",
@@ -2830,7 +2804,47 @@
                 "selection_mode": "tile",
                 "valid_target_team": "ally",
                 "requires_line_of_sight": false,
-                "bypasses_los": false,
+                "bypasses_los": true,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "row_3"
+              }
+            },
+            {
+              "id": "skill_artisan_guitarist_clear_chorus",
+              "name_en": "Clear Chorus",
+              "name_fr": "Chœur Clair",
+              "tier": "advanced",
+              "target": "allies",
+              "pattern": "row_3",
+              "damage_type": "none",
+              "base_power": 0,
+              "mana_cost": 22,
+              "mana_cost_per_level": 2,
+              "cooldown": 14.0,
+              "vfx_type": "heal",
+              "description_fr": "Retire 3 altérations à 3 alliés en ligne. Ignore la ligne de vue.",
+              "description_en": "Cleanses 3 debuffs from 3 allies in a row. Ignores line of sight.",
+              "tags": [
+                "cleanse",
+                "aoe",
+                "support"
+              ],
+              "effects": [
+                {
+                  "type": "utility",
+                  "stat": "cleanse",
+                  "value": 3
+                }
+              ],
+              "base_class_id": "artisan",
+              "subclass_id": "musician",
+              "tier3_id": "guitarist",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "tile",
+                "valid_target_team": "ally",
+                "requires_line_of_sight": false,
+                "bypasses_los": true,
                 "requires_entity_on_target_tile": false,
                 "aoe_pattern_id": "row_3"
               }
@@ -2843,20 +2857,26 @@
               "target": "allies",
               "pattern": "col_2",
               "damage_type": "none",
-              "hot_base": 10,
-              "hot_scaling_stat": "mag",
-              "hot_scaling_percent": 25,
-              "hot_duration": 12.0,
-              "mana_cost": 18,
+              "base_power": 0,
+              "mana_cost": 22,
+              "mana_cost_per_level": 2,
               "cooldown": 14.0,
               "vfx_type": "regeneration",
-              "description_fr": "Applique un soin continu de 10 (+25% MAG) par seconde à 2 alliés en colonne pendant 12s.",
-              "description_en": "A soothing tune played gently.\nApplies a heal over time of 10 (+25% MAG) per second to 2 allies in a column for 12s.",
+              "description_fr": "Applique +3% HP max/s à 2 alliés en colonne pendant 12s. Ignore la ligne de vue.",
+              "description_en": "Applies +3% max HP/s to 2 allies in a column for 12s. Ignores line of sight.",
               "tags": [
-                "heal",
                 "hot",
-                "aoe",
-                "pattern:col_2"
+                "support",
+                "aoe"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "heal_over_time",
+                  "stacks_to_apply": 3,
+                  "scaling": "max_hp",
+                  "duration": 12.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "musician",
@@ -2866,7 +2886,7 @@
                 "selection_mode": "tile",
                 "valid_target_team": "ally",
                 "requires_line_of_sight": false,
-                "bypasses_los": false,
+                "bypasses_los": true,
                 "requires_entity_on_target_tile": false,
                 "aoe_pattern_id": "col_2"
               }
@@ -2879,20 +2899,33 @@
               "target": "ally",
               "pattern": "single",
               "damage_type": "none",
-              "base_heal": 50,
               "heal_scaling_stat": "mag",
-              "heal_scaling_percent": 55,
-              "power_per_level": 5,
-              "hp_threshold": 40,
-              "mana_cost": 22,
+              "heal_scaling_percent": 200,
+              "heal_scaling_per_level": 8,
+              "mana_cost": 26,
+              "mana_cost_per_level": 3,
               "cooldown": 16.0,
+              "conditional_bonus": {
+                "condition": "target_below_hp",
+                "hp_threshold": 40,
+                "heal_bonus_percent": 50
+              },
               "vfx_type": "buff_aura",
-              "description_fr": "Soigne un allié de 50 (+55% MAG) et confère +20% réduction de dégâts pendant 8s.\nUtilisable uniquement si l'allié est en dessous de 40% HP.",
-              "description_en": "A verse that refuses to let go.\nHeals an ally for 50 (+55% MAG) and grants +20% damage reduction for 8s.\nCan only be used if the ally is below 40% HP.",
+              "description_fr": "Soigne 200% MAG sur un allié et confère +15% réduction de dégâts pendant 8s. +50% soin si la cible est sous 40% HP. Ignore la ligne de vue.",
+              "description_en": "Heals 200% MAG on an ally and grants +15% damage reduction for 8s. +50% heal if target is below 40% HP. Ignores line of sight.",
               "tags": [
                 "heal",
                 "buff",
-                "emergency"
+                "emergency",
+                "defense"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "damage_reduction_up",
+                  "stacks_to_apply": 3,
+                  "duration": 8.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "musician",
@@ -2901,19 +2934,11 @@
               "targeting": {
                 "selection_mode": "entity",
                 "valid_target_team": "ally",
-                "requires_line_of_sight": true,
-                "bypasses_los": false,
+                "requires_line_of_sight": false,
+                "bypasses_los": true,
                 "requires_entity_on_target_tile": false,
                 "aoe_pattern_id": "single"
-              },
-              "effects": [
-                {
-                  "type": "buff",
-                  "stat": "def_up",
-                  "stacks_to_apply": 4,
-                  "duration": 8.0
-                }
-              ]
+              }
             },
             {
               "id": "skill_artisan_guitarist_perfect_harmony",
@@ -2923,23 +2948,37 @@
               "target": "allies",
               "pattern": "all",
               "damage_type": "none",
-              "base_heal": 40,
               "heal_scaling_stat": "mag",
-              "heal_scaling_percent": 50,
-              "power_per_level": 7,
-              "mana_cost": 42,
+              "heal_scaling_percent": 200,
+              "heal_scaling_per_level": 8,
+              "mana_cost": 50,
+              "mana_cost_per_level": 4,
               "cooldown": 28.0,
               "cast_time": 2.0,
               "is_signature": true,
               "vfx_type": "buff_aura",
-              "description_fr": "Sort signature. Soigne tous les alliés de 40 (+50% MAG).\nConfère l'immunité aux altérations de contrôle pendant 5s.",
-              "description_en": "Signature skill. Every instrument finds its place.\nHeals all allies for 40 (+50% MAG).\nGrants CC immunity for 5s.",
+              "description_fr": "Soigne 200% MAG à tous les alliés. Confère +15% réduction de dégâts pendant 8s et l'immunité aux altérations de contrôle pendant 5s. Incantation 2.0s. Ignore la ligne de vue.",
+              "description_en": "Heals 200% MAG to all allies. Grants +15% damage reduction for 8s and CC immunity for 5s. 2.0s cast. Ignores line of sight.",
               "tags": [
-                "buff",
-                "cc_immune",
                 "heal",
+                "cc_immune",
+                "defense",
                 "all",
-                "signature"
+                "signature",
+                "support"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "damage_reduction_up",
+                  "stacks_to_apply": 3,
+                  "duration": 8.0
+                },
+                {
+                  "type": "buff",
+                  "stat": "cc_immune",
+                  "duration": 5.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "musician",
@@ -2949,17 +2988,10 @@
                 "selection_mode": "tile",
                 "valid_target_team": "ally",
                 "requires_line_of_sight": false,
-                "bypasses_los": false,
+                "bypasses_los": true,
                 "requires_entity_on_target_tile": false,
                 "aoe_pattern_id": "all"
-              },
-              "effects": [
-                {
-                  "type": "buff",
-                  "stat": "cc_immune",
-                  "duration": 5.0
-                }
-              ]
+              }
             }
           ]
         },
@@ -2977,16 +3009,26 @@
               "damage_type": "physical",
               "scaling_stat": "atk",
               "base_power": 0,
-              "scaling_percent": 300,
-              "percent_per_level": 7,
-              "mana_cost": 18,
-              "cooldown": 8.0,
+              "scaling_percent": 150,
+              "percent_per_level": 6,
+              "mana_cost": 10,
+              "mana_cost_per_level": 1,
+              "cooldown": 5.0,
               "vfx_type": "melee_slash",
-              "description_fr": "Inflige 300% ATK dégâts physiques à une cible.\nÉtourdit l'ennemi pendant 1.5s.",
-              "description_en": "The drum thunders like a cannon.\nDeals 300% ATK physical damage to one target.\nStuns the enemy for 1.5s.",
+              "description_fr": "Inflige 150% ATK dégâts physiques. Étourdissement 1.5s. Ignore la ligne de vue.",
+              "description_en": "Deals 150% ATK physical damage. Stuns for 1.5s. Ignores line of sight.",
               "tags": [
                 "damage",
-                "stun"
+                "stun",
+                "filler",
+                "cc"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "stun",
+                  "duration": 1.5
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "musician",
@@ -2995,18 +3037,11 @@
               "targeting": {
                 "selection_mode": "entity",
                 "valid_target_team": "enemy",
-                "requires_line_of_sight": true,
-                "bypasses_los": false,
+                "requires_line_of_sight": false,
+                "bypasses_los": true,
                 "requires_entity_on_target_tile": false,
                 "aoe_pattern_id": "single"
-              },
-              "effects": [
-                {
-                  "type": "buff",
-                  "stat": "stun",
-                  "duration": 1.5
-                }
-              ]
+              }
             },
             {
               "id": "skill_artisan_war_drummer_rolling_rhythm",
@@ -3018,17 +3053,26 @@
               "damage_type": "physical",
               "scaling_stat": "atk",
               "base_power": 0,
-              "scaling_percent": 220,
+              "scaling_percent": 200,
               "percent_per_level": 7,
               "mana_cost": 22,
-              "cooldown": 10.0,
+              "mana_cost_per_level": 2,
+              "cooldown": 12.0,
               "vfx_type": "aoe_pulse",
-              "description_fr": "Inflige 220% ATK dégâts physiques à 3 ennemis en ligne.",
-              "description_en": "A drumroll that sweeps the line.\nDeals 220% ATK physical damage to 3 enemies in a row.",
+              "description_fr": "Inflige 200% ATK dégâts physiques sur 3 ennemis en ligne. -10% vitesse d'attaque par cible pendant 6s. Ignore la ligne de vue.",
+              "description_en": "Deals 200% ATK physical damage to 3 enemies in a row. -10% attack speed per target for 6s. Ignores line of sight.",
               "tags": [
                 "damage",
                 "aoe",
-                "pattern:row_3"
+                "atk_speed_down"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "atk_speed_down",
+                  "stacks_to_apply": 2,
+                  "duration": 6.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "musician",
@@ -3038,7 +3082,7 @@
                 "selection_mode": "tile",
                 "valid_target_team": "enemy",
                 "requires_line_of_sight": false,
-                "bypasses_los": false,
+                "bypasses_los": true,
                 "requires_entity_on_target_tile": false,
                 "aoe_pattern_id": "row_3"
               }
@@ -3048,21 +3092,31 @@
               "name_en": "Shockwave",
               "name_fr": "Onde de Choc",
               "tier": "advanced",
-              "target": "enemy",
+              "target": "enemies",
               "pattern": "single_plus_adjacent_2",
               "damage_type": "physical",
               "scaling_stat": "atk",
               "base_power": 0,
-              "scaling_percent": 260,
-              "percent_per_level": 7,
+              "scaling_percent": 230,
+              "percent_per_level": 8,
               "mana_cost": 24,
+              "mana_cost_per_level": 3,
               "cooldown": 12.0,
               "vfx_type": "aoe_pulse",
-              "description_fr": "Inflige 260% ATK dégâts physiques à la cible et 2 ennemis adjacents.",
-              "description_en": "The vibration propagates through the ground.\nDeals 260% ATK physical damage to the target and 2 adjacent enemies.",
+              "description_fr": "Inflige 230% ATK dégâts physiques à la cible et 2 ennemis adjacents. -15% armure par cible pendant 8s.",
+              "description_en": "Deals 230% ATK physical damage to the target and 2 adjacent enemies. -15% armor per target for 8s.",
               "tags": [
                 "damage",
-                "aoe"
+                "aoe",
+                "armor_down"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "armor_down",
+                  "stacks_to_apply": 3,
+                  "duration": 8.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "musician",
@@ -3072,7 +3126,7 @@
                 "selection_mode": "tile",
                 "valid_target_team": "enemy",
                 "requires_line_of_sight": false,
-                "bypasses_los": false,
+                "bypasses_los": true,
                 "requires_entity_on_target_tile": false,
                 "aoe_pattern_id": "single_plus_adjacent_2"
               }
@@ -3084,16 +3138,36 @@
               "tier": "advanced",
               "target": "enemy",
               "pattern": "single",
-              "damage_type": "none",
-              "mana_cost": 16,
-              "cooldown": 12.0,
+              "damage_type": "physical",
+              "scaling_stat": "atk",
+              "base_power": 0,
+              "scaling_percent": 100,
+              "percent_per_level": 5,
+              "mana_cost": 22,
+              "mana_cost_per_level": 2,
+              "cooldown": 14.0,
               "vfx_type": "debuff_aura",
-              "description_fr": "Marque un ennemi pendant 8s.\nLes prochaines attaques contre la cible infligent +20% dégâts.",
-              "description_en": "The rhythm marks the prey.\nMarks an enemy for 8s.\nAll attacks against the target deal +20% damage.",
+              "description_fr": "Inflige 100% ATK dégâts physiques. Applique Marqué (+10% dégâts subis) et Vulnérable (+20% dégâts subis) pendant 8s.",
+              "description_en": "Deals 100% ATK physical damage. Applies Marked (+10% damage taken) and Vulnerable (+20% damage taken) for 8s.",
               "tags": [
-                "debuff",
+                "damage",
                 "mark",
-                "vulnerability"
+                "vulnerable",
+                "setup"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "marked",
+                  "stacks_to_apply": 1,
+                  "duration": 8.0
+                },
+                {
+                  "type": "debuff",
+                  "stat": "vulnerable",
+                  "stacks_to_apply": 4,
+                  "duration": 8.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "musician",
@@ -3106,15 +3180,7 @@
                 "bypasses_los": false,
                 "requires_entity_on_target_tile": false,
                 "aoe_pattern_id": "single"
-              },
-              "effects": [
-                {
-                  "type": "debuff",
-                  "stat": "vulnerable",
-                  "stacks_to_apply": 4,
-                  "duration": 8.0
-                }
-              ]
+              }
             },
             {
               "id": "skill_artisan_war_drummer_drum_assault",
@@ -3126,21 +3192,35 @@
               "damage_type": "physical",
               "scaling_stat": "atk",
               "base_power": 0,
-              "scaling_percent": 440,
-              "percent_per_level": 9,
-              "mana_cost": 40,
-              "cooldown": 24.0,
+              "scaling_percent": 380,
+              "percent_per_level": 11,
+              "mana_cost": 50,
+              "mana_cost_per_level": 4,
+              "cooldown": 28.0,
               "cast_time": 1.5,
               "is_signature": true,
               "vfx_type": "aoe_pulse",
-              "description_fr": "Technique signature. Inflige 440% ATK degats physiques en zone 2x2.\nEtourdit tous les ennemis touches pendant 2s.",
-              "description_en": "Signature skill. The final solo that shakes the earth.\nDeals 440% ATK physical damage in a 2x2 area.\nStuns all enemies hit for 2s.",
+              "description_fr": "Inflige 380% ATK dégâts physiques en zone 2x2. Étourdissement 2s. -20% armure par cible pendant 8s. Incantation 1.5s. Ignore la ligne de vue.",
+              "description_en": "Deals 380% ATK physical damage in a 2x2 area. Stuns for 2s. -20% armor per target for 8s. 1.5s cast. Ignores line of sight.",
               "tags": [
                 "damage",
-                "stun",
                 "aoe",
-                "signature",
-                "pattern:rect_2x2"
+                "stun",
+                "armor_down",
+                "signature"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "stun",
+                  "duration": 2.0
+                },
+                {
+                  "type": "debuff",
+                  "stat": "armor_down",
+                  "stacks_to_apply": 4,
+                  "duration": 8.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "musician",
@@ -3150,17 +3230,10 @@
                 "selection_mode": "tile",
                 "valid_target_team": "enemy",
                 "requires_line_of_sight": false,
-                "bypasses_los": false,
+                "bypasses_los": true,
                 "requires_entity_on_target_tile": false,
                 "aoe_pattern_id": "rect_2x2"
-              },
-              "effects": [
-                {
-                  "type": "buff",
-                  "stat": "stun",
-                  "duration": 2.0
-                }
-              ]
+              }
             }
           ]
         }
