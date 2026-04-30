@@ -129,6 +129,12 @@ ALLOWED_METADATA_FIELDS = {
     # Spellblade enchanted blade specifics
     "buff_attack_speed", "buff_magic_on_autos", "buff_magic_pen",
     "autos_generate_momentum",
+    # ClassRegistry metadata (Phase 4.0 whitelist 2026-04-30)
+    # Written by content_loader at parse time, present in skills.json for traceability.
+    "base_class_id", "subclass_id", "tier3_id", "source_scope", "targeting",
+    # Misc skill-specific fields (also Phase 4.0 whitelist)
+    "exclude_caster",   # Artisan resource_share: heal allies but not caster
+    "dot_heal_percent", # Martyr intercession: % of DoT damage redirected as healing
 }
 
 # Legacy fields: BLOCKED after Bloc 5 cleanup.
@@ -213,6 +219,38 @@ def load_effect_ids(db_root):
     return ids
 
 
+def load_canonical_grid(db_root):
+    """Load _meta.canonical_grid from stats/status_effects.json (Phase 3 Option A).
+    Returns dict: effect_id -> {value_per_stack, max_stacks, unit}.
+    Used to validate that skills use stacks_to_apply correctly per CTO contract.
+    """
+    path = os.path.join(db_root, "stats", "status_effects.json")
+    data = load_json(path)
+    grid = {}
+    canonical = data.get("_meta", {}).get("canonical_grid", {})
+    for category, effects in canonical.items():
+        if category.startswith("_"):
+            continue
+        if category == "non_stackable_special_effects":
+            continue
+        if not isinstance(effects, dict):
+            continue
+        for effect_id, defn in effects.items():
+            if effect_id.startswith("_"):
+                continue
+            if not isinstance(defn, dict):
+                continue
+            max_stacks = defn.get("max_stacks", 0)
+            if max_stacks <= 0:
+                continue
+            grid[effect_id] = {
+                "value_per_stack": defn.get("value_per_stack", 0),
+                "max_stacks": max_stacks,
+                "unit": defn.get("unit", "percent"),
+            }
+    return grid
+
+
 def extract_all_skills(data):
     """Extract all skill dicts from a skills.json file."""
     skills = []
@@ -248,8 +286,10 @@ def validate_skill_fields(skill, file_path, errors, warnings):
         errors.append(f"{file_path}: skill '{sid}' has UNKNOWN field '{field}' — not in any whitelist")
 
 
-def validate_effects_array(skill, file_path, valid_effect_ids, errors, warnings):
-    """Validate the effects[] array of a skill."""
+def validate_effects_array(skill, file_path, valid_effect_ids, canonical_grid, errors, warnings):
+    """Validate the effects[] array of a skill.
+    Phase 3 Option A (CTO 2026-04-30): enforces canonical contract bidirectionally.
+    """
     sid = skill.get("id", "???")
     effects = skill.get("effects")
 
@@ -290,13 +330,54 @@ def validate_effects_array(skill, file_path, valid_effect_ids, errors, warnings)
 
         # Allowed fields in an effect entry
         allowed_effect_fields = {
-            "type", "stat", "value", "value_per_level",
+            "type", "stat",
+            # Phase 3 Option A: stacks_to_apply replaces value/value_override for canonical
+            "stacks_to_apply",
+            # value still authorized for non-canonical (utility, legacy non-canonical types)
+            "value", "value_per_level",
             "duration", "duration_per_level", "duration_scaling",
             "scaling", "target", "chance", "condition",
+            "base_value",  # legacy field for shield base, kept for compat
         }
         for field in effect.keys():
             if field not in allowed_effect_fields:
                 errors.append(f"{file_path}: skill '{sid}' effects[{i}] has unknown field '{field}'")
+
+        # Phase 3 Option A — strict bidirectional contract
+        if stat and stat in canonical_grid and etype in ("buff", "debuff"):
+            grid_entry = canonical_grid[stat]
+            max_stacks = grid_entry["max_stacks"]
+            # canonical → value/value_override FORBIDDEN
+            if "value" in effect:
+                errors.append(
+                    f"{file_path}: skill '{sid}' effects[{i}] uses 'value' on canonical stackable "
+                    f"effect '{stat}' — use 'stacks_to_apply' instead (Option A contract)")
+            if "value_override" in effect:
+                errors.append(
+                    f"{file_path}: skill '{sid}' effects[{i}] uses 'value_override' on canonical "
+                    f"stackable effect '{stat}' — use 'stacks_to_apply' instead (Option A contract)")
+            if "value_per_level" in effect:
+                errors.append(
+                    f"{file_path}: skill '{sid}' effects[{i}] uses 'value_per_level' on canonical "
+                    f"stackable effect '{stat}' — value_per_level was retired in Phase 2 Option A")
+            # stacks_to_apply REQUIRED
+            if "stacks_to_apply" not in effect:
+                errors.append(
+                    f"{file_path}: skill '{sid}' effects[{i}] applies canonical stackable effect "
+                    f"'{stat}' but missing 'stacks_to_apply' field (required, range [1, {max_stacks}])")
+            else:
+                stacks = effect["stacks_to_apply"]
+                if not isinstance(stacks, int) or stacks <= 0 or stacks > max_stacks:
+                    errors.append(
+                        f"{file_path}: skill '{sid}' effects[{i}] effect '{stat}' has "
+                        f"stacks_to_apply={stacks} out of range [1, {max_stacks}]")
+        elif stat and etype in ("buff", "debuff"):
+            # Non-canonical buff/debuff: stacks_to_apply FORBIDDEN
+            if "stacks_to_apply" in effect:
+                errors.append(
+                    f"{file_path}: skill '{sid}' effects[{i}] uses 'stacks_to_apply' on "
+                    f"non-canonical effect '{stat}' — stacks_to_apply is reserved for canonical "
+                    f"stackable effects only")
 
 
 def validate_legacy_contradiction(skill, file_path, errors):
@@ -332,6 +413,10 @@ def main():
     valid_effect_ids = load_effect_ids(db_root)
     print(f"Loaded {len(valid_effect_ids)} valid effect IDs from stats/status_effects.json")
 
+    # Phase 3 Option A: load canonical grid for strict contract validation
+    canonical_grid = load_canonical_grid(db_root)
+    print(f"Loaded {len(canonical_grid)} canonical stackable effects from _meta.canonical_grid")
+
     # Process all class skill files
     skill_files = sorted(glob.glob("classes/*/skills.json"))
     total_skills = 0
@@ -345,7 +430,7 @@ def main():
 
         for skill in skills:
             validate_skill_fields(skill, skill_file, errors, warnings)
-            validate_effects_array(skill, skill_file, valid_effect_ids, errors, warnings)
+            validate_effects_array(skill, skill_file, valid_effect_ids, canonical_grid, errors, warnings)
             validate_legacy_contradiction(skill, skill_file, errors)
 
             # Count legacy usage
