@@ -1239,33 +1239,38 @@
       "tier3": {
         "plague_brewer": {
           "identity": "DoT stacking + soft control + attrition wins",
-          "signature": "skill_artisan_plague_brewer_plagueburst",
+          "signature": "skill_artisan_plague_brewer_plague_burst",
           "skills": [
             {
-              "id": "skill_artisan_plague_brewer_virulent_poison",
-              "name_en": "Virulent Poison",
-              "name_fr": "Poison Virulent",
+              "id": "skill_artisan_plague_brewer_inoculation",
+              "name_en": "Inoculation",
+              "name_fr": "Inoculation",
               "tier": "advanced",
               "target": "enemy",
               "pattern": "single",
               "damage_type": "magical",
               "scaling_stat": "mag",
               "base_power": 0,
-              "scaling_percent": 280,
-              "percent_per_level": 8,
-              "applies_toxin": true,
-              "toxin_stacks": 3,
-              "toxin_duration": 10.0,
-              "spread_on_kill": true,
-              "mana_cost": 16,
-              "cooldown": 8.0,
+              "scaling_percent": 150,
+              "percent_per_level": 6,
+              "mana_cost": 8,
+              "mana_cost_per_level": 1,
+              "cooldown": 4.0,
               "vfx_type": "projectile",
-              "description_fr": "Inflige 280% MAG dégâts magiques.\nApplique 3 charges de Toxine pendant 10s.\nSe propage aux ennemis adjacents si la cible meurt.",
-              "description_en": "A particularly tenacious strain.\nDeals 280% MAG magic damage.\nApplies 3 Toxin stacks for 10s.\nSpreads to adjacent enemies if the target dies.",
+              "description_fr": "Inflige 150% MAG dégâts magiques. Applique 2 charges de Toxine (max 5).",
+              "description_en": "Deals 150% MAG magic damage. Applies 2 Toxin stacks (max 5).",
               "tags": [
                 "damage",
-                "poison",
-                "spread"
+                "toxin",
+                "filler"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "toxin",
+                  "stacks_to_apply": 2,
+                  "duration": 6.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "alchemist",
@@ -1281,32 +1286,36 @@
               }
             },
             {
-              "id": "skill_artisan_plague_brewer_contagion_row",
-              "name_en": "Contagion Row",
-              "name_fr": "Rangée de Contagion",
+              "id": "skill_artisan_plague_brewer_contagion",
+              "name_en": "Contagion",
+              "name_fr": "Contagion",
               "tier": "advanced",
               "target": "enemies",
-              "pattern": "row_4",
+              "pattern": "row_3",
               "damage_type": "magical",
               "scaling_stat": "mag",
               "base_power": 0,
-              "scaling_percent": 340,
-              "percent_per_level": 8,
-              "applies_toxin": true,
-              "toxin_stacks": 2,
-              "toxin_duration": 8.0,
-              "toxin_refresh": true,
+              "scaling_percent": 220,
+              "percent_per_level": 9,
               "mana_cost": 22,
+              "mana_cost_per_level": 2,
               "cooldown": 12.0,
+              "cast_time": 1.0,
               "vfx_type": "aoe_pulse",
-              "description_fr": "Inflige 340% MAG dégâts magiques à 4 ennemis en ligne complète.\nApplique 2 charges de Toxine pendant 8s.",
-              "description_en": "The infection spreads along the line.\nDeals 340% MAG magic damage to 4 enemies in a full row.\nApplies 2 Toxin stacks for 8s.",
+              "description_fr": "Inflige 220% MAG dégâts magiques sur 3 ennemis en ligne. Applique 2 charges de Toxine (max 5) par cible. Incantation 1.0s.",
+              "description_en": "Deals 220% MAG magic damage to 3 enemies in a row. Applies 2 Toxin stacks (max 5) per target. 1.0s cast.",
               "tags": [
                 "damage",
-                "disease",
                 "aoe",
-                "spread",
-                "pattern:row_4"
+                "toxin"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "toxin",
+                  "stacks_to_apply": 2,
+                  "duration": 6.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "alchemist",
@@ -1318,29 +1327,45 @@
                 "requires_line_of_sight": false,
                 "bypasses_los": false,
                 "requires_entity_on_target_tile": false,
-                "aoe_pattern_id": "row_4"
+                "aoe_pattern_id": "row_3"
               }
             },
             {
-              "id": "skill_artisan_plague_brewer_wither",
-              "name_en": "Wither",
-              "name_fr": "Dépérissement",
+              "id": "skill_artisan_plague_brewer_lethal_sap",
+              "name_en": "Lethal Sap",
+              "name_fr": "Sève Mortifère",
               "tier": "advanced",
               "target": "enemy",
               "pattern": "single",
               "damage_type": "magical",
               "scaling_stat": "mag",
               "base_power": 0,
-              "scaling_percent": 230,
+              "scaling_percent": 200,
               "percent_per_level": 8,
-              "mana_cost": 18,
+              "mana_cost": 24,
+              "mana_cost_per_level": 3,
               "cooldown": 14.0,
               "vfx_type": "debuff_aura",
-              "description_fr": "Inflige 230% MAG dégâts magiques.\nRéduit les soins reçus par la cible de 50% pendant 8s.",
-              "description_en": "Tissues slowly necrotize.\nDeals 230% MAG magic damage.\nReduces healing received by the target by 50% for 8s.",
+              "description_fr": "Inflige 200% MAG dégâts magiques. Applique 5 charges de Toxine (max 5, 8s). -30% soins reçus pendant 8s.",
+              "description_en": "Deals 200% MAG magic damage. Applies 5 Toxin stacks (max 5, 8s). -30% healing received for 8s.",
               "tags": [
-                "debuff",
+                "damage",
+                "toxin",
                 "heal_reduction"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "toxin",
+                  "stacks_to_apply": 5,
+                  "duration": 8.0
+                },
+                {
+                  "type": "debuff",
+                  "stat": "heal_received_down",
+                  "stacks_to_apply": 2,
+                  "duration": 8.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "alchemist",
@@ -1353,20 +1378,12 @@
                 "bypasses_los": false,
                 "requires_entity_on_target_tile": false,
                 "aoe_pattern_id": "single"
-              },
-              "effects": [
-                {
-                  "type": "debuff",
-                  "stat": "heal_reduction",
-                  "stacks_to_apply": 3,
-                  "duration": 8.0
-                }
-              ]
+              }
             },
             {
-              "id": "skill_artisan_plague_brewer_sickening_mist",
-              "name_en": "Sickening Mist",
-              "name_fr": "Brume Nauséabonde",
+              "id": "skill_artisan_plague_brewer_plague_mist",
+              "name_en": "Plague Mist",
+              "name_fr": "Brume Pestilentielle",
               "tier": "advanced",
               "target": "enemies",
               "pattern": "rect_2x2",
@@ -1374,24 +1391,33 @@
               "scaling_stat": "mag",
               "base_power": 0,
               "scaling_percent": 280,
-              "percent_per_level": 8,
-              "applies_toxin": true,
-              "toxin_stacks": 1,
-              "toxin_duration": 8.0,
-              "secondary_debuff": "atk_down",
-              "secondary_debuff_value": 15,
-              "secondary_debuff_duration": 6.0,
-              "mana_cost": 24,
+              "percent_per_level": 9,
+              "mana_cost": 28,
+              "mana_cost_per_level": 3,
               "cooldown": 14.0,
+              "cast_time": 1.0,
               "vfx_type": "aoe_pulse",
-              "description_fr": "Inflige 280% MAG dégâts magiques en zone 2x2.\nApplique 1 charge de Toxine, ralentit de 25% et réduit l'ATK de 15% pendant 6s.",
-              "description_en": "A fetid fog invades the field.\nDeals 280% MAG magic damage in a 2x2 area.\nApplies 1 Toxin stack, slows by 25% and reduces ATK by 15% for 6s.",
+              "description_fr": "Inflige 280% MAG dégâts magiques en zone 2x2. Applique 3 charges de Toxine (max 5) par cible. -15% ATK par cible pendant 8s. Incantation 1.0s.",
+              "description_en": "Deals 280% MAG magic damage in a 2x2 area. Applies 3 Toxin stacks (max 5) per target. -15% ATK per target for 8s. 1.0s cast.",
               "tags": [
-                "debuff",
+                "damage",
                 "aoe",
-                "disease",
-                "slow",
-                "pattern:rect_2x2"
+                "toxin",
+                "atk_down"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "toxin",
+                  "stacks_to_apply": 3,
+                  "duration": 6.0
+                },
+                {
+                  "type": "debuff",
+                  "stat": "atk_down",
+                  "stacks_to_apply": 3,
+                  "duration": 8.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "alchemist",
@@ -1404,43 +1430,51 @@
                 "bypasses_los": false,
                 "requires_entity_on_target_tile": false,
                 "aoe_pattern_id": "rect_2x2"
-              },
-              "effects": [
-                {
-                  "type": "debuff",
-                  "stat": "slow",
-                  "value": 25,
-                  "duration": 6.0
-                }
-              ]
+              }
             },
             {
-              "id": "skill_artisan_plague_brewer_plagueburst",
-              "name_en": "Plagueburst",
-              "name_fr": "Explosion de Peste",
+              "id": "skill_artisan_plague_brewer_plague_burst",
+              "name_en": "Plague Burst",
+              "name_fr": "Pestilence",
               "tier": "signature",
               "target": "enemies",
-              "pattern": "around_radius_1",
+              "pattern": "all",
               "damage_type": "magical",
               "scaling_stat": "mag",
               "base_power": 0,
-              "scaling_percent": 420,
+              "scaling_percent": 220,
               "percent_per_level": 11,
               "detonates_toxin": true,
-              "detonate_damage_per_stack": 25,
-              "detonate_consumes_stacks": true,
-              "mana_cost": 35,
-              "cooldown": 22.0,
-              "cast_time": 1.5,
+              "detonate_damage_per_stack": 30,
+              "mana_cost": 50,
+              "mana_cost_per_level": 4,
+              "cooldown": 28.0,
+              "cast_time": 2.0,
               "is_signature": true,
               "vfx_type": "aoe_pulse",
-              "description_fr": "Sort signature. Fait exploser toutes les charges de Toxine sur la cible et les ennemis autour.\n420% MAG + 25 dégâts par charge consommée.",
-              "description_en": "Signature skill. All infections reach their peak.\nDetonates all Toxin stacks on the target and surrounding enemies.\n420% MAG + 25 damage per stack consumed.",
+              "description_fr": "Inflige 220% MAG dégâts magiques à tous les ennemis. Applique 5 charges de Toxine (max 5) par cible. Détone toutes les Toxines : +30 dégâts par charge consommée. -45% soins reçus pendant 8s. Incantation 2.0s.",
+              "description_en": "Deals 220% MAG magic damage to all enemies. Applies 5 Toxin stacks (max 5) per target. Detonates all Toxin stacks: +30 damage per stack consumed. -45% healing received for 8s. 2.0s cast.",
               "tags": [
                 "damage",
+                "all",
+                "toxin",
                 "detonate",
-                "aoe",
+                "heal_reduction",
                 "signature"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "toxin",
+                  "stacks_to_apply": 5,
+                  "duration": 6.0
+                },
+                {
+                  "type": "debuff",
+                  "stat": "heal_received_down",
+                  "stacks_to_apply": 3,
+                  "duration": 8.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "alchemist",
@@ -1452,7 +1486,7 @@
                 "requires_line_of_sight": false,
                 "bypasses_los": false,
                 "requires_entity_on_target_tile": false,
-                "aoe_pattern_id": "ring_1_center"
+                "aoe_pattern_id": "all"
               }
             }
           ]
@@ -1462,29 +1496,35 @@
           "signature": "skill_artisan_reactionist_chain_reaction",
           "skills": [
             {
-              "id": "skill_artisan_reactionist_unstable_mix",
-              "name_en": "Unstable Mix",
-              "name_fr": "Mélange Instable",
+              "id": "skill_artisan_reactionist_catalyst",
+              "name_en": "Catalyst",
+              "name_fr": "Catalyseur",
               "tier": "advanced",
               "target": "enemy",
               "pattern": "single",
               "damage_type": "magical",
               "scaling_stat": "mag",
               "base_power": 0,
-              "scaling_percent": 280,
-              "percent_per_level": 8,
-              "mark": "unstable",
-              "mark_duration": 8.0,
-              "mark_detonation_damage": 40,
-              "mana_cost": 14,
-              "cooldown": 8.0,
+              "scaling_percent": 150,
+              "percent_per_level": 6,
+              "mana_cost": 8,
+              "mana_cost_per_level": 1,
+              "cooldown": 4.0,
               "vfx_type": "projectile",
-              "description_fr": "Inflige 280% MAG dégâts magiques.\nApplique une marque explosive pendant 8s.\nExplose pour 40 dégâts bonus si la cible est frappée par une autre attaque.",
-              "description_en": "Mixes volatile reagents.\nDeals 280% MAG magic damage.\nApplies an explosive mark for 8s.\nDetonates for 40 bonus damage if the target is hit by another attack.",
+              "description_fr": "Inflige 150% MAG dégâts magiques. Applique Marqué (+10% dégâts subis) pendant 8s.",
+              "description_en": "Deals 150% MAG magic damage. Applies Marked (+10% damage taken) for 8s.",
               "tags": [
                 "damage",
                 "mark",
-                "setup"
+                "filler"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "marked",
+                  "stacks_to_apply": 1,
+                  "duration": 8.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "alchemist",
@@ -1500,26 +1540,42 @@
               }
             },
             {
-              "id": "skill_artisan_reactionist_pressure_spike",
-              "name_en": "Pressure Spike",
-              "name_fr": "Pic de Pression",
+              "id": "skill_artisan_reactionist_volatile_mark",
+              "name_en": "Volatile Mark",
+              "name_fr": "Marquage Volatile",
               "tier": "advanced",
-              "target": "enemy",
-              "pattern": "single_plus_adjacent_1",
+              "target": "enemies",
+              "pattern": "row_3",
               "damage_type": "magical",
               "scaling_stat": "mag",
               "base_power": 0,
-              "scaling_percent": 400,
-              "percent_per_level": 8,
-              "mana_cost": 20,
+              "scaling_percent": 130,
+              "percent_per_level": 6,
+              "mana_cost": 22,
+              "mana_cost_per_level": 2,
               "cooldown": 12.0,
-              "cast_time": 1.0,
-              "vfx_type": "aoe_pulse",
-              "description_fr": "Inflige 400% MAG dégâts magiques à la cible et 1 ennemi adjacent. Incantation 1.0s.",
-              "description_en": "Pressure reaches its breaking point.\nDeals 400% MAG magic damage to the target and 1 adjacent enemy. 1.0s cast.",
+              "vfx_type": "debuff_aura",
+              "description_fr": "Inflige 130% MAG dégâts magiques sur 3 ennemis en ligne. Applique Marqué (+10% dégâts subis) et -10% résistance magique par cible pendant 8s.",
+              "description_en": "Deals 130% MAG magic damage to 3 enemies in a row. Applies Marked (+10% damage taken) and -10% magic resist per target for 8s.",
               "tags": [
                 "damage",
-                "aoe"
+                "aoe",
+                "mark",
+                "magic_resist_down"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "marked",
+                  "stacks_to_apply": 1,
+                  "duration": 8.0
+                },
+                {
+                  "type": "debuff",
+                  "stat": "magic_resist_down",
+                  "stacks_to_apply": 2,
+                  "duration": 8.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "alchemist",
@@ -1531,30 +1587,46 @@
                 "requires_line_of_sight": false,
                 "bypasses_los": false,
                 "requires_entity_on_target_tile": false,
-                "aoe_pattern_id": "single_plus_adjacent_1"
+                "aoe_pattern_id": "row_3"
               }
             },
             {
-              "id": "skill_artisan_reactionist_reactive_mark",
-              "name_en": "Reactive Mark",
-              "name_fr": "Marque Réactive",
+              "id": "skill_artisan_reactionist_overload",
+              "name_en": "Overload",
+              "name_fr": "Surcharge",
               "tier": "advanced",
               "target": "enemy",
               "pattern": "single",
-              "damage_type": "none",
-              "mark": "reactive",
-              "mark_duration": 10.0,
-              "mark_trigger": "spellcast",
-              "mark_detonation_damage_percent": 30,
-              "mana_cost": 16,
-              "cooldown": 12.0,
+              "damage_type": "magical",
+              "scaling_stat": "mag",
+              "base_power": 0,
+              "scaling_percent": 100,
+              "percent_per_level": 5,
+              "mana_cost": 22,
+              "mana_cost_per_level": 2,
+              "cooldown": 14.0,
               "vfx_type": "debuff_aura",
-              "description_fr": "Applique une marque réactive pendant 10s.\nExplose pour 30% des dégâts de base si la cible lance un sort.",
-              "description_en": "A catalyst waiting for the right moment.\nApplies a reactive mark for 10s.\nDetonates for 30% base damage if the target casts a spell.",
+              "description_fr": "Inflige 100% MAG dégâts magiques. Applique Vulnérable (+25% dégâts subis) et -15% résistance magique pendant 8s.",
+              "description_en": "Deals 100% MAG magic damage. Applies Vulnerable (+25% damage taken) and -15% magic resist for 8s.",
               "tags": [
-                "debuff",
-                "mark",
-                "reactive"
+                "damage",
+                "vulnerable",
+                "magic_resist_down",
+                "setup"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "vulnerable",
+                  "stacks_to_apply": 5,
+                  "duration": 8.0
+                },
+                {
+                  "type": "debuff",
+                  "stat": "magic_resist_down",
+                  "stacks_to_apply": 3,
+                  "duration": 8.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "alchemist",
@@ -1570,8 +1642,8 @@
               }
             },
             {
-              "id": "skill_artisan_reactionist_detonate",
-              "name_en": "Detonate",
+              "id": "skill_artisan_reactionist_detonation",
+              "name_en": "Detonation",
               "name_fr": "Détonation",
               "tier": "advanced",
               "target": "enemies",
@@ -1579,19 +1651,21 @@
               "damage_type": "magical",
               "scaling_stat": "mag",
               "base_power": 0,
-              "scaling_percent": 350,
+              "scaling_percent": 280,
               "percent_per_level": 8,
               "detonates_marks": true,
-              "mana_cost": 24,
-              "cooldown": 18.0,
+              "mana_cost": 28,
+              "mana_cost_per_level": 3,
+              "cooldown": 16.0,
               "cast_time": 1.0,
               "vfx_type": "aoe_pulse",
-              "description_fr": "Inflige 350% MAG dégâts magiques. Incantation 1.0s.\nFait exploser toutes les marques actives sur le champ de bataille.",
-              "description_en": "The time for reaction has come.\nDeals 350% MAG magic damage. 1.0s cast.\nDetonates all active marks on the battlefield.",
+              "description_fr": "Inflige 280% MAG dégâts magiques à tous les ennemis. Détone toutes les marques actives sur le champ de bataille. Incantation 1.0s.",
+              "description_en": "Deals 280% MAG magic damage to all enemies. Detonates all active marks on the battlefield. 1.0s cast.",
               "tags": [
                 "damage",
+                "all",
                 "detonate",
-                "all"
+                "mark_consumer"
               ],
               "base_class_id": "artisan",
               "subclass_id": "alchemist",
@@ -1612,27 +1686,38 @@
               "name_fr": "Réaction en Chaîne",
               "tier": "signature",
               "target": "enemies",
-              "pattern": "chain_2",
+              "pattern": "chain_3",
               "damage_type": "magical",
               "scaling_stat": "mag",
               "base_power": 0,
-              "scaling_percent": 550,
+              "scaling_percent": 350,
               "percent_per_level": 11,
-              "chain_bounces": 2,
+              "chain_bounces": 3,
               "damage_per_bounce": 15,
               "detonates_marks": true,
-              "mana_cost": 36,
+              "mana_cost": 50,
+              "mana_cost_per_level": 4,
               "cooldown": 28.0,
-              "cast_time": 1.5,
+              "cast_time": 2.0,
               "is_signature": true,
               "vfx_type": "aoe_pulse",
-              "description_fr": "Sort signature. Inflige 550% MAG dégâts magiques rebondissant sur 3 cibles.\nChaque rebond inflige +15% dégâts.\nFait exploser toutes les marques au passage.",
-              "description_en": "Signature skill. The gears spin out of control.\nDeals 550% MAG magic damage bouncing to 3 targets.\nEach bounce deals +15% more damage.\nDetonates all marks on contact.",
+              "description_fr": "Inflige 350% MAG dégâts magiques en chaîne sur 3 cibles. +15% dégâts par rebond. Détone toutes les marques. -25% résistance magique par cible pendant 8s. Incantation 2.0s.",
+              "description_en": "Deals 350% MAG magic damage chained to 3 targets. +15% damage per bounce. Detonates all marks. -25% magic resist per target for 8s. 2.0s cast.",
               "tags": [
                 "damage",
                 "chain",
+                "detonate",
+                "magic_resist_down",
                 "escalating",
                 "signature"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "magic_resist_down",
+                  "stacks_to_apply": 5,
+                  "duration": 8.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "alchemist",
@@ -1644,7 +1729,7 @@
                 "requires_line_of_sight": true,
                 "bypasses_los": false,
                 "requires_entity_on_target_tile": false,
-                "aoe_pattern_id": "chain_2"
+                "aoe_pattern_id": "chain_3"
               }
             }
           ]
