@@ -2657,7 +2657,530 @@
             "aoe_pattern_id": "all"
           }
         }
-      ]
+      ],
+      "tier3": {
+        "intercessor": {
+          "identity": "Sacrifice specialist + self-sustain + restorative counter-attacks",
+          "signature": "skill_healer_intercessor_redemptive_strike",
+          "skills": [
+            {
+              "id": "skill_healer_intercessor_bleeding_strike",
+              "name_en": "Bleeding Strike",
+              "name_fr": "Frappe Sanglante",
+              "tier": "advanced",
+              "target": "enemy",
+              "pattern": "single",
+              "damage_type": "magical",
+              "scaling_stat": "mag",
+              "base_power": 0,
+              "scaling_percent": 130,
+              "percent_per_level": 6,
+              "mana_cost": 10,
+              "mana_cost_per_level": 1,
+              "cooldown": 5.0,
+              "vfx_type": "life_steal",
+              "description_fr": "Inflige 130% MAG dégâts magiques. Vole 30% des dégâts en HP. Applique 1 charge de Saignement (max 3).",
+              "description_en": "Deals 130% MAG magic damage. Steals 30% of damage as HP. Applies 1 Bleed stack (max 3).",
+              "tags": [
+                "damage",
+                "lifesteal",
+                "bleed",
+                "filler"
+              ],
+              "effects": [
+                {
+                  "type": "utility",
+                  "stat": "lifesteal",
+                  "value": 30
+                },
+                {
+                  "type": "debuff",
+                  "stat": "bleed",
+                  "stacks_to_apply": 1,
+                  "duration": 5.0
+                }
+              ],
+              "base_class_id": "healer",
+              "subclass_id": "martyr",
+              "tier3_id": "intercessor",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "entity",
+                "valid_target_team": "enemy",
+                "requires_line_of_sight": true,
+                "bypasses_los": false,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "single"
+              }
+            },
+            {
+              "id": "skill_healer_intercessor_martyrs_cry",
+              "name_en": "Martyr's Cry",
+              "name_fr": "Cri du Martyr",
+              "tier": "advanced",
+              "target": "enemies",
+              "pattern": "row_3",
+              "damage_type": "magical",
+              "scaling_stat": "mag",
+              "base_power": 0,
+              "scaling_percent": 150,
+              "percent_per_level": 7,
+              "mana_cost": 22,
+              "mana_cost_per_level": 2,
+              "cooldown": 12.0,
+              "vfx_type": "debuff_aura",
+              "description_fr": "Inflige 150% MAG dégâts magiques sur 3 ennemis en ligne. Provoque pendant 4s. Vole 50% des dégâts en HP.",
+              "description_en": "Deals 150% MAG magic damage to 3 enemies in a row. Taunts for 4s. Steals 50% of damage as HP.",
+              "tags": [
+                "damage",
+                "taunt",
+                "lifesteal",
+                "aoe",
+                "sacrifice"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "taunt",
+                  "duration": 4.0
+                },
+                {
+                  "type": "utility",
+                  "stat": "lifesteal",
+                  "value": 50
+                }
+              ],
+              "base_class_id": "healer",
+              "subclass_id": "martyr",
+              "tier3_id": "intercessor",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "tile",
+                "valid_target_team": "enemy",
+                "requires_line_of_sight": false,
+                "bypasses_los": false,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "row_3"
+              }
+            },
+            {
+              "id": "skill_healer_intercessor_stigma",
+              "name_en": "Stigma",
+              "name_fr": "Stigmate",
+              "tier": "advanced",
+              "target": "ally",
+              "pattern": "single",
+              "damage_type": "none",
+              "base_power": 0,
+              "mana_cost": 24,
+              "mana_cost_per_level": 3,
+              "cooldown": 14.0,
+              "vfx_type": "shield",
+              "description_fr": "Intercepte 50% des dégâts subis par un allié pendant 8s. Le lanceur reçoit +3% HP max/s pendant 8s.",
+              "description_en": "Intercepts 50% of damage taken by an ally for 8s. The caster receives +3% max HP/s for 8s.",
+              "tags": [
+                "damage_transfer",
+                "hot",
+                "sacrifice",
+                "support"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "damage_transfer",
+                  "value": 50,
+                  "duration": 8.0,
+                  "scaling": "caster_max_hp"
+                },
+                {
+                  "type": "buff",
+                  "stat": "heal_over_time",
+                  "stacks_to_apply": 3,
+                  "scaling": "max_hp",
+                  "duration": 8.0,
+                  "target": "self"
+                }
+              ],
+              "base_class_id": "healer",
+              "subclass_id": "martyr",
+              "tier3_id": "intercessor",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "entity",
+                "valid_target_team": "ally",
+                "requires_line_of_sight": true,
+                "bypasses_los": false,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "single"
+              }
+            },
+            {
+              "id": "skill_healer_intercessor_martyrs_path",
+              "name_en": "Martyr's Path",
+              "name_fr": "Voie du Martyr",
+              "tier": "advanced",
+              "target": "self",
+              "pattern": "single",
+              "damage_type": "none",
+              "base_power": 0,
+              "mana_cost": 28,
+              "mana_cost_per_level": 3,
+              "cooldown": 16.0,
+              "vfx_type": "buff_aura",
+              "description_fr": "+25% ATK, +15% réduction de dégâts et +3% HP max/s sur le lanceur pendant 10s.",
+              "description_en": "+25% ATK, +15% damage reduction and +3% max HP/s on the caster for 10s.",
+              "tags": [
+                "buff",
+                "self",
+                "atk_up",
+                "defense",
+                "hot"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "atk_up",
+                  "stacks_to_apply": 5,
+                  "duration": 10.0
+                },
+                {
+                  "type": "buff",
+                  "stat": "damage_reduction_up",
+                  "stacks_to_apply": 3,
+                  "duration": 10.0
+                },
+                {
+                  "type": "buff",
+                  "stat": "heal_over_time",
+                  "stacks_to_apply": 3,
+                  "scaling": "max_hp",
+                  "duration": 10.0
+                }
+              ],
+              "base_class_id": "healer",
+              "subclass_id": "martyr",
+              "tier3_id": "intercessor",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "self",
+                "valid_target_team": "self",
+                "requires_line_of_sight": true,
+                "bypasses_los": false,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "single"
+              }
+            },
+            {
+              "id": "skill_healer_intercessor_redemptive_strike",
+              "name_en": "Redemptive Strike",
+              "name_fr": "Frappe Rédemptrice",
+              "tier": "signature",
+              "target": "enemy",
+              "pattern": "single",
+              "damage_type": "magical",
+              "scaling_stat": "mag",
+              "base_power": 0,
+              "scaling_percent": 320,
+              "percent_per_level": 11,
+              "damage_per_missing_hp_percent": 1,
+              "max_missing_hp_bonus": 50,
+              "mana_cost": 50,
+              "mana_cost_per_level": 4,
+              "cooldown": 28.0,
+              "cast_time": 2.0,
+              "is_signature": true,
+              "vfx_type": "life_steal",
+              "description_fr": "Inflige 320% MAG dégâts magiques. +1% dégâts par 1% HP manquant du lanceur (max +50%). Applique +3% HP max/s à tous les alliés pendant 8s. Incantation 2.0s.",
+              "description_en": "Deals 320% MAG magic damage. +1% damage per 1% missing HP of the caster (max +50%). Applies +3% max HP/s to all allies for 8s. 2.0s cast.",
+              "tags": [
+                "damage",
+                "hot",
+                "missing_hp_scaling",
+                "sacrifice",
+                "signature"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "heal_over_time",
+                  "stacks_to_apply": 3,
+                  "scaling": "max_hp",
+                  "duration": 8.0,
+                  "target": "allies"
+                }
+              ],
+              "base_class_id": "healer",
+              "subclass_id": "martyr",
+              "tier3_id": "intercessor",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "entity",
+                "valid_target_team": "enemy",
+                "requires_line_of_sight": true,
+                "bypasses_los": false,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "single"
+              }
+            }
+          ]
+        },
+        "covenant": {
+          "identity": "Life link + sacrifice healing + protective shields",
+          "signature": "skill_healer_covenant_sacred_bond",
+          "skills": [
+            {
+              "id": "skill_healer_covenant_vital_touch",
+              "name_en": "Vital Touch",
+              "name_fr": "Toucher Vital",
+              "tier": "advanced",
+              "target": "ally",
+              "pattern": "single",
+              "damage_type": "none",
+              "heal_scaling_stat": "mag",
+              "heal_scaling_percent": 60,
+              "heal_scaling_per_level": 3,
+              "mana_cost": 10,
+              "mana_cost_per_level": 1,
+              "cooldown": 5.0,
+              "vfx_type": "heal",
+              "description_fr": "Soigne 60% MAG sur un allié et octroie un bouclier de 8% HP max pendant 5s.",
+              "description_en": "Heals 60% MAG on an ally and grants an 8% max HP shield for 5s.",
+              "tags": [
+                "heal",
+                "shield",
+                "support",
+                "filler"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "shield",
+                  "value": 8,
+                  "scaling": "max_hp",
+                  "duration": 5.0
+                }
+              ],
+              "base_class_id": "healer",
+              "subclass_id": "martyr",
+              "tier3_id": "covenant",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "entity",
+                "valid_target_team": "ally",
+                "requires_line_of_sight": true,
+                "bypasses_los": false,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "single"
+              }
+            },
+            {
+              "id": "skill_healer_covenant_breath_link",
+              "name_en": "Breath Link",
+              "name_fr": "Lien de Souffle",
+              "tier": "advanced",
+              "target": "ally",
+              "pattern": "single",
+              "damage_type": "none",
+              "base_power": 0,
+              "mana_cost": 22,
+              "mana_cost_per_level": 2,
+              "cooldown": 12.0,
+              "vfx_type": "shield",
+              "description_fr": "Octroie un bouclier de 15% HP max et intercepte 30% des dégâts subis par un allié pendant 8s.",
+              "description_en": "Grants a 15% max HP shield and intercepts 30% of damage taken by an ally for 8s.",
+              "tags": [
+                "shield",
+                "damage_transfer",
+                "support",
+                "link"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "shield",
+                  "value": 15,
+                  "scaling": "max_hp",
+                  "duration": 8.0
+                },
+                {
+                  "type": "buff",
+                  "stat": "damage_transfer",
+                  "value": 30,
+                  "duration": 8.0,
+                  "scaling": "caster_max_hp"
+                }
+              ],
+              "base_class_id": "healer",
+              "subclass_id": "martyr",
+              "tier3_id": "covenant",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "entity",
+                "valid_target_team": "ally",
+                "requires_line_of_sight": true,
+                "bypasses_los": false,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "single"
+              }
+            },
+            {
+              "id": "skill_healer_covenant_communion",
+              "name_en": "Communion",
+              "name_fr": "Communion",
+              "tier": "advanced",
+              "target": "allies",
+              "pattern": "row_3",
+              "damage_type": "none",
+              "base_power": 0,
+              "mana_cost": 26,
+              "mana_cost_per_level": 3,
+              "cooldown": 14.0,
+              "cast_time": 1.0,
+              "vfx_type": "shield",
+              "description_fr": "Octroie un bouclier de 18% HP max et intercepte 25% des dégâts subis par 3 alliés en ligne pendant 8s. Incantation 1.0s.",
+              "description_en": "Grants an 18% max HP shield and intercepts 25% of damage taken by 3 allies in a row for 8s. 1.0s cast.",
+              "tags": [
+                "shield",
+                "damage_transfer",
+                "aoe",
+                "support",
+                "link"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "shield",
+                  "value": 18,
+                  "scaling": "max_hp",
+                  "duration": 8.0
+                },
+                {
+                  "type": "buff",
+                  "stat": "damage_transfer",
+                  "value": 25,
+                  "duration": 8.0,
+                  "scaling": "caster_max_hp"
+                }
+              ],
+              "base_class_id": "healer",
+              "subclass_id": "martyr",
+              "tier3_id": "covenant",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "tile",
+                "valid_target_team": "ally",
+                "requires_line_of_sight": false,
+                "bypasses_los": false,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "row_3"
+              }
+            },
+            {
+              "id": "skill_healer_covenant_vow_of_sacrifice",
+              "name_en": "Vow of Sacrifice",
+              "name_fr": "Vœu de Sacrifice",
+              "tier": "advanced",
+              "target": "allies",
+              "pattern": "all",
+              "damage_type": "none",
+              "heal_scaling_stat": "mag",
+              "heal_scaling_percent": 100,
+              "heal_scaling_per_level": 5,
+              "sacrifice_hp_percent": 25,
+              "mana_cost": 28,
+              "mana_cost_per_level": 3,
+              "cooldown": 18.0,
+              "vfx_type": "heal",
+              "description_fr": "Le lanceur sacrifie 25% de ses HP. Soigne 100% MAG et octroie un bouclier de 20% HP max à tous les alliés pendant 8s.",
+              "description_en": "The caster sacrifices 25% HP. Heals 100% MAG and grants a 20% max HP shield to all allies for 8s.",
+              "tags": [
+                "heal",
+                "shield",
+                "all",
+                "sacrifice",
+                "support"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "shield",
+                  "value": 20,
+                  "scaling": "max_hp",
+                  "duration": 8.0
+                }
+              ],
+              "base_class_id": "healer",
+              "subclass_id": "martyr",
+              "tier3_id": "covenant",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "tile",
+                "valid_target_team": "ally",
+                "requires_line_of_sight": false,
+                "bypasses_los": false,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "all"
+              }
+            },
+            {
+              "id": "skill_healer_covenant_sacred_bond",
+              "name_en": "Sacred Bond",
+              "name_fr": "Lien Sacré",
+              "tier": "signature",
+              "target": "allies",
+              "pattern": "all",
+              "damage_type": "none",
+              "heal_scaling_stat": "mag",
+              "heal_scaling_percent": 200,
+              "heal_scaling_per_level": 8,
+              "mana_cost": 50,
+              "mana_cost_per_level": 4,
+              "cooldown": 30.0,
+              "cast_time": 2.5,
+              "is_signature": true,
+              "vfx_type": "shield",
+              "description_fr": "Soigne 200% MAG à tous les alliés. Octroie un bouclier de 25% HP max et intercepte 35% des dégâts subis par chaque allié pendant 8s. Incantation 2.5s.",
+              "description_en": "Heals 200% MAG to all allies. Grants a 25% max HP shield and intercepts 35% of damage taken by each ally for 8s. 2.5s cast.",
+              "tags": [
+                "heal",
+                "shield",
+                "damage_transfer",
+                "all",
+                "signature",
+                "link"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "shield",
+                  "value": 25,
+                  "scaling": "max_hp",
+                  "duration": 8.0
+                },
+                {
+                  "type": "buff",
+                  "stat": "damage_transfer",
+                  "value": 35,
+                  "duration": 8.0,
+                  "scaling": "caster_max_hp"
+                }
+              ],
+              "base_class_id": "healer",
+              "subclass_id": "martyr",
+              "tier3_id": "covenant",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "tile",
+                "valid_target_team": "ally",
+                "requires_line_of_sight": false,
+                "bypasses_los": false,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "all"
+              }
+            }
+          ]
+        }
+      }
     }
   }
 }
