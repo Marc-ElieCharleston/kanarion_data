@@ -2007,23 +2007,38 @@
             {
               "id": "skill_artisan_battle_cook_power_dish",
               "name_en": "Power Dish",
-              "name_fr": "Plat de Puissance",
+              "name_fr": "Plat de Force",
               "tier": "advanced",
               "target": "ally",
               "pattern": "single",
               "damage_type": "none",
-              "secondary_buff": "crit_chance_up",
-              "secondary_buff_value": 15,
-              "secondary_buff_duration": 12.0,
-              "mana_cost": 18,
-              "cooldown": 14.0,
+              "base_power": 0,
+              "mana_cost": 10,
+              "mana_cost_per_level": 1,
+              "cooldown": 5.0,
               "vfx_type": "buff_aura",
-              "description_fr": "Confère +30% ATK et +15% chances de critique à un allié pendant 12s.",
-              "description_en": "A secret recipe that multiplies strength.\nGrants +30% ATK and +15% critical chance to an ally for 12s.",
+              "description_fr": "+15% ATK et +10% chance de critique sur un allié pendant 10s.",
+              "description_en": "+15% ATK and +10% crit chance on an ally for 10s.",
               "tags": [
                 "buff",
-                "attack",
-                "crit"
+                "support",
+                "atk_up",
+                "crit",
+                "filler"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "atk_up",
+                  "stacks_to_apply": 3,
+                  "duration": 10.0
+                },
+                {
+                  "type": "buff",
+                  "stat": "crit_chance_up",
+                  "stacks_to_apply": 2,
+                  "duration": 10.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "chef",
@@ -2036,15 +2051,7 @@
                 "bypasses_los": false,
                 "requires_entity_on_target_tile": false,
                 "aoe_pattern_id": "single"
-              },
-              "effects": [
-                {
-                  "type": "buff",
-                  "stat": "atk_up",
-                  "stacks_to_apply": 5,
-                  "duration": 12.0
-                }
-              ]
+              }
             },
             {
               "id": "skill_artisan_battle_cook_steady_course",
@@ -2054,20 +2061,26 @@
               "target": "allies",
               "pattern": "row_3",
               "damage_type": "none",
-              "hot_base": 12,
-              "hot_scaling_stat": "mag",
-              "hot_scaling_percent": 25,
-              "hot_duration": 12.0,
+              "base_power": 0,
               "mana_cost": 22,
-              "cooldown": 16.0,
+              "mana_cost_per_level": 2,
+              "cooldown": 14.0,
               "vfx_type": "regeneration",
-              "description_fr": "Applique un soin continu de 12 (+25% MAG) par seconde à 3 alliés en ligne pendant 12s.",
-              "description_en": "A dish simmered with patience.\nApplies a heal over time of 12 (+25% MAG) per second to 3 allies in a row for 12s.",
+              "description_fr": "Applique +3% HP max/s à 3 alliés en ligne pendant 10s.",
+              "description_en": "Applies +3% max HP/s to 3 allies in a row for 10s.",
               "tags": [
-                "heal",
                 "hot",
-                "aoe",
-                "pattern:row_3"
+                "support",
+                "aoe"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "heal_over_time",
+                  "stacks_to_apply": 3,
+                  "scaling": "max_hp",
+                  "duration": 10.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "chef",
@@ -2090,20 +2103,27 @@
               "target": "allies",
               "pattern": "col_2",
               "damage_type": "none",
-              "base_heal": 25,
               "heal_scaling_stat": "mag",
-              "heal_scaling_percent": 35,
-              "power_per_level": 4,
-              "dispel_debuffs": true,
-              "mana_cost": 18,
+              "heal_scaling_percent": 100,
+              "heal_scaling_per_level": 5,
+              "mana_cost": 22,
+              "mana_cost_per_level": 2,
               "cooldown": 12.0,
               "vfx_type": "heal",
-              "description_fr": "Soigne de 25 (+35% MAG) et purifie les altérations négatives de la cible et d'1 allié proche.",
-              "description_en": "Good spices drive out ailments.\nHeals for 25 (+35% MAG) and purifies negative effects from target and 1 nearby ally.",
+              "description_fr": "Soigne 100% MAG sur 2 alliés en colonne. Retire 2 altérations par cible.",
+              "description_en": "Heals 100% MAG on 2 allies in a column. Cleanses 2 debuffs per target.",
               "tags": [
-                "dispel",
                 "heal",
-                "aoe"
+                "cleanse",
+                "aoe",
+                "support"
+              ],
+              "effects": [
+                {
+                  "type": "utility",
+                  "stat": "cleanse",
+                  "value": 2
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "chef",
@@ -2126,19 +2146,24 @@
               "target": "ally",
               "pattern": "single",
               "damage_type": "none",
-              "base_heal": 80,
               "heal_scaling_stat": "mag",
-              "heal_scaling_percent": 60,
-              "power_per_level": 5,
-              "hp_threshold": 30,
-              "mana_cost": 28,
-              "cooldown": 20.0,
+              "heal_scaling_percent": 150,
+              "heal_scaling_per_level": 7,
+              "mana_cost": 26,
+              "mana_cost_per_level": 3,
+              "cooldown": 18.0,
+              "conditional_bonus": {
+                "condition": "target_below_hp",
+                "hp_threshold": 40,
+                "heal_bonus_percent": 100
+              },
               "vfx_type": "heal",
-              "description_fr": "Soigne un allié de 80 (+60% MAG).\nUtilisable uniquement si l'allié est en dessous de 30% HP.",
-              "description_en": "Never leave the table hungry.\nHeals an ally for 80 (+60% MAG).\nCan only be used if the ally is below 30% HP.",
+              "description_fr": "Soigne 150% MAG sur un allié. +100% soin si la cible est sous 40% HP (=300% MAG total).",
+              "description_en": "Heals 150% MAG on an ally. +100% heal if target is below 40% HP (=300% MAG total).",
               "tags": [
                 "heal",
-                "emergency"
+                "emergency",
+                "single"
               ],
               "base_class_id": "artisan",
               "subclass_id": "chef",
@@ -2161,25 +2186,38 @@
               "target": "allies",
               "pattern": "rect_2x3",
               "damage_type": "none",
-              "base_heal": 60,
               "heal_scaling_stat": "mag",
-              "heal_scaling_percent": 70,
-              "power_per_level": 7,
-              "dispel_debuffs": true,
-              "mana_cost": 42,
-              "cooldown": 26.0,
+              "heal_scaling_percent": 200,
+              "heal_scaling_per_level": 8,
+              "mana_cost": 50,
+              "mana_cost_per_level": 4,
+              "cooldown": 28.0,
               "cast_time": 2.0,
               "is_signature": true,
               "vfx_type": "heal",
-              "description_fr": "Sort signature. Soigne de 60 (+70% MAG) tous les alliés en zone 2x3.\nConfère +25% vitesse d'attaque pendant 8s.\nPurifie toutes les altérations négatives.",
-              "description_en": "Signature skill. The service is impeccable.\nHeals all allies in a 2x3 area for 60 (+70% MAG).\nGrants +25% attack speed for 8s.\nPurifies all negative effects.",
+              "description_fr": "Soigne 200% MAG sur les alliés en zone 2x3. +25% vitesse d'attaque pendant 10s. Retire 3 altérations par cible. Incantation 2.0s.",
+              "description_en": "Heals 200% MAG on allies in a 2x3 area. +25% attack speed for 10s. Cleanses 3 debuffs per target. 2.0s cast.",
               "tags": [
                 "heal",
                 "buff",
-                "dispel",
+                "atk_speed",
+                "cleanse",
                 "aoe",
                 "signature",
-                "pattern:rect_2x3"
+                "support"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "atk_speed_up",
+                  "stacks_to_apply": 5,
+                  "duration": 10.0
+                },
+                {
+                  "type": "utility",
+                  "stat": "cleanse",
+                  "value": 3
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "chef",
@@ -2192,15 +2230,7 @@
                 "bypasses_los": false,
                 "requires_entity_on_target_tile": false,
                 "aoe_pattern_id": "rect_2x3"
-              },
-              "effects": [
-                {
-                  "type": "buff",
-                  "stat": "atk_speed_up",
-                  "stacks_to_apply": 5,
-                  "duration": 8.0
-                }
-              ]
+              }
             }
           ]
         },
@@ -2218,20 +2248,26 @@
               "damage_type": "magical",
               "scaling_stat": "mag",
               "base_power": 0,
-              "scaling_percent": 300,
-              "percent_per_level": 8,
-              "applies_burn": true,
-              "burn_stacks": 2,
-              "burn_duration": 6.0,
-              "mana_cost": 16,
-              "cooldown": 10.0,
+              "scaling_percent": 150,
+              "percent_per_level": 6,
+              "mana_cost": 10,
+              "mana_cost_per_level": 1,
+              "cooldown": 5.0,
               "vfx_type": "melee_slash",
-              "description_fr": "Inflige 300% MAG dégâts magiques à une cible.\nApplique 2 charges de brûlure pendant 6s.",
-              "description_en": "A blade seasoned with crushed pepper.\nDeals 300% MAG magic damage to one target.\nApplies 2 burn stacks for 6s.",
+              "description_fr": "Inflige 150% MAG dégâts magiques. Applique 2 charges de Brûlure (max 3).",
+              "description_en": "Deals 150% MAG magic damage. Applies 2 Burn stacks (max 3).",
               "tags": [
                 "damage",
                 "burn",
-                "dot"
+                "filler"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "burn",
+                  "stacks_to_apply": 2,
+                  "duration": 6.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "chef",
@@ -2256,21 +2292,26 @@
               "damage_type": "magical",
               "scaling_stat": "mag",
               "base_power": 0,
-              "scaling_percent": 280,
-              "percent_per_level": 8,
-              "applies_burn": true,
-              "burn_stacks": 2,
-              "burn_duration": 6.0,
+              "scaling_percent": 230,
+              "percent_per_level": 9,
               "mana_cost": 22,
-              "cooldown": 14.0,
+              "mana_cost_per_level": 2,
+              "cooldown": 12.0,
               "vfx_type": "aoe_pulse",
-              "description_fr": "Inflige 280% MAG dégâts magiques à 3 ennemis en ligne.\nApplique 2 charges de brûlure pendant 6s.",
-              "description_en": "Cooking aromas invade the field.\nDeals 280% MAG magic damage to 3 enemies in a row.\nApplies 2 burn stacks for 6s.",
+              "description_fr": "Inflige 230% MAG dégâts magiques sur 3 ennemis en ligne. Applique 2 charges de Brûlure (max 3) par cible.",
+              "description_en": "Deals 230% MAG magic damage to 3 enemies in a row. Applies 2 Burn stacks (max 3) per target.",
               "tags": [
                 "damage",
-                "burn",
                 "aoe",
-                "pattern:row_3"
+                "burn"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "burn",
+                  "stacks_to_apply": 2,
+                  "duration": 6.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "chef",
@@ -2295,17 +2336,32 @@
               "damage_type": "magical",
               "scaling_stat": "mag",
               "base_power": 0,
-              "scaling_percent": 380,
+              "scaling_percent": 200,
               "percent_per_level": 8,
-              "mana_cost": 20,
+              "mana_cost": 22,
+              "mana_cost_per_level": 2,
               "cooldown": 14.0,
-              "cast_time": 1.0,
               "vfx_type": "projectile",
-              "description_fr": "Inflige 380% MAG dégâts magiques. Incantation 1.0s.\nÉtourdit la cible pendant 1.5s.",
-              "description_en": "Concentrated pepper shot to the face.\nDeals 380% MAG magic damage. 1.0s cast.\nStuns the target for 1.5s.",
+              "description_fr": "Inflige 200% MAG dégâts magiques. Étourdissement 2s. Applique 1 charge de Brûlure (max 3).",
+              "description_en": "Deals 200% MAG magic damage. Stuns for 2s. Applies 1 Burn stack (max 3).",
               "tags": [
                 "damage",
-                "stun"
+                "stun",
+                "burn",
+                "cc"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "stun",
+                  "duration": 2.0
+                },
+                {
+                  "type": "debuff",
+                  "stat": "burn",
+                  "stacks_to_apply": 1,
+                  "duration": 6.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "chef",
@@ -2318,14 +2374,7 @@
                 "bypasses_los": false,
                 "requires_entity_on_target_tile": false,
                 "aoe_pattern_id": "single"
-              },
-              "effects": [
-                {
-                  "type": "buff",
-                  "stat": "stun",
-                  "duration": 1.5
-                }
-              ]
+              }
             },
             {
               "id": "skill_artisan_spice_master_overheat",
@@ -2334,15 +2383,35 @@
               "tier": "advanced",
               "target": "enemy",
               "pattern": "single",
-              "damage_type": "none",
-              "mana_cost": 18,
+              "damage_type": "magical",
+              "scaling_stat": "mag",
+              "base_power": 0,
+              "scaling_percent": 130,
+              "percent_per_level": 6,
+              "mana_cost": 26,
+              "mana_cost_per_level": 3,
               "cooldown": 14.0,
               "vfx_type": "debuff_aura",
-              "description_fr": "Surchauffe la cible, la rendant vulnérable.\nAugmente tous les dégâts reçus de 50% pendant 8s.",
-              "description_en": "Temperature rises beyond the critical threshold.\nOverheats the target, leaving it vulnerable.\nIncreases all damage taken by 50% for 8s.",
+              "description_fr": "Inflige 130% MAG dégâts magiques. Applique Vulnérable (+25% dégâts subis) pendant 8s. Applique 3 charges de Brûlure (max 3).",
+              "description_en": "Deals 130% MAG magic damage. Applies Vulnerable (+25% damage taken) for 8s. Applies 3 Burn stacks (max 3).",
               "tags": [
-                "debuff",
-                "vulnerability"
+                "damage",
+                "vulnerable",
+                "burn"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "vulnerable",
+                  "stacks_to_apply": 5,
+                  "duration": 8.0
+                },
+                {
+                  "type": "debuff",
+                  "stat": "burn",
+                  "stacks_to_apply": 3,
+                  "duration": 6.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "chef",
@@ -2355,15 +2424,7 @@
                 "bypasses_los": false,
                 "requires_entity_on_target_tile": false,
                 "aoe_pattern_id": "single"
-              },
-              "effects": [
-                {
-                  "type": "debuff",
-                  "stat": "vulnerable",
-                  "stacks_to_apply": 5,
-                  "duration": 8.0
-                }
-              ]
+              }
             },
             {
               "id": "skill_artisan_spice_master_inferno_seasoning",
@@ -2375,25 +2436,32 @@
               "damage_type": "magical",
               "scaling_stat": "mag",
               "base_power": 0,
-              "scaling_percent": 600,
+              "scaling_percent": 350,
               "percent_per_level": 11,
               "detonates_burn": true,
-              "detonate_damage_per_stack": 20,
-              "detonate_consumes_stacks": true,
-              "mana_cost": 38,
+              "detonate_damage_per_stack": 30,
+              "mana_cost": 50,
+              "mana_cost_per_level": 4,
               "cooldown": 28.0,
               "cast_time": 1.5,
               "is_signature": true,
               "vfx_type": "aoe_pulse",
-              "description_fr": "Sort signature. Inflige 600% MAG dégâts magiques en zone 2x2.\nFait exploser toutes les charges de brûlure : +20 dégâts par charge consommée.",
-              "description_en": "Signature skill. The main course is served.\nDeals 600% MAG magic damage in a 2x2 area.\nDetonates all burn stacks: +20 damage per stack consumed.",
+              "description_fr": "Inflige 350% MAG dégâts magiques en zone 2x2. Applique 3 charges de Brûlure (max 3) par cible. Détone toutes les charges de Brûlure : +30 dégâts par charge consommée. Incantation 1.5s.",
+              "description_en": "Deals 350% MAG magic damage in a 2x2 area. Applies 3 Burn stacks (max 3) per target. Detonates all Burn stacks: +30 damage per stack consumed. 1.5s cast.",
               "tags": [
                 "damage",
-                "fire",
-                "detonate",
                 "aoe",
-                "signature",
-                "pattern:rect_2x2"
+                "burn",
+                "detonate",
+                "signature"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "burn",
+                  "stacks_to_apply": 3,
+                  "duration": 6.0
+                }
               ],
               "base_class_id": "artisan",
               "subclass_id": "chef",
