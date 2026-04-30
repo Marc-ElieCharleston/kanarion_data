@@ -51,7 +51,7 @@ ALLOWED_METADATA_FIELDS = {
     # LoS bypass
     "ignore_los",
     # Multi-hit
-    "hit_count", "each_hit_can_crit",
+    "hit_count", "each_hit_can_crit", "damage_per_hit_bonus",
     # Execute
     "execute_threshold", "execute_bonus_percent",
     # Penetration
@@ -108,6 +108,8 @@ ALLOWED_METADATA_FIELDS = {
     # Detonate (Alchemist)
     "detonates_toxin", "detonate_consumes_stacks",
     "detonate_damage_base", "detonate_damage_per_stack",
+    # Reaver (consumes bleed stacks for bonus damage)
+    "consumes_bleed_stacks", "bleed_consume_damage_per_stack",
     # Stun chance (per-skill)
     "stun_chance", "stun_chance_per_level", "stun_duration",
     # Disarm chance
