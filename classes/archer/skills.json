@@ -2004,7 +2004,493 @@
             "aoe_pattern_id": "bounce_all"
           }
         }
-      ]
+      ],
+      "tier3": {
+        "bouncer": {
+          "identity": "Ricocheting projectiles + multi-target chains + spreading damage",
+          "signature": "skill_archer_bouncer_pinball_fury",
+          "skills": [
+            {
+              "id": "skill_archer_bouncer_angled_shot",
+              "name_en": "Angled Shot",
+              "name_fr": "Tir Anglé",
+              "tier": "advanced",
+              "target": "enemies",
+              "pattern": "chain_2",
+              "damage_type": "physical",
+              "scaling_stat": "atk",
+              "base_power": 0,
+              "scaling_percent": 120,
+              "percent_per_level": 5,
+              "chain_bounces": 1,
+              "mana_cost": 8,
+              "mana_cost_per_level": 1,
+              "cooldown": 4.0,
+              "vfx_type": "ricochet",
+              "description_fr": "Inflige 120% ATK dégâts physiques. 1 rebond sur une autre cible. Ignore la ligne de vue.",
+              "description_en": "Deals 120% ATK physical damage. 1 bounce to another target. Ignores line of sight.",
+              "tags": [
+                "damage",
+                "ranged",
+                "bounce",
+                "filler"
+              ],
+              "base_class_id": "archer",
+              "subclass_id": "ballmaster",
+              "tier3_id": "bouncer",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "tile",
+                "valid_target_team": "enemy",
+                "requires_line_of_sight": true,
+                "bypasses_los": true,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "chain_2"
+              }
+            },
+            {
+              "id": "skill_archer_bouncer_triangulation",
+              "name_en": "Triangulation",
+              "name_fr": "Triangulation",
+              "tier": "advanced",
+              "target": "enemies",
+              "pattern": "chain_3",
+              "damage_type": "physical",
+              "scaling_stat": "atk",
+              "base_power": 0,
+              "scaling_percent": 130,
+              "percent_per_level": 6,
+              "chain_bounces": 3,
+              "mana_cost": 18,
+              "mana_cost_per_level": 2,
+              "cooldown": 10.0,
+              "vfx_type": "ricochet",
+              "description_fr": "Inflige 130% ATK dégâts physiques en chaîne sur 3 cibles. Applique 1 charge de Saignement (max 3) par cible. Ignore la ligne de vue.",
+              "description_en": "Deals 130% ATK physical damage chained to 3 targets. Applies 1 Bleed stack (max 3) per target. Ignores line of sight.",
+              "tags": [
+                "damage",
+                "aoe",
+                "bounce",
+                "chain",
+                "bleed"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "bleed",
+                  "stacks_to_apply": 1,
+                  "duration": 5.0
+                }
+              ],
+              "base_class_id": "archer",
+              "subclass_id": "ballmaster",
+              "tier3_id": "bouncer",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "tile",
+                "valid_target_team": "enemy",
+                "requires_line_of_sight": true,
+                "bypasses_los": true,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "chain_3"
+              }
+            },
+            {
+              "id": "skill_archer_bouncer_precise_calculation",
+              "name_en": "Precise Calculation",
+              "name_fr": "Calcul Précis",
+              "tier": "advanced",
+              "target": "self",
+              "pattern": "single",
+              "damage_type": "none",
+              "base_power": 0,
+              "mana_cost": 22,
+              "mana_cost_per_level": 2,
+              "cooldown": 16.0,
+              "vfx_type": "buff_aura",
+              "description_fr": "+25% précision et +15% chance de critique sur le lanceur pendant 10s.",
+              "description_en": "+25% accuracy and +15% crit chance on the caster for 10s.",
+              "tags": [
+                "buff",
+                "self",
+                "accuracy",
+                "crit"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "accuracy_up",
+                  "stacks_to_apply": 5,
+                  "duration": 10.0
+                },
+                {
+                  "type": "buff",
+                  "stat": "crit_chance_up",
+                  "stacks_to_apply": 3,
+                  "duration": 10.0
+                }
+              ],
+              "base_class_id": "archer",
+              "subclass_id": "ballmaster",
+              "tier3_id": "bouncer",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "self",
+                "valid_target_team": "self",
+                "requires_line_of_sight": true,
+                "bypasses_los": false,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "single"
+              }
+            },
+            {
+              "id": "skill_archer_bouncer_carom",
+              "name_en": "Carom",
+              "name_fr": "Carambole",
+              "tier": "advanced",
+              "target": "enemies",
+              "pattern": "chain_4",
+              "damage_type": "physical",
+              "scaling_stat": "atk",
+              "base_power": 0,
+              "scaling_percent": 110,
+              "percent_per_level": 6,
+              "chain_bounces": 4,
+              "can_bounce_same_target": true,
+              "damage_per_bounce": 8,
+              "mana_cost": 26,
+              "mana_cost_per_level": 3,
+              "cooldown": 14.0,
+              "vfx_type": "ricochet",
+              "description_fr": "Inflige 110% ATK dégâts physiques en 4 rebonds, peut retoucher la même cible. +8% dégâts par rebond. Applique 1 charge de Saignement (max 3) par impact. Ignore la ligne de vue.",
+              "description_en": "Deals 110% ATK physical damage in 4 bounces, can rehit same target. +8% damage per bounce. Applies 1 Bleed stack (max 3) per hit. Ignores line of sight.",
+              "tags": [
+                "damage",
+                "bounce",
+                "escalating",
+                "bleed",
+                "ranged"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "bleed",
+                  "stacks_to_apply": 1,
+                  "duration": 5.0
+                }
+              ],
+              "base_class_id": "archer",
+              "subclass_id": "ballmaster",
+              "tier3_id": "bouncer",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "tile",
+                "valid_target_team": "enemy",
+                "requires_line_of_sight": true,
+                "bypasses_los": true,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "chain_4"
+              }
+            },
+            {
+              "id": "skill_archer_bouncer_pinball_fury",
+              "name_en": "Pinball Fury",
+              "name_fr": "Furie de Flipper",
+              "tier": "signature",
+              "target": "enemies",
+              "pattern": "bounce_all",
+              "damage_type": "physical",
+              "scaling_stat": "atk",
+              "base_power": 0,
+              "scaling_percent": 150,
+              "percent_per_level": 9,
+              "chain_bounces": 12,
+              "can_bounce_same_target": true,
+              "damage_per_bounce": 10,
+              "mana_cost": 50,
+              "mana_cost_per_level": 4,
+              "cooldown": 28.0,
+              "cast_time": 2.0,
+              "is_signature": true,
+              "vfx_type": "ricochet",
+              "description_fr": "Inflige 150% ATK dégâts physiques en 12 rebonds, peut retoucher. +10% dégâts par rebond. Applique 1 charge de Saignement (max 3) par impact. Incantation 2.0s. Ignore la ligne de vue.",
+              "description_en": "Deals 150% ATK physical damage in 12 bounces, can rehit. +10% damage per bounce. Applies 1 Bleed stack (max 3) per hit. 2.0s cast. Ignores line of sight.",
+              "tags": [
+                "damage",
+                "bounce",
+                "escalating",
+                "bleed",
+                "signature",
+                "ranged"
+              ],
+              "effects": [
+                {
+                  "type": "debuff",
+                  "stat": "bleed",
+                  "stacks_to_apply": 1,
+                  "duration": 5.0
+                }
+              ],
+              "base_class_id": "archer",
+              "subclass_id": "ballmaster",
+              "tier3_id": "bouncer",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "tile",
+                "valid_target_team": "enemy",
+                "requires_line_of_sight": true,
+                "bypasses_los": true,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "bounce_all"
+              }
+            }
+          ]
+        },
+        "striker": {
+          "identity": "Rapid combos + trick shots + speed burst + multi-hit",
+          "signature": "skill_archer_striker_ultimate_combo",
+          "skills": [
+            {
+              "id": "skill_archer_striker_quick_shot",
+              "name_en": "Quick Shot",
+              "name_fr": "Tir Vif",
+              "tier": "advanced",
+              "target": "enemy",
+              "pattern": "single",
+              "damage_type": "physical",
+              "scaling_stat": "atk",
+              "base_power": 0,
+              "scaling_percent": 100,
+              "percent_per_level": 4,
+              "hit_count": 2,
+              "each_hit_can_crit": true,
+              "mana_cost": 8,
+              "mana_cost_per_level": 1,
+              "cooldown": 4.0,
+              "vfx_type": "projectile",
+              "description_fr": "Inflige 100% ATK dégâts physiques en 2 frappes. Chaque frappe peut critiquer.",
+              "description_en": "Deals 100% ATK physical damage in 2 hits. Each hit can crit.",
+              "tags": [
+                "damage",
+                "ranged",
+                "multi_hit",
+                "filler"
+              ],
+              "base_class_id": "archer",
+              "subclass_id": "ballmaster",
+              "tier3_id": "striker",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "entity",
+                "valid_target_team": "enemy",
+                "requires_line_of_sight": true,
+                "bypasses_los": false,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "single"
+              }
+            },
+            {
+              "id": "skill_archer_striker_rapid_volley",
+              "name_en": "Rapid Volley",
+              "name_fr": "Volée Rapide",
+              "tier": "advanced",
+              "target": "enemies",
+              "pattern": "row_3",
+              "damage_type": "physical",
+              "scaling_stat": "atk",
+              "base_power": 0,
+              "scaling_percent": 80,
+              "percent_per_level": 4,
+              "hit_count": 2,
+              "each_hit_can_crit": true,
+              "mana_cost": 18,
+              "mana_cost_per_level": 2,
+              "cooldown": 10.0,
+              "vfx_type": "projectile",
+              "description_fr": "Inflige 80% ATK dégâts physiques en 2 frappes sur 3 ennemis en ligne. Chaque frappe peut critiquer. +10% vitesse d'attaque sur le lanceur pendant 5s.",
+              "description_en": "Deals 80% ATK physical damage in 2 hits to 3 enemies in a row. Each hit can crit. +10% attack speed on the caster for 5s.",
+              "tags": [
+                "damage",
+                "aoe",
+                "multi_hit",
+                "atk_speed",
+                "ranged"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "atk_speed_up",
+                  "stacks_to_apply": 2,
+                  "duration": 5.0,
+                  "target": "self"
+                }
+              ],
+              "base_class_id": "archer",
+              "subclass_id": "ballmaster",
+              "tier3_id": "striker",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "tile",
+                "valid_target_team": "enemy",
+                "requires_line_of_sight": false,
+                "bypasses_los": false,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "row_3"
+              }
+            },
+            {
+              "id": "skill_archer_striker_frantic_cadence",
+              "name_en": "Frantic Cadence",
+              "name_fr": "Cadence Frénétique",
+              "tier": "advanced",
+              "target": "self",
+              "pattern": "single",
+              "damage_type": "none",
+              "base_power": 0,
+              "double_attack_chance": 15,
+              "mana_cost": 22,
+              "mana_cost_per_level": 2,
+              "cooldown": 16.0,
+              "vfx_type": "buff_aura",
+              "description_fr": "+25% vitesse d'attaque, +15% chance de critique et +15% chance de double frappe sur le lanceur pendant 10s.",
+              "description_en": "+25% attack speed, +15% crit chance and +15% double attack chance on the caster for 10s.",
+              "tags": [
+                "buff",
+                "self",
+                "atk_speed",
+                "crit",
+                "double_attack"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "atk_speed_up",
+                  "stacks_to_apply": 5,
+                  "duration": 10.0
+                },
+                {
+                  "type": "buff",
+                  "stat": "crit_chance_up",
+                  "stacks_to_apply": 3,
+                  "duration": 10.0
+                },
+                {
+                  "type": "buff",
+                  "stat": "double_attack_chance",
+                  "value": 15,
+                  "duration": 10.0
+                }
+              ],
+              "base_class_id": "archer",
+              "subclass_id": "ballmaster",
+              "tier3_id": "striker",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "self",
+                "valid_target_team": "self",
+                "requires_line_of_sight": true,
+                "bypasses_los": false,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "single"
+              }
+            },
+            {
+              "id": "skill_archer_striker_deadly_combo",
+              "name_en": "Deadly Combo",
+              "name_fr": "Combo Mortel",
+              "tier": "advanced",
+              "target": "enemy",
+              "pattern": "single",
+              "damage_type": "physical",
+              "scaling_stat": "atk",
+              "base_power": 0,
+              "scaling_percent": 75,
+              "percent_per_level": 4,
+              "hit_count": 4,
+              "damage_per_hit_bonus": 8,
+              "each_hit_can_crit": true,
+              "mana_cost": 26,
+              "mana_cost_per_level": 3,
+              "cooldown": 12.0,
+              "vfx_type": "projectile",
+              "description_fr": "Inflige 75% ATK dégâts physiques en 4 frappes. +8% dégâts par frappe successive. Chaque frappe peut critiquer.",
+              "description_en": "Deals 75% ATK physical damage in 4 hits. +8% damage per successive hit. Each hit can crit.",
+              "tags": [
+                "damage",
+                "multi_hit",
+                "escalating",
+                "ranged"
+              ],
+              "base_class_id": "archer",
+              "subclass_id": "ballmaster",
+              "tier3_id": "striker",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "entity",
+                "valid_target_team": "enemy",
+                "requires_line_of_sight": true,
+                "bypasses_los": false,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "single"
+              }
+            },
+            {
+              "id": "skill_archer_striker_ultimate_combo",
+              "name_en": "Ultimate Combo",
+              "name_fr": "Combo Ultime",
+              "tier": "signature",
+              "target": "enemies",
+              "pattern": "single_plus_adjacent_2",
+              "damage_type": "physical",
+              "scaling_stat": "atk",
+              "base_power": 0,
+              "scaling_percent": 100,
+              "percent_per_level": 6,
+              "hit_count": 4,
+              "damage_per_hit_bonus": 10,
+              "each_hit_can_crit": true,
+              "mana_cost": 50,
+              "mana_cost_per_level": 4,
+              "cooldown": 28.0,
+              "cast_time": 2.0,
+              "is_signature": true,
+              "vfx_type": "projectile",
+              "description_fr": "Inflige 100% ATK dégâts physiques en 4 frappes par cible sur la cible et 2 ennemis adjacents. +10% dégâts par frappe successive. Chaque frappe peut critiquer. +25% vitesse d'attaque sur le lanceur pendant 8s. Incantation 2.0s.",
+              "description_en": "Deals 100% ATK physical damage in 4 hits per target on the target and 2 adjacent enemies. +10% damage per successive hit. Each hit can crit. +25% attack speed on the caster for 8s. 2.0s cast.",
+              "tags": [
+                "damage",
+                "aoe",
+                "multi_hit",
+                "escalating",
+                "atk_speed",
+                "signature",
+                "ranged"
+              ],
+              "effects": [
+                {
+                  "type": "buff",
+                  "stat": "atk_speed_up",
+                  "stacks_to_apply": 5,
+                  "duration": 8.0,
+                  "target": "self"
+                }
+              ],
+              "base_class_id": "archer",
+              "subclass_id": "ballmaster",
+              "tier3_id": "striker",
+              "source_scope": "TIER3",
+              "targeting": {
+                "selection_mode": "tile",
+                "valid_target_team": "enemy",
+                "requires_line_of_sight": false,
+                "bypasses_los": false,
+                "requires_entity_on_target_tile": false,
+                "aoe_pattern_id": "single_plus_adjacent_2"
+              }
+            }
+          ]
+        }
+      }
     },
     "gunslinger": {
       "identity": "Rapid fire specialist - Speed + Interrupts + Suppression",
