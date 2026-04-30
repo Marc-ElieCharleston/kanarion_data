@@ -1,26 +1,122 @@
 {
   "_meta": {
-    "version": "3.4",
-    "last_updated": "2026-02-27",
-    "description": "Tous les buffs/debuffs/DoTs du jeu",
+    "version": "4.0",
+    "last_updated": "2026-04-30",
+    "description": "Tous les buffs/debuffs/DoTs du jeu. Option A canonique (CTO 2026-04-30): pour les stat_modifier stackables generiques, 1 effect_id = 1 icone, 1 stack = value_per_stack fixe. Skills appliquent stacks_to_apply (1, 2, 3...), pas de value/value_override arbitraire.",
     "damage_types": {
-      "physical": "Dégâts physiques (ATK-based)",
-      "magical": "Dégâts magiques (MAG-based)",
-      "_note": "Pas d'éléments (feu/glace/etc). Visuels cosmétiques uniquement."
+      "physical": "Degats physiques (ATK-based)",
+      "magical": "Degats magiques (MAG-based)",
+      "_note": "Pas d'elements (feu/glace/etc). Visuels cosmetiques uniquement."
     },
     "stacking_system": {
       "refresh": "Reapplying refreshes duration only",
-      "stackable": "10% per stack, max 10 stacks = 100%",
-      "unique": "Only one instance per target"
+      "stackable": "1 stack = value_per_stack fixe (defini par effet, voir canonical_grid). Skills passent stacks_to_apply, jamais value/value_override.",
+      "unique": "Only one instance per target",
+      "overflow_behavior": "Si stacks_to_apply + current_stacks > max_stacks, on applique ce qu'on peut jusqu'au cap, les stacks excedentaires sont perdus. Duree refresh selon refresh_on_apply."
+    },
+    "option_a_contract": {
+      "rule": "Pour tout effect_id liste dans canonical_grid (stackable standard), les skills DOIVENT utiliser stacks_to_apply (entier positif <= max_stacks). value et value_override sont INTERDITS sur ces effets.",
+      "rationale": "Evite l'ambiguite ou la value de la 1ere application est gardee et les suivantes ne contribuent qu'en stacks. Cf. status_manager.cpp:1232-1280. CTO 2026-04-30: pas de dual-mode legacy, on casse maintenant pour avoir un contrat propre.",
+      "enforcement": {
+        "ci": "validate.yml fail si une skill utilise value/value_override sur un effet liste dans canonical_grid",
+        "backend_load": "SkillResolver fail-fast au demarrage du combat service si une skill viole le contrat. Pas de warning, pas de fallback, pas de demarrage en mode degrade.",
+        "runtime": "apply_effect() n'accepte plus value_override pour les effets canonical_grid. Le parametre disparait pour ces effets, remplace par stacks_to_apply uniquement."
+      },
+      "exceptions_value_authorized": [
+        "shields (absorb amount via skill shield_value)",
+        "heal flat ponctuels (heal_power skill field)",
+        "DoT/HoT scaling stat (caster_max_hp etc.) — declare dans runtime de l'effet, pas dans le skill",
+        "effect_id non-stackables custom listes dans non_stackable_special_effects (shield_wall, hunter_mark, assassin_mark, guardian_breath, etc.)"
+      ],
+      "_warning": "Si tu as besoin d'une 'valeur custom' pour une classe specifique sur un effet stackable, NE PAS reintroduire value/value_override. Creer un nouvel effect_id dedie (ex: hunter_mark au lieu de marked avec value=15). C'est explicitement la decision CTO."
+    },
+    "canonical_grid": {
+      "_note": "Valeurs autoritaires pour les stat_modifier stackables. Format: effect_id -> {value_per_stack, max_stacks, total_max}. Toute skill applique des stacks, pas une value libre.",
+      "offensifs": {
+        "atk_up": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "+25%"},
+        "atk_down": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "-25%"},
+        "mag_up": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "+25%"},
+        "mag_down": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "-25%"},
+        "atk_percent_up": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "+25%", "_note": "Berserker innate, alias possible de atk_up"},
+        "damage_percent_up": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "+25%"},
+        "damage_percent_down": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "-25%"},
+        "crit_chance_up": {"value_per_stack": 5, "unit": "percent", "max_stacks": 3, "total_max": "+15%"},
+        "crit_chance_down": {"value_per_stack": 5, "unit": "percent", "max_stacks": 3, "total_max": "-15%"},
+        "crit_damage_up": {"value_per_stack": 10, "unit": "percent_additive_on_base", "max_stacks": 3, "total_max": "+30 (additif sur 150% base = 180%, multiplicateur 1.80x)"},
+        "crit_damage_down": {"value_per_stack": 10, "unit": "percent_additive_on_base", "max_stacks": 3, "total_max": "-30"},
+        "accuracy_up": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "+25%"},
+        "accuracy_down": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "-25%"}
+      },
+      "defensifs": {
+        "armor_up": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "+25%"},
+        "armor_down": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "-25%"},
+        "magic_resist_up": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "+25%"},
+        "magic_resist_down": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "-25%"},
+        "damage_reduction_up": {"value_per_stack": 5, "unit": "percent", "max_stacks": 3, "total_max": "+15% (multiplicatif post-armor/MR donc fort)"},
+        "damage_reduction_down": {"value_per_stack": 5, "unit": "percent", "max_stacks": 3, "total_max": "-15%"},
+        "evasion_up": {"value_per_stack": 3, "unit": "percent", "max_stacks": 5, "total_max": "+15% (esquive cap bas pour eviter frustration)"},
+        "evasion_down": {"value_per_stack": 3, "unit": "percent", "max_stacks": 5, "total_max": "-15%"},
+        "def_up": {"value_per_stack": 5, "unit": "flat", "max_stacks": 5, "total_max": "+25 flat damage reduction"},
+        "def_down": {"value_per_stack": 5, "unit": "flat", "max_stacks": 5, "total_max": "-25 flat"}
+      },
+      "tempo": {
+        "atk_speed_up": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "+25%"},
+        "atk_speed_down": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "-25%"},
+        "cast_speed_up": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "+25%"},
+        "cast_speed_down": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "-25%"}
+      },
+      "soin": {
+        "heal_power_up": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "+25%"},
+        "heal_power_down": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "-25%"},
+        "heal_received_down": {"value_per_stack": 15, "unit": "percent", "max_stacks": 3, "total_max": "-45%"},
+        "heal_reduction": {"value_per_stack": 15, "unit": "percent", "max_stacks": 3, "total_max": "-45% (cap dur a 95%)"},
+        "crit_resistance_down": {"value_per_stack": 5, "unit": "percent", "max_stacks": 3, "total_max": "-15%"},
+        "heal_over_time": {"value_per_stack": 1, "unit": "percent_max_hp_per_sec", "max_stacks": 3, "total_max": "+3% maxHP/s", "_note": "scaling=max_hp, tick=1.0s"}
+      },
+      "special": {
+        "vulnerable": {"value_per_stack": 5, "unit": "percent_dmg_taken", "max_stacks": 5, "total_max": "+25%"},
+        "exposed": {"value_per_stack": 10, "unit": "percent_dmg_taken", "max_stacks": 3, "total_max": "+30%"},
+        "marked": {"value_per_stack": 10, "unit": "percent_dmg_taken", "max_stacks": 1, "total_max": "+10% (refresh, valeur fixe generique)", "_note": "Pour mark de classe, creer hunter_mark/assassin_mark separes"},
+        "berserk": {"value_per_stack": 5, "unit": "percent_both", "max_stacks": 5, "total_max": "+25% dmg dealt ET dmg taken"},
+        "lifesteal": {"value_per_stack": 5, "unit": "percent", "max_stacks": 5, "total_max": "+25%"},
+        "thorns": {"value_per_stack": 1, "unit": "stacks_of_DEF*0.1", "max_stacks": 10, "total_max": "DEF*1.0"},
+        "regen": {"value_per_stack": 1, "unit": "percent_max_hp_per_sec", "max_stacks": 5, "total_max": "+5% maxHP/s"}
+      },
+      "dot": {
+        "_note": "1 stack = formule existante. Plusieurs stacks = somme. Skills appliquent 1 stack par defaut.",
+        "bleed": {"max_stacks": 3, "tick": "ATK*0.3 per stack"},
+        "burn": {"max_stacks": 3, "tick": "MAG*0.25 per stack"},
+        "chill": {"max_stacks": 3, "tick": "MAG*0.1 + 10% slow per stack"},
+        "poison": {"max_stacks": 5, "tick": "2% maxHP per stack"},
+        "corruption": {"max_stacks": 5, "tick": "MAG*0.15 per stack"},
+        "toxin": {"max_stacks": 5, "tick": "MAG*0.1 per stack", "_note": "Reduit de 10 a 5 stacks (Option A 2026-04-30)"}
+      },
+      "non_stackable_special_effects": {
+        "_note": "Effets > 25% qui doivent rester non-stackables (max_stacks=1, refresh). Ne pas tenter d'atteindre des caps eleves via stacks.",
+        "examples": [
+          "shield_wall (futur, 50% damage_reduction duree courte CD long)",
+          "invulnerable (0 damage taken, 2-4s)",
+          "untargetable, invisible (Rogue)",
+          "cc_immune, cc_immune_zone",
+          "stun, freeze, silence, fear, confusion, blind, disarm, taunt (CC, refresh)"
+        ]
+      }
+    },
+    "rules_anti_amplification_chain": {
+      "_note": "vulnerable + exposed + marked sont tous des damage_taken amplifiers. Eviter de les distribuer ensemble dans la meme classe ou le meme tier de skills early.",
+      "rule_1": "Pas de skill early (tier filler/basic) qui applique deux de ces effets simultanement",
+      "rule_2": "Aucun effet anti-heal (heal_reduction, heal_received_down) ne doit etre applique en meme temps qu'un amplifier de damage_taken par la meme source",
+      "rule_3": "Le total damage_taken multiplicatif (vulnerable + exposed + marked + berserk) ne doit pas atteindre +100% en pratique normale"
     },
     "runtime_formula_tokens": {
       "number_literal": "That exact number (e.g. 0.25, -0.15)",
-      "value": "effect_val (skill effect power)",
+      "value": "effect_val (skill effect power) — INTERDIT sur les effets de canonical_grid, voir option_a_contract",
       "-value": "-effect_val",
       "value/100": "effect_val / 100.0 (percent conversion)",
       "-value/100": "-effect_val / 100.0",
       "power": "power_val (skill total power)",
-      "value*N": "effect_val * N (e.g. value*0.15)"
+      "value*N": "effect_val * N (e.g. value*0.15)",
+      "stacks_to_apply": "Nombre de stacks a appliquer en une fois (Option A). Cible canonique pour les stat_modifier stackables."
     }
   },
   "categories": [
@@ -255,7 +351,7 @@
         "name_en": "Toxin",
         "polarity": "debuff",
         "stacking": "stackable",
-        "max_stacks": 10,
+        "max_stacks": 5,
         "impl": "done",
         "damage_type": "magical",
         "formula": "MAG * 0.1 per tick per stack",
@@ -2086,6 +2182,74 @@
           "action": "restore_mp",
           "amount": "value",
           "vfx_type": "breath_restore"
+        }
+      },
+      "hunter_mark": {
+        "name_fr": "Marque du Chasseur",
+        "name_en": "Hunter's Mark",
+        "polarity": "debuff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "impl": "todo",
+        "formula": "+15% damage taken from all sources, refresh on reapply",
+        "tooltip_fr": "La cible subit davantage de degats du chasseur.",
+        "tooltip_en": "The target takes increased damage from the hunter.",
+        "description_fr": "Marque exclusive du Chasseur. La cible recoit +15% degats de toutes sources. Effet non-stackable Option A pour eviter de reintroduire value variable sur 'marked' generique.",
+        "description_en": "Archer-exclusive mark. Target takes +15% damage from all sources. Non-stackable Option A custom effect to avoid reintroducing variable value on generic 'marked'.",
+        "sources": [
+          "Archer (Hunter Mark)"
+        ],
+        "runtime": {
+          "stat_mods": {
+            "damage_taken_percent": 0.15
+          },
+          "vfx_type": "mark_effect"
+        }
+      },
+      "iron_stance_shield": {
+        "name_fr": "Posture de Fer",
+        "name_en": "Iron Stance",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "impl": "todo",
+        "stealable": false,
+        "formula": "-50% damage taken, short duration, long CD",
+        "tooltip_fr": "Posture defensive ultime. Reduit massivement les degats subis.",
+        "tooltip_en": "Ultimate defensive stance. Massively reduces damage taken.",
+        "description_fr": "Le Guardian se met en garde absolue. -50% degats subis pendant la duree. Effet non-stackable, CD long. Option A custom car au-dela du cap canonique damage_reduction_up (15%).",
+        "description_en": "The Guardian enters an absolute defensive stance. -50% damage taken for the duration. Non-stackable, long CD. Option A custom effect (beyond canonical damage_reduction_up cap of 15%).",
+        "sources": [
+          "Warrior (Guardian Iron Stance)"
+        ],
+        "runtime": {
+          "stat_mods": {
+            "damage_taken_percent": -0.50
+          },
+          "vfx_type": "shield_aura"
+        }
+      },
+      "steady_aim_amplifier": {
+        "name_fr": "Visee Stable",
+        "name_en": "Steady Aim",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "impl": "todo",
+        "stealable": false,
+        "formula": "+50 crit_damage (additif sur 150% base = 200%), short duration",
+        "tooltip_fr": "Augmente massivement les degats critiques pour un court instant.",
+        "tooltip_en": "Massively increases critical damage for a short time.",
+        "description_fr": "Le Ranger ajuste sa visee. +50 crit damage (additif sur 150% base, donc 200% au crit). Non-stackable. Option A custom car au-dela du cap canonique crit_damage_up (+30).",
+        "description_en": "The Ranger steadies their aim. +50 crit damage (additive on 150% base = 200% on crit). Non-stackable. Option A custom (beyond canonical crit_damage_up cap of +30).",
+        "sources": [
+          "Archer (Ranger Steady Aim)"
+        ],
+        "runtime": {
+          "stat_mods": {
+            "crit_damage": 50
+          },
+          "vfx_type": "power_aura"
         }
       }
     }

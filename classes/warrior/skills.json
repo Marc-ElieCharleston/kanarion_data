@@ -35,8 +35,8 @@
       "mana_cost_per_level": 3,
       "cooldown": 4.5,
       "vfx_type": "melee_slash",
-      "description_fr": "Le guerrier frappe d'un coup direct et brutal, ouvrant une plaie vive.\nInflige 120% ATK dégâts physiques à un ennemi.\nApplique 1 charge de Saignement.",
-      "description_en": "The warrior delivers a direct, brutal blow that opens a bleeding wound.\nDeals 120% ATK damage to a single target.\nApplies 1 Bleed stack.",
+      "description_fr": "Le guerrier frappe d'un coup direct et brutal, ouvrant une plaie vive.\nInflige 120% ATK dégâts physiques à un ennemi.\nApplique 1 charge de Saignement (max 3).",
+      "description_en": "The warrior delivers a direct, brutal blow that opens a bleeding wound.\nDeals 120% ATK damage to a single target.\nApplies 1 Bleed stack (max 3).",
       "tags": [
         "damage",
         "melee",
@@ -47,7 +47,7 @@
         {
           "type": "debuff",
           "stat": "bleed",
-          "value": 1,
+          "stacks_to_apply": 1,
           "duration": 4.0
         }
       ],
@@ -122,8 +122,8 @@
       "mana_cost_per_level": 5,
       "cooldown": 12.0,
       "vfx_type": "shield",
-      "description_fr": "Le guerrier ancre ses pieds dans le sol et durcit sa garde.\nRéduit les dégâts reçus de 25% (+2%/niv) pendant 6s.",
-      "description_en": "The warrior plants his feet and hardens his guard.\nReduces damage taken by 25% (+2%/lvl) for 6s.",
+      "description_fr": "Le guerrier ancre ses pieds dans le sol et durcit sa garde.\nRéduit les dégâts reçus de 15% pendant 6s.",
+      "description_en": "The warrior plants his feet and hardens his guard.\nReduces damage taken by 15% for 6s.",
       "tags": [
         "defense",
         "buff",
@@ -133,8 +133,7 @@
         {
           "type": "buff",
           "stat": "damage_reduction_up",
-          "value": 25,
-          "value_per_level": 2,
+          "stacks_to_apply": 3,
           "duration": 6.0
         }
       ],
@@ -311,8 +310,8 @@
           "mana_cost": 25,
           "cooldown": 18.0,
           "vfx_type": "shield",
-          "description_fr": "Le Gardien se fige comme une forteresse, sacrifiant sa rapidité pour une défense absolue.\nOctroie un bouclier de 15% HP max et 50% de réduction de dégâts pendant 5s.\nRalentit le lanceur de 50%.",
-          "description_en": "The Guardian becomes an immovable fortress, trading speed for absolute defense.\nGrants a shield equal to 15% max HP and 50% damage reduction for 5s.\nSlows the caster by 50%.",
+          "description_fr": "Le Gardien se fige comme une forteresse, sacrifiant sa rapidité pour une défense absolue.\nOctroie un bouclier de 15% HP max et active Posture de Fer (-50% dégâts subis) pendant 5s.\n-25% vitesse d'attaque sur le lanceur.",
+          "description_en": "The Guardian becomes an immovable fortress, trading speed for absolute defense.\nGrants a shield equal to 15% max HP and activates Iron Stance (-50% damage taken) for 5s.\n-25% attack speed on the caster.",
           "tags": [
             "defense",
             "buff",
@@ -330,14 +329,13 @@
             },
             {
               "type": "buff",
-              "stat": "damage_reduction_up",
-              "value": 50,
+              "stat": "iron_stance_shield",
               "duration": 5.0
             },
             {
               "type": "debuff",
               "stat": "atk_speed_down",
-              "value": 50,
+              "stacks_to_apply": 5,
               "duration": 5.0,
               "target": "self"
             }
@@ -426,7 +424,7 @@
             {
               "type": "debuff",
               "stat": "atk_down",
-              "value": 15,
+              "stacks_to_apply": 3,
               "duration": 4.0
             }
           ],
@@ -555,20 +553,20 @@
             {
               "type": "buff",
               "stat": "lifesteal",
-              "value": 25,
+              "stacks_to_apply": 5,
               "duration": 8.0,
               "scaling": "atk"
             },
             {
               "type": "buff",
               "stat": "atk_percent_up",
-              "value": 15,
+              "stacks_to_apply": 3,
               "duration": 8.0
             },
             {
               "type": "buff",
               "stat": "atk_up",
-              "value": 15,
+              "stacks_to_apply": 3,
               "duration": 8.0
             }
           ],
@@ -632,8 +630,8 @@
           "mana_cost": 25,
           "cooldown": 20.0,
           "vfx_type": "buff_aura",
-          "description_fr": "Le Berserker cède à une fureur incontrôlée, frappant plus vite et plus fort.\n+30% ATK et +20% vitesse d'attaque pendant 10s.\n-15% DEF pendant 10s.",
-          "description_en": "The Berserker surrenders to uncontrolled fury, striking faster and harder.\n+30% ATK and +20% attack speed for 10s.\n-15% DEF for 10s.",
+          "description_fr": "Le Berserker cède à une fureur incontrôlée, frappant plus vite et plus fort.\n+25% ATK et +20% vitesse d'attaque pendant 10s.\n-15% DEF pendant 8s.",
+          "description_en": "The Berserker surrenders to uncontrolled fury, striking faster and harder.\n+25% ATK and +20% attack speed for 10s.\n-15% DEF for 8s.",
           "tags": [
             "buff",
             "attack",
@@ -645,19 +643,19 @@
             {
               "type": "buff",
               "stat": "atk_up",
-              "value": 30,
+              "stacks_to_apply": 5,
               "duration": 10.0
             },
             {
               "type": "buff",
               "stat": "atk_speed_up",
-              "value": 20,
+              "stacks_to_apply": 4,
               "duration": 10.0
             },
             {
               "type": "debuff",
               "stat": "def_down",
-              "value": 15,
+              "stacks_to_apply": 3,
               "duration": 8.0,
               "target": "self"
             }
@@ -694,8 +692,8 @@
           "execute_bonus_percent": 50,
           "vfx_type": "melee_slash",
           "is_signature": true,
-          "description_fr": "Le Berserker abat sa lame avec la fureur d'un monde brisé.\nInflige 410% ATK dégâts physiques à la cible et 2 ennemis adjacents.\n+50% de dégâts si la cible est sous 20% HP.\nApplique Vulnérable (-15% résistances) pendant 6s.",
-          "description_en": "The Berserker brings down his blade with the fury of a broken world.\nDeals 410% ATK damage to the target and 2 adjacent enemies.\n+50% damage if the target is below 20% HP.\nApplies Vulnerable (-15% resistances) for 6s.",
+          "description_fr": "Le Berserker abat sa lame avec la fureur d'un monde brisé.\nInflige 410% ATK dégâts physiques à la cible et 2 ennemis adjacents.\n+50% de dégâts si la cible est sous 20% HP.\nApplique Vulnérable (+15% dégâts subis) pendant 6s.",
+          "description_en": "The Berserker brings down his blade with the fury of a broken world.\nDeals 410% ATK damage to the target and 2 adjacent enemies.\n+50% damage if the target is below 20% HP.\nApplies Vulnerable (+15% damage taken) for 6s.",
           "tags": [
             "damage",
             "execute",
@@ -707,7 +705,7 @@
             {
               "type": "debuff",
               "stat": "vulnerable",
-              "value": 15,
+              "stacks_to_apply": 3,
               "duration": 6.0
             }
           ],
@@ -781,8 +779,8 @@
           "mana_cost": 16,
           "cooldown": 10.0,
           "vfx_type": "melee_slash",
-          "description_fr": "Le Maître d'Armes frappe là où l'armure est la plus faible, brisant la protection ennemie.\nInflige 170% ATK dégâts physiques à 2 cibles en colonne.\nRéduit l'armure de 20 pendant 8s.",
-          "description_en": "The Weapon Master strikes where armor is weakest, shattering the enemy's protection.\nDeals 170% ATK damage to 2 targets in a column.\nReduces armor by 20 for 8s.",
+          "description_fr": "Le Maître d'Armes frappe là où l'armure est la plus faible, brisant la protection ennemie.\nInflige 170% ATK dégâts physiques à 2 cibles en colonne.\nRéduit l'armure de 20% pendant 8s.",
+          "description_en": "The Weapon Master strikes where armor is weakest, shattering the enemy's protection.\nDeals 170% ATK damage to 2 targets in a column.\nReduces armor by 20% for 8s.",
           "tags": [
             "damage",
             "armor_break",
@@ -793,7 +791,7 @@
             {
               "type": "debuff",
               "stat": "armor_down",
-              "value": 20,
+              "stacks_to_apply": 4,
               "duration": 8.0
             }
           ],
@@ -962,13 +960,13 @@
             {
               "type": "buff",
               "stat": "damage_percent_up",
-              "value": 20,
+              "stacks_to_apply": 4,
               "duration": 10.0
             },
             {
               "type": "buff",
               "stat": "atk_speed_up",
-              "value": 10,
+              "stacks_to_apply": 2,
               "duration": 10.0
             }
           ],
@@ -997,8 +995,8 @@
           "mana_cost": 16,
           "cooldown": 10.0,
           "vfx_type": "debuff_aura",
-          "description_fr": "Le Seigneur de Guerre pousse un rugissement qui brise la détermination de ses ennemis, dissipant leurs renforts.\nRéduit la réduction de dégâts des ennemis en cône de 20% pendant 8s. Retire 2 buffs de chaque cible.",
-          "description_en": "The Warlord unleashes a roar that shatters the resolve of his enemies, stripping away their reinforcements.\nReduces damage reduction of enemies in a cone by 20% for 8s. Removes 2 buffs from each target.",
+          "description_fr": "Le Seigneur de Guerre pousse un rugissement qui brise la détermination de ses ennemis, dissipant leurs renforts.\nRéduit la réduction de dégâts des ennemis en cône de 15% pendant 8s. Retire 2 buffs de chaque cible.",
+          "description_en": "The Warlord unleashes a roar that shatters the resolve of his enemies, stripping away their reinforcements.\nReduces damage reduction of enemies in a cone by 15% for 8s. Removes 2 buffs from each target.",
           "tags": [
             "debuff",
             "defense_down",
@@ -1010,7 +1008,7 @@
             {
               "type": "debuff",
               "stat": "damage_reduction_down",
-              "value": 20,
+              "stacks_to_apply": 3,
               "duration": 8.0
             },
             {
@@ -1044,8 +1042,8 @@
           "mana_cost": 22,
           "cooldown": 14.0,
           "vfx_type": "buff_aura",
-          "description_fr": "Le Seigneur de Guerre rallie ses compagnons, renforçant leur résistance au combat.\n+25% de réduction de dégâts sur la cible et 2 alliés proches pendant 10s.",
-          "description_en": "The Warlord rallies his companions, steeling their resolve for the fight ahead.\n+25% damage reduction on target and 2 nearby allies for 10s.",
+          "description_fr": "Le Seigneur de Guerre rallie ses compagnons, renforçant leur résistance au combat.\n+15% de réduction de dégâts sur la cible et 2 alliés proches pendant 10s.",
+          "description_en": "The Warlord rallies his companions, steeling their resolve for the fight ahead.\n+15% damage reduction on target and 2 nearby allies for 10s.",
           "tags": [
             "buff",
             "defense",
@@ -1056,7 +1054,7 @@
             {
               "type": "buff",
               "stat": "damage_reduction_up",
-              "value": 25,
+              "stacks_to_apply": 3,
               "duration": 10.0
             }
           ],
@@ -1090,8 +1088,8 @@
           "mana_cost": 24,
           "cooldown": 12.0,
           "vfx_type": "melee_slash",
-          "description_fr": "Le Seigneur de Guerre concentre toute sa force en un coup qui perce armure et bouclier.\nInflige 280% ATK dégâts physiques à un ennemi.\n30% de pénétration d'armure. Ignore 50% du bouclier.\nRéduit l'armure de 15 pendant 6s.",
-          "description_en": "The Warlord focuses all his strength into a blow that pierces through armor and shield alike.\nDeals 280% ATK damage to a single target.\n30% armor penetration and ignores 50% of the shield.\nReduces armor by 15 for 6s.",
+          "description_fr": "Le Seigneur de Guerre concentre toute sa force en un coup qui perce armure et bouclier.\nInflige 280% ATK dégâts physiques à un ennemi.\n30% de pénétration d'armure. Ignore 50% du bouclier.\nRéduit l'armure de 15% pendant 6s.",
+          "description_en": "The Warlord focuses all his strength into a blow that pierces through armor and shield alike.\nDeals 280% ATK damage to a single target.\n30% armor penetration and ignores 50% of the shield.\nReduces armor by 15% for 6s.",
           "tags": [
             "damage",
             "melee",
@@ -1103,7 +1101,7 @@
             {
               "type": "debuff",
               "stat": "armor_down",
-              "value": 15,
+              "stacks_to_apply": 3,
               "duration": 6.0
             }
           ],
@@ -1134,8 +1132,8 @@
           "cast_time": 2.0,
           "vfx_type": "buff_aura",
           "is_signature": true,
-          "description_fr": "Le Seigneur de Guerre plante sa bannière. Ceux qui la voient savent qu'ils ne sont pas seuls.\nZone 2x3 : +15% Dégâts et +15% de réduction de dégâts aux alliés.\nRégénère 0.5% des HP max du lanceur par seconde pendant 12s.",
-          "description_en": "The Warlord plants his banner. Those who see it know they are not alone.\n2x3 area: +15% Damage and +15% damage reduction to allies.\nRegenerates 0.5% of the caster's max HP per second for 12s.",
+          "description_fr": "Le Seigneur de Guerre plante sa bannière. Ceux qui la voient savent qu'ils ne sont pas seuls.\nZone 2x3 : +15% Dégâts et +15% de réduction de dégâts aux alliés.\nRégénère 1% des HP max par seconde pendant 12s.",
+          "description_en": "The Warlord plants his banner. Those who see it know they are not alone.\n2x3 area: +15% Damage and +15% damage reduction to allies.\nRegenerates 1% of max HP per second for 12s.",
           "tags": [
             "buff",
             "hot",
@@ -1147,19 +1145,19 @@
             {
               "type": "buff",
               "stat": "damage_percent_up",
-              "value": 15,
+              "stacks_to_apply": 3,
               "duration": 12.0
             },
             {
               "type": "buff",
               "stat": "damage_reduction_up",
-              "value": 15,
+              "stacks_to_apply": 3,
               "duration": 12.0
             },
             {
               "type": "buff",
               "stat": "heal_over_time",
-              "value": 0.5,
+              "stacks_to_apply": 1,
               "scaling": "max_hp",
               "duration": 12.0
             }

@@ -138,13 +138,55 @@ Players choose a faction at level 60. Subclass lore must NOT lock players into a
 - Bonus types: flat, percent, or both
 - Stat caps: crit 100%, armor_pen 70%, damage_reduction 75%, CDR 40%, etc.
 
-### Status Effects
-- Stacking: 10% per stack, max 10 stacks (+100%), duration refreshes on reapply
-- Hard CC: stun, freeze, sleep, petrify, knockdown
-- Soft CC: slow, silence, blind, taunt, root, fear, confusion, disarm
-- DoTs: poison (% max HP), bleed (ATK-based), burn (MAG-based) — each has max stacks
-- Counter effects: heal_reduction, heal_block, shield_block
-- Immunity effects: evasion, invulnerable, untargetable, cc_immune
+### Status Effects — Option A (CTO 2026-04-30, contrat strict)
+
+**Regle absolue.** Pour les `stat_modifier` stackables generiques listes dans `stats/status_effects.json` `_meta.canonical_grid`, la puissance d'un buff/debuff vient UNIQUEMENT du nombre de stacks appliques. Les champs `value` et `value_override` sont INTERDITS sur ces effets.
+
+**Skills doivent utiliser :**
+```json
+{ "effect": "armor_down", "stacks_to_apply": 3, "duration": 8 }
+```
+**JAMAIS :**
+```json
+{ "effect": "armor_down", "value": 25, "duration": 8 }
+```
+
+**Mapping value originale → stacks_to_apply** (regle de migration) :
+- `value` proche de `value_per_stack × N` → `stacks_to_apply: N`
+- Exemple : `armor_down value=25` avec `value_per_stack=5` → `stacks_to_apply: 5`
+- Si la value souhaitee depasse le total_max canonique, c'est une violation : creer un nouvel `effect_id` dedie (non-stackable custom).
+
+**Grille canonique.** Voir `stats/status_effects.json` `_meta.canonical_grid` pour la table complete. Resume :
+- Offensifs (atk/mag/damage_percent/accuracy) : 5%/stack × 5 = ±25%
+- Crit chance : 5%/stack × 3 = ±15%. Crit damage : 10%/stack × 3 = ±30 (additif sur 150% base)
+- Defensifs (armor/MR) : 5%/stack × 5 = ±25%
+- damage_reduction : 5%/stack × 3 = ±15% (multiplicatif post-armor donc effet fort)
+- evasion : 3%/stack × 5 = ±15%
+- Tempo (atk_speed/cast_speed) : 5%/stack × 5 = ±25%
+- Heal power : 5%/stack × 5 = ±25%. Heal reduction : 15%/stack × 3 = -45%
+- DoT (bleed/burn/chill/poison/corruption/toxin) : 1 stack = formule existante. toxin reduit a 5 stacks max (etait 10).
+
+**Comportement overflow stack.** Si `stacks_to_apply + current_stacks > max_stacks`, on applique ce qu'on peut jusqu'au cap, les stacks excedentaires sont perdus. Duree refresh selon `refresh_on_apply`.
+
+**Enforcement strict (pas de dual-mode legacy) :**
+- **CI** (`validate.yml`) : fail si une skill utilise `value`/`value_override` sur un effet de `canonical_grid`
+- **Backend** (`SkillResolver` au load combat) : fail-fast, le combat service ne demarre pas si une skill viole le contrat
+- **Runtime** : `apply_effect()` n'accepte plus `value_override` pour ces effets
+
+**Exceptions ou `value` reste autorise :**
+- Shields (absorb amount via `shield_value`)
+- Heal flat ponctuels (`heal_power` skill field)
+- DoT/HoT scaling (`caster_max_hp`, declare dans runtime de l'effet)
+- Effets non-stackables custom listes dans `_meta.canonical_grid.non_stackable_special_effects` (shield_wall, hunter_mark, assassin_mark, guardian_breath, etc.)
+
+**Anti-pattern critique :** ne JAMAIS reintroduire `value` libre pour donner une variante de classe a un effet stackable. Si le Hunter veut un mark plus fort que le mark generique, creer `hunter_mark` comme effect_id distinct, pas `marked` avec `value=15`. Le cumul `vulnerable + exposed + marked + berserk` ne doit pas atteindre +100% damage_taken en pratique normale (voir `_meta.rules_anti_amplification_chain`).
+
+**Categories non-stackables (regle inchangee) :**
+- Hard CC : stun, freeze, sleep, petrify, knockdown (refresh, max 1)
+- Soft CC : slow, silence, blind, taunt, root, fear, confusion, disarm
+- DoTs : poison (% max HP), bleed (ATK-based), burn (MAG-based) — chacun avec son max_stacks
+- Counter effects : heal_reduction, heal_block, shield_block
+- Immunity : evasion, invulnerable, untargetable, cc_immune
 
 ## Claude Code on Windows — Known Issues & Workarounds
 
