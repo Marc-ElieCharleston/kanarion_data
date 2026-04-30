@@ -188,6 +188,66 @@ Players choose a faction at level 60. Subclass lore must NOT lock players into a
 - Counter effects : heal_reduction, heal_block, shield_block
 - Immunity : evasion, invulnerable, untargetable, cc_immune
 
+### Skill Description Conventions (alignment Option A)
+
+Les `description_fr` / `description_en` reflètent la VALEUR EFFECTIVE appliquée, pas le nombre de stacks. Le joueur pense en % pour les buffs, en stacks pour les DoTs.
+
+**Buffs / debuffs canonical (stat_modifier avec stacks_to_apply) :**
+- Annoncer le % effectif (`stacks_to_apply × value_per_stack`)
+- `atk_up stacks_to_apply: 5` (5×5%) → "+25% ATK"
+- `damage_reduction_up stacks_to_apply: 3` (3×5%) → "+15% réduction de dégâts"
+- `def_down stacks_to_apply: 4` (4×5 flat) → "-20 DEF" (PAS "-20%", def est flat)
+- Optionnel : ajouter "(max +25%)" pour expliciter le cap quand utile (ex: Frenzy, War Anthem)
+
+**DoTs (bleed/burn/chill/poison/corruption/toxin) :**
+- Annoncer en stacks ET nom de l'effet (icônes en jeu affichent le compteur)
+- `bleed stacks_to_apply: 1` → "Applique 1 charge de Saignement (max 3)"
+- `toxin stacks_to_apply: 2` → "2 charges de Toxine (max 5)"
+- Ne PAS annoncer en dégâts absolus (varie avec ATK/MAG)
+- "(max N)" optionnel sur ultimate qui appliquent déjà le max, recommandé sur fillers
+
+**Effets custom non-stackables nommés (iron_stance_shield, hunter_mark, steady_aim_amplifier, etc.) :**
+- Souligner comme effet nommé avec parenthèse explicative
+- "Active Posture de Fer (-50% dégâts subis) pendant 5s"
+- "Applique Marque du Chasseur (+15% dégâts subis) pendant 8s"
+- "Active Visée Stable (+50 dégâts critiques) pendant 5s"
+- Le joueur doit comprendre que c'est un buff distinct avec icône/durée propre, pas un buff générique
+
+**Scaling per-level — ce qui reste vs ce qui a disparu :**
+- ✅ GARDER `(+X%/niv)` sur le scaling damage (`percent_per_level` sur `scaling_percent`)
+- ✅ GARDER `(+X.Xs/niv)` sur la durée (`duration_per_level`)
+- ✅ GARDER `(+X/niv)` sur le scaling heal (`heal_scaling_per_level`, `power_per_level`)
+- ❌ RETIRER `(+X%/niv)` sur les valeurs d'effets canonical_grid (`value_per_level` supprimé en Phase 2 Option A)
+
+**Unités (canonical_grid) :**
+- **Percent** : atk_up/down, mag_up/down, damage_percent_up/down, accuracy_up/down, crit_chance_up/down, armor_up/down, magic_resist_up/down, damage_reduction_up/down, evasion_up/down, atk_speed_up/down, cast_speed_up/down, heal_power_up/down, heal_received_down, heal_reduction, crit_resistance_down, vulnerable, exposed, marked, berserk, lifesteal
+- **Flat** : `def_up/down` (5 par stack, PAS %)
+- **Crit damage** : additif sur 150% base (`crit_damage_up`: +10/stack additif, PAS %)
+- **HoT** : `heal_over_time` = 1% maxHP/s par stack (scaling=max_hp)
+
+**Skills multi-effets :**
+- Lister tous les effets avec leurs valeurs effectives
+- Frenzy (atk_up s.5, atk_speed_up s.4, def_down s.3) → "+25% ATK et +20% vitesse d'attaque pendant 10s. -15% DEF pendant 8s."
+- Si deux effets canonical s'additionnent (Marqué + Exposé), expliciter le total : "(+20% dégâts subis cumulés)"
+
+**Terminologie :**
+- "Mana" INTERDIT en texte joueur. Utiliser "Souffle" (FR) / "Breath" (EN). Les clés techniques `mp` et `mana_cost` restent.
+- Codes internes (`row_3`, `rect_2x2`, noms de patterns) JAMAIS dans les descriptions. Utiliser "ligne", "zone 2x3", "diagonale", etc.
+- Voir `correction_traduction.md` pour le glossaire FR/EN canonique.
+
+**Style :**
+- Bilingue : FR source, EN traduction. Synchroniser les deux.
+- Pas de tirets cadratins (—). Utiliser virgules, points, parenthèses.
+- Garder l'intro narrative (lore) avant la partie mécanique (pattern existant).
+- Pour DoTs avec multi-types (Brûlure + Frisson), éviter de cumuler "(max 3)" pour ne pas alourdir.
+
+**Anti-patterns descriptions à corriger systématiquement :**
+- "(+1%/niv)" sur un effet canonical_grid (le scaling per-level n'existe plus pour ces effets)
+- "-25% DEF" alors que def est flat (écrire "-25 DEF")
+- "Vulnérable (-15% résistances)" alors que vulnerable = +X% dégâts subis (écrire "+15% dégâts subis")
+- "+50% dégâts critiques" pour `crit_damage_up` (additif, écrire "+50 dégâts critiques")
+- Description annonçant +30% alors que canonical max = +25% (Frenzy avant migration : atk_up cap à +25%)
+
 ## Claude Code on Windows — Known Issues & Workarounds
 
 This project runs on **Windows 11** with Git Bash. Claude Code's Bash tool has specific quirks on this platform. Follow these rules strictly to avoid wasting time on broken commands.
