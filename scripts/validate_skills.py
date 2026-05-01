@@ -337,6 +337,10 @@ def validate_effects_array(skill, file_path, valid_effect_ids, canonical_grid, e
             "stacks_to_apply",
             # value still authorized for non-canonical (utility, legacy non-canonical types)
             "value", "value_per_level",
+            # PR2 BUG-5 (CTO 2026-05-01): pct = scaling percent for typed scaled effects
+            # (heal_over_time_mag, heal_over_time_max_hp, shield_def/mag/max_hp/max_mp).
+            # Used together with value (flat base): result = value + (stat * pct / 100).
+            "pct",
             "duration", "duration_per_level", "duration_scaling",
             "scaling", "target", "chance", "condition",
             "base_value",  # legacy field for shield base, kept for compat
