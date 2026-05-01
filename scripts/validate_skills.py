@@ -341,6 +341,9 @@ def validate_effects_array(skill, file_path, valid_effect_ids, canonical_grid, e
             # (heal_over_time_mag, heal_over_time_max_hp, shield_def/mag/max_hp/max_mp).
             # Used together with value (flat base): result = value + (stat * pct / 100).
             "pct",
+            # PR2.5 BUG-5 (CTO 2026-05-01): per-skill-level scaling for typed effects.
+            # value_per_level adds (level-1)*vpl to flat base, pct_per_level adds to scaling %.
+            "pct_per_level",
             "duration", "duration_per_level", "duration_scaling",
             "scaling", "target", "chance", "condition",
             "base_value",  # legacy field for shield base, kept for compat
