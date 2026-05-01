@@ -406,24 +406,53 @@
         "stacking": "refresh",
         "max_stacks": 1,
         "impl": "planned",
-        "formula": "caster_mag * 0.10 per tick (non-stackable, MAG-scaled variant)",
+        "formula": "tick_heal = value + (caster_mag * pct / 100) per tick. value=base flat (skill-defined), pct=scaling % (skill-defined). Convention CTO 2026-05-01.",
         "tick_interval": 1.0,
         "duration_modifiable": true,
         "tooltip_fr": "Soigne la cible chaque seconde, basé sur la puissance magique du lanceur.",
         "tooltip_en": "Heals the target each second, based on caster's magic power.",
-        "description_fr": "Variante MAG-scaled du soin continu pour les soutiens Artisan. Soigne 10% MAG du lanceur chaque seconde. Non-stackable, refresh sur réapplication.",
-        "description_en": "MAG-scaled variant of HoT for Artisan support skills. Heals 10% caster MAG each second. Non-stackable, refresh on reapply.",
+        "description_fr": "Variante MAG-scaled du soin continu pour les soutiens Artisan/Healer. Le tick = soin de base (value) + un pourcentage de la MAG du lanceur (pct). Non-stackable, refresh sur réapplication.",
+        "description_en": "MAG-scaled HoT variant for Artisan/Healer supports. Tick = flat value + pct% caster MAG. Non-stackable, refresh on reapply.",
         "sources": [
-          "Artisan (Chef, Musician)"
+          "Artisan (Chef, Musician)",
+          "Healer"
         ],
         "runtime": {
-          "tick_heal": "value",
+          "tick_heal_formula": "value + (caster.magic_power * instance.pct) / 100",
           "tick_rate": 1.0,
           "scaling_stat": "caster_mag",
-          "scaling_percent": 0.10,
-          "scaling_behavior": "flat",
+          "scaling_source": "instance.pct",
+          "scaling_behavior": "flat_plus_scaling",
           "vfx_type": "heal_glow",
-          "_backend_note": "Backend patch required: status_manager process_periodic_effects must compute tick_heal as caster.magic_power * 0.10 for this effect_id. Until then, fall back to default tick_value behavior."
+          "_backend_note": "Backend patch required (PR2): status_manager::process_periodic_effects must add a branch for effect_id 'heal_over_time_mag' computing tick_heal = inst.value + (caster.magic_power * inst.pct) / 100. Skill schema must accept both 'value' (flat base) and 'pct' (scaling percent) on effect entries with stat='heal_over_time_mag'."
+        }
+      },
+      "heal_over_time_max_hp": {
+        "name_fr": "Régénération Vitale",
+        "name_en": "Vital Regeneration",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "impl": "planned",
+        "formula": "tick_heal = value + (target_max_hp * pct / 100) per tick. value=base flat, pct=scaling % de max_hp cible. Convention CTO 2026-05-01.",
+        "tick_interval": 1.0,
+        "duration_modifiable": true,
+        "tooltip_fr": "Régénère un % des PV max de la cible chaque seconde.",
+        "tooltip_en": "Regenerates a % of target's max HP each second.",
+        "description_fr": "Variante max_hp-scaled du soin continu, utilisée par les Healer/Lifewarden et certains buffs persistants. Le tick = base (value) + un pourcentage des PV max de la cible (pct). Non-stackable, refresh sur réapplication.",
+        "description_en": "Max_hp-scaled HoT variant for Healer/Lifewarden and persistent buffs. Tick = flat value + pct% target max HP. Non-stackable, refresh on reapply.",
+        "sources": [
+          "Healer (Lifewarden, Lightbringer, Martyr tier3)",
+          "Warrior (Warlord war_banner)"
+        ],
+        "runtime": {
+          "tick_heal_formula": "value + (target.max_hp * instance.pct) / 100",
+          "tick_rate": 1.0,
+          "scaling_stat": "target_max_hp",
+          "scaling_source": "instance.pct",
+          "scaling_behavior": "flat_plus_scaling",
+          "vfx_type": "heal_glow",
+          "_backend_note": "Backend patch required (PR2): status_manager::process_periodic_effects must add a branch for effect_id 'heal_over_time_max_hp' computing tick_heal = inst.value + (target.max_hp * inst.pct) / 100. Skill schema must accept both 'value' (flat base) and 'pct' (scaling percent) on effect entries with stat='heal_over_time_max_hp'."
         }
       }
     },
@@ -1357,6 +1386,103 @@
             "shield": "power"
           },
           "vfx_type": "shield_aura"
+        }
+      },
+      "shield_def": {
+        "name_fr": "Bouclier (DEF)",
+        "name_en": "Shield (DEF)",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "impl": "planned",
+        "formula": "absorb = value + (caster_def * pct / 100). value=base flat, pct=% scaling sur DEF du lanceur. Convention CTO 2026-05-01.",
+        "tooltip_fr": "Absorbe des dégâts proportionnels à la DEF du lanceur.",
+        "tooltip_en": "Absorbs damage scaled with caster DEF.",
+        "description_fr": "Variante DEF-scaled du bouclier, utilisée par les Tanks/Forgerons. Absorption = valeur de base (value) + un pourcentage de la DEF du lanceur (pct).",
+        "description_en": "DEF-scaled shield variant for Tanks/Blacksmiths. Absorption = flat value + pct% caster DEF.",
+        "sources": [
+          "Artisan (Blacksmith forged_retaliation, metalguard, quick_patch)"
+        ],
+        "runtime": {
+          "absorb_formula": "value + (caster.def * instance.pct) / 100",
+          "scaling_stat": "caster_def",
+          "scaling_source": "instance.pct",
+          "scaling_behavior": "flat_plus_scaling",
+          "vfx_type": "shield_aura",
+          "_backend_note": "Backend patch required (PR3): status_manager apply shield branch must add a case for effect_id 'shield_def' computing absorb = inst.value + (caster.defense * inst.pct) / 100. Skill schema must accept 'value' + 'pct' on effect entries with stat='shield_def'."
+        }
+      },
+      "shield_mag": {
+        "name_fr": "Bouclier (MAG)",
+        "name_en": "Shield (MAG)",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "impl": "planned",
+        "formula": "absorb = value + (caster_mag * pct / 100). value=base flat, pct=% scaling sur MAG du lanceur. Convention CTO 2026-05-01.",
+        "tooltip_fr": "Absorbe des dégâts proportionnels à la MAG du lanceur.",
+        "tooltip_en": "Absorbs damage scaled with caster MAG.",
+        "description_fr": "Variante MAG-scaled du bouclier, utilisée par les Healer/Cantor/Mage. Absorption = valeur de base (value) + un pourcentage de la MAG du lanceur (pct).",
+        "description_en": "MAG-scaled shield variant for Healer/Cantor/Mage. Absorption = flat value + pct% caster MAG.",
+        "sources": [
+          "Healer (holy_shield, cantor sacred_ward, lifewarden vine_shield)"
+        ],
+        "runtime": {
+          "absorb_formula": "value + (caster.magic_power * instance.pct) / 100",
+          "scaling_stat": "caster_mag",
+          "scaling_source": "instance.pct",
+          "scaling_behavior": "flat_plus_scaling",
+          "vfx_type": "shield_aura",
+          "_backend_note": "Backend patch required (PR3): status_manager apply shield branch must add a case for effect_id 'shield_mag' computing absorb = inst.value + (caster.magic_power * inst.pct) / 100."
+        }
+      },
+      "shield_max_hp": {
+        "name_fr": "Bouclier (PV max)",
+        "name_en": "Shield (Max HP)",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "impl": "planned",
+        "formula": "absorb = value + (caster_max_hp * pct / 100). value=base flat, pct=% scaling sur PV max du lanceur. Convention CTO 2026-05-01. Alias legacy 'caster_max_hp' à normaliser en 'max_hp' lors de la migration data.",
+        "tooltip_fr": "Absorbe des dégâts proportionnels aux PV max du lanceur.",
+        "tooltip_en": "Absorbs damage scaled with caster max HP.",
+        "description_fr": "Variante max_hp-scaled du bouclier, utilisée par les Guardian et tanks lourds. Absorption = valeur de base (value) + un pourcentage des PV max du lanceur (pct).",
+        "description_en": "Max_hp-scaled shield variant for Guardians and heavy tanks. Absorption = flat value + pct% caster max HP.",
+        "sources": [
+          "Warrior (Guardian protect_ally, iron_stance, barrier, aegis_of_the_realm)",
+          "Healer (Martyr sacred_pact)"
+        ],
+        "runtime": {
+          "absorb_formula": "value + (caster.max_hp * instance.pct) / 100",
+          "scaling_stat": "caster_max_hp",
+          "scaling_source": "instance.pct",
+          "scaling_behavior": "flat_plus_scaling",
+          "vfx_type": "shield_aura",
+          "_backend_note": "Backend patch required (PR3): status_manager apply shield branch must add a case for effect_id 'shield_max_hp' computing absorb = inst.value + (caster.max_hp * inst.pct) / 100."
+        }
+      },
+      "shield_max_mp": {
+        "name_fr": "Bouclier (Souffle max)",
+        "name_en": "Shield (Max Breath)",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "impl": "planned",
+        "formula": "absorb = value + (caster_max_mp * pct / 100). value=base flat, pct=% scaling sur Souffle max du lanceur. Convention CTO 2026-05-01.",
+        "tooltip_fr": "Absorbe des dégâts proportionnels au Souffle max du lanceur.",
+        "tooltip_en": "Absorbs damage scaled with caster max Breath.",
+        "description_fr": "Variante max_mp-scaled du bouclier, utilisée par les Mage (mana_shield, spell_guard). Absorption = valeur de base (value) + un pourcentage du Souffle max du lanceur (pct).",
+        "description_en": "Max_mp-scaled shield variant for Mages (mana_shield, spell_guard). Absorption = flat value + pct% caster max Breath.",
+        "sources": [
+          "Mage (mana_shield, spellblade spell_guard)"
+        ],
+        "runtime": {
+          "absorb_formula": "value + (caster.max_mp * instance.pct) / 100",
+          "scaling_stat": "caster_max_mp",
+          "scaling_source": "instance.pct",
+          "scaling_behavior": "flat_plus_scaling",
+          "vfx_type": "shield_aura",
+          "_backend_note": "Backend patch required (PR3): status_manager apply shield branch must add a case for effect_id 'shield_max_mp' computing absorb = inst.value + (caster.max_mp * inst.pct) / 100."
         }
       },
       "evasion": {
