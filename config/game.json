@@ -113,10 +113,10 @@
   },
   "combat_camera": {
     "_comment": "Combat-specific camera (more restrictive zoom)",
-    "_scale_note": "Scaled 2026-04-29 to match 1920x1080 viewport + grid 1.3x. Default 2.8 keeps the 4x5 grid readable without feeling sparse on 1920x1080 (was 2.2).",
-    "default_zoom": 2.8,
-    "min_zoom": 1.6,
-    "max_zoom": 3.5,
+    "_scale_note": "Tuned 2026-05-01 via layout_tuner.tscn for 1920x1080 viewport with tightened axes (axis_col 45/45, axis_row 78/-46). Default 1.8 fits the whole 4x5 grid without overflow.",
+    "default_zoom": 1.8,
+    "min_zoom": 1.0,
+    "max_zoom": 3.0,
     "zoom_step": 0.2,
     "pinch_sensitivity": 0.003
   },
@@ -142,7 +142,7 @@
     "slots_per_row": 4
   },
   "combat_grids": {
-    "_comment": "Grilles de combat dynamiques - 4x5 standard partout sauf tutorial",
+    "_comment": "Grille unique 4x5 (5 cols x 4 rows = 20 slots par equipe) — seul format actif depuis le pivot Arena Hub 2026-05-01.",
     "default": "4x5",
     "playtest_mode": false,
     "playtest_grids": [
@@ -154,33 +154,27 @@
         "cols": 5,
         "total_slots": 20,
         "description": "Standard grid (4 rows × 5 cols) - all combat types"
-      },
-      "2x5": {
-        "rows": 2,
-        "cols": 5,
-        "total_slots": 10,
-        "description": "Compact grid for tutorial/small encounters"
       }
     },
     "layout": {
       "_comment": "Isometric projection - Canaan Online style. Enemy uses col_mirrored = (cols-1)-col",
       "_formula": "anchor = team_center - ((cols-1)/2)*axis_col - ((rows-1)/2)*axis_row; pos = anchor + col*axis_col + row*axis_row",
-      "_scale_note": "Scaled 1.3x on 2026-04-29 to fit the 1920x1080 viewport + camera zoom 2.2",
+      "_scale_note": "Tuned 2026-05-01 via layout_tuner.tscn for 1920x1080 viewport with combat_camera.default_zoom = 1.8. Tighter axes than 2026-04-29 pass to keep the grid compact.",
       "axis_col": {
-        "x": 79,
-        "y": 68
+        "x": 45,
+        "y": 45
       },
       "axis_row": {
-        "x": 86,
-        "y": -51
+        "x": 78,
+        "y": -46
       },
       "team_center_player": {
-        "x": -189,
-        "y": 91
+        "x": -179,
+        "y": 106
       },
       "team_center_enemy": {
-        "x": 150,
-        "y": -98
+        "x": 140,
+        "y": -78
       }
     },
     "usage": {
@@ -188,10 +182,9 @@
       "dungeon": "4x5",
       "pvp_arena": "4x5",
       "boss_fight": "4x5",
-      "tutorial": "2x5",
       "playtest": "4x5"
     },
-    "notes": "4x5 (4 rows x 5 cols) standardise partout — seul le tutorial reste en 2x5"
+    "notes": "4x5 (4 rows x 5 cols) — seul format actif. Tutorial supprime au pivot Arena Hub 2026-05-01."
   },
   "dungeon_formats": {
     "_comment": "Formats de combat pour les donjons — chaque format force une strategie differente",
@@ -216,7 +209,7 @@
     "elite": {
       "name_fr": "Elite",
       "name_en": "Elite",
-      "grid": "3x5",
+      "grid": "4x5",
       "monster_count": {
         "min": 3,
         "max": 6
@@ -236,7 +229,7 @@
     "mythic": {
       "name_fr": "Mythique",
       "name_en": "Mythic",
-      "grid": "3x5",
+      "grid": "4x5",
       "monster_count": {
         "min": 1,
         "max": 4
