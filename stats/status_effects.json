@@ -2568,17 +2568,39 @@
         "polarity": "buff",
         "stacking": "unique",
         "impl": "done",
-        "formula": "Instant action. Restores value MP to target. Optional scaling.",
+        "formula": "Instant action. Restores value MP flat to target (no scaling — runtime ignores scaling field).",
         "tooltip_fr": "Restaure du Souffle.",
         "tooltip_en": "Restores Breath.",
-        "description_fr": "Restaure value points de Souffle a la cible.",
-        "description_en": "Restores value Breath to the target.",
+        "description_fr": "Restaure value Souffle (flat) a la cible. Pas de scaling cote runtime.",
+        "description_en": "Restores value Breath (flat) to the target. No scaling honored at runtime.",
         "sources": [
           "Artisan"
         ],
         "runtime": {
           "action": "restore_mp",
           "amount": "value",
+          "vfx_type": "breath_restore"
+        }
+      },
+      "mana_restore_max_mp": {
+        "name_fr": "Restauration de Souffle (% max)",
+        "name_en": "Breath Restore (% max)",
+        "polarity": "buff",
+        "stacking": "unique",
+        "impl": "planned",
+        "formula": "Instant action. Restores (value + pct% * caster_max_mp) MP to target.",
+        "tooltip_fr": "Restaure du Souffle (flat + pct%).",
+        "tooltip_en": "Restores Breath (flat + pct%).",
+        "description_fr": "Restaure value Souffle plus pct%% du Souffle max du lanceur a la cible.",
+        "description_en": "Restores value Breath plus pct%% of caster max Breath to the target.",
+        "sources": [
+          "Artisan"
+        ],
+        "runtime": {
+          "action": "restore_mp",
+          "amount": "value + pct_pct * caster_max_mp",
+          "value_field": "value",
+          "pct_field": "pct",
           "vfx_type": "breath_restore"
         }
       },
