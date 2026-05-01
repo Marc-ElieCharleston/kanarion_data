@@ -2568,39 +2568,24 @@
         "polarity": "buff",
         "stacking": "unique",
         "impl": "done",
-        "formula": "Instant action. Restores value MP flat to target (no scaling — runtime ignores scaling field).",
+        "formula": "Instant action. Restores value MP to target. With scaling: 'caster_max_mp' = value% * caster.max_mp; 'mag'/'atk' = value% * stat. value_per_level adds (level-1) * vpl to value before scaling.",
         "tooltip_fr": "Restaure du Souffle.",
         "tooltip_en": "Restores Breath.",
-        "description_fr": "Restaure value Souffle (flat) a la cible. Pas de scaling cote runtime.",
-        "description_en": "Restores value Breath (flat) to the target. No scaling honored at runtime.",
+        "description_fr": "Restaure value Souffle a la cible. Si scaling=caster_max_mp, value est un pourcentage du Souffle max du lanceur.",
+        "description_en": "Restores value Breath to the target. If scaling=caster_max_mp, value is a percentage of caster's max Breath.",
         "sources": [
           "Artisan"
         ],
         "runtime": {
           "action": "restore_mp",
-          "amount": "value",
-          "vfx_type": "breath_restore"
-        }
-      },
-      "mana_restore_max_mp": {
-        "name_fr": "Restauration de Souffle (% max)",
-        "name_en": "Breath Restore (% max)",
-        "polarity": "buff",
-        "stacking": "unique",
-        "impl": "planned",
-        "formula": "Instant action. Restores (value + pct% * caster_max_mp) MP to target.",
-        "tooltip_fr": "Restaure du Souffle (flat + pct%).",
-        "tooltip_en": "Restores Breath (flat + pct%).",
-        "description_fr": "Restaure value Souffle plus pct%% du Souffle max du lanceur a la cible.",
-        "description_en": "Restores value Breath plus pct%% of caster max Breath to the target.",
-        "sources": [
-          "Artisan"
-        ],
-        "runtime": {
-          "action": "restore_mp",
-          "amount": "value + pct_pct * caster_max_mp",
-          "value_field": "value",
-          "pct_field": "pct",
+          "amount": "value (flat) OR value% * caster.max_mp (scaling=caster_max_mp) OR value% * stat (scaling=mag|atk)",
+          "scaling_modes": [
+            "",
+            "caster_max_mp",
+            "mag",
+            "atk"
+          ],
+          "value_per_level_supported": true,
           "vfx_type": "breath_restore"
         }
       },
