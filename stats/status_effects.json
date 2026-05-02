@@ -2244,46 +2244,29 @@
           "vfx_type": "magic_aura"
         }
       },
-      "double_hit_chance": {
-        "name_fr": "Double Frappe",
-        "name_en": "Double Hit",
-        "polarity": "buff",
-        "stacking": "refresh",
-        "impl": "done",
-        "formula": "+[skill_value]% chance to hit twice",
-        "tooltip_fr": "Chance de frapper deux fois.",
-        "tooltip_en": "Chance to strike twice.",
-        "description_fr": "Chance de frapper deux fois par auto-attaque. Chaque coup est indépendant (crit, effets).",
-        "description_en": "Chance to strike twice per auto-attack. Each hit is independent (crit, effects).",
-        "sources": [
-          "Warrior Weaponmaster"
-        ],
-        "runtime": {
-          "stat_mods": {
-            "extra_hit_chance": "value/100"
-          },
-          "vfx_type": "multi_strike"
-        }
-      },
       "double_attack_chance": {
         "name_fr": "Tir Double",
         "name_en": "Double Shot",
         "polarity": "buff",
         "stacking": "refresh",
         "impl": "done",
-        "formula": "+[skill_value]% chance to attack twice",
+        "formula": "Auto-attack only. Pipeline: roll triple→if fail roll double→else single. Each hit independent (crit/proc/status).",
         "tooltip_fr": "Chance d'effectuer une attaque supplémentaire.",
         "tooltip_en": "Chance to perform an additional attack.",
-        "description_fr": "Chance de tirer deux fois par auto-attaque. Même mécanique que double frappe, version à distance.",
-        "description_en": "Chance to fire twice per auto-attack. Same mechanic as double hit, ranged version.",
+        "description_fr": "Chance de deux auto-attaques au lieu d'une. Mutuellement exclusif avec triple_attack_chance (triple roll first, double fallback). Cap 50%.",
+        "description_en": "Chance to fire two auto-attacks instead of one. Mutually exclusive with triple_attack_chance (triple rolls first, double falls back). Cap 50%.",
         "sources": [
           "Archer Gunslinger"
         ],
         "runtime": {
           "stat_mods": {
-            "extra_hit_chance": "value/100"
+            "double_attack_chance_percent": "value/100"
           },
           "vfx_type": "multi_strike"
+        },
+        "_audit_note": "CTO 2026-05-02 spec finalized: consolidated from double_hit_chance.",
+        "stat_mods": {
+          "double_attack_chance_percent": 0.0
         }
       },
       "martial_discipline_atk": {
@@ -2566,6 +2549,30 @@
           "crit_damage": 50
         },
         "_audit_note": "PR A2 cleanup 2026-05-02: stat_mods migrated from runtime block to top-level (numeric, machine-readable). The runtime block keeps template strings as designer documentation only."
+      },
+      "triple_attack_chance": {
+        "name_fr": "Triple Attaque",
+        "name_en": "Triple Attack",
+        "polarity": "buff",
+        "stacking": "unique",
+        "impl": "done",
+        "formula": "Auto-attack only. Rolls before double_attack_chance (priority); on success fires 3 hits. Cap 30%.",
+        "tooltip_fr": "Chance de tirer trois auto-attaques.",
+        "tooltip_en": "Chance to fire three auto-attacks.",
+        "description_fr": "Chance de trois auto-attaques au lieu d'une. Roll prioritaire sur double_attack_chance. Cap 30%. Auto-attaques uniquement (jamais sur skills).",
+        "description_en": "Chance to fire three auto-attacks instead of one. Rolls before double_attack_chance. Cap 30%. Auto-attacks only (never on skills).",
+        "sources": [
+          "Archer Gunslinger (future tier3)"
+        ],
+        "_audit_note": "CTO 2026-05-02 spec: independent of double, but mutually exclusive outcome (triple wins).",
+        "stat_mods": {
+          "triple_attack_chance_percent": 0.0
+        },
+        "runtime": {
+          "stat_mods": {
+            "triple_attack_chance_percent": "value/100"
+          }
+        }
       }
     }
   },
