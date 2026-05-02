@@ -1740,93 +1740,6 @@
           "_backend_note": "Backend patch required (PR3): status_manager apply shield branch must add a case for effect_id 'shield_max_mp' computing absorb = inst.value + (caster.max_mp * inst.pct) / 100."
         }
       },
-      "evasion": {
-        "name_fr": "Évasion",
-        "name_en": "Evasion",
-        "polarity": "buff",
-        "stacking": "refresh",
-        "impl": "done",
-        "formula": "evasion_chance% dodge rate",
-        "tooltip_fr": "Augmente l'esquive contre les attaques et compétences.",
-        "tooltip_en": "Increases dodge chance against attacks and skills.",
-        "description_fr": "Augmente la chance d'esquiver les attaques ET les compétences. Le % dépend du sort. Ne bloque pas les AOE zone.",
-        "description_en": "Increases chance to dodge both attacks AND skills. % depends on the spell. Does not block zone AOE.",
-        "runtime": {
-          "evasion_chance": "value/100",
-          "vfx_type": "shadow_aura"
-        }
-      },
-      "block": {
-        "name_fr": "Blocage",
-        "name_en": "Block",
-        "polarity": "buff",
-        "stacking": "refresh",
-        "impl": "done",
-        "formula": "negates 1 attack",
-        "tooltip_fr": "Bloque la prochaine attaque reçue.",
-        "tooltip_en": "Blocks the next incoming attack.",
-        "description_fr": "Annule complètement la prochaine attaque reçue (physique ou magique). Consomme 1 charge.",
-        "description_en": "Completely negates the next attack received (phys or mag). Consumes 1 charge.",
-        "runtime": {
-          "block_chance": "value/100",
-          "block_reduction": 0.4,
-          "vfx_type": "shield_aura"
-        }
-      },
-      "parry": {
-        "name_fr": "Parade",
-        "name_en": "Parry",
-        "polarity": "buff",
-        "stacking": "refresh",
-        "impl": "done",
-        "formula": "negates attack + counter ATK * 0.5",
-        "tooltip_fr": "Parre les attaques et réduit les dégâts subis.",
-        "tooltip_en": "Parries attacks and reduces damage taken.",
-        "description_fr": "Bloque la prochaine attaque mêlée ET riposte automatiquement. Riposte = 50% ATK.",
-        "description_en": "Blocks next melee attack AND auto-counters. Counter = 50% ATK.",
-        "runtime": {
-          "parry_chance": "value/100",
-          "vfx_type": "parry_aura"
-        }
-      },
-      "reflect": {
-        "name_fr": "Renvoi",
-        "name_en": "Reflect",
-        "polarity": "buff",
-        "stacking": "refresh",
-        "impl": "done",
-        "formula": "[skill_value]% damage reflected",
-        "tooltip_fr": "Renvoie une partie des dégâts subis à l'attaquant.",
-        "tooltip_en": "Reflects a portion of damage taken back to the attacker.",
-        "description_fr": "Renvoie un % des dégâts reçus à l'attaquant. % défini par le sort (20-50% typique).",
-        "description_en": "Returns % of damage taken to attacker. % set by spell (20-50% typical).",
-        "runtime": {
-          "stat_mods": {
-            "reflect": "value"
-          },
-          "vfx_type": "reflect_aura"
-        }
-      },
-      "thorns": {
-        "name_fr": "Épines",
-        "name_en": "Thorns",
-        "polarity": "buff",
-        "stacking": "stackable",
-        "impl": "done",
-        "formula": "DEF * 0.1 per stack to melee attackers",
-        "tooltip_fr": "Inflige des dégâts aux ennemis qui attaquent le porteur.",
-        "tooltip_en": "Deals damage to enemies that attack the bearer.",
-        "description_fr": "Inflige des dégâts fixes aux attaquants mêlée. Se cumule. Passif, ne consomme pas l'effet.",
-        "description_en": "Deals flat damage to melee attackers. Stacks. Passive, doesn't consume effect.",
-        "runtime": {
-          "stat_mods": {
-            "thorns": "power"
-          },
-          "vfx_type": "thorn_aura"
-        },
-        "max_stacks": 10,
-        "value_per_stack": 1
-      },
       "sacrifice": {
         "name_fr": "Sacrifice",
         "name_en": "Sacrifice",
@@ -1921,29 +1834,6 @@
           "consume_on_trigger": true,
           "vfx_type": "riposte_flash"
         }
-      },
-      "replique_active": {
-        "name_fr": "Replique",
-        "name_en": "Replique Active",
-        "polarity": "buff",
-        "stacking": "unique",
-        "max_stacks": 1,
-        "impl": "planned",
-        "stealable": false,
-        "formula": "Variante Warrior Bulwark de Riposte. Renvoie value% des degats de la prochaine attaque recue. Consomme apres 1 declenchement. Duree 4s.",
-        "tooltip_fr": "Posture defensive du Bulwark. Renvoie une partie des degats de la prochaine attaque recue.",
-        "tooltip_en": "Bulwark defensive stance. Reflects part of the next attack received back to the attacker.",
-        "description_fr": "Variante Warrior Bulwark de Riposte. Identite de classe distincte de riposte_active (Rogue Duelist). Renvoie value% des degats de la prochaine attaque recue. Consomme apres 1 declenchement.",
-        "description_en": "Warrior Bulwark variant of Riposte. Distinct class identity from riposte_active (Rogue Duelist). Reflects value% of the next attack's damage. Consumed after 1 trigger.",
-        "sources": [
-          "Warrior (Bulwark)"
-        ],
-        "runtime": {
-          "on_hit_taken": "reflect_damage",
-          "consume_on_trigger": true,
-          "vfx_type": "riposte_flash",
-          "_backend_note": "Backend patch requis: room.cpp:2357 hook on_damage_taken doit checker has_effect(\"replique_active\") en plus de has_effect(\"riposte_active\"). Quick fix Option A: 5 lignes additionnelles."
-        }
       }
     },
     "immunity": {
@@ -2026,12 +1916,13 @@
         "name_en": "CC Immunity Zone",
         "polarity": "buff",
         "stacking": "refresh",
-        "impl": "planned",
+        "impl": "done",
         "is_aura": true,
         "tooltip_fr": "Les alliés dans la zone deviennent immunisés aux contrôles.",
         "tooltip_en": "Allies inside the area become immune to crowd control.",
         "description_fr": "Crée une zone. Alliés dans la zone immuns aux contrôles. Zone fixe, ne bouge pas. Compétence de Soigneur.",
-        "description_en": "Creates a zone. Allies inside immune to CC. Zone is fixed, doesn't move. Healer/Support skill."
+        "description_en": "Creates a zone. Allies inside immune to CC. Zone is fixed, doesn't move. Healer/Support skill.",
+        "_pr_a2_note": "Flag corrected 2026-05-02 — code path verified wired in audit."
       }
     },
     "aggro": {
@@ -2201,13 +2092,14 @@
         "name_en": "Breath Regen",
         "polarity": "buff",
         "stacking": "stackable",
-        "impl": "planned",
+        "impl": "done",
         "formula": "max_MP * 0.02 per second per stack",
         "tooltip_fr": "Régénère progressivement le Souffle.",
         "tooltip_en": "Gradually regenerates Breath.",
         "description_fr": "Regenere 2% Souffle max par seconde par charge. Pour lanceurs de sorts. Plus agressif que la regen PV.",
         "description_en": "Regenerates 2% max Breath per second per stack. For casters. More aggressive than HP regen.",
-        "max_stacks": 10
+        "max_stacks": 10,
+        "_pr_a2_note": "Flag corrected 2026-05-02 — code path verified wired in audit."
       },
       "mana_drain": {
         "name_fr": "Drain Souffle",
@@ -2310,11 +2202,12 @@
         "name_en": "Shield Block",
         "polarity": "debuff",
         "stacking": "refresh",
-        "impl": "planned",
+        "impl": "done",
         "tooltip_fr": "Empêche la cible de recevoir des boucliers.",
         "tooltip_en": "Prevents the target from receiving shields.",
         "description_fr": "Empêche de recevoir de NOUVEAUX boucliers. N'affecte pas les boucliers existants. Efficace contre le spam de boucliers Guardian.",
-        "description_en": "Prevents receiving NEW shields. Doesn't affect existing shields. Counters Guardian/shield spam."
+        "description_en": "Prevents receiving NEW shields. Doesn't affect existing shields. Counters Guardian/shield spam.",
+        "_pr_a2_note": "Flag corrected 2026-05-02 — code path verified wired in audit."
       },
       "frenzy": {
         "name_fr": "Frénésie",
@@ -2435,7 +2328,7 @@
         "polarity": "buff",
         "stacking": "stackable",
         "max_stacks": 3,
-        "impl": "planned",
+        "impl": "done",
         "formula": "+5% ATK per stack, refreshes on new stack",
         "duration": 10.0,
         "tooltip_fr": "Augmente l'attaque du porteur.",
@@ -2444,7 +2337,8 @@
         "description_en": "The warrior's discipline strengthens his blows. +5% ATK per stack (max 3). Triggered by casting an offensive spell.",
         "sources": [
           "Warrior (class passive)"
-        ]
+        ],
+        "_pr_a2_note": "Flag corrected 2026-05-02 — code path verified wired in audit."
       },
       "martial_discipline_def": {
         "name_fr": "Discipline Martiale (DEF)",
@@ -2452,7 +2346,7 @@
         "polarity": "buff",
         "stacking": "stackable",
         "max_stacks": 3,
-        "impl": "planned",
+        "impl": "done",
         "formula": "+5% DEF per stack, refreshes on new stack",
         "duration": 10.0,
         "tooltip_fr": "Augmente la défense du porteur.",
@@ -2461,7 +2355,8 @@
         "description_en": "The warrior's discipline hardens his guard. +5% DEF per stack (max 3). Triggered by casting a support or defensive spell.",
         "sources": [
           "Warrior (class passive)"
-        ]
+        ],
+        "_pr_a2_note": "Flag corrected 2026-05-02 — code path verified wired in audit."
       },
       "arcane_charge": {
         "name_fr": "Charge Arcanique",
@@ -2469,7 +2364,7 @@
         "polarity": "buff",
         "stacking": "stackable",
         "max_stacks": 3,
-        "impl": "planned",
+        "impl": "done",
         "formula": "+4% MAG per stack. Consumed by powerful spells for amplified effects (bonus varies by skill). Scalable: +0.1%/stack per Arcane Mastery level.",
         "tooltip_fr": "Augmente la puissance des compétences magiques.\nPeut se cumuler.",
         "tooltip_en": "Increases magical skill power.\nCan stack.",
@@ -2477,7 +2372,8 @@
         "description_en": "The Mage's Breath accumulates with each cast. +4% MAG per charge. Consumed by powerful spells for amplified effects.",
         "sources": [
           "Mage (class passive)"
-        ]
+        ],
+        "_pr_a2_note": "Flag corrected 2026-05-02 — code path verified wired in audit."
       },
       "guardian_breath": {
         "name_fr": "Souffle Protecteur",
@@ -2501,7 +2397,7 @@
         "polarity": "debuff",
         "stacking": "stackable",
         "max_stacks": 4,
-        "impl": "planned",
+        "impl": "done",
         "formula": "+5% damage taken per stack. Applied every 4 auto-attacks on the same target. Duration 8s, refreshes on new stack. Scalable: +0.5% per stack per Hunter's Focus level.",
         "duration": 8.0,
         "tooltip_fr": "Marque une cible et augmente les dégâts qu'elle subit.",
@@ -2510,7 +2406,8 @@
         "description_en": "The prey is marked by the hunter's Breath. +5% damage taken per stack (max 4). Applied every 4 auto-attacks on the same target.",
         "sources": [
           "Archer (class passive)"
-        ]
+        ],
+        "_pr_a2_note": "Flag corrected 2026-05-02 — code path verified wired in audit."
       },
       "savoir_faire": {
         "name_fr": "Savoir-Faire",
@@ -2535,7 +2432,7 @@
         "polarity": "buff",
         "stacking": "stackable",
         "max_stacks": 5,
-        "impl": "planned",
+        "impl": "done",
         "formula": "+3% damage and +2% armor penetration per stack. At 5 stacks: consumed, grants Predator's Focus for 10s (+20% damage, +15% armor pen, +10% crit chance). Scalable: +0.3% damage per stack per Assassin's Precision level.",
         "duration": 10.0,
         "tooltip_fr": "Renforce le porteur après avoir infligé des dégâts ou vaincu une cible.",
@@ -2544,14 +2441,15 @@
         "description_en": "The Rogue's predatory instinct sharpens with each strike on weakened prey. +3% damage and +2% armor penetration per stack. At 5 stacks: Predator's Focus 10s.",
         "sources": [
           "Rogue (class passive)"
-        ]
+        ],
+        "_pr_a2_note": "Flag corrected 2026-05-02 — code path verified wired in audit."
       },
       "predators_focus": {
         "name_fr": "Concentration du Prédateur",
         "name_en": "Predator's Focus",
         "polarity": "buff",
         "stacking": "unique",
-        "impl": "planned",
+        "impl": "done",
         "formula": "+20% damage, +15% armor penetration, +10% critical chance for 10s. Granted when Predation reaches 5 stacks.",
         "duration": 10.0,
         "tooltip_fr": "Augmente la précision et les dégâts infligés.",
@@ -2560,7 +2458,8 @@
         "description_en": "The predator found the opening. +20% damage, +15% armor penetration, +10% critical chance for 10s.",
         "sources": [
           "Rogue (class passive)"
-        ]
+        ],
+        "_pr_a2_note": "Flag corrected 2026-05-02 — code path verified wired in audit."
       },
       "steal_buff": {
         "name_fr": "Vol de Buff",
@@ -2636,7 +2535,7 @@
         "polarity": "debuff",
         "stacking": "refresh",
         "max_stacks": 1,
-        "impl": "planned",
+        "impl": "done",
         "formula": "+15% damage taken from all sources, refresh on reapply",
         "tooltip_fr": "La cible subit davantage de degats du chasseur.",
         "tooltip_en": "The target takes increased damage from the hunter.",
@@ -2650,7 +2549,8 @@
             "damage_taken_percent": 0.15
           },
           "vfx_type": "mark_effect"
-        }
+        },
+        "_pr_a2_note": "Flag corrected 2026-05-02 — code path verified wired in audit."
       },
       "iron_stance_shield": {
         "name_fr": "Posture de Fer",
@@ -2658,7 +2558,7 @@
         "polarity": "buff",
         "stacking": "refresh",
         "max_stacks": 1,
-        "impl": "planned",
+        "impl": "done",
         "stealable": false,
         "formula": "-50% damage taken, short duration, long CD",
         "tooltip_fr": "Posture defensive ultime. Reduit massivement les degats subis.",
@@ -2673,7 +2573,8 @@
             "damage_taken_percent": -0.5
           },
           "vfx_type": "shield_aura"
-        }
+        },
+        "_pr_a2_note": "Flag corrected 2026-05-02 — code path verified wired in audit."
       },
       "steady_aim_amplifier": {
         "name_fr": "Visee Stable",
