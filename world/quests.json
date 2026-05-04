@@ -1818,6 +1818,638 @@
         ]
       },
       "unlocks": "q_main_arrival"
+    },
+    {
+      "id": "q_tut_intro_01",
+      "type": "main",
+      "zone": "tutorial_tavern",
+      "min_level": 1,
+      "flags": [
+        "tutorial",
+        "auto_accept_on_zone_enter"
+      ],
+      "title_fr": "Premier contact",
+      "title_en": "First Contact",
+      "summary_fr": "Aldric, le maître de guilde, t'attend dans la taverne. Va lui parler, il va t'équiper et te former.",
+      "summary_en": "Aldric, the guild master, is waiting in the tavern. Go talk to him, he'll equip and train you.",
+      "npc_giver": "npc_guild_master_aldric",
+      "objective_mode": "sequential",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_guild_master_aldric",
+          "count": 1,
+          "description_fr": "Parler à Aldric",
+          "description_en": "Talk to Aldric",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_01_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_guild_master_aldric",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Aldric",
+                  "label_en": "Go see Aldric"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "equip_item",
+          "count": 1,
+          "description_fr": "Équiper l'arme reçue",
+          "description_en": "Equip the received weapon",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_01_obj1_inv",
+                "type": "highlight",
+                "target": "ui_inventory_button",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Ouvre ton inventaire",
+                  "label_en": "Open your inventory"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_tut_intro_01_intro_modal",
+            "type": "modal",
+            "priority": 100,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Bienvenue à Kanarion",
+              "title_en": "Welcome to Kanarion",
+              "content_fr": "Te voilà enfin. Je commençais à croire que tu avais changé d'avis.\n\nTu connais les règles, comme tout le monde ici : personne ne sort des murs sans être préparé. Depuis que les Fissures se sont ouvertes, même les créatures les plus faibles deviennent dangereuses.\n\nOn a déjà perdu trop de volontaires. Des gens du village. Des amis.\n\nSi tu veux rejoindre les expéditions, on commence simplement : équipe une arme.",
+              "content_en": "There you are. I was starting to think you'd changed your mind.\n\nYou know the rules, like everyone here: no one leaves the walls unprepared. Ever since the Fissures opened, even the weakest creatures have become dangerous.\n\nWe've already lost too many volunteers. People from the village. Friends.\n\nIf you want to join the expeditions, we start simply: equip a weapon."
+            }
+          }
+        ]
+      },
+      "rewards": {
+        "xp": 50,
+        "items": [
+          {
+            "id": "wpn_dagger_b1",
+            "qty": 1,
+            "_note": "Placeholder. À remplacer par token class-aware {class_starter_weapon} quand le système est prêt côté serveur."
+          }
+        ]
+      },
+      "chain_next": "q_tut_intro_02"
+    },
+    {
+      "id": "q_tut_intro_02",
+      "type": "main",
+      "zone": "tutorial_tavern",
+      "min_level": 1,
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "Premier palier",
+      "title_en": "First Step",
+      "summary_fr": "Tu as équipé ton arme. Retourne voir Aldric pour confirmer ta formation.",
+      "summary_en": "You equipped your weapon. Return to Aldric to confirm your training.",
+      "npc_giver": "npc_guild_master_aldric",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_guild_master_aldric",
+          "count": 1,
+          "description_fr": "Retourner voir Aldric",
+          "description_en": "Return to Aldric",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_02_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_guild_master_aldric",
+                "priority": 85,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Retourne voir Aldric",
+                  "label_en": "Return to Aldric"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "quest_hints": {
+        "on_complete": [
+          {
+            "id": "q_tut_intro_02_levelup_modal",
+            "type": "modal",
+            "priority": 95,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Tu as monté de niveau",
+              "title_en": "You leveled up",
+              "content_fr": "Tu as monté de niveau.\n\nÀ chaque niveau, tu reçois des points pour faire évoluer ton personnage :\n• 3 points de stats\n• 1 point de compétence active\n• 1 point de compétence passive\n\nCommence par investir tes points de stats, puis utilise ton point de compétence active pour renforcer une technique.",
+              "content_en": "You leveled up.\n\nEach level, you receive points to develop your character:\n• 3 stat points\n• 1 active skill point\n• 1 passive skill point\n\nStart by allocating your stat points, then use your active skill point to strengthen a technique."
+            }
+          }
+        ]
+      },
+      "rewards": {
+        "xp": 80
+      },
+      "chain_next": "q_tut_intro_03"
+    },
+    {
+      "id": "q_tut_intro_03",
+      "type": "main",
+      "zone": "tutorial_tavern",
+      "min_level": 1,
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "Connais tes forces",
+      "title_en": "Know Your Strengths",
+      "summary_fr": "Investis tes points de stats et ton point de compétence, puis retourne voir Aldric.",
+      "summary_en": "Allocate your stat points and skill point, then return to Aldric.",
+      "npc_giver": "npc_guild_master_aldric",
+      "objective_mode": "sequential",
+      "objectives": [
+        {
+          "template": "spend_stat_points",
+          "count": 3,
+          "description_fr": "Investir 3 points de stats",
+          "description_en": "Allocate 3 stat points",
+          "_note": "Template à créer côté backend (incrémente sur chaque STAT_ALLOCATE_REQUEST)",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_03_obj0_stats",
+                "type": "highlight",
+                "target": "ui_stats_button",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Ouvre tes statistiques",
+                  "label_en": "Open your stats"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "spend_skill_point",
+          "count": 1,
+          "description_fr": "Investir 1 point de compétence active",
+          "description_en": "Allocate 1 active skill point",
+          "_note": "Template à créer côté backend (incrémente sur SKILL_UPGRADE_REQUEST)",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_03_obj1_skills",
+                "type": "highlight",
+                "target": "ui_skills_button",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Ouvre tes compétences",
+                  "label_en": "Open your skills"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_guild_master_aldric",
+          "count": 1,
+          "description_fr": "Retourner voir Aldric",
+          "description_en": "Return to Aldric",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_03_obj2_arrow",
+                "type": "arrow",
+                "target": "npc_guild_master_aldric",
+                "priority": 85,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Retourne voir Aldric",
+                  "label_en": "Return to Aldric"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_tut_intro_03_aldric_dialogue",
+            "type": "modal",
+            "priority": 80,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Aldric",
+              "title_en": "Aldric",
+              "content_fr": "Avant de t'envoyer dehors, ouvre ton entraînement.\n\nRenforce tes stats, puis améliore une technique. Choisis ce qui te ressemble : plus de force, plus de magie, plus d'endurance… mais choisis.\n\nEt ne t'inquiète pas : en ville, tu trouveras toujours quelqu'un pour t'aider à réinitialiser tes points si tu changes d'avis.",
+              "content_en": "Before I send you out, open your training.\n\nStrengthen your stats, then improve a technique. Choose what suits you: more strength, more magic, more endurance… but choose.\n\nAnd don't worry: in town, you'll always find someone to help you reset your points if you change your mind."
+            }
+          }
+        ]
+      },
+      "rewards": {
+        "xp": 30
+      },
+      "chain_next": "q_tut_intro_04"
+    },
+    {
+      "id": "q_tut_intro_04",
+      "type": "main",
+      "zone": "tutorial_tavern",
+      "min_level": 1,
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "Première épreuve",
+      "title_en": "First Trial",
+      "summary_fr": "Aldric a capturé un rat contaminé. Affronte-le pour t'entraîner, puis reviens lui parler.",
+      "summary_en": "Aldric captured a contaminated rat. Fight it to practice, then come back to him.",
+      "npc_giver": "npc_guild_master_aldric",
+      "objective_mode": "sequential",
+      "objectives": [
+        {
+          "template": "tutorial_combat_complete",
+          "scenario_id": "rat_solo",
+          "count": 1,
+          "description_fr": "Délivrer le rat contaminé",
+          "description_en": "Defeat the contaminated rat",
+          "_note": "Template à créer côté backend. Trigger TUTORIAL_COMBAT_START_REQUEST(scenario_id=rat_solo). Compteur incrémente à la victoire.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_04_obj0_target",
+                "type": "arrow",
+                "target": "tutorial_target_rat",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Affronte le rat contaminé",
+                  "label_en": "Fight the contaminated rat"
+                }
+              }
+            ],
+            "on_complete": [
+              {
+                "id": "q_tut_intro_04_obj0_return",
+                "type": "arrow",
+                "target": "npc_guild_master_aldric",
+                "priority": 85,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Retourne voir Aldric",
+                  "label_en": "Return to Aldric"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_guild_master_aldric",
+          "count": 1,
+          "description_fr": "Retourner voir Aldric",
+          "description_en": "Return to Aldric"
+        }
+      ],
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_tut_intro_04_aldric_dialogue",
+            "type": "modal",
+            "priority": 85,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Aldric",
+              "title_en": "Aldric",
+              "content_fr": "Maintenant, on passe à la pratique.\n\nUn rat contaminé a été capturé près de la sortie. Avant les Fissures, ce n'était qu'une nuisance. Aujourd'hui, même ces bêtes-là deviennent violentes, comme si quelque chose les poussait à attaquer.\n\nClique sur le rat, lance le combat, et libère-le.",
+              "content_en": "Now, time for practice.\n\nA contaminated rat was captured near the exit. Before the Fissures, it was just a nuisance. Today, even these beasts become violent, as if something pushes them to attack.\n\nClick the rat, start the fight, and free it."
+            }
+          }
+        ]
+      },
+      "rewards": {
+        "xp": 200
+      },
+      "chain_next": "q_tut_intro_05"
+    },
+    {
+      "id": "q_tut_intro_05",
+      "type": "main",
+      "zone": "tutorial_tavern",
+      "min_level": 1,
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "Réserves",
+      "title_en": "Supplies",
+      "summary_fr": "Aldric te donne des potions hors combat. Place-en une sur ta barre rapide, puis retourne lui parler.",
+      "summary_en": "Aldric gives you out-of-combat potions. Place one on your quickbar, then return to him.",
+      "npc_giver": "npc_guild_master_aldric",
+      "objective_mode": "sequential",
+      "objectives": [
+        {
+          "template": "assign_quickslot",
+          "count": 1,
+          "description_fr": "Placer une potion sur la barre rapide",
+          "description_en": "Place a potion on the quickbar",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_05_obj0_quickbar",
+                "type": "highlight",
+                "target": "ui_quickbar_slot_first_empty",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Glisse une potion sur ta barre rapide",
+                  "label_en": "Drag a potion to your quickbar"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_guild_master_aldric",
+          "count": 1,
+          "description_fr": "Retourner voir Aldric",
+          "description_en": "Return to Aldric"
+        }
+      ],
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_tut_intro_05_aldric_dialogue",
+            "type": "modal",
+            "priority": 80,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Aldric",
+              "title_en": "Aldric",
+              "content_fr": "Tu t'en es bien sorti.\n\nMais tu as senti les dégâts ? Ce n'était qu'un rat. Plus on s'éloigne du village, plus l'influence des Fissures devient forte.\n\nEzra pense même que certaines créatures commencent à se transformer.\n\nPrends ces potions. Elles ne servent pas pendant le combat, mais elles t'éviteront d'attendre que tes blessures se referment entre deux affrontements.",
+              "content_en": "You did well.\n\nBut you felt the damage? That was just a rat. The further from the village, the stronger the Fissures' influence.\n\nEzra even thinks some creatures are starting to transform.\n\nTake these potions. They don't work during combat, but they spare you from waiting for your wounds to close between fights."
+            }
+          }
+        ]
+      },
+      "rewards": {
+        "xp": 50,
+        "items": [
+          {
+            "id": "cons_hp_potion_small",
+            "qty": 3
+          },
+          {
+            "id": "cons_mp_potion_small",
+            "qty": 2
+          }
+        ]
+      },
+      "chain_next": "q_tut_intro_06"
+    },
+    {
+      "id": "q_tut_intro_06",
+      "type": "main",
+      "zone": "tutorial_tavern",
+      "min_level": 1,
+      "flags": [
+        "tutorial",
+        "gated_by_mercenary_mvp"
+      ],
+      "_gating_note": "Si le système mercenaire MVP n'est pas prêt, le serveur skip cette quête et chaîne directement q_tut_intro_05 -> q_tut_intro_08.",
+      "title_fr": "Renforts",
+      "title_en": "Reinforcements",
+      "summary_fr": "Aldric te dit d'aller voir Hestia. Elle place les mercenaires qui accompagnent les volontaires.",
+      "summary_en": "Aldric tells you to see Hestia. She places mercenaries who accompany volunteers.",
+      "npc_giver": "npc_guild_master_aldric",
+      "objective_mode": "sequential",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_mercenary_broker_hestia",
+          "count": 1,
+          "description_fr": "Parler à Hestia",
+          "description_en": "Talk to Hestia",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_06_obj0_hestia",
+                "type": "arrow",
+                "target": "npc_mercenary_broker_hestia",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Hestia",
+                  "label_en": "Go see Hestia"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "recruit_mercenary",
+          "count": 1,
+          "description_fr": "Recruter un mercenaire",
+          "description_en": "Recruit a mercenary",
+          "_note": "Template à créer côté backend. Incrémente sur MERCENARY_HIRE_RESPONSE success."
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_mercenary_broker_hestia",
+          "count": 1,
+          "description_fr": "Retourner voir Hestia",
+          "description_en": "Return to Hestia"
+        }
+      ],
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_tut_intro_06_aldric_dialogue",
+            "type": "modal",
+            "priority": 80,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Aldric",
+              "title_en": "Aldric",
+              "content_fr": "Une dernière chose.\n\nDehors, les créatures ne restent plus seules. Elles se regroupent, se protègent, parfois même se soignent entre elles.\n\nLes expéditions qui survivent sont celles qui partent en équipe. Va voir Hestia. Elle s'occupe des mercenaires qui accompagnent les volontaires.",
+              "content_en": "One last thing.\n\nOut there, creatures no longer stay alone. They group up, protect each other, sometimes even heal each other.\n\nThe expeditions that survive are the ones that leave in a team. Go see Hestia. She handles the mercenaries who accompany volunteers."
+            }
+          }
+        ]
+      },
+      "rewards": {
+        "xp": 100,
+        "gold": 50
+      },
+      "chain_next": "q_tut_intro_07"
+    },
+    {
+      "id": "q_tut_intro_07",
+      "type": "main",
+      "zone": "tutorial_tavern",
+      "min_level": 1,
+      "flags": [
+        "tutorial",
+        "gated_by_mercenary_mvp"
+      ],
+      "title_fr": "Combat de groupe",
+      "title_en": "Group Combat",
+      "summary_fr": "Aldric a préparé un groupe ennemi pour t'entraîner au combat à plusieurs.",
+      "summary_en": "Aldric prepared an enemy group to train you in group combat.",
+      "npc_giver": "npc_guild_master_aldric",
+      "objective_mode": "sequential",
+      "objectives": [
+        {
+          "template": "tutorial_combat_complete",
+          "scenario_id": "group_contaminated",
+          "count": 1,
+          "description_fr": "Délivrer le groupe contaminé",
+          "description_en": "Defeat the contaminated group",
+          "_note": "Template à créer côté backend. Trigger TUTORIAL_COMBAT_START_REQUEST(scenario_id=group_contaminated). Spawn 3-4 mobs lvl 1 avec rôles variés.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_07_obj0_target",
+                "type": "arrow",
+                "target": "tutorial_target_group",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Affronte le groupe contaminé",
+                  "label_en": "Fight the contaminated group"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_guild_master_aldric",
+          "count": 1,
+          "description_fr": "Retourner voir Aldric",
+          "description_en": "Return to Aldric"
+        }
+      ],
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_tut_intro_07_aldric_dialogue",
+            "type": "modal",
+            "priority": 85,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Aldric",
+              "title_en": "Aldric",
+              "content_fr": "Je vois que tu es bien accompagné.\n\nRegarde le groupe près de la sortie. Cette fois, ils sont plusieurs. Avant d'attaquer, observe leur composition : certains encaissent, certains frappent fort, d'autres soignent ou gênent tes mouvements.\n\nUn bon volontaire ne fonce pas tête baissée. Il regarde, il place son équipe, puis il frappe.",
+              "content_en": "I see you're well accompanied.\n\nLook at the group near the exit. This time, there are several. Before attacking, observe their composition: some take hits, some hit hard, others heal or hinder your movements.\n\nA good volunteer doesn't charge in headfirst. They look, place their team, then strike."
+            }
+          },
+          {
+            "id": "q_tut_intro_07_group_modal",
+            "type": "modal",
+            "priority": 84,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Lire un groupe",
+              "title_en": "Reading a Group",
+              "content_fr": "Certains ennemis combattent en groupe.\n\nRegarde leur rôle avant de lancer le combat :\n• les tanks protègent\n• les soigneurs prolongent le combat\n• les attaquants fragiles doivent souvent être éliminés vite\n\nPlus un groupe est dangereux, plus la récompense est élevée.",
+              "content_en": "Some enemies fight in groups.\n\nLook at their role before starting the fight:\n• tanks protect\n• healers prolong the fight\n• fragile attackers should often be taken out fast\n\nThe more dangerous the group, the higher the reward."
+            }
+          }
+        ]
+      },
+      "rewards": {
+        "xp": 250,
+        "gold": 100
+      },
+      "chain_next": "q_tut_intro_08"
+    },
+    {
+      "id": "q_tut_intro_08",
+      "type": "main",
+      "zone": "tutorial_tavern",
+      "min_level": 1,
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "Vers le hub",
+      "title_en": "To the Hub",
+      "summary_fr": "Le portail est ouvert. Franchis-le pour rejoindre le hub principal de Kanarion.",
+      "summary_en": "The portal is open. Cross it to reach Kanarion's main hub.",
+      "npc_giver": "npc_guild_master_aldric",
+      "objectives": [
+        {
+          "template": "enter_zone",
+          "zone_id": "village",
+          "count": 1,
+          "description_fr": "Franchir le portail vers le hub",
+          "description_en": "Cross the portal to the hub",
+          "_note": "zone_id en placeholder vers village.tscn. À mettre à jour quand le vrai hub Arena sera créé.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_08_obj0_portal",
+                "type": "arrow",
+                "target": "warp_to_village",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Utilise le portail",
+                  "label_en": "Use the portal"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_tut_intro_08_aldric_dialogue",
+            "type": "modal",
+            "priority": 85,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Aldric",
+              "title_en": "Aldric",
+              "content_fr": "Vous vous en êtes bien sortis.\n\nCe n'était qu'un exercice, mais dehors, ce sera rarement aussi simple. Les Fissures gagnent du terrain, et Kanarion ne tiendra pas éternellement derrière ses murs.\n\nSi tu veux vraiment aider le village, prends des contrats, pars en équipe, et découvre ce qui ronge notre monde.\n\nLe portail est ouvert. Bienvenue parmi les volontaires.",
+              "content_en": "You came through fine.\n\nThis was only training, but out there, it will rarely be this simple. The Fissures gain ground, and Kanarion won't hold behind its walls forever.\n\nIf you really want to help the village, take contracts, leave in a team, and discover what gnaws at our world.\n\nThe portal is open. Welcome among the volunteers."
+            }
+          },
+          {
+            "id": "q_tut_intro_08_exit_modal",
+            "type": "modal",
+            "priority": 84,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Tutoriel terminé",
+              "title_en": "Tutorial Complete",
+              "content_fr": "Le tutoriel est terminé.\n\nEn franchissant ce portail, tu rejoindras le hub principal de Kanarion. Tu pourras y prendre des contrats, recruter des alliés, améliorer ton équipement et rejoindre d'autres joueurs.",
+              "content_en": "The tutorial is complete.\n\nBy crossing this portal, you'll reach Kanarion's main hub. There you can take contracts, recruit allies, improve your gear, and meet other players."
+            }
+          }
+        ]
+      },
+      "rewards": {
+        "xp": 150,
+        "gold": 100
+      }
     }
   ],
   "_summary": {
