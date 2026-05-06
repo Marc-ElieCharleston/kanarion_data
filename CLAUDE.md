@@ -122,6 +122,50 @@ Players choose a faction at level 60. Subclass lore must NOT lock players into a
 - **Tags catalog:** beast, humanoid, undead, elemental, demon, corrupted, ranged, melee, caster, tank, swarm, elite, boss, assassin, healer, support, artillery
 - Loot table `item_id` references must exist in items files (CI validates this)
 
+### Mercenary Structure (`entities/mercenaries.json`)
+Bots IA hires par les joueurs, jouent les classes du jeu en combat (1 par character max v1, persiste 24h Redis cote backend). Reutilises pour bots PvP futurs (juste `source_mode` et `balance_profile` differents).
+
+- **Required fields:** `id`, `archetype_id`, `name_fr`, `name_en`, `class_id`, `level_offset_from_player`, `skill_loadout[]`, `ai_profile`, `balance_profile`, `cost_gold`, `icon`, `description_fr`, `description_en`
+- **Optional:** `subclass_id` (null si base class uniquement)
+- **ID convention :** `merc_<class>` (ex: `merc_warrior`)
+- **Class IDs valides :** warrior / mage / healer / archer / rogue / artisan
+- **Skill loadout :** 3-5 skills basiques par classe (filler / basic / advanced). Le serveur les pre-resout au ROOM_SETUP (pas de DataDB lookup en combat). Cross-ref valide par CI : chaque skill_id doit exister dans `classes/<class>/skills.json`
+- **Balance profile :** doit exister dans `config/mercenary_balance.json` (ex: `solo_helper_v1`)
+- **AI profile :** mappe sur PlayerAI cote combat. Valeurs : warrior / mage / healer / archer / rogue / artisan
+
+**Cost design rule (CTO 2026-05-05) :** Les 6 archetypes de base ont `cost_gold=0` (anti-frustration nouveaux joueurs sans tuto). Augmenter uniquement sur tiers avances post-MVP (ex: `merc_ranger_elite`, `merc_occultist`).
+
+### Mercenary Balance (`config/mercenary_balance.json`)
+Profils de balance applique au spawn d'un mercenaire en combat. Format :
+```json
+{
+  "profiles": {
+    "solo_helper_v1": {
+      "level_offset": -2,
+      "damage_multiplier": 0.85,
+      "healing_multiplier": 0.95,
+      "shield_multiplier": 0.95,
+      "hp_multiplier": 0.95,
+      "mp_multiplier": 1.0,
+      "ai_intelligence_level": 3,
+      "aggro_bias": 1.0,
+      "uses_high_skill_synergies": false,
+      "uses_consumables": false
+    }
+  }
+}
+```
+**Profils prevus :**
+- `solo_helper_v1` (LIVE) : aide solo PvE, plus faible qu'un joueur correct
+- `pvp_filler_v1` (FUTURE) : bot PvP, stats ≈ joueur reel (level_offset=0, multipliers=1.0)
+
+### Mercenary Potions (`items/consumables.json`)
+Potions dediees au merc (le joueur les boit, l'effet va sur son merc) :
+- `cons_hp_potion_merc_small` : `effect_type=heal_merc_hp_flat`, `value=50`
+- `cons_mp_potion_merc_small` : `effect_type=restore_merc_mp_flat`, `value=30`
+
+Drops dans `items/loot_tables.json` `common_consumables.drops` chance 5%.
+
 ## Game Systems Knowledge
 
 ### Combat System
