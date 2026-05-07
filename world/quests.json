@@ -1792,8 +1792,8 @@
       ],
       "title_fr": "Premier contact",
       "title_en": "First Contact",
-      "summary_fr": "Aldric, le maître de guilde, t'attend dans la taverne. Va lui parler, il va t'équiper et te former.",
-      "summary_en": "Aldric, the guild master, is waiting in the tavern. Go talk to him, he'll equip and train you.",
+      "summary_fr": "Aldric t'attend dans la taverne. Va lui parler pour commencer ta formation.",
+      "summary_en": "Aldric is waiting for you in the tavern. Go talk to him to begin your training.",
       "npc_giver": "npc_tutorial_instructor_aldric",
       "objective_mode": "sequential",
       "objectives": [
@@ -1818,57 +1818,26 @@
               }
             ]
           }
-        },
-        {
-          "template": "equip_item",
-          "count": 1,
-          "description_fr": "Équiper l'arme reçue",
-          "description_en": "Equip the received weapon",
-          "hints": {
-            "on_active": [
-              {
-                "id": "q_tut_intro_01_obj1_inv",
-                "type": "arrow",
-                "target": "ui_inventory_button",
-                "priority": 90,
-                "show_once": true,
-                "payload": {
-                  "label_fr": "Ouvre ton inventaire",
-                  "label_en": "Open your inventory"
-                }
-              }
-            ]
-          }
         }
       ],
       "quest_hints": {
         "on_accept": [
           {
-            "id": "q_tut_intro_01_arrival_modal",
+            "id": "q_tut_intro_01_intro_modal",
             "type": "modal",
             "priority": 100,
             "show_once": true,
             "payload": {
               "title_fr": "",
               "title_en": "",
-              "content_fr": "Il y a longtemps, le monde était paisible.\n\nKanarion vivait sans peur. Les routes étaient sûres, les villages commerçaient.\n\nPuis les premières Fissures sont apparues. Des marques. Sur la pierre, dans le ciel. Parfois sur la peau des bêtes.\n\nAu début, on a cru à un phénomène passager.\n\nMais les créatures des environs ont commencé à changer. Plus agressives. Comme si quelque chose les contrôlait.\n\nLes anciens du village sont partis en expédition pour comprendre.\n\nTrès peu sont revenus. Et ceux qui sont revenus n'étaient plus vraiment les mêmes.\n\nAujourd'hui, les Fissures se propagent. Les bêtes s'approchent des murs.\n\nKanarion forme une nouvelle génération. Des jeunes volontaires, prêts à partir au-delà des murs. Pour défendre. Pour comprendre. Pour ramener ce qui peut encore l'être.\n\nTu as choisi de te porter volontaire.\n\nAldric t'attend dans la taverne. Ta formation commence aujourd'hui.",
-              "content_en": "Long ago, the world was peaceful.\n\nKanarion lived without fear. The roads were safe, the villages traded freely.\n\nThen the first Fissures appeared. Marks. On stone, in the sky. Sometimes on the skin of beasts.\n\nAt first, people thought it would pass.\n\nBut the creatures around the village began to change. More aggressive. As if something were driving them.\n\nThe village elders set out on an expedition to understand.\n\nFew came back. And those who returned were no longer quite themselves.\n\nToday, the Fissures spread. The beasts draw close to the walls.\n\nKanarion is training a new generation. Young volunteers, ready to step beyond the walls. To defend. To understand. To bring back whatever can still be saved.\n\nYou chose to volunteer.\n\nAldric is waiting for you in the tavern. Your training begins today."
+              "content_fr": "Il y a longtemps, le monde était paisible.\n\nKanarion vivait sans peur. Les routes étaient sûres, les villages commerçaient.\n\nPuis les premières Fissures sont apparues. Des marques. Sur la pierre, dans le ciel. Parfois sur la peau des bêtes.\n\nAu début, on a cru à un phénomène passager.\n\nMais les créatures des environs ont commencé à changer. Plus agressives. Comme si quelque chose répondait en elles.\n\nLes anciens du village sont partis en expédition pour comprendre.\n\nTrès peu sont revenus. Et ceux qui sont revenus n'étaient plus vraiment les mêmes.\n\nAujourd'hui, les Fissures se propagent. Les bêtes s'approchent des murs.\n\nKanarion forme une nouvelle génération. Des jeunes volontaires, prêts à partir au-delà des murs. Pour défendre. Pour comprendre. Pour ramener ce qui peut encore l'être.\n\nTu as choisi de te porter volontaire.\n\nAldric t'attend dans la taverne. Ta formation commence aujourd'hui.",
+              "content_en": "Long ago, the world was peaceful.\n\nKanarion lived without fear. The roads were safe, the villages traded freely.\n\nThen the first Fissures appeared. Marks. On stone, in the sky. Sometimes on the skin of beasts.\n\nAt first, people thought it would pass.\n\nBut the creatures around the village began to change. More aggressive. As if something were answering inside them.\n\nThe village elders set out on an expedition to understand.\n\nFew came back. And those who returned were no longer quite themselves.\n\nToday, the Fissures spread. The beasts draw close to the walls.\n\nKanarion is training a new generation. Young volunteers, ready to step beyond the walls. To defend. To understand. To bring back whatever can still be saved.\n\nYou chose to volunteer.\n\nAldric is waiting for you in the tavern. Your training begins today."
             }
           }
         ]
       },
-      "_dialog_revisit": {
-        "_note": "Mini-réplique d'Aldric si le joueur reparle au PNJ avec l'objectif 'equip_item' actif (arme pas encore équipée). Mécanisme backend à implémenter (revisit_dialogue par objectif actif).",
-        "obj1_equip_item_active": {
-          "title_fr": "Aldric",
-          "title_en": "Aldric",
-          "content_fr": "Quoi, t'as déjà oublié ? L'arme, dans ton sac. Sors-la, équipe-la, et reviens me voir.",
-          "content_en": "What, forgot already? The weapon, in your bag. Take it out, equip it, then come back."
-        }
-      },
       "rewards": {
-        "xp": 50,
-        "_note_items_removed": "Le starter weapon est livré au character_create par le backend (CharacterService::grant_starter_weapon). Pas de reward d'arme ici sinon le joueur en aurait deux."
+        "xp": 50
       },
       "chain_next": "q_tut_intro_02"
     },
@@ -1880,12 +1849,34 @@
       "flags": [
         "tutorial"
       ],
-      "title_fr": "Premier palier",
-      "title_en": "First Step",
-      "summary_fr": "Tu as équipé ton arme. Retourne voir Aldric pour confirmer ta formation.",
-      "summary_en": "You equipped your weapon. Return to Aldric to confirm your training.",
+      "title_fr": "Équipe ton arme",
+      "title_en": "Equip Your Weapon",
+      "summary_fr": "Ouvre ton inventaire et équipe l'arme de départ, puis retourne voir Aldric.",
+      "summary_en": "Open your inventory and equip the starter weapon, then return to Aldric.",
       "npc_giver": "npc_tutorial_instructor_aldric",
+      "objective_mode": "sequential",
       "objectives": [
+        {
+          "template": "equip_item",
+          "count": 1,
+          "description_fr": "Équiper une arme",
+          "description_en": "Equip a weapon",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_02_obj0_inv",
+                "type": "arrow",
+                "target": "ui_inventory_button",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Ouvre ton inventaire",
+                  "label_en": "Open your inventory"
+                }
+              }
+            ]
+          }
+        },
         {
           "template": "talk_to_npc",
           "npc_id": "npc_tutorial_instructor_aldric",
@@ -1895,7 +1886,7 @@
           "hints": {
             "on_active": [
               {
-                "id": "q_tut_intro_02_obj0_arrow",
+                "id": "q_tut_intro_02_obj1_arrow",
                 "type": "arrow",
                 "target": "npc_tutorial_instructor_aldric",
                 "priority": 85,
@@ -1910,20 +1901,43 @@
         }
       ],
       "quest_hints": {
-        "on_complete": [
+        "on_accept": [
           {
-            "id": "q_tut_intro_02_levelup_modal",
+            "id": "q_tut_intro_02_aldric_intro",
             "type": "modal",
-            "priority": 95,
+            "priority": 90,
             "show_once": true,
             "payload": {
-              "title_fr": "Le Souffle",
-              "title_en": "Breath",
-              "content_fr": "Le Souffle alimente tes compétences.\n\nChaque classe le canalise à sa manière : par la force, la magie, les soins, la précision, l'instinct ou les outils.\n\nEn montant de niveau, tu gagnes des points pour apprendre à mieux le maîtriser.",
-              "content_en": "Breath fuels your skills.\n\nEvery class channels it differently: through strength, magic, healing, precision, instinct or tools.\n\nAs you level up, you gain points to better master it."
+              "title_fr": "Aldric",
+              "title_en": "Aldric",
+              "content_fr": "Ah, te voilà.\n\nJe me demandais si tu allais vraiment venir.\n\nTu as choisi de te porter volontaire, alors on ne va pas perdre de temps. Dehors, personne ne survit avec de bonnes intentions seulement.\n\nAvant de parler d'expédition, on commence par le plus simple : une arme.\n\nTu en as reçu une à ton arrivée. Équipe-la, puis reviens me voir.",
+              "content_en": "Ah, there you are.\n\nI was wondering if you'd really come.\n\nYou chose to volunteer, so we won't waste time. Out there, no one survives on good intentions alone.\n\nBefore we talk about expeditions, we start with the simplest thing: a weapon.\n\nYou received one when you arrived. Equip it, then come back to me."
+            }
+          }
+        ],
+        "on_complete": [
+          {
+            "id": "q_tut_intro_02_aldric_validation",
+            "type": "modal",
+            "priority": 90,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Aldric",
+              "title_en": "Aldric",
+              "content_fr": "Pas mal.\n\nTu sais au moins de quel côté tenir ton arme.\n\nMais dehors, ça ne suffira pas. Depuis que les Fissures sont revenues, quelque chose réagit chez certains habitants.\n\nUne chaleur dans la poitrine. Une force qui monte quand le danger approche.\n\nOn appelle ça le Souffle.\n\nChez toi aussi, il répond.",
+              "content_en": "Not bad.\n\nAt least you know which end to hold your weapon by.\n\nBut out there, it won't be enough. Since the Fissures returned, something stirs in certain people.\n\nA warmth in the chest. A force that rises when danger draws near.\n\nWe call it Breath.\n\nIn you too, it answers."
             }
           }
         ]
+      },
+      "_dialog_revisit": {
+        "_note": "Mini-réplique d'Aldric si le joueur reparle au PNJ avec l'objectif 'equip_item' actif (arme pas encore équipée). Mécanisme backend à implémenter.",
+        "obj0_equip_item_active": {
+          "title_fr": "Aldric",
+          "title_en": "Aldric",
+          "content_fr": "Tu n'iras pas loin les mains vides.\n\nOuvre ton inventaire, équipe ton arme, puis reviens me voir.",
+          "content_en": "You won't get far empty-handed.\n\nOpen your inventory, equip your weapon, then come back."
+        }
       },
       "rewards": {
         "xp": 80
@@ -1938,10 +1952,67 @@
       "flags": [
         "tutorial"
       ],
+      "title_fr": "Le Souffle",
+      "title_en": "Breath",
+      "summary_fr": "Aldric va t'expliquer le Souffle, cette énergie que tu vas apprendre à canaliser.",
+      "summary_en": "Aldric will explain Breath, the energy you will learn to channel.",
+      "npc_giver": "npc_tutorial_instructor_aldric",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_tutorial_instructor_aldric",
+          "count": 1,
+          "description_fr": "Écouter Aldric",
+          "description_en": "Listen to Aldric"
+        }
+      ],
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_tut_intro_03_aldric_dialogue",
+            "type": "modal",
+            "priority": 90,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Aldric",
+              "title_en": "Aldric",
+              "content_fr": "Le Souffle n'est pas de la magie comme dans les histoires.\n\nC'est une énergie vivante. Elle était déjà là avant les Fissures, dans la terre, dans les bêtes, dans les hommes.\n\nMais depuis leur retour, elle s'éveille plus fort chez certains.\n\nLes guerriers la font passer dans leur corps. Les mages la projettent. Les soigneurs l'utilisent pour refermer les plaies. Les archers l'aiguisent dans leur regard. Les rôdeurs dans leurs réflexes. Les artisans dans leurs outils.\n\nToi, tu vas devoir apprendre à la canaliser.",
+              "content_en": "Breath isn't magic like in the old stories.\n\nIt's a living energy. It was already here before the Fissures, in the earth, in the beasts, in men.\n\nBut since their return, it awakens more strongly in some.\n\nWarriors run it through their bodies. Mages project it. Healers use it to close wounds. Archers sharpen it in their gaze. Rangers in their reflexes. Artisans in their tools.\n\nYou will have to learn to channel it."
+            }
+          }
+        ],
+        "on_complete": [
+          {
+            "id": "q_tut_intro_03_levelup_modal",
+            "type": "modal",
+            "priority": 95,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Niveau supérieur",
+              "title_en": "Level Up",
+              "content_fr": "Tu as monté de niveau.\n\nÀ chaque niveau, tu reçois des points pour faire évoluer ton personnage :\n\n• 3 points de stats\n• 1 point de compétence active\n• 1 point de compétence passive\n\nCommence par investir tes points de stats, puis utilise ton point de compétence active pour renforcer une technique.",
+              "content_en": "You leveled up.\n\nAt every level, you receive points to grow your character:\n\n• 3 stat points\n• 1 active skill point\n• 1 passive skill point\n\nStart by investing your stat points, then use your active skill point to reinforce a technique."
+            }
+          }
+        ]
+      },
+      "rewards": {
+        "xp": 100
+      },
+      "chain_next": "q_tut_intro_04"
+    },
+    {
+      "id": "q_tut_intro_04",
+      "type": "main",
+      "zone": "tutorial_tavern",
+      "min_level": 1,
+      "flags": [
+        "tutorial"
+      ],
       "title_fr": "Connais tes forces",
       "title_en": "Know Your Strengths",
-      "summary_fr": "Investis tes points de stats et ton point de compétence, puis retourne voir Aldric.",
-      "summary_en": "Allocate your stat points and skill point, then return to Aldric.",
+      "summary_fr": "Investis tes points de stats et améliore une compétence active, puis retourne voir Aldric.",
+      "summary_en": "Allocate your stat points and improve an active skill, then return to Aldric.",
       "npc_giver": "npc_tutorial_instructor_aldric",
       "objective_mode": "sequential",
       "objectives": [
@@ -1950,11 +2021,10 @@
           "count": 3,
           "description_fr": "Investir 3 points de stats",
           "description_en": "Allocate 3 stat points",
-          "_note": "Template à créer côté backend (incrémente sur chaque STAT_ALLOCATE_REQUEST)",
           "hints": {
             "on_active": [
               {
-                "id": "q_tut_intro_03_obj0_stats",
+                "id": "q_tut_intro_04_obj0_stats",
                 "type": "highlight",
                 "target": "ui_stats_button",
                 "priority": 90,
@@ -1970,13 +2040,12 @@
         {
           "template": "spend_skill_point",
           "count": 1,
-          "description_fr": "Investir 1 point de compétence active",
-          "description_en": "Allocate 1 active skill point",
-          "_note": "Template à créer côté backend (incrémente sur SKILL_UPGRADE_REQUEST)",
+          "description_fr": "Améliorer une compétence active",
+          "description_en": "Improve an active skill",
           "hints": {
             "on_active": [
               {
-                "id": "q_tut_intro_03_obj1_skills",
+                "id": "q_tut_intro_04_obj1_skills",
                 "type": "highlight",
                 "target": "ui_skills_button",
                 "priority": 90,
@@ -1998,7 +2067,7 @@
           "hints": {
             "on_active": [
               {
-                "id": "q_tut_intro_03_obj2_arrow",
+                "id": "q_tut_intro_04_obj2_arrow",
                 "type": "arrow",
                 "target": "npc_tutorial_instructor_aldric",
                 "priority": 85,
@@ -2015,35 +2084,49 @@
       "quest_hints": {
         "on_accept": [
           {
-            "id": "q_tut_intro_03_aldric_dialogue",
+            "id": "q_tut_intro_04_aldric_intro",
             "type": "modal",
-            "priority": 80,
+            "priority": 90,
             "show_once": true,
             "payload": {
               "title_fr": "Aldric",
               "title_en": "Aldric",
-              "content_fr": "T'as déjà tenu une arme, hein ? Bon.\n\nOn va commencer directement. J'ai gardé quelques rats qui traînaient en dehors de la ville. Depuis que les traces de Fissure sont apparues, ils sont devenus super agressifs, fais attention, c'est comme si quelque chose les contrôlait.\n\nMais avant de t'envoyer là-dedans, fais-moi plaisir : regarde tes points. T'as des stats à investir, et une compétence à activer.\n\nEt t'inquiète pas, tu pourras toujours modifier tes stats plus tard.",
-              "content_en": "You've held a weapon before, haven't you? Good.\n\nLet's get straight to it. I've kept a few rats that were wandering outside the village. Since the Fissure traces appeared, they've turned really aggressive, watch yourself, it's like something's controlling them.\n\nBut before I send you out there, do me a favor: look at your points. You've got stats to invest, and a skill to activate.\n\nAnd don't worry, you can always change your stats later."
+              "content_fr": "Bon.\n\nMaintenant que ton Souffle répond, il faut lui donner une direction.\n\nOuvre tes statistiques et renforce ce qui te semble utile. Plus de force, plus de magie, plus d'endurance... à toi de voir.\n\nEnsuite, améliore une compétence active.\n\nEt ne t'inquiète pas. En ville, tu pourras toujours réinitialiser tes points si tu changes d'avis.",
+              "content_en": "Good.\n\nNow that your Breath answers, you have to give it direction.\n\nOpen your stats and reinforce what feels useful. More strength, more magic, more endurance... up to you.\n\nThen, improve an active skill.\n\nAnd don't worry. In town, you can always reset your points if you change your mind."
+            }
+          }
+        ],
+        "on_complete": [
+          {
+            "id": "q_tut_intro_04_aldric_validation",
+            "type": "modal",
+            "priority": 88,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Aldric",
+              "title_en": "Aldric",
+              "content_fr": "Voilà.\n\nTu as déjà l'air moins fragile qu'en entrant ici.\n\nMaintenant, on peut passer à la pratique.",
+              "content_en": "There.\n\nYou already look less fragile than when you walked in.\n\nNow, we can move to the real thing."
             }
           }
         ]
       },
       "_dialog_revisit": {
-        "_note": "Mini-réplique d'Aldric si le joueur reparle au PNJ avec les objectifs 'spend_stat_points' ou 'spend_skill_point' encore actifs. Mécanisme backend à implémenter.",
+        "_note": "Mini-réplique d'Aldric si le joueur reparle avec les objectifs 'spend_stat_points' ou 'spend_skill_point' encore actifs.",
         "obj_points_pending": {
           "title_fr": "Aldric",
           "title_en": "Aldric",
-          "content_fr": "T'as pas encore touché à tes points. Stats, compétence. Allez, file.",
-          "content_en": "You haven't touched your points yet. Stats, skill. Come on, go."
+          "content_fr": "Pas encore.\n\nOuvre tes stats, dépense tes points, puis améliore une compétence active.\n\nAprès ça, je t'enverrai face à quelque chose qui bouge.",
+          "content_en": "Not yet.\n\nOpen your stats, spend your points, then improve an active skill.\n\nAfter that, I'll send you against something that moves."
         }
       },
       "rewards": {
-        "xp": 30
+        "xp": 50
       },
-      "chain_next": "q_tut_intro_04"
+      "chain_next": "q_tut_intro_05"
     },
     {
-      "id": "q_tut_intro_04",
+      "id": "q_tut_intro_05",
       "type": "main",
       "zone": "tutorial_tavern",
       "min_level": 1,
@@ -2052,8 +2135,8 @@
       ],
       "title_fr": "Première épreuve",
       "title_en": "First Trial",
-      "summary_fr": "Aldric a capturé un rat contaminé. Affronte-le pour t'entraîner, puis reviens lui parler.",
-      "summary_en": "Aldric captured a contaminated rat. Fight it to practice, then come back to him.",
+      "summary_fr": "Affronte le rat contaminé près de la sortie. Si tu tiens bon, tu pourras peut-être le délivrer.",
+      "summary_en": "Face the contaminated rat near the exit. If you hold your ground, you may be able to deliver it.",
       "npc_giver": "npc_tutorial_instructor_aldric",
       "objective_mode": "sequential",
       "objectives": [
@@ -2061,13 +2144,13 @@
           "template": "tutorial_combat_complete",
           "scenario_id": "rat_solo",
           "count": 1,
-          "description_fr": "Délivrer le rat contaminé",
-          "description_en": "Defeat the contaminated rat",
-          "_note": "Template à créer côté backend. Trigger TUTORIAL_COMBAT_START_REQUEST(scenario_id=rat_solo). Compteur incrémente à la victoire.",
+          "description_fr": "Affronter le rat contaminé",
+          "description_en": "Face the contaminated rat",
+          "_note": "Scenario rat_solo. Server spawns 1 mob_rat at back row center via TUTORIAL_COMBAT_START_REQUEST.",
           "hints": {
             "on_active": [
               {
-                "id": "q_tut_intro_04_obj0_target",
+                "id": "q_tut_intro_05_obj0_target",
                 "type": "arrow",
                 "target": "tutorial_target_rat",
                 "priority": 90,
@@ -2080,7 +2163,7 @@
             ],
             "on_complete": [
               {
-                "id": "q_tut_intro_04_obj0_return",
+                "id": "q_tut_intro_05_obj0_return",
                 "type": "arrow",
                 "target": "npc_tutorial_instructor_aldric",
                 "priority": 85,
@@ -2104,35 +2187,131 @@
       "quest_hints": {
         "on_accept": [
           {
-            "id": "q_tut_intro_04_aldric_dialogue",
+            "id": "q_tut_intro_05_aldric_intro",
             "type": "modal",
-            "priority": 85,
+            "priority": 90,
             "show_once": true,
             "payload": {
               "title_fr": "Aldric",
               "title_en": "Aldric",
-              "content_fr": "Le rat près de la sortie a été touché par les Fissures.\n\nIl attaque tout ce qui bouge, mais ce n'est pas de la rage ordinaire. Quelque chose le pousse.\n\nParfois, vaincre une créature suffit à briser l'emprise. Parfois non.\n\nAujourd'hui, on va voir si tu peux au moins survivre... et peut-être le libérer.",
-              "content_en": "The rat near the exit was touched by the Fissures.\n\nIt attacks anything that moves, but it isn't ordinary rage. Something is driving it.\n\nSometimes, defeating a creature is enough to break the hold. Sometimes not.\n\nToday, we'll see if you can at least survive... and perhaps free it."
+              "content_fr": "Le rat près de la sortie a été touché par les Fissures.\n\nIl attaque tout ce qui bouge, mais ce n'est pas de la rage ordinaire. Quelque chose le pousse.\n\nParfois, vaincre une créature suffit à briser l'emprise.\n\nParfois, il ne reste rien à sauver.\n\nCelui-là est encore faible. Si tu tiens bon, on pourra peut-être le ramener à lui.\n\nVa. Affronte-le.",
+              "content_en": "The rat near the exit was touched by the Fissures.\n\nIt attacks anything that moves, but this isn't ordinary rage. Something is driving it.\n\nSometimes, defeating a creature is enough to break the hold.\n\nSometimes, there's nothing left to save.\n\nThis one is still weak. If you hold your ground, we may be able to bring it back.\n\nGo. Face it."
+            }
+          }
+        ],
+        "on_complete": [
+          {
+            "id": "q_tut_intro_05_aldric_postcombat",
+            "type": "modal",
+            "priority": 88,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Aldric",
+              "title_en": "Aldric",
+              "content_fr": "Tu vois ?\n\nIl respire encore.\n\nL'emprise a lâché avant de le consumer complètement.\n\nCe n'est pas toujours le cas. Mais cette fois, tu l'as délivré.\n\nColette s'occupe des créatures qu'on arrive à sauver. Va la voir. Si ce rat accepte ton Souffle, il pourra peut-être t'accompagner.",
+              "content_en": "You see?\n\nIt still breathes.\n\nThe hold released before consuming it entirely.\n\nIt isn't always the case. But this time, you delivered it.\n\nColette handles the creatures we manage to save. Go see her. If this rat accepts your Breath, it may walk with you."
             }
           }
         ]
       },
       "_dialog_revisit": {
-        "_note": "Mini-réplique d'Aldric si le joueur reparle au PNJ avec l'objectif 'tutorial_combat_complete' encore actif (combat pas lancé). Mécanisme backend à implémenter.",
+        "_note": "Mini-réplique si l'objectif 'tutorial_combat_complete' est encore actif.",
         "obj_combat_pending": {
           "title_fr": "Aldric",
           "title_en": "Aldric",
-          "content_fr": "Le rat te fait peur ? Allez, vas-y. Je bouge pas.",
-          "content_en": "The rat scares you? Come on, go. I'm not moving."
+          "content_fr": "Le rat te fait peur ?\n\nC'est normal. Garde ton calme, clique sur lui, et lance le combat.\n\nJe suis là si ça tourne mal.",
+          "content_en": "The rat scares you?\n\nNormal. Keep calm, click on it, start the fight.\n\nI'm here if it goes wrong."
         }
       },
       "rewards": {
         "xp": 200
       },
-      "chain_next": "q_tut_intro_05"
+      "chain_next": "q_tut_intro_06"
     },
     {
-      "id": "q_tut_intro_05",
+      "id": "q_tut_intro_06",
+      "type": "main",
+      "zone": "tutorial_tavern",
+      "min_level": 1,
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "Le rat libéré",
+      "title_en": "The Freed Rat",
+      "summary_fr": "Va voir Colette pour créer un lien avec le rat délivré.",
+      "summary_en": "Go see Colette to forge a bond with the delivered rat.",
+      "npc_giver": "npc_tutorial_familiar_colette",
+      "objective_mode": "sequential",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_tutorial_familiar_colette",
+          "count": 1,
+          "description_fr": "Parler à Colette",
+          "description_en": "Talk to Colette",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_06_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_tutorial_familiar_colette",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Colette",
+                  "label_en": "Go see Colette"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "choose_familiar",
+          "count": 1,
+          "description_fr": "Choisir une voie pour le rat",
+          "description_en": "Choose a path for the rat",
+          "_note": "Template à créer côté backend (Phase 2). Incrémente sur FAMILIAR_CHOOSE_ROLE_RESPONSE success."
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_tutorial_familiar_colette",
+          "count": 1,
+          "description_fr": "Reparler à Colette",
+          "description_en": "Talk to Colette again"
+        }
+      ],
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_tut_intro_06_aldric_intro",
+            "type": "modal",
+            "priority": 90,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Aldric",
+              "title_en": "Aldric",
+              "content_fr": "Ne le laisse pas seul.\n\nUne créature libérée des Fissures reste fragile. Si l'emprise revient, elle redeviendra dangereuse.\n\nColette connaît ces choses mieux que moi.\n\nVa la voir. Elle saura si un lien est possible.",
+              "content_en": "Don't leave it alone.\n\nA creature freed from the Fissures remains fragile. If the hold returns, it becomes dangerous again.\n\nColette knows these things better than I do.\n\nGo see her. She'll know if a bond is possible."
+            }
+          }
+        ]
+      },
+      "_dialog_revisit": {
+        "_note": "Mini-réplique de Colette si le joueur reparle avec l'objectif 'choose_familiar' encore actif.",
+        "obj_familiar_pending": {
+          "title_fr": "Colette",
+          "title_en": "Colette",
+          "content_fr": "Le lien ne se formera pas tout seul.\n\nChoisis la voie que ton compagnon suivra, puis je stabiliserai son Souffle.",
+          "content_en": "The bond won't form by itself.\n\nChoose the path your companion will follow, then I'll steady its Breath."
+        }
+      },
+      "rewards": {
+        "xp": 100
+      },
+      "chain_next": "q_tut_intro_07"
+    },
+    {
+      "id": "q_tut_intro_07",
       "type": "main",
       "zone": "tutorial_tavern",
       "min_level": 1,
@@ -2145,6 +2324,19 @@
       "summary_en": "Aldric gives you out-of-combat potions. Place one on your quickbar, then return to him.",
       "npc_giver": "npc_tutorial_instructor_aldric",
       "objective_mode": "sequential",
+      "rewards_on_accept": {
+        "_note": "Backend Phase 2 doit traiter ce champ à l'acceptation de la quête (similaire à 'rewards' au turn-in). Requis pour que q_tut_intro_07 soit testable : sans potions à l'acceptation, le joueur ne peut pas valider l'objectif assign_quickslot.",
+        "items": [
+          {
+            "id": "cons_hp_potion_small",
+            "qty": 3
+          },
+          {
+            "id": "cons_mp_potion_small",
+            "qty": 2
+          }
+        ]
+      },
       "objectives": [
         {
           "template": "assign_quickslot",
@@ -2154,14 +2346,14 @@
           "hints": {
             "on_active": [
               {
-                "id": "q_tut_intro_05_obj0_quickbar",
+                "id": "q_tut_intro_07_obj0_quickbar",
                 "type": "highlight",
                 "target": "ui_quickbar_slot_first_empty",
                 "priority": 90,
                 "show_once": true,
                 "payload": {
-                  "label_fr": "Glisse une potion sur ta barre rapide",
-                  "label_en": "Drag a potion to your quickbar"
+                  "label_fr": "Place une potion sur ta barre rapide",
+                  "label_en": "Place a potion on your quickbar"
                 }
               }
             ]
@@ -2178,132 +2370,59 @@
       "quest_hints": {
         "on_accept": [
           {
-            "id": "q_tut_intro_05_aldric_dialogue",
+            "id": "q_tut_intro_07_aldric_intro",
             "type": "modal",
-            "priority": 80,
+            "priority": 90,
             "show_once": true,
             "payload": {
               "title_fr": "Aldric",
               "title_en": "Aldric",
-              "content_fr": "Tu t'en es bien sorti.\n\nTu vois, c'est pas méchant un rat. Ce qui le rendait agressif, c'est la corruption des Fissures. Quand on tue ces bêtes, en réalité on les libère.\n\nEt encore, là c'est qu'un rat. Plus on s'éloigne du village, plus la corruption pèse. Ezra m'a rapporté que certaines bêtes commencent même à se transformer...\n\nBon je me perds. Tiens, prends ces potions. Elles servent pas pendant le combat, mais ça t'évitera d'attendre que tes blessures se referment entre deux sorties. Mets-en une sur ta barre rapide.",
-              "content_en": "You did well.\n\nYou see, a rat's not really mean. What made it aggressive was the corruption of the Fissures. When we kill these beasts, we're really setting them free.\n\nAnd that's just a rat. The further from the village, the heavier the corruption gets. Ezra told me some beasts are even starting to transform...\n\nWell, I'm rambling. Here, take these potions. They don't work during combat, but they'll save you from waiting for your wounds to heal between trips. Put one on your quickbar."
+              "content_fr": "Te voilà accompagné.\n\nBien. Mais ne crois pas que ça te rend invincible.\n\nMême un petit combat peut laisser des traces. Et dehors, on n'a pas toujours le luxe d'attendre que les blessures se referment.\n\nTiens, prends ces potions.\n\nElles ne servent pas pendant le combat, mais elles te permettront de récupérer entre deux sorties.\n\nMets-en une sur ta barre rapide.",
+              "content_en": "Now you walk with company.\n\nGood. But don't think that makes you invincible.\n\nEven a small fight can leave marks. And out there, we don't always have the luxury of waiting for wounds to close.\n\nHere, take these potions.\n\nThey don't work during combat, but they'll let you recover between trips.\n\nPut one on your quickbar."
+            }
+          }
+        ],
+        "on_complete": [
+          {
+            "id": "q_tut_intro_07_aldric_validation",
+            "type": "modal",
+            "priority": 88,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Aldric",
+              "title_en": "Aldric",
+              "content_fr": "Parfait.\n\nGarde toujours de quoi récupérer entre deux combats.\n\nLes volontaires qui survivent ne sont pas ceux qui frappent le plus fort. Ce sont ceux qui savent repartir debout.",
+              "content_en": "Perfect.\n\nAlways keep something to recover between fights.\n\nThe volunteers who survive aren't the ones who hit the hardest. They're the ones who know how to walk out again."
             }
           }
         ]
       },
       "_dialog_revisit": {
-        "_note": "Mini-réplique d'Aldric si le joueur reparle au PNJ avec l'objectif 'assign_quickslot' encore actif (potion pas encore mise sur la quickbar). Mécanisme backend à implémenter.",
+        "_note": "Mini-réplique d'Aldric si le joueur reparle sans avoir placé une potion.",
         "obj_quickslot_pending": {
           "title_fr": "Aldric",
           "title_en": "Aldric",
-          "content_fr": "T'as oublié les potions. Mets-en une sur ta barre rapide, allez.",
-          "content_en": "You forgot the potions. Put one on your quickbar, come on."
+          "content_fr": "Je t'ai donné des potions, pas des décorations.\n\nPlace-en une dans ta barre rapide, puis reviens me voir.",
+          "content_en": "I gave you potions, not decorations.\n\nPut one on your quickbar, then come back."
         }
       },
       "rewards": {
-        "xp": 50,
-        "items": [
-          {
-            "id": "cons_hp_potion_small",
-            "qty": 3
-          },
-          {
-            "id": "cons_mp_potion_small",
-            "qty": 2
-          }
-        ]
+        "xp": 50
       },
-      "chain_next": "q_tut_intro_06"
+      "chain_next": "q_tut_intro_08"
     },
     {
-      "id": "q_tut_intro_06",
+      "id": "q_tut_intro_08",
       "type": "main",
       "zone": "tutorial_tavern",
       "min_level": 1,
       "flags": [
-        "tutorial",
-        "gated_by_mercenary_mvp"
-      ],
-      "_gating_note": "Si le système mercenaire MVP n'est pas prêt, le serveur skip cette quête et chaîne directement q_tut_intro_05 -> q_tut_intro_08.",
-      "title_fr": "Renforts",
-      "title_en": "Reinforcements",
-      "summary_fr": "Aldric te dit d'aller voir Hestia. Elle place les mercenaires qui accompagnent les volontaires.",
-      "summary_en": "Aldric tells you to see Hestia. She places mercenaries who accompany volunteers.",
-      "npc_giver": "npc_tutorial_instructor_aldric",
-      "objective_mode": "sequential",
-      "objectives": [
-        {
-          "template": "talk_to_npc",
-          "npc_id": "npc_tutorial_mercenary_hestia",
-          "count": 1,
-          "description_fr": "Parler à Hestia",
-          "description_en": "Talk to Hestia",
-          "hints": {
-            "on_active": [
-              {
-                "id": "q_tut_intro_06_obj0_hestia",
-                "type": "arrow",
-                "target": "npc_tutorial_mercenary_hestia",
-                "priority": 90,
-                "show_once": true,
-                "payload": {
-                  "label_fr": "Va voir Hestia",
-                  "label_en": "Go see Hestia"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "template": "recruit_mercenary",
-          "count": 1,
-          "description_fr": "Recruter un mercenaire",
-          "description_en": "Recruit a mercenary",
-          "_note": "Template à créer côté backend. Incrémente sur MERCENARY_HIRE_RESPONSE success."
-        },
-        {
-          "template": "talk_to_npc",
-          "npc_id": "npc_tutorial_mercenary_hestia",
-          "count": 1,
-          "description_fr": "Retourner voir Hestia",
-          "description_en": "Return to Hestia"
-        }
-      ],
-      "quest_hints": {
-        "on_accept": [
-          {
-            "id": "q_tut_intro_06_aldric_dialogue",
-            "type": "modal",
-            "priority": 80,
-            "show_once": true,
-            "payload": {
-              "title_fr": "Aldric",
-              "title_en": "Aldric",
-              "content_fr": "Une dernière chose.\n\nDehors, les créatures ne restent plus seules. Elles se regroupent, se protègent, parfois même se soignent entre elles.\n\nLes expéditions qui survivent sont celles qui partent en équipe. Va voir Hestia. Elle s'occupe des mercenaires qui accompagnent les volontaires.",
-              "content_en": "One last thing.\n\nOut there, creatures no longer stay alone. They group up, protect each other, sometimes even heal each other.\n\nThe expeditions that survive are the ones that leave in a team. Go see Hestia. She handles the mercenaries who accompany volunteers."
-            }
-          }
-        ]
-      },
-      "rewards": {
-        "xp": 100,
-        "gold": 50
-      },
-      "chain_next": "q_tut_intro_07"
-    },
-    {
-      "id": "q_tut_intro_07",
-      "type": "main",
-      "zone": "tutorial_tavern",
-      "min_level": 1,
-      "flags": [
-        "tutorial",
-        "gated_by_mercenary_mvp"
+        "tutorial"
       ],
       "title_fr": "Combat de groupe",
       "title_en": "Group Combat",
-      "summary_fr": "Aldric a préparé un groupe ennemi pour t'entraîner au combat à plusieurs.",
-      "summary_en": "Aldric prepared an enemy group to train you in group combat.",
+      "summary_fr": "Apprends à combattre avec ton familier face à un groupe contaminé.",
+      "summary_en": "Learn to fight alongside your familiar against a contaminated group.",
       "npc_giver": "npc_tutorial_instructor_aldric",
       "objective_mode": "sequential",
       "objectives": [
@@ -2311,13 +2430,13 @@
           "template": "tutorial_combat_complete",
           "scenario_id": "group_contaminated",
           "count": 1,
-          "description_fr": "Délivrer le groupe contaminé",
-          "description_en": "Defeat the contaminated group",
-          "_note": "Template à créer côté backend. Trigger TUTORIAL_COMBAT_START_REQUEST(scenario_id=group_contaminated). Spawn 3-4 mobs lvl 1 avec rôles variés.",
+          "description_fr": "Vaincre le groupe contaminé avec ton familier",
+          "description_en": "Defeat the contaminated group with your familiar",
+          "_note": "Scenario group_contaminated. Server spawns 3-4 mobs lvl 1 with varied roles via TUTORIAL_COMBAT_START_REQUEST.",
           "hints": {
             "on_active": [
               {
-                "id": "q_tut_intro_07_obj0_target",
+                "id": "q_tut_intro_08_obj0_target",
                 "type": "arrow",
                 "target": "tutorial_target_group",
                 "priority": 90,
@@ -2341,27 +2460,41 @@
       "quest_hints": {
         "on_accept": [
           {
-            "id": "q_tut_intro_07_aldric_dialogue",
+            "id": "q_tut_intro_08_aldric_intro",
             "type": "modal",
-            "priority": 85,
+            "priority": 90,
             "show_once": true,
             "payload": {
               "title_fr": "Aldric",
               "title_en": "Aldric",
-              "content_fr": "Je vois que tu es bien accompagné.\n\nRegarde le groupe près de la sortie. Cette fois, ils sont plusieurs. Avant d'attaquer, observe leur composition : certains encaissent, certains frappent fort, d'autres soignent ou gênent tes mouvements.\n\nUn bon volontaire ne fonce pas tête baissée. Il regarde, il place son équipe, puis il frappe.",
-              "content_en": "I see you're well accompanied.\n\nLook at the group near the exit. This time, there are several. Before attacking, observe their composition: some take hits, some hit hard, others heal or hinder your movements.\n\nA good volunteer doesn't charge in headfirst. They look, place their team, then strike."
+              "content_fr": "Maintenant, tu n'es plus seul.\n\nTon familier n'est pas un outil. C'est un compagnon.\n\nIl suivra ton Souffle, mais il faudra apprendre à te battre avec lui. Le protéger quand il est en danger. Profiter de ses forces quand une ouverture apparaît.\n\nDehors, les créatures se regroupent.\n\nOn va voir si vous savez tenir ensemble.",
+              "content_en": "Now, you're no longer alone.\n\nYour familiar isn't a tool. It's a companion.\n\nIt will follow your Breath, but you'll have to learn to fight beside it. Protect it when it's in danger. Use its strengths when an opening appears.\n\nOut there, creatures band together.\n\nWe'll see if you can hold together."
             }
           },
           {
-            "id": "q_tut_intro_07_group_modal",
+            "id": "q_tut_intro_08_group_modal",
             "type": "modal",
-            "priority": 84,
+            "priority": 89,
             "show_once": true,
             "payload": {
               "title_fr": "Lire un groupe",
               "title_en": "Reading a Group",
-              "content_fr": "Certains ennemis combattent en groupe.\n\nRegarde leur rôle avant de lancer le combat :\n• les tanks protègent\n• les soigneurs prolongent le combat\n• les attaquants fragiles doivent souvent être éliminés vite\n\nPlus un groupe est dangereux, plus la récompense est élevée.",
-              "content_en": "Some enemies fight in groups.\n\nLook at their role before starting the fight:\n• tanks protect\n• healers prolong the fight\n• fragile attackers should often be taken out fast\n\nThe more dangerous the group, the higher the reward."
+              "content_fr": "Certains ennemis combattent en groupe.\n\nAvant de lancer le combat, regarde leur rôle :\n\n• les tanks protègent\n• les soigneurs prolongent le combat\n• les attaquants fragiles doivent souvent être éliminés vite\n\nPlus un groupe est dangereux, plus la récompense est élevée.",
+              "content_en": "Some enemies fight in groups.\n\nBefore starting the fight, look at their role:\n\n• tanks protect\n• healers prolong the fight\n• fragile attackers should often be taken out fast\n\nThe more dangerous the group, the higher the reward."
+            }
+          }
+        ],
+        "on_complete": [
+          {
+            "id": "q_tut_intro_08_aldric_validation",
+            "type": "modal",
+            "priority": 88,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Aldric",
+              "title_en": "Aldric",
+              "content_fr": "Bien.\n\nVous vous êtes couverts l'un l'autre. C'est comme ça qu'on survit dehors.\n\nSeul, tu peux gagner un combat.\n\nEn équipe, tu peux revenir vivant.",
+              "content_en": "Good.\n\nYou covered each other. That's how you survive out there.\n\nAlone, you can win a fight.\n\nIn a team, you can come back alive."
             }
           }
         ]
@@ -2370,10 +2503,10 @@
         "xp": 250,
         "gold": 100
       },
-      "chain_next": "q_tut_intro_08"
+      "chain_next": "q_tut_intro_09"
     },
     {
-      "id": "q_tut_intro_08",
+      "id": "q_tut_intro_09",
       "type": "main",
       "zone": "tutorial_tavern",
       "min_level": 1,
@@ -2396,7 +2529,7 @@
           "hints": {
             "on_active": [
               {
-                "id": "q_tut_intro_08_obj0_portal",
+                "id": "q_tut_intro_09_obj0_portal",
                 "type": "arrow",
                 "target": "warp_to_village",
                 "priority": 90,
@@ -2413,27 +2546,27 @@
       "quest_hints": {
         "on_accept": [
           {
-            "id": "q_tut_intro_08_aldric_dialogue",
+            "id": "q_tut_intro_09_aldric_dialogue",
             "type": "modal",
-            "priority": 85,
+            "priority": 90,
             "show_once": true,
             "payload": {
               "title_fr": "Aldric",
               "title_en": "Aldric",
-              "content_fr": "Vous vous en êtes bien sortis.\n\nCe n'était qu'un exercice, mais dehors, ce sera rarement aussi simple. Les Fissures gagnent du terrain, et Kanarion ne tiendra pas éternellement derrière ses murs.\n\nSi tu veux vraiment aider le village, prends des contrats, pars en équipe, et découvre ce qui ronge notre monde.\n\nLe portail est ouvert. Bienvenue parmi les volontaires.",
-              "content_en": "You came through fine.\n\nThis was only training, but out there, it will rarely be this simple. The Fissures gain ground, and Kanarion won't hold behind its walls forever.\n\nIf you really want to help the village, take contracts, leave in a team, and discover what gnaws at our world.\n\nThe portal is open. Welcome among the volunteers."
+              "content_fr": "Vous vous en êtes bien sortis.\n\nCe n'était qu'un exercice, mais dehors, ce sera rarement aussi simple.\n\nLes Fissures gagnent du terrain, et Kanarion ne tiendra pas éternellement derrière ses murs.\n\nSi tu veux vraiment aider le village, prends des contrats, pars en équipe, renforce ton familier, et découvre ce qui ronge notre monde.\n\nLe portail est ouvert.\n\nBienvenue parmi les volontaires.",
+              "content_en": "You came through it well.\n\nThis was only training, but out there, it will rarely be this simple.\n\nThe Fissures gain ground, and Kanarion won't hold forever behind its walls.\n\nIf you really want to help the village, take contracts, leave in a team, strengthen your familiar, and discover what gnaws at our world.\n\nThe portal is open.\n\nWelcome among the volunteers."
             }
           },
           {
-            "id": "q_tut_intro_08_exit_modal",
+            "id": "q_tut_intro_09_exit_modal",
             "type": "modal",
-            "priority": 84,
+            "priority": 89,
             "show_once": true,
             "payload": {
               "title_fr": "Tutoriel terminé",
               "title_en": "Tutorial Complete",
-              "content_fr": "Le tutoriel est terminé.\n\nEn franchissant ce portail, tu rejoindras le hub principal de Kanarion. Tu pourras y prendre des contrats, recruter des alliés, améliorer ton équipement et rejoindre d'autres joueurs.",
-              "content_en": "The tutorial is complete.\n\nBy crossing this portal, you'll reach Kanarion's main hub. There you can take contracts, recruit allies, improve your gear, and meet other players."
+              "content_fr": "Le tutoriel est terminé.\n\nEn franchissant ce portail, tu rejoindras le hub principal de Kanarion.\n\nTu pourras y prendre des contrats, rejoindre d'autres joueurs, améliorer ton équipement et faire progresser ton familier.",
+              "content_en": "The tutorial is complete.\n\nBy crossing this portal, you'll reach Kanarion's main hub.\n\nThere you can take contracts, join other players, improve your gear, and grow your familiar."
             }
           }
         ]
@@ -2445,7 +2578,7 @@
     }
   ],
   "_summary": {
-    "total_quests": 27,
+    "total_quests": 28,
     "main_quests": 17,
     "side_quests": 7,
     "repeatable_quests": 3
