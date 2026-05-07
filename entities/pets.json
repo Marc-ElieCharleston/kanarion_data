@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "version": "1.0",
+    "version": "1.1",
     "last_updated": "2026-05-07",
     "description": "Archetypes de familiers (compagnons de combat). 100% serveur-autoritaire. Remplacent le slot mercenaire cote joueur.",
     "id_convention": "pet_<species>_<role> pour V1 (1 espece rat x 4 roles)",
@@ -8,10 +8,91 @@
     "skill_loadout_note": "Skills random au loot dans le pool du role. Slots level-based : 2 (lv1) / 3 (lv20) / 4 (lv50) / 5 (lv100).",
     "passive_note": "Pas de passif V1.",
     "evolution_note": "Pas d'evolution V1.",
-    "design_intent": "Compagnon de combat persistant, attache au character. Le rat du tutoriel devient le familier (4 roles au choix). Memes stats par role, la rarete = stat multiplier (x1.00 a x1.10).",
-    "tutorial_note": "Le rat libere des Fissures dans le tutoriel devient le familier de depart. Le joueur choisit son role.",
+    "design_intent": "Compagnon de combat persistant. Memes stats par role, la rarete = stat multiplier (x1.00 a x1.10).",
+    "tutorial_note": "Le rat libere des Fissures dans le tutoriel devient le familier de depart. Character-bound permanent (lien forge par l'histoire personnelle du perso). Le joueur choisit son role.",
     "tier_note": "Rarete drop : commun (x1.00), rare (x1.03), epique (x1.06), legendaire (x1.10). Voir config/pet_balance.json rarity_multipliers.",
-    "ownership": "character-bound V1. Le PNJ de stockage des familiers (futur) sera account-bound."
+    "lore_ref": "world/lore.json section les_familiers : connexion au Lien, mecanique des Ames, sens narratif du transfert via HDV.",
+
+    "binding_modes": {
+      "character": {
+        "description": "Lie a un character specifique, jamais transferable. Reserve au familier du tutoriel (rat libere des Fissures). Le lien forge par l'histoire personnelle ne peut etre cede.",
+        "applies_to": "tutorial_rat",
+        "tradeable": false
+      },
+      "account": {
+        "description": "Lie au compte du joueur, accessible a tous les persos via le PNJ stockage (Maitre des Liens, futur). Une fois invoque depuis une Ame, ne peut plus etre vendu ni cede.",
+        "applies_to": "all_non_tutorial",
+        "tradeable_after_summon": false
+      }
+    },
+
+    "economy": {
+      "principle": "Les familiers ne sont JAMAIS tradeable directement. Seules les Ames (souls, items pre-invocation) circulent sur l'HDV. Une fois l'Ame invoquee, le familier est lie au compte/perso et ne peut plus etre cede.",
+      "soul_item_id_pattern": "pet_soul_<rarity>_<role>",
+      "soul_drops_from": ["boss_kills", "events", "world_drops_rare", "taming_v3"],
+      "soul_summon_resets": {
+        "level": 1,
+        "skills": "auto_roll_from_pool",
+        "custom_name": "default_archetype_name",
+        "rationale": "Empeche un lv1 d'acheter un familier lv100. Le buyer doit lever lui-meme. Lore : l'Ame contient le potentiel, pas l'experience vecue."
+      },
+      "level_gate_by_rarity": {
+        "common": 1,
+        "rare": 20,
+        "epic": 40,
+        "legendary": 60,
+        "rationale": "Empeche un lv1 d'invoquer une legendaire P2W. Cap par perso, pas par compte (un alt lv1 ne peut pas summon une Ame legendaire achetee par le main)."
+      },
+      "level_cap_to_owner": {
+        "rule": "Le familier ne peut pas exceder le niveau du proprietaire. Un familier lv50 sur un perso lv30 fonctionne en lv30.",
+        "ref": "config/pet_balance.json profiles.pet_companion_v1.level_cap_to_owner"
+      },
+      "hdv_rules": {
+        "fee_pct": 10,
+        "max_listings_per_account_per_day": 5,
+        "rationale_fee": "Gold sink anti-inflation. Anti-flipping bot.",
+        "rationale_listing_cap": "Anti-bot farm a la chaine. Permet quand meme 5 ventes/jour pour un farmer dedie."
+      },
+      "anti_abuse_summary": "4 garde-fous empilent : (1) reset level a l'invocation, (2) skill reroll a l'invocation, (3) level gate par rarete a l'invocation, (4) level cap to owner en combat. Ensemble, impossible d'avoir un lv1 player avec un lv100 pet OP."
+    },
+
+    "instance_fields": {
+      "description": "Champs d'une instance de familier (vs archetype). Stocke en PG dans table account_pets ou character_pets selon binding_mode.",
+      "fields": {
+        "pet_instance_id": "UUID unique, source canonique d'identite",
+        "account_id": "UUID compte, toujours present",
+        "archetype_id": "ref vers pets[].id (pet_rat_attack/tank/heal/utility)",
+        "rarity": "common / rare / epic / legendary, immutable post-invocation",
+        "binding_mode": "character (tuto only) ou account (tout le reste)",
+        "bound_character_id": "UUID character, set si binding_mode=character, NULL sinon",
+        "active_for_character_id": "UUID character qui a le familier en slot actif (NULL si en stockage)",
+        "level": "1 a level_cap. Reset a 1 a l'invocation depuis Ame.",
+        "xp": "BIGINT, gagne avec le proprietaire actif",
+        "rolled_skills": "TEXT[] de skill_ids tires aleatoirement du skill_pool a l'invocation, no duplicates",
+        "custom_name": "TEXT, nom donne par le joueur. Default = name_fr de l'archetype.",
+        "trait_id": "TEXT NULL, V1 toujours null. Reserve pour V2 traits legers (Vif/Robuste/Loyal/Feroce/Apaisant).",
+        "origin": "TEXT, source narrative : 'tutorial_rat', 'boss_drop_<boss_id>', 'event_<event_id>', 'forest_taming', 'hdv_purchase_from_<original_origin>'",
+        "summoned_from_soul_origin": "TEXT NULL, audit trace : preserve l'origine narrative quand l'Ame est achetee a l'HDV. Le buyer herite de l'histoire.",
+        "created_at": "TIMESTAMP de l'invocation"
+      },
+      "immutable_after_summon": ["pet_instance_id", "account_id", "archetype_id", "rarity", "binding_mode", "bound_character_id", "origin", "summoned_from_soul_origin"],
+      "mutable_during_life": ["active_for_character_id", "level", "xp", "rolled_skills", "custom_name", "trait_id"]
+    },
+
+    "origin_enum_v1": [
+      "tutorial_rat",
+      "boss_drop",
+      "event_seasonal",
+      "world_drop_rare",
+      "hdv_purchase",
+      "v3_taming"
+    ],
+
+    "future_vN": {
+      "v2": ["evolution lv20 (forme avancee)", "traits legers aleatoires (Vif/Robuste/Loyal/Feroce/Apaisant)", "PNJ Maitre des Liens (storage account)", "renommage cosmetique"],
+      "v3": ["taming/apaisement de creatures sauvages", "skins cosmetiques", "accessoires", "events saisonniers"],
+      "v4": ["equipement leger ou accessoires", "quetes de lien (par perso x familier)", "evolution avancee (forme finale)"]
+    }
   },
   "pets": [
     {

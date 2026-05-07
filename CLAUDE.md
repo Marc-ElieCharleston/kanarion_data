@@ -166,6 +166,58 @@ Potions dediees au merc (le joueur les boit, l'effet va sur son merc) :
 
 Drops dans `items/loot_tables.json` `common_consumables.drops` chance 5%.
 
+### Familiar Structure (`entities/pets.json`)
+Compagnons de combat persistants attaches au joueur. Remplacent le slot mercenaire cote joueur (les mercenaires deviennent un systeme purement serveur pour bots PvP/PvE matchmaking). Voir `world/lore.json` section `les_familiers` pour la fondation narrative (Le Lien, les Ames, le Maitre des Liens). Memoire de design : `project_familiar_system_v1.md`.
+
+- **Required archetype fields :** `id`, `archetype_id`, `name_fr`, `name_en`, `species`, `role`, `stat_template`, `skill_pool[]`, `ai_profile`, `balance_profile`, `icon`, `description_fr`, `description_en`
+- **ID convention :** `pet_<species>_<role>` (ex: `pet_rat_tank`)
+- **Roles V1 :** attack / tank / heal / utility (4 roles, 1 espece rat V1)
+- **Skill pool :** 6 skills par role dans `skills/pet_skills.json` (24 total). Au loot/invocation, le serveur tire aleatoirement N skills du pool selon le slot count (no duplicates). Cross-ref CI : chaque `skill_id` du `skill_pool` doit exister dans `skills/pet_skills.json`.
+- **Stat template :** doit exister dans `config/pet_balance.json` `stat_templates` (4 templates V1 : `pet_attack_v1`, `pet_tank_v1`, `pet_heal_v1`, `pet_utility_v1`)
+- **Balance profile :** doit exister dans `config/pet_balance.json` `profiles` (V1 : `pet_companion_v1`)
+- **AI profile :** mappe sur PetAI cote combat. Valeurs V1 : `pet_attack_v1` / `pet_tank_v1` / `pet_heal_v1` / `pet_utility_v1`
+
+**Slot progression (level-based) :** 2 slots lv1 → 3 lv20 → 4 lv50 → 5 lv100. Configuration dans `config/pet_balance.json` `slot_progression.by_level`.
+
+**Rarete = stat multiplier seul (V1) :** commun ×1.00 / rare ×1.03 / epique ×1.06 / legendaire ×1.10. Configuration dans `config/pet_balance.json` `rarity_multipliers`. Pas de bonus loot, pas de slot bonus, pas de passif rarete-dependant.
+
+### Familiar Skills (`skills/pet_skills.json`)
+Pool de 24 skills (6 par role). Phase 3 Option A canonical (`stacks_to_apply` sur effets de `canonical_grid`, `value`/`duration` uniquement sur effets non-canonical comme stun/taunt/cleanse).
+
+- **ID convention :** `skill_pet_<role>_<name>` (ex: `skill_pet_attack_pounce`)
+- **Required fields :** identiques a un skill classe (id, name_fr/en, tier, target, pattern, damage_type, scaling_stat, base_power, scaling_percent, mana_cost, cooldown, description_fr/en, tags, targeting)
+- **Specifiques pet :** `source_scope: "PET"`, `pet_role: <role>` (attack/tank/heal/utility)
+
+### Familiar Souls (`pets/pet_souls.json`)
+Items tradeable a l'HDV qui contiennent le potentiel d'un familier (rarete + role) sans son experience. Une Ame ne devient un familier qu'apres invocation chez le Maitre des Liens. Une fois invoquee, le familier est lie au compte du buyer et ne peut plus etre cede.
+
+- **ID convention :** `pet_soul_<rarity>_<role>` (16 archetypes V1 : 4 raretes × 4 roles)
+- **Required fields :** `id`, `name_fr`, `name_en`, `description_fr`, `description_en`, `rarity`, `role`, `item_type: "pet_soul"`, `summon_archetype_id`, `summon_level_gate`, `stat_multiplier`, `tradeable: true`, `hdv_listable: true`
+- **Cross-ref CI :** `summon_archetype_id` doit exister dans `entities/pets.json` `pets[].id`
+- **Level gate par rarete :** commun lv1, rare lv20, epique lv40, legendaire lv60 (anti-abuse pay-to-win)
+
+**Anti-abuse stack 4 couches :**
+1. Reset level=1 a l'invocation (pas de transfert de progression)
+2. Reroll skills a l'invocation (pas de transfert de loadout)
+3. Level gate par rarete (anti-P2W lv1+legendaire)
+4. Level cap to owner en combat (`pet_balance.json` `level_cap_to_owner: true`)
+
+### Familiar Potions & Reroll Items (`items/consumables.json`)
+Potions familier (le joueur les utilise via inventaire, l'effet va sur son familier actif) :
+- `cons_hp_potion_pet_small` : `effect_type=heal_pet_hp_flat`, `value=50`
+- `cons_mp_potion_pet_small` : `effect_type=restore_pet_mp_flat`, `value=30`
+
+Items de reroll skill (rerolls des skills aleatoires deja attribues) :
+- `cons_pet_skill_reroll_one` : `effect={type: "pet_reroll_skill", target: "random_one"}` (uncommon, 200g)
+- `cons_pet_skill_reroll_choose` : `effect={type: "pet_reroll_skill", target: "player_choice"}` (rare, 600g)
+
+### Familiar Binding Modes (lore + technique)
+Deux modes coexistent V1 :
+- **`character`** : seul cas = rat du tutoriel (lien narratif specifique au perso liberant la creature des Fissures). Jamais transferable, ni au compte ni a un autre perso. Voir `world/lore.json` `les_familiers.le_tutoriel_du_rat`.
+- **`account`** : tous les autres familiers (drops, events, achats HDV, V3 taming). Stockes au niveau compte, accessibles a tous les persos via le Maitre des Liens (PNJ V2). Une fois invoque, jamais transferable hors du compte.
+
+**Anti-pattern interdit :** convertir un familier `character` en `account` ou vice-versa. Le mode est immutable a la creation. Voir `entities/pets.json` `_meta.instance_fields.immutable_after_summon`.
+
 ## Game Systems Knowledge
 
 ### Combat System
