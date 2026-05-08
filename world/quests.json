@@ -2139,12 +2139,12 @@
       ],
       "title_fr": "Réserves",
       "title_en": "Supplies",
-      "summary_fr": "Aldric te donne des potions hors combat. Place-en une sur ta barre rapide, puis retourne lui parler.",
-      "summary_en": "Aldric gives you out-of-combat potions. Place one on your quickbar, then return to him.",
+      "summary_fr": "Aldric a quelque chose pour toi. Va le voir, puis place une potion sur ta barre rapide.",
+      "summary_en": "Aldric has something for you. Go see him, then place a potion on your quickbar.",
       "npc_giver": "npc_tutorial_instructor_aldric",
       "objective_mode": "sequential",
       "rewards_on_accept": {
-        "_note": "Backend Phase 2 doit traiter ce champ à l'acceptation de la quête (similaire à 'rewards' au turn-in). Requis pour que q_tut_intro_06 soit testable : sans potions à l'acceptation, le joueur ne peut pas valider l'objectif assign_quickslot.",
+        "_note": "Items donnés à l'acceptation (auto-chain depuis q_tut_intro_05). Le dialogue intro d'Aldric (obj_0) cite ces potions narrativement, mais elles arrivent dès l'acceptation pour que le joueur puisse les placer dès le premier dialogue terminé.",
         "items": [
           {
             "id": "cons_hp_potion_small",
@@ -2158,6 +2158,28 @@
       },
       "objectives": [
         {
+          "template": "talk_to_npc",
+          "npc_id": "npc_tutorial_instructor_aldric",
+          "count": 1,
+          "description_fr": "Aller voir Aldric",
+          "description_en": "Go see Aldric",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_06_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_tutorial_instructor_aldric",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Aldric a quelque chose pour toi",
+                  "label_en": "Aldric has something for you"
+                }
+              }
+            ]
+          }
+        },
+        {
           "template": "assign_quickslot",
           "count": 1,
           "description_fr": "Placer une potion sur la barre rapide",
@@ -2165,7 +2187,7 @@
           "hints": {
             "on_active": [
               {
-                "id": "q_tut_intro_06_obj0_quickbar",
+                "id": "q_tut_intro_06_obj1_quickbar",
                 "type": "highlight",
                 "target": "ui_quickbar_slot_first_empty",
                 "priority": 90,
@@ -2183,11 +2205,26 @@
           "npc_id": "npc_tutorial_instructor_aldric",
           "count": 1,
           "description_fr": "Retourner voir Aldric",
-          "description_en": "Return to Aldric"
+          "description_en": "Return to Aldric",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_06_obj2_arrow",
+                "type": "arrow",
+                "target": "npc_tutorial_instructor_aldric",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Reviens voir Aldric",
+                  "label_en": "Return to Aldric"
+                }
+              }
+            ]
+          }
         }
       ],
       "rewards": {
-        "xp": 30
+        "xp": 50
       },
       "chain_next": "q_tut_intro_07"
     },
@@ -2254,7 +2291,7 @@
         ]
       },
       "rewards": {
-        "xp": 150,
+        "xp": 250,
         "gold": 100
       },
       "chain_next": "q_tut_intro_08"
@@ -2314,7 +2351,7 @@
         ]
       },
       "rewards": {
-        "xp": 80,
+        "xp": 150,
         "gold": 100
       }
     }
