@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "version": "3.0",
-    "last_updated": "2026-01-10",
-    "description": "Système PvP - duel, arena, guild wars"
+    "version": "3.1",
+    "last_updated": "2026-05-08",
+    "description": "Système PvP - duel, arena, guild wars. PR1 PvP MVP (rev 4 plan validé CTO 2026-05-08)."
   },
 
   "duel": {
@@ -11,7 +11,28 @@
     "rewards": false,
     "death_penalty": false,
     "hp_after_duel": "full_restore",
-    "request_timeout_seconds": 30
+    "request_timeout_seconds": 30,
+    "modes": {
+      "duel_1v1": {
+        "enabled": true,
+        "team_size": 1,
+        "bot_fill": false,
+        "description": "Défi direct entre deux joueurs humains, sans bot fill."
+      },
+      "duel_2v2": {
+        "enabled": false,
+        "planned": "PR3",
+        "team_size": 2,
+        "bot_fill": false,
+        "description": "Défi direct entre deux équipes de 2 joueurs humains, planifié PR3."
+      }
+    },
+    "constraints": {
+      "cooldown_between_duels_seconds": 60,
+      "max_distance_pixels": 500,
+      "same_zone_required": true,
+      "level_range_optional": null
+    }
   },
 
   "open_world_pvp": {
@@ -21,9 +42,18 @@
 
   "arena": {
     "enabled": false,
-    "planned": true,
-    "modes_planned": ["1v1", "3v3", "5v5"],
-    "ranked_planned": true
+    "planned": "PR2",
+    "modes_planned": ["1v1", "2v2", "4v4", "8v8"],
+    "ranked_planned": false,
+    "rewards_planned": false,
+    "bot_fill": {
+      "enabled": true,
+      "wait_seconds_before_fill": 10,
+      "balance_profile": "pvp_filler_v1",
+      "ux_label_fr": "recrue d'arène",
+      "ux_label_en": "arena recruit"
+    },
+    "notes": "PR2 ouvre arena_1v1 via Dargo. PR3 ouvre 2v2/4v4. 8v8 reporté post-MVP."
   },
 
   "guild_wars": {
