@@ -41,19 +41,54 @@
   },
 
   "arena": {
-    "enabled": false,
-    "planned": "PR2",
-    "modes_planned": ["1v1", "2v2", "4v4", "8v8"],
+    "enabled": true,
+    "exhibition_only": true,
     "ranked_planned": false,
     "rewards_planned": false,
+    "modes": {
+      "arena_1v1": {
+        "enabled": true,
+        "team_size": 1,
+        "bot_fill": true,
+        "description": "Exhibition 1v1 via Dargo. Si pas d'adversaire après 10s, une recrue d'arène complète."
+      },
+      "arena_2v2": {
+        "enabled": false,
+        "planned": "PR3",
+        "team_size": 2,
+        "bot_fill": true
+      },
+      "arena_4v4": {
+        "enabled": false,
+        "planned": "PR3",
+        "team_size": 4,
+        "bot_fill": true
+      },
+      "arena_8v8": {
+        "enabled": false,
+        "planned": "post_MVP",
+        "team_size": 8,
+        "bot_fill": true,
+        "notes": "Reporté: lisibilité, équilibrage, perf à valider d'abord."
+      }
+    },
     "bot_fill": {
       "enabled": true,
       "wait_seconds_before_fill": 10,
       "balance_profile": "pvp_filler_v1",
+      "ai_profile": "exhibition_recruit_v1",
+      "level_strategy": "average_team_level",
       "ux_label_fr": "recrue d'arène",
-      "ux_label_en": "arena recruit"
+      "ux_label_en": "arena recruit",
+      "composition_rules": {
+        "arena_1v1": "random_archetype",
+        "arena_2v2": "ensure_at_least_one_healer",
+        "arena_4v4": "1_frontline_1_healer_2_dps"
+      }
     },
-    "notes": "PR2 ouvre arena_1v1 via Dargo. PR3 ouvre 2v2/4v4. 8v8 reporté post-MVP."
+    "match_ready_countdown_ms": 10000,
+    "queue_status_push_interval_ms": 1000,
+    "notes": "PR2 ouvre arena_1v1 via Dargo (desert_playtest). PR3 ouvre 2v2/4v4. 8v8 post-MVP."
   },
 
   "guild_wars": {
