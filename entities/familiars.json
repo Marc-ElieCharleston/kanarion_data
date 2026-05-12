@@ -2,14 +2,78 @@
   "_meta": {
     "version": "1.0",
     "last_updated": "2026-05-07",
-    "description": "Archetypes de familier (compagnons animaux du joueur, account-bound, 1 actif). 100% serveur-autoritaire. Persiste PG (table familiars).",
+    "description": "Archetypes de familier (compagnons animaux du joueur, 1 actif). 100% serveur-autoritaire. Persiste PG (table familiars).",
     "spec_ref": "PLAN_FAMILIAR_SYSTEM (a creer)",
-    "lore_intent": "Le rat du tutoriel, libere de l'influence des Fissures, devient le premier compagnon du joueur. Il s'adapte au role choisi par son maitre.",
+    "lore_intent": "Le rat du tutoriel, libere de l'influence des Fissures, devient le premier compagnon du joueur. Les familiers ne sont pas des ames capturees ni des corps invoques : ce sont des creatures dont le Souffle a garde une trace stable apres liberation. Colette stabilise cette trace pour que la creature reprenne forme et accepte d'accompagner le joueur.",
     "id_convention": "familiar_<animal>_<role> pour V1 (1 espece = rat, 4 roles)",
     "balance_note": "Tous les archetypes V1 utilisent balance_profile=familiar_v1. Voir config/familiar_balance.json.",
     "skill_loadout_note": "3 skills par role (filler/basic/advanced). Skills familier-specifiques (skill_familiar_*) avec noms / icones / descriptions dedies, jamais reutilisation visible des skills joueurs.",
     "post_v1_evolution": "Le rat starter pourra evoluer plus tard (Rat des Sables, Rat Spectral, Renard, Hibou, etc.) via quetes / evolutions. V1 = 4 variantes du rat de depart pour fonder l'attachement.",
-    "tutorial_npc": "Hestaia donne le premier familier au joueur a la fin du tuto, avec choix entre les 4 roles."
+    "tutorial_npc": "Colette stabilise le premier familier du joueur pendant le tutoriel, avec choix entre les 4 roles.",
+    "capture_design": {
+      "drop_item_concept": "Trace stable de <creature>",
+      "default_rule": "Chaque monstre non humanoide peut recevoir une entree familiar_capture. Les humanoides sont exclus par regle globale.",
+      "forbidden_monster_tags": [
+        "humanoid"
+      ],
+      "forbidden_design_note": "Les humains, bandits, voleurs, brigands, zelotes et autres humanoides ne deviennent jamais des familiers. Meme brises par les Fissures, ils restent des personnes, pas des compagnons a stabiliser.",
+      "lore_rule": "Quand une creature non humanoide est liberee de l influence des Fissures, elle peut tres rarement laisser une trace stable de Souffle. Cette trace n est pas une ame emprisonnee ni un cadavre : c est une empreinte vivante que Colette peut stabiliser pour permettre a la creature de reprendre forme.",
+      "drop_rule": "drop_chance est une probabilite decimale par monstre. 0.01 = 1%, 0.001 = 0.1%, 0.0001 = 0.01%. La stabilisation chez Colette reussit toujours une fois la trace obtenue.",
+      "encounter_star_trace_multiplier": {
+        "0": 1,
+        "1": 1.2,
+        "2": 1.5,
+        "3": 2,
+        "4": 3,
+        "5": 5
+      },
+      "roles": {
+        "attaque": "DPS familier",
+        "tank": "Encaisse et protege",
+        "heal": "Soigne ou stabilise",
+        "utilitaire": "Gene les ennemis et soutient le groupe"
+      },
+      "skill_slot_model": {
+        "level_1": [
+          "signature_family",
+          "role_skill"
+        ],
+        "level_20": [
+          "custom_skill_1"
+        ],
+        "level_60": [
+          "custom_skill_2"
+        ],
+        "level_100": [
+          "custom_skill_3"
+        ]
+      },
+      "signature_templates": {
+        "bite_bleed": "Degats physiques + saignement leger",
+        "venom_bite": "Degats + poison ou affaiblissement",
+        "shell_guard": "Defense, bouclier ou reduction de degats",
+        "charge_stun": "Charge, degats et interruption courte",
+        "pack_howl": "Buff ou debuff de groupe",
+        "fear_screech": "Cri qui reduit attaque, precision ou tempo ennemi",
+        "shadow_mark": "Marque ou esquive liee a la corruption/ombre",
+        "bone_arrow": "Projectile d os, degats a distance",
+        "bone_guard": "Defense ou riposte osseuse",
+        "stone_guard": "Protection lourde de pierre",
+        "crystal_bite": "Degats + ralentissement/frisson",
+        "ember_burst": "Degats + brulure",
+        "rune_guard": "Bouclier ou buff runique",
+        "resonant_guard": "Protection + controle par resonance",
+        "bone_heal": "Soin faible ou restauration par ossature",
+        "abyss_bite": "Degats sombres + drain leger",
+        "void_bite": "Degats sombres + debuff Souffle",
+        "rift_pounce": "Bond, focus cible fragile",
+        "heal_minor": "Soin mineur",
+        "breath_restore": "Restauration de Souffle"
+      },
+      "stabilization": "Une trace stable transformee chez Colette donne un familier niveau 1. La rarete, les etoiles, les traits et les skills custom peuvent varier selon le design serveur.",
+      "trade_rule": "Un familier echangeable rompt son lien avec son ancien maitre et revient niveau 1 chez le nouveau maitre. Il garde son espece, ses etoiles et ses traits innés, mais perd son experience et les progres lies a l ancien lien.",
+      "star_upgrade_rule": "Les traces stables d une meme famille peuvent etre donnees a un familier vivant pour renforcer sa forme et augmenter progressivement ses etoiles."
+    }
   },
   "familiars": [
     {

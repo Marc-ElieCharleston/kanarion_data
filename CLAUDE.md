@@ -4,7 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-KanarionDB (`kanarion_data`) is a JSON-based game database for "Kanarion Online" (a mobile 2D MMORPG). This repo contains **only the JSON data** — no application code. The web editor is in a separate repo: [`kanarion-tool`](https://github.com/Marc-ElieCharleston/kanarion-tool). Both the C++ backend and Godot frontend consume this data as a git submodule (`kanarion-meta/`), pinned to the same commit.
+KanarionDB (`kanarion_data`) is a JSON-based game database for "Kanarion Online" (a 2D MMORPG). This repo contains **only the JSON data** — no application code. The web editor lives at sibling directory `../kanarion-tool/` (separate git repo). Both the C++ backend and Godot frontend consume this data as a git submodule (`kanarion-meta/`), pinned to the same commit.
+
+> **AGENTS.md mirror:** A Codex-facing `AGENTS.md` exists at the workspace root. Codex is currently scoped to data review only — when editing this `CLAUDE.md`, you do NOT need to re-edit `AGENTS.md` unless the data conventions themselves change.
+
+> **Active design state lives in auto-memory.** Before assuming current behavior, check these entries:
+> - `project_familiar_system_v1` — Familiar V1 design (4 roles, rat species, Le Lien, Colette, level-based slots)
+> - `project_stats_integration_audit`, `project_stats_consumers_audit`, `project_passive_tier_audit` — stats/passives authority
+> - The "Status Effects — Option A" contract below (CTO 2026-04-30)
 
 ## Commands
 
@@ -166,8 +173,10 @@ Potions dediees au merc (le joueur les boit, l'effet va sur son merc) :
 
 Drops dans `items/loot_tables.json` `common_consumables.drops` chance 5%.
 
-### Familiar Structure (`entities/pets.json`)
-Compagnons de combat persistants attaches au joueur. Remplacent le slot mercenaire cote joueur (les mercenaires deviennent un systeme purement serveur pour bots PvP/PvE matchmaking). Voir `world/lore.json` section `les_familiers` pour la fondation narrative (Le Lien, les Ames, le Maitre des Liens). Memoire de design : `project_familiar_system_v1.md`.
+### Familiar Structure (`entities/familiars.json` ← canonical V1, `entities/pets.json` ← legacy naming en cours de rename)
+Compagnons de combat persistants attaches au joueur. Remplacent le slot mercenaire cote joueur (les mercenaires deviennent un systeme purement serveur pour bots PvP/PvE matchmaking). Voir `world/lore.json` section `les_familiers` pour la fondation narrative (Le Lien, les Ames, Colette / Maitre des Liens). Memoire de design : `project_familiar_system_v1`.
+
+**Naming en transition :** `entities/familiars.json` (v1.0, 2026-05-11) est le fichier canonique courant — IDs `familiar_<animal>_<role>`, balance via `config/familiar_balance.json`, NPC stabilisation = Colette. `entities/pets.json` (v1.1, plus ancien) garde l'ancienne nomenclature `pet_<species>_<role>` + `pet_balance.json` + Maitre des Liens. Les deux coexistent le temps de la migration ; toute nouvelle entree va dans `familiars.json`. Les conventions ci-dessous parlent au format historique `pet_*` — mentalement traduire `pet_` → `familiar_` quand on edite le nouveau fichier.
 
 - **Required archetype fields :** `id`, `archetype_id`, `name_fr`, `name_en`, `species`, `role`, `stat_template`, `skill_pool[]`, `ai_profile`, `balance_profile`, `icon`, `description_fr`, `description_en`
 - **ID convention :** `pet_<species>_<role>` (ex: `pet_rat_tank`)
@@ -221,7 +230,7 @@ Deux modes coexistent V1 :
 ## Game Systems Knowledge
 
 ### Combat System
-- **Grid:** 4x4 (16 slots, max 10 players per team)
+- **Grid:** 4×5 per team (20 slots per team), max 10 players per team — single active format since the Arena Hub pivot (2026-05-01). Source: `config/game.json` `combat_grids`. Each room supports up to 32 entities total (backend `combat.json` `max_entities_per_room`).
 - **Rows:** front, mid_front, mid_back, back (positioning matters for tanks/healers)
 - **Type:** Real-time with 2.0s Global Cooldown (GCD), drag-and-drop targeting
 - **Line of Sight (LoS):** Auto-attacks blocked if target has units in front (same column on target's grid)
@@ -344,31 +353,11 @@ Les `description_fr` / `description_en` reflètent la VALEUR EFFECTIVE appliqué
 - "+50% dégâts critiques" pour `crit_damage_up` (additif, écrire "+50 dégâts critiques")
 - Description annonçant +30% alors que canonical max = +25% (Frenzy avant migration : atk_up cap à +25%)
 
-## Claude Code on Windows — Known Issues & Workarounds
+## Windows-specific gotcha — `gen_hash.sh` is broken, use Python
 
-This project runs on **Windows 11** with Git Bash. Claude Code's Bash tool has specific quirks on this platform. Follow these rules strictly to avoid wasting time on broken commands.
+This project runs on **Windows 11**. The repo has two shells available (PowerShell + Git Bash) and both work for git operations. The only real platform-specific issue is `gen_hash.sh`:
 
-### Bash Tool Behavior
-
-| Issue | Detail |
-|-------|--------|
-| **Output swallowed** | Many commands return empty stdout/stderr even on success. `pwd`, `echo`, `ls` are unreliable. |
-| **Exit code 1 on success** | The Bash tool often reports `exit code 1` for commands that actually succeeded. Don't retry blindly — check the actual state. |
-| **HEREDOC syntax broken** | `$(cat <<'EOF'...)` and multi-line heredocs **do not work**. Always use simple inline `-m "message"` for git commits. |
-| **Piped commands fragile** | Complex pipelines (`find | sort | while read`) may silently fail or return no output. |
-
-### Shell Scripts (.sh) — CRLF Problem
-
-All `.sh` files have CRLF line endings (`\r\n`) because Git checks them out on Windows. Bash cannot execute them directly:
-```
-scripts/gen_hash.sh: line 6: $'\r': command not found
-```
-
-**Never run shell scripts directly** (`bash scripts/gen_hash.sh` → FAILS). Use the Python workaround below.
-
-### gen_hash.sh — Use Python Replacement
-
-The `gen_hash.sh` script **does not work** on this Windows setup (CRLF + `dirname` issues). Use this pure-Python equivalent instead:
+All `.sh` files in this repo have CRLF line endings because Git checks them out on Windows. Combined with a `dirname` resolution quirk, this means `bash scripts/gen_hash.sh` fails with `$'\r': command not found`. **Do not try to fix it inline** — use this Python equivalent every time you need to regenerate the content hash:
 
 ```bash
 python -c "
@@ -402,67 +391,22 @@ print(f'Updated content_hash: sha256:{h}')
 "
 ```
 
-### Git Commands — What Works
+Same caveat applies to `scripts/tag_release.sh` and `scripts/pre-commit` — CRLF + `dirname` will break them; run their logic manually (or via Python) if needed.
 
-**Works reliably:**
-```bash
-git status
-git add <file1> <file2>
-git commit -m "short message"
-git push
-git push origin master
-git log --oneline -5
-git diff --name-only
-git rm --cached <file>
+## Commit Workflow on Windows
+
+```
+1. Edit JSON files
+2. Regenerate hash via the Python snippet above (NOT gen_hash.sh)
+3. git add <specific files>   # avoid `git add .` to keep diffs clean
+4. git commit -m "feat(data): short message"
+5. git push origin master     # only when asked
 ```
 
-**Does NOT work (avoid):**
-```bash
-# HEREDOC commit messages — BROKEN
-git commit -m "$(cat <<'EOF'
-message
-EOF
-)"
-
-# Complex pipelines — OUTPUT SWALLOWED
-git log --oneline | head -5
-
-# Interactive flags — NOT SUPPORTED
-git add -i
-git rebase -i
-```
-
-### Commit Workflow (Correct Sequence)
-
-```bash
-# 1. Regenerate hash (Python — NOT gen_hash.sh)
-python -c "... (see above) ..."
-
-# 2. Stage files explicitly
-git add _meta/version.json classes/warrior/skills.json  # list specific files
-
-# 3. Commit with simple -m
-git commit -m "feat(data): add new warrior skills"
-
-# 4. Push if requested
-git push origin master
-```
-
-### When Bash Fails — Use Python as Fallback
-
-For any command where the Bash tool returns empty output or unexplained exit code 1, wrap it in Python:
-```bash
-python -c "
-import subprocess
-r = subprocess.run(['git', 'status'], capture_output=True, text=True)
-print(r.stdout)
-print(r.stderr)
-"
-```
+Avoid `git add -i` / `git rebase -i` (no interactive support in this harness).
 
 ## Notes
 
 - Review `config/combat.json` before modifying damage calculations — formulas are complex
-- The web editor reads this data via `DB_ROOT` env var
-- `gen_hash.sh` uses `sha256sum` (Linux/Git Bash) and `python` — both must be available but **the script itself fails on Windows due to CRLF** — use the Python replacement above
-- On Windows, shell scripts require CRLF stripping before execution — prefer Python alternatives
+- The web editor (`../kanarion-tool/kanarion-editor/`) reads this data via the `DB_ROOT` env var pointing to this repo
+- Frontend & backend consume this repo as a git submodule `kanarion-meta/` — after a push here, the consumer repos must update their submodule pin (see root `CLAUDE.md` → "Windows Development Gotchas → Submodule update")
