@@ -1,9 +1,11 @@
 {
   "_meta": {
-    "version": "6.1",
+    "version": "7.0",
     "last_updated": "2026-05-13",
     "class": "healer",
-    "description": "Healer passives: 1 innate + 5 class-specific (max 10 levels each). Focus: heal power, shield power, buff duration, CDR, effect resist."
+    "description": "Healer passives: 1 innate + 5 class-specific (max 10 levels each). Each class_passive opens a subclass axis: Lifewarden (Lifewarden's Blessing), Lightbringer (Radiant Burst), Cantor (Sacred Hymn), Martyr (Martyr's Offering). Fondation slot (Divine Touch) is shared by all builds and linked to the innate via passive_scaling.",
+    "framework": "Slot 1 = Fondation (multi-stat enabler, lie a l'inne). Slots 2-5 = Specialisations 2-stats par subclass.",
+    "cdr_note": "CDR conserve dans le slot Lightbringer (les healers spamment les heals critiques). Asymetrie vs Mage volontaire."
   },
   "innate_passive": {
     "id": "p_heal_guardian_breath",
@@ -40,44 +42,62 @@
       "name_fr": "Toucher Divin",
       "name_en": "Divine Touch",
       "max_level": 10,
-      "description_fr": "Augmente la puissance de soin de 1.5% par niveau.",
-      "description_en": "Increases heal power by 1.5% per level.",
+      "slot": "fondation",
+      "description_fr": "+1 MAG et +0.75% MAG par niveau. +0.5% puissance de soin par niveau. Le socle du Soigneur, sur lequel toutes les voies sacrées se fondent.",
+      "description_en": "+1 MAG and +0.75% MAG per level. +0.5% heal power per level. The Healer's foundation, on which every sacred path is built.",
       "effects": [
         {
-          "stat": "heal_power",
-          "op": "add_flat",
-          "value_per_level": 1.5
-        }
-      ]
-    },
-    {
-      "id": "p_heal_sacred_protection",
-      "name_fr": "Protection Sacrée",
-      "name_en": "Sacred Protection",
-      "max_level": 10,
-      "description_fr": "Augmente la puissance de bouclier de 1% et les soins reçus de 0.5% par niveau.",
-      "description_en": "Increases shield power by 1% and healing received by 0.5% per level.",
-      "effects": [
-        {
-          "stat": "shield_power",
+          "stat": "mag",
           "op": "add_flat",
           "value_per_level": 1
         },
         {
-          "stat": "healing_received",
+          "stat": "mag",
+          "op": "add_percent",
+          "value_per_level": 0.75
+        },
+        {
+          "stat": "heal_power",
+          "op": "add_percent",
+          "value_per_level": 0.5
+        }
+      ]
+    },
+    {
+      "id": "p_heal_lifewarden_blessing",
+      "name_fr": "Bénédiction du Gardien",
+      "name_en": "Lifewarden's Blessing",
+      "max_level": 10,
+      "slot": "lifewarden",
+      "description_fr": "+0.5 puissance de soin et +0.5 puissance de bouclier par niveau. La voie du Gardien de Vie : protéger l'équipe par la régénération et les boucliers.",
+      "description_en": "+0.5 heal power and +0.5 shield power per level. The Lifewarden's path: protect the team through regeneration and shields.",
+      "effects": [
+        {
+          "stat": "heal_power",
+          "op": "add_flat",
+          "value_per_level": 0.5
+        },
+        {
+          "stat": "shield_power",
           "op": "add_flat",
           "value_per_level": 0.5
         }
       ]
     },
     {
-      "id": "p_heal_holy_radiance",
-      "name_fr": "Radiance Sacrée",
-      "name_en": "Holy Radiance",
+      "id": "p_heal_radiant_burst",
+      "name_fr": "Éclat Radieux",
+      "name_en": "Radiant Burst",
       "max_level": 10,
-      "description_fr": "Augmente la durée des améliorations de 1% par niveau.",
-      "description_en": "Increases buff duration by 1% per level.",
+      "slot": "lightbringer",
+      "description_fr": "+0.4 réduction de temps de recharge et +1 durée des améliorations par niveau. La voie du Porteur de Lumière : enchaîner les soins burst, soutenir avec des buffs durables.",
+      "description_en": "+0.4 cooldown reduction and +1 buff duration per level. The Lightbringer's path: chain burst heals, support with lasting buffs.",
       "effects": [
+        {
+          "stat": "cooldown_reduction",
+          "op": "add_flat",
+          "value_per_level": 0.4
+        },
         {
           "stat": "buff_duration",
           "op": "add_flat",
@@ -86,32 +106,44 @@
       ]
     },
     {
-      "id": "p_heal_mercy",
-      "name_fr": "Miséricorde",
-      "name_en": "Mercy",
+      "id": "p_heal_sacred_hymn",
+      "name_fr": "Hymne Sacré",
+      "name_en": "Sacred Hymn",
       "max_level": 10,
-      "description_fr": "Augmente la réduction de temps de recharge de 0.5% par niveau.",
-      "description_en": "Increases cooldown reduction by 0.5% per level.",
+      "slot": "cantor",
+      "description_fr": "+1 soins reçus et +0.5 ténacité par niveau. La voie du Cantor : tenir sous le feu pour continuer les hymnes sacrés.",
+      "description_en": "+1 healing received and +0.5 tenacity per level. The Cantor's path: stand firm under fire to keep singing the sacred hymns.",
       "effects": [
         {
-          "stat": "cooldown_reduction",
+          "stat": "healing_received",
+          "op": "add_flat",
+          "value_per_level": 1
+        },
+        {
+          "stat": "tenacity",
           "op": "add_flat",
           "value_per_level": 0.5
         }
       ]
     },
     {
-      "id": "p_heal_sanctified_ground",
-      "name_fr": "Terre Sanctifiée",
-      "name_en": "Sanctified Ground",
+      "id": "p_heal_martyrs_offering",
+      "name_fr": "Offrande du Martyr",
+      "name_en": "Martyr's Offering",
       "max_level": 10,
-      "description_fr": "Augmente la résistance aux effets de 0.75% par niveau.",
-      "description_en": "Increases effect resist by 0.75% per level.",
+      "slot": "martyr",
+      "description_fr": "+0.5% MAG et +0.4 vampirisme magique par niveau. La voie du Martyr : se donner pour les siens, se nourrir de chaque sort lancé.",
+      "description_en": "+0.5% MAG and +0.4 spell vamp per level. The Martyr's path: give of oneself for one's own, draw life from every spell cast.",
       "effects": [
         {
-          "stat": "effect_resist",
+          "stat": "mag",
+          "op": "add_percent",
+          "value_per_level": 0.5
+        },
+        {
+          "stat": "spell_vamp",
           "op": "add_flat",
-          "value_per_level": 0.75
+          "value_per_level": 0.4
         }
       ]
     }
