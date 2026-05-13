@@ -1,9 +1,10 @@
 {
   "_meta": {
-    "version": "6.1",
+    "version": "7.0",
     "last_updated": "2026-05-13",
     "class": "artisan",
-    "description": "Artisan passives: 1 innate + 5 class-specific (max 10 levels each). Focus: effect chance/resist, CDR, cast speed, hybrid dmg/heal, survivability."
+    "description": "Artisan passives: 1 innate + 5 class-specific (max 10 levels each). Each class_passive opens a subclass axis: Blacksmith (Forgemaster's Grip), Alchemist (Alchemist's Brew), Chef (Chef's Feast), Musician (Musician's Chord). Fondation slot (Tactical Genius) is shared by all builds and linked to the innate via passive_scaling.",
+    "framework": "Slot 1 = Fondation (multi-stat enabler hybride atk+mag, lie a l'inne). Slots 2-5 = Specialisations 2-stats par subclass."
   },
   "innate_passive": {
     "id": "p_art_savoir_faire",
@@ -44,8 +45,56 @@
       "name_fr": "Génie Tactique",
       "name_en": "Tactical Genius",
       "max_level": 10,
-      "description_fr": "Augmente la chance d'effet de 0.5% et la résistance aux effets de 0.5% par niveau.",
-      "description_en": "Increases effect chance by 0.5% and effect resist by 0.5% per level.",
+      "slot": "fondation",
+      "description_fr": "+0.5% ATK et +0.5% MAG par niveau. +0.3% dégâts infligés par niveau. Le socle de l'Artisan, sur lequel toutes les voies hybrides se fondent.",
+      "description_en": "+0.5% ATK and +0.5% MAG per level. +0.3% damage dealt per level. The Artisan's foundation, on which every hybrid path is built.",
+      "effects": [
+        {
+          "stat": "atk",
+          "op": "add_percent",
+          "value_per_level": 0.5
+        },
+        {
+          "stat": "mag",
+          "op": "add_percent",
+          "value_per_level": 0.5
+        },
+        {
+          "stat": "damage_percent",
+          "op": "add_flat",
+          "value_per_level": 0.3
+        }
+      ]
+    },
+    {
+      "id": "p_art_forgemasters_grip",
+      "name_fr": "Poigne du Forgeron",
+      "name_en": "Forgemaster's Grip",
+      "max_level": 10,
+      "slot": "blacksmith",
+      "description_fr": "+0.5 défense et +0.5 puissance de bouclier par niveau. La voie du Forgeron : transformer l'acier en barrière, et la barrière en lame.",
+      "description_en": "+0.5 defense and +0.5 shield power per level. The Blacksmith's path: turn steel into barrier, and barrier into blade.",
+      "effects": [
+        {
+          "stat": "def",
+          "op": "add_flat",
+          "value_per_level": 0.5
+        },
+        {
+          "stat": "shield_power",
+          "op": "add_flat",
+          "value_per_level": 0.5
+        }
+      ]
+    },
+    {
+      "id": "p_art_alchemists_brew",
+      "name_fr": "Brassage de l'Alchimiste",
+      "name_en": "Alchemist's Brew",
+      "max_level": 10,
+      "slot": "alchemist",
+      "description_fr": "+0.5 chance d'effet et +0.75 durée des affaiblissements par niveau. La voie de l'Alchimiste : doser les poisons, prolonger leurs effets.",
+      "description_en": "+0.5 effect chance and +0.75 debuff duration per level. The Alchemist's path: measure the poison, extend its grip.",
       "effects": [
         {
           "stat": "effect_chance",
@@ -53,109 +102,51 @@
           "value_per_level": 0.5
         },
         {
-          "stat": "effect_resist",
+          "stat": "debuff_duration",
           "op": "add_flat",
-          "value_per_level": 0.5
-        }
-      ]
-    },
-    {
-      "id": "p_art_inventors_insight",
-      "name_fr": "Perspicacité de l'Inventeur",
-      "name_en": "Inventor's Insight",
-      "max_level": 10,
-      "description_fr": "Augmente la réduction de temps de recharge de 0.5% et la vitesse d'incantation de 0.5% par niveau.",
-      "description_en": "Increases cooldown reduction by 0.5% and cast speed by 0.5% per level.",
-      "effects": [
-        {
-          "stat": "cooldown_reduction",
-          "op": "add_flat",
-          "value_per_level": 0.5
-        },
-        {
-          "stat": "cast_speed",
-          "op": "add_flat",
-          "value_per_level": 0.5
-        }
-      ]
-    },
-    {
-      "id": "p_art_durable_craftsmanship",
-      "name_fr": "Artisanat Durable",
-      "name_en": "Durable Craftsmanship",
-      "max_level": 10,
-      "description_fr": "Augmente les PV max de 1% et l'armure de 0.75% par niveau.",
-      "description_en": "Increases max HP by 1% and armor by 0.75% per level.",
-      "effects": [
-        {
-          "stat": "hp",
-          "op": "add_percent",
-          "value_per_level": 1
-        },
-        {
-          "stat": "armor",
-          "op": "add_percent",
           "value_per_level": 0.75
         }
       ]
     },
     {
-      "id": "p_art_overcharge",
-      "name_fr": "Surcharge",
-      "name_en": "Overcharge",
+      "id": "p_art_chefs_feast",
+      "name_fr": "Festin du Chef",
+      "name_en": "Chef's Feast",
       "max_level": 10,
-      "description_fr": "Augmente les dégâts infligés de 0.5% et la puissance de soin de 0.5% par niveau.",
-      "description_en": "Increases damage dealt by 0.5% and heal power by 0.5% per level.",
+      "slot": "chef",
+      "description_fr": "+0.5 soins reçus et +0.4 réduction de temps de recharge par niveau. La voie du Chef : nourrir l'équipe, accélérer le rythme du combat.",
+      "description_en": "+0.5 healing received and +0.4 cooldown reduction per level. The Chef's path: feed the team, quicken the rhythm of battle.",
       "effects": [
         {
-          "stat": "damage_percent",
+          "stat": "healing_received",
           "op": "add_flat",
           "value_per_level": 0.5
         },
         {
-          "stat": "heal_power",
+          "stat": "cooldown_reduction",
           "op": "add_flat",
-          "value_per_level": 0.5
+          "value_per_level": 0.4
         }
       ]
     },
     {
-      "id": "p_art_master_craftsman",
-      "name_fr": "Maître Artisan",
-      "name_en": "Master Craftsman",
+      "id": "p_art_musicians_chord",
+      "name_fr": "Accord du Musicien",
+      "name_en": "Musician's Chord",
       "max_level": 10,
-      "description_fr": "Augmente ATK, MAG, PV max, Souffle max, armure et résistance magique de 0.25% chacune par niveau.",
-      "description_en": "Increases ATK, MAG, max HP, max Breath, armor and magic resist by 0.25% each per level.",
+      "slot": "musician",
+      "description_fr": "+1 durée des améliorations et +0.5 ténacité par niveau. La voie du Musicien : tenir le tempo, faire durer les harmonies, résister à la dissonance.",
+      "description_en": "+1 buff duration and +0.5 tenacity per level. The Musician's path: hold the tempo, sustain the harmonies, resist the dissonance.",
       "effects": [
         {
-          "stat": "atk",
-          "op": "add_percent",
-          "value_per_level": 0.25
+          "stat": "buff_duration",
+          "op": "add_flat",
+          "value_per_level": 1
         },
         {
-          "stat": "mag",
-          "op": "add_percent",
-          "value_per_level": 0.25
-        },
-        {
-          "stat": "hp",
-          "op": "add_percent",
-          "value_per_level": 0.25
-        },
-        {
-          "stat": "mp",
-          "op": "add_percent",
-          "value_per_level": 0.25
-        },
-        {
-          "stat": "armor",
-          "op": "add_percent",
-          "value_per_level": 0.25
-        },
-        {
-          "stat": "magic_resist",
-          "op": "add_percent",
-          "value_per_level": 0.25
+          "stat": "tenacity",
+          "op": "add_flat",
+          "value_per_level": 0.5
         }
       ]
     }
