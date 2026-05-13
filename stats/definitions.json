@@ -55,26 +55,6 @@
         "bonus_type": "both",
         "default": 2.0,
         "formula": "mp_regen_final = (base + growth + flat_bonus) \u00d7 (1 + percent_bonus/100)"
-      },
-      "hp_regen_combat": {
-        "name": "Regen HP Combat",
-        "name_en": "Combat HP Regen",
-        "description": "Points de vie regeneres par seconde EN combat. Seul le guerrier en possede via passif.",
-        "description_en": "Health points regenerated per second IN combat. Only warrior has this via passive.",
-        "tooltip_fr": "Points de vie r\u00e9cup\u00e9r\u00e9s chaque seconde pendant le combat.",
-        "tooltip_en": "Health regenerated every second during combat.",
-        "bonus_type": "both",
-        "default": 0,
-        "formula": "hp_regen_combat_final = (base + flat_bonus) \u00d7 (1 + percent_bonus/100)"
-      },
-      "mp_regen_combat": {
-        "name": "Regen Souffle Combat",
-        "name_en": "Combat Breath Regen",
-        "description": "Obsolete \u2014 mp_regen fonctionne partout desormais. Garde a 0 pour compatibilite.",
-        "description_en": "Obsolete \u2014 mp_regen now works everywhere. Kept at 0 for compatibility.",
-        "bonus_type": "both",
-        "default": 0,
-        "formula": "mp_regen_combat_final = 0 (use mp_regen instead)"
       }
     },
 
@@ -98,17 +78,6 @@
         "tooltip_en": "Increases spell damage and healing power.",
         "bonus_type": "both",
         "formula": "mag_final = (base + growth + flat_bonus) \u00d7 (1 + percent_bonus/100)"
-      },
-      "power": {
-        "name": "Puissance",
-        "name_en": "Power",
-        "description": "Ajoute +1 ATK et +1 MAG par point. Id\u00e9al pour les builds hybrides.",
-        "description_en": "Adds +1 ATK and +1 MAG per point. Ideal for hybrid builds.",
-        "tooltip_fr": "Augmente \u00e0 la fois l\u2019Attaque et la Magie. Id\u00e9al pour les builds hybrides.",
-        "tooltip_en": "Increases both Attack and Magic. Ideal for hybrid builds.",
-        "bonus_type": "flat",
-        "derived": false,
-        "formula": "effective_atk += power, effective_mag += power"
       },
       "crit": {
         "name": "Chance Critique",
@@ -225,6 +194,8 @@
         "bonus_type": "flat",
         "default": 0,
         "cap": 100,
+        "implementation_status": "pending",
+        "_note": "Defined in DB but not yet applied by combat_profile_builder/damage_calculator. Implement before using in passives/items.",
         "formula": "damage_to_hp = total_damage \u00d7 (shield_pierce/100)"
       },
       "shield_break": {
@@ -250,7 +221,7 @@
         "tooltip_fr": "R\u00e9duit les d\u00e9g\u00e2ts subis d\u2019une valeur fixe.",
         "tooltip_en": "Reduces incoming damage by a flat amount.",
         "bonus_type": "both",
-        "formula": "total_def = def + damage_reduction_flat (from buffs). damage_after = max(damage \u00d7 0.1, damage - total_def)"
+        "formula": "damage_after = max(damage \u00d7 0.1, damage - def)"
       },
       "armor": {
         "name": "Armure",
@@ -284,18 +255,6 @@
         "cap": 75,
         "source": "buff_only",
         "formula": "final_damage = damage_after_armor \u00d7 (1 - damage_reduction/100)"
-      },
-      "damage_reduction_flat": {
-        "name": "Reduction Degats Fixe",
-        "name_en": "Flat Damage Reduction",
-        "description": "Reduction FIXE des degats recus (apres armor/mr). Retire X points de degats (min 10% du coup). Obtenu via skills, passifs ou equipement - pas une stat de base.",
-        "description_en": "FLAT reduction of damage taken (after armor/mr). Removes X damage points (min 10% of hit). From skills, passives or equipment - not a base stat.",
-        "tooltip_fr": "R\u00e9duit les d\u00e9g\u00e2ts subis d\u2019une valeur fixe.",
-        "tooltip_en": "Reduces incoming damage by a flat amount.",
-        "bonus_type": "flat",
-        "default": 0,
-        "source": "status_effect",
-        "formula": "damage_after_def = max(raw_damage \u00d7 0.1, raw_damage - damage_reduction_flat)"
       },
       "block_chance": {
         "name": "Chance Bloquer",
@@ -597,7 +556,7 @@
       "4. Apply penetration (armor_pen ou magic_pen)",
       "5. Apply armor (physique) ou magic_resist (magique) - % reduction",
       "6. Apply damage_taken_percent (marked/vulnerable)",
-      "7. Apply damage_reduction_flat (min 10% du coup) - via skills/passifs/equip",
+      "7. Apply def (flat reduction, min 10% du coup)",
       "8. Block/Parry check",
       "9. Apply reflect (reduit degats + renvoie)",
       "10. Apply shield/barrier absorption",

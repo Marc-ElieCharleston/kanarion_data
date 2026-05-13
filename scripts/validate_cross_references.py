@@ -60,7 +60,7 @@ def collect_canonical_stats(defs: dict) -> set:
     aliases = {
         "hp", "mp", "atk", "mag", "def", "armor", "magic_resist",
         "crit", "crit_chance", "crit_dmg", "crit_damage",
-        "attack_speed", "hp_regen", "mp_regen", "hp_regen_combat", "mp_regen_combat",
+        "attack_speed", "hp_regen", "mp_regen",
         "lifesteal", "spell_vamp", "armor_pen", "magic_pen",
         "damage_reduction", "heal_power", "cooldown_reduction",
         "block_chance", "parry_chance", "evasion", "hit", "flee",

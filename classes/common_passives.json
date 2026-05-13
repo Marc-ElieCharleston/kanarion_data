@@ -1,10 +1,17 @@
 {
   "_meta": {
-    "version": "3.0",
-    "last_updated": "2026-04-21",
-    "description": "Common passives available to all classes — 10 passives, max 10 levels each. Mix flat+percent: flat gives early impact, percent scales late. Stats use DB-canonical keys.",
-    "budget_note": "100 points to distribute across 10 common + 10 class passives (max 10 each). Future: possibly 2pts/lv.",
-    "phantom_stats_warning": "tenacity, hp_regen not yet applied by combat_profile_builder. Tracked for Phase D cleanup."
+    "version": "3.2",
+    "last_updated": "2026-05-13",
+    "description": "Common passives available to all classes — 18 passives, max 10 levels each. Mix flat+percent: flat gives early impact, percent scales late. Stats use DB-canonical keys.",
+    "budget_note": "100 points to distribute across 18 common + 5 class + 3 subclass passives = 26 total, max 10 each (260 levels to max all = 38% reachable). Forces build choices.",
+    "stat_application_notes": {
+      "hp_regen": "out-of-combat only by design (combat HP regen via skills/heals only)",
+      "tenacity": "applied in combat (status_manager) — cap 50%"
+    },
+    "intentional_overlaps": {
+      "effect_chance": "appears in p_common_precision (+0.2/lvl) AND p_common_focus (+0.6/lvl) — opt-in stacking for debuff specialists, max combined +8 at lvl 10",
+      "tenacity": "appears in p_common_tenacity (+0.5/lvl) AND p_common_safeguard (+0.25/lvl) — opt-in stacking for control-resistance specialists, max combined +7.5% at lvl 10"
+    }
   },
   "common_passives": [
     {
@@ -199,12 +206,181 @@
       "max_level": 10,
       "description_fr": "+0.5% réduction de durée des contrôles par niveau.",
       "description_en": "+0.5% CC duration reduction per level.",
-      "_warning": "PHANTOM: tenacity not yet applied by combat_profile_builder — needs Phase D cleanup",
       "effects": [
         {
           "stat": "tenacity",
           "op": "add_flat",
           "value_per_level": 0.5
+        }
+      ]
+    },
+    {
+      "id": "p_common_balanced_power",
+      "name_fr": "Puissance Hybride",
+      "name_en": "Balanced Power",
+      "max_level": 10,
+      "description_fr": "+0.5 ATK et +0.5% ATK par niveau. +0.5 MAG et +0.5% MAG par niveau. Pour les builds hybrides.",
+      "description_en": "+0.5 ATK and +0.5% ATK per level. +0.5 MAG and +0.5% MAG per level. For hybrid builds.",
+      "effects": [
+        {
+          "stat": "atk",
+          "op": "add_flat",
+          "value_per_level": 0.5
+        },
+        {
+          "stat": "atk",
+          "op": "add_percent",
+          "value_per_level": 0.5
+        },
+        {
+          "stat": "mag",
+          "op": "add_flat",
+          "value_per_level": 0.5
+        },
+        {
+          "stat": "mag",
+          "op": "add_percent",
+          "value_per_level": 0.5
+        }
+      ]
+    },
+    {
+      "id": "p_common_precision",
+      "name_fr": "Précision",
+      "name_en": "Precision",
+      "max_level": 10,
+      "description_fr": "+1 précision et +0.2 chance d'effet par niveau.",
+      "description_en": "+1 accuracy and +0.2 effect chance per level.",
+      "effects": [
+        {
+          "stat": "hit",
+          "op": "add_flat",
+          "value_per_level": 1
+        },
+        {
+          "stat": "effect_chance",
+          "op": "add_flat",
+          "value_per_level": 0.2
+        }
+      ]
+    },
+    {
+      "id": "p_common_breakthrough",
+      "name_fr": "Percée Physique",
+      "name_en": "Breakthrough",
+      "max_level": 10,
+      "description_fr": "+0.6 pénétration d'armure par niveau.",
+      "description_en": "+0.6 armor penetration per level.",
+      "effects": [
+        {
+          "stat": "armor_pen",
+          "op": "add_flat",
+          "value_per_level": 0.6
+        }
+      ]
+    },
+    {
+      "id": "p_common_arcane_piercing",
+      "name_fr": "Percée Magique",
+      "name_en": "Arcane Piercing",
+      "max_level": 10,
+      "description_fr": "+0.6 pénétration magique par niveau.",
+      "description_en": "+0.6 magic penetration per level.",
+      "effects": [
+        {
+          "stat": "magic_pen",
+          "op": "add_flat",
+          "value_per_level": 0.6
+        }
+      ]
+    },
+    {
+      "id": "p_common_focus",
+      "name_fr": "Maîtrise des Effets",
+      "name_en": "Focus",
+      "max_level": 10,
+      "description_fr": "+0.6 chance d'effet et +0.5 durée des debuffs par niveau.",
+      "description_en": "+0.6 effect chance and +0.5 debuff duration per level.",
+      "effects": [
+        {
+          "stat": "effect_chance",
+          "op": "add_flat",
+          "value_per_level": 0.6
+        },
+        {
+          "stat": "debuff_duration",
+          "op": "add_flat",
+          "value_per_level": 0.5
+        }
+      ]
+    },
+    {
+      "id": "p_common_safeguard",
+      "name_fr": "Sauvegarde",
+      "name_en": "Safeguard",
+      "max_level": 10,
+      "description_fr": "+0.75 résistance aux effets et +0.25% réduction de durée des contrôles par niveau.",
+      "description_en": "+0.75 effect resistance and +0.25% CC duration reduction per level.",
+      "effects": [
+        {
+          "stat": "effect_resist",
+          "op": "add_flat",
+          "value_per_level": 0.75
+        },
+        {
+          "stat": "tenacity",
+          "op": "add_flat",
+          "value_per_level": 0.25
+        }
+      ]
+    },
+    {
+      "id": "p_common_restoration",
+      "name_fr": "Restauration",
+      "name_en": "Restoration",
+      "max_level": 10,
+      "description_fr": "+1 puissance de soin et +0.5% puissance de soin par niveau. +0.5 soins reçus par niveau.",
+      "description_en": "+1 heal power and +0.5% heal power per level. +0.5 healing received per level.",
+      "effects": [
+        {
+          "stat": "heal_power",
+          "op": "add_flat",
+          "value_per_level": 1
+        },
+        {
+          "stat": "heal_power",
+          "op": "add_percent",
+          "value_per_level": 0.5
+        },
+        {
+          "stat": "healing_received",
+          "op": "add_flat",
+          "value_per_level": 0.5
+        }
+      ]
+    },
+    {
+      "id": "p_common_warding",
+      "name_fr": "Gardien",
+      "name_en": "Warding",
+      "max_level": 10,
+      "description_fr": "+1 puissance de bouclier et +0.5% puissance de bouclier par niveau. +0.2% réduction de dégâts par niveau.",
+      "description_en": "+1 shield power and +0.5% shield power per level. +0.2% damage reduction per level.",
+      "effects": [
+        {
+          "stat": "shield_power",
+          "op": "add_flat",
+          "value_per_level": 1
+        },
+        {
+          "stat": "shield_power",
+          "op": "add_percent",
+          "value_per_level": 0.5
+        },
+        {
+          "stat": "damage_reduction",
+          "op": "add_flat",
+          "value_per_level": 0.2
         }
       ]
     }
