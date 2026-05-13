@@ -1,9 +1,10 @@
 {
   "_meta": {
-    "version": "6.1",
+    "version": "7.0",
     "last_updated": "2026-05-13",
     "class": "archer",
-    "description": "Archer passives: 1 innate + 5 class-specific (max 10 levels each). Focus: precision, crit damage, armor pen, double hit."
+    "description": "Archer passives: 1 innate + 5 class-specific (max 10 levels each). Each class_passive opens a subclass axis: Ranger (Ranger's Aim), Falconer (Falconer's Dive), Ballmaster (Trick Shot), Gunslinger (Quick Draw). Fondation slot (Hunter's Focus) is shared by all builds and linked to the innate via passive_scaling.",
+    "framework": "Slot 1 = Fondation (multi-stat enabler, lie a l'inne). Slots 2-5 = Specialisations 2-stats par subclass."
   },
   "innate_passive": {
     "id": "p_arch_predator_mark",
@@ -35,82 +36,112 @@
   },
   "class_passives": [
     {
-      "id": "p_arch_eagle_eye",
-      "name_fr": "Œil d'Aigle",
-      "name_en": "Eagle Eye",
+      "id": "p_arch_hunters_focus",
+      "name_fr": "Concentration du Chasseur",
+      "name_en": "Hunter's Focus",
       "max_level": 10,
-      "description_fr": "Augmente la précision de 1% et la chance de critique de 0.5% par niveau.",
-      "description_en": "Increases accuracy by 1% and critical chance by 0.5% per level.",
+      "slot": "fondation",
+      "description_fr": "+1 ATK et +0.75% ATK par niveau. +0.3% dégâts infligés par niveau. Le socle de l'Archer, sur lequel toutes les voies de la chasse se fondent.",
+      "description_en": "+1 ATK and +0.75% ATK per level. +0.3% damage dealt per level. The Archer's foundation, on which every path of the hunt is built.",
       "effects": [
         {
-          "stat": "hit",
-          "op": "add_percent",
+          "stat": "atk",
+          "op": "add_flat",
           "value_per_level": 1
         },
         {
-          "stat": "crit",
+          "stat": "atk",
           "op": "add_percent",
+          "value_per_level": 0.75
+        },
+        {
+          "stat": "damage_percent",
+          "op": "add_flat",
+          "value_per_level": 0.3
+        }
+      ]
+    },
+    {
+      "id": "p_arch_rangers_aim",
+      "name_fr": "Visée du Ranger",
+      "name_en": "Ranger's Aim",
+      "max_level": 10,
+      "slot": "ranger",
+      "description_fr": "+0.5% chance critique et +1 dégâts critiques par niveau. La voie du Ranger : la flèche qui trouve toujours le point faible.",
+      "description_en": "+0.5% critical chance and +1 critical damage per level. The Ranger's path: the arrow that always finds the weak spot.",
+      "effects": [
+        {
+          "stat": "crit",
+          "op": "add_flat",
+          "value_per_level": 0.5
+        },
+        {
+          "stat": "crit_dmg",
+          "op": "add_flat",
+          "value_per_level": 1
+        }
+      ]
+    },
+    {
+      "id": "p_arch_falconers_dive",
+      "name_fr": "Piqué du Fauconnier",
+      "name_en": "Falconer's Dive",
+      "max_level": 10,
+      "slot": "falconer",
+      "description_fr": "+0.5% dégâts infligés et +0.5 pénétration d'armure par niveau. La voie du Fauconnier : la frappe en piqué qui transperce les défenses.",
+      "description_en": "+0.5% damage dealt and +0.5 armor penetration per level. The Falconer's path: the diving strike that pierces defenses.",
+      "effects": [
+        {
+          "stat": "damage_percent",
+          "op": "add_flat",
+          "value_per_level": 0.5
+        },
+        {
+          "stat": "armor_pen",
+          "op": "add_flat",
           "value_per_level": 0.5
         }
       ]
     },
     {
-      "id": "p_arch_deadly_aim",
-      "name_fr": "Visée Mortelle",
-      "name_en": "Deadly Aim",
+      "id": "p_arch_trick_shot",
+      "name_fr": "Tir Trompeur",
+      "name_en": "Trick Shot",
       "max_level": 10,
-      "description_fr": "Augmente les dégâts critiques de 1.5% par niveau.",
-      "description_en": "Increases critical damage by 1.5% per level.",
+      "slot": "ballmaster",
+      "description_fr": "+0.5 chance d'effet et +0.75 durée des affaiblissements par niveau. La voie du Ballmaster : chaque projectile porte une intention, chaque rebond une surprise.",
+      "description_en": "+0.5 effect chance and +0.75 debuff duration per level. The Ballmaster's path: every projectile carries intent, every bounce a surprise.",
       "effects": [
         {
-          "stat": "crit_dmg",
-          "op": "add_percent",
-          "value_per_level": 1.5
-        }
-      ]
-    },
-    {
-      "id": "p_arch_weakpoint_exploit",
-      "name_fr": "Œil du Chasseur",
-      "name_en": "Weakpoint Exploit",
-      "max_level": 10,
-      "description_fr": "Augmente la pénétration d'armure de 0.75% par niveau.",
-      "description_en": "Increases armor penetration by 0.75% per level.",
-      "effects": [
+          "stat": "effect_chance",
+          "op": "add_flat",
+          "value_per_level": 0.5
+        },
         {
-          "stat": "armor_pen",
+          "stat": "debuff_duration",
           "op": "add_flat",
           "value_per_level": 0.75
         }
       ]
     },
     {
-      "id": "p_arch_hunters_focus",
-      "name_fr": "Concentration du Chasseur",
-      "name_en": "Hunter's Focus",
+      "id": "p_arch_quick_draw",
+      "name_fr": "Tir Rapide",
+      "name_en": "Quick Draw",
       "max_level": 10,
-      "description_fr": "Augmente les dégâts infligés de 0.75% par niveau.",
-      "description_en": "Increases damage dealt by 0.75% per level.",
+      "slot": "gunslinger",
+      "description_fr": "+0.02 vitesse d'attaque et +0.3 chance de double frappe par niveau. La voie du Gunslinger : tirer plus vite que l'ombre, frapper deux fois là où un seul suffit.",
+      "description_en": "+0.02 attack speed and +0.3 double hit chance per level. The Gunslinger's path: shoot faster than the shadow, strike twice where one would suffice.",
       "effects": [
         {
-          "stat": "damage_percent",
+          "stat": "attack_speed",
           "op": "add_flat",
-          "value_per_level": 0.75
-        }
-      ]
-    },
-    {
-      "id": "p_arch_relentless_pursuit",
-      "name_fr": "Poursuite Acharnée",
-      "name_en": "Relentless Pursuit",
-      "max_level": 10,
-      "description_fr": "Augmente la chance de double frappe de 0.25% par niveau.",
-      "description_en": "Increases double hit chance by 0.25% per level.",
-      "effects": [
+          "value_per_level": 0.02
+        },
         {
-          "stat": "double_attack_chance",
+          "stat": "double_hit_chance",
           "op": "add_flat",
-          "value_per_level": 0.25
+          "value_per_level": 0.3
         }
       ]
     }
