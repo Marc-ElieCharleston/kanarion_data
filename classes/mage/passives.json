@@ -1,9 +1,11 @@
 {
   "_meta": {
-    "version": "6.1",
+    "version": "7.0",
     "last_updated": "2026-05-13",
     "class": "mage",
-    "description": "Mage passives: 1 innate + 5 class-specific (max 10 levels each). Focus: MAG, cast speed, magic pen, CDR, spell vamp."
+    "description": "Mage passives: 1 innate + 5 class-specific (max 10 levels each). Each class_passive opens a subclass axis: Elementalist (Elemental Focus), Occultist (Occult Grasp), Cardmaster (Arcane Gamble), Spellblade (Arcane Blade). Fondation slot (Arcane Mastery) is shared by all builds and linked to the innate via passive_scaling.",
+    "framework": "Slot 1 = Fondation (multi-stat enabler, lie a l'inne). Slots 2-5 = Specialisations 2-stats par subclass.",
+    "cdr_note": "CDR a ete retire des class_passives mage. Disponible via equipement et futurs subclass passives (ex: Elementalist Arcane Cadence)."
   },
   "innate_passive": {
     "id": "p_mage_arcane_charges",
@@ -44,33 +46,24 @@
       "name_fr": "Maîtrise Arcanique",
       "name_en": "Arcane Mastery",
       "max_level": 10,
-      "description_fr": "Augmente la MAG de 1.5% et le Souffle max de 1% par niveau.",
-      "description_en": "Increases MAG by 1.5% and max Breath by 1% per level.",
+      "slot": "fondation",
+      "description_fr": "+1 MAG et +0.75% MAG par niveau. +0.5% Souffle max par niveau. Le socle du Mage, sur lequel toutes les voies arcaniques se fondent.",
+      "description_en": "+1 MAG and +0.75% MAG per level. +0.5% max Breath per level. The Mage's foundation, on which every arcane path is built.",
       "effects": [
         {
           "stat": "mag",
+          "op": "add_flat",
+          "value_per_level": 1
+        },
+        {
+          "stat": "mag",
           "op": "add_percent",
-          "value_per_level": 1.5
+          "value_per_level": 0.75
         },
         {
           "stat": "mp",
           "op": "add_percent",
-          "value_per_level": 1
-        }
-      ]
-    },
-    {
-      "id": "p_mage_spell_weaving",
-      "name_fr": "Tissage de Sorts",
-      "name_en": "Spell Weaving",
-      "max_level": 10,
-      "description_fr": "Augmente la vitesse d'incantation de 1% par niveau.",
-      "description_en": "Increases cast speed by 1% per level.",
-      "effects": [
-        {
-          "stat": "cast_speed",
-          "op": "add_flat",
-          "value_per_level": 1
+          "value_per_level": 0.5
         }
       ]
     },
@@ -79,43 +72,82 @@
       "name_fr": "Focalisation Élémentaire",
       "name_en": "Elemental Focus",
       "max_level": 10,
-      "description_fr": "Augmente la pénétration magique de 0.75% par niveau.",
-      "description_en": "Increases magic penetration by 0.75% per level.",
+      "slot": "elementalist",
+      "description_fr": "+0.5 pénétration magique et +0.5 vitesse d'incantation par niveau. La voie de l'Élémentaliste : précision et rythme.",
+      "description_en": "+0.5 magic penetration and +0.5 cast speed per level. The Elementalist's path: precision and rhythm.",
       "effects": [
         {
           "stat": "magic_pen",
+          "op": "add_flat",
+          "value_per_level": 0.5
+        },
+        {
+          "stat": "cast_speed",
+          "op": "add_flat",
+          "value_per_level": 0.5
+        }
+      ]
+    },
+    {
+      "id": "p_mage_occult_grasp",
+      "name_fr": "Étreinte de l'Occulte",
+      "name_en": "Occult Grasp",
+      "max_level": 10,
+      "slot": "occultist",
+      "description_fr": "+0.5 chance d'effet et +0.75 durée des affaiblissements par niveau. La voie de l'Occultiste : enchaîner l'ennemi avec ses propres ténèbres.",
+      "description_en": "+0.5 effect chance and +0.75 debuff duration per level. The Occultist's path: chain the enemy with their own darkness.",
+      "effects": [
+        {
+          "stat": "effect_chance",
+          "op": "add_flat",
+          "value_per_level": 0.5
+        },
+        {
+          "stat": "debuff_duration",
           "op": "add_flat",
           "value_per_level": 0.75
         }
       ]
     },
     {
-      "id": "p_mage_mana_efficiency",
-      "name_fr": "Cadence Arcanique",
-      "name_en": "Arcane Cadence",
+      "id": "p_mage_arcane_gamble",
+      "name_fr": "Pari Arcanique",
+      "name_en": "Arcane Gamble",
       "max_level": 10,
-      "description_fr": "Augmente la réduction de temps de recharge de 0.5% par niveau.",
-      "description_en": "Increases cooldown reduction by 0.5% per level.",
+      "slot": "cardmaster",
+      "description_fr": "+0.5% chance critique et +1 dégâts critiques par niveau. La voie du Cardmaster : lire les motifs du hasard, frapper quand la chance tourne.",
+      "description_en": "+0.5% critical chance and +1 critical damage per level. The Cardmaster's path: read the patterns of chance, strike when fortune turns.",
       "effects": [
         {
-          "stat": "cooldown_reduction",
+          "stat": "crit",
           "op": "add_flat",
           "value_per_level": 0.5
+        },
+        {
+          "stat": "crit_dmg",
+          "op": "add_flat",
+          "value_per_level": 1
         }
       ]
     },
     {
-      "id": "p_mage_spell_vamp",
-      "name_fr": "Vampirisme Magique",
-      "name_en": "Spell Vampirism",
+      "id": "p_mage_arcane_blade",
+      "name_fr": "Lame Arcanique",
+      "name_en": "Arcane Blade",
       "max_level": 10,
-      "description_fr": "Augmente le vampirisme magique de 0.5% par niveau.",
-      "description_en": "Increases spell vamp by 0.5% per level.",
+      "slot": "spellblade",
+      "description_fr": "+0.5% ATK et +0.4 vampirisme magique par niveau. La voie du Spellblade : le Souffle imprègne la lame, et chaque coup nourrit le mage.",
+      "description_en": "+0.5% ATK and +0.4 spell vamp per level. The Spellblade's path: Breath imbues the blade, and every strike feeds the mage.",
       "effects": [
+        {
+          "stat": "atk",
+          "op": "add_percent",
+          "value_per_level": 0.5
+        },
         {
           "stat": "spell_vamp",
           "op": "add_flat",
-          "value_per_level": 0.5
+          "value_per_level": 0.4
         }
       ]
     }
