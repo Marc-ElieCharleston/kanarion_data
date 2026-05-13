@@ -1,9 +1,10 @@
 {
   "_meta": {
-    "version": "6.1",
+    "version": "7.0",
     "last_updated": "2026-05-13",
     "class": "warrior",
-    "description": "Warrior passives: 1 innate + 5 class-specific (max 10 levels each). Focus: tank, damage reduction, block, armor pen."
+    "description": "Warrior passives: 1 innate + 5 class-specific (max 10 levels each). Each class_passive opens a subclass axis: Berserker (Brutal Force + Blood Thirst), Weaponmaster (Brutal Force + Blood Thirst sustain), Guardian (Iron Guard), Warlord (Warlord Presence). Fondation slot (Fortified Resolve) is shared by all builds and linked to the innate via passive_scaling.",
+    "framework": "Slot 1 = Fondation (multi-stat enabler, lie a l'inne). Slots 2-4 = Specialisations 2-stats par subclass. Slot 5 = Identite Warlord/Universelle."
   },
   "innate_passive": {
     "id": "p_war_martial_discipline",
@@ -45,78 +46,108 @@
       "name_fr": "Résolution Fortifiée",
       "name_en": "Fortified Resolve",
       "max_level": 10,
-      "description_fr": "Augmente l'armure de 1.5% et les PV max de 1% par niveau.",
-      "description_en": "Increases armor by 1.5% and max HP by 1% per level.",
+      "slot": "fondation",
+      "description_fr": "+1 ATK et +0.75% ATK par niveau. +0.5% PV max par niveau. Le socle du Warrior, sur lequel toutes les voies se fondent.",
+      "description_en": "+1 ATK and +0.75% ATK per level. +0.5% max HP per level. The Warrior's foundation, on which every path is built.",
       "effects": [
         {
-          "stat": "armor",
+          "stat": "atk",
+          "op": "add_flat",
+          "value_per_level": 1
+        },
+        {
+          "stat": "atk",
           "op": "add_percent",
-          "value_per_level": 1.5
+          "value_per_level": 0.75
         },
         {
           "stat": "hp",
           "op": "add_percent",
-          "value_per_level": 1
-        }
-      ]
-    },
-    {
-      "id": "p_war_battle_hardened",
-      "name_fr": "Endurci au Combat",
-      "name_en": "Battle Hardened",
-      "max_level": 10,
-      "description_fr": "Augmente la réduction de dégâts de 0.5% par niveau.",
-      "description_en": "Increases damage reduction by 0.5% per level.",
-      "effects": [
-        {
-          "stat": "damage_reduction",
-          "op": "add_percent",
           "value_per_level": 0.5
         }
       ]
     },
     {
-      "id": "p_war_defensive_stance",
-      "name_fr": "Posture Défensive",
-      "name_en": "Defensive Stance",
+      "id": "p_war_brutal_force",
+      "name_fr": "Force Brutale",
+      "name_en": "Brutal Force",
       "max_level": 10,
-      "description_fr": "Augmente la chance de blocage de 0.5% par niveau.",
-      "description_en": "Increases block chance by 0.5% per level.",
+      "slot": "berserker_weaponmaster",
+      "description_fr": "+0.5% dégâts infligés et +0.5 pénétration d'armure par niveau. La frappe qui brise les défenses.",
+      "description_en": "+0.5% damage dealt and +0.5 armor penetration per level. The strike that breaks defenses.",
       "effects": [
         {
-          "stat": "block_chance",
+          "stat": "damage_percent",
           "op": "add_flat",
           "value_per_level": 0.5
-        }
-      ]
-    },
-    {
-      "id": "p_war_unstoppable_force",
-      "name_fr": "Force Imparable",
-      "name_en": "Unstoppable Force",
-      "max_level": 10,
-      "description_fr": "Augmente la pénétration d'armure de 0.75% par niveau.",
-      "description_en": "Increases armor penetration by 0.75% per level.",
-      "effects": [
+        },
         {
           "stat": "armor_pen",
           "op": "add_flat",
-          "value_per_level": 0.75
+          "value_per_level": 0.5
         }
       ]
     },
     {
-      "id": "p_war_second_wind",
-      "name_fr": "Second Souffle",
-      "name_en": "Second Wind",
+      "id": "p_war_blood_thirst",
+      "name_fr": "Soif de Sang",
+      "name_en": "Blood Thirst",
       "max_level": 10,
-      "description_fr": "Augmente les soins reçus de 1% par niveau.",
-      "description_en": "Increases healing received by 1% per level.",
+      "slot": "berserker_sustain",
+      "description_fr": "+0.75% ATK et +0.3% vol de vie par niveau. Plus le sang coule, plus la rage nourrit le guerrier.",
+      "description_en": "+0.75% ATK and +0.3% lifesteal per level. The more blood flows, the more rage feeds the warrior.",
       "effects": [
         {
-          "stat": "healing_received",
+          "stat": "atk",
+          "op": "add_percent",
+          "value_per_level": 0.75
+        },
+        {
+          "stat": "lifesteal",
+          "op": "add_flat",
+          "value_per_level": 0.3
+        }
+      ]
+    },
+    {
+      "id": "p_war_iron_guard",
+      "name_fr": "Garde de Fer",
+      "name_en": "Iron Guard",
+      "max_level": 10,
+      "slot": "guardian",
+      "description_fr": "+1 puissance de bouclier et +0.3% réduction de dégâts par niveau. Le rempart qui protège les siens.",
+      "description_en": "+1 shield power and +0.3% damage reduction per level. The bulwark that shields its own.",
+      "effects": [
+        {
+          "stat": "shield_power",
           "op": "add_flat",
           "value_per_level": 1
+        },
+        {
+          "stat": "damage_reduction",
+          "op": "add_flat",
+          "value_per_level": 0.3
+        }
+      ]
+    },
+    {
+      "id": "p_war_warlord_presence",
+      "name_fr": "Présence du Warlord",
+      "name_en": "Warlord Presence",
+      "max_level": 10,
+      "slot": "warlord_signature",
+      "description_fr": "+1 durée des améliorations et +0.5 ténacité par niveau. Sa voix tient l'équipe, sa volonté résiste à tout contrôle.",
+      "description_en": "+1 buff duration and +0.5 tenacity per level. Their voice steadies the team, their will resists any control.",
+      "effects": [
+        {
+          "stat": "buff_duration",
+          "op": "add_flat",
+          "value_per_level": 1
+        },
+        {
+          "stat": "tenacity",
+          "op": "add_flat",
+          "value_per_level": 0.5
         }
       ]
     }
