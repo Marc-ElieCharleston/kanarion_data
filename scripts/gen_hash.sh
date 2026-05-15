@@ -11,6 +11,7 @@ cd "$(dirname "$0")/.."
 # Sorted by path for determinism
 HASH=$(find . -name "*.json" \
   -not -path "./.git/*" \
+  -not -path "*/.claude/*" \
   -not -path "./kanarion-editor/*" \
   -not -path "./scripts/*" \
   -not -path "./_meta/version.json" \

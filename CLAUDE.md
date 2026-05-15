@@ -364,7 +364,7 @@ python -c "
 import hashlib, json, os, datetime
 os.chdir(r'C:\Users\Charl\Documents\Kanarion Online\kanarion_database')
 exclude_files = {'./_meta/version.json', './_meta/statistics.json', './_meta/index.json', './_meta/changelog.json', './_meta/ideas_to_integrate.json'}
-exclude_dirs = {'.git', 'kanarion-editor', 'scripts'}
+exclude_dirs = {'.git', '.claude', 'kanarion-editor', 'scripts'}
 json_files = []
 for root, dirs, files in os.walk('.'):
     dirs[:] = [d for d in dirs if d not in exclude_dirs]

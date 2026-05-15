@@ -50,15 +50,49 @@ from typing import Iterator
 # Default applied by skill.gd loader when mana_cost_per_level is missing.
 DEFAULT_MP_COST_PER_LEVEL = 4
 
-# Per-level fields that count as "scales something useful".
+# Per-level fields at the SKILL ROOT that count as "scales something useful".
+# Source of truth = kanarion_front/scripts/skills/skill.gd loader (any field the
+# loader actually reads). NOTE: heal_scaling_per_level is intentionally NOT here
+# — neither client (skill.gd) nor backend (room.cpp) reads it; it is dead data.
 POSITIVE_PER_LEVEL_FIELDS = [
     "power_per_level",
     "percent_per_level",
     "effect_power_per_level",
     "duration_per_level",
+    "buff_duration_per_level",
+    "debuff_duration_per_level",
     "shield_value_per_level",
     "hot_duration_per_level",
     "hot_duration_scaling",
+    "success_chance_per_level",
+    "lifesteal_per_level",
+    "lifesteal_percent_per_level",
+    "disarm_chance_per_level",
+    "stun_chance_per_level",
+    "defense_reduction_per_level",
+    # Niche skill-specific scalings (used on a small number of skills)
+    "damage_per_adjacent_ally_per_level",
+    "team_damage_amp_per_level",
+    "bonus_per_charge_per_level",
+]
+
+# Skill-root fields where a NEGATIVE per-level value is the "good" direction
+# (lower cooldown = better for the player). Keeping them separate because the
+# generic "> 0" check would otherwise treat them as missing.
+NEGATIVE_IS_POSITIVE_FIELDS = [
+    "cooldown_per_level",
+]
+
+# Per-level fields that may live INSIDE an entry of `effects[]` (per-effect override).
+# Loader reads `duration_per_level` in skill.gd around line 830
+# (entry.get("duration_per_level", ...)). The other entries scale per-effect
+# value/pct on non-canonical effects (shields, HoT pct, mana_restore, lifesteal,
+# counter chance).
+NESTED_POSITIVE_PER_LEVEL_FIELDS = [
+    "duration_per_level",
+    "pct_per_level",
+    "value_per_level",
+    "counter_chance_per_level",
 ]
 
 
@@ -94,12 +128,31 @@ def iter_skill_objects(node) -> Iterator[dict]:
 
 
 def positive_per_level_summary(skill: dict) -> dict[str, float]:
-    """Return {field_name: value} for every per-level field that is > 0."""
+    """Return {field_name: value} for every per-level field that is > 0.
+
+    Looks at:
+      - root-level skill fields (POSITIVE_PER_LEVEL_FIELDS)
+      - nested effects[].* fields (NESTED_POSITIVE_PER_LEVEL_FIELDS) — keyed
+        as "effects[i].<field>" so the report shows where the scaling lives.
+    """
     out: dict[str, float] = {}
     for name in POSITIVE_PER_LEVEL_FIELDS:
         v = skill.get(name)
         if isinstance(v, (int, float)) and float(v) > 0:
             out[name] = float(v)
+    for name in NEGATIVE_IS_POSITIVE_FIELDS:
+        v = skill.get(name)
+        if isinstance(v, (int, float)) and float(v) < 0:
+            out[name] = float(v)
+    effects = skill.get("effects")
+    if isinstance(effects, list):
+        for i, entry in enumerate(effects):
+            if not isinstance(entry, dict):
+                continue
+            for name in NESTED_POSITIVE_PER_LEVEL_FIELDS:
+                v = entry.get(name)
+                if isinstance(v, (int, float)) and float(v) > 0:
+                    out[f"effects[{i}].{name}"] = float(v)
     return out
 
 
