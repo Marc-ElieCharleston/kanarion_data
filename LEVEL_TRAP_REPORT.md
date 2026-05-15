@@ -1,192 +1,56 @@
-# Skills "level-trap" — liste à reviewer avec le designer
+# Skills "level-trap" — review & fix log
 
-**Total** : 129 skills flaggés par `scripts/lint_useless_level.py`
+**Statut au 2026-05-15** : 99 skills traités. Reste 1 cas spécial (DoT) qui dépend de l'extension du schéma Skill (Task #4).
 
-## Question à poser pour CHAQUE skill
+## Historique
 
-1. Est-ce intentionnel que ce skill ne scale rien quand on le monte ?
-   - **Oui (utilitaire pur, durée fixe, etc.)** → mettre `mana_cost_per_level: 0` pour cohérence (sinon le joueur paye plus cher sans gain)
-   - **Non, devrait scaler** → choisir la mécanique à scaler et lui donner un `*_per_level` positif :
-     - Damage : `power_per_level` (base flat) ou `percent_per_level` (scaling %)
-     - Heal : `power_per_level` (base flat sur heal_base)
-     - Effet buff/debuff : `effect_power_per_level`
-     - Durée statut : `duration_per_level`
-     - Shield : `shield_value_per_level`
-     - HoT durée : `hot_duration_per_level`
+| Date | Étape | Hits restants |
+|------|-------|---------------|
+| ~2026-05-14 | Premier rapport `lint_useless_level.py` | 129 (avec faux positifs) |
+| 2026-05-15 | Lint patché : nested `effects[].duration_per_level` + champs additionnels reconnus | 99 |
+| 2026-05-15 | Apply des défauts par bucket (`apply_level_trap_fixes.py`) | 1 (DoT-static, déféré task #4) |
 
-## Skills par classe
+## Décisions de design (CTO 2026-05-15)
 
-### ARCHER (12 skills)
+| Bucket | Skills | Action appliquée |
+|--------|--------|------------------|
+| 1 — Buffs offensifs canonical (atk_up/crit_up/atk_speed_up via stacks) | 21 + 7 mixed | `duration_per_level: 0.2` (+1.8s à lvl 10) |
+| 2 — Buffs défensifs canonical (DR/armor/MR via stacks) | 8 | `duration_per_level: 0.2` |
+| 2b — Resource buff non-canonical (mana_regen, heal_over_time avec stacks_to_apply) | 2 | `duration_per_level: 0.2` |
+| 3 — Shields (shield_max_hp/def/mag avec `value`/`pct`) | 15 + 9 mixed | `effects[i].value_per_level: 1` |
+| 4 — HoT-only (heal_over_time_max_hp avec `pct`) | 5 + 4 mixed | `effects[i].pct_per_level: 0.2` |
+| 5 — Debuffs/CC (atk_down/fear/stun/etc.) | 11 | `duration_per_level: 0.2` (stat) ou `0.1` (CC dur) |
+| 6 — Binary utility (invisible/cc_immune/stance) | 5 | `duration_per_level: 0.2` |
+| 6b — Cleanse/purge/steal_buff | 2 | `mana_cost_per_level: 0` (effet binaire fixe) |
+| 7 — DEAD `heal_scaling_per_level` (loader ne lisait jamais) | 5 + 2 cachés | Migration → `percent_per_level: N` (même valeur) |
+| 8 — Mystery skills (card_lucky_draw, fate_gambler, cantor_requiem) | 3 | `mana_cost_per_level: 0` (effets intentionnellement fixes / threshold-based) |
 
-| Skill ID | Tier | Cat | Mana/lvl | Mécanique actuelle | Action proposée |
-|----------|------|-----|----------|---------------------|------------------|
-| `eagle_eye` | basic | none | 2 | effects=2 | _à décider_ |
-| `hunter_mark` | basic | none | 1 | effects=2 | _à décider_ |
-| `ranger_steady_aim` | strong | none | (def +4) | effects=1 | _à décider_ |
-| `sharpshooter_focus` | advanced | none | 2 | effects=3 | _à décider_ |
-| `skirmisher_tactical_evade` | advanced | none | 2 | effects=2 | _à décider_ |
-| `falconer_wing_guard` | strong | none | (def +4) | effects=1 | _à décider_ |
-| `wind_hunter_aerial_guard` | advanced | none | 2 | effects=3 | _à décider_ |
-| `bouncer_precise_calculation` | advanced | none | 2 | effects=2 | _à décider_ |
-| `striker_frantic_cadence` | advanced | none | 2 | effects=3 | _à décider_ |
-| `gunslinger_rapid_fire` | strong | none | (def +4) | effects=3 | _à décider_ |
-| `quickshot_frenzy` | advanced | none | 2 | effects=3 | _à décider_ |
-| `deadeye_dead_eye` | advanced | none | 2 | effects=3 | _à décider_ |
+## Audit de cohérence loader / data (effectué 2026-05-15)
 
-### ARTISAN (18 skills)
+Découvert pendant le review :
 
-| Skill ID | Tier | Cat | Mana/lvl | Mécanique actuelle | Action proposée |
-|----------|------|-----|----------|---------------------|------------------|
-| `work_rhythm` | standard | none | 2 | effects=1 | _à décider_ |
-| `expose_flaw` | standard | none | 2 | effects=1 | _à décider_ |
-| `blacksmith_metalguard` | strong | none | (def +4) | effects=3 | _à décider_ |
-| `forgemaster_reinforced_plate` | advanced | none | 1 | effects=1 | _à décider_ |
-| `forgemaster_iron_wall` | advanced | none | 2 | effects=2 | _à décider_ |
-| `forgemaster_living_forge` | advanced | none | 3 | effects=2 | _à décider_ |
-| `forgemaster_stoicism` | advanced | none | 3 | effects=3 | _à décider_ |
-| `forgemaster_living_fortress` | signature | none | 4 | effects=3 | _à décider_ |
-| `chef_energy_snack` | strong | none | (def +4) | effects=2 | _à décider_ |
-| `chef_warming_broth` | strong | none | (def +4) | effects=2 | _à décider_ |
-| `battle_cook_power_dish` | advanced | none | 1 | effects=2 | _à décider_ |
-| `battle_cook_steady_course` | advanced | none | 2 | effects=1 | _à décider_ |
-| `musician_rallying_melody` | standard | none | (def +4) | effects=2 | _à décider_ |
-| `musician_tempo_shift` | strong | none | (def +4) | effects=2 | _à décider_ |
-| `musician_grand_performance` | signature | none | (def +4) | effects=2 | _à décider_ |
-| `guitarist_heroic_anthem` | advanced | none | 1 | effects=2 | _à décider_ |
-| `guitarist_clear_chorus` | advanced | none | 2 | effects=1 | _à décider_ |
-| `guitarist_gentle_cadence` | advanced | none | 2 | effects=1 | _à décider_ |
+| Field | Backend C++ | Client Godot | Verdict |
+|-------|-------------|--------------|---------|
+| `effects[i].value_per_level` | OK Lu (`content_loader.cpp:590`, `room.cpp:3320`) | KO Pas lu | **Combat OK, tooltip cassé** → Task #6 |
+| `effects[i].pct_per_level` | OK Lu (`content_loader.cpp:594`, `room.cpp:3324`) | KO Pas lu | **Combat OK, tooltip cassé** → Task #6 |
+| `effects[i].pct` | OK Lu (`content_loader.cpp:585`) | KO Pas lu | **Combat OK, tooltip cassé** → Task #6 |
+| `heal_scaling_per_level` | KO Pas lu | KO Pas lu | **Truly dead** → migré vers `percent_per_level` (task #5 closed) |
+| `dot_percent_per_level` / `dot_duration_per_level` | KO Pas dans schéma | KO Pas dans schéma | **À implémenter** → Task #4 |
 
-### FAMILIAR (7 skills)
+Conséquence : les choix Buckets 3 et 4 (`value_per_level` / `pct_per_level` nested) sont **valides** car le combat les applique correctement. Seuls les tooltips client doivent être patchés en parallèle (Task #6).
 
-| Skill ID | Tier | Cat | Mana/lvl | Mécanique actuelle | Action proposée |
-|----------|------|-----|----------|---------------------|------------------|
-| `shrill_cry` | basic | none | 1 | effects=1 | _à décider_ |
-| `bristled_fur` | advanced | none | 1 | effects=1 | _à décider_ |
-| `restorative_lick` | filler | none | 1 | heal_scale=100% | _à décider_ |
-| `soothing_aura` | basic | none | 1 | effects=1 | _à décider_ |
-| `rescue_instinct` | advanced | none | 2 | heal_scale=200% / effects=1 | _à décider_ |
-| `breath_screen` | filler | none | 1 | effects=1 | _à décider_ |
-| `invigorating_presence` | basic | none | 1 | effects=1 | _à décider_ |
+## Cas spécial restant : `dot-static` (1 skill)
 
-### HEALER (26 skills)
-
-| Skill ID | Tier | Cat | Mana/lvl | Mécanique actuelle | Action proposée |
-|----------|------|-----|----------|---------------------|------------------|
-| `holy_shield` | strong | none | 2 | effects=2 | _à décider_ |
-| `lifewarden_regrowth` | standard | none | (def +4) | effects=2 | _à décider_ |
-| `lifewarden_vine_shield` | standard | none | (def +4) | effects=1 | _à décider_ |
-| `lifewarden_regeneration` | strong | none | (def +4) | effects=2 | _à décider_ |
-| `druidic_healer_bloom` | advanced | none | 2 | effects=1 | _à décider_ |
-| `grove_warden_vine_shield` | advanced | none | 2 | effects=1 | _à décider_ |
-| `grove_warden_thorn_wall` | advanced | none | 3 | effects=1 | _à décider_ |
-| `grove_warden_sylvan_aura` | advanced | none | 3 | effects=2 | _à décider_ |
-| `grove_warden_sylvan_fortress` | signature | none | 4 | effects=2 | _à décider_ |
-| `lightbringer_sanctuary` | strong | none | (def +4) | effects=2 | _à décider_ |
-| `lightbringer_bless` | standard | none | (def +4) | effects=1 | _à décider_ |
-| `cantor_hymn_of_vigor` | basic | none | (def +4) | effects=1 | _à décider_ |
-| `cantor_war_anthem` | strong | none | (def +4) | effects=1 | _à décider_ |
-| `cantor_hymn_of_haste` | standard | none | (def +4) | effects=1 | _à décider_ |
-| `cantor_sacred_ward` | strong | none | (def +4) | effects=3 | _à décider_ |
-| `cantor_requiem` | signature | none | (def +4) | _aucune valeur mécanique_ | _à décider_ |
-| `choirmaster_minor_hymn` | advanced | none | 1 | effects=2 | _à décider_ |
-| `choirmaster_song_of_protection` | advanced | none | 2 | effects=2 | _à décider_ |
-| `choirmaster_sacred_canticle` | advanced | none | 3 | effects=2 | _à décider_ |
-| `martyr_intercession` | standard | none | (def +4) | dot=3%/s (6.0s) | _à décider_ |
-| `martyr_intercession` | standard | none | (def +4) | dot=3%/s (6.0s) | _à décider_ |
-| `martyr_sacred_pact` | standard | none | (def +4) | effects=1 | _à décider_ |
-| `intercessor_stigma` | advanced | none | 3 | effects=2 | _à décider_ |
-| `intercessor_martyrs_path` | advanced | none | 3 | effects=3 | _à décider_ |
-| `covenant_breath_link` | advanced | none | 2 | effects=2 | _à décider_ |
-| `covenant_communion` | advanced | none | 3 | effects=2 | _à décider_ |
-
-### MAGE (9 skills)
-
-| Skill ID | Tier | Cat | Mana/lvl | Mécanique actuelle | Action proposée |
-|----------|------|-----|----------|---------------------|------------------|
-| `mana_shield` | basic | none | 1 | effects=1 | _à décider_ |
-| `elem_elemental_focus` | basic | none | (def +4) | effects=1 | _à décider_ |
-| `card_lucky_draw` | basic | none | (def +4) | _aucune valeur mécanique_ | _à décider_ |
-| `fate_gambler_double_or_nothing` | advanced | none | 2 | _aucune valeur mécanique_ | _à décider_ |
-| `sb_enchanted_blade` | standard | none | (def +4) | effects=1 | _à décider_ |
-| `sb_spell_guard` | standard | none | (def +4) | effects=1 | _à décider_ |
-| `runeknight_warding_rune` | advanced | none | 2 | effects=2 | _à décider_ |
-| `runeknight_runic_aura` | advanced | none | 3 | effects=2 | _à décider_ |
-| `runeknight_runic_wall` | advanced | none | 3 | effects=2 | _à décider_ |
-
-### PET_SKILLS (12 skills)
-
-| Skill ID | Tier | Cat | Mana/lvl | Mécanique actuelle | Action proposée |
-|----------|------|-----|----------|---------------------|------------------|
-| `skill_pet_tank_shrill_cry` | basic | none | 3 | effects=1 | _à décider_ |
-| `skill_pet_tank_bristle` | basic | none | 2 | effects=2 | _à décider_ |
-| `skill_pet_tank_stubborn_stance` | filler | none | 1 | effects=2 | _à décider_ |
-| `skill_pet_heal_lick` | filler | none | 2 | _aucune valeur mécanique_ | _à décider_ |
-| `skill_pet_heal_aura` | basic | none | 3 | effects=1 | _à décider_ |
-| `skill_pet_heal_vital_breath` | filler | none | 2 | effects=1 | _à décider_ |
-| `skill_pet_heal_regen_wave` | advanced | none | 5 | effects=1 | _à décider_ |
-| `skill_pet_heal_calming_embrace` | basic | none | 4 | effects=1 | _à décider_ |
-| `skill_pet_utility_invigorate` | basic | none | 4 | effects=1 | _à décider_ |
-| `skill_pet_utility_alert_cry` | filler | none | 2 | effects=1 | _à décider_ |
-| `skill_pet_utility_light_step` | filler | none | 2 | effects=1 | _à décider_ |
-| `skill_pet_utility_tactical_sniff` | basic | none | 3 | effects=1 | _à décider_ |
-
-### ROGUE (12 skills)
-
-| Skill ID | Tier | Cat | Mana/lvl | Mécanique actuelle | Action proposée |
-|----------|------|-----|----------|---------------------|------------------|
-| `mark_target` | standard | none | 2 | effects=2 | _à décider_ |
-| `shadowblade_vanish` | strong | none | (def +4) | effects=1 | _à décider_ |
-| `nightstalker_shadow_veil` | advanced | none | 2 | effects=1 | _à décider_ |
-| `assassin_premeditation` | advanced | none | 2 | effects=2 | _à décider_ |
-| `trickster_misdirection` | strong | none | (def +4) | effects=1 | _à décider_ |
-| `trickster_grand_swindle` | signature | none | (def +4) | effects=1 | _à décider_ |
-| `blinker_phase_step` | advanced | none | 2 | effects=2 | _à décider_ |
-| `duelist_en_garde` | standard | none | (def +4) | effects=1 | _à décider_ |
-| `duelist_riposte` | strong | none | (def +4) | effects=1 | _à décider_ |
-| `blade_dancer_cadence` | advanced | none | 2 | effects=2 | _à décider_ |
-| `countermaster_master_guard` | advanced | none | 2 | effects=2 | _à décider_ |
-| `countermaster_perfect_counter` | signature | none | 3 | effects=3 | _à décider_ |
-
-### WARRIOR (33 skills)
-
-| Skill ID | Tier | Cat | Mana/lvl | Mécanique actuelle | Action proposée |
-|----------|------|-----|----------|---------------------|------------------|
-| `defensive_stance` | basic | none | 5 | effects=1 | _à décider_ |
-| `taunting_shout` | standard | none | 6 | effects=1 | _à décider_ |
-| `guardian_protect_ally` | standard | none | (def +4) | effects=4 | _à décider_ |
-| `guardian_iron_stance` | strong | none | (def +4) | scaling=15% / effects=3 | _à décider_ |
-| `guardian_barrier` | standard | none | (def +4) | scaling=10% / effects=1 | _à décider_ |
-| `guardian_aegis_of_the_realm` | signature | none | (def +4) | effects=1 | _à décider_ |
-| `bulwark_massive_presence` | advanced | none | 2 | effects=3 | _à décider_ |
-| `bulwark_stone_form` | advanced | none | 2 | effects=4 | _à décider_ |
-| `bulwark_last_bastion` | signature | none | 4 | effects=5 | _à décider_ |
-| `sentinel_watch` | advanced | none | 1 | effects=1 | _à décider_ |
-| `sentinel_protective_wing` | advanced | none | 2 | effects=2 | _à décider_ |
-| `sentinel_wardship` | advanced | none | 3 | effects=4 | _à décider_ |
-| `sentinel_selfless_vow` | advanced | none | 3 | effects=1 | _à décider_ |
-| `sentinel_phalanx` | signature | none | 4 | effects=3 | _à décider_ |
-| `berserker_bloodlust` | standard | none | (def +4) | effects=3 | _à décider_ |
-| `berserker_frenzy` | strong | none | (def +4) | effects=3 | _à décider_ |
-| `bloodrage_defiant_blood` | advanced | none | 2 | effects=3 | _à décider_ |
-| `frenzied_warrior_trance` | advanced | none | 2 | effects=3 | _à décider_ |
-| `weaponmaster_blade_stance` | standard | none | (def +4) | effects=1 | _à décider_ |
-| `hammer_lord_forge_stance` | advanced | none | 2 | effects=3 | _à décider_ |
-| `dual_axe_reaver_bloodthirst` | advanced | none | 2 | effects=3 | _à décider_ |
-| `warlord_command_shout` | standard | none | (def +4) | effects=2 | _à décider_ |
-| `warlord_weakening_roar` | basic | none | (def +4) | effects=2 | _à décider_ |
-| `warlord_rally` | standard | none | (def +4) | effects=1 | _à décider_ |
-| `warlord_war_banner` | signature | none | (def +4) | effects=3 | _à décider_ |
-| `commander_battle_order` | advanced | none | 1 | effects=2 | _à décider_ |
-| `commander_maneuver` | advanced | none | 2 | effects=2 | _à décider_ |
-| `commander_chosen` | advanced | none | 3 | effects=4 | _à décider_ |
-| `commander_coordination` | advanced | none | 3 | effects=2 | _à décider_ |
-| `commander_call_to_glory` | signature | none | 4 | effects=5 | _à décider_ |
-| `dreadlord_terror_cry` | advanced | none | 2 | effects=2 | _à décider_ |
-| `dreadlord_suffocating_presence` | advanced | none | 3 | effects=3 | _à décider_ |
-| `dreadlord_reign_of_terror` | signature | none | 4 | effects=4 | _à décider_ |
-
-## Cas spécial : `dot-static` (1 skill)
-
-| Skill ID | Détail | Action |
+| Skill ID | Détail | Statut |
 |----------|--------|--------|
-| `skill_healer_martyr_intercession` | dot_percent=3, dot_duration=6, dot_heals_lowest_ally=true | Le schéma Skill n'a pas `dot_percent_per_level` ni `dot_duration_per_level`. Soit (a) ajouter ces champs côté `kanarion_front/scripts/skills/skill.gd` + loader, soit (b) ajouter `power_per_level` ou autre champ existant qui ferait scaler la mécanique par stats du caster. Décision design. |
+| `skill_healer_martyr_intercession` | dot_percent=3, dot_duration=6, dot_heals_lowest_ally=true | **Bloqué par Task #4** : extension du schéma Skill avec `dot_percent_per_level: 0.5` et `dot_duration_per_level`. Une fois implémenté côté backend C++ + Godot loader, appliquer `dot_percent_per_level: 0.5` à ce skill (lvl 1 = 3% → lvl 10 = 7.5%). |
+
+## Scripts associés
+
+- `scripts/lint_useless_level.py` — détection (peut tourner à tout moment, devrait toujours retourner 1 hit jusqu'à la résolution du DoT-static).
+- `scripts/apply_level_trap_fixes.py` — application des défauts par bucket. Idempotent. Mode `--dry-run` pour preview.
+
+## Tâches de suivi (cross-repo)
+
+1. **Task #4** — Extension du schéma Skill avec `dot_percent_per_level` et `dot_duration_per_level` (backend C++ + Godot loader). Bloquant pour Intercession.
+2. **Task #6** — Patch `kanarion_front/scripts/skills/skill.gd` pour lire les fields nested per-level (visualisation/tooltip uniquement, le combat est déjà correct).
