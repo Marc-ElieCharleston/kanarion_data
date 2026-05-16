@@ -1,10 +1,30 @@
 {
   "_meta": {
-    "version": "1.0",
-    "last_updated": "2026-05-04",
+    "version": "2.0",
+    "last_updated": "2026-05-16",
     "description": "Profils de balance pour entites mercenaires (PlayerAI). Applique au spawn combat sur le snapshot stats du merc.",
-    "rule": "Un mercenaire doit etre suffisamment utile pour debloquer un joueur, mais toujours moins bon qu'un vrai joueur correct.",
-    "spec_ref": "plans/PLAN_MERCENARY_SYSTEM.md section 11 (Balance MVP)"
+    "rule": "Un mercenaire doit etre suffisamment utile pour debloquer un joueur, mais toujours moins bon qu'un vrai joueur correct. Bots PvP filler par role utilisent stats proches d'un joueur reel avec biais role-specifique.",
+    "spec_ref": "plans/PLAN_MERCENARY_SYSTEM.md + PR-A2 (arena bot-fill PvP)",
+    "profile_count": 11,
+    "profile_categories": {
+      "pve_solo_helper": [
+        "solo_helper_v1"
+      ],
+      "pvp_filler_generic": [
+        "pvp_filler_v1"
+      ],
+      "pvp_filler_by_role": [
+        "pvp_filler_tank_v1",
+        "pvp_filler_bruiser_v1",
+        "pvp_filler_healer_v1",
+        "pvp_filler_support_v1",
+        "pvp_filler_dps_physical_v1",
+        "pvp_filler_dps_magical_v1",
+        "pvp_filler_dps_ranged_v1",
+        "pvp_filler_debuffer_v1",
+        "pvp_filler_controller_v1"
+      ]
+    }
   },
   "profiles": {
     "solo_helper_v1": {
@@ -37,6 +57,123 @@
       "uses_high_skill_synergies": true,
       "uses_consumables": false,
       "level_strategy": "average_team_level"
+    },
+    "pvp_filler_tank_v1": {
+      "role": "tank",
+      "level_offset": 0,
+      "damage_multiplier": 0.8,
+      "healing_multiplier": 0.95,
+      "shield_multiplier": 1.15,
+      "hp_multiplier": 1.2,
+      "mp_multiplier": 1.0,
+      "ai_intelligence_level": 4,
+      "aggro_bias": 1.5,
+      "uses_high_skill_synergies": true,
+      "uses_consumables": false
+    },
+    "pvp_filler_bruiser_v1": {
+      "role": "bruiser",
+      "level_offset": 0,
+      "damage_multiplier": 0.95,
+      "healing_multiplier": 0.9,
+      "shield_multiplier": 1.0,
+      "hp_multiplier": 1.1,
+      "mp_multiplier": 1.0,
+      "ai_intelligence_level": 4,
+      "aggro_bias": 1.2,
+      "uses_high_skill_synergies": true,
+      "uses_consumables": false
+    },
+    "pvp_filler_healer_v1": {
+      "role": "healer",
+      "level_offset": 0,
+      "damage_multiplier": 0.4,
+      "healing_multiplier": 1.2,
+      "shield_multiplier": 1.05,
+      "hp_multiplier": 0.95,
+      "mp_multiplier": 1.2,
+      "ai_intelligence_level": 5,
+      "aggro_bias": 0.3,
+      "uses_high_skill_synergies": true,
+      "uses_consumables": true
+    },
+    "pvp_filler_support_v1": {
+      "role": "support",
+      "level_offset": 0,
+      "damage_multiplier": 0.55,
+      "healing_multiplier": 1.05,
+      "shield_multiplier": 1.05,
+      "hp_multiplier": 0.95,
+      "mp_multiplier": 1.15,
+      "ai_intelligence_level": 5,
+      "aggro_bias": 0.5,
+      "uses_high_skill_synergies": true,
+      "uses_consumables": false
+    },
+    "pvp_filler_dps_physical_v1": {
+      "role": "dps_physical",
+      "level_offset": 0,
+      "damage_multiplier": 1.05,
+      "healing_multiplier": 0.9,
+      "shield_multiplier": 0.9,
+      "hp_multiplier": 0.9,
+      "mp_multiplier": 1.0,
+      "ai_intelligence_level": 4,
+      "aggro_bias": 1.0,
+      "uses_high_skill_synergies": true,
+      "uses_consumables": false
+    },
+    "pvp_filler_dps_magical_v1": {
+      "role": "dps_magical",
+      "level_offset": 0,
+      "damage_multiplier": 1.05,
+      "healing_multiplier": 0.9,
+      "shield_multiplier": 0.85,
+      "hp_multiplier": 0.85,
+      "mp_multiplier": 1.15,
+      "ai_intelligence_level": 4,
+      "aggro_bias": 0.9,
+      "uses_high_skill_synergies": true,
+      "uses_consumables": false
+    },
+    "pvp_filler_dps_ranged_v1": {
+      "role": "dps_ranged",
+      "level_offset": 0,
+      "damage_multiplier": 1.0,
+      "healing_multiplier": 0.9,
+      "shield_multiplier": 0.85,
+      "hp_multiplier": 0.85,
+      "mp_multiplier": 1.05,
+      "ai_intelligence_level": 4,
+      "aggro_bias": 0.8,
+      "uses_high_skill_synergies": true,
+      "uses_consumables": false
+    },
+    "pvp_filler_debuffer_v1": {
+      "role": "debuffer",
+      "level_offset": 0,
+      "damage_multiplier": 0.75,
+      "healing_multiplier": 0.9,
+      "shield_multiplier": 0.9,
+      "hp_multiplier": 0.9,
+      "mp_multiplier": 1.1,
+      "ai_intelligence_level": 5,
+      "aggro_bias": 0.7,
+      "uses_high_skill_synergies": true,
+      "uses_consumables": false
+    },
+    "pvp_filler_controller_v1": {
+      "role": "controller",
+      "level_offset": 0,
+      "damage_multiplier": 0.7,
+      "healing_multiplier": 0.95,
+      "shield_multiplier": 0.95,
+      "hp_multiplier": 0.9,
+      "mp_multiplier": 1.1,
+      "ai_intelligence_level": 5,
+      "aggro_bias": 0.8,
+      "uses_high_skill_synergies": true,
+      "uses_consumables": false
     }
   }
 }
