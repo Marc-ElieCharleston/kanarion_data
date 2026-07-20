@@ -1,0 +1,116 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-07-20",
+    "description": "Cartes Koro concrètes (runtime V1). Une carte accorde un skill d'une autre classe à un rang fixe. Puissance = puissance du skill de base x (rank_percent / 100). Design général : systems/koro.json. PAS lié au Cardmaster (identité séparée).",
+    "slot_type": "accessory",
+    "max_equipped": 2,
+    "rank_percents": {
+      "_comment": "Milieux des ranges de systems/koro.json ranks.rank_distribution. Une carte template porte un rank_percent FIXE (pas de roll par instance en V1).",
+      "C": 50,
+      "B": 68,
+      "A": 83,
+      "S": 95,
+      "SS": 110
+    },
+    "notes": [
+      "Le rank_percent est transmis de bout en bout economy -> CombatProfile -> injection SkillsComponent (ne pas répéter le bug du rang inerte des uniques)",
+      "base_skill_id doit exister dans classes/<class>/skills.json (source_scope BASE uniquement en V1)",
+      "Le skill accordé s'exécute via le chemin normal room.cpp::apply_skill_effects, cooldown et coût en Souffle identiques au skill original",
+      "koro_heavy_strike_c et koro_heavy_strike_ss existent en double rang pour prouver le scaling au gate test"
+    ]
+  },
+  "koro_cards": [
+    {
+      "id": "koro_heavy_strike_c",
+      "name_fr": "Koro : Frappe Lourde (C)",
+      "name_en": "Koro: Heavy Strike (C)",
+      "base_skill_id": "skill_warrior_heavy_strike",
+      "base_class_id": "warrior",
+      "rank": "C",
+      "rank_percent": 50,
+      "level_req": 1,
+      "tradeable": true,
+      "description_fr": "Accorde le skill Frappe Lourde (Guerrier) à 50% de sa puissance.",
+      "description_en": "Grants the Heavy Strike skill (Warrior) at 50% of its power."
+    },
+    {
+      "id": "koro_heavy_strike_ss",
+      "name_fr": "Koro : Frappe Lourde (SS)",
+      "name_en": "Koro: Heavy Strike (SS)",
+      "base_skill_id": "skill_warrior_heavy_strike",
+      "base_class_id": "warrior",
+      "rank": "SS",
+      "rank_percent": 110,
+      "level_req": 1,
+      "tradeable": true,
+      "description_fr": "Accorde le skill Frappe Lourde (Guerrier) à 110% de sa puissance. Roll parfait.",
+      "description_en": "Grants the Heavy Strike skill (Warrior) at 110% of its power. Perfect roll."
+    },
+    {
+      "id": "koro_magic_bolt_b",
+      "name_fr": "Koro : Trait Magique (B)",
+      "name_en": "Koro: Magic Bolt (B)",
+      "base_skill_id": "skill_mage_magic_bolt",
+      "base_class_id": "mage",
+      "rank": "B",
+      "rank_percent": 68,
+      "level_req": 1,
+      "tradeable": true,
+      "description_fr": "Accorde le skill Trait Magique (Mage) à 68% de sa puissance.",
+      "description_en": "Grants the Magic Bolt skill (Mage) at 68% of its power."
+    },
+    {
+      "id": "koro_heal_b",
+      "name_fr": "Koro : Soin (B)",
+      "name_en": "Koro: Heal (B)",
+      "base_skill_id": "skill_healer_heal",
+      "base_class_id": "healer",
+      "rank": "B",
+      "rank_percent": 68,
+      "level_req": 1,
+      "tradeable": true,
+      "description_fr": "Accorde le skill Soin (Soigneur) à 68% de sa puissance.",
+      "description_en": "Grants the Heal skill (Healer) at 68% of its power."
+    },
+    {
+      "id": "koro_precise_shot_a",
+      "name_fr": "Koro : Tir Précis (A)",
+      "name_en": "Koro: Precise Shot (A)",
+      "base_skill_id": "skill_archer_precise_shot",
+      "base_class_id": "archer",
+      "rank": "A",
+      "rank_percent": 83,
+      "level_req": 1,
+      "tradeable": true,
+      "description_fr": "Accorde le skill Tir Précis (Archer) à 83% de sa puissance.",
+      "description_en": "Grants the Precise Shot skill (Archer) at 83% of its power."
+    },
+    {
+      "id": "koro_quick_stab_c",
+      "name_fr": "Koro : Coup Rapide (C)",
+      "name_en": "Koro: Quick Stab (C)",
+      "base_skill_id": "skill_rogue_quick_stab",
+      "base_class_id": "rogue",
+      "rank": "C",
+      "rank_percent": 50,
+      "level_req": 1,
+      "tradeable": true,
+      "description_fr": "Accorde le skill Coup Rapide (Voleur) à 50% de sa puissance.",
+      "description_en": "Grants the Quick Stab skill (Rogue) at 50% of its power."
+    },
+    {
+      "id": "koro_tool_strike_c",
+      "name_fr": "Koro : Coup d'Outil (C)",
+      "name_en": "Koro: Tool Strike (C)",
+      "base_skill_id": "skill_artisan_tool_strike",
+      "base_class_id": "artisan",
+      "rank": "C",
+      "rank_percent": 50,
+      "level_req": 1,
+      "tradeable": true,
+      "description_fr": "Accorde le skill Coup d'Outil (Artisan) à 50% de sa puissance.",
+      "description_en": "Grants the Tool Strike skill (Artisan) at 50% of its power."
+    }
+  ]
+}
