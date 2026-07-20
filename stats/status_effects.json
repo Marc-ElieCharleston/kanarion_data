@@ -1995,7 +1995,11 @@
           "vfx_type": "mark_effect"
         },
         "max_stacks": 1,
-        "value_per_stack": 10
+        "value_per_stack": 10,
+        "stat_mods": {
+          "damage_taken_percent": 0.1
+        },
+        "_audit_note": "2026-07-20: added top-level numeric stat_mods so this effect actually applies. The loader never reads the runtime block, so marked was inert (icon shown, no damage taken bonus). Value 0.1 = original design intent (value_per_stack 10, +10% damage taken). The runtime block keeps its template string as designer documentation only. Same pattern as vulnerable / exposed."
       },
       "revealed": {
         "name_fr": "Révélé",
@@ -2536,7 +2540,10 @@
           },
           "vfx_type": "shield_aura"
         },
-        "_pr_a2_note": "Flag corrected 2026-05-02 — code path verified wired in audit."
+        "stat_mods": {
+          "damage_taken_percent": -0.5
+        },
+        "_audit_note": "2026-07-20: added top-level numeric stat_mods so this Guardian signature actually applies. The loader never reads the runtime block, so Iron Stance was inert (icon shown, no damage reduction). Value -0.5 = original design intent (-50% damage taken). Replaces a stale _pr_a2_note that falsely claimed the code path was verified wired. Same pattern as vulnerable / exposed."
       },
       "steady_aim_amplifier": {
         "name_fr": "Visee Stable",
