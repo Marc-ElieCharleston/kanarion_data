@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "version": "5.0",
-    "last_updated": "2026-04-18",
-    "description": "Keystones — Stigma-style triggers actifs. 5 slots (lv 20/40/60/80/100). Rangs C→SS. 3 variantes par keystone."
+    "version": "5.1",
+    "last_updated": "2026-07-20",
+    "description": "Keystones — Stigma-style triggers actifs. 5 slots (lv 20/40/60/80/100). Rangs C→SS. 3 variantes par keystone. v5.1 : blocs runtime normalises (keystone runtime V1)."
   },
 
   "rules": {
@@ -18,7 +18,20 @@
       "Tous les effets utilisent des mecaniques existantes (shield, DR, buff stats, heal, thorns, CDR, CC, debuff)",
       "Pool commun (toutes classes) + pool par classe (a designer plus tard)",
       "Les keystones se drop, se craft, se trade (comme les Koros)"
-    ]
+    ],
+    "runtime_contract": {
+      "_note": "Keystone runtime V1 (2026-07-20). Une variante est EQUIPABLE si et seulement si elle porte un bloc 'runtime'. Une variante sans bloc runtime est RESERVEE : le character service refuse son allocation, elle n'apparait pas comme choix valide. Le bloc 'runtime' utilise le MEME schema que le bloc 'effect' de items/uniques.json (type combat_proc + triggers[] imbriques), consomme cote server-combat par UniqueItemRegistry + ProcProcessor. Aucun moteur d'effet nouveau : uniquement les appliers existants (stat_buff temporaire, apply_status canonical Option A avec stacks_to_apply, apply_shield_percent_max_hp, heal_percent_max_hp).",
+      "engine": "proc_processor",
+      "allocation_model_v1": "Les keystones V1 sont ALLOUEES a des slots (choix de progression, table character_keystones), pas des items lootes. Le drop/craft/trade et les rangs B/A/S/SS sont reserves pour une version future. Toutes les valeurs runtime V1 = rang C.",
+      "triggers_v1": ["combat_start", "on_kill", "on_auto_attack", "on_block", "on_dodge", "on_hp_threshold", "on_damage_taken", "on_damage_threshold", "on_buff_applied", "on_heal_cast", "first_skill_cast", "on_critical_hit"],
+      "runtime_extensions_required": [
+        "stacks_to_apply lu par parse_effect_object et passe a StatusManager::apply_effect (statuts canoniques multi-stack)",
+        "heal_percent_max_hp : heal instantane en % des HP max (reutilise apply_heal)",
+        "trigger on_critical_hit : hook dans la resolution de degats quand is_crit",
+        "target_rule 'self' respecte par status_proc (forcer le statut sur le porteur, pas la cible du trigger)"
+      ],
+      "hp_threshold_note": "on_hp_threshold ne se re-arme pas dans un meme combat (ProcStateComponent.hp_threshold_triggered). Le cooldown ne s'applique donc qu'entre combats en V1."
+    }
   },
 
   "common_keystones": [
@@ -42,6 +55,20 @@
           "scaling": {
             "C":  { "trigger_pct": 25, "value": 20, "duration": 6, "cooldown": 90 },
             "SS": { "trigger_pct": 35, "value": 50, "duration": 10, "cooldown": 45 }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hp_threshold",
+                "threshold": 0.25,
+                "cooldown": 90,
+                "effects": [
+                  { "apply_status": "atk_up", "stacks_to_apply": 4, "duration": 6.0 },
+                  { "apply_status": "mag_up", "stacks_to_apply": 4, "duration": 6.0 }
+                ]
+              }
+            ]
           }
         },
         {
@@ -54,6 +81,19 @@
           "scaling": {
             "C":  { "trigger_pct": 25, "value": 15, "duration": 6, "cooldown": 90 },
             "SS": { "trigger_pct": 35, "value": 35, "duration": 10, "cooldown": 45 }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hp_threshold",
+                "threshold": 0.25,
+                "cooldown": 90,
+                "effects": [
+                  { "stat": "crit", "value": 15, "duration": 6.0 }
+                ]
+              }
+            ]
           }
         },
         {
@@ -138,6 +178,18 @@
           "scaling": {
             "C":  { "value": 3, "duration": 4, "cooldown": 15 },
             "SS": { "value": 8, "duration": 6, "cooldown": 8 }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_critical_hit",
+                "cooldown": 15,
+                "effects": [
+                  { "apply_status": "burn", "stacks_to_apply": 1, "duration": 4.0 }
+                ]
+              }
+            ]
           }
         },
         {
@@ -150,6 +202,18 @@
           "scaling": {
             "C":  { "value": 10, "duration": 4, "cooldown": 15 },
             "SS": { "value": 25, "duration": 6, "cooldown": 8 }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_critical_hit",
+                "cooldown": 15,
+                "effects": [
+                  { "apply_status": "def_down", "stacks_to_apply": 2, "duration": 4.0 }
+                ]
+              }
+            ]
           }
         },
         {
@@ -186,6 +250,18 @@
           "scaling": {
             "C":  { "value": 10, "duration": 8, "cooldown": 8 },
             "SS": { "value": 25, "duration": 12, "cooldown": 4 }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_kill",
+                "cooldown": 8,
+                "effects": [
+                  { "stat": "atk_percent", "value": 10, "duration": 8.0 }
+                ]
+              }
+            ]
           }
         },
         {
@@ -282,6 +358,19 @@
           "scaling": {
             "C":  { "trigger_pct": 25, "value": 20, "duration": 6, "cooldown": 90 },
             "SS": { "trigger_pct": 35, "value": 50, "duration": 10, "cooldown": 45 }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hp_threshold",
+                "threshold": 0.25,
+                "cooldown": 90,
+                "effects": [
+                  { "apply_shield_percent_max_hp": 20 }
+                ]
+              }
+            ]
           }
         },
         {
@@ -378,6 +467,18 @@
           "scaling": {
             "C":  { "value": 10, "duration": 4, "cooldown": 12 },
             "SS": { "value": 25, "duration": 6, "cooldown": 6 }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_block",
+                "cooldown": 12,
+                "effects": [
+                  { "apply_status": "damage_reduction_up", "stacks_to_apply": 2, "duration": 4.0, "target_rule": "self" }
+                ]
+              }
+            ]
           }
         },
         {
@@ -402,6 +503,18 @@
           "scaling": {
             "C":  { "value": 3, "cooldown": 10 },
             "SS": { "value": 8, "cooldown": 5 }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_block",
+                "cooldown": 10,
+                "effects": [
+                  { "heal_percent_max_hp": 3 }
+                ]
+              }
+            ]
           }
         }
       ]
@@ -534,6 +647,18 @@
           "scaling": {
             "C":  { "value": 10, "duration": 5, "cooldown": 12 },
             "SS": { "value": 25, "duration": 8, "cooldown": 5 }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_heal_cast",
+                "cooldown": 12,
+                "effects": [
+                  { "apply_status": "def_up", "stacks_to_apply": 2, "duration": 5.0 }
+                ]
+              }
+            ]
           }
         },
         {
@@ -810,6 +935,18 @@
           "scaling": {
             "C":  { "value": 6, "cooldown": 20 },
             "SS": { "value": 15, "cooldown": 8 }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_kill",
+                "cooldown": 20,
+                "effects": [
+                  { "heal_percent_max_hp": 6 }
+                ]
+              }
+            ]
           }
         },
         {
