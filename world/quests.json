@@ -2266,20 +2266,20 @@
       "flags": [
         "tutorial"
       ],
-      "title_fr": "Combat de groupe",
-      "title_en": "Group Combat",
-      "summary_fr": "Apprends à combattre avec ton familier face à un groupe contaminé.",
-      "summary_en": "Learn to fight alongside your familiar against a contaminated group.",
+      "title_fr": "Le sparring d'Aldric",
+      "title_en": "Aldric's Sparring Match",
+      "summary_fr": "Aldric a monté un duel amical : ton équipe contre la sienne. Montre-lui ce que tu vaux face à une vraie composition.",
+      "summary_en": "Aldric has set up a friendly duel: your team against his. Show him what you're worth against a real composition.",
       "npc_giver": "npc_tutorial_instructor_aldric",
       "objective_mode": "sequential",
       "objectives": [
         {
           "template": "tutorial_combat_complete",
-          "scenario_id": "group_contaminated",
+          "scenario_id": "sparring_trinity",
           "count": 1,
-          "description_fr": "Vaincre le groupe contaminé avec ton familier",
-          "description_en": "Defeat the contaminated group with your familiar",
-          "_note": "Scenario group_contaminated. Server spawns 3-4 mobs lvl 1 with varied roles via TUTORIAL_COMBAT_START_REQUEST.",
+          "description_fr": "Remporter le sparring d'Aldric",
+          "description_en": "Win Aldric's sparring match",
+          "_note": "B2 (2026-07-21). Scenario sparring_trinity : composition resolue 100% serveur depuis config/tutorial_encounters.json (A1-phase2, commit back 5238750) : allies merc warrior/healer/mage lv2 vs trinite ennemie lv1. Les champs mob_id/mob_count du client sont IGNORES (anti-spoof). Overlays pregame : le serveur mappe sparring_trinity -> pregame_scenario_id tutorial_group_contaminated (overlay_scenario_key), la copy vit sous cette cle dans world/tutorial_overlays.json. Le filtre quete utilise tutorial_scenario_id = sparring_trinity (ce champ-ci).",
           "hints": {
             "on_active": [
               {
@@ -2289,8 +2289,8 @@
                 "priority": 90,
                 "show_once": true,
                 "payload": {
-                  "label_fr": "Affronte le groupe contaminé",
-                  "label_en": "Fight the contaminated group"
+                  "label_fr": "Rejoins le sparring",
+                  "label_en": "Join the sparring match"
                 }
               }
             ]
@@ -2397,7 +2397,7 @@
       "npc_giver": "npc_hub_guide_tobin",
       "auto_accept_on_zone_enter": "desert_playtest",
       "objective_mode": "parallel",
-      "_comment": "Lot B3a (2026-07-21), voir kanarion_front/PLAN_HUB_TOUR.md. Objectifs en ordre libre (parallel). Retirés vs plan : « Achète une potion à la boutique » (aucun PNJ boutique dans desert_playtest et aucun template purchase_item côté quest service) ; « Rejoins ou fonde une guilde (optionnel) » (le moteur de quêtes n'a pas d'objectif optionnel, QuestObjectiveDef sans flag required) : la guilde est routée via le nœud Discuter de Tobin. Potions familier restaurées (2026-07-21, handler pet_service branché : economy reconnait heal_pet_hp_flat/restore_pet_mp_flat, familiar service applique sur l'actif + push 0x0F07). NOTE lot backend : ces potions ne sont pas encore dans loot_tables.json et les vieilles cons_*_potion_merc_* y traînent. q_hub_tour_02 « L'épreuve » (duel arène + première salle donjon) est un ID RÉSERVÉ, gated backend lot A : chain_next saute directement à q_hub_tour_03 tant que Q2 n'existe pas.",
+      "_comment": "Lot B3a (2026-07-21), voir kanarion_front/PLAN_HUB_TOUR.md. Objectifs en ordre libre (parallel). Retirés vs plan : « Achète une potion à la boutique » (aucun PNJ boutique dans desert_playtest et aucun template purchase_item côté quest service) ; « Rejoins ou fonde une guilde (optionnel) » (le moteur de quêtes n'a pas d'objectif optionnel, QuestObjectiveDef sans flag required) : la guilde est routée via le nœud Discuter de Tobin. Potions familier restaurées (2026-07-21, handler pet_service branché : economy reconnait heal_pet_hp_flat/restore_pet_mp_flat, familiar service applique sur l'actif + push 0x0F07). NOTE lot backend : ces potions ne sont pas encore dans loot_tables.json et les vieilles cons_*_potion_merc_* y traînent. q_hub_tour_02 « L'épreuve » LIVRÉ (lot B3b 2026-07-21) : chain Q1 -> Q2 -> Q3.",
       "dialogue_give_fr": "Fraîchement sorti de chez Aldric ? Parfait. Ici, tout passe par les maîtres : missions, arène, donjons. Je te fais le tour ? Reviens me voir quand tu as coché tout ça.",
       "dialogue_give_en": "Fresh out of Aldric's training? Perfect. Around here, everything goes through the masters: missions, arena, dungeons. Shall I show you around? Come back once you've checked all of that off.",
       "dialogue_complete_fr": "Déjà de retour ? Tu connais le village mieux que certains anciens. Tiens, de quoi voir venir. Et si tu veux des compagnons de route, va saluer Verena, elle enregistre les guildes.",
@@ -2462,7 +2462,7 @@
           "count": 1,
           "description_fr": "Rendre visite à Colette, l'Éleveuse de Familiers",
           "description_en": "Visit Colette, the Familiar Breeder",
-          "_note": "Le plan prévoyait « Fais renommer ton familier par l'Éleveuse » : aucun handler RENAME côté services/familiar (custom_name posé à la création seulement, review backend 2026-07-21). talk_to_npc en attendant le handler.",
+          "_note": "Le plan prévoyait « Fais renommer ton familier ». Le handler RENAME existe désormais (commits back d417b30 + client bouton Renommer v1.9) mais AUCUN template de quête ne détecte un rename (il faudrait un template rename_familiar abonné à l'event familiar). L'objectif reste talk_to_npc ; Colette INVITE au rename dans ses dialogues (texte seul).",
           "hints": {
             "on_active": [
               {
@@ -2497,6 +2497,92 @@
           }
         ]
       },
+      "chain_next": "q_hub_tour_02"
+    },
+    {
+      "id": "q_hub_tour_02",
+      "type": "main",
+      "zone": "desert_playtest",
+      "min_level": 1,
+      "title_fr": "L'épreuve",
+      "title_en": "The Trial",
+      "summary_fr": "Tobin t'envoie goûter au vrai jeu : présente-toi à Dargo le Maître d'Arène, puis va vaincre un premier groupe dans le Repaire des Bandits.",
+      "summary_en": "Tobin sends you to taste the real game: introduce yourself to Dargo the Arena Master, then defeat a first pack inside the Bandit Den.",
+      "npc_giver": "npc_hub_guide_tobin",
+      "prerequisites": [
+        "q_hub_tour_01"
+      ],
+      "objective_mode": "parallel",
+      "_comment": "Lot B3b (2026-07-21). L'objectif « duel d'entraînement à l'arène » du plan est REMPLACÉ par talk_to_npc Dargo, deux raisons backend prouvées : (1) le spawn trinité (handle_tutorial_combat_start, commit 5238750) est contractuellement tuto-only (zone tutorial_tavern, Step 6) ; (2) les rooms d'exhibition d'arène sont en mode DUEL/is_pvp et publish_combat_event_for_quests est gated par !is_pvp (combat_host.cpp:4413) : AUCUN event quête n'existe pour un combat d'arène. Branchement backend manquant documenté au plan. Ordre libre (parallel) VOLONTAIRE : l'enforcement sequential ne couvre que le chemin client-notified, pas les events zone/combat, un mode sequential ici créerait des progressions incohérentes. Détection donjon prouvée : zone_id == dungeon_id (dungeon_service.cpp:789, zone dungeon_open dans world/zones.json), entrée via Varn (main.gd:2662 -> DUNGEON_ENTER_ZONE -> scène dungeon_bandit_den, zone client dungeon_lvl20_bandit_den), combats internes = pipeline zone standard donc origin_zone_id = dungeon_lvl20_bandit_den. « Première salle » mappée sur win_combats_in_zone count 1 (un avant-goût, pas un mur, difficulté easy sans clé, migration 053). Récompense : pas d'XP (cohérence économie, l'XP vient du contenu), unique_dam_rishon distribué via le canal générique kanarion.economy.inventory.add (economy charge uniques.json via UniqueStaticRegistry) : à smoke-tester au déploiement.",
+      "dialogue_give_fr": "Le tour est fini, place à l'épreuve. Présente-toi à Dargo, puis descends au Repaire des Bandits faire tomber un premier groupe. Et reviens entier, c'est tout ce que je demande.",
+      "dialogue_give_en": "The tour is over, time for the trial. Introduce yourself to Dargo, then head down into the Bandit Den and take out a first pack. And come back in one piece, that's all I ask.",
+      "dialogue_complete_fr": "Le Repaire, déjà ? Certains attendent des semaines avant d'oser y descendre. Tiens, un anneau qui a fait ses preuves : Premier Sang. Il ouvre bien les combats, tu verras.",
+      "dialogue_complete_en": "The Den already? Some wait weeks before daring to go down there. Here, a ring that has proven itself: First Blood. It opens fights well, you'll see.",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_arena_dargo",
+          "count": 1,
+          "description_fr": "Se présenter à Dargo, le Maître d'Arène",
+          "description_en": "Introduce yourself to Dargo, the Arena Master",
+          "_note": "Remplace le duel d'entraînement d'arène du plan (indétectable aujourd'hui, voir _comment). Reviendra en vrai duel quand le déclencheur arène + l'event quête existeront.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_hub_tour_02_obj0_dargo",
+                "type": "arrow",
+                "target": "npc_arena_dargo",
+                "priority": 88,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Dargo",
+                  "label_en": "Go see Dargo"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "enter_zone",
+          "zone_id": "dungeon_lvl20_bandit_den",
+          "count": 1,
+          "description_fr": "Entrer dans le Repaire des Bandits",
+          "description_en": "Enter the Bandit Den",
+          "_note": "Détection : presence zone_changed avec zone_id = dungeon_lvl20_bandit_den (zone dungeon_open, accès via Varn, difficulté easy sans clé).",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_hub_tour_02_obj1_varn",
+                "type": "arrow",
+                "target": "npc_dungeon_master_varn",
+                "priority": 84,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "L'accès au Repaire passe par Varn",
+                  "label_en": "Varn opens the way to the Den"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "win_combats_in_zone",
+          "zone_id": "dungeon_lvl20_bandit_den",
+          "count": 1,
+          "description_fr": "Vaincre un premier groupe dans le Repaire",
+          "description_en": "Defeat a first pack in the Den",
+          "_note": "« Terminer la première salle » du plan, mappé sur la réalité : 1 victoire de combat dont origin_zone_id = dungeon_lvl20_bandit_den (server-driven, combat_host.cpp:4671 + quest_service.cpp:1542)."
+        }
+      ],
+      "rewards": {
+        "gold": 150,
+        "items": [
+          {
+            "id": "unique_dam_rishon",
+            "qty": 1
+          }
+        ]
+      },
       "chain_next": "q_hub_tour_03"
     },
     {
@@ -2510,7 +2596,7 @@
       "summary_en": "Tobin wants to see you again once you reach level 10. The first real milestone for a volunteer.",
       "npc_giver": "npc_hub_guide_tobin",
       "prerequisites": [
-        "q_hub_tour_01"
+        "q_hub_tour_02"
       ],
       "_comment": "Capstone jalon niveau 10 (décision backend 2026-07-21 : le gate sous-classe passera à lv10 en stopgap config ; le chiffre du jalon suivra le gate config à la release). Texte VOLONTAIREMENT sans revendication de déblocage mécanique : en playtest les skills de sous-classe sont disponibles dès le niveau 1 (character_manager.cpp:161). À la release, dialogue_complete pourra mentionner le déblocage des compétences de sous-classe. Nit backend connu : reach_level n'est pas réconcilié à l'accept (quest_service ne lit le level courant qu'aux CHARACTER_LEVELED_UP), un perso déjà au niveau cible doit prendre un niveau supplémentaire pour valider.",
       "dialogue_give_fr": "Tu tiens sur tes jambes, c'est bien. Maintenant, va grandir. Missions, combats, donjons : tout compte. Reviens me voir au niveau 10. C'est là que les choses sérieuses commencent.",
