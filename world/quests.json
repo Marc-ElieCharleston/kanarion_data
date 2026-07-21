@@ -2397,7 +2397,7 @@
       "npc_giver": "npc_hub_guide_tobin",
       "auto_accept_on_zone_enter": "desert_playtest",
       "objective_mode": "parallel",
-      "_comment": "Lot B3a (2026-07-21), voir kanarion_front/PLAN_HUB_TOUR.md. Objectifs en ordre libre (parallel). Retirés vs plan : « Achète une potion à la boutique » (aucun PNJ boutique dans desert_playtest et aucun template purchase_item côté quest service) ; « Rejoins ou fonde une guilde (optionnel) » (le moteur de quêtes n'a pas d'objectif optionnel, QuestObjectiveDef sans flag required) : la guilde est routée via le nœud Discuter de Tobin. Potions familier remplacées par potions classiques (handler pet_service non branché, economy_service.cpp:1036). q_hub_tour_02 « L'épreuve » (duel arène + première salle donjon) est un ID RÉSERVÉ, gated backend lot A : chain_next saute directement à q_hub_tour_03 tant que Q2 n'existe pas.",
+      "_comment": "Lot B3a (2026-07-21), voir kanarion_front/PLAN_HUB_TOUR.md. Objectifs en ordre libre (parallel). Retirés vs plan : « Achète une potion à la boutique » (aucun PNJ boutique dans desert_playtest et aucun template purchase_item côté quest service) ; « Rejoins ou fonde une guilde (optionnel) » (le moteur de quêtes n'a pas d'objectif optionnel, QuestObjectiveDef sans flag required) : la guilde est routée via le nœud Discuter de Tobin. Potions familier restaurées (2026-07-21, handler pet_service branché : economy reconnait heal_pet_hp_flat/restore_pet_mp_flat, familiar service applique sur l'actif + push 0x0F07). NOTE lot backend : ces potions ne sont pas encore dans loot_tables.json et les vieilles cons_*_potion_merc_* y traînent. q_hub_tour_02 « L'épreuve » (duel arène + première salle donjon) est un ID RÉSERVÉ, gated backend lot A : chain_next saute directement à q_hub_tour_03 tant que Q2 n'existe pas.",
       "dialogue_give_fr": "Fraîchement sorti de chez Aldric ? Parfait. Ici, tout passe par les maîtres : missions, arène, donjons. Je te fais le tour ? Reviens me voir quand tu as coché tout ça.",
       "dialogue_give_en": "Fresh out of Aldric's training? Perfect. Around here, everything goes through the masters: missions, arena, dungeons. Shall I show you around? Come back once you've checked all of that off.",
       "dialogue_complete_fr": "Déjà de retour ? Tu connais le village mieux que certains anciens. Tiens, de quoi voir venir. Et si tu veux des compagnons de route, va saluer Verena, elle enregistre les guildes.",
@@ -2485,11 +2485,15 @@
         "items": [
           {
             "id": "cons_hp_potion_small",
-            "qty": 3
+            "qty": 2
           },
           {
-            "id": "cons_mp_potion_small",
-            "qty": 2
+            "id": "cons_hp_potion_pet_small",
+            "qty": 1
+          },
+          {
+            "id": "cons_mp_potion_pet_small",
+            "qty": 1
           }
         ]
       },
@@ -2502,24 +2506,24 @@
       "min_level": 1,
       "title_fr": "La voie s'éveille",
       "title_en": "The Path Awakens",
-      "summary_fr": "Tobin veut te revoir quand tu auras atteint le niveau 20. Un cap que peu de volontaires franchissent.",
-      "summary_en": "Tobin wants to see you again once you reach level 20. A milestone few volunteers ever cross.",
+      "summary_fr": "Tobin veut te revoir quand tu auras atteint le niveau 10. Le premier vrai cap d'un volontaire.",
+      "summary_en": "Tobin wants to see you again once you reach level 10. The first real milestone for a volunteer.",
       "npc_giver": "npc_hub_guide_tobin",
       "prerequisites": [
         "q_hub_tour_01"
       ],
-      "_comment": "Capstone jalon niveau 20. Texte VOLONTAIREMENT sans revendication de déblocage mécanique : en playtest les skills de sous-classe sont disponibles dès le niveau 1 ; le gate lv20 n'existera qu'à la release (character_manager.cpp:161). À la release, dialogue_complete pourra mentionner le déblocage des compétences de sous-classe. Nit backend connu : reach_level n'est pas réconcilié à l'accept (quest_service ne lit le level courant qu'aux CHARACTER_LEVELED_UP), un perso déjà lv20+ doit prendre un niveau supplémentaire pour valider.",
-      "dialogue_give_fr": "Tu tiens sur tes jambes, c'est bien. Maintenant, va grandir. Missions, combats, donjons : tout compte. Reviens me voir au niveau 20. Peu de volontaires vont jusque-là.",
-      "dialogue_give_en": "You can stand on your own two feet, good. Now go and grow. Missions, fights, dungeons: it all counts. Come back and see me at level 20. Few volunteers make it that far.",
-      "dialogue_complete_fr": "Niveau 20 ! La plupart n'arrivent jamais jusque-là. Ta voie est tracée, et le village le sait maintenant. Montre ce qu'elle vaut.",
-      "dialogue_complete_en": "Level 20! Most never make it this far. Your path is set, and the village knows it now. Show what it's worth.",
+      "_comment": "Capstone jalon niveau 10 (décision backend 2026-07-21 : le gate sous-classe passera à lv10 en stopgap config ; le chiffre du jalon suivra le gate config à la release). Texte VOLONTAIREMENT sans revendication de déblocage mécanique : en playtest les skills de sous-classe sont disponibles dès le niveau 1 (character_manager.cpp:161). À la release, dialogue_complete pourra mentionner le déblocage des compétences de sous-classe. Nit backend connu : reach_level n'est pas réconcilié à l'accept (quest_service ne lit le level courant qu'aux CHARACTER_LEVELED_UP), un perso déjà au niveau cible doit prendre un niveau supplémentaire pour valider.",
+      "dialogue_give_fr": "Tu tiens sur tes jambes, c'est bien. Maintenant, va grandir. Missions, combats, donjons : tout compte. Reviens me voir au niveau 10. C'est là que les choses sérieuses commencent.",
+      "dialogue_give_en": "You can stand on your own two feet, good. Now go and grow. Missions, fights, dungeons: it all counts. Come back and see me at level 10. That's when things get serious.",
+      "dialogue_complete_fr": "Niveau 10 ! Tu n'es plus un débutant. Ta voie est tracée, et le village le sait maintenant. Montre ce qu'elle vaut.",
+      "dialogue_complete_en": "Level 10! You're no beginner anymore. Your path is set, and the village knows it now. Show what it's worth.",
       "objectives": [
         {
           "template": "reach_level",
-          "level": 20,
+          "level": 10,
           "count": 1,
-          "description_fr": "Atteindre le niveau 20",
-          "description_en": "Reach level 20"
+          "description_fr": "Atteindre le niveau 10",
+          "description_en": "Reach level 10"
         }
       ],
       "rewards": {
