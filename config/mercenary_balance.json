@@ -5,10 +5,15 @@
     "description": "Profils de balance pour entites mercenaires (PlayerAI). Applique au spawn combat sur le snapshot stats du merc.",
     "rule": "Un mercenaire doit etre suffisamment utile pour debloquer un joueur, mais toujours moins bon qu'un vrai joueur correct. Bots PvP filler par role utilisent stats proches d'un joueur reel avec biais role-specifique.",
     "spec_ref": "plans/PLAN_MERCENARY_SYSTEM.md + PR-A2 (arena bot-fill PvP)",
-    "profile_count": 11,
+    "profile_count": 14,
     "profile_categories": {
       "pve_solo_helper": [
         "solo_helper_v1"
+      ],
+      "tutorial_sparring": [
+        "tutorial_sparring_ally_v1",
+        "tutorial_sparring_enemy_v1",
+        "tutorial_sparring_enemy_healer_v1"
       ],
       "pvp_filler_generic": [
         "pvp_filler_v1"
@@ -38,6 +43,48 @@
       "ai_intelligence_level": 3,
       "ai_decision_delay_ticks": 2,
       "aggro_bias": 0.8,
+      "uses_high_skill_synergies": false,
+      "uses_consumables": false
+    },
+    "tutorial_sparring_ally_v1": {
+      "_note": "Allies lv2 du sparring trinite tuto (config/tutorial_encounters.json scenario sparring_trinity). Spawn a level EXPLICITE 2 (pas de level_offset joueur). hp x2.0 = ~300 HP : contre des ennemis a damage x0.6, aucun allie ne meurt (la lecon porte sur la priorite de cible, pas la survie). IA lente (delay 3 ticks) pour que le joueur mene le combat.",
+      "level_offset": 0,
+      "damage_multiplier": 1.0,
+      "healing_multiplier": 1.0,
+      "shield_multiplier": 1.2,
+      "hp_multiplier": 2.0,
+      "mp_multiplier": 1.5,
+      "ai_intelligence_level": 3,
+      "ai_decision_delay_ticks": 3,
+      "aggro_bias": 1.0,
+      "uses_high_skill_synergies": false,
+      "uses_consumables": false
+    },
+    "tutorial_sparring_enemy_v1": {
+      "_note": "Ennemis warrior + mage lv1 du sparring trinite tuto. damage x0.6 : le joueur ne peut pas perdre, mais sent la pression. hp x1.5 = ~225 HP : tombent en ~15-20s sous focus SANS heal ennemi, mais trainent des dizaines de secondes si le soigneur ennemi est ignore.",
+      "level_offset": 0,
+      "damage_multiplier": 0.6,
+      "healing_multiplier": 1.0,
+      "shield_multiplier": 1.0,
+      "hp_multiplier": 1.5,
+      "mp_multiplier": 1.5,
+      "ai_intelligence_level": 2,
+      "ai_decision_delay_ticks": 3,
+      "aggro_bias": 1.0,
+      "uses_high_skill_synergies": false,
+      "uses_consumables": false
+    },
+    "tutorial_sparring_enemy_healer_v1": {
+      "_note": "LE coeur de la lecon 'tue le soigneur d'abord'. healing x2.5 : Soin 180% mag(10) = 18 -> 45 par cast / cd 8s = ~5.6 HP/s + HoT, assez pour quasi annuler le focus de l'equipe sur le tank ennemi (combat traine si ignore). hp x0.9 = ~135 HP : focus = tombe en ~15-25s malgre son self-heal. mp x2.5 = jamais a sec pendant la duree du tuto. Knobs de tuning : healing_multiplier (traine) et hp_multiplier (tombe).",
+      "level_offset": 0,
+      "damage_multiplier": 0.5,
+      "healing_multiplier": 2.5,
+      "shield_multiplier": 1.5,
+      "hp_multiplier": 0.9,
+      "mp_multiplier": 2.5,
+      "ai_intelligence_level": 3,
+      "ai_decision_delay_ticks": 2,
+      "aggro_bias": 0.3,
       "uses_high_skill_synergies": false,
       "uses_consumables": false
     },

@@ -1,0 +1,97 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-07-21",
+    "description": "Compositions des combats du tutoriel (option B combat forgiving + sparring trinite, decision 2026-07-21). Source de verite data pour le spawn serveur A1-phase2.",
+    "consumed_by": "server-combat combat_host.cpp handle_tutorial_combat_start (A1-phase2). Etat actuel : le serveur whiteliste rat_solo et group_contaminated en dur et spawn mob_id/mob_count depuis la requete client. Cible : le serveur resout le scenario_id dans CE fichier et ignore mob_id/mob_count client (anti-spoof + zero decision client).",
+    "spawn_contract": {
+      "monsters": "Spawn monstre standard (monster_templates_), level explicite.",
+      "mercenary_allies": "spawn_npc_ally(team=PLAYERS, archetype_id, level, balance_profile) - reutilise les archetypes de entities/mercenaries.json, fill universel LFG/matchmaking/PvP.",
+      "mercenary_enemies": "spawn_npc_ally(team=ENEMIES, archetype_id, level, balance_profile) - meme code, team opposee.",
+      "level_rule": "Les levels ci-dessous sont EXPLICITES (le champ level_offset des profils de balance est ignore pour les spawns tuto).",
+      "grid_hint": "Indication de placement sur la grille 4x5 : front = 1re ligne, back = 4e ligne. Le serveur choisit la colonne."
+    },
+    "scenario_id_note": "sparring_trinity est un NOUVEAU scenario a whitelister cote serveur (A1-phase2). group_contaminated (3x mob_rat identiques) reste fonctionnel le temps de la transition puis sera retire quand le lot B re-sequencera les quetes."
+  },
+  "scenarios": {
+    "rat_solo": {
+      "zone": "tutorial_tavern",
+      "description": "Premier combat du jeu. Un seul rat docile : le joueur a le temps de lire les overlays PREGAME et d'experimenter le ciblage sans pression.",
+      "allies": [],
+      "enemies": [
+        {
+          "kind": "monster",
+          "monster_id": "mob_rat_tutorial",
+          "level": 1,
+          "count": 1,
+          "grid_hint": "back"
+        }
+      ],
+      "accept_criteria": [
+        "Le rat n'a pas frappe 2 fois avant la premiere action du joueur (1re attaque du rat >= 5s, GCD joueur 3s).",
+        "Un lecteur lent finit les overlays PREGAME avant de cliquer Pret (countdown PREGAME allonge cote server-combat/config/combat.json, zone A1)."
+      ]
+    },
+    "sparring_trinity": {
+      "zone": "tutorial_tavern",
+      "description": "Combat de sparring qui montre l'USP tactique : compos a roles des deux cotes. La lecon est 'tue le soigneur d'abord' : ignorer le soigneur ennemi fait trainer le combat, le focus le fait tomber et debloque la victoire.",
+      "allies": [
+        {
+          "kind": "mercenary",
+          "archetype_id": "merc_warrior",
+          "level": 2,
+          "balance_profile": "tutorial_sparring_ally_v1",
+          "grid_hint": "front"
+        },
+        {
+          "kind": "mercenary",
+          "archetype_id": "merc_healer",
+          "level": 2,
+          "balance_profile": "tutorial_sparring_ally_v1",
+          "grid_hint": "back"
+        },
+        {
+          "kind": "mercenary",
+          "archetype_id": "merc_mage",
+          "level": 2,
+          "balance_profile": "tutorial_sparring_ally_v1",
+          "grid_hint": "back"
+        }
+      ],
+      "enemies": [
+        {
+          "kind": "mercenary",
+          "archetype_id": "merc_warrior",
+          "level": 1,
+          "balance_profile": "tutorial_sparring_enemy_v1",
+          "grid_hint": "front"
+        },
+        {
+          "kind": "mercenary",
+          "archetype_id": "merc_healer",
+          "level": 1,
+          "balance_profile": "tutorial_sparring_enemy_healer_v1",
+          "grid_hint": "back"
+        },
+        {
+          "kind": "mercenary",
+          "archetype_id": "merc_mage",
+          "level": 1,
+          "balance_profile": "tutorial_sparring_enemy_v1",
+          "grid_hint": "back"
+        }
+      ],
+      "lesson": {
+        "intent": "Le joueur apprend la priorite de cible, pas la survie. Les allies lv2 ne peuvent pas mourir (hp x2.0 vs damage ennemi x0.6), donc la SEULE variable est le temps de kill.",
+        "ignore_healer": "Focus tank ennemi (~225 HP) avec le heal ennemi actif (~45 HP par cast / 8s + HoT) : le net DPS equipe tombe pres de zero, le combat traine (> 90s sur la premiere cible).",
+        "focus_healer": "Soigneur ennemi ~135 HP, son self-heal ne compense pas le focus de 4 attaquants : il tombe en ~15-25s, puis le reste suit sans resistance.",
+        "ai_guarantee": "PlayerAI profil healer (player_ai.cpp) : skill_priority heal avant smite, ally_heal_threshold 0.8 (soigne des qu'un allie passe sous 80%), emergency_heal_threshold 0.4. L'IA monster_ai.json role healer a le meme contrat (heal_lowest_ally 60)."
+      },
+      "accept_criteria": [
+        "Test A (ignore) : tuer warrior ennemi d'abord sans toucher le soigneur prend au moins 3x plus de temps que le test B.",
+        "Test B (focus) : focus soigneur ennemi des le debut, il tombe en moins de ~25s et le combat total reste sous ~60s.",
+        "Aucun allie ni le joueur ne meurt dans les deux tests."
+      ]
+    }
+  }
+}
