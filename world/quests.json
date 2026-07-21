@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": "3.1",
-    "last_updated": "2026-04-26",
+    "last_updated": "2026-07-21",
     "description": "MVP Quests (Lv 1-20). Farming-first: quests guide/boost but don't block."
   },
   "quest_types": [
@@ -2382,6 +2382,148 @@
       "rewards": {
         "xp": 240,
         "gold": 100
+      },
+      "_note_hub_tour": "Lot B3a : PAS de chain_next vers q_hub_tour_01 ici, c'est VOULU. q_hub_tour_01 est attribuee par auto_accept_on_zone_enter=desert_playtest (couvre aussi les joueurs qui skippent le tuto, que le filtre client has_uncompleted_predecessor exclurait avec un chain). Un chain_next ici creerait en plus un double-accept (auto turn-in client tuto + auto-accept serveur zone) avec toast d'erreur visible."
+    },
+    {
+      "id": "q_hub_tour_01",
+      "type": "main",
+      "zone": "desert_playtest",
+      "min_level": 1,
+      "title_fr": "Le tour du village",
+      "title_en": "The Village Tour",
+      "summary_fr": "Tobin te fait faire le tour du village : Naya et ses missions, un premier combat dans le désert, et Colette l'Éleveuse de Familiers.",
+      "summary_en": "Tobin shows you around the village: Naya and her missions, a first fight in the desert, and Colette the Familiar Breeder.",
+      "npc_giver": "npc_hub_guide_tobin",
+      "auto_accept_on_zone_enter": "desert_playtest",
+      "objective_mode": "parallel",
+      "_comment": "Lot B3a (2026-07-21), voir kanarion_front/PLAN_HUB_TOUR.md. Objectifs en ordre libre (parallel). Retirés vs plan : « Achète une potion à la boutique » (aucun PNJ boutique dans desert_playtest et aucun template purchase_item côté quest service) ; « Rejoins ou fonde une guilde (optionnel) » (le moteur de quêtes n'a pas d'objectif optionnel, QuestObjectiveDef sans flag required) : la guilde est routée via le nœud Discuter de Tobin. Potions familier remplacées par potions classiques (handler pet_service non branché, economy_service.cpp:1036). q_hub_tour_02 « L'épreuve » (duel arène + première salle donjon) est un ID RÉSERVÉ, gated backend lot A : chain_next saute directement à q_hub_tour_03 tant que Q2 n'existe pas.",
+      "dialogue_give_fr": "Fraîchement sorti de chez Aldric ? Parfait. Ici, tout passe par les maîtres : missions, arène, donjons. Je te fais le tour ? Reviens me voir quand tu as coché tout ça.",
+      "dialogue_give_en": "Fresh out of Aldric's training? Perfect. Around here, everything goes through the masters: missions, arena, dungeons. Shall I show you around? Come back once you've checked all of that off.",
+      "dialogue_complete_fr": "Déjà de retour ? Tu connais le village mieux que certains anciens. Tiens, de quoi voir venir. Et si tu veux des compagnons de route, va saluer Verena, elle enregistre les guildes.",
+      "dialogue_complete_en": "Back already? You know the village better than some of the old-timers. Here, something to keep you going. And if you want traveling companions, go greet Verena, she registers the guilds.",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_hub_guide_tobin",
+          "count": 1,
+          "description_fr": "Écouter Tobin, le guide du village",
+          "description_en": "Listen to Tobin, the village guide",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_hub_tour_01_obj0_tobin",
+                "type": "arrow",
+                "target": "npc_hub_guide_tobin",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Tobin",
+                  "label_en": "Go see Tobin"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_naya",
+          "count": 1,
+          "description_fr": "Rencontrer Naya, la Guérisseuse de l'Oasis",
+          "description_en": "Meet Naya, the Oasis Healer",
+          "_note": "Remplace « Valide une quête de Naya » et « Prends un contrat auprès du Maître Combat » du plan : aucun template complete_quest/take_contract dans le quest service (SUPPORTED_TEMPLATES, quest_service.cpp:153), et aucun PNJ Maître Combat dans le hub. Naya porte le service quest_hub (missions répétables).",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_hub_tour_01_obj1_naya",
+                "type": "arrow",
+                "target": "npc_naya",
+                "priority": 85,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Rencontre Naya",
+                  "label_en": "Meet Naya"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "win_combats_in_zone",
+          "zone_id": "desert_playtest",
+          "count": 1,
+          "description_fr": "Remporter un combat dans le désert",
+          "description_en": "Win a fight in the desert",
+          "_note": "Server-driven : combat publie origin_zone_id dans room_ended (combat_host.cpp:4671), quest service update_win_progress_in_zone (quest_service.cpp:1542). Couvre l'esprit « fais une mission de Naya » sans dépendre d'un template complete_quest."
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_familiar_breeder_colette",
+          "count": 1,
+          "description_fr": "Rendre visite à Colette, l'Éleveuse de Familiers",
+          "description_en": "Visit Colette, the Familiar Breeder",
+          "_note": "Le plan prévoyait « Fais renommer ton familier par l'Éleveuse » : aucun handler RENAME côté services/familiar (custom_name posé à la création seulement, review backend 2026-07-21). talk_to_npc en attendant le handler.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_hub_tour_01_obj3_colette",
+                "type": "arrow",
+                "target": "npc_familiar_breeder_colette",
+                "priority": 80,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Colette",
+                  "label_en": "Go see Colette"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "rewards": {
+        "gold": 120,
+        "items": [
+          {
+            "id": "cons_hp_potion_small",
+            "qty": 3
+          },
+          {
+            "id": "cons_mp_potion_small",
+            "qty": 2
+          }
+        ]
+      },
+      "chain_next": "q_hub_tour_03"
+    },
+    {
+      "id": "q_hub_tour_03",
+      "type": "main",
+      "zone": "desert_playtest",
+      "min_level": 1,
+      "title_fr": "La voie s'éveille",
+      "title_en": "The Path Awakens",
+      "summary_fr": "Tobin veut te revoir quand tu auras atteint le niveau 20. Un cap que peu de volontaires franchissent.",
+      "summary_en": "Tobin wants to see you again once you reach level 20. A milestone few volunteers ever cross.",
+      "npc_giver": "npc_hub_guide_tobin",
+      "prerequisites": [
+        "q_hub_tour_01"
+      ],
+      "_comment": "Capstone jalon niveau 20. Texte VOLONTAIREMENT sans revendication de déblocage mécanique : en playtest les skills de sous-classe sont disponibles dès le niveau 1 ; le gate lv20 n'existera qu'à la release (character_manager.cpp:161). À la release, dialogue_complete pourra mentionner le déblocage des compétences de sous-classe. Nit backend connu : reach_level n'est pas réconcilié à l'accept (quest_service ne lit le level courant qu'aux CHARACTER_LEVELED_UP), un perso déjà lv20+ doit prendre un niveau supplémentaire pour valider.",
+      "dialogue_give_fr": "Tu tiens sur tes jambes, c'est bien. Maintenant, va grandir. Missions, combats, donjons : tout compte. Reviens me voir au niveau 20. Peu de volontaires vont jusque-là.",
+      "dialogue_give_en": "You can stand on your own two feet, good. Now go and grow. Missions, fights, dungeons: it all counts. Come back and see me at level 20. Few volunteers make it that far.",
+      "dialogue_complete_fr": "Niveau 20 ! La plupart n'arrivent jamais jusque-là. Ta voie est tracée, et le village le sait maintenant. Montre ce qu'elle vaut.",
+      "dialogue_complete_en": "Level 20! Most never make it this far. Your path is set, and the village knows it now. Show what it's worth.",
+      "objectives": [
+        {
+          "template": "reach_level",
+          "level": 20,
+          "count": 1,
+          "description_fr": "Atteindre le niveau 20",
+          "description_en": "Reach level 20"
+        }
+      ],
+      "rewards": {
+        "gold": 200
       }
     }
   ],
