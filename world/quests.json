@@ -2065,7 +2065,7 @@
               "title_fr": "Niveau supérieur",
               "title_en": "Level Up",
               "content_fr": "Tu as monté de niveau.\n\nÀ chaque palier, tu reçois des points pour évoluer :\n\n• 3 points de stats\n• 1 point de compétence active\n• 1 point de compétence passive\n\nInvestis tes points de stats, puis utilise ton point de compétence pour apprendre une nouvelle technique.",
-              "content_en": "You leveled up.\n\nAt every tier, you receive points to grow:\n\n• 3 stat points\n• 1 active skill point\n• 1 passive skill point\n\nInvest your stat points, then use your skill point to learn a new technique."
+              "content_en": "You leveled up.\n\nEach time you level up, you receive points to grow:\n\n• 3 stat points\n• 1 active skill point\n• 1 passive skill point\n\nInvest your stat points, then use your skill point to learn a new technique."
             }
           }
         ]
@@ -2333,18 +2333,18 @@
       "flags": [
         "tutorial"
       ],
-      "title_fr": "Vers le hub",
-      "title_en": "To the Hub",
-      "summary_fr": "Le portail est ouvert. Franchis-le pour rejoindre le terrain d'entraînement et retrouver Naya.",
-      "summary_en": "The portal is open. Cross it to reach the training grounds and meet Naya.",
+      "title_fr": "Vers le village",
+      "title_en": "To the Village",
+      "summary_fr": "Le portail est ouvert. Franchis-le pour rejoindre le village et retrouver Naya.",
+      "summary_en": "The portal is open. Cross it to reach the village and meet Naya.",
       "npc_giver": "npc_tutorial_instructor_aldric",
       "objectives": [
         {
           "template": "enter_zone",
           "zone_id": "desert_playtest",
           "count": 1,
-          "description_fr": "Franchir le portail vers le terrain d'entraînement",
-          "description_en": "Cross the portal to the training grounds",
+          "description_fr": "Franchir le portail vers le village",
+          "description_en": "Cross the portal to the village",
           "_note": "Direct to desert_playtest spawn (140, -1580) next to Naya (80, -1580). Replaces the previous village placeholder when the real Arena hub lands.",
           "hints": {
             "on_active": [
@@ -2373,8 +2373,8 @@
             "payload": {
               "title_fr": "Ton apprentissage est terminé",
               "title_en": "Your Training is Complete",
-              "content_fr": "Tu peux maintenant rejoindre le village de Kanarion.\n\nPrends tes premières missions, découvre de nouveaux familiers, améliore ton équipement et prépare-toi pour les contrats d'exploration.\n\nQuand tu seras prêt, tu pourras te rendre vers le sud.",
-              "content_en": "You can now join the village of Kanarion.\n\nTake your first missions, discover new familiars, improve your gear, and prepare for exploration contracts.\n\nWhen you're ready, you can head south."
+              "content_fr": "Tu peux maintenant rejoindre le village de Kanarion.\n\nPrends tes premières missions, découvre de nouveaux familiers, améliore ton équipement et prépare-toi pour les contrats d'exploration.\n\nQuand tu seras prêt, tu pourras t'aventurer plus loin.",
+              "content_en": "You can now join the village of Kanarion.\n\nTake your first missions, discover new familiars, improve your gear, and prepare for exploration contracts.\n\nWhen you're ready, you can venture further out."
             }
           }
         ]
@@ -2398,8 +2398,8 @@
       "auto_accept_on_zone_enter": "desert_playtest",
       "objective_mode": "parallel",
       "_comment": "Lot B3a (2026-07-21), voir kanarion_front/PLAN_HUB_TOUR.md. Objectifs en ordre libre (parallel). Retirés vs plan : « Achète une potion à la boutique » (aucun PNJ boutique dans desert_playtest et aucun template purchase_item côté quest service) ; « Rejoins ou fonde une guilde (optionnel) » (le moteur de quêtes n'a pas d'objectif optionnel, QuestObjectiveDef sans flag required) : la guilde est routée via le nœud Discuter de Tobin. Potions familier restaurées (2026-07-21, handler pet_service branché : economy reconnait heal_pet_hp_flat/restore_pet_mp_flat, familiar service applique sur l'actif + push 0x0F07). NOTE lot backend : ces potions ne sont pas encore dans loot_tables.json et les vieilles cons_*_potion_merc_* y traînent. q_hub_tour_02 « L'épreuve » LIVRÉ (lot B3b 2026-07-21) : chain Q1 -> Q2 -> Q3.",
-      "dialogue_give_fr": "Fraîchement sorti de chez Aldric ? Parfait. Ici, tout passe par les maîtres : missions, arène, donjons. Je te fais le tour ? Reviens me voir quand tu as coché tout ça.",
-      "dialogue_give_en": "Fresh out of Aldric's training? Perfect. Around here, everything goes through the masters: missions, arena, dungeons. Shall I show you around? Come back once you've checked all of that off.",
+      "dialogue_give_fr": "Fraîchement arrivé par le portail ? Parfait. Ici, tout passe par les maîtres : missions, arène, donjons. Je te fais le tour ? Reviens me voir quand tu as coché tout ça.",
+      "dialogue_give_en": "Fresh through the portal? Perfect. Around here, everything goes through the masters: missions, arena, dungeons. Shall I show you around? Come back once you've checked all of that off.",
       "dialogue_complete_fr": "Déjà de retour ? Tu connais le village mieux que certains anciens. Tiens, de quoi voir venir. Et si tu veux des compagnons de route, va saluer Verena, elle enregistre les guildes.",
       "dialogue_complete_en": "Back already? You know the village better than some of the old-timers. Here, something to keep you going. And if you want traveling companions, go greet Verena, she registers the guilds.",
       "objectives": [
@@ -2516,8 +2516,8 @@
       "_comment": "Lot B3b (2026-07-21). L'objectif « duel d'entraînement à l'arène » du plan est REMPLACÉ par talk_to_npc Dargo, deux raisons backend prouvées : (1) le spawn trinité (handle_tutorial_combat_start, commit 5238750) est contractuellement tuto-only (zone tutorial_tavern, Step 6) ; (2) les rooms d'exhibition d'arène sont en mode DUEL/is_pvp et publish_combat_event_for_quests est gated par !is_pvp (combat_host.cpp:4413) : AUCUN event quête n'existe pour un combat d'arène. Branchement backend manquant documenté au plan. Ordre libre (parallel) VOLONTAIRE : l'enforcement sequential ne couvre que le chemin client-notified, pas les events zone/combat, un mode sequential ici créerait des progressions incohérentes. Détection donjon prouvée : zone_id == dungeon_id (dungeon_service.cpp:789, zone dungeon_open dans world/zones.json), entrée via Varn (main.gd:2662 -> DUNGEON_ENTER_ZONE -> scène dungeon_bandit_den, zone client dungeon_lvl20_bandit_den), combats internes = pipeline zone standard donc origin_zone_id = dungeon_lvl20_bandit_den. « Première salle » mappée sur win_combats_in_zone count 1 (un avant-goût, pas un mur, difficulté easy sans clé, migration 053). Récompense : pas d'XP (cohérence économie, l'XP vient du contenu), unique_dam_rishon distribué via le canal générique kanarion.economy.inventory.add (economy charge uniques.json via UniqueStaticRegistry) : à smoke-tester au déploiement.",
       "dialogue_give_fr": "Le tour est fini, place à l'épreuve. Présente-toi à Dargo, puis descends au Repaire des Bandits faire tomber un premier groupe. Et reviens entier, c'est tout ce que je demande.",
       "dialogue_give_en": "The tour is over, time for the trial. Introduce yourself to Dargo, then head down into the Bandit Den and take out a first pack. And come back in one piece, that's all I ask.",
-      "dialogue_complete_fr": "Le Repaire, déjà ? Certains attendent des semaines avant d'oser y descendre. Tiens, un anneau qui a fait ses preuves : Premier Sang. Il ouvre bien les combats, tu verras.",
-      "dialogue_complete_en": "The Den already? Some wait weeks before daring to go down there. Here, a ring that has proven itself: First Blood. It opens fights well, you'll see.",
+      "dialogue_complete_fr": "Le Repaire, déjà ? Certains attendent des semaines avant d'oser y descendre. Tiens, un anneau qui a fait ses preuves : Dam Rishon. Dans la vieille langue, ça veut dire Premier Sang. Il ouvre bien les combats, tu verras.",
+      "dialogue_complete_en": "The Den already? Some wait weeks before daring to go down there. Here, a ring that has proven itself: Dam Rishon. In the old tongue, that means First Blood. It opens fights well, you'll see.",
       "objectives": [
         {
           "template": "talk_to_npc",
