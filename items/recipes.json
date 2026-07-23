@@ -1,0 +1,172 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-07-23",
+    "description": "Recettes de craft basique (T1) du Forgeron. MVP testable : matériaux de monstres + or -> équipement/consommable de base, déterministe (le craft réussit toujours). Filet anti-malchance : ne jamais être bloqué par le loot RNG, et donner un but aux matériaux communs.",
+    "station_owner": "npc_blacksmith_gorik",
+    "craft_contract": "Client envoie {recipe_id, idempotency_key}. Serveur : valide recipe existe + level_req + materials possedes + gold possede -> consomme atomiquement (materials + gold) -> ajoute output_item (cle UUID idempotente) -> refresh inventaire. Server-authoritative.",
+    "guardrail_ingredients": "Chaque materiau utilise est present dans items/loot_tables.json (droppable) ET dans entities/monsters.json drops ET farmable dans desert_playtest (familles loup + sanglier). Verifie 2026-07-23. NE PAS ajouter d'ingredient absent de loot_tables (les mats rat/scarabee/substat n'y sont PAS -> recettes infabricables en playtest).",
+    "known_data_issue": "Deux systemes de drop coexistent et divergent : entities/monsters.json a un champ drops par mob (mat_rat_tail, mat_carapace...) ABSENT de items/loot_tables.json qui fonctionne par famille (wolf/boar/goblin...) + default=mat_monster_fang. Les mats loup/sanglier concordent des deux cotes (choix sur). A reconcilier avant d'elargir la palette d'ingredients.",
+    "categories": ["weapon", "armor", "consumable"],
+    "scope": "Playtest Acte 1 (lv 1-20) : uniquement outputs T1 (_b1). Toutes recettes debloquees d'entree (pas de systeme d'apprentissage). Couts en or = placeholders tunables."
+  },
+  "recipes": [
+    {
+      "id": "recipe_wpn_sword_b1",
+      "category": "weapon",
+      "station": "blacksmith",
+      "output_item": "wpn_sword_b1",
+      "output_qty": 1,
+      "level_req": 1,
+      "gold_cost": 30,
+      "materials": [
+        { "id": "mat_boar_tusk", "qty": 2 }
+      ]
+    },
+    {
+      "id": "recipe_wpn_dagger_b1",
+      "category": "weapon",
+      "station": "blacksmith",
+      "output_item": "wpn_dagger_b1",
+      "output_qty": 1,
+      "level_req": 1,
+      "gold_cost": 25,
+      "materials": [
+        { "id": "mat_wolf_fang", "qty": 2 }
+      ]
+    },
+    {
+      "id": "recipe_wpn_staff_b1",
+      "category": "weapon",
+      "station": "blacksmith",
+      "output_item": "wpn_staff_b1",
+      "output_qty": 1,
+      "level_req": 1,
+      "gold_cost": 25,
+      "materials": [
+        { "id": "mat_wolf_fang", "qty": 1 },
+        { "id": "mat_boar_hide", "qty": 1 }
+      ]
+    },
+    {
+      "id": "recipe_wpn_bow_b1",
+      "category": "weapon",
+      "station": "blacksmith",
+      "output_item": "wpn_bow_b1",
+      "output_qty": 1,
+      "level_req": 1,
+      "gold_cost": 30,
+      "materials": [
+        { "id": "mat_wolf_fang", "qty": 2 }
+      ]
+    },
+    {
+      "id": "recipe_wpn_tool_b1",
+      "category": "weapon",
+      "station": "blacksmith",
+      "output_item": "wpn_tool_b1",
+      "output_qty": 1,
+      "level_req": 1,
+      "gold_cost": 28,
+      "materials": [
+        { "id": "mat_boar_tusk", "qty": 2 }
+      ]
+    },
+    {
+      "id": "recipe_head_medium_b1",
+      "category": "armor",
+      "station": "blacksmith",
+      "output_item": "head_medium_b1",
+      "output_qty": 1,
+      "level_req": 1,
+      "gold_cost": 15,
+      "materials": [
+        { "id": "mat_wolf_pelt", "qty": 1 }
+      ]
+    },
+    {
+      "id": "recipe_chest_medium_b1",
+      "category": "armor",
+      "station": "blacksmith",
+      "output_item": "chest_medium_b1",
+      "output_qty": 1,
+      "level_req": 1,
+      "gold_cost": 40,
+      "materials": [
+        { "id": "mat_boar_hide", "qty": 3 }
+      ]
+    },
+    {
+      "id": "recipe_legs_medium_b1",
+      "category": "armor",
+      "station": "blacksmith",
+      "output_item": "legs_medium_b1",
+      "output_qty": 1,
+      "level_req": 1,
+      "gold_cost": 30,
+      "materials": [
+        { "id": "mat_boar_hide", "qty": 2 }
+      ]
+    },
+    {
+      "id": "recipe_feet_medium_b1",
+      "category": "armor",
+      "station": "blacksmith",
+      "output_item": "feet_medium_b1",
+      "output_qty": 1,
+      "level_req": 1,
+      "gold_cost": 15,
+      "materials": [
+        { "id": "mat_wolf_pelt", "qty": 1 }
+      ]
+    },
+    {
+      "id": "recipe_belt_medium_b1",
+      "category": "armor",
+      "station": "blacksmith",
+      "output_item": "belt_medium_b1",
+      "output_qty": 1,
+      "level_req": 1,
+      "gold_cost": 15,
+      "materials": [
+        { "id": "mat_boar_hide", "qty": 1 }
+      ]
+    },
+    {
+      "id": "recipe_cape_cloth_b1",
+      "category": "armor",
+      "station": "blacksmith",
+      "output_item": "cape_cloth_b1",
+      "output_qty": 1,
+      "level_req": 1,
+      "gold_cost": 25,
+      "materials": [
+        { "id": "mat_wolf_pelt", "qty": 2 }
+      ]
+    },
+    {
+      "id": "recipe_cons_hp_potion_small",
+      "category": "consumable",
+      "station": "blacksmith",
+      "output_item": "cons_hp_potion_small",
+      "output_qty": 1,
+      "level_req": 1,
+      "gold_cost": 8,
+      "materials": [
+        { "id": "mat_raw_meat", "qty": 1 }
+      ]
+    },
+    {
+      "id": "recipe_cons_mp_potion_small",
+      "category": "consumable",
+      "station": "blacksmith",
+      "output_item": "cons_mp_potion_small",
+      "output_qty": 1,
+      "level_req": 1,
+      "gold_cost": 12,
+      "materials": [
+        { "id": "mat_raw_meat", "qty": 1 }
+      ]
+    }
+  ]
+}
