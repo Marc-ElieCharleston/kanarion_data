@@ -1,18 +1,18 @@
 {
   "_meta": {
-    "version": "1.1",
-    "last_updated": "2026-07-23",
+    "version": "1.2",
+    "last_updated": "2026-07-28",
     "description": "Recettes de craft basique du Forgeron. MVP testable : matériaux de monstres + or -> equipement/consommable de base, deterministe. Filet anti-malchance + but pour les materiaux.",
     "station_owner": "npc_blacksmith_gorik",
     "craft_contract": "Client envoie {recipe_id, idempotency_key}. Serveur : valide recipe existe + level_req + materials possedes + gold possede -> consomme atomiquement (materials + gold) -> ajoute output_item (cle UUID idempotente) -> refresh inventaire. Server-authoritative.",
     "rank_system": {
       "description": "Craft organise par RANG de 10 niveaux (cap lv30 pour l'instant), un seul bracket d'item par rang pour rester leger.",
       "rank_1": "lv 1-10 -> items b1 (level_req 1). LIVRE (Rang 1 complet ci-dessous). Mats surs loup/sanglier.",
-      "rank_2": "lv 10-20 -> items b3 (level_req 11). EN ATTENTE : demande des mats de mobs lv6-15 fiables -> depend de la reconciliation des 2 systemes de drop (voir known_data_issue).",
+      "rank_2": "lv 10-20 -> items b3 (level_req 11). LIVRE : 21 recettes (5 armes + 15 armures light/medium/heavy + cape silk). Mats mid-tier desert verifies dans loot_tables : bull_horn/alpha_fang/ram_horn/sharp_claw (armes), hyena_pelt/tough_hide/scorpion_shell/reinforced_leather (armures).",
       "rank_3": "lv 20-30 -> AUCUN item de base au-dela de lv16 (brackets b1=1/b2=6/b3=11/b4=16). Soit creer des items lv20-30, soit ce palier reste loot-only."
     },
     "guardrail_ingredients": "Chaque materiau est present dans items/loot_tables.json (droppable) ET dans entities/monsters.json drops ET farmable dans desert_playtest (familles loup + sanglier). NE PAS ajouter d'ingredient absent de loot_tables (mats rat/scarabee/substat n'y sont PAS).",
-    "known_data_issue": "Deux systemes de drop divergent : entities/monsters.json (drops par mob : mat_rat_tail...) vs items/loot_tables.json (par famille + default=mat_monster_fang). Les mats loup/sanglier concordent des deux cotes (choix sur du Rang 1). A reconcilier avant de cabler le Rang 2 (b3).",
+    "known_data_issue": "RESOLU 2026-07-28 : loot_tables.json est la source de verite unique (confirme dans loot_roller.cpp). Le champ drops de monsters.json (dead data) a ete migre dans loot_tables (tables par stripped-id) puis supprime. Tout mat present dans loot_tables est desormais farmable, point.",
     "categories": ["weapon", "armor", "consumable"],
     "scope": "Couts en or = placeholders tunables. Toutes recettes debloquees d'entree (pas d'apprentissage). Armure heavy en cuir/os faute de mat metal bulletproof-farmable (a re-thematiser au Rang 2 avec du minerai)."
   },
@@ -46,6 +46,34 @@
     { "id": "recipe_cape_cloth_b1", "rank": 1, "level_band": "1-10", "category": "armor", "station": "blacksmith", "output_item": "cape_cloth_b1", "output_qty": 1, "level_req": 1, "gold_cost": 25, "materials": [ { "id": "mat_wolf_pelt", "qty": 2 } ] },
 
     { "id": "recipe_cons_hp_potion_small", "rank": 1, "level_band": "1-10", "category": "consumable", "station": "blacksmith", "output_item": "cons_hp_potion_small", "output_qty": 1, "level_req": 1, "gold_cost": 8,  "materials": [ { "id": "mat_raw_meat", "qty": 1 } ] },
-    { "id": "recipe_cons_mp_potion_small", "rank": 1, "level_band": "1-10", "category": "consumable", "station": "blacksmith", "output_item": "cons_mp_potion_small", "output_qty": 1, "level_req": 1, "gold_cost": 12, "materials": [ { "id": "mat_raw_meat", "qty": 1 } ] }
+    { "id": "recipe_cons_mp_potion_small", "rank": 1, "level_band": "1-10", "category": "consumable", "station": "blacksmith", "output_item": "cons_mp_potion_small", "output_qty": 1, "level_req": 1, "gold_cost": 12, "materials": [ { "id": "mat_raw_meat", "qty": 1 } ] },
+
+    { "id": "recipe_wpn_sword_b3",  "rank": 2, "level_band": "10-20", "category": "weapon", "station": "blacksmith", "output_item": "wpn_sword_b3",  "output_qty": 1, "level_req": 11, "gold_cost": 60, "materials": [ { "id": "mat_bull_horn", "qty": 2 } ] },
+    { "id": "recipe_wpn_dagger_b3", "rank": 2, "level_band": "10-20", "category": "weapon", "station": "blacksmith", "output_item": "wpn_dagger_b3", "output_qty": 1, "level_req": 11, "gold_cost": 55, "materials": [ { "id": "mat_alpha_fang", "qty": 2 } ] },
+    { "id": "recipe_wpn_staff_b3",  "rank": 2, "level_band": "10-20", "category": "weapon", "station": "blacksmith", "output_item": "wpn_staff_b3",  "output_qty": 1, "level_req": 11, "gold_cost": 55, "materials": [ { "id": "mat_ram_horn", "qty": 2 } ] },
+    { "id": "recipe_wpn_bow_b3",    "rank": 2, "level_band": "10-20", "category": "weapon", "station": "blacksmith", "output_item": "wpn_bow_b3",    "output_qty": 1, "level_req": 11, "gold_cost": 60, "materials": [ { "id": "mat_sharp_claw", "qty": 2 } ] },
+    { "id": "recipe_wpn_tool_b3",   "rank": 2, "level_band": "10-20", "category": "weapon", "station": "blacksmith", "output_item": "wpn_tool_b3",   "output_qty": 1, "level_req": 11, "gold_cost": 58, "materials": [ { "id": "mat_bull_horn", "qty": 2 } ] },
+
+    { "id": "recipe_head_light_b3",  "rank": 2, "level_band": "10-20", "category": "armor", "station": "blacksmith", "output_item": "head_light_b3",  "output_qty": 1, "level_req": 11, "gold_cost": 25, "materials": [ { "id": "mat_hyena_pelt", "qty": 1 } ] },
+    { "id": "recipe_head_medium_b3", "rank": 2, "level_band": "10-20", "category": "armor", "station": "blacksmith", "output_item": "head_medium_b3", "output_qty": 1, "level_req": 11, "gold_cost": 28, "materials": [ { "id": "mat_tough_hide", "qty": 1 } ] },
+    { "id": "recipe_head_heavy_b3",  "rank": 2, "level_band": "10-20", "category": "armor", "station": "blacksmith", "output_item": "head_heavy_b3",  "output_qty": 1, "level_req": 11, "gold_cost": 45, "materials": [ { "id": "mat_scorpion_shell", "qty": 2 } ] },
+
+    { "id": "recipe_chest_light_b3",  "rank": 2, "level_band": "10-20", "category": "armor", "station": "blacksmith", "output_item": "chest_light_b3",  "output_qty": 1, "level_req": 11, "gold_cost": 55, "materials": [ { "id": "mat_hyena_pelt", "qty": 2 } ] },
+    { "id": "recipe_chest_medium_b3", "rank": 2, "level_band": "10-20", "category": "armor", "station": "blacksmith", "output_item": "chest_medium_b3", "output_qty": 1, "level_req": 11, "gold_cost": 65, "materials": [ { "id": "mat_tough_hide", "qty": 3 } ] },
+    { "id": "recipe_chest_heavy_b3",  "rank": 2, "level_band": "10-20", "category": "armor", "station": "blacksmith", "output_item": "chest_heavy_b3",  "output_qty": 1, "level_req": 11, "gold_cost": 90, "materials": [ { "id": "mat_scorpion_shell", "qty": 3 }, { "id": "mat_reinforced_leather", "qty": 1 } ] },
+
+    { "id": "recipe_legs_light_b3",  "rank": 2, "level_band": "10-20", "category": "armor", "station": "blacksmith", "output_item": "legs_light_b3",  "output_qty": 1, "level_req": 11, "gold_cost": 40, "materials": [ { "id": "mat_hyena_pelt", "qty": 1 } ] },
+    { "id": "recipe_legs_medium_b3", "rank": 2, "level_band": "10-20", "category": "armor", "station": "blacksmith", "output_item": "legs_medium_b3", "output_qty": 1, "level_req": 11, "gold_cost": 48, "materials": [ { "id": "mat_tough_hide", "qty": 2 } ] },
+    { "id": "recipe_legs_heavy_b3",  "rank": 2, "level_band": "10-20", "category": "armor", "station": "blacksmith", "output_item": "legs_heavy_b3",  "output_qty": 1, "level_req": 11, "gold_cost": 65, "materials": [ { "id": "mat_scorpion_shell", "qty": 2 } ] },
+
+    { "id": "recipe_feet_light_b3",  "rank": 2, "level_band": "10-20", "category": "armor", "station": "blacksmith", "output_item": "feet_light_b3",  "output_qty": 1, "level_req": 11, "gold_cost": 25, "materials": [ { "id": "mat_hyena_pelt", "qty": 1 } ] },
+    { "id": "recipe_feet_medium_b3", "rank": 2, "level_band": "10-20", "category": "armor", "station": "blacksmith", "output_item": "feet_medium_b3", "output_qty": 1, "level_req": 11, "gold_cost": 28, "materials": [ { "id": "mat_tough_hide", "qty": 1 } ] },
+    { "id": "recipe_feet_heavy_b3",  "rank": 2, "level_band": "10-20", "category": "armor", "station": "blacksmith", "output_item": "feet_heavy_b3",  "output_qty": 1, "level_req": 11, "gold_cost": 40, "materials": [ { "id": "mat_scorpion_shell", "qty": 2 } ] },
+
+    { "id": "recipe_belt_light_b3",  "rank": 2, "level_band": "10-20", "category": "armor", "station": "blacksmith", "output_item": "belt_light_b3",  "output_qty": 1, "level_req": 11, "gold_cost": 25, "materials": [ { "id": "mat_hyena_pelt", "qty": 1 } ] },
+    { "id": "recipe_belt_medium_b3", "rank": 2, "level_band": "10-20", "category": "armor", "station": "blacksmith", "output_item": "belt_medium_b3", "output_qty": 1, "level_req": 11, "gold_cost": 28, "materials": [ { "id": "mat_tough_hide", "qty": 1 } ] },
+    { "id": "recipe_belt_heavy_b3",  "rank": 2, "level_band": "10-20", "category": "armor", "station": "blacksmith", "output_item": "belt_heavy_b3",  "output_qty": 1, "level_req": 11, "gold_cost": 35, "materials": [ { "id": "mat_reinforced_leather", "qty": 1 } ] },
+
+    { "id": "recipe_cape_silk_b3", "rank": 2, "level_band": "10-20", "category": "armor", "station": "blacksmith", "output_item": "cape_silk_b3", "output_qty": 1, "level_req": 11, "gold_cost": 45, "materials": [ { "id": "mat_hyena_pelt", "qty": 2 } ] }
   ]
 }
