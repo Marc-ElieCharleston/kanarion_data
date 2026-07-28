@@ -1,0 +1,134 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-07-28",
+    "description": "Pool de passifs familier. A la capture/invocation, chaque familier roll 1 passif aleatoire de ce pool (le graal = roller LE bon passif). La rarete de l'instance gate la force et le nombre.",
+    "roll_rules": {
+      "selection": "1 passif tire aleatoirement du pool (weighted par 'roll_weight'). Roles fleches privilegies pour le role du familier, universels toujours possibles.",
+      "rarity_gating": {
+        "common": {"passive_count": 1, "value_mult": 1.0},
+        "uncommon": {"passive_count": 1, "value_mult": 1.0},
+        "rare": {"passive_count": 1, "value_mult": 1.25},
+        "epic": {"passive_count": 1, "value_mult": 1.25},
+        "legendary": {"passive_count": 2, "value_mult": 1.25}
+      },
+      "note": "legendary = 2 passifs = incitatif tryhard majeur. value_mult s'applique aux 'value' des effets. 100% serveur-autoritaire : le serveur roll, stocke sur l'instance, applique au spawn ; le client ne fait qu'afficher."
+    },
+    "flavor_weighting": "Un familier tank a plus de chances de roller un passif 'tank' ou 'universal' qu'un passif 'dps'. Poids exact a caler cote roll backend.",
+    "backend_need": "Nouveau : roll passif a la capture (familiar service), colonne(s) instance en PG, application au spawn combat (comme la rarete). Voir PLAN_FAMILIAR_STATS.md."
+  },
+  "passives": [
+    {
+      "id": "fp_vigor",
+      "name_fr": "Vigueur", "name_en": "Vigor",
+      "description_fr": "+8% de PV maximum.",
+      "description_en": "+8% maximum HP.",
+      "flavor": "universal", "roll_weight": 12,
+      "effects": [{"stat": "hp", "op": "add_percent", "value": 8}]
+    },
+    {
+      "id": "fp_ferocity",
+      "name_fr": "Férocité", "name_en": "Ferocity",
+      "description_fr": "+8% d'attaque.",
+      "description_en": "+8% attack.",
+      "flavor": "universal", "roll_weight": 12,
+      "effects": [{"stat": "atk", "op": "add_percent", "value": 8}]
+    },
+    {
+      "id": "fp_carapace",
+      "name_fr": "Carapace", "name_en": "Carapace",
+      "description_fr": "+8% d'armure.",
+      "description_en": "+8% armor.",
+      "flavor": "universal", "roll_weight": 12,
+      "effects": [{"stat": "armor", "op": "add_percent", "value": 8}]
+    },
+    {
+      "id": "fp_leech",
+      "name_fr": "Sangsue", "name_en": "Leech",
+      "description_fr": "Soigne le familier de 6% des dégâts qu'il inflige.",
+      "description_en": "Heals the familiar for 6% of the damage it deals.",
+      "flavor": "universal", "roll_weight": 8,
+      "effects": [{"stat": "lifesteal", "op": "add_percent", "value": 6}]
+    },
+    {
+      "id": "fp_regeneration",
+      "name_fr": "Régénération", "name_en": "Regeneration",
+      "description_fr": "Récupère 1% des PV maximum par seconde.",
+      "description_en": "Recovers 1% of maximum HP per second.",
+      "flavor": "universal", "roll_weight": 8,
+      "effects": [{"stat": "hp_regen_percent", "op": "add_flat", "value": 1}]
+    },
+    {
+      "id": "fp_thorns",
+      "name_fr": "Épines", "name_en": "Thorns",
+      "description_fr": "Renvoie 8% des dégâts subis à l'attaquant.",
+      "description_en": "Reflects 8% of damage taken back to the attacker.",
+      "flavor": "universal", "roll_weight": 7,
+      "effects": [{"stat": "thorns_percent", "op": "add_flat", "value": 8}]
+    },
+    {
+      "id": "fp_unyielding",
+      "name_fr": "Inébranlable", "name_en": "Unyielding",
+      "description_fr": "+6% de réduction de dégâts.",
+      "description_en": "+6% damage reduction.",
+      "flavor": "tank", "roll_weight": 8,
+      "effects": [{"stat": "damage_reduction", "op": "add_percent", "value": 6}]
+    },
+    {
+      "id": "fp_provocation",
+      "name_fr": "Provocation", "name_en": "Provocation",
+      "description_fr": "Attire l'attention des ennemis proches (aura de taunt légère).",
+      "description_en": "Draws nearby enemies' attention (light taunt aura).",
+      "flavor": "tank", "roll_weight": 5,
+      "effects": [{"special": "taunt_aura", "value": 1}]
+    },
+    {
+      "id": "fp_keen_eye",
+      "name_fr": "Œil vif", "name_en": "Keen Eye",
+      "description_fr": "+8% de chance de coup critique.",
+      "description_en": "+8% critical hit chance.",
+      "flavor": "dps", "roll_weight": 8,
+      "effects": [{"stat": "crit", "op": "add_percent", "value": 8}]
+    },
+    {
+      "id": "fp_predator",
+      "name_fr": "Prédateur", "name_en": "Predator",
+      "description_fr": "+12% de dégâts contre les cibles sous 30% de PV.",
+      "description_en": "+12% damage against targets below 30% HP.",
+      "flavor": "dps", "roll_weight": 5,
+      "effects": [{"special": "execute_bonus", "threshold": 30, "value": 12}]
+    },
+    {
+      "id": "fp_mender",
+      "name_fr": "Guérisseur", "name_en": "Mender",
+      "description_fr": "+10% de puissance de soin.",
+      "description_en": "+10% healing power.",
+      "flavor": "heal", "roll_weight": 8,
+      "effects": [{"stat": "heal_power", "op": "add_percent", "value": 10}]
+    },
+    {
+      "id": "fp_overflow",
+      "name_fr": "Trop-plein", "name_en": "Overflow",
+      "description_fr": "Le surplus de soin se transforme en bouclier temporaire.",
+      "description_en": "Overhealing converts into a temporary shield.",
+      "flavor": "heal", "roll_weight": 5,
+      "effects": [{"special": "overheal_shield", "value": 1}]
+    },
+    {
+      "id": "fp_celerity",
+      "name_fr": "Célérité", "name_en": "Celerity",
+      "description_fr": "+10% de vitesse d'action.",
+      "description_en": "+10% action speed.",
+      "flavor": "utility", "roll_weight": 7,
+      "effects": [{"stat": "attack_speed", "op": "add_percent", "value": 10}]
+    },
+    {
+      "id": "fp_anticipation",
+      "name_fr": "Anticipation", "name_en": "Anticipation",
+      "description_fr": "-10% de temps de recharge (plafonné à la limite de CDR).",
+      "description_en": "-10% cooldowns (capped at the CDR limit).",
+      "flavor": "utility", "roll_weight": 5,
+      "effects": [{"stat": "cooldown_reduction", "op": "add_percent", "value": 10}]
+    }
+  ]
+}
