@@ -1,0 +1,54 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-07-29",
+    "description": "Contrat des paliers de menace monstre (threat_tier) + types d'aggro. Source unique pour le backend. Le champ threat_tier / aggro_type est posé sur chaque mob dans entities/monsters.json.",
+    "owner": "Claude (orchestrateur DB)",
+    "consumers": {
+      "xp_multiplier": "loot_roller.cpp base_xp_for_level() -> facteur XP par palier (B1). Le base_xp legacy du mob n'est PAS lu.",
+      "hp_multiplier": "REFERENCE seulement - deja bakee dans base_stats.hp au moment de l'authoring (fodder/tough). Ne PAS re-appliquer au runtime (double-dip).",
+      "aggro": "presence/world - aggro de proximite instancie (Dofus-style) selon aggro_type + aggro_range (B2)."
+    }
+  },
+  "threat_tiers": {
+    "fodder": {
+      "xp_multiplier": 0.6,
+      "hp_multiplier": 0.65,
+      "_note": "trash de swarm. hp bakee dans base_stats (deja x0.65)."
+    },
+    "standard": {
+      "xp_multiplier": 1.0,
+      "hp_multiplier": 1.0,
+      "_note": "gros du roster, sur la courbe."
+    },
+    "tough": {
+      "xp_multiplier": 1.6,
+      "hp_multiplier": 1.5,
+      "_note": "mini-boss de bande. hp bakee dans base_stats (deja x1.5)."
+    },
+    "elite": {
+      "xp_multiplier": 2.5,
+      "hp_multiplier": 1.0,
+      "_note": "hp NON bakee : le runtime applique deja x1.5hp/1.2atk/1.2def (monster_variants + presence)."
+    },
+    "boss": {
+      "xp_multiplier": 4.0,
+      "hp_multiplier": 1.0,
+      "_note": "hand-tuned. hp laissee telle quelle."
+    }
+  },
+  "aggro_types": {
+    "passive": {
+      "aggro_range": 0,
+      "_desc": "ignore le joueur. Combat seulement si le joueur l'attaque explicitement."
+    },
+    "neutral": {
+      "aggro_range": 0,
+      "_desc": "defaut. Combat si attaque/clique seulement, ne course pas le joueur."
+    },
+    "aggressive": {
+      "aggro_range": 3,
+      "_desc": "aggro de proximite : declenche un combat instancie (Dofus-style) quand le joueur entre dans aggro_range. Valeur TUNABLE (unite = cases/tiles overworld), globale ici ; override par mob possible en V2."
+    }
+  }
+}
