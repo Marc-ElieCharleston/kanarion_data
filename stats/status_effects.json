@@ -543,9 +543,9 @@
         "true_damage": false,
         "formula": "MAG * 0.1 per tick per stack + 10% slow",
         "tick_interval": 1.0,
-        "tooltip_fr": "Ralentit et inflige de legers degats magiques.\nSe cumule.",
+        "tooltip_fr": "Ralentit et inflige de légers dégâts magiques.\nSe cumule.",
         "tooltip_en": "Slows and deals light magical damage.\nStacks.",
-        "description_fr": "Ralentit la cible de 10% par charge et inflige de legers degats magiques par seconde. Max 3 charges.",
+        "description_fr": "Ralentit la cible de 10% par charge et inflige de légers dégâts magiques par seconde. Max 3 charges.",
         "description_en": "Slows the target by 10% per stack and deals light magical damage per second. Max 3 stacks.",
         "sources": [
           "Mage (Elementalist)"
@@ -570,9 +570,9 @@
         "true_damage": false,
         "formula": "MAG * 0.15 per tick per stack",
         "tick_interval": 1.0,
-        "tooltip_fr": "Corrompt la cible, infligeant des degats magiques croissants.\nSe cumule.",
+        "tooltip_fr": "Corrompt la cible, infligeant des dégâts magiques croissants.\nSe cumule.",
         "tooltip_en": "Corrupts the target, dealing increasing magical damage.\nStacks.",
-        "description_fr": "Inflige des degats magiques par seconde par charge. Max 5 charges. Plus de charges = plus de degats.",
+        "description_fr": "Inflige des dégâts magiques par seconde par charge. Max 5 charges. Plus de charges = plus de dégâts.",
         "description_en": "Deals magical damage per second per stack. Max 5 stacks. More stacks = more damage.",
         "sources": [
           "Mage (Occultist)"
@@ -594,9 +594,9 @@
         "true_damage": false,
         "formula": "MAG * 0.1 per tick per stack",
         "tick_interval": 1.0,
-        "tooltip_fr": "Empoisonne la cible. Les charges peuvent etre detonees.\nSe cumule.",
+        "tooltip_fr": "Empoisonne la cible. Les charges peuvent être detonees.\nSe cumule.",
         "tooltip_en": "Poisons the target. Stacks can be detonated.\nStacks.",
-        "description_fr": "Inflige de legers degats magiques par seconde par charge. Max 10 charges. Peut etre detone pour des degats massifs.",
+        "description_fr": "Inflige de légers dégâts magiques par seconde par charge. Max 10 charges. Peut être detone pour des dégâts massifs.",
         "description_en": "Deals light magical damage per second per stack. Max 10 stacks. Can be detonated for massive damage.",
         "sources": [
           "Artisan (Alchemist)"
@@ -1291,6 +1291,32 @@
         ],
         "max_stacks": 10
       },
+      "all_stats_down": {
+        "name_fr": "Toutes Stats Réduites",
+        "name_en": "All Stats Down",
+        "polarity": "debuff",
+        "stacking": "stackable",
+        "impl": "done",
+        "formula": "- [skill_value]% all stats per stack",
+        "tooltip_fr": "Diminue toutes les statistiques.",
+        "tooltip_en": "Lowers all stats.",
+        "description_fr": "Diminue toutes les statistiques simultanément. Version debuff ennemi de Toutes Stats.",
+        "description_en": "Lowers all stats simultaneously. Enemy debuff counterpart of All Stats.",
+        "runtime": {
+          "stat_mods": {
+            "atk_percent": "-value/100",
+            "def_percent": "-value/100",
+            "mag_percent": "-value/100",
+            "armor_percent": "-value/100",
+            "magic_resist_percent": "-value/100"
+          },
+          "vfx_type": "weaken_aura"
+        },
+        "sources": [
+          "Artisan Musician"
+        ],
+        "max_stacks": 10
+      },
       "exposed": {
         "name_fr": "Expose",
         "name_en": "Exposed",
@@ -1299,7 +1325,7 @@
         "max_stacks": 5,
         "impl": "done",
         "formula": "+5% damage taken per stack",
-        "tooltip_fr": "Augmente les degats recus.",
+        "tooltip_fr": "Augmente les dégâts reçus.",
         "tooltip_en": "Increases damage taken.",
         "description_fr": "La cible reçoit davantage de dégâts de toutes les sources. Cumulable.",
         "description_en": "The target takes increased damage from all sources. Stacks.",
@@ -1592,7 +1618,7 @@
         "formula": "Target override priority 2. Single-target offensive only. Removed if forced target invalid. Duration 4s.",
         "tooltip_fr": "Les attaques de la cible sont redirigees vers un allie.",
         "tooltip_en": "The target's attacks are redirected to an ally.",
-        "description_fr": "Force la cible a attaquer un allie choisi par le Trickster. Retire si la cible redirigee meurt. Duree 4s.",
+        "description_fr": "Force la cible a attaquer un allie choisi par le Trickster. Retire si la cible redirigee meurt. Durée 4s.",
         "description_en": "Forces the target to attack an ally chosen by the Trickster. Removed if redirect target dies. Duration 4s.",
         "sources": [
           "Rogue (Trickster)"
@@ -1612,7 +1638,7 @@
         "formula": "Target override priority 3. Single-target offensive only. Removed if forced target invalid. Duration 8s.",
         "tooltip_fr": "Force la cible a attaquer le lanceur.",
         "tooltip_en": "Forces the target to attack the caster.",
-        "description_fr": "La cible ne peut attaquer que le lanceur. Retire si le lanceur meurt. Duree 8s.",
+        "description_fr": "La cible ne peut attaquer que le lanceur. Retire si le lanceur meurt. Durée 8s.",
         "description_en": "The target can only attack the caster. Removed if the caster dies. Duration 8s.",
         "sources": [
           "Rogue (Duelist)"
@@ -1837,9 +1863,9 @@
         "impl": "done",
         "stealable": false,
         "formula": "+value% parry chance. Hook on_parry: counter-attack (ATK*0.5, non-evitable, no crit, no hooks). Duration 6s.",
-        "tooltip_fr": "Posture defensive. Chance de parade augmentee et contre-attaque automatique.",
+        "tooltip_fr": "Posture défensive. Chance de parade augmentée et contre-attaque automatique.",
         "tooltip_en": "Defensive stance. Increased parry chance and automatic counter on parry.",
-        "description_fr": "Augmente la chance de parade de value%. Chaque parade declenche une contre-attaque automatique (ATK*50%).",
+        "description_fr": "Augmente la chance de parade de value%. Chaque parade déclenche une contre-attaque automatique (ATK*50%).",
         "description_en": "Increases parry chance by value%. Each parry triggers an automatic counter-attack (ATK*50%).",
         "sources": [
           "Rogue (Duelist)"
@@ -1858,9 +1884,9 @@
         "impl": "done",
         "stealable": false,
         "formula": "Reflects value% of next attack (final_damage > 0 only). Consumed after 1 trigger. Duration 3s.",
-        "tooltip_fr": "Renvoie une partie des degats de la prochaine attaque recue.",
+        "tooltip_fr": "Renvoie une partie des dégâts de la prochaine attaque recue.",
         "tooltip_en": "Reflects part of the next attack received back to the attacker.",
-        "description_fr": "Renvoie value% des degats de la prochaine attaque recue a l'attaquant. Consomme apres 1 declenchement.",
+        "description_fr": "Renvoie value% des dégâts de la prochaine attaque recue a l'attaquant. Consomme après 1 declenchement.",
         "description_en": "Reflects value% of the next attack's damage back to the attacker. Consumed after 1 trigger.",
         "sources": [
           "Rogue (Duelist)"
@@ -2114,7 +2140,7 @@
         "formula": "max_MP * 0.02 per second per stack",
         "tooltip_fr": "Régénère progressivement le Souffle.",
         "tooltip_en": "Gradually regenerates Breath.",
-        "description_fr": "Regenere 2% Souffle max par seconde par charge. Pour lanceurs de sorts. Plus agressif que la regen PV.",
+        "description_fr": "Régénère 2% Souffle max par seconde par charge. Pour lanceurs de sorts. Plus agressif que la regen PV.",
         "description_en": "Regenerates 2% max Breath per second per stack. For casters. More aggressive than HP regen.",
         "max_stacks": 10,
         "_pr_a2_note": "Flag corrected 2026-05-02 — code path verified wired in audit."
@@ -2445,7 +2471,7 @@
         "formula": "Instant action. Steals value random stealable buffs (full instance). Uniform selection. No-op if none.",
         "tooltip_fr": "Vole des buffs a la cible.",
         "tooltip_en": "Steals buffs from the target.",
-        "description_fr": "Vole value buff(s) aleatoire(s) de la cible et les applique au lanceur.",
+        "description_fr": "Vole value buff(s) aléatoire(s) de la cible et les applique au lanceur.",
         "description_en": "Steals value random buff(s) from the target and applies them to the caster.",
         "sources": [
           "Rogue (Trickster, Corsair)"
@@ -2512,9 +2538,9 @@
         "max_stacks": 1,
         "impl": "done",
         "formula": "+15% damage taken from all sources, refresh on reapply",
-        "tooltip_fr": "La cible subit davantage de degats du chasseur.",
+        "tooltip_fr": "La cible subit davantage de dégâts du chasseur.",
         "tooltip_en": "The target takes increased damage from the hunter.",
-        "description_fr": "Marque exclusive du Chasseur. La cible recoit +15% degats de toutes sources. Effet non-stackable Option A pour eviter de reintroduire value variable sur 'marked' generique.",
+        "description_fr": "Marque exclusive du Chasseur. La cible recoit +15% dégâts de toutes sources. Effet non-stackable Option A pour eviter de reintroduire value variable sur 'marked' generique.",
         "description_en": "Archer-exclusive mark. Target takes +15% damage from all sources. Non-stackable Option A custom effect to avoid reintroducing variable value on generic 'marked'.",
         "sources": [
           "Archer (Hunter Mark)"
@@ -2539,9 +2565,9 @@
         "impl": "done",
         "stealable": false,
         "formula": "-50% damage taken, short duration, long CD",
-        "tooltip_fr": "Posture defensive ultime. Reduit massivement les degats subis.",
+        "tooltip_fr": "Posture défensive ultime. Réduit massivement les dégâts subis.",
         "tooltip_en": "Ultimate defensive stance. Massively reduces damage taken.",
-        "description_fr": "Le Guardian se met en garde absolue. -50% degats subis pendant la duree. Effet non-stackable, CD long. Option A custom car au-dela du cap canonique damage_reduction_up (15%).",
+        "description_fr": "Le Guardian se met en garde absolue. -50% dégâts subis pendant la durée. Effet non-stackable, CD long. Option A custom car au-delà du cap canonique damage_reduction_up (15%).",
         "description_en": "The Guardian enters an absolute defensive stance. -50% damage taken for the duration. Non-stackable, long CD. Option A custom effect (beyond canonical damage_reduction_up cap of 15%).",
         "sources": [
           "Warrior (Guardian Iron Stance)"
@@ -2558,7 +2584,7 @@
         "_audit_note": "2026-07-20: added top-level numeric stat_mods so this Guardian signature actually applies. The loader never reads the runtime block, so Iron Stance was inert (icon shown, no damage reduction). Value -0.5 = original design intent (-50% damage taken). Replaces a stale _pr_a2_note that falsely claimed the code path was verified wired. Same pattern as vulnerable / exposed."
       },
       "steady_aim_amplifier": {
-        "name_fr": "Visee Stable",
+        "name_fr": "Visée Stable",
         "name_en": "Steady Aim",
         "polarity": "buff",
         "stacking": "refresh",
@@ -2566,9 +2592,9 @@
         "impl": "planned",
         "stealable": false,
         "formula": "+50 crit_damage (additif sur 150% base = 200%), short duration",
-        "tooltip_fr": "Augmente massivement les degats critiques pour un court instant.",
+        "tooltip_fr": "Augmente massivement les dégâts critiques pour un court instant.",
         "tooltip_en": "Massively increases critical damage for a short time.",
-        "description_fr": "Le Ranger ajuste sa visee. +50 crit damage (additif sur 150% base, donc 200% au crit). Non-stackable. Option A custom car au-dela du cap canonique crit_damage_up (+30).",
+        "description_fr": "Le Ranger ajuste sa visée. +50 crit damage (additif sur 150% base, donc 200% au crit). Non-stackable. Option A custom car au-delà du cap canonique crit_damage_up (+30).",
         "description_en": "The Ranger steadies their aim. +50 crit damage (additive on 150% base = 200% on crit). Non-stackable. Option A custom (beyond canonical crit_damage_up cap of +30).",
         "sources": [
           "Archer (Ranger Steady Aim)"
@@ -2611,16 +2637,16 @@
     }
   },
   "_summary": {
-    "total": 103,
+    "total": 104,
     "categories": 9,
     "by_polarity": {
       "buff": 53,
-      "debuff": 50
+      "debuff": 51
     },
     "breakdown": {
       "dot": 9,
       "hot": 3,
-      "stat_modifiers": 29,
+      "stat_modifiers": 30,
       "tempo": 4,
       "control": 11,
       "defensive": 10,

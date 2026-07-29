@@ -9,8 +9,8 @@
     "points_per_level": 1,
     "starting_points": 1,
     "max_player_level": 100,
-    "total_points_available": 101,
-    "_comment": "1 point par niveau + 1 point au character create. Total = 101 sur 150 needed pour tout maxer (deficit -49 force build choices)."
+    "total_points_available": 100,
+    "_comment": "1 point au character create (backend: character/config.hpp starting_skill_points=1) + 1 point par level-up. De lv1 a lv100 = 99 level-ups. Total = 1 + 99 = 100 sur 150 needed pour tout maxer (deficit -50 force build choices). Corrige 2026-07-29 : la valeur 101 comptait un level-up de trop."
   },
 
   "skill_levels": {
@@ -36,18 +36,21 @@
     },
     "tier3": {
       "count": 5,
-      "unlock_at_player_level": 60,
-      "_comment": "Design verrouille : specialisation (ex-tier3) au lv60, quete-driven. L'ancienne valeur 40 etait une derive.",
+      "unlock_at_player_level": 30,
+      "release_unlock_level": 40,
+      "_comment": "STOPGAP 2026-07-28 (decision Charleston) : specialisation abaissee a 30 pour le playtest, deblocage via le PNJ Maitre des Voies. Valeur RELEASE = 40 (champ release_unlock_level). (Ancien design verrouille lv60 quete-driven abandonne.)",
       "description": "Skills de specialisation (tier 3)"
     }
   },
 
   "economy_analysis": {
+    "_comment": "Bloc DERIVE de skill_points. Ne jamais y mettre une valeur independante : total_skills_per_character x skill_levels.max_level = points_to_max_all, et points_available = skill_points.total_points_available.",
     "total_skills_per_character": 15,
     "points_to_max_all": 150,
     "points_available": 100,
     "deficit": -50,
-    "design_intent": "Force les choix de build, impossible de tout maxer"
+    "design_intent": "Force les choix de build, impossible de tout maxer",
+    "_note_signature_movement": "Les 6 signature_movement (1 par classe, unlock lv5) ne sont PAS comptes dans les 15 skills point-buyable. Si un jour ils deviennent montables au point, passer total_skills_per_character a 16 et points_to_max_all a 160."
   },
 
   "mana_cost_scaling": {
@@ -80,7 +83,21 @@
   },
 
   "duration_scaling": {
-    "_comment": "Scaling de duree par type d'effet",
+    "_comment": "Scaling de duree par type d'effet. Les valeurs `duration_per_level` ci-dessous sont un FALLBACK (le client les lit dans skill.gd:1545 quand un skill n'a pas de valeur explicite). La regle normative est `_policy_relative` ci-dessous.",
+    "_policy_relative": {
+      "_comment": "Politique validee 2026-07-29. On ne pilote plus un gain ABSOLU en secondes (un +0.2s/niv valait +9% sur un buff de 20s et +112% sur un buff de 4s, pour le meme cout de 9 points) mais un gain RELATIF au niveau 10.",
+      "formula": "duration_per_level = duration_de_base * cible / 9   (arrondi au pas de 0.05, plancher 0.05)",
+      "targets_at_level_10": {
+        "buff_debuff_stat": 0.25,
+        "soft_cc_and_taunt": 0.15,
+        "hard_cc": 0.10
+      },
+      "hard_cc_absolute_cap_seconds": 1.0,
+      "hard_cc_note": "Garde-fou PvP : un stun ne doit jamais gagner plus d'une seconde pleine entre le niveau 1 et le niveau 10, quel que soit son pourcentage.",
+      "applied_scope": "125 effets normalises sur 6 classes. Dispersion du gain avant : 9% a 112%. Apres : 22% a 27% pour les buffs, 11% a 17% pour les CC.",
+      "regle_malus": "Un effet NEGATIF porte par ton propre skill (le def_down de Frenzy, l'atk_speed_down de Stone Form) ne doit JAMAIS recevoir de duration_per_level : investir dans un skill ne doit pas allonger sa propre contrepartie.",
+      "regle_non_creation": "On ne normalise que les effets qui portent DEJA un duration_per_level. Un effet volontairement fige (decisions CTO du 2026-05-15, bucket 8) le reste."
+    },
     "hard_cc": {
       "types": ["stun", "freeze", "petrify", "sleep", "knockdown"],
       "duration_per_level": 0.1,
@@ -134,6 +151,12 @@
       "mana_per_level": 2,
       "description": "Skill standard - lvl10: +63% stat"
     },
+    "advanced": {
+      "power_per_level": 0,
+      "percent_per_level": 7,
+      "mana_per_level": 2,
+      "description": "Workhorse tier3 - lvl10: +63% stat"
+    },
     "strong": {
       "power_per_level": 0,
       "percent_per_level": 8,
@@ -156,6 +179,21 @@
 
   "skill_tiers": {
     "_comment": "Classification des skills - scaling_percent de BASE (niveau 1). Physical = lower %, Magical = higher %.",
+    "_audit_2026_07_29": {
+      "verdict": "Les ranges de filler/basic/standard/strong/signature sont les CIBLES de design v3.0 (janvier 2026) et ont diverge du roster reel. Seul 'advanced' porte des ranges derives des donnees.",
+      "mesure": "Sur 390 skills joueur (30 base + 120 subclass + 240 tier3), 369 ont un scaling_percent hors du range de leur tier, et 184 un percent_per_level different de scaling_by_tier.",
+      "exemple": "skill_warrior_heavy_strike (filler phys) = 60% ATK +3%/niv, la cible annoncee est 110-130% +5%/niv.",
+      "observe_p10_p90": {
+        "filler": { "phys": [60, 100], "mag": [70, 110], "ppl": [2, 4], "cd": [3, 4], "mana": [8, 12] },
+        "basic": { "phys": [65, 180], "mag": [40, 115], "ppl": [2, 6], "cd": [8, 32], "mana": [12, 18] },
+        "standard": { "phys": [60, 160], "mag": [100, 155], "ppl": [3, 6], "cd": [12, 32], "mana": [16, 22] },
+        "advanced": { "phys": [90, 280], "mag": [130, 280], "ppl": [5, 9], "cd": [4, 16], "mana": [8, 28] },
+        "strong": { "phys": [35, 195], "mag": [30, 185], "ppl": [5, 7], "cd": [20, 36], "mana": [22, 30] },
+        "signature": { "phys": [110, 380], "mag": [125, 380], "ppl": [6, 13], "cd": [26, 48], "mana": [36, 50] }
+      },
+      "decision_en_attente": "Arbitrer plus tard : soit re-deriver les 5 tiers restants depuis la data (zero impact gameplay), soit rebalancer les 369 skills sur les cibles (gros impact, entraine le tuning monstres/loot). Ne PAS traiter ces ranges comme normatifs tant que l'arbitrage n'est pas fait.",
+      "note_gain_lv1_lv10": "Le gain relatif lv1->lv10 va de +15% a +129% selon le skill, sans logique de tier (mediane ~+33% partout). Un filler et une signature progressent au meme rythme relatif : a arbitrer avec le point precedent."
+    },
     "filler": {
       "scaling_range_phys": [110, 130],
       "scaling_range_mag": [140, 160],
@@ -177,6 +215,14 @@
       "mana_range": [14, 22],
       "description": "Skill standard equilibre"
     },
+    "advanced": {
+      "_comment": "Formalise 2026-07-29. Tier le plus utilise du roster joueur (192/390 skills, soit 80% du tier3). Ce n'est PAS un cran de puissance entre standard et strong : c'est l'axe tier3, caracterise par un scaling eleve ET un cooldown court. Ranges derives du roster reel (percentiles 10-90), pas d'une cible theorique.",
+      "scaling_range_phys": [90, 280],
+      "scaling_range_mag": [130, 280],
+      "cooldown_range": [4.0, 16.0],
+      "mana_range": [8, 28],
+      "description": "Workhorse tier3 - haut scaling, CD court"
+    },
     "strong": {
       "scaling_range_phys": [200, 280],
       "scaling_range_mag": [280, 380],
@@ -192,6 +238,8 @@
       "description": "Skill signature de subclass"
     },
     "ultimate": {
+      "_comment": "Audit 2026-07-29 : ZERO skill joueur n'utilise ce tier. Il reste vivant car skills/monster_skills.json s'en sert (8 skills de boss). Ne pas supprimer sans migrer le roster monstres.",
+      "used_by": "monster_skills_only",
       "scaling_range_phys": [300, 450],
       "scaling_range_mag": [450, 600],
       "cooldown_range": [25.0, 45.0],

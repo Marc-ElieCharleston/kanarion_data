@@ -50,10 +50,68 @@ from typing import Iterator
 # Default applied by skill.gd loader when mana_cost_per_level is missing.
 DEFAULT_MP_COST_PER_LEVEL = 4
 
-# Per-level fields at the SKILL ROOT that count as "scales something useful".
-# Source of truth = kanarion_front/scripts/skills/skill.gd loader (any field the
-# loader actually reads). NOTE: heal_scaling_per_level is intentionally NOT here
-# — neither client (skill.gd) nor backend (room.cpp) reads it; it is dead data.
+# =============================================================================
+# AUTORITE = LE SERVEUR (corrige 2026-07-29)
+# =============================================================================
+# Le jeu est 100% server-authoritative : c'est le combat serveur qui decide ce
+# qu'un niveau de skill change reellement. Un champ que seul le client lit ne
+# produit AUCUN gain en jeu — il ne fait qu'afficher une promesse dans le
+# tooltip. Cette liste doit donc suivre le backend, pas skill.gd.
+#
+# Historique du bug : la liste ci-dessous etait derivee de skill.gd. Resultat,
+# le linter comptait le `duration_per_level` RACINE comme un gain valide alors
+# que content_loader.cpp ne le lit que dans effects[i]. 46 skills sont restes
+# des pieges durs pendant deux mois sans qu'aucun hit ne remonte.
+#
+# Champs reellement lus par le serveur (verifie par enumeration exhaustive des
+# `value("...per_level")` / `contains("...per_level")` dans content_loader.cpp,
+# en excluant skill_executor.cpp qui est du dead code) :
+#
+#   racine  : percent_per_level, mana_cost_per_level, bonus_per_charge_per_level
+#   nested  : effects[i].duration_per_level, .value_per_level, .pct_per_level
+#
+# Tous les autres champs *_per_level presents dans la data sont client-only.
+SERVER_HONORED_ROOT_FIELDS = [
+    "percent_per_level",
+    "bonus_per_charge_per_level",
+]
+
+SERVER_HONORED_NESTED_FIELDS = [
+    "duration_per_level",
+    "value_per_level",
+    "pct_per_level",
+]
+
+# Champs que le CLIENT lit (skill.gd) mais qu'aucun code serveur vivant ne lit.
+# Les porter ne casse rien, mais ils ne doivent JAMAIS suffire a dedouaner un
+# skill : le tooltip annoncera un gain que le combat n'appliquera pas.
+CLIENT_ONLY_PER_LEVEL_FIELDS = [
+    "duration_per_level",          # RACINE : le serveur ne lit que le nested
+    "power_per_level",
+    "effect_power_per_level",
+    "buff_duration_per_level",
+    "debuff_duration_per_level",
+    "shield_value_per_level",
+    "hot_duration_per_level",
+    "hot_duration_scaling",
+    "success_chance_per_level",
+    "lifesteal_per_level",
+    "lifesteal_percent_per_level",
+    "disarm_chance_per_level",
+    "stun_chance_per_level",
+    "defense_reduction_per_level",
+    "damage_per_adjacent_ally_per_level",
+    "team_damage_amp_per_level",
+    "cooldown_per_level",
+]
+
+# Le loader serveur lit `value`, `pct`, `value_per_level` et `pct_per_level` en
+# int32_t (content_loader.cpp:613-629). Une valeur decimale est tronquee, et un
+# `if (x != 0)` la jette ensuite. `pct_per_level: 0.2` vaut donc 0 en combat.
+# Ticket BE-2 : passer ces champs en float cote backend.
+INT_TRUNCATED_NESTED_FIELDS = ["value", "pct", "value_per_level", "pct_per_level"]
+
+# Conserve pour la retro-compat de l'ancien rapport (non utilise pour le verdict).
 POSITIVE_PER_LEVEL_FIELDS = [
     "power_per_level",
     "percent_per_level",
@@ -128,15 +186,52 @@ def iter_skill_objects(node) -> Iterator[dict]:
 
 
 def positive_per_level_summary(skill: dict) -> dict[str, float]:
-    """Return {field_name: value} for every per-level field that is > 0.
+    """Gains per-level REELLEMENT appliques par le combat serveur.
 
-    Looks at:
-      - root-level skill fields (POSITIVE_PER_LEVEL_FIELDS)
-      - nested effects[].* fields (NESTED_POSITIVE_PER_LEVEL_FIELDS) — keyed
-        as "effects[i].<field>" so the report shows where the scaling lives.
+    Un champ client-only n'entre pas ici : il affiche une promesse dans le
+    tooltip sans que le combat ne l'applique. Voir SERVER_HONORED_* en tete.
     """
     out: dict[str, float] = {}
-    for name in POSITIVE_PER_LEVEL_FIELDS:
+    for name in SERVER_HONORED_ROOT_FIELDS:
+        v = skill.get(name)
+        if isinstance(v, (int, float)) and float(v) > 0:
+            out[name] = float(v)
+    effects = skill.get("effects")
+    if isinstance(effects, list):
+        for i, entry in enumerate(effects):
+            if not isinstance(entry, dict):
+                continue
+            for name in SERVER_HONORED_NESTED_FIELDS:
+                v = entry.get(name)
+                if not isinstance(v, (int, float)) or float(v) <= 0:
+                    continue
+                # BE-2 : ces champs sont lus en int32_t. Une decimale est
+                # tronquee puis jetee par le `if (x != 0)` du loader.
+                if name in INT_TRUNCATED_NESTED_FIELDS and int(v) == 0:
+                    continue
+                out[f"effects[{i}].{name}"] = float(v)
+    return out
+
+
+def client_only_promises(skill: dict) -> dict[str, float]:
+    """Champs per-level que le client affiche mais que le serveur ignore.
+
+    Exception : un `duration_per_level` RACINE est legitime quand le skill porte
+    aussi la valeur dans ses effects[] — c'est le pattern retenu le 2026-07-29,
+    la racine sert de source d'affichage au client (skill.gd:1544) pendant que
+    le nested pilote le combat. La promesse est alors tenue, pas fantome.
+    """
+    effects = skill.get("effects")
+    mirrored = isinstance(effects, list) and any(
+        isinstance(e, dict)
+        and isinstance(e.get("duration_per_level"), (int, float))
+        and float(e["duration_per_level"]) > 0
+        for e in effects
+    )
+    out: dict[str, float] = {}
+    for name in CLIENT_ONLY_PER_LEVEL_FIELDS:
+        if name == "duration_per_level" and mirrored:
+            continue
         v = skill.get(name)
         if isinstance(v, (int, float)) and float(v) > 0:
             out[name] = float(v)
@@ -144,15 +239,22 @@ def positive_per_level_summary(skill: dict) -> dict[str, float]:
         v = skill.get(name)
         if isinstance(v, (int, float)) and float(v) < 0:
             out[name] = float(v)
+    return out
+
+
+def truncated_decimals(skill: dict) -> dict[str, float]:
+    """Valeurs decimales sur des champs d'effet lus en int32_t (BE-2)."""
+    out: dict[str, float] = {}
     effects = skill.get("effects")
-    if isinstance(effects, list):
-        for i, entry in enumerate(effects):
-            if not isinstance(entry, dict):
-                continue
-            for name in NESTED_POSITIVE_PER_LEVEL_FIELDS:
-                v = entry.get(name)
-                if isinstance(v, (int, float)) and float(v) > 0:
-                    out[f"effects[{i}].{name}"] = float(v)
+    if not isinstance(effects, list):
+        return out
+    for i, entry in enumerate(effects):
+        if not isinstance(entry, dict):
+            continue
+        for name in INT_TRUNCATED_NESTED_FIELDS:
+            v = entry.get(name)
+            if isinstance(v, float) and v != int(v):
+                out[f"effects[{i}].{name}"] = v
     return out
 
 
@@ -180,6 +282,31 @@ def lint_skill(path: Path, skill: dict) -> list[Hit]:
             skill_id=sid,
             category="level-trap",
             detail=f"{cost_reason} ; aucun *_per_level positif" + (f" ; mechanic ctx : {ctx}" if ctx else ""),
+        ))
+
+    # Heuristic 1b — tooltip fantome : le client annonce un gain par niveau que
+    # le combat serveur n'applique pas. Faux espoir cote joueur, meme quand le
+    # skill a par ailleurs un vrai scaling.
+    ghosts = client_only_promises(skill)
+    if ghosts:
+        listed = ", ".join(f"{k}={v:g}" for k, v in ghosts.items())
+        hits.append(Hit(
+            file=path,
+            skill_id=sid,
+            category="ghost-tooltip",
+            detail=f"champ(s) lus par le client mais ignores par le combat serveur : {listed}",
+        ))
+
+    # Heuristic 1c — decimale tronquee : content_loader.cpp lit value / pct /
+    # value_per_level / pct_per_level en int32_t (BE-2). 0.2 devient 0.
+    trunc = truncated_decimals(skill)
+    if trunc:
+        listed = ", ".join(f"{k}={v:g} -> {int(v)}" for k, v in trunc.items())
+        hits.append(Hit(
+            file=path,
+            skill_id=sid,
+            category="int-truncated",
+            detail=f"valeur decimale tronquee par le loader serveur (int32_t) : {listed}",
         ))
 
     # Heuristic 2 — DoT static : has DoT but no per-level scaling on it.
