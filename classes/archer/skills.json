@@ -37,11 +37,7 @@
     "cooldown": 20.0,
     "consumes_gcd": false,
     "unlock_at_level": 5,
-    "movement": {
-      "type": "self_move",
-      "mode": "flee",
-      "range": 2
-    },
+    "movement": { "type": "self_move", "mode": "flee", "range": 2 },
     "vfx_type": "dash_trail",
     "description_fr": "L'archer effectue un bond d'esquive a l'oppose de la menace la plus proche pour retablir la distance.",
     "description_en": "The archer rolls away from the nearest threat to restore distance.",
@@ -51,6 +47,45 @@
       "signature"
     ],
     "max_level": 1
+  },
+  "class_filler": {
+    "id": "skill_archer_quick_shot",
+    "name_fr": "Tir Rapide",
+    "name_en": "Quick Shot",
+    "tier": "filler",
+    "target": "enemy",
+    "pattern": "single",
+    "damage_type": "physical",
+    "scaling_stat": "atk",
+    "base_power": 0,
+    "scaling_percent": 100,
+    "percent_per_level": 0,
+    "mana_cost": 0,
+    "mana_cost_per_level": 0,
+    "cooldown": 0,
+    "cast_time": 0,
+    "unlock_at_level": 1,
+    "vfx_type": "arrow_shot",
+    "description_fr": "Une fleche encochee et lachee d'un seul mouvement. Le geste que la main finit par faire seule.",
+    "description_en": "An arrow nocked and loosed in one motion. The gesture the hand ends up making on its own.",
+    "tags": [
+      "damage",
+      "ranged",
+      "filler",
+      "free"
+    ],
+    "base_class_id": "archer",
+    "subclass_id": "",
+    "tier3_id": "",
+    "source_scope": "BASE",
+    "targeting": {
+      "selection_mode": "entity",
+      "valid_target_team": "enemy",
+      "requires_line_of_sight": true,
+      "bypasses_los": false,
+      "requires_entity_on_target_tile": false,
+      "aoe_pattern_id": "single"
+    }
   },
   "base_skills": [
     {
@@ -117,19 +152,19 @@
       "cooldown": 20.0,
       "cast_time": 1.0,
       "vfx_type": "projectile",
-      "description_fr": "L'Archer libère une volée de flèches sur une colonne ennemie. Applique Saignement et ralentit les attaques des cibles touchées.",
-      "description_en": "The Archer looses a volley of arrows over an enemy column. Applies Bleed and slows the struck targets' attacks.",
+      "description_fr": "L'Archer libère une volée de flèches sur une colonne ennemie. Applique Saignement et réduit les dégâts des cibles touchées.",
+      "description_en": "The Archer looses a volley of arrows over an enemy column. Applies Bleed and reduces the struck targets' damage.",
       "tags": [
         "damage",
         "aoe",
         "bleed",
         "dot",
-        "atk_speed_down"
+        "damage_percent_down"
       ],
       "effects": [
         {
           "type": "debuff",
-          "stat": "atk_speed_down",
+          "stat": "damage_percent_down",
           "stacks_to_apply": 2,
           "duration": 6.0
         },
@@ -177,12 +212,12 @@
         "debuff",
         "cc",
         "disarm",
-        "atk_speed_down"
+        "damage_percent_down"
       ],
       "effects": [
         {
           "type": "debuff",
-          "stat": "atk_speed_down",
+          "stat": "damage_percent_down",
           "stacks_to_apply": 4,
           "duration": 10.0
         },
@@ -563,8 +598,8 @@
               "mana_cost_per_level": 1,
               "cooldown": 4.0,
               "vfx_type": "projectile",
-              "description_fr": "Le tireur d'élite décoche une flèche mordante et augmente sa chance de critique pour la suivante.",
-              "description_en": "The Sharpshooter looses a biting arrow and increases their critical chance for the next one.",
+              "description_fr": "Le tireur d'élite décoche une flèche mordante et augmente sa chance de critique pour la suivante. Inflige 140% ATQ (+9.3%/niv). Augmente les chances critiques de 5% pendant 5s.",
+              "description_en": "The Sharpshooter looses a biting arrow and increases their critical chance for the next one. Deals 140% ATK (+9.3%/lvl). Increases crit chance by 5% for 5s.",
               "tags": [
                 "damage",
                 "ranged",
@@ -609,8 +644,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 10.0,
               "vfx_type": "projectile",
-              "description_fr": "Le tireur d'élite frappe un point précis pour blesser en profondeur et augmente ses dégâts critiques.",
-              "description_en": "The Sharpshooter strikes a precise point to wound deeply and increases their critical damage.",
+              "description_fr": "Le tireur d'élite frappe un point précis pour blesser en profondeur et augmente ses dégâts critiques. Inflige 220% ATQ (+14.7%/niv). Augmente les dégâts critiques de 20 pendant 8s.",
+              "description_en": "The Sharpshooter strikes a precise point to wound deeply and increases their critical damage. Deals 220% ATK (+14.7%/lvl). Increases crit damage by 20 for 8s.",
               "tags": [
                 "damage",
                 "ranged",
@@ -651,8 +686,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 16.0,
               "vfx_type": "buff_aura",
-              "description_fr": "Le tireur d'élite règle son souffle sur la cible : il augmente sa chance de critique, ses dégâts critiques et sa précision.",
-              "description_en": "The Sharpshooter steadies their breath on the target: it increases their critical chance, critical damage and accuracy.",
+              "description_fr": "Le tireur d'élite règle son souffle sur la cible : il augmente sa chance de critique, ses dégâts critiques et sa précision. Augmente les chances critiques de 15% pendant 10s (+0.3s/niv), augmente les dégâts critiques de 30 pendant 10s (+0.3s/niv), augmente la précision de 25% pendant 10s (+0.3s/niv).",
+              "description_en": "The Sharpshooter steadies their breath on the target: it increases their critical chance, critical damage and accuracy. Increases crit chance by 15% for 10s (+0.3s/lvl), increases crit damage by 30 for 10s (+0.3s/lvl), increases accuracy by 25% for 10s (+0.3s/lvl).",
               "tags": [
                 "buff",
                 "self",
@@ -714,8 +749,8 @@
               "mana_cost_per_level": 3,
               "cooldown": 14.0,
               "vfx_type": "projectile",
-              "description_fr": "Le tireur d'élite lâche la flèche qui achève : le tir frappe plus fort une cible affaiblie et augmente sa chance de critique.",
-              "description_en": "The Sharpshooter looses the finishing arrow: it hits a weakened target harder and increases their critical chance.",
+              "description_fr": "Le tireur d'élite lâche la flèche qui achève : le tir frappe plus fort une cible affaiblie et augmente sa chance de critique. Inflige 280% ATQ (+18.7%/niv). Augmente les chances critiques de 15% pendant 5s.",
+              "description_en": "The Sharpshooter looses the finishing arrow: it hits a weakened target harder and increases their critical chance. Deals 280% ATK (+18.7%/lvl). Increases crit chance by 15% for 5s.",
               "tags": [
                 "damage",
                 "execute",
@@ -765,8 +800,8 @@
               "cast_time": 2.0,
               "is_signature": true,
               "vfx_type": "projectile",
-              "description_fr": "Le tireur d'élite retient son souffle et lâche un tir décisif : là où la flèche se loge, plus rien ne respire.",
-              "description_en": "The Sharpshooter holds their breath and looses a decisive shot: where the arrow lands, nothing breathes.",
+              "description_fr": "Le tireur d'élite retient son souffle et lâche un tir décisif : là où la flèche se loge, plus rien ne respire. Inflige 400% ATQ (+31.1%/niv).",
+              "description_en": "The Sharpshooter holds their breath and looses a decisive shot: where the arrow lands, nothing breathes. Deals 400% ATK (+31.1%/lvl).",
               "tags": [
                 "damage",
                 "ranged",
@@ -809,8 +844,8 @@
               "mana_cost_per_level": 1,
               "cooldown": 4.0,
               "vfx_type": "projectile",
-              "description_fr": "Le Skirmisher tire depuis l'angle mort et gagne en esquive en se repliant.",
-              "description_en": "The Skirmisher shoots from a blind angle and gains evasion as they fall back.",
+              "description_fr": "Le Skirmisher tire depuis l'angle mort et gagne en esquive en se repliant. Inflige 130% ATQ (+8.7%/niv). Augmente l'esquive de 6% pendant 5s.",
+              "description_en": "The Skirmisher shoots from a blind angle and gains evasion as they fall back. Deals 130% ATK (+8.7%/lvl). Increases evasion by 6% for 5s.",
               "tags": [
                 "damage",
                 "ranged",
@@ -857,8 +892,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 12.0,
               "vfx_type": "projectile",
-              "description_fr": "Le Skirmisher décoche une salve en mouvement sur une ligne ennemie et gagne en vitesse d'attaque.",
-              "description_en": "The Skirmisher looses a volley on the move over an enemy line and gains attack speed.",
+              "description_fr": "Le Skirmisher décoche une salve en mouvement sur une ligne ennemie et gagne en dégâts infligés. Inflige 100% ATQ (+6.7%/niv). Augmente les dégâts infligés de 10% pendant 5s.",
+              "description_en": "The Skirmisher looses a volley on the move over an enemy line and deals more damage. Deals 100% ATK (+6.7%/lvl). Increases damage dealt by 10% for 5s.",
               "tags": [
                 "damage",
                 "aoe",
@@ -869,7 +904,7 @@
               "effects": [
                 {
                   "type": "buff",
-                  "stat": "atk_speed_up",
+                  "stat": "damage_percent_up",
                   "stacks_to_apply": 2,
                   "duration": 5.0,
                   "target": "self"
@@ -901,8 +936,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 16.0,
               "vfx_type": "buff_aura",
-              "description_fr": "Le Skirmisher se replie d'un pas fluide : il gagne en esquive et en vitesse d'attaque.",
-              "description_en": "The Skirmisher slips back with fluid footing: they gain evasion and attack speed.",
+              "description_fr": "Le Skirmisher se replie d'un pas fluide : il gagne en esquive et en dégâts infligés. Augmente l'esquive de 15% pendant 10s (+0.3s/niv), augmente les dégâts infligés de 25% pendant 10s (+0.3s/niv).",
+              "description_en": "The Skirmisher slips back with fluid footing: they gain evasion and damage dealt. Increases evasion by 15% for 10s (+0.3s/lvl), increases damage dealt by 25% for 10s (+0.3s/lvl).",
               "tags": [
                 "buff",
                 "self",
@@ -920,7 +955,7 @@
                 },
                 {
                   "type": "buff",
-                  "stat": "atk_speed_up",
+                  "stat": "damage_percent_up",
                   "stacks_to_apply": 5,
                   "duration": 10.0,
                   "duration_per_level": 0.3
@@ -956,8 +991,8 @@
               "mana_cost_per_level": 3,
               "cooldown": 14.0,
               "vfx_type": "projectile",
-              "description_fr": "Le Skirmisher frappe comme l'éclair et disparaît, gagnant en vitesse d'attaque.",
-              "description_en": "The Skirmisher strikes like lightning and vanishes, gaining attack speed.",
+              "description_fr": "Le Skirmisher frappe comme l'éclair et disparaît, gagnant en dégâts infligés. Inflige 280% ATQ (+18.7%/niv). Augmente les dégâts infligés de 25% pendant 8s.",
+              "description_en": "The Skirmisher strikes like lightning and vanishes, dealing more damage. Deals 280% ATK (+18.7%/lvl). Increases damage dealt by 25% for 8s.",
               "tags": [
                 "damage",
                 "ranged",
@@ -967,7 +1002,7 @@
               "effects": [
                 {
                   "type": "buff",
-                  "stat": "atk_speed_up",
+                  "stat": "damage_percent_up",
                   "stacks_to_apply": 5,
                   "duration": 8.0,
                   "target": "self"
@@ -1006,8 +1041,8 @@
               "cast_time": 2.0,
               "is_signature": true,
               "vfx_type": "projectile",
-              "description_fr": "Le Skirmisher vide son carquois sur une ligne ennemie puis s'évanouit : il gagne en esquive et en vitesse d'attaque.",
-              "description_en": "The Skirmisher empties their quiver over an enemy line then vanishes: they gain evasion and attack speed.",
+              "description_fr": "Le Skirmisher vide son carquois sur une ligne ennemie puis s'évanouit : il gagne en esquive et en dégâts infligés. Inflige 130% ATQ (+10.1%/niv). Augmente l'esquive de 15% pendant 8s, augmente les dégâts infligés de 25% pendant 8s.",
+              "description_en": "The Skirmisher empties their quiver over an enemy line then vanishes: they gain evasion and damage dealt. Deals 130% ATK (+10.1%/lvl). Increases evasion by 15% for 8s, increases damage dealt by 25% for 8s.",
               "tags": [
                 "damage",
                 "aoe",
@@ -1027,7 +1062,7 @@
                 },
                 {
                   "type": "buff",
-                  "stat": "atk_speed_up",
+                  "stat": "damage_percent_up",
                   "stacks_to_apply": 5,
                   "duration": 8.0,
                   "target": "self"
@@ -1315,8 +1350,8 @@
               "mana_cost_per_level": 1,
               "cooldown": 4.0,
               "vfx_type": "falcon",
-              "description_fr": "Le faucon plonge, taillade au passage et applique Saignement.",
-              "description_en": "The falcon dives, slashes in passing and applies Bleed.",
+              "description_fr": "Le faucon plonge, taillade au passage et applique Saignement. Inflige 150% ATQ (+10%/niv). 1 charge de Saignement (max 3).",
+              "description_en": "The falcon dives, slashes in passing and applies Bleed. Deals 150% ATK (+10%/lvl). 1 stack of Bleed (max 3).",
               "tags": [
                 "damage",
                 "ranged",
@@ -1363,8 +1398,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 10.0,
               "vfx_type": "falcon",
-              "description_fr": "Faucon et tireur frappent ensemble et ouvrent deux plaies : applique Saignement.",
-              "description_en": "Falcon and archer strike together and open two wounds: applies Bleed.",
+              "description_fr": "Faucon et tireur frappent ensemble et ouvrent deux plaies : applique Saignement. Inflige 90% ATQ (+6%/niv). 2 charges de Saignement (max 3).",
+              "description_en": "Falcon and archer strike together and open two wounds: applies Bleed. Deals 90% ATK (+6%/lvl). 2 stacks of Bleed (max 3).",
               "tags": [
                 "damage",
                 "multi_hit",
@@ -1410,8 +1445,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 12.0,
               "vfx_type": "debuff_aura",
-              "description_fr": "Le faucon trace un cercle au-dessus de la cible et la laisse Marquée tant qu'il tourne.",
-              "description_en": "The falcon circles above the target and leaves them Marked as long as it wheels overhead.",
+              "description_fr": "Le faucon trace un cercle au-dessus de la cible et la laisse Marquée tant qu'il tourne. Inflige 130% ATQ (+8.7%/niv). Augmente les dégâts subis de 10 pendant 8s.",
+              "description_en": "The falcon circles above the target and leaves them Marked as long as it wheels overhead. Deals 130% ATK (+8.7%/lvl). Increases damage taken by 10 for 8s.",
               "tags": [
                 "damage",
                 "mark",
@@ -1456,8 +1491,8 @@
               "mana_cost_per_level": 3,
               "cooldown": 14.0,
               "vfx_type": "falcon",
-              "description_fr": "Le faucon fond sur les plaies déjà ouvertes : applique Saignement et frappe plus fort une cible qui saigne.",
-              "description_en": "The falcon plunges onto already open wounds: applies Bleed and hits a bleeding target harder.",
+              "description_fr": "Le faucon fond sur les plaies déjà ouvertes : applique Saignement et frappe plus fort une cible qui saigne. Inflige 320% ATQ (+21.3%/niv). 2 charges de Saignement (max 3).",
+              "description_en": "The falcon plunges onto already open wounds: applies Bleed and hits a bleeding target harder. Deals 320% ATK (+21.3%/lvl). 2 stacks of Bleed (max 3).",
               "tags": [
                 "damage",
                 "ranged",
@@ -1507,8 +1542,8 @@
               "cast_time": 1.5,
               "is_signature": true,
               "vfx_type": "falcon",
-              "description_fr": "Tireur et faucon frappent la même proie et celles d'à côté dans une tempête de plumes : applique Saignement aux cibles touchées.",
-              "description_en": "Archer and falcon strike the same prey and those beside it in a storm of feathers: applies Bleed to the struck targets.",
+              "description_fr": "Tireur et faucon frappent la même proie et celles d'à côté dans une tempête de plumes : applique Saignement aux cibles touchées. Inflige 380% ATQ (+29.6%/niv). 3 charges de Saignement (max 3).",
+              "description_en": "Archer and falcon strike the same prey and those beside it in a storm of feathers: applies Bleed to the struck targets. Deals 380% ATK (+29.6%/lvl). 3 stacks of Bleed (max 3).",
               "tags": [
                 "damage",
                 "aoe",
@@ -1561,8 +1596,8 @@
               "mana_cost_per_level": 1,
               "cooldown": 4.0,
               "vfx_type": "falcon",
-              "description_fr": "Le tireur suit le courant du faucon et gagne en esquive.",
-              "description_en": "The archer rides the falcon's current and gains evasion.",
+              "description_fr": "Le tireur suit le courant du faucon et gagne en esquive. Inflige 130% ATQ (+8.7%/niv). Augmente l'esquive de 6% pendant 5s.",
+              "description_en": "The archer rides the falcon's current and gains evasion. Deals 130% ATK (+8.7%/lvl). Increases evasion by 6% for 5s.",
               "tags": [
                 "damage",
                 "ranged",
@@ -1608,8 +1643,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 12.0,
               "vfx_type": "falcon",
-              "description_fr": "Le faucon vole en ligne devant l'ennemi et brouille sa visée : il réduit la précision des cibles touchées.",
-              "description_en": "The falcon flies in a line before the enemy and blurs their aim: it reduces the struck targets' accuracy.",
+              "description_fr": "Le faucon vole en ligne devant l'ennemi et brouille sa visée : il réduit la précision des cibles touchées. Inflige 110% ATQ (+7.3%/niv). Réduit la précision de 10% pendant 5s.",
+              "description_en": "The falcon flies in a line before the enemy and blurs their aim: it reduces the struck targets' accuracy. Deals 110% ATK (+7.3%/lvl). Reduces accuracy by 10% for 5s.",
               "tags": [
                 "damage",
                 "aoe",
@@ -1651,8 +1686,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 16.0,
               "vfx_type": "buff_aura",
-              "description_fr": "Le tireur épouse les courants du faucon : il gagne en esquive, en vitesse d'attaque et en précision.",
-              "description_en": "The archer rides the falcon's currents: they gain evasion, attack speed and accuracy.",
+              "description_fr": "Le tireur épouse les courants du faucon : il gagne en esquive, en dégâts infligés et en précision. Augmente l'esquive de 15% pendant 10s (+0.3s/niv), augmente les dégâts infligés de 15% pendant 10s (+0.3s/niv), augmente la précision de 15% pendant 10s (+0.3s/niv).",
+              "description_en": "The archer rides the falcon's currents: they gain evasion, damage dealt and accuracy. Increases evasion by 15% for 10s (+0.3s/lvl), increases damage dealt by 15% for 10s (+0.3s/lvl), increases accuracy by 15% for 10s (+0.3s/lvl).",
               "tags": [
                 "buff",
                 "self",
@@ -1671,7 +1706,7 @@
                 },
                 {
                   "type": "buff",
-                  "stat": "atk_speed_up",
+                  "stat": "damage_percent_up",
                   "stacks_to_apply": 3,
                   "duration": 10.0,
                   "duration_per_level": 0.3
@@ -1714,8 +1749,8 @@
               "mana_cost_per_level": 3,
               "cooldown": 12.0,
               "vfx_type": "falcon",
-              "description_fr": "Le faucon plonge, frappe bref, et le tireur reste hors d'atteinte : il gagne en esquive.",
-              "description_en": "The falcon dives, strikes briefly, and the archer stays out of reach: they gain evasion.",
+              "description_fr": "Le faucon plonge, frappe bref, et le tireur reste hors d'atteinte : il gagne en esquive. Inflige 250% ATQ (+16.7%/niv). Augmente l'esquive de 15% pendant 5s.",
+              "description_en": "The falcon dives, strikes briefly, and the archer stays out of reach: they gain evasion. Deals 250% ATK (+16.7%/lvl). Increases evasion by 15% for 5s.",
               "tags": [
                 "damage",
                 "single",
@@ -1765,8 +1800,8 @@
               "cast_time": 2.0,
               "is_signature": true,
               "vfx_type": "falcon",
-              "description_fr": "Le faucon domine le ciel et fond sur tout ce qui bouge en deux passes : le tireur gagne en esquive et en vitesse d'attaque.",
-              "description_en": "The falcon dominates the sky and swoops on everything below in two passes: the archer gains evasion and attack speed.",
+              "description_fr": "Le faucon domine le ciel et fond sur tout ce qui bouge en deux passes : le tireur gagne en esquive et en dégâts infligés. Inflige 200% ATQ (+15.6%/niv). Augmente l'esquive de 15% pendant 10s, augmente les dégâts infligés de 25% pendant 10s.",
+              "description_en": "The falcon dominates the sky and swoops on everything below in two passes: the archer gains evasion and damage dealt. Deals 200% ATK (+15.6%/lvl). Increases evasion by 15% for 10s, increases damage dealt by 25% for 10s.",
               "tags": [
                 "damage",
                 "all",
@@ -1786,7 +1821,7 @@
                 },
                 {
                   "type": "buff",
-                  "stat": "atk_speed_up",
+                  "stat": "damage_percent_up",
                   "stacks_to_apply": 5,
                   "duration": 10.0,
                   "target": "self"
@@ -2017,20 +2052,20 @@
           "damage_per_bounce": 8,
           "is_signature": true,
           "vfx_type": "ricochet",
-          "description_fr": "Le Ballmaster libère un chaos de flèches qui rebondissent et s'entrechoquent : plus la danse dure, plus elle blesse, et elle ralentit les attaques des ennemis.",
-          "description_en": "The Ballmaster unleashes a chaos of bouncing, colliding arrows: the longer the dance lasts, the more it wounds, and it slows the enemies' attacks.",
+          "description_fr": "Le Ballmaster libère un chaos de flèches qui rebondissent et s'entrechoquent : plus la danse dure, plus elle blesse, et elle réduit les dégâts des ennemis.",
+          "description_en": "The Ballmaster unleashes a chaos of bouncing, colliding arrows: the longer the dance lasts, the more it wounds, and it reduces the enemies' damage.",
           "tags": [
             "damage",
             "bounce",
             "signature",
             "multi_hit",
             "scaling",
-            "atk_speed_down"
+            "damage_percent_down"
           ],
           "effects": [
             {
               "type": "debuff",
-              "stat": "atk_speed_down",
+              "stat": "damage_percent_down",
               "stacks_to_apply": 3,
               "duration": 8.0
             }
@@ -2071,8 +2106,8 @@
               "mana_cost_per_level": 1,
               "cooldown": 4.0,
               "vfx_type": "ricochet",
-              "description_fr": "Le Bouncer tire d'un angle calculé : la flèche ricoche pour aller chercher une seconde proie hors de vue.",
-              "description_en": "The Bouncer shoots from a calculated angle: the arrow ricochets to reach a second prey out of sight.",
+              "description_fr": "Le Bouncer tire d'un angle calculé : la flèche ricoche pour aller chercher une seconde proie hors de vue. Inflige 120% ATQ (+8%/niv).",
+              "description_en": "The Bouncer shoots from a calculated angle: the arrow ricochets to reach a second prey out of sight. Deals 120% ATK (+8%/lvl).",
               "tags": [
                 "damage",
                 "ranged",
@@ -2109,8 +2144,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 10.0,
               "vfx_type": "ricochet",
-              "description_fr": "Le Bouncer trace un triangle entre trois corps et lâche : la flèche les relie et applique Saignement.",
-              "description_en": "The Bouncer traces a triangle between three bodies and looses: the arrow links them and applies Bleed.",
+              "description_fr": "Le Bouncer trace un triangle entre trois corps et lâche : la flèche les relie et applique Saignement. Inflige 130% ATQ (+8.7%/niv). 1 charge de Saignement (max 3).",
+              "description_en": "The Bouncer traces a triangle between three bodies and looses: the arrow links them and applies Bleed. Deals 130% ATK (+8.7%/lvl). 1 stack of Bleed (max 3).",
               "tags": [
                 "damage",
                 "aoe",
@@ -2152,8 +2187,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 16.0,
               "vfx_type": "buff_aura",
-              "description_fr": "Le Bouncer mesure distances et angles : il augmente sa précision et sa chance de critique.",
-              "description_en": "The Bouncer measures distances and angles: they increase their accuracy and critical chance.",
+              "description_fr": "Le Bouncer mesure distances et angles : il augmente sa précision et sa chance de critique. Augmente la précision de 25% pendant 10s (+0.3s/niv), augmente les chances critiques de 15% pendant 10s (+0.3s/niv).",
+              "description_en": "The Bouncer measures distances and angles: they increase their accuracy and critical chance. Increases accuracy by 25% for 10s (+0.3s/lvl), increases crit chance by 15% for 10s (+0.3s/lvl).",
               "tags": [
                 "buff",
                 "self",
@@ -2209,8 +2244,8 @@
               "mana_cost_per_level": 3,
               "cooldown": 14.0,
               "vfx_type": "ricochet",
-              "description_fr": "La flèche du Bouncer rebondit en cascade, gagne en force et peut mordre deux fois la même proie : applique Saignement.",
-              "description_en": "The Bouncer's arrow bounces in a cascade, gaining force and able to bite the same prey twice: applies Bleed.",
+              "description_fr": "La flèche du Bouncer rebondit en cascade, gagne en force et peut mordre deux fois la même proie : applique Saignement. Inflige 110% ATQ (+7.3%/niv). 1 charge de Saignement (max 3).",
+              "description_en": "The Bouncer's arrow bounces in a cascade, gaining force and able to bite the same prey twice: applies Bleed. Deals 110% ATK (+7.3%/lvl). 1 stack of Bleed (max 3).",
               "tags": [
                 "damage",
                 "bounce",
@@ -2260,8 +2295,8 @@
               "cast_time": 2.0,
               "is_signature": true,
               "vfx_type": "ricochet",
-              "description_fr": "Une seule flèche prend possession du champ de bataille et rebondit sans répit, plus rapide à chaque retour : applique Saignement à chaque chair frôlée.",
-              "description_en": "A single arrow takes over the battlefield and bounces endlessly, faster with each return: applies Bleed to every flesh it grazes.",
+              "description_fr": "Une seule flèche prend possession du champ de bataille et rebondit sans répit, plus rapide à chaque retour : applique Saignement à chaque chair frôlée. Inflige 150% ATQ (+11.7%/niv). 1 charge de Saignement (max 3).",
+              "description_en": "A single arrow takes over the battlefield and bounces endlessly, faster with each return: applies Bleed to every flesh it grazes. Deals 150% ATK (+11.7%/lvl). 1 stack of Bleed (max 3).",
               "tags": [
                 "damage",
                 "bounce",
@@ -2315,8 +2350,8 @@
               "mana_cost_per_level": 1,
               "cooldown": 4.0,
               "vfx_type": "projectile",
-              "description_fr": "Le Striker enchaîne deux flèches presque dans le même geste, plus vite que la corde ne se détend.",
-              "description_en": "The Striker chains two arrows in almost the same motion, faster than the string relaxes.",
+              "description_fr": "Le Striker enchaîne deux flèches presque dans le même geste, plus vite que la corde ne se détend. Inflige 100% ATQ (+6.7%/niv).",
+              "description_en": "The Striker chains two arrows in almost the same motion, faster than the string relaxes. Deals 100% ATK (+6.7%/lvl).",
               "tags": [
                 "damage",
                 "ranged",
@@ -2354,8 +2389,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 10.0,
               "vfx_type": "projectile",
-              "description_fr": "Le Striker mitraille une ligne ennemie d'une volée rapide et gagne en vitesse d'attaque.",
-              "description_en": "The Striker rakes an enemy line with a rapid volley and gains attack speed.",
+              "description_fr": "Le Striker mitraille une ligne ennemie d'une volée rapide et gagne en dégâts infligés. Inflige 80% ATQ (+5.3%/niv). Augmente les dégâts infligés de 10% pendant 5s.",
+              "description_en": "The Striker rakes an enemy line with a rapid volley and deals more damage. Deals 80% ATK (+5.3%/lvl). Increases damage dealt by 10% for 5s.",
               "tags": [
                 "damage",
                 "aoe",
@@ -2366,7 +2401,7 @@
               "effects": [
                 {
                   "type": "buff",
-                  "stat": "atk_speed_up",
+                  "stat": "damage_percent_up",
                   "stacks_to_apply": 2,
                   "duration": 5.0,
                   "target": "self"
@@ -2399,8 +2434,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 16.0,
               "vfx_type": "buff_aura",
-              "description_fr": "Le Striker lâche prise sur le rythme : il gagne en vitesse d'attaque, en chance de critique, et peut tirer deux flèches pour une.",
-              "description_en": "The Striker lets go of the rhythm: they gain attack speed, critical chance, and can fire two arrows for one.",
+              "description_fr": "Le Striker lâche prise sur le rythme : il gagne en dégâts infligés, en chance de critique, et peut tirer deux flèches pour une. Augmente les dégâts infligés de 25% pendant 10s (+0.3s/niv), augmente les chances critiques de 15% pendant 10s (+0.3s/niv), applique Tir Double pendant 10s (+0.3s/niv).",
+              "description_en": "The Striker lets go of the rhythm: they gain damage dealt, critical chance, and can fire two arrows for one. Increases damage dealt by 25% for 10s (+0.3s/lvl), increases crit chance by 15% for 10s (+0.3s/lvl), applies Double Shot for 10s (+0.3s/lvl).",
               "tags": [
                 "buff",
                 "self",
@@ -2411,7 +2446,7 @@
               "effects": [
                 {
                   "type": "buff",
-                  "stat": "atk_speed_up",
+                  "stat": "damage_percent_up",
                   "stacks_to_apply": 5,
                   "duration": 10.0,
                   "duration_per_level": 0.3
@@ -2464,8 +2499,8 @@
               "mana_cost_per_level": 3,
               "cooldown": 12.0,
               "vfx_type": "projectile",
-              "description_fr": "Le Striker enchaîne quatre flèches, chacune frappant plus fort que la précédente.",
-              "description_en": "The Striker chains four arrows, each hitting harder than the last.",
+              "description_fr": "Le Striker enchaîne quatre flèches, chacune frappant plus fort que la précédente. Inflige 75% ATQ (+5%/niv).",
+              "description_en": "The Striker chains four arrows, each hitting harder than the last. Deals 75% ATK (+5%/lvl).",
               "tags": [
                 "damage",
                 "multi_hit",
@@ -2506,8 +2541,8 @@
               "cast_time": 2.0,
               "is_signature": true,
               "vfx_type": "projectile",
-              "description_fr": "Le Striker explose en cadence sur la cible et ses voisines, chaque flèche frappant plus fort, et finit dans un dernier élan de vitesse d'attaque.",
-              "description_en": "The Striker erupts in cadence on the target and its neighbors, each arrow hitting harder, ending in a final surge of attack speed.",
+              "description_fr": "Le Striker explose en cadence sur la cible et ses voisines, chaque flèche frappant plus fort, et finit dans un dernier élan de puissance. Inflige 100% ATQ (+7.8%/niv). Augmente les dégâts infligés de 25% pendant 8s.",
+              "description_en": "The Striker erupts in cadence on the target and its neighbors, each arrow hitting harder, ending in a final surge of power. Deals 100% ATK (+7.8%/lvl). Increases damage dealt by 25% for 8s.",
               "tags": [
                 "damage",
                 "aoe",
@@ -2520,7 +2555,7 @@
               "effects": [
                 {
                   "type": "buff",
-                  "stat": "atk_speed_up",
+                  "stat": "damage_percent_up",
                   "stacks_to_apply": 5,
                   "duration": 8.0,
                   "target": "self"
@@ -2648,8 +2683,8 @@
           "mana_cost": 20,
           "cooldown": 32.0,
           "vfx_type": "buff_aura",
-          "description_fr": "Le Gunslinger accélère son Souffle jusqu'à la frénésie : il gagne en vitesse d'attaque, en chance de critique, et peut tirer deux flèches d'affilée.",
-          "description_en": "The Gunslinger quickens their Breath to a frenzy: they gain attack speed, critical chance, and can fire two shots in a row.",
+          "description_fr": "Le Gunslinger accélère son Souffle jusqu'à la frénésie : il gagne en dégâts infligés, en chance de critique, et peut tirer deux flèches d'affilée.",
+          "description_en": "The Gunslinger quickens their Breath to a frenzy: they gain damage dealt, critical chance, and can fire two shots in a row.",
           "tags": [
             "buff",
             "self",
@@ -2660,7 +2695,7 @@
           "effects": [
             {
               "type": "buff",
-              "stat": "atk_speed_up",
+              "stat": "damage_percent_up",
               "stacks_to_apply": 5,
               "duration": 10.0,
               "duration_per_level": 0.3
@@ -2716,7 +2751,7 @@
             "aoe",
             "debuff",
             "suppression",
-            "cast_speed_down",
+            "damage_percent_down",
             "purge"
           ],
           "effects": [
@@ -2728,7 +2763,7 @@
             },
             {
               "type": "debuff",
-              "stat": "cast_speed_down",
+              "stat": "damage_percent_down",
               "stacks_to_apply": 4,
               "duration": 12.0
             },
@@ -2829,8 +2864,8 @@
               "mana_cost_per_level": 1,
               "cooldown": 4.0,
               "vfx_type": "projectile",
-              "description_fr": "Le tireur crache deux billes d'arquebuse coup sur coup, la seconde partie avant que la fumée ne se dissipe.",
-              "description_en": "The gunner spits two arquebus rounds back to back, the second gone before the smoke clears.",
+              "description_fr": "Le tireur crache deux billes d'arquebuse coup sur coup, la seconde partie avant que la fumée ne se dissipe. Inflige 90% ATQ (+6%/niv).",
+              "description_en": "The gunner spits two arquebus rounds back to back, the second gone before the smoke clears. Deals 90% ATK (+6%/lvl).",
               "tags": [
                 "damage",
                 "ranged",
@@ -2868,8 +2903,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 12.0,
               "vfx_type": "projectile",
-              "description_fr": "Le canon balaie une ligne ennemie de deux trains de plomb.",
-              "description_en": "The barrel sweeps an enemy line with two trains of lead.",
+              "description_fr": "Le canon balaie une ligne ennemie de deux trains de plomb. Inflige 90% ATQ (+6%/niv).",
+              "description_en": "The barrel sweeps an enemy line with two trains of lead. Deals 90% ATK (+6%/lvl).",
               "tags": [
                 "damage",
                 "aoe",
@@ -2903,8 +2938,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 16.0,
               "vfx_type": "buff_aura",
-              "description_fr": "Le tireur entre dans une transe de poudre : il gagne en vitesse d'attaque, en chance de critique, et chaque coup peut en cacher un autre.",
-              "description_en": "The gunner enters a powder trance: they gain attack speed, critical chance, and each shot may hide another.",
+              "description_fr": "Le tireur entre dans une transe de poudre : il gagne en dégâts infligés, en chance de critique, et chaque coup peut en cacher un autre. Augmente les dégâts infligés de 25% pendant 10s (+0.3s/niv), augmente les chances critiques de 15% pendant 10s (+0.3s/niv), applique Tir Double pendant 10s (+0.3s/niv).",
+              "description_en": "The gunner enters a powder trance: they gain damage dealt, critical chance, and each shot may hide another. Increases damage dealt by 25% for 10s (+0.3s/lvl), increases crit chance by 15% for 10s (+0.3s/lvl), applies Double Shot for 10s (+0.3s/lvl).",
               "tags": [
                 "buff",
                 "self",
@@ -2915,7 +2950,7 @@
               "effects": [
                 {
                   "type": "buff",
-                  "stat": "atk_speed_up",
+                  "stat": "damage_percent_up",
                   "stacks_to_apply": 5,
                   "duration": 10.0,
                   "duration_per_level": 0.3
@@ -2968,8 +3003,8 @@
               "mana_cost_per_level": 3,
               "cooldown": 12.0,
               "vfx_type": "projectile",
-              "description_fr": "Quatre billes de plomb crachées en rafale, chacune frappant plus fort dans la chair déjà ouverte.",
-              "description_en": "Four lead rounds sprayed in a burst, each hitting harder in flesh already torn open.",
+              "description_fr": "Quatre billes de plomb crachées en rafale, chacune frappant plus fort dans la chair déjà ouverte. Inflige 70% ATQ (+4.7%/niv).",
+              "description_en": "Four lead rounds sprayed in a burst, each hitting harder in flesh already torn open. Deals 70% ATK (+4.7%/lvl).",
               "tags": [
                 "damage",
                 "multi_hit",
@@ -3009,8 +3044,8 @@
               "cast_time": 2.0,
               "is_signature": true,
               "vfx_type": "projectile",
-              "description_fr": "Le tireur ouvre le feu sans s'arrêter, balaie tout le champ ennemi en rafales et gagne en vitesse d'attaque.",
-              "description_en": "The gunner opens fire without pause, sweeping the whole enemy field in bursts and gaining attack speed.",
+              "description_fr": "Le tireur ouvre le feu sans s'arrêter, balaie tout le champ ennemi en rafales et gagne en dégâts infligés. Inflige 110% ATQ (+8.6%/niv). Augmente les dégâts infligés de 25% pendant 8s.",
+              "description_en": "The gunner opens fire without pause, sweeping the whole enemy field in bursts and dealing more damage. Deals 110% ATK (+8.6%/lvl). Increases damage dealt by 25% for 8s.",
               "tags": [
                 "damage",
                 "all",
@@ -3022,7 +3057,7 @@
               "effects": [
                 {
                   "type": "buff",
-                  "stat": "atk_speed_up",
+                  "stat": "damage_percent_up",
                   "stacks_to_apply": 5,
                   "duration": 8.0,
                   "target": "self"
@@ -3063,8 +3098,8 @@
               "mana_cost_per_level": 1,
               "cooldown": 4.0,
               "vfx_type": "projectile",
-              "description_fr": "Le Deadeye lève le canon, ajuste, et augmente sa chance de critique pour le tir suivant.",
-              "description_en": "The Deadeye raises the barrel, adjusts, and increases their critical chance for the next shot.",
+              "description_fr": "Le Deadeye lève le canon, ajuste, et augmente sa chance de critique pour le tir suivant. Inflige 150% ATQ (+10%/niv). Augmente les chances critiques de 5% pendant 5s.",
+              "description_en": "The Deadeye raises the barrel, adjusts, and increases their critical chance for the next shot. Deals 150% ATK (+10%/lvl). Increases crit chance by 5% for 5s.",
               "tags": [
                 "damage",
                 "ranged",
@@ -3109,8 +3144,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 10.0,
               "vfx_type": "projectile",
-              "description_fr": "Le Deadeye ajuste l'angle au degré près et frappe le point qui fait le plus mal : il augmente ses dégâts critiques.",
-              "description_en": "The Deadeye adjusts the angle to the degree and strikes where it hurts most: it increases their critical damage.",
+              "description_fr": "Le Deadeye ajuste l'angle au degré près et frappe le point qui fait le plus mal : il augmente ses dégâts critiques. Inflige 230% ATQ (+15.3%/niv). Augmente les dégâts critiques de 20 pendant 8s.",
+              "description_en": "The Deadeye adjusts the angle to the degree and strikes where it hurts most: it increases their critical damage. Deals 230% ATK (+15.3%/lvl). Increases crit damage by 20 for 8s.",
               "tags": [
                 "damage",
                 "ranged",
@@ -3152,8 +3187,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 16.0,
               "vfx_type": "buff_aura",
-              "description_fr": "Le Deadeye fige son regard et tout devient cible : il augmente sa chance de critique, ses dégâts critiques et sa précision.",
-              "description_en": "The Deadeye fixes their gaze and everything becomes a target: it increases their critical chance, critical damage and accuracy.",
+              "description_fr": "Le Deadeye fige son regard et tout devient cible : il augmente sa chance de critique, ses dégâts critiques et sa précision. Augmente les chances critiques de 15% pendant 10s (+0.3s/niv), augmente les dégâts critiques de 30 pendant 10s (+0.3s/niv), augmente la précision de 25% pendant 10s (+0.3s/niv).",
+              "description_en": "The Deadeye fixes their gaze and everything becomes a target: it increases their critical chance, critical damage and accuracy. Increases crit chance by 15% for 10s (+0.3s/lvl), increases crit damage by 30 for 10s (+0.3s/lvl), increases accuracy by 25% for 10s (+0.3s/lvl).",
               "tags": [
                 "buff",
                 "self",
@@ -3215,8 +3250,8 @@
               "mana_cost_per_level": 3,
               "cooldown": 14.0,
               "vfx_type": "projectile",
-              "description_fr": "Le Deadeye garde cette balle pour ceux qui titubent déjà : le tir frappe bien plus fort une cible affaiblie.",
-              "description_en": "The Deadeye saves this bullet for those already staggering: the shot hits a weakened target far harder.",
+              "description_fr": "Le Deadeye garde cette balle pour ceux qui titubent déjà : le tir frappe bien plus fort une cible affaiblie. Inflige 280% ATQ (+18.7%/niv).",
+              "description_en": "The Deadeye saves this bullet for those already staggering: the shot hits a weakened target far harder. Deals 280% ATK (+18.7%/lvl).",
               "tags": [
                 "damage",
                 "execute",
@@ -3258,8 +3293,8 @@
               "cast_time": 2.0,
               "is_signature": true,
               "vfx_type": "projectile",
-              "description_fr": "Le Deadeye ajuste sans trembler et tire la sentence : un coup critique garanti, bien plus fort sur une cible mourante. Si elle meurt, la compétence est aussitôt de nouveau utilisable.",
-              "description_en": "The Deadeye adjusts without a tremor and fires the sentence: a guaranteed critical hit, far stronger on a dying target. If they die, the skill is instantly usable again.",
+              "description_fr": "Le Deadeye ajuste sans trembler et tire la sentence : un coup critique garanti, bien plus fort sur une cible mourante. Si elle meurt, la compétence est aussitôt de nouveau utilisable. Inflige 420% ATQ (+32.7%/niv).",
+              "description_en": "The Deadeye adjusts without a tremor and fires the sentence: a guaranteed critical hit, far stronger on a dying target. If they die, the skill is instantly usable again. Deals 420% ATK (+32.7%/lvl).",
               "tags": [
                 "damage",
                 "ranged",

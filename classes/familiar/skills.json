@@ -7,7 +7,7 @@
     "design_intent": "Le familier est un animal : skills majoritairement melee (morsure, bond, leche, charge). Pour les rares cas distance/utilitaire (shield, regen, stun), utiliser instinct animal coherent (ecran de souffle, cri, presence).",
     "scaling_note": "Scaling par niveau via percent_per_level. Voir skill_system.json. Familier level capped au level joueur.",
     "formula": "damage = scaling_percent% * scaling_stat (pareil que skills joueurs)",
-    "v1_role_layout": "3 skills par role (filler/basic/advanced). 4 roles : attaque / tank / heal / utilitaire. Total 12 skills V1.",
+    "v1_role_layout": "1 filler de base par role (CD 5s). Heal = 3 variantes filler (flat/HoT/shield) via filler_variant_group='heal', le serveur en roll UNE au spawn. Reste = basic/advanced.",
     "post_v1_evolution": "Evolutions du familier debloqueront 1-2 skills supplementaires + variantes thematiques (rat des sables = bonus desert, etc.)",
     "vfx_available": [
       "melee_slash",
@@ -34,7 +34,7 @@
       "percent_per_level": 5,
       "mana_cost": 4,
       "mana_cost_per_level": 1,
-      "cooldown": 1.5,
+      "cooldown": 5.0,
       "vfx_type": "melee_slash",
       "description_fr": "Le familier plante ses crocs dans la chair de l'ennemi.",
       "description_en": "The familiar sinks its fangs into the enemy's flesh.",
@@ -123,7 +123,7 @@
       "percent_per_level": 4,
       "mana_cost": 6,
       "mana_cost_per_level": 1,
-      "cooldown": 3.0,
+      "cooldown": 5.0,
       "vfx_type": "melee_slash",
       "description_fr": "Le familier se jette de tout son poids contre l'ennemi pour détourner son regard de son maître. Applique Provocation.",
       "description_en": "The familiar hurls its whole body at the enemy to pull its gaze away from its master. Applies Taunt.",
@@ -219,7 +219,7 @@
       "heal_scaling_percent": 100,
       "mana_cost": 8,
       "mana_cost_per_level": 1,
-      "cooldown": 2.0,
+      "cooldown": 5.0,
       "vfx_type": "heal",
       "description_fr": "Le familier lèche tendrement les plaies d'un allie. Sa salive porte quelque chose qui apaise et repare, on dirait un peu du Souffle.",
       "description_en": "The familiar gently licks an ally's wounds. Its saliva carries something that soothes and mends, almost like Breath.",
@@ -230,7 +230,8 @@
         "familiar"
       ],
       "percent_per_level": 5,
-      "role": "heal"
+      "role": "heal",
+      "filler_variant_group": "heal"
     },
     {
       "id": "skill_familiar_soothing_aura",
@@ -306,7 +307,7 @@
       "source_scope": "FAMILIAR",
       "name_fr": "Écran de Souffle",
       "name_en": "Breath Screen",
-      "tier": "filler",
+      "tier": "basic",
       "target": "ally",
       "pattern": "single",
       "damage_type": "none",
@@ -405,7 +406,7 @@
       "id": "skill_familiar_tail_swipe",
       "name_fr": "Coup de Queue",
       "name_en": "Tail Swipe",
-      "tier": "filler",
+      "tier": "basic",
       "target": "enemy",
       "pattern": "row_2",
       "damage_type": "physical",
@@ -485,7 +486,7 @@
       "id": "skill_familiar_quick_bleed",
       "name_fr": "Saignement Vif",
       "name_en": "Quick Bleed",
-      "tier": "filler",
+      "tier": "basic",
       "target": "enemy",
       "pattern": "single",
       "damage_type": "physical",
@@ -502,7 +503,7 @@
       "tags": [
         "damage",
         "melee",
-        "filler",
+        "basic",
         "bleed",
         "familiar"
       ],
@@ -529,7 +530,7 @@
       "id": "skill_familiar_stubborn_stance",
       "name_fr": "Posture Tetue",
       "name_en": "Stubborn Stance",
-      "tier": "filler",
+      "tier": "basic",
       "target": "self",
       "pattern": "single",
       "damage_type": "none",
@@ -545,7 +546,7 @@
       "tags": [
         "self_buff",
         "defensive",
-        "filler",
+        "basic",
         "familiar"
       ],
       "effects": [
@@ -665,7 +666,7 @@
       "id": "skill_familiar_vital_breath",
       "name_fr": "Souffle Vital",
       "name_en": "Vital Breath",
-      "tier": "filler",
+      "tier": "basic",
       "target": "ally",
       "pattern": "single",
       "damage_type": "none",
@@ -682,7 +683,7 @@
       "tags": [
         "heal",
         "self_buff",
-        "filler",
+        "basic",
         "familiar"
       ],
       "effects": [
@@ -796,7 +797,7 @@
       "id": "skill_familiar_alert_cry",
       "name_fr": "Cri d'Alerte",
       "name_en": "Alert Cry",
-      "tier": "filler",
+      "tier": "basic",
       "target": "ally",
       "pattern": "ring_1",
       "damage_type": "none",
@@ -812,7 +813,7 @@
       "tags": [
         "buff",
         "aoe",
-        "filler",
+        "basic",
         "familiar"
       ],
       "effects": [
@@ -839,7 +840,7 @@
       "id": "skill_familiar_light_step",
       "name_fr": "Pas Léger",
       "name_en": "Light Step",
-      "tier": "filler",
+      "tier": "basic",
       "target": "self",
       "pattern": "single",
       "damage_type": "none",
@@ -855,7 +856,7 @@
       "tags": [
         "self_buff",
         "evasion",
-        "filler",
+        "basic",
         "familiar"
       ],
       "effects": [
@@ -919,6 +920,284 @@
       },
       "duration_per_level": 0.2,
       "role": "utilitaire"
+    },
+    {
+      "id": "skill_familiar_muzzle",
+      "source_scope": "FAMILIAR",
+      "name_fr": "Muselière",
+      "name_en": "Muzzle",
+      "tier": "basic",
+      "target": "enemy",
+      "pattern": "single",
+      "damage_type": "physical",
+      "scaling_stat": "atk",
+      "base_power": 0,
+      "scaling_percent": 60,
+      "percent_per_level": 5,
+      "mana_cost": 10,
+      "mana_cost_per_level": 1,
+      "cooldown": 10.0,
+      "vfx_type": "debuff_aura",
+      "description_fr": "Le familier claque des mâchoires devant l'ennemi et le réduit au silence pendant 2s.",
+      "description_en": "The familiar snaps its jaws at the enemy, silencing it for 2s.",
+      "tags": [
+        "familiar",
+        "utilitaire",
+        "basic",
+        "control"
+      ],
+      "role": "utilitaire",
+      "effects": [
+        {
+          "type": "debuff",
+          "stat": "silence",
+          "duration": 2.0,
+          "duration_per_level": 0.15
+        }
+      ]
+    },
+    {
+      "id": "skill_familiar_disarming_fang",
+      "source_scope": "FAMILIAR",
+      "name_fr": "Croc Désarmant",
+      "name_en": "Disarming Fang",
+      "tier": "basic",
+      "target": "enemy",
+      "pattern": "single",
+      "damage_type": "physical",
+      "scaling_stat": "atk",
+      "base_power": 0,
+      "scaling_percent": 110,
+      "percent_per_level": 5,
+      "mana_cost": 10,
+      "mana_cost_per_level": 1,
+      "cooldown": 9.0,
+      "vfx_type": "melee_slash",
+      "description_fr": "Une morsure précise sur la garde de l'ennemi le désarme pendant 2.5s.",
+      "description_en": "A precise bite on the enemy's guard disarms it for 2.5s.",
+      "tags": [
+        "familiar",
+        "attaque",
+        "basic",
+        "control"
+      ],
+      "role": "attaque",
+      "effects": [
+        {
+          "type": "debuff",
+          "stat": "disarm",
+          "duration": 2.5,
+          "duration_per_level": 0.15
+        }
+      ]
+    },
+    {
+      "id": "skill_familiar_thieving_claw",
+      "source_scope": "FAMILIAR",
+      "name_fr": "Griffe Rapace",
+      "name_en": "Thieving Claw",
+      "tier": "advanced",
+      "target": "enemy",
+      "pattern": "single",
+      "damage_type": "physical",
+      "scaling_stat": "atk",
+      "base_power": 0,
+      "scaling_percent": 80,
+      "percent_per_level": 5,
+      "mana_cost": 14,
+      "mana_cost_per_level": 1,
+      "cooldown": 14.0,
+      "vfx_type": "debuff_aura",
+      "description_fr": "Le familier arrache un effet positif à l'ennemi et se l'approprie.",
+      "description_en": "The familiar tears a buff away from the enemy and takes it for itself.",
+      "tags": [
+        "familiar",
+        "utilitaire",
+        "advanced",
+        "control"
+      ],
+      "role": "utilitaire",
+      "effects": [
+        {
+          "type": "debuff",
+          "stat": "steal_buff",
+          "value": 1
+        }
+      ]
+    },
+    {
+      "id": "skill_familiar_thirsting_bite",
+      "source_scope": "FAMILIAR",
+      "name_fr": "Morsure Assoiffée",
+      "name_en": "Thirsting Bite",
+      "tier": "basic",
+      "target": "enemy",
+      "pattern": "single",
+      "damage_type": "physical",
+      "scaling_stat": "atk",
+      "base_power": 0,
+      "scaling_percent": 100,
+      "percent_per_level": 5,
+      "mana_cost": 8,
+      "mana_cost_per_level": 1,
+      "cooldown": 8.0,
+      "vfx_type": "melee_slash",
+      "description_fr": "Une morsure qui aspire le Souffle de l'ennemi (30 Souffle drainé).",
+      "description_en": "A bite that siphons the enemy's Breath (30 Breath drained).",
+      "tags": [
+        "familiar",
+        "utilitaire",
+        "basic",
+        "control"
+      ],
+      "role": "utilitaire",
+      "effects": [
+        {
+          "type": "debuff",
+          "stat": "mana_drain",
+          "value": 30,
+          "value_per_level": 5
+        }
+      ]
+    },
+    {
+      "id": "skill_familiar_festering_fangs",
+      "source_scope": "FAMILIAR",
+      "name_fr": "Crocs Purulents",
+      "name_en": "Festering Fangs",
+      "tier": "advanced",
+      "target": "enemy",
+      "pattern": "single",
+      "damage_type": "physical",
+      "scaling_stat": "atk",
+      "base_power": 0,
+      "scaling_percent": 130,
+      "percent_per_level": 5,
+      "mana_cost": 12,
+      "mana_cost_per_level": 1,
+      "cooldown": 12.0,
+      "vfx_type": "melee_slash",
+      "description_fr": "Des crocs infectés qui réduisent les soins reçus par l'ennemi de 45% pendant 6s.",
+      "description_en": "Infected fangs that reduce the enemy's healing received by 45% for 6s.",
+      "tags": [
+        "familiar",
+        "attaque",
+        "advanced",
+        "control"
+      ],
+      "role": "attaque",
+      "effects": [
+        {
+          "type": "debuff",
+          "stat": "heal_reduction",
+          "stacks_to_apply": 3,
+          "duration": 6.0
+        }
+      ]
+    },
+    {
+      "id": "skill_familiar_mending_pulse",
+      "source_scope": "FAMILIAR",
+      "name_fr": "Onde Réparatrice",
+      "name_en": "Mending Pulse",
+      "tier": "filler",
+      "target": "ally",
+      "pattern": "single",
+      "damage_type": "none",
+      "mana_cost": 8,
+      "mana_cost_per_level": 1,
+      "cooldown": 5.0,
+      "percent_per_level": 5,
+      "vfx_type": "heal",
+      "role": "heal",
+      "filler_variant_group": "heal",
+      "description_fr": "Le familier dépose sur un allié une brume de Souffle qui répare peu à peu ses blessures.",
+      "description_en": "The familiar lays a mist of Breath on an ally that mends its wounds over time.",
+      "tags": [
+        "heal",
+        "hot",
+        "filler",
+        "familiar"
+      ],
+      "effects": [
+        {
+          "type": "buff",
+          "stat": "heal_over_time_mag",
+          "stacks_to_apply": 3,
+          "duration": 6.0,
+          "applies_to": "target"
+        }
+      ]
+    },
+    {
+      "id": "skill_familiar_guarding_lick",
+      "source_scope": "FAMILIAR",
+      "name_fr": "Léchouille Gardienne",
+      "name_en": "Guarding Lick",
+      "tier": "filler",
+      "target": "ally",
+      "pattern": "single",
+      "damage_type": "none",
+      "mana_cost": 8,
+      "mana_cost_per_level": 1,
+      "cooldown": 5.0,
+      "percent_per_level": 4,
+      "vfx_type": "shield",
+      "role": "heal",
+      "filler_variant_group": "heal",
+      "description_fr": "Le familier enduit un allié d'une salive chargée de Souffle qui durcit en un bouclier.",
+      "description_en": "The familiar coats an ally in Breath-laced saliva that hardens into a shield.",
+      "tags": [
+        "shield",
+        "heal",
+        "filler",
+        "familiar"
+      ],
+      "effects": [
+        {
+          "type": "buff",
+          "stat": "shield_mag",
+          "value": 0,
+          "pct": 40,
+          "duration": 6.0,
+          "duration_per_level": 0.2
+        }
+      ]
+    },
+    {
+      "id": "skill_familiar_unnerving_nip",
+      "source_scope": "FAMILIAR",
+      "name_fr": "Morsure Déstabilisante",
+      "name_en": "Unnerving Nip",
+      "tier": "filler",
+      "target": "enemy",
+      "pattern": "single",
+      "damage_type": "physical",
+      "scaling_stat": "atk",
+      "base_power": 0,
+      "scaling_percent": 70,
+      "percent_per_level": 5,
+      "mana_cost": 5,
+      "mana_cost_per_level": 1,
+      "cooldown": 5.0,
+      "vfx_type": "debuff_aura",
+      "role": "utilitaire",
+      "description_fr": "Une morsure vive et agaçante qui perturbe la visée de l'ennemi.",
+      "description_en": "A sharp, nagging bite that throws off the enemy's aim.",
+      "tags": [
+        "debuff",
+        "melee",
+        "filler",
+        "familiar"
+      ],
+      "effects": [
+        {
+          "type": "debuff",
+          "stat": "accuracy_down",
+          "stacks_to_apply": 2,
+          "duration": 5.0
+        }
+      ]
     }
   ]
 }
