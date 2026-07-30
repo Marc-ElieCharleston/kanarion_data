@@ -1987,8 +1987,8 @@
           "mana_cost": 20,
           "cooldown": 14.0,
           "vfx_type": "melee_slash",
-          "description_fr": "Le Maître d'Armes trace un arc mortel à travers les rangs ennemis et fauche ceux qui se tiennent côte à côte.",
-          "description_en": "The Weapon Master traces a deadly arc through the enemy ranks, mowing down those standing side by side.",
+          "description_fr": "Le Maître d'Armes trace un arc mortel à travers les rangs ennemis et fauche ceux qui se tiennent côte à côte. Le tranchant desserre leur garde : réduit la DEF de 15 pendant 12s.",
+          "description_en": "The Weapon Master traces a deadly arc through the enemy ranks, mowing down those standing side by side. The edge loosens their guard: reduces DEF by 15 for 12s.",
           "tags": [
             "damage",
             "aoe",
@@ -2005,7 +2005,16 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_3"
-          }
+          },
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "def_down",
+              "stacks_to_apply": 3,
+              "duration": 12.0,
+              "duration_per_level": 0.35
+            }
+          ]
         },
         {
           "id": "skill_warrior_weaponmaster_blade_stance",
@@ -2019,8 +2028,8 @@
           "mana_cost": 18,
           "cooldown": 32.0,
           "vfx_type": "buff_aura",
-          "description_fr": "Le Maître d'Armes entre en concentration absolue : sa lame exploite chaque ouverture et frappe parfois deux fois.",
-          "description_en": "The Weapon Master enters absolute focus: his blade exploits every opening and sometimes strikes twice.",
+          "description_fr": "Le Maître d'Armes entre en concentration absolue : sa garde se referme et aucune ouverture ne lui échappe. Augmente la DEF de 25 pendant 20s.",
+          "description_en": "The Weapon Master enters absolute focus: his guard closes and no opening escapes him. Increases DEF by 25 for 20s.",
           "tags": [
             "buff",
             "self",
@@ -2030,10 +2039,11 @@
           "effects": [
             {
               "type": "buff",
-              "stat": "double_attack_chance",
-              "value": 20,
+              "stat": "def_up",
+              "stacks_to_apply": 5,
               "duration": 20.0,
-              "duration_per_level": 0.55
+              "duration_per_level": 0.55,
+              "target": "self"
             }
           ],
           "base_class_id": "warrior",
@@ -2692,8 +2702,8 @@
           "mana_cost": 16,
           "cooldown": 20.0,
           "vfx_type": "debuff_aura",
-          "description_fr": "Le rugissement du Seigneur de Guerre brise la garde des ennemis devant lui : ils subissent plus de dégâts, et leurs renforts protecteurs sont dissipés.",
-          "description_en": "The Warlord's roar breaks the guard of the enemies before him: they take more damage, and their protective buffs are stripped away.",
+          "description_fr": "Le rugissement du Seigneur de Guerre brise la garde des ennemis devant lui : ils subissent plus de dégâts, leur magie faiblit, et leurs renforts protecteurs sont dissipés. Réduit la MAG de 15% et augmente les dégâts subis de 15% pendant 16s.",
+          "description_en": "The Warlord's roar breaks the guard of the enemies before him: they take more damage, their magic falters, and their protective buffs are stripped away. Reduces MAG by 15% and increases damage taken by 15% for 16s.",
           "tags": [
             "debuff",
             "defense_down",
@@ -2713,6 +2723,13 @@
               "type": "utility",
               "stat": "purge",
               "value": 2
+            },
+            {
+              "type": "debuff",
+              "stat": "mag_down",
+              "stacks_to_apply": 3,
+              "duration": 16.0,
+              "duration_per_level": 0.45
             }
           ],
           "base_class_id": "warrior",
@@ -2741,8 +2758,8 @@
           "mana_cost": 22,
           "cooldown": 28.0,
           "vfx_type": "buff_aura",
-          "description_fr": "Le Seigneur de Guerre rallie ses compagnons : ceux qu'il rassemble subissent moins de dégâts.",
-          "description_en": "The Warlord rallies his companions: those he gathers take less damage.",
+          "description_fr": "Le Seigneur de Guerre rallie ses compagnons : ceux qu'il rassemble subissent moins de dégâts et resistent mieux à la magie. Augmente la réduction de dégâts de 15% et la résistance magique de 15% pendant 20s.",
+          "description_en": "The Warlord rallies his companions: those he gathers take less damage and better resist magic. Increases damage reduction by 15% and magic resistance by 15% for 20s.",
           "tags": [
             "buff",
             "defense",
@@ -2753,6 +2770,13 @@
             {
               "type": "buff",
               "stat": "damage_reduction_up",
+              "stacks_to_apply": 3,
+              "duration": 20.0,
+              "duration_per_level": 0.55
+            },
+            {
+              "type": "buff",
+              "stat": "magic_resist_up",
               "stacks_to_apply": 3,
               "duration": 20.0,
               "duration_per_level": 0.55
