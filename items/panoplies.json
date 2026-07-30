@@ -5,11 +5,13 @@
     "description": "Panoplies (sets d'équipement) - Système de rangs universel. Chaque set existe à tous les niveaux, le rang monte tous les 20 niveaux.",
     "total_sets": 25,
     "rank_system": {
-      "_comment": "Dofus-style: mêmes sets à tous les niveaux, rang = palier de puissance. Les bonus listés dans chaque set sont les valeurs Rang 2 (base x1.0). Les autres rangs appliquent le multiplicateur.",
-      "rang_1": { "level_range": [1, 19], "stat_multiplier": 0.5, "name_fr": "Rang 1 — Apprenti", "name_en": "Rank 1 — Apprentice" },
-      "rang_2": { "level_range": [20, 39], "stat_multiplier": 1.0, "name_fr": "Rang 2 — Confirmé", "name_en": "Rank 2 — Adept" },
-      "rang_3": { "level_range": [40, 59], "stat_multiplier": 1.5, "name_fr": "Rang 3 — Expert", "name_en": "Rank 3 — Expert" },
-      "rang_4": { "level_range": [60, 100], "stat_multiplier": 2.0, "name_fr": "Rang 4 — Maître", "name_en": "Rank 4 — Master" }
+      "_comment": "Aligne sur le tier_system equipement (lv1-100, 5 rangs = C->SS). Bonus listes = valeurs Rang 1 (base x1.0). Stats de piece + bonus FLAT x stat_multiplier. Bonus POURCENT (voir percent_bonus_stats) x percent_bonus_multiplier (plus doux).",
+      "percent_bonus_stats": ["lifesteal", "spell_vamp", "crit", "crit_dmg", "cooldown_reduction", "evasion", "block_chance", "parry_chance", "armor_pen", "magic_pen", "damage_percent", "damage_reduction", "heal_power", "effect_chance", "effect_resist", "double_hit_chance", "attack_speed", "cast_speed"],
+      "rang_1": { "level_range": [1, 20], "stat_multiplier": 1.0, "percent_bonus_multiplier": 1.0, "rank_label": "C", "name_fr": "Rang 1 — Apprenti", "name_en": "Rank 1 — Apprentice" },
+      "rang_2": { "level_range": [21, 40], "stat_multiplier": 1.5, "percent_bonus_multiplier": 1.25, "rank_label": "B", "name_fr": "Rang 2 — Confirmé", "name_en": "Rank 2 — Adept" },
+      "rang_3": { "level_range": [41, 60], "stat_multiplier": 2.0, "percent_bonus_multiplier": 1.5, "rank_label": "A", "name_fr": "Rang 3 — Expert", "name_en": "Rank 3 — Expert" },
+      "rang_4": { "level_range": [61, 80], "stat_multiplier": 2.8, "percent_bonus_multiplier": 1.75, "rank_label": "S", "name_fr": "Rang 4 — Maître", "name_en": "Rank 4 — Master" },
+      "rang_5": { "level_range": [81, 100], "stat_multiplier": 4.0, "percent_bonus_multiplier": 2.0, "rank_label": "SS", "name_fr": "Rang 5 — Grand Maître", "name_en": "Rank 5 — Grandmaster" }
     },
     "rank_formula": "final_bonus = floor(base_bonus × rank_multiplier). Ex: Kesher 2p lifesteal 5 → R1: 2, R2: 5, R3: 7, R4: 10",
     "equipment_slots": [
@@ -39,7 +41,7 @@
   },
 
   "piece_base_stats": {
-    "_note": "Stats de base par piece au Rang 2 (x1.0). Multiplier par stat_multiplier du rang. Les substats suivent les pools de equipment_stats.json selon la categorie (armor/accessory/weapon).",
+    "_note": "Stats de base par piece au Rang 1 (x1.0). Multiplier par stat_multiplier du rang. Les substats suivent les pools de equipment_stats.json selon la categorie (armor/accessory/weapon).",
     "by_slot_and_weight": {
       "helmet": {
         "light": { "mp": 12, "mag": 3, "magic_resist": 3 },
@@ -97,11 +99,12 @@
       "_note": "Les substats sont generees au drop via les pools de equipment_stats.json. Categorie: armor slots -> pool armor, ring/necklace -> pool accessory, weapon -> pool soul_essence. Nombre de substats selon la rarete de la piece (equipment_scaling.json)."
     },
     "rarity_at_drop": {
-      "_note": "Chaque piece de panoplie drop avec une rarete fixe determinee par le rang du set.",
+      "_note": "Rarete fixe par rang du set.",
       "rank_1": "uncommon",
       "rank_2": "rare",
       "rank_3": "epic",
-      "rank_4": "legendary"
+      "rank_4": "legendary",
+      "rank_5": "legendary"
     }
   },
 
