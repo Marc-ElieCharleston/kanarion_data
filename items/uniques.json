@@ -385,60 +385,54 @@
       "meaning": "Racine de Force / Root of Strength",
       "slot": "belt",
       "role": "defensive",
-      "description_fr": "Enraciné comme un chêne centenaire. Cette ceinture puise dans les profondeurs de la terre quand tout semble perdu.",
-      "description_en": "Rooted like a centuries-old oak. This belt draws from the depths of the earth when all seems lost.",
+      "description_fr": "Une ceinture tissee de racines qui ancre le porteur dans la terre. Plus il souffre, plus il tient bon.",
+      "description_en": "A belt woven from roots that anchors its bearer to the earth. The more it suffers, the more it endures.",
       "effect": {
-        "description_fr": "Sous 30% HP : +[R]25% DEF et MR pendant 6s (CD 30s). +[R]50 HP max permanent.",
-        "description_en": "Below 30% HP: +[R]25% DEF and MR for 6s (CD 30s). +[R]50 max HP permanent.",
+        "description_fr": "+[R]80 PV max permanent. Sous 40% de PV : +[R]30% de soins reçus pendant 6s (CD 20s).",
+        "description_en": "+[R]80 max HP permanent. Below 40% HP: +[R]30% healing received for 6s (CD 20s).",
         "type": "combat_proc",
         "effects": [
           {
+            "stat": "hp_max",
+            "value": 80,
+            "duration": -1,
+            "scalable": true
+          },
+          {
             "trigger": "on_hp_threshold",
-            "threshold": 0.3,
+            "threshold": 0.4,
+            "cooldown": 20.0,
             "effect": [
               {
-                "stat": "def_percent",
-                "value": 25,
-                "duration": 6.0,
-                "scalable": true
-              },
-              {
-                "stat": "magic_resist_percent",
-                "value": 25,
+                "stat": "healing_received",
+                "value": 30,
                 "duration": 6.0,
                 "scalable": true
               }
-            ],
-            "cooldown": 30.0
-          },
-          {
-            "stat": "hp_max",
-            "value": 50,
-            "duration": -1,
-            "scalable": true
+            ]
           }
         ]
       },
       "rank_scaling": {
         "rang_1": {
-          "def_mr_buff": 17,
-          "hp_max": 35
+          "hp_max": 55,
+          "heal_received": 20
         },
         "rang_2": {
-          "def_mr_buff": 25,
-          "hp_max": 50
+          "hp_max": 80,
+          "heal_received": 30
         },
         "rang_3": {
-          "def_mr_buff": 32,
-          "hp_max": 65
+          "hp_max": 105,
+          "heal_received": 36
         },
         "rang_4": {
-          "def_mr_buff": 40,
-          "hp_max": 80
+          "hp_max": 130,
+          "heal_received": 42
         },
         "rang_5": {
-          "def_mr_buff": 48,
-          "hp_max": 95
+          "hp_max": 160,
+          "heal_received": 50
         }
       },
       "source": {
@@ -1018,51 +1012,50 @@
       "id": "unique_tzinat_refleks",
       "name_fr": "Tzinat Refleks",
       "name_en": "Tzinat Refleks",
-      "meaning": "Bouclier Reflexif / Reflexive Shield",
+      "meaning": "Épines Réflexes / Reflexive Thorns",
       "slot": "cape",
       "role": "defensive",
-      "description_fr": "Une cape tissee pour ceux qui restent eveilles pendant que d'autres dorment. Chaque coup reçu apprend au fil quoi durcir. Elle ne protège pas le porteur, elle protège ceux derrière lui.",
-      "description_en": "A cape woven for those who stay awake while others sleep. Each blow received teaches the thread what to harden. It does not protect the bearer; it protects those who stand behind.",
+      "description_fr": "Une cape herissee d'echardes de cristal qui renvoient la douleur a qui la donne.",
+      "description_en": "A cloak bristling with crystal splinters that return pain to whoever deals it.",
       "effect": {
-        "description_fr": "Quand vous subissez des dégâts : [R]15% de chance d'obtenir un bouclier egal a [R]5% des PV max pendant 4s. Cooldown 4s.",
-        "description_en": "When you take damage: [R]15% chance to gain a shield equal to [R]5% max HP for 4s. 4s cooldown.",
-        "type": "combat_proc",
-        "triggers": [
+        "description_fr": "Renvoie [R]12% des dégâts subis à l'attaquant. +[R]8% d'évasion.",
+        "description_en": "Reflects [R]12% of damage taken back to the attacker. +[R]8% evasion.",
+        "type": "passive_modifier",
+        "effects": [
           {
-            "trigger": "on_damage_taken",
-            "chance": 15,
-            "cooldown": 4.0,
-            "effects": [
-              {
-                "stat": "shield_percent_max_hp",
-                "value": 5,
-                "duration": 4.0,
-                "scalable": true
-              }
-            ]
+            "stat": "thorns_percent",
+            "value": 12,
+            "duration": -1,
+            "scalable": true
+          },
+          {
+            "stat": "evasion",
+            "value": 8,
+            "duration": -1,
+            "scalable": true
           }
         ]
       },
       "rank_scaling": {
         "rang_1": {
-          "proc_chance": 10,
-          "shield_percent": 3
+          "thorns": 8,
+          "evasion": 5
         },
         "rang_2": {
-          "proc_chance": 15,
-          "shield_percent": 5
+          "thorns": 12,
+          "evasion": 8
         },
         "rang_3": {
-          "proc_chance": 20,
-          "shield_percent": 7
+          "thorns": 15,
+          "evasion": 9
         },
         "rang_4": {
-          "proc_chance": 25,
-          "shield_percent": 9
+          "thorns": 18,
+          "evasion": 10
         },
         "rang_5": {
-          "proc_chance": 30,
-          "shield_percent": 11
+          "thorns": 22,
+          "evasion": 12
         }
       },
       "source": {
@@ -1079,46 +1072,40 @@
       "id": "unique_lahav_kesem",
       "name_fr": "Lahav Kesem",
       "name_en": "Lahav Kesem",
-      "meaning": "Lame Apprivoisee / Tamed Edge",
+      "meaning": "Lame Vive / Quick Blade",
       "slot": "weapon",
       "weapon_type": "sword",
       "role": "offensive",
-      "description_fr": "Une épée forgée selon une méthode oubliee, ou la flamme du forgeron était pliee dans le métal au lieu d'être eteinte. Elle s'éveille au contact, sans qu'on lui demande.",
-      "description_en": "A sword forged by a forgotten method, where the smith's flame was folded into the metal rather than quenched. It wakes at a touch, unbidden.",
+      "description_fr": "Une lame si legere qu'elle semble frapper avant meme que la main ne bouge.",
+      "description_en": "A blade so light it seems to strike before the hand even moves.",
       "effect": {
-        "description_fr": "Les attaques de base ont [R]30% de chance d'appliquer 1 charge de Brûlure (4s).",
-        "description_en": "Basic attacks have [R]30% chance to apply 1 stack of Burn (4s).",
-        "type": "combat_proc",
-        "triggers": [
+        "description_fr": "+[R]18% de chance de frapper une seconde fois (50% des dégâts).",
+        "description_en": "+[R]18% chance to strike a second time (50% damage).",
+        "type": "passive_modifier",
+        "effects": [
           {
-            "trigger": "on_basic_attack",
-            "chance": 30,
-            "effects": [
-              {
-                "apply_status": "burn",
-                "stacks_to_apply": 1,
-                "duration": 4.0,
-                "scalable": true
-              }
-            ]
+            "stat": "double_attack_chance",
+            "value": 18,
+            "duration": -1,
+            "scalable": true
           }
         ]
       },
       "rank_scaling": {
         "rang_1": {
-          "proc_chance": 21
+          "double_hit": 12
         },
         "rang_2": {
-          "proc_chance": 30
+          "double_hit": 18
         },
         "rang_3": {
-          "proc_chance": 39
+          "double_hit": 22
         },
         "rang_4": {
-          "proc_chance": 48
+          "double_hit": 26
         },
         "rang_5": {
-          "proc_chance": 57
+          "double_hit": 30
         }
       },
       "source": {
@@ -1305,6 +1292,191 @@
       },
       "lore_note": "Frapper avant qu'on ne te voie, ce n'est pas de la lachete. C'est l'aveu qu'on prefere n'avoir qu'un coup a porter.",
       "level_req": 20
+    },
+    {
+      "id": "unique_lev_anak",
+      "name_fr": "Lev Anak",
+      "name_en": "Lev Anak",
+      "meaning": "Coeur de Titan / Titan's Heart",
+      "slot": "chest",
+      "role": "defensive",
+      "description_fr": "Un plastron forge autour d'un eclat de coeur de titan. Plus le danger monte, plus il protege.",
+      "description_en": "A cuirass forged around a shard of a titan's heart. The greater the danger, the more it shields.",
+      "effect": {
+        "description_fr": "+[R]100 PV max permanent. Sous 50% de PV : +[R]15% de réduction de dégâts pendant 8s (CD 20s).",
+        "description_en": "+[R]100 max HP permanent. Below 50% HP: +[R]15% damage reduction for 8s (CD 20s).",
+        "type": "combat_proc",
+        "effects": [
+          {
+            "stat": "hp_max",
+            "value": 100,
+            "duration": -1,
+            "scalable": true
+          },
+          {
+            "trigger": "on_hp_threshold",
+            "threshold": 0.5,
+            "cooldown": 20.0,
+            "effect": [
+              {
+                "stat": "damage_reduction",
+                "value": 15,
+                "duration": 8.0,
+                "scalable": true
+              }
+            ]
+          }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": {
+          "hp_max": 70,
+          "dr": 10
+        },
+        "rang_2": {
+          "hp_max": 100,
+          "dr": 15
+        },
+        "rang_3": {
+          "hp_max": 130,
+          "dr": 18
+        },
+        "rang_4": {
+          "hp_max": 160,
+          "dr": 21
+        },
+        "rang_5": {
+          "hp_max": 200,
+          "dr": 24
+        }
+      },
+      "source": {
+        "type": "monster_drop",
+        "base_drop_chance": 0.02,
+        "description_fr": "Drop par les gros monstres (tough/elite)",
+        "description_en": "Dropped by big monsters (tough/elite)"
+      },
+      "level_req": 1
+    },
+    {
+      "id": "unique_tzaad_ruach",
+      "name_fr": "Tzaad Ruach",
+      "name_en": "Tzaad Ruach",
+      "meaning": "Pas du Vent / Wind Step",
+      "slot": "legs",
+      "role": "utility",
+      "description_fr": "Des jambieres si legeres que le porteur semble danser au-dessus du sol.",
+      "description_en": "Greaves so light the wearer seems to dance above the ground.",
+      "effect": {
+        "description_fr": "+[R]10% d'évasion. +[R]8% de vitesse d'attaque.",
+        "description_en": "+[R]10% evasion. +[R]8% attack speed.",
+        "type": "passive_modifier",
+        "effects": [
+          {
+            "stat": "evasion",
+            "value": 10,
+            "duration": -1,
+            "scalable": true
+          },
+          {
+            "stat": "attack_speed",
+            "value": 8,
+            "duration": -1,
+            "scalable": true
+          }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": {
+          "evasion": 6,
+          "atk_speed": 5
+        },
+        "rang_2": {
+          "evasion": 10,
+          "atk_speed": 8
+        },
+        "rang_3": {
+          "evasion": 12,
+          "atk_speed": 9
+        },
+        "rang_4": {
+          "evasion": 14,
+          "atk_speed": 10
+        },
+        "rang_5": {
+          "evasion": 16,
+          "atk_speed": 12
+        }
+      },
+      "source": {
+        "type": "monster_drop",
+        "base_drop_chance": 0.02,
+        "description_fr": "Drop par les monstres rapides (assassin/beast)",
+        "description_en": "Dropped by fast monsters (assassin/beast)"
+      },
+      "level_req": 1
+    },
+    {
+      "id": "unique_shen_hatzama",
+      "name_fr": "Shen HaTzama",
+      "name_en": "Shen HaTzama",
+      "meaning": "Croc de la Soif / Fang of Thirst",
+      "slot": "necklace",
+      "role": "offensive",
+      "description_fr": "Un croc suspendu qui ne se rassasie jamais ; chaque mort abreuve son porteur.",
+      "description_en": "A hanging fang that is never sated; every death slakes its bearer.",
+      "effect": {
+        "description_fr": "+[R]8% de vol de vie. Chaque ennemi tué restaure [R]6% de vos PV max.",
+        "description_en": "+[R]8% lifesteal. Each enemy killed restores [R]6% of your max HP.",
+        "type": "combat_proc",
+        "effects": [
+          {
+            "stat": "lifesteal",
+            "value": 8,
+            "duration": -1,
+            "scalable": true
+          },
+          {
+            "trigger": "on_kill",
+            "effect": [
+              {
+                "stat": "heal_percent_max_hp",
+                "value": 6,
+                "scalable": true
+              }
+            ]
+          }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": {
+          "lifesteal": 5,
+          "heal_on_kill": 4
+        },
+        "rang_2": {
+          "lifesteal": 8,
+          "heal_on_kill": 6
+        },
+        "rang_3": {
+          "lifesteal": 10,
+          "heal_on_kill": 8
+        },
+        "rang_4": {
+          "lifesteal": 12,
+          "heal_on_kill": 9
+        },
+        "rang_5": {
+          "lifesteal": 14,
+          "heal_on_kill": 11
+        }
+      },
+      "source": {
+        "type": "monster_drop",
+        "base_drop_chance": 0.02,
+        "description_fr": "Drop par les monstres agressifs (berserker/beast)",
+        "description_en": "Dropped by aggressive monsters (berserker/beast)"
+      },
+      "level_req": 1
     }
   ],
   "_summary": {
