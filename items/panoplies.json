@@ -1,4 +1,251 @@
 {
+  "set_signatures": {
+    "_comment": "Mecanique signature debloquee au top breakpoint (6p/8p) d'un gros set. Format proc reutilise celui des uniques (voir items/uniques.json). Valeurs scalable:true scalent par rang du set (stat_multiplier flat / percent_bonus_multiplier %). Les chances, durees, once_per_combat sont fixes. [R] dans les desc = valeur scalee affichee.",
+    "shomer": {
+      "breakpoint": 8,
+      "name_fr": "Dernier Rempart",
+      "name_en": "Last Bastion",
+      "archetype": "main_tank",
+      "effect": {
+        "description_fr": "Une fois par combat, un coup qui te tuerait te laisse à 1 PV et t'accorde un bouclier de [R]20% de tes PV max pendant 3s.",
+        "description_en": "Once per battle, a lethal blow leaves you at 1 HP and grants a shield of [R]20% max HP for 3s.",
+        "type": "combat_proc",
+        "triggers": [
+          {
+            "trigger": "on_lethal_damage",
+            "once_per_combat": true,
+            "effects": [
+              {
+                "apply": "survive_at_1hp"
+              },
+              {
+                "stat": "shield_percent_max_hp",
+                "value": 20,
+                "duration": 3.0,
+                "scalable": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "tzayad": {
+      "breakpoint": 8,
+      "name_fr": "Salve Critique",
+      "name_en": "Critical Volley",
+      "archetype": "crit_dps",
+      "effect": {
+        "description_fr": "Tes coups critiques ont 30% de chance de frapper un second ennemi pour [R]60% des dégâts.",
+        "description_en": "Your critical hits have 30% chance to strike a second enemy for [R]60% damage.",
+        "type": "combat_proc",
+        "triggers": [
+          {
+            "trigger": "on_crit",
+            "chance": 30,
+            "effects": [
+              {
+                "apply": "bounce_hit",
+                "target": "second_enemy",
+                "damage_percent": 60,
+                "scalable": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "adamah": {
+      "breakpoint": 8,
+      "name_fr": "Rage Tellurique",
+      "name_en": "Telluric Rage",
+      "archetype": "bruiser",
+      "effect": {
+        "description_fr": "+1% de dégâts par tranche de 3% de PV manquants (max +[R]25%).",
+        "description_en": "+1% damage per 3% missing HP (max +[R]25%).",
+        "type": "passive_conditional",
+        "effects": [
+          {
+            "apply": "missing_hp_damage",
+            "per_missing_pct": 3,
+            "value_per": 1,
+            "max": 25,
+            "scalable": true
+          }
+        ]
+      }
+    },
+    "neshamah": {
+      "breakpoint": 8,
+      "name_fr": "Souffle Partagé",
+      "name_en": "Shared Breath",
+      "archetype": "support_sustain",
+      "effect": {
+        "description_fr": "Ta régénération de PV et de Souffle soigne aussi les 2 alliés les plus proches pour [R]50%.",
+        "description_en": "Your HP and Breath regen also heals the 2 nearest allies for [R]50%.",
+        "type": "passive_aura",
+        "effects": [
+          {
+            "apply": "share_regen",
+            "targets": 2,
+            "percent": 50,
+            "scalable": true
+          }
+        ]
+      }
+    },
+    "tzel": {
+      "breakpoint": 6,
+      "name_fr": "Danse de l'Ombre",
+      "name_en": "Shadow Dance",
+      "archetype": "assassin",
+      "effect": {
+        "description_fr": "Chaque ennemi tué réinitialise le temps de recharge de ton skill de déplacement.",
+        "description_en": "Each enemy killed resets your movement skill's cooldown.",
+        "type": "combat_proc",
+        "triggers": [
+          {
+            "trigger": "on_kill",
+            "effects": [
+              {
+                "apply": "reset_movement_cooldown"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "orim": {
+      "breakpoint": 6,
+      "name_fr": "Lumière Rémanente",
+      "name_en": "Lingering Light",
+      "archetype": "healer",
+      "effect": {
+        "description_fr": "Tes soins laissent un soin sur la durée égal à [R]20% du soin, sur 4s.",
+        "description_en": "Your heals leave a heal-over-time equal to [R]20% of the heal, over 4s.",
+        "type": "combat_proc",
+        "triggers": [
+          {
+            "trigger": "on_heal",
+            "effects": [
+              {
+                "apply": "hot_from_heal",
+                "percent_of_heal": 20,
+                "duration": 4.0,
+                "scalable": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "eshal": {
+      "breakpoint": 6,
+      "name_fr": "Embrasement",
+      "name_en": "Conflagration",
+      "archetype": "dot_mage",
+      "effect": {
+        "description_fr": "Quand tu appliques Brûlure, [R]40% de chance de la propager à un ennemi adjacent.",
+        "description_en": "When you apply Burn, [R]40% chance to spread it to an adjacent enemy.",
+        "type": "combat_proc",
+        "triggers": [
+          {
+            "trigger": "on_status_apply",
+            "status": "burn",
+            "chance": 40,
+            "effects": [
+              {
+                "apply": "spread_status",
+                "status": "burn",
+                "target": "adjacent",
+                "scalable": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "mayim": {
+      "breakpoint": 6,
+      "name_fr": "Gel Profond",
+      "name_en": "Deep Freeze",
+      "archetype": "control_mage",
+      "effect": {
+        "description_fr": "Tes Ralentissements ont [R]25% de chance de Geler la cible 1.5s.",
+        "description_en": "Your Slows have [R]25% chance to Freeze the target for 1.5s.",
+        "type": "combat_proc",
+        "triggers": [
+          {
+            "trigger": "on_status_apply",
+            "status": "slow",
+            "chance": 25,
+            "effects": [
+              {
+                "apply_status": "freeze",
+                "duration": 1.5,
+                "scalable": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "magen": {
+      "breakpoint": 6,
+      "name_fr": "Égide Partagée",
+      "name_en": "Shared Aegis",
+      "archetype": "shield_tank",
+      "effect": {
+        "description_fr": "Quand tu gagnes un bouclier, l'allié le plus proche en gagne un égal à [R]50%.",
+        "description_en": "When you gain a shield, the nearest ally gains one equal to [R]50%.",
+        "type": "combat_proc",
+        "triggers": [
+          {
+            "trigger": "on_shield_gain",
+            "effects": [
+              {
+                "apply": "share_shield",
+                "percent": 50,
+                "target": "nearest_ally",
+                "scalable": true
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "davar": {
+      "breakpoint": 6,
+      "name_fr": "Harmonie",
+      "name_en": "Harmony",
+      "archetype": "buffer_utility",
+      "effect": {
+        "description_fr": "Les buffs sur toi durent [R]25% plus longtemps. Au début du combat, gagne un bouclier de [R]10% de tes PV max (5s).",
+        "description_en": "Buffs on you last [R]25% longer. At battle start, gain a shield of [R]10% max HP (5s).",
+        "type": "combat_proc",
+        "effects": [
+          {
+            "stat": "buff_duration",
+            "value": 25,
+            "duration": -1,
+            "scalable": true
+          }
+        ],
+        "triggers": [
+          {
+            "trigger": "combat_start",
+            "effects": [
+              {
+                "stat": "shield_percent_max_hp",
+                "value": 10,
+                "duration": 5.0,
+                "scalable": true
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
   "_meta": {
     "version": "3.0",
     "last_updated": "2026-03-04",
