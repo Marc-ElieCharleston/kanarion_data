@@ -15,21 +15,22 @@
   "archetypes_lv1_standard": {
     "_comment": "Profil lv1 tier=standard rarity=normal. Fiche complete par archetype. L'identite = les RATIOS (tanky vs glassy) + le profil crit + la penetration. Grounded sur les vrais mobs bas-niveau par ai_role.",
     "_stat_classes": {
-      "growth": ["hp", "atk", "def", "magic_resist", "mp", "speed"],
-      "fixed": ["crit", "crit_damage", "armor_pen", "magic_pen"],
-      "note": "GROWTH = stats brutes, scalent x curve(lvl) x tier_mult x rarity_mult (magnitude calibree aux ancres 10/30/50/70/100). FIXED = taux (comme un joueur), NE scalent PAS avec curve ni tier ; rarity applique un bump modere clampe par _caps. crit/armor_pen/magic_pen en % ; crit_damage en % de mult (base 150 = x1.5)."
+      "growth": ["hp", "atk", "def", "magic_resist", "mp"],
+      "fixed": ["crit", "crit_damage", "armor_pen", "magic_pen", "range"],
+      "note": "GROWTH = stats brutes, scalent x curve(lvl) x tier_mult x rarity_mult (magnitude calibree aux ancres 10/30/50/70/100). FIXED = ne scalent PAS avec curve ni tier (crit/crit_damage/armor_pen/magic_pen = taux comme un joueur, rarity bump modere clampe par _caps ; range = constante positionnelle 2-7). PAS de 'speed' : combat statique, GCD fixe, aucune initiative par entite. crit/armor_pen/magic_pen en % ; crit_damage en % de mult (base 150 = x1.5)."
     },
     "_caps": {
-      "crit": 60, "crit_damage": 220, "armor_pen": 70, "magic_pen": 70,
-      "note": "Caps monstres. armor_pen/magic_pen reutilisent le cap joueur (70). crit cap 60 (< joueur 100, evite le crit-lock apres rarity). crit_damage cap 220 (base 150 + max 70)."
+      "crit": 60, "crit_damage": 220, "armor_pen": 70, "magic_pen": 70, "range_min": 2, "range_max": 7,
+      "note": "Caps monstres. armor_pen/magic_pen reutilisent le cap joueur (70). crit cap 60 (< joueur 100, evite le crit-lock apres rarity). crit_damage cap 220 (base 150 + max 70). range borne [2,7]."
     },
-    "tank":       { "hp": 48, "atk": 3, "def": 7, "magic_resist": 5, "mp": 60,  "speed": 0.9, "crit": 2,  "crit_damage": 150, "armor_pen": 0,  "magic_pen": 0,  "identity": "mur: hp+def eleves, atk faible, lent, crit quasi nul, aucune penetration" },
-    "brute":      { "hp": 36, "atk": 5, "def": 4, "magic_resist": 4, "mp": 50,  "speed": 1.0, "crit": 8,  "crit_damage": 150, "armor_pen": 12, "magic_pen": 8,  "identity": "frontline equilibre hp/atk, penetration phys+mag moderee pour percer les tanks (ex-berserker/bruiser)" },
-    "assassin":   { "hp": 24, "atk": 7, "def": 2, "magic_resist": 3, "mp": 50,  "speed": 1.2, "crit": 22, "crit_damage": 185, "armor_pen": 22, "magic_pen": 12, "identity": "glass melee: burst crit, tres fragile, rapide, forte penetration armure" },
-    "archer":     { "hp": 26, "atk": 6, "def": 2, "magic_resist": 4, "mp": 60,  "speed": 1.15,"crit": 16, "crit_damage": 165, "armor_pen": 20, "magic_pen": 12, "identity": "glass ranged PHYSIQUE: crit eleve, perce l'armure (ex-artillery physique)" },
-    "mage":       { "hp": 26, "atk": 7, "def": 2, "magic_resist": 6, "mp": 120, "speed": 1.1, "crit": 12, "crit_damage": 155, "armor_pen": 12, "magic_pen": 22, "identity": "glass ranged MAGIQUE: crit + un peu de crit_damage, forte penetration magique (ex-artillery magique + caster)" },
-    "controller": { "hp": 30, "atk": 4, "def": 3, "magic_resist": 6, "mp": 150, "speed": 1.1, "crit": 6,  "crit_damage": 150, "armor_pen": 6,  "magic_pen": 8,  "identity": "utilitaire: CC/debuffs, mr moyen, penetration legere (ex-tactician)" },
-    "support":    { "hp": 28, "atk": 3, "def": 3, "magic_resist": 7, "mp": 180, "speed": 1.2, "crit": 3,  "crit_damage": 150, "armor_pen": 0,  "magic_pen": 0,  "identity": "backline: heal/buff, mr eleve, atk faible, aucune penetration (ex-healer)" }
+    "_range_note": "range = base_range de l'entite (fallback moteur : eff_range = skill.range >= 0 ? skill.range : base_range). Les 66 skills monstres ont deja leur range explicite 2-7 ; ce base_range sert de defaut pour tout skill sans range + porte l'identite de reach de l'archetype (melee 2 / ranged 6-7).",
+    "tank":       { "hp": 48, "atk": 3, "def": 7, "magic_resist": 5, "mp": 60,  "crit": 2,  "crit_damage": 150, "armor_pen": 0,  "magic_pen": 0,  "range": 2, "identity": "mur melee: hp+def eleves, atk faible, crit quasi nul, aucune penetration" },
+    "brute":      { "hp": 36, "atk": 5, "def": 4, "magic_resist": 4, "mp": 50,  "crit": 8,  "crit_damage": 150, "armor_pen": 12, "magic_pen": 8,  "range": 2, "identity": "frontline melee equilibre hp/atk, penetration phys+mag moderee pour percer les tanks (ex-berserker/bruiser)" },
+    "assassin":   { "hp": 24, "atk": 7, "def": 2, "magic_resist": 3, "mp": 50,  "crit": 22, "crit_damage": 185, "armor_pen": 22, "magic_pen": 12, "range": 2, "identity": "glass melee: burst crit, tres fragile, forte penetration armure" },
+    "archer":     { "hp": 26, "atk": 6, "def": 2, "magic_resist": 4, "mp": 60,  "crit": 16, "crit_damage": 165, "armor_pen": 20, "magic_pen": 12, "range": 7, "identity": "glass ranged PHYSIQUE: crit eleve, perce l'armure, longue portee (ex-artillery physique)" },
+    "mage":       { "hp": 26, "atk": 7, "def": 2, "magic_resist": 6, "mp": 120, "crit": 12, "crit_damage": 155, "armor_pen": 12, "magic_pen": 22, "range": 7, "identity": "glass ranged MAGIQUE: crit + un peu de crit_damage, forte penetration magique, longue portee (ex-artillery magique + caster)" },
+    "controller": { "hp": 30, "atk": 4, "def": 3, "magic_resist": 6, "mp": 150, "crit": 6,  "crit_damage": 150, "armor_pen": 6,  "magic_pen": 8,  "range": 6, "identity": "utilitaire ranged: CC/debuffs, mr moyen, penetration legere (ex-tactician)" },
+    "support":    { "hp": 28, "atk": 3, "def": 3, "magic_resist": 7, "mp": 180, "crit": 3,  "crit_damage": 150, "armor_pen": 0,  "magic_pen": 0,  "range": 6, "identity": "backline ranged: heal/buff, mr eleve, atk faible, aucune penetration (ex-healer)" }
   },
 
   "archetype_consolidation": {
