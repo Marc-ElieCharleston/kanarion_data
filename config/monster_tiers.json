@@ -1,12 +1,12 @@
 {
   "_meta": {
-    "version": "1.0",
-    "last_updated": "2026-07-29",
-    "description": "Contrat des paliers de menace monstre (threat_tier) + types d'aggro. Source unique pour le backend. Le champ threat_tier / aggro_type est posé sur chaque mob dans entities/monsters.json.",
+    "version": "1.1",
+    "last_updated": "2026-07-31",
+    "description": "Contrat des paliers de menace monstre (threat_tier) : XP + aggro. Le champ threat_tier / aggro_type est posé sur chaque mob dans entities/monsters.json. NOTE (pivot 2026-07-31) : les MULTIPLICATEURS DE STATS par tier (hp/atk/def) ont déménagé vers config/monster_scaling_model.json (tier_multipliers). Ce fichier ne fait plus autorité que sur xp_multiplier + aggro. Les hp_multiplier ci-dessous sont conservés comme RÉFÉRENCE des valeurs bakées dans les base_stats actuels (legacy transition) ; le modèle de scaling les remplace au flip moteur.",
     "owner": "Claude (orchestrateur DB)",
     "consumers": {
       "xp_multiplier": "loot_roller.cpp base_xp_for_level() -> facteur XP par palier (B1). Le base_xp legacy du mob n'est PAS lu.",
-      "hp_multiplier": "REFERENCE seulement - deja bakee dans base_stats.hp au moment de l'authoring (fodder/tough). Ne PAS re-appliquer au runtime (double-dip).",
+      "hp_multiplier": "LEGACY/REFERENCE seulement - bakee dans base_stats.hp actuels (fodder/tough). Ne PAS re-appliquer au runtime (double-dip). AUTORITÉ RÉELLE = monster_scaling_model.json tier_multipliers (appliqué au spawn post-flip).",
       "aggro": "presence/world - aggro de proximite instancie (Dofus-style) selon aggro_type + aggro_range (B2)."
     }
   },

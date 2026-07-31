@@ -38,7 +38,7 @@ Validation happens at three levels:
 - **`_meta/`** — Version info (`version.json`), roadmap (`ROADMAP.md`), ideas backlog, 15 design suggestions in `suggestions/`
 - **`classes/`** — 6 base classes (warrior, mage, healer, archer, rogue, artisan), each with `skills.json` and `passives.json`. Also `common_passives.json` (10 universal passives) and `_classes_index.json` (6 classes x 4 subclasses x 2 tier3 = 48 tier3 specs)
 - **`combat/`** — Targeting system (`targeting.json`: 4x4 grid), LoS mechanics, ability ideas
-- **`config/`** — Combat formulas (`combat.json`), game constants (`game.json`), monster AI (`monster_ai.json`), skill system (`skill_system.json`), skill templates (`skill_templates.json`), role tags (`roles.json`), monster archetypes, monster skill scaling
+- **`config/`** — Combat formulas (`combat.json`), game constants (`game.json`), monster AI (`monster_ai.json`), skill system (`skill_system.json`), skill templates (`skill_templates.json`), role tags (`roles.json`), monster archetypes, monster skill scaling, **monster scaling model (`monster_scaling_model.json`: derived-stats architecture — see Monster Structure)**, threat tiers (`monster_tiers.json`: xp/aggro)
 - **`entities/`** — Monsters (`monsters.json`), NPCs, boss mechanics, summons (`summons.json`: max 6/team), monster archetypes/variants, healer/support monsters
 - **`items/`** — Equipment (10 slots, 5 rarities, T1-T5 scaling), consumables, materials, affixes, panoplies (25 sets with intentional Hebrew names), loot tables, currencies, substat crafting system
 - **`stats/`** — 40+ stat definitions, class base stats, growth rates, status effect definitions with IDs (`stats/status_effects.json` is the single canonical source for all status effects — definitions, balance rules, durations, stacking, formulas)
@@ -118,7 +118,12 @@ Players choose a faction at level 60. Subclass lore must NOT lock players into a
 - **Fields:** `id`, `name_fr`, `name_en`, `max_level`, `description_fr`, `description_en`, `effects[]` (each with `stat`, `op`, `value_per_level`)
 
 ### Monster Structure
-- **Required fields:** `id`, `name_fr`, `name_en`, `category`, `base_level`, `danger_level`, `tags[]`, `ai_role`, `base_xp` (flat XP per kill), `gold_weight` (0.0-3.0), `base_stats{}`, `drops[]`
+- **Required fields:** `id`, `name_fr`, `name_en`, `category`, `base_level`, `danger_level`, `tags[]`, `ai_role`, `stat_archetype`, `threat_tier`, `rarity`, `base_xp` (flat XP per kill), `gold_weight` (0.0-3.0), `base_stats{}`, `drops[]`
+- **Stats DÉRIVÉES, plus de hand-authoring (pivot 2026-07-31) :** `stat(mob, lvl) = base_lv1[stat_archetype] × curve(lvl) × tier_mult × rarity_mult`. Source de vérité = **`config/monster_scaling_model.json`**. Le tuning des stats à la main par niveau est mort (dérive non-monotone lv60-100). `base_stats{}` reste comme cache/legacy le temps de la transition — le moteur bascule vers la dérivation au spawn (scaler `combat_host`). **Ne plus tuner `base_stats` à la main : ajuster `base_lv1[archetype]`, `tier_multipliers`, `rarity_multipliers`, ou la `level_curve` du modèle.**
+- **`stat_archetype` (7)** : tank / brute / assassin / archer / mage / controller / support. Pilote les STATS (ratios lv1 + profil crit). **Distinct de `ai_role`** (IA + kit skills). Split archer (physique) / mage (magique). Mapping 11 `ai_role` → 7 archétypes dans `archetype_consolidation`.
+- **`threat_tier` (5)** : fodder / standard / tough / elite / boss (mult hp/atk/def). **`rarity` (4)** : normal / magic / rare / champion (overlay variant, défaut `normal`). Mults dans le modèle. `monster_tiers.json` garde xp_multiplier + aggro ; les mults de STATS vivent dans `monster_scaling_model.json`.
+- **Crit « comme les joueurs » :** `crit` / `crit_damage` / `armor_pen` viennent de l'archétype (assassin/archer élevés, tank quasi nul). Le moteur les applique mob→joueur. Ces 3 stats **ne scalent PAS** avec la courbe (taux). Seuls hp/atk/def/mr/mp/speed scalent.
+- **Un seul stat offensif `atk`** (pas de `mag`) ; le `damage_type` du skill route vers `def` ou `magic_resist` du JOUEUR.
 - **Tags catalog:** beast, humanoid, undead, elemental, demon, corrupted, ranged, melee, caster, tank, swarm, elite, boss, assassin, healer, support, artillery
 - Loot table `item_id` references must exist in items files (CI validates this)
 
