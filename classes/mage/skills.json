@@ -2853,8 +2853,8 @@
           "buff_magic_pen": 15,
           "autos_generate_momentum": true,
           "vfx_type": "buff_aura",
-          "description_fr": "Le Spellblade embrase sa lame : tant que dure la Lame Enchantée, chaque coup réduit la résistance magique de la cible, et il gagne du Momentum Arcanique.",
-          "description_en": "The Spellblade ignites their blade: while the Enchanted Blade lasts, every hit reduces the target's magic resistance, and they gain Arcane Momentum.",
+          "description_fr": "Le Spellblade imprègne sa lame d'arcane : chacun de ses coups, sorts compris, porte un surcroît de dégâts magiques, et ses incantations s'accélèrent. Ajoute 10 dégâts magiques plus 20% de la MAG sur chaque coup et augmente la vitesse d'incantation de 15% pendant 20s.",
+          "description_en": "The Spellblade steeps their blade in arcana: every blow, spells included, carries a surplus of magic damage, and their casting quickens. Adds 10 magic damage plus 20% of MAG on every hit and increases cast speed by 15% for 20s.",
           "tags": [
             "buff",
             "self",
@@ -2866,9 +2866,18 @@
             {
               "type": "buff",
               "stat": "enchanted_blade",
-              "value": 25,
+              "value": 10,
               "duration": 20.0,
-              "duration_per_level": 0.55
+              "duration_per_level": 0.55,
+              "pct": 20
+            },
+            {
+              "type": "buff",
+              "stat": "cast_speed_up",
+              "stacks_to_apply": 3,
+              "duration": 20.0,
+              "duration_per_level": 0.55,
+              "target": "self"
             }
           ],
           "base_class_id": "mage",
@@ -2991,8 +3000,8 @@
           "damage_type": "magical",
           "scaling_stat": "mag",
           "base_power": 0,
-          "scaling_percent": 224,
-          "percent_per_level": 17.4,
+          "scaling_percent": 75,
+          "percent_per_level": 5.8,
           "mana_cost": 40,
           "cooldown": 27.0,
           "cast_time": 2.5,
@@ -3002,8 +3011,8 @@
           "bonus_damage_per_charge": 15,
           "vfx_type": "melee_slash",
           "is_signature": true,
-          "description_fr": "Le Spellblade libère tout son Souffle accumulé en un arc d'énergie qui fauche une ligne ennemie, consumant son Momentum Arcanique et ses Charges Arcaniques.",
-          "description_en": "The Spellblade unleashes all their built-up Breath in an arc of energy that mows down an enemy line, consuming their Arcane Momentum and Arcane Charges.",
+          "description_fr": "Le Spellblade fend l'air d'un arc arcanique et frappe trois fois dans le même geste. Inflige 75% MAG par coup, trois coups, chacun pouvant critiquer.",
+          "description_en": "The Spellblade cleaves the air in an arcane arc, striking three times in one motion. Deals 75% MAG per hit, three hits, each able to crit.",
           "tags": [
             "damage",
             "aoe",
@@ -3023,7 +3032,9 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_3"
-          }
+          },
+          "hit_count": 3,
+          "each_hit_can_crit": true
         }
       ],
       "tier3": {
