@@ -2263,11 +2263,11 @@
         "polarity": "buff",
         "stacking": "refresh",
         "impl": "done",
-        "formula": "+bonus_magic_flat, +20% ATK_SPEED, +magic_pen",
+        "formula": "+bonus_magic_flat (value + pct% MAG), +cast_speed, +magic_pen",
         "tooltip_fr": "Imprègne l'arme de magie pour augmenter les dégâts.",
         "tooltip_en": "Imbues the weapon with magic to increase damage.",
-        "description_fr": "Enchante l'arme. Ajoute des dégâts magiques fixes aux auto-attaques + vitesse d'attaque + pénétration magique.",
-        "description_en": "Enchants weapon. Adds flat magic damage to auto-attacks + attack speed + magic penetration.",
+        "description_fr": "Enchante l'arme. Ajoute des degats magiques sur CHAQUE coup, sorts inclus (applique apres mitigation, avec magic_resist et magic_pen). Accelere aussi l'incantation.",
+        "description_en": "Enchants the weapon. Adds magic damage on EVERY hit, spells included (applied after mitigation, with magic_resist and magic_pen). Also speeds up casting.",
         "sources": [
           "Mage Spellblade"
         ],
@@ -2278,7 +2278,8 @@
             "magic_pen": 15
           },
           "vfx_type": "magic_aura"
-        }
+        },
+        "_audit_note": "2026-07-31 : composante ATK_SPEED retiree (auto-attaques supprimees definitivement). Remplacee par cast_speed, qui a du sens depuis que les sorts Mage ont un temps d'incantation. ATTENTION : cast_speed n'est PAS applique par le runtime (room.cpp:2814), ticket BE-6. Et bonus_magic_flat ne lit que 'value', pas 'pct' (status_manager.cpp:1178), ticket BE-10."
       },
       "double_attack_chance": {
         "name_fr": "Tir Double",
