@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "version": "0.1-draft",
+    "last_updated": "2026-07-31",
+    "owner": "Claude (orchestrateur DB)",
+    "status": "DRAFT - en attente calibrage courbe (referentiel joueur back) + validation",
+    "description_fr": "Modele de scaling monstre unifie : stat(mob, lvl) = base_lv1[archetype] x curve(lvl) x tier_mult x rarity_mult. Remplace le hand-authoring par niveau (source de la derive non-monotone lv60-100). Meme logique que le bot/familier scaler (base + growth x level).",
+    "consumers": {
+      "engine": "server-combat combat_host au spawn : applique base_lv1 x curve(lvl) x tier x rarity. Modele du bot-scaler combat_host.cpp:6970.",
+      "note_atk": "Les monstres ont un SEUL stat offensif 'atk' (pas de 'mag' separe). Le damage_type du skill (physical/magical) decide quelle defense JOUEUR s'applique (def vs mr). Le def/mr du MOB decide sa propre mitigation.",
+      "note_crit": "NOUVEAU : les monstres portent desormais crit/crit_damage/armor_pen comme les joueurs. Le moteur doit les appliquer au calcul de degats mob->joueur (crit roll, mult crit_damage, penetration armor_pen). crit_damage en pourcentage (150 = x1.5). Caps joueur reutilises : crit 100%, armor_pen 70%."
+    }
+  },
+
+  "archetypes_lv1_standard": {
+    "_comment": "Profil lv1 tier=standard rarity=normal. L'identite = les RATIOS (tanky vs glassy) + le profil crit. Les magnitudes absolues se calibrent avec curve(lvl) aux ancres 10/30/50/70/100. Grounded sur les vrais mobs bas-niveau par ai_role. crit/armor_pen en % ; crit_damage en % de mult (150 = x1.5). crit/crit_damage/armor_pen NE scalent PAS avec curve(lvl) (comme un joueur : ce sont des taux, pas des stats brutes) - seuls hp/atk/def/mr/mp scalent.",
+    "tank":       { "hp": 48, "atk": 3, "def": 7, "magic_resist": 5, "mp": 60,  "speed": 0.9, "crit": 2,  "crit_damage": 150, "armor_pen": 0,  "identity": "mur: hp+def eleves, atk faible, lent, crit quasi nul" },
+    "brute":      { "hp": 36, "atk": 5, "def": 4, "magic_resist": 4, "mp": 50,  "speed": 1.0, "crit": 5,  "crit_damage": 150, "armor_pen": 0,  "identity": "frontline equilibre hp/atk (ex-berserker/bruiser)" },
+    "assassin":   { "hp": 24, "atk": 7, "def": 2, "magic_resist": 3, "mp": 50,  "speed": 1.2, "crit": 20, "crit_damage": 180, "armor_pen": 15, "identity": "glass melee: burst crit, tres fragile, rapide, penetration" },
+    "archer":     { "hp": 26, "atk": 6, "def": 2, "magic_resist": 4, "mp": 60,  "speed": 1.15,"crit": 15, "crit_damage": 160, "armor_pen": 10, "identity": "glass ranged PHYSIQUE: crit eleve, perce l'armure (ex-artillery physique)" },
+    "mage":       { "hp": 26, "atk": 7, "def": 2, "magic_resist": 6, "mp": 120, "speed": 1.1, "crit": 8,  "crit_damage": 150, "armor_pen": 0,  "identity": "glass ranged MAGIQUE: degats magiques, fragile def, pool mp (ex-artillery magique + caster)" },
+    "controller": { "hp": 30, "atk": 4, "def": 3, "magic_resist": 6, "mp": 150, "speed": 1.1, "crit": 5,  "crit_damage": 150, "armor_pen": 0,  "identity": "utilitaire: CC/debuffs, mr moyen (ex-tactician)" },
+    "support":    { "hp": 28, "atk": 3, "def": 3, "magic_resist": 7, "mp": 180, "speed": 1.2, "crit": 3,  "crit_damage": 150, "armor_pen": 0,  "identity": "backline: heal/buff, mr eleve, atk faible (ex-healer)" }
+  },
+
+  "archetype_consolidation": {
+    "_comment": "Mapping des 11 ai_role existants vers les 7 archetypes. Le champ ai_role du mob reste (pilote l'IA/skills) ; le stat_archetype (nouveau) pilote les stats. artillery se split : les mobs a skills majoritairement damage_type=physical -> archer, sinon -> mage.",
+    "tank": "tank",
+    "brute": "brute",
+    "berserker": "brute",
+    "bruiser": "brute",
+    "assassin": "assassin",
+    "artillery": "archer_or_mage_par_damage_type",
+    "caster": "mage",
+    "controller": "controller",
+    "tactician": "controller",
+    "support": "support",
+    "healer": "support"
+  },
+
+  "tier_multipliers": {
+    "_comment": "Applique sur base_lv1 x curve. hp = survie, atk = menace, def/mr = mitigation. Remplace hp_multiplier bake de monster_tiers.json (plus de double-dip : le runtime applique TOUT).",
+    "fodder":   { "hp": 0.60, "atk": 0.85, "def": 0.85, "magic_resist": 0.85 },
+    "standard": { "hp": 1.00, "atk": 1.00, "def": 1.00, "magic_resist": 1.00 },
+    "tough":    { "hp": 1.60, "atk": 1.15, "def": 1.15, "magic_resist": 1.15 },
+    "elite":    { "hp": 2.20, "atk": 1.30, "def": 1.25, "magic_resist": 1.25 },
+    "boss":     { "hp": 4.00, "atk": 1.60, "def": 1.40, "magic_resist": 1.40 }
+  },
+
+  "rarity_multipliers": {
+    "_comment": "Overlay variant optionnel (spawn d'une version superieure du meme mob). Applique sur toutes les stats. Defaut = normal.",
+    "normal":   1.00,
+    "magic":    1.15,
+    "rare":     1.40,
+    "champion": 1.80
+  },
+
+  "level_curve": {
+    "_comment": "PLACEHOLDER - a calibrer avec le referentiel joueur (forme de courbe back). curve(1)=1. La puissance joueur ACCELERE (le gear compose) donc la courbe doit etre lineaire->super-lineaire, PAS sub-lineaire (le roster actuel etait sub-lineaire = mobs trop faibles en fin de courbe). Ancres calibrees pour que mob standard lvX = DPS_Equilibre(X) x tours-standard (hp) et eHP_Equilibre(X) x part-standard (atk).",
+    "type": "anchored_interpolation",
+    "anchors_hp": { "1": 1.0, "10": 6.0, "30": 27.0, "50": 50.0, "70": 78.0, "100": 130.0 },
+    "anchors_offense": { "1": 1.0, "10": 5.0, "30": 18.0, "50": 34.0, "70": 55.0, "100": 95.0 },
+    "note": "anchors_hp calent hp ; anchors_offense calent atk (+ def/mr suivent offense). Valeurs provisoires derivees du roster actuel corrige a la hausse en fin de courbe. A REMPLACER par le calibrage joueur."
+  },
+
+  "per_mob_override": {
+    "_comment": "La plupart des mobs derivent purement (stat_archetype, base_level, threat_tier, rarity). Un mob special (boss signature) peut porter un stat_override optionnel {hp?, atk?, def?, mr?} ou un stat_scalar {x1.2} pour se demarquer sans casser le modele."
+  }
+}
