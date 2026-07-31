@@ -3796,5 +3796,53 @@
       }
     },
     "note": "Le book precis est tire uniformement parmi tous les pet_books du rang choisi. Pas de pity V1."
+  },
+  "keystone_drops": {
+    "_comment": "Drop des Stigmates de keystone (items/keystone_items.json). Le RANG suit la bande de niveau du mob (level_req coherent, toujours utilisable) ; la FAMILLE est tiree uniformement parmi les 7 ; la FREQUENCE depend du tier de menace. TODO backend: acquisition item -> apprentissage keystone au rang -> allocation (V1 = alloue only, voir systems/keystones.json). Modele proche de pet_book_drops + unique_drops.",
+    "base_chance_per_kill": 0.01,
+    "tier_chance_multiplier": {
+      "_comment": "Frequence par tier. fodder=0 : les keystones viennent de vraies menaces, pas du trash.",
+      "fodder": 0.0,
+      "standard": 1.0,
+      "tough": 1.5,
+      "elite": 2.5,
+      "boss": 4.0
+    },
+    "rank_by_level_band": {
+      "_comment": "Le rang droppe = la bande de niveau du mob, pour que le level_req de l'item colle (pas de S-rank req61 sur un mob lv10).",
+      "1-20": "C",
+      "21-40": "B",
+      "41-60": "A",
+      "61-80": "S",
+      "81-100": "SS"
+    },
+    "rank_to_suffix": {
+      "_comment": "Construction de l'item id : ks_<family>_<suffix>. Suffixe positionnel = axe icone.",
+      "C": "a",
+      "B": "b",
+      "A": "c",
+      "S": "s",
+      "SS": "ss"
+    },
+    "families": [
+      "ks_dps_fury",
+      "ks_dps_ignition",
+      "ks_tank_bastion",
+      "ks_tank_anchor",
+      "ks_support_blessing",
+      "ks_support_life_link",
+      "ks_util_mastery"
+    ],
+    "star_multiplier": {
+      "0_star": 1.0,
+      "1_star": 1.2,
+      "2_star": 1.5,
+      "3_star": 2.0,
+      "4_star": 3.5,
+      "5_star": 7.0
+    },
+    "max_per_combat": 1,
+    "formula": "final_chance = base_chance_per_kill x tier_chance_multiplier[tier] x star_mult ; si drop -> rank = rank_by_level_band[bande du mob], family = uniform(families), item_id = ks_<family>_<rank_to_suffix[rank]>",
+    "note": "1% base a titre de depart (visibilite playtest). A retune vers ~0.2-0.3% une fois le systeme valide."
   }
 }
