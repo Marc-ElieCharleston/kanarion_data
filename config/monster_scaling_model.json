@@ -8,19 +8,28 @@
     "consumers": {
       "engine": "server-combat combat_host au spawn : applique base_lv1 x curve(lvl) x tier x rarity. Modele du bot-scaler combat_host.cpp:6970.",
       "note_atk": "Les monstres ont un SEUL stat offensif 'atk' (pas de 'mag' separe). Le damage_type du skill (physical/magical) decide quelle defense JOUEUR s'applique (def vs mr). Le def/mr du MOB decide sa propre mitigation.",
-      "note_crit": "NOUVEAU : les monstres portent desormais crit/crit_damage/armor_pen comme les joueurs. Le moteur doit les appliquer au calcul de degats mob->joueur (crit roll, mult crit_damage, penetration armor_pen). crit_damage en pourcentage (150 = x1.5). Caps joueur reutilises : crit 100%, armor_pen 70%."
+      "note_crit_pen": "Les monstres portent crit/crit_damage/armor_pen/magic_pen comme les joueurs. Le moteur doit les appliquer au calcul mob->joueur : roll crit, mult crit_damage (%, base 150=x1.5), penetration armor_pen (perce def joueur) ET magic_pen (perce magic_resist joueur). PENETRATION DOUBLE OBLIGATOIRE sur brute + DPS (assassin/archer/mage) sinon les joueurs tanks ne meurent jamais. Ces 4 stats sont FIXED (voir archetypes_lv1_standard._stat_classes) : ne scalent PAS avec curve/tier, rarity bump modere, clampe par _caps (crit 60, crit_damage 220, armor_pen 70, magic_pen 70)."
     }
   },
 
   "archetypes_lv1_standard": {
-    "_comment": "Profil lv1 tier=standard rarity=normal. L'identite = les RATIOS (tanky vs glassy) + le profil crit. Les magnitudes absolues se calibrent avec curve(lvl) aux ancres 10/30/50/70/100. Grounded sur les vrais mobs bas-niveau par ai_role. crit/armor_pen en % ; crit_damage en % de mult (150 = x1.5). crit/crit_damage/armor_pen NE scalent PAS avec curve(lvl) (comme un joueur : ce sont des taux, pas des stats brutes) - seuls hp/atk/def/mr/mp scalent.",
-    "tank":       { "hp": 48, "atk": 3, "def": 7, "magic_resist": 5, "mp": 60,  "speed": 0.9, "crit": 2,  "crit_damage": 150, "armor_pen": 0,  "identity": "mur: hp+def eleves, atk faible, lent, crit quasi nul" },
-    "brute":      { "hp": 36, "atk": 5, "def": 4, "magic_resist": 4, "mp": 50,  "speed": 1.0, "crit": 5,  "crit_damage": 150, "armor_pen": 0,  "identity": "frontline equilibre hp/atk (ex-berserker/bruiser)" },
-    "assassin":   { "hp": 24, "atk": 7, "def": 2, "magic_resist": 3, "mp": 50,  "speed": 1.2, "crit": 20, "crit_damage": 180, "armor_pen": 15, "identity": "glass melee: burst crit, tres fragile, rapide, penetration" },
-    "archer":     { "hp": 26, "atk": 6, "def": 2, "magic_resist": 4, "mp": 60,  "speed": 1.15,"crit": 15, "crit_damage": 160, "armor_pen": 10, "identity": "glass ranged PHYSIQUE: crit eleve, perce l'armure (ex-artillery physique)" },
-    "mage":       { "hp": 26, "atk": 7, "def": 2, "magic_resist": 6, "mp": 120, "speed": 1.1, "crit": 8,  "crit_damage": 150, "armor_pen": 0,  "identity": "glass ranged MAGIQUE: degats magiques, fragile def, pool mp (ex-artillery magique + caster)" },
-    "controller": { "hp": 30, "atk": 4, "def": 3, "magic_resist": 6, "mp": 150, "speed": 1.1, "crit": 5,  "crit_damage": 150, "armor_pen": 0,  "identity": "utilitaire: CC/debuffs, mr moyen (ex-tactician)" },
-    "support":    { "hp": 28, "atk": 3, "def": 3, "magic_resist": 7, "mp": 180, "speed": 1.2, "crit": 3,  "crit_damage": 150, "armor_pen": 0,  "identity": "backline: heal/buff, mr eleve, atk faible (ex-healer)" }
+    "_comment": "Profil lv1 tier=standard rarity=normal. Fiche complete par archetype. L'identite = les RATIOS (tanky vs glassy) + le profil crit + la penetration. Grounded sur les vrais mobs bas-niveau par ai_role.",
+    "_stat_classes": {
+      "growth": ["hp", "atk", "def", "magic_resist", "mp", "speed"],
+      "fixed": ["crit", "crit_damage", "armor_pen", "magic_pen"],
+      "note": "GROWTH = stats brutes, scalent x curve(lvl) x tier_mult x rarity_mult (magnitude calibree aux ancres 10/30/50/70/100). FIXED = taux (comme un joueur), NE scalent PAS avec curve ni tier ; rarity applique un bump modere clampe par _caps. crit/armor_pen/magic_pen en % ; crit_damage en % de mult (base 150 = x1.5)."
+    },
+    "_caps": {
+      "crit": 60, "crit_damage": 220, "armor_pen": 70, "magic_pen": 70,
+      "note": "Caps monstres. armor_pen/magic_pen reutilisent le cap joueur (70). crit cap 60 (< joueur 100, evite le crit-lock apres rarity). crit_damage cap 220 (base 150 + max 70)."
+    },
+    "tank":       { "hp": 48, "atk": 3, "def": 7, "magic_resist": 5, "mp": 60,  "speed": 0.9, "crit": 2,  "crit_damage": 150, "armor_pen": 0,  "magic_pen": 0,  "identity": "mur: hp+def eleves, atk faible, lent, crit quasi nul, aucune penetration" },
+    "brute":      { "hp": 36, "atk": 5, "def": 4, "magic_resist": 4, "mp": 50,  "speed": 1.0, "crit": 8,  "crit_damage": 150, "armor_pen": 12, "magic_pen": 8,  "identity": "frontline equilibre hp/atk, penetration phys+mag moderee pour percer les tanks (ex-berserker/bruiser)" },
+    "assassin":   { "hp": 24, "atk": 7, "def": 2, "magic_resist": 3, "mp": 50,  "speed": 1.2, "crit": 22, "crit_damage": 185, "armor_pen": 22, "magic_pen": 12, "identity": "glass melee: burst crit, tres fragile, rapide, forte penetration armure" },
+    "archer":     { "hp": 26, "atk": 6, "def": 2, "magic_resist": 4, "mp": 60,  "speed": 1.15,"crit": 16, "crit_damage": 165, "armor_pen": 20, "magic_pen": 12, "identity": "glass ranged PHYSIQUE: crit eleve, perce l'armure (ex-artillery physique)" },
+    "mage":       { "hp": 26, "atk": 7, "def": 2, "magic_resist": 6, "mp": 120, "speed": 1.1, "crit": 12, "crit_damage": 155, "armor_pen": 12, "magic_pen": 22, "identity": "glass ranged MAGIQUE: crit + un peu de crit_damage, forte penetration magique (ex-artillery magique + caster)" },
+    "controller": { "hp": 30, "atk": 4, "def": 3, "magic_resist": 6, "mp": 150, "speed": 1.1, "crit": 6,  "crit_damage": 150, "armor_pen": 6,  "magic_pen": 8,  "identity": "utilitaire: CC/debuffs, mr moyen, penetration legere (ex-tactician)" },
+    "support":    { "hp": 28, "atk": 3, "def": 3, "magic_resist": 7, "mp": 180, "speed": 1.2, "crit": 3,  "crit_damage": 150, "armor_pen": 0,  "magic_pen": 0,  "identity": "backline: heal/buff, mr eleve, atk faible, aucune penetration (ex-healer)" }
   },
 
   "archetype_consolidation": {
