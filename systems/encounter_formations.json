@@ -1,28 +1,97 @@
 {
   "_meta": {
-    "version": "1.0",
-    "last_updated": "2026-03-13",
-    "description": "Regles de formation pour le placement des monstres en combat. Le serveur utilise ces regles pour positionner les monstres sur la grille selon leur ai_role."
+    "version": "1.1",
+    "last_updated": "2026-08-01",
+    "description": "Regles de formation (placement mob en combat) keyees ai_role. v1.1: cohérence PORTEE (melee range2 tank/brute/berserker/bruiser->front rows 0-1, assassin->row1 juste derriere le front car range2 ne peut pas sniper du fond ; ranged range6-7 artillery/caster/tactician/controller/healer/support->fond rows 2-3). Ajout des roles MANQUANTS controller/caster/bruiser (avant: fallback front-row a tort). Rows absolues pour grille 4-rangs actuelle ; a etendre pour 10x5."
   },
-
   "formation_rules": {
-    "tank":      { "preferred_rows": [0],       "placement_priority": 1 },
-    "berserker": { "preferred_rows": [0],       "placement_priority": 2 },
-    "healer":    { "preferred_rows": [2, 3],    "placement_priority": 3 },
-    "support":   { "preferred_rows": [2, 3],    "placement_priority": 4 },
-    "brute":     { "preferred_rows": [0, 1],    "placement_priority": 5 },
-    "tactician": { "preferred_rows": [1, 2],    "placement_priority": 6 },
-    "artillery": { "preferred_rows": [1, 2],    "placement_priority": 7 },
-    "assassin":  { "preferred_rows": [1],       "placement_priority": 8 }
+    "tank": {
+      "preferred_rows": [
+        0
+      ],
+      "placement_priority": 1
+    },
+    "brute": {
+      "preferred_rows": [
+        0,
+        1
+      ],
+      "placement_priority": 2
+    },
+    "berserker": {
+      "preferred_rows": [
+        0,
+        1
+      ],
+      "placement_priority": 3
+    },
+    "bruiser": {
+      "preferred_rows": [
+        0,
+        1
+      ],
+      "placement_priority": 4
+    },
+    "assassin": {
+      "preferred_rows": [
+        1
+      ],
+      "placement_priority": 5
+    },
+    "artillery": {
+      "preferred_rows": [
+        2,
+        3
+      ],
+      "placement_priority": 6
+    },
+    "caster": {
+      "preferred_rows": [
+        2,
+        3
+      ],
+      "placement_priority": 7
+    },
+    "tactician": {
+      "preferred_rows": [
+        2,
+        3
+      ],
+      "placement_priority": 8
+    },
+    "controller": {
+      "preferred_rows": [
+        2,
+        3
+      ],
+      "placement_priority": 9
+    },
+    "healer": {
+      "preferred_rows": [
+        2,
+        3
+      ],
+      "placement_priority": 10
+    },
+    "support": {
+      "preferred_rows": [
+        2,
+        3
+      ],
+      "placement_priority": 11
+    }
   },
-
-  "column_priority": [2, 1, 3, 0, 4],
-
+  "column_priority": [
+    2,
+    1,
+    3,
+    0,
+    4
+  ],
   "los_protection": {
     "enabled": true,
     "description": "Les monstres non-frontline preferent les colonnes ou un tank/berserker est deja place en row 0, pour beneficier du blocage LoS"
   },
-
   "fallback": {
     "strategy": "any_free_slot",
     "description": "Si toutes les preferred_rows sont pleines, prendre n'importe quel slot libre en partant du front"
