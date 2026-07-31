@@ -66,11 +66,23 @@
   },
 
   "level_curve": {
-    "_comment": "PLACEHOLDER - a calibrer avec le referentiel joueur (forme de courbe back). curve(1)=1. La puissance joueur ACCELERE (le gear compose) donc la courbe doit etre lineaire->super-lineaire, PAS sub-lineaire (le roster actuel etait sub-lineaire = mobs trop faibles en fin de courbe). Ancres calibrees pour que mob standard lvX = DPS_Equilibre(X) x tours-standard (hp) et eHP_Equilibre(X) x part-standard (atk).",
+    "_comment": "CALIBRE sur le referentiel joueur GERE (harness StatRoller reel, item 3 back 15debc0, build Equilibre). curve(1)=1 (mob = base_lv1 au lv1). anchors_hp calent hp+mp ; anchors_offense calent atk+def+mr. Interpolation lineaire entre ancres (1/10/30/50/70/100). Reference = archetype MOYEN (base_hp moy 31, base_atk moy 5) : la courbe cale le mob moyen, chaque archetype spread autour (tank plus tanky, glass plus fragile).",
     "type": "anchored_interpolation",
-    "anchors_hp": { "1": 1.0, "10": 6.0, "30": 27.0, "50": 50.0, "70": 78.0, "100": 130.0 },
-    "anchors_offense": { "1": 1.0, "10": 5.0, "30": 18.0, "50": 34.0, "70": 55.0, "100": 95.0 },
-    "note": "anchors_hp calent hp ; anchors_offense calent atk (+ def/mr suivent offense). Valeurs provisoires derivees du roster actuel corrige a la hausse en fin de courbe. A REMPLACER par le calibrage joueur."
+    "anchors_hp": { "1": 1.0, "10": 3.8, "30": 8.9, "50": 13.6, "70": 22.8, "100": 34.7 },
+    "anchors_offense": { "1": 1.0, "10": 6.5, "30": 13.1, "50": 18.0, "70": 30.7, "100": 43.0 },
+    "calibration": {
+      "reference_build": "Equilibre gere (socle+passifs+gear, harness back item 3)",
+      "player_ref_equilibre": {
+        "hp":     { "10": 325, "30": 657, "50": 901, "70": 1541, "100": 2158 },
+        "dps_per_turn": { "10": 47, "30": 111, "50": 169, "70": 284, "100": 431 },
+        "armor":  { "10": 28, "30": 55, "50": 74, "70": 149, "100": 202 },
+        "magic_resist": { "10": 30, "30": 59, "50": 77, "70": 142, "100": 207 },
+        "crit_pct": { "10": 8, "30": 12, "50": 15, "70": 28, "100": 38 }
+      },
+      "anchors_hp_basis": "SOLIDE (independant de la formule de degats) : hp_mob(standard, avg archetype) = DPS_Equilibre(lvl) x 2.5 tours (barème standard). anchors_hp[lvl] = DPS_Equilibre[lvl] x 2.5 / 31 (base_hp moyen). Tours-pour-tuer par tier via tier_multipliers.hp : tank naturellement plus lent, glass plus vite.",
+      "anchors_offense_basis": "PREMIER PASSAGE (depend de la formule de degats/mitigation/penetration back, non exacte cote data) : anchors_offense tracke PV_Equilibre, ancre lv100=43 (base_atk moy 5 -> atk mob moyen lv100 ~215, vise ~11% PV joueur/tour en supposant que la double-penetration perce l'armure joueur + skill_coef ~1.1). A TUNER IN-GAME : flip MONSTER_SCALING_MODEL=1, mesurer le % PV joueur pris/tour d'un mob standard de meme niveau, ajuster anchors_offense. Besoin idealement : formule mitigation + interaction penetration pour un calage exact au lieu d'observation.",
+      "discontinuite_lv50_70": "Le referentiel joueur a une marche lv50->70 (rarete rare->epic + passifs 5->7->10). La courbe mob la SUIT (anchors 13.6->22.8 hp) : c'est voulu, le mob reste a ~2.5 tours. Pas de lissage (un pic de puissance joueur au gear lv70 = reward, absorbe par l'interpolation)."
+    }
   },
 
   "per_mob_override": {
