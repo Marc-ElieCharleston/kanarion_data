@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "version": "1.1",
+    "version": "2.0",
     "last_updated": "2026-08-01",
-    "description": "Regles de formation (placement mob en combat) keyees ai_role. v1.1: cohérence PORTEE (melee range2 tank/brute/berserker/bruiser->front rows 0-1, assassin->row1 juste derriere le front car range2 ne peut pas sniper du fond ; ranged range6-7 artillery/caster/tactician/controller/healer/support->fond rows 2-3). Ajout des roles MANQUANTS controller/caster/bruiser (avant: fallback front-row a tort). Rows absolues pour grille 4-rangs actuelle ; a etendre pour 10x5."
+    "description": "Regles de formation (placement mob en combat) keyees ai_role. v1.1: cohérence PORTEE (melee range2 tank/brute/berserker/bruiser->front rows 0-1, assassin->row1 juste derriere le front car range2 ne peut pas sniper du fond ; ranged range6-7 artillery/caster/tactician/controller/healer/support->fond rows 2-3). Ajout des roles MANQUANTS controller/caster/bruiser (avant: fallback front-row a tort). Rows absolues pour grille 4-rangs actuelle ; a etendre pour 10x5. v2.0: AJOUT formation_rules_by_archetype (7 stat_archetypes + bandes nommees) = table PRIMARY que le back consomme apres bascule de cle ; formation_rules (ai_role, rows) reste en fallback non-breaking."
   },
   "formation_rules": {
     "tank": {
@@ -95,5 +95,42 @@
   "fallback": {
     "strategy": "any_free_slot",
     "description": "Si toutes les preferred_rows sont pleines, prendre n'importe quel slot libre en partant du front"
+  },
+  "formation_rules_by_archetype": {
+    "_comment": "PRIMARY (v2): keye stat_archetype + bandes nommees front/mid/back. Le back bascule le lookup ici (fallback formation_rules ai_role, non-breaking). Bandes traduites en lignes locales par rows_per_team au spawn -> geometrie-agnostique (4x5/10x5/10x6). front=melee range2 (tank/brute), back=ranged range6-7 (archer/mage/controller/support), mid=assassin (glass melee ; teleporte a n'importe quel ennemi via shadow_strike + invisible 6s, donc position de depart peu critique).",
+    "tank": {
+      "band": "front",
+      "placement_priority": 1
+    },
+    "brute": {
+      "band": "front",
+      "placement_priority": 2
+    },
+    "archer": {
+      "band": "back",
+      "placement_priority": 3
+    },
+    "mage": {
+      "band": "back",
+      "placement_priority": 4
+    },
+    "controller": {
+      "band": "back",
+      "placement_priority": 5
+    },
+    "support": {
+      "band": "back",
+      "placement_priority": 6
+    },
+    "assassin": {
+      "band": "mid",
+      "placement_priority": 7
+    }
+  },
+  "band_definitions": {
+    "_comment": "Le moteur traduit les bandes en lignes locales selon rows_per_team au spawn.",
+    "front": "ligne avant (row local 0, colle au no-mans-land)",
+    "mid": "ligne(s) du milieu (entre front et back)",
+    "back": "fond (derniere ligne locale), protege par LoS derriere une colonne front"
   }
 }

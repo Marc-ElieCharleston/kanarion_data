@@ -1408,25 +1408,43 @@
           "scaling_percent": 170,
           "mana_cost": 20,
           "cooldown": 18.0,
-          "cast_time": 2.5,
+          "cast_time": 1.0,
           "vfx_type": "dash_trail",
-          "description_fr": "Téléportation vers une cible du backline pour une frappe dévastatrice.\nInflige 170% ATK dégâts physiques. Cible le backline en priorité.",
-          "description_en": "Teleports to a backline target for a devastating strike.\nDeals 170% ATK physical damage. Prioritizes backline targets.",
+          "description_fr": "L'assassin se teleporte au contact de n'importe quel ennemi et se fond dans l'ombre (Invisibilite 6s : inciblable, frappe la ligne arriere).\nInflige 170% ATK degats physiques.",
+          "description_en": "The assassin teleports next to any enemy and melts into shadow (Invisibility 6s: untargetable, can strike the back row).\nDeals 170% ATK physical damage.",
           "tags": [
             "damage",
             "melee",
             "teleport",
-            "assassin"
+            "gap_closer",
+            "stealth",
+            "invisible",
+            "assassin",
+            "signature"
           ],
           "targeting": {
             "selection_mode": "entity",
             "valid_target_team": "enemy",
-            "requires_line_of_sight": true,
-            "bypasses_los": false,
+            "requires_line_of_sight": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": true,
             "aoe_pattern_id": "single"
           },
-          "range": 3
+          "range": 12,
+          "movement": {
+            "type": "teleport_adjacent",
+            "range": 12,
+            "land_distance": 2,
+            "note": "teleporte au contact de N'IMPORTE QUEL ennemi (range 12 = toute la grille). land_distance 2 = ideal (user), fallback adjacent si non supporte."
+          },
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "invisible",
+              "duration": 6.0,
+              "target_rule": "self"
+            }
+          ]
         },
         {
           "id": "skill_mob_assassin_ambush",
