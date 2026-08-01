@@ -302,15 +302,21 @@
     }
   },
   "deduplication": {
-    "_etat_2026_08_01": "12 groupes de sorts de classe mecaniquement identiques au depart, 9 restants. Les 3 impliquant l'Archer sont resolus.",
-    "_methode": "Empreinte = pattern + cible + type de degats + stat + scaling + cooldown + nombre de coups + liste triee des effets. Deux sorts de meme empreinte sont le meme sort sous deux noms.",
-    "_piege_vecu": "Differencier un doublon peut en CREER un autre : en donnant a sharpshooter_focus le couple crit_chance_up + crit_damage_up, il est devenu identique a rogue/assassin_premeditation. TOUJOURS relancer le scan COMPLET apres chaque differenciation, jamais seulement sur la paire traitee. C'est le compte qui a trahi l'erreur : 10 restants la ou 9 etaient attendus.",
-    "_principe": "Differencier par l'IDENTITE declaree de la sous-classe, pas par les chiffres. Sharpshooter ouvre la cible pour l'equipe la ou l'Assassin ne prepare que lui-meme ; le Striker mise sur le coup en plus la ou le Quickshot mise sur le critique ; le Coup de Vent balaie deux cases parce qu'une bourrasque balaie.",
-    "restant_a_traiter": [
-      "7 groupes cross-classe",
-      "1 groupe intra-Healer : cleanse_wave / purifying_wave",
-      "8 groupes internes aux monstres",
-      "10 collisions de NOM entre sorts de monstre et de classe"
-    ]
+    "_etat": "TERMINE le 2026-08-01. 0 groupe de sorts identiques sur les 498 sorts du jeu (396 classes + 70 monstres + 32 familiers).",
+    "_methode_CORRECTE": "Comparer TOUTE la charge mecanique du sort, en excluant seulement la presentation (id, noms, descriptions, tags, vfx, offsets, role, ids de hierarchie). Serialiser recursivement en structure triee et comparer.",
+    "_methode_A_NE_PAS_REFAIRE": "Choisir a la main une liste de champs a comparer. C'est ce que j'ai fait d'abord et la mesure a du etre revisee TROIS fois : 12 groupes annonces, puis 9, puis 4, puis 2 en realite. Chaque champ oublie (pct du bouclier, value d'un effet, heal_scaling_percent, mana_cost, execute_bonus_percent, generates_charges) inventait des faux jumeaux. Deux signatures que j'allais 'corriger' (Choeur du Salut / Phalange) differaient en fait par leur bouclier et un soin.",
+    "_cout_de_l_erreur": "Aucun degat : la sur-detection fait perdre du temps, elle ne casse rien. Mais elle a failli faire modifier 5 sorts sains. L'inverse (sous-detection) serait pire.",
+    "_piege_second": "Differencier un doublon peut en CREER un autre. En donnant a sharpshooter_focus le couple crit_chance_up + crit_damage_up, il est devenu identique a rogue/assassin_premeditation. TOUJOURS relancer le scan complet apres chaque differenciation : c'est le comptage qui a trahi l'erreur (10 restants la ou 9 etaient attendus).",
+    "_principe_de_differenciation": "Differencier par l'IDENTITE declaree de la sous-classe, jamais par les chiffres seuls. Et verifier d'abord la DESCRIPTION : dans presque tous les cas le texte promettait deja la mecanique manquante, il suffisait de la livrer.",
+    "_exemples_traites": {
+      "Concentration / Premeditation": "Le Sharpshooter ouvre la cible pour toute l'equipe (crit_resistance_down), l'Assassin ne prepare que lui-meme. Le texte du premier disait deja 'sur la cible'.",
+      "Cadence Frenetique / Frenesie": "Le Striker mise sur le coup en plus (Tir Double 25%), le Quickshot sur le critique.",
+      "Tir Furtif / Coup de Vent": "La forme suit le nom : une bourrasque balaie deux cases (row_2), un tir furtif reste mono-cible.",
+      "Combo Mortel / Deferlement": "L'escalade (+8 par coup) reste la signature du Striker. Le Frenzied est un 'speed demon + damage buffs' : cinq coups plus rapides et un buff sur soi, pas d'escalade.",
+      "Tir d'Achevement / Mise a Mort": "Le Deadeye garde l'execution pure a 75%. L'Assassin, dont l'identite dit 'bleed stacking', descend a 50% mais ouvre une plaie.",
+      "Morsure / Griffe (monstres)": "La Griffe saigne, parce que sa description disait deja 'lacerent la chair'.",
+      "Trait Sacre / Decharge (monstres)": "La Decharge ralentit les incantations : elle est portee par hymn_breaker et silence_bringer, des mobs anti-incantateurs."
+    },
+    "_a_surveiller": "Relancer ce scan apres toute vague d'ajout de sorts. Un doublon ne se voit pas a la lecture, seulement a la comparaison."
   }
 }
