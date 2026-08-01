@@ -44,12 +44,17 @@ def collect_canonical_stats(defs: dict) -> set:
                             if isinstance(sub_val, dict) and "id" in sub_val:
                                 stats.add(sub_val["id"])
                             elif isinstance(sub_val, dict):
-                                # Another nesting level
-                                for inner_key, inner_val in sub_val.items():
-                                    if isinstance(inner_val, dict) and "id" in inner_val:
-                                        stats.add(inner_val["id"])
-                                    else:
-                                        stats.add(inner_key)
+                                # Une entree de stat SANS champ `id` : la cle EST
+                                # l'identifiant (definitions.json n'utilise pas de
+                                # champ `id`, aucune des 39 stats n'en porte).
+                                # Bug historique : on descendait ici d'un niveau de
+                                # trop et on ajoutait les noms de CHAMPS (`name`,
+                                # `description`, `bonus_type`...) au lieu du nom de
+                                # la stat. Consequence : seules les stats presentes
+                                # dans la liste d'alias en dur passaient, et `luck`,
+                                # `thorns`, `cast_speed`, `reflect` faisaient echouer
+                                # la CI sans qu'aucune data soit fautive.
+                                stats.add(sub_key)
                             else:
                                 stats.add(sub_key)
                 else:
