@@ -206,19 +206,20 @@
         ]
       },
       "reellement_inertes": {
-        "_comment": "Aucune reference serveur, aucun usage data. Suppression possible, sans urgence.",
-        "hp_dot": "jamais implemente, jamais utilise",
-        "sacrifice": "jamais implemente. ATTENTION au faux positif : le mot 'sacrifice' apparait 28 fois en PROSE dans le lore du Martyr (dont l'identite est 'Self-sacrifice protector'), zero fois comme identifiant d'effet."
-      },
-      "obsoletes_par_design": {
-        "_comment": "Encore traites generiquement par le moteur, mais la STAT sous-jacente ne fait plus rien depuis le retrait des auto-attaques (2026-07-30) : atk_speed n'alimente que `haste`, qui ne pilotait que l'intervalle d'auto-attaque.",
-        "effets": [
-          "atk_speed_up",
-          "atk_speed_down"
-        ]
+        "_comment": "Revise le 2026-08-01 apres verification exhaustive. Il n'en restait QU'UN.",
+        "sacrifice": "SUPPRIME. Jamais implemente, jamais reference comme effet. Piege a connaitre : le mot 'sacrifice' apparait comme TAG dans warrior/skills.json et healer/skills.json (espace de noms different des effets) et 28 fois en prose dans le lore du Martyr. Aucun de ces usages n'est une reference d'effet."
       },
       "disponible_et_inexploite": {
         "cast_speed_down": "VIVANT et generique (status_manager.cpp:196 via starts_with('cast_speed_')), cast_speed rendu reel par BE-6. Zero usage en data. C'est un outil anti-incantateur pret a l'emploi, notamment contre le Mage dont les temps d'incantation ont ete allonges."
+      },
+      "faux_positifs_de_mon_propre_audit": {
+        "_comment": "Erreurs que j'ai commises en scannant, gardees pour ne pas les refaire.",
+        "hp_dot": "Annonce inerte a tort. Il est reference par la cle `dot_type` (et non `effect`/`stat`/`buff`), que mon scan ne couvrait pas, et il TOURNE. Lecon : les effets peuvent etre references par des cles inattendues.",
+        "_regle": "Avant de declarer un effet mort, chercher son nom en TEXTE BRUT dans tous les .json, pas seulement dans les cles d'effet connues — puis dans le code back ET client."
+      },
+      "ecart_declaration_vs_implementation": {
+        "_resolu": "amplify : fiche realignee sur le code le 2026-08-01. 101 effets, TOUS en impl:done.",
+        "_regle": "Un effet peut etre mal ETIQUETE (label perime : steady_aim, guardian_breath, savoir_faire, hp_dot) ou mal DEFINI (sa fiche decrit autre chose que le code : amplify). Le second est plus dangereux — un label 'done' fait croire que la fiche est fiable."
       }
     },
     "contre_effets": {
@@ -255,6 +256,13 @@
         "nightstalker/spellbreaker": "5 charges (-25%), cd 14s — PLAFOND, 'frappe au point ou le sort se forme'",
         "_pourquoi_ici": "Les deux premiers PROMETTAIENT deja de ralentir les incantations dans leur texte sans porter l'effet. suppressing_fire portait meme un damage_percent_down non documente a la place. Le placement ne fait que tenir la promesse."
       }
+    },
+    "detonation_de_dot": {
+      "statut": "PROPOSE, non implemente. Chantier moteur post-tournoi, PAS de la config.",
+      "idee": "A X charges de DoT sur une cible, un sort consomme les charges pour un burst = f(charges). Transforme l'empilement passif en ressource strategique.",
+      "_pourquoi_ce_n_est_PAS_de_la_config": "Verifie avec le back. La machinerie de charges existante (room.cpp:3195-3245, consumes_charges / max_charges_consumed / bonus_damage_per_charge) est 100% cote LANCEUR : elle lit le ChargesComponent du caster et consomme SES propres charges. C'est une ressource-soi. La detonation veut consommer les charges de DoT de la CIBLE, qui vivent dans son StatusEffectsComponent. Source totalement differente : le vocabulaire consumes_charges ne peut pas la cibler.",
+      "_ce_qu_il_faut": "Un nouveau type d'effet, ex. detonate_dot, dans apply_skill_effects : lire les charges de bleed/burn/toxin de la cible, les retirer, infliger un burst fonction du nombre. Petit mais reel.",
+      "_ne_pas_faire": "Declarer la detonation en data avec consumes_charges en croyant que ca marchera : ca tomberait dans le vide, sans erreur."
     }
   },
   "pieges_verifies": {
@@ -275,5 +283,40 @@
     "_comment": "Outil de tri, pas de verdict : puissance divisee par le cooldown. Sert a reperer ce qui merite un regard, jamais a decider seul.",
     "formule": "densite = puissance / cooldown",
     "_lire_avec": "la limite DoT ci-dessus, et le tier : une signature a densite elevee est normale, un tier advanced a 60+ ne l'est pas."
+  },
+  "mutualisation_des_sorts": {
+    "_question": "Faire pointer monstres et familiers vers les sorts de classe existants, simplement renommes, pour tout regrouper ?",
+    "_verdict": "NON pour la reference directe. OUI pour les templates. Tranche le 2026-08-01.",
+    "ce_qui_marcherait_deja": "Techniquement la reference directe fonctionne : SkillRegistry est un dictionnaire plat par id, classes et monstres chargent dans le MEME registre. Un monstre peut referencer skill_warrior_charge aujourd'hui. Stats compatibles (monstres : atk 177/177, mag 110/177, mp 177/177). Les mercenaires le font deja : 156 references, par design.",
+    "pourquoi_c_est_quand_meme_non": {
+      "couplage_de_balance": "Nerfer un sort joueur pour le PvP rebalancerait tout le bestiaire. Monstres et joueurs tournent sur deux modeles distincts (monster_scaling_model.json contre points de competence et PvP), avec deux proprietaires et deux rythmes de tuning.",
+      "le_renommage_est_le_signe": "Si ca merite un nom different, ca meritera bientot un cooldown puis un chiffre different. Le sort partage devient un tas d'overrides, pire que deux entrees propres. Et aucun mecanisme de name_override n'existe sur les sorts.",
+      "le_gain_est_surestime": "Mesure : 31 sorts de monstre sur 70 et 13 sur 32 chez le familier partagent la FORME d'un sort de classe. ZERO partage les chiffres. Regrouper ne serait pas une reorganisation mais un rebalancing de 44 sorts sur les nombres joueurs.",
+      "elites_et_boss": "Contrainte produit (Charleston, 2026-08-01) : les elites et les boss doivent avoir des mecaniques SPECIFIQUES. Du sur-mesure n'a par definition rien a mutualiser."
+    },
+    "la_bonne_voie": {
+      "_quoi": "config/skill_templates.json — le fichier EXISTE deja, 11 templates ecrits, description : Skill templates for reducing duplication, skills can reference a template and override specific values.",
+      "_etat": "DORMANT : le backend ne le lit pas, aucun sort ne le reference.",
+      "_pourquoi_c_est_le_bon_niveau": "Le template partage la FORME (type de degats, stat de scaling, pattern, vfx), ce qui n'a aucune raison de differer. Chaque sort garde son nom, ses chiffres et son cooldown, ce qui doit differer. Zero couplage de balance, et pas besoin d'inventer un systeme de renommage puisque chacun garde son nom nativement.",
+      "_cout": "Travail backend : resolution des templates au chargement. Post-tournoi, meme lot que BE-16 et la detonation de DoT."
+    }
+  },
+  "deduplication": {
+    "_etat": "TERMINE le 2026-08-01. 0 groupe de sorts identiques sur les 498 sorts du jeu (396 classes + 70 monstres + 32 familiers).",
+    "_methode_CORRECTE": "Comparer TOUTE la charge mecanique du sort, en excluant seulement la presentation (id, noms, descriptions, tags, vfx, offsets, role, ids de hierarchie). Serialiser recursivement en structure triee et comparer.",
+    "_methode_A_NE_PAS_REFAIRE": "Choisir a la main une liste de champs a comparer. C'est ce que j'ai fait d'abord et la mesure a du etre revisee TROIS fois : 12 groupes annonces, puis 9, puis 4, puis 2 en realite. Chaque champ oublie (pct du bouclier, value d'un effet, heal_scaling_percent, mana_cost, execute_bonus_percent, generates_charges) inventait des faux jumeaux. Deux signatures que j'allais 'corriger' (Choeur du Salut / Phalange) differaient en fait par leur bouclier et un soin.",
+    "_cout_de_l_erreur": "Aucun degat : la sur-detection fait perdre du temps, elle ne casse rien. Mais elle a failli faire modifier 5 sorts sains. L'inverse (sous-detection) serait pire.",
+    "_piege_second": "Differencier un doublon peut en CREER un autre. En donnant a sharpshooter_focus le couple crit_chance_up + crit_damage_up, il est devenu identique a rogue/assassin_premeditation. TOUJOURS relancer le scan complet apres chaque differenciation : c'est le comptage qui a trahi l'erreur (10 restants la ou 9 etaient attendus).",
+    "_principe_de_differenciation": "Differencier par l'IDENTITE declaree de la sous-classe, jamais par les chiffres seuls. Et verifier d'abord la DESCRIPTION : dans presque tous les cas le texte promettait deja la mecanique manquante, il suffisait de la livrer.",
+    "_exemples_traites": {
+      "Concentration / Premeditation": "Le Sharpshooter ouvre la cible pour toute l'equipe (crit_resistance_down), l'Assassin ne prepare que lui-meme. Le texte du premier disait deja 'sur la cible'.",
+      "Cadence Frenetique / Frenesie": "Le Striker mise sur le coup en plus (Tir Double 25%), le Quickshot sur le critique.",
+      "Tir Furtif / Coup de Vent": "La forme suit le nom : une bourrasque balaie deux cases (row_2), un tir furtif reste mono-cible.",
+      "Combo Mortel / Deferlement": "L'escalade (+8 par coup) reste la signature du Striker. Le Frenzied est un 'speed demon + damage buffs' : cinq coups plus rapides et un buff sur soi, pas d'escalade.",
+      "Tir d'Achevement / Mise a Mort": "Le Deadeye garde l'execution pure a 75%. L'Assassin, dont l'identite dit 'bleed stacking', descend a 50% mais ouvre une plaie.",
+      "Morsure / Griffe (monstres)": "La Griffe saigne, parce que sa description disait deja 'lacerent la chair'.",
+      "Trait Sacre / Decharge (monstres)": "La Decharge ralentit les incantations : elle est portee par hymn_breaker et silence_bringer, des mobs anti-incantateurs."
+    },
+    "_a_surveiller": "Relancer ce scan apres toute vague d'ajout de sorts. Un doublon ne se voit pas a la lecture, seulement a la comparaison."
   }
 }
