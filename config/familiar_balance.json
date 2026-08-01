@@ -5,7 +5,8 @@
     "description": "Profils de balance pour entites familier (compagnon animal du joueur). Applique au spawn combat sur le snapshot stats.",
     "rule": "Un familier doit etre un vrai allie de combat utile, sans remplacer un joueur. Compense les solo runs et donne identite gameplay au joueur.",
     "spec_ref": "PLAN_FAMILIAR_SYSTEM (a creer)",
-    "vs_mercenary_note": "Le mercenaire est un bot filler PvP (post-MVP). Le familier est l'attachement personnel du joueur. Stats familier ~= stats merc mais sans level_offset (capped au level joueur, pas -2)."
+    "vs_mercenary_note": "Le mercenaire est un bot filler PvP (post-MVP). Le familier est l'attachement personnel du joueur. Stats familier ~= stats merc mais sans level_offset (capped au level joueur, pas -2).",
+    "merge_note": "slot_progression migre depuis pet_balance.json (2026-08-01, fin de la migration pet_->familiar_). Le loadout_roller doit lire familiar_balance.slot_progression.by_level."
   },
   "profiles": {
     "familiar_v1": {
@@ -61,5 +62,33 @@
     "rare": 0.01,
     "epic": 0.005,
     "legendary": 0.002
+  },
+  "slot_progression": {
+    "description_fr": "Nombre de slots de skills disponibles selon le niveau du familier. Slots non-rerollable individuellement, rerollable globalement via item.",
+    "description_en": "Number of skill slots available based on pet level. Slots not individually rerollable, globally rerollable via item.",
+    "by_level": [
+      {
+        "min_level": 1,
+        "skill_slots": 2
+      },
+      {
+        "min_level": 20,
+        "skill_slots": 3
+      },
+      {
+        "min_level": 50,
+        "skill_slots": 4
+      },
+      {
+        "min_level": 100,
+        "skill_slots": 5
+      }
+    ],
+    "skill_unlock_rule": "auto_roll_from_pool",
+    "unlock_no_duplicates": true,
+    "rerollable_via": [
+      "cons_pet_skill_reroll_one",
+      "cons_pet_skill_reroll_choose"
+    ]
   }
 }
