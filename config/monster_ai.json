@@ -1,8 +1,22 @@
 {
   "_meta": {
     "version": "1.0",
-    "last_updated": "2026-01-14",
-    "description": "Configuration du systeme d'IA des monstres"
+    "last_updated": "2026-08-01",
+    "description": "Configuration du systeme d'IA des monstres",
+    "ai_role_to_stat_archetype": {
+      "_comment": "Alignement 7 archetypes. ai_role pilote l IA+skills, stat_archetype pilote stats+placement.",
+      "tank": "tank",
+      "brute": "brute",
+      "berserker": "brute",
+      "bruiser": "brute",
+      "assassin": "assassin",
+      "artillery": "archer/mage",
+      "caster": "mage",
+      "tactician": "controller",
+      "controller": "controller",
+      "healer": "support",
+      "support": "support"
+    }
   },
   "intelligence_levels": {
     "_comment": "Niveau d'intelligence base sur le danger_level du monstre",
@@ -87,8 +101,8 @@
     "assassin": {
       "name_fr": "Assassin",
       "name_en": "Assassin",
-      "description_fr": "Ignore les tanks et focus directement les classes fragiles de la backline (soigneurs, mages).",
-      "description_en": "Ignores tanks and focuses fragile backline classes (healers, mages).",
+      "description_fr": "Se teleporte sur les classes fragiles de la backline (soigneurs, mages) et devient invisible pour les eliminer. Ignore les tanks.",
+      "description_en": "Teleports onto fragile backline classes (healers, mages) and turns invisible to eliminate them. Ignores tanks.",
       "preferred_row": "front",
       "priority_weights": {
         "attack_healer": 50,
@@ -109,6 +123,8 @@
         "warrior"
       ],
       "preferred_skills": [
+        "gap_closer",
+        "teleport",
         "single_target_damage",
         "execute"
       ]
@@ -251,6 +267,86 @@
       "preferred_skills": [
         "damage",
         "rage"
+      ]
+    },
+    "bruiser": {
+      "name_fr": "Cogneur",
+      "name_en": "Bruiser",
+      "description_fr": "Frontline qui frappe fort au corps a corps, focus l ennemi le plus proche.",
+      "description_en": "Frontline melee bruiser, focuses the closest enemy.",
+      "preferred_row": "front",
+      "priority_weights": {
+        "attack_nearest": 50,
+        "attack_lowest_hp": 25,
+        "attack_random": 25
+      },
+      "behavior": {
+        "aggression": 0.75,
+        "self_preservation": 0.4,
+        "support_allies": 0.15
+      },
+      "preferred_skills": [
+        "single_target_damage",
+        "melee"
+      ]
+    },
+    "caster": {
+      "name_fr": "Mage",
+      "name_en": "Caster",
+      "description_fr": "Nuke magique a distance, vise la backline et les cibles a bas PV depuis le fond.",
+      "description_en": "Ranged magic nuker, targets the backline and low-HP targets from the rear.",
+      "preferred_row": "back",
+      "priority_weights": {
+        "attack_backline": 45,
+        "attack_lowest_hp": 30,
+        "attack_grouped": 20,
+        "attack_random": 5
+      },
+      "behavior": {
+        "aggression": 0.7,
+        "self_preservation": 0.5,
+        "support_allies": 0.15
+      },
+      "target_priority": [
+        "healer",
+        "mage",
+        "archer",
+        "rogue",
+        "warrior"
+      ],
+      "preferred_skills": [
+        "ranged_damage",
+        "aoe_damage"
+      ]
+    },
+    "controller": {
+      "name_fr": "Controleur",
+      "name_en": "Controller",
+      "description_fr": "Verrouille tes casters avec du CC et des debuffs depuis le fond. Interrompt les incantations.",
+      "description_en": "Locks down your casters with CC and debuffs from the rear. Interrupts casts.",
+      "preferred_row": "back",
+      "priority_weights": {
+        "cc_caster": 40,
+        "debuff_enemy": 30,
+        "interrupt_cast": 20,
+        "attack_random": 10
+      },
+      "behavior": {
+        "aggression": 0.5,
+        "self_preservation": 0.5,
+        "support_allies": 0.35
+      },
+      "target_priority": [
+        "mage",
+        "healer",
+        "archer",
+        "rogue",
+        "warrior"
+      ],
+      "preferred_skills": [
+        "cc",
+        "debuff",
+        "ranged_damage"
       ]
     }
   },
