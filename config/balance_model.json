@@ -174,7 +174,72 @@
       "plafond_absolu_hard_cc_secondes": 1.0
     },
     "regle_malus": "Un effet NEGATIF porte par son propre sort (le def_down de Frenzy) ne recoit JAMAIS de duration_per_level : investir dans un sort ne doit pas allonger sa propre contrepartie.",
-    "regle_uptime": "Un debuff ne doit pas atteindre 100% d'uptime sur son propre cooldown, sinon il devient une stat passive et non un choix."
+    "regle_uptime": "Un debuff ne doit pas atteindre 100% d'uptime sur son propre cooldown, sinon il devient une stat passive et non un choix.",
+    "inventaire_2026_08_01": {
+      "_comment": "Arbitrage des effets qui paraissaient morts. LEÇON DE METHODE : compter les usages dans la data ne prouve RIEN. Beaucoup d'effets sont des marqueurs runtime poses par le MOTEUR (arcane_charge, savoir_faire_charged, predation) ou declenches par classes/*/passives.json, jamais par un sort. Le seul test valable est : le code serveur y fait-il reference ?",
+      "a_conserver_absolument": {
+        "_comment": "18 effets referencies par du code serveur vivant. Les supprimer casserait le moteur, meme si aucun SORT ne les cite.",
+        "marqueurs_runtime_poses_par_le_moteur": [
+          "arcane_charge",
+          "savoir_faire_charged",
+          "predation",
+          "predators_focus",
+          "berserk",
+          "amplify"
+        ],
+        "declenches_par_les_passifs_innés": [
+          "martial_discipline_atk",
+          "martial_discipline_def",
+          "guardian_breath",
+          "savoir_faire",
+          "predator_mark"
+        ],
+        "_ou": "classes/*/passives.json, traites par combat/innate_passive_processor.cpp",
+        "autres_cables": [
+          "shield",
+          "shield_block",
+          "regen",
+          "invulnerable",
+          "untargetable",
+          "cc_immune_zone",
+          "triple_attack_chance"
+        ]
+      },
+      "reellement_inertes": {
+        "_comment": "Aucune reference serveur, aucun usage data. Suppression possible, sans urgence.",
+        "hp_dot": "jamais implemente, jamais utilise",
+        "sacrifice": "jamais implemente. ATTENTION au faux positif : le mot 'sacrifice' apparait 28 fois en PROSE dans le lore du Martyr (dont l'identite est 'Self-sacrifice protector'), zero fois comme identifiant d'effet."
+      },
+      "obsoletes_par_design": {
+        "_comment": "Encore traites generiquement par le moteur, mais la STAT sous-jacente ne fait plus rien depuis le retrait des auto-attaques (2026-07-30) : atk_speed n'alimente que `haste`, qui ne pilotait que l'intervalle d'auto-attaque.",
+        "effets": [
+          "atk_speed_up",
+          "atk_speed_down"
+        ]
+      },
+      "disponible_et_inexploite": {
+        "cast_speed_down": "VIVANT et generique (status_manager.cpp:196 via starts_with('cast_speed_')), cast_speed rendu reel par BE-6. Zero usage en data. C'est un outil anti-incantateur pret a l'emploi, notamment contre le Mage dont les temps d'incantation ont ete allonges."
+      }
+    },
+    "contre_effets": {
+      "_comment": "Anti-soin et anti-critique. Regle : les placer sur les sous-classes dont c'est l'IDENTITE, jamais en saupoudrage. L'hote doit cibler des ENNEMIS — une sous-classe defensive qui ne buffe que ses allies (Forgemaster, Sentinel) ne peut pas porter d'anti-crit.",
+      "anti_soin": {
+        "warlord/dreadlord": "terror_cry",
+        "healer/martyr": "zealous_strike",
+        "archer/ranger": "piercing_arrow + kill_shot",
+        "artisan/plague_brewer": "lethal_sap + plague_burst",
+        "rogue/debuffer": "total_shutdown (2026-08-01)",
+        "rogue/cutthroat": "slashing_spree (2026-08-01)",
+        "mage/occultist": "curse_of_weakness (2026-08-01)"
+      },
+      "anti_critique": {
+        "warrior/bulwark": "massive_presence + riposte",
+        "rogue/countermaster": "guard_break (2026-08-01)",
+        "mage/frostcaller": "frost_mist (2026-08-01)",
+        "artisan/war_drummer": "rolling_rhythm (2026-08-01)"
+      },
+      "_piege": "crit_resistance_down n'est PAS un anti-crit : il REDUIT la resistance aux critiques de la cible, donc il AMPLIFIE les crits. C'est un outil offensif (ranger_precision_shot)."
+    }
   },
   "pieges_verifies": {
     "_comment": "Champs qui ont ete ecrits en data en croyant qu'ils faisaient quelque chose. Verifier AVANT d'utiliser.",
