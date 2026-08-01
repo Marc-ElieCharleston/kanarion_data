@@ -1,0 +1,198 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-08-01",
+    "description": "Grille de balance des sorts. Modele UNIQUE qui relie puissance, temps d'incantation et cooldown. Sert a reperer les sorts hors norme, pas a generer les sorts automatiquement : un sort peut sortir de la grille si le design le justifie, mais l'ecart doit etre volontaire et documente.",
+    "usage": "scripts d'audit + revue manuelle. Recalculer apres toute passe de balance."
+  },
+  "puissance_effective": {
+    "_comment": "Mesure unique qui rend les sorts comparables entre eux, quelle que soit leur forme. Exprimee en % de la stat de scaling.",
+    "formule": "puissance = direct + dot + controle",
+    "direct": {
+      "formule": "scaling_percent x hit_count x facteur_surface",
+      "facteur_surface": "racine(min(cases, 9))",
+      "_pourquoi_racine": "Une zone de 25 cases ne touche jamais 25 cibles. La racine amortit : 1 case = x1, 4 cases = x2, 9 cases et plus = x3.",
+      "_pourquoi_plafond_9": "Au-dela de 9 cases on touche en pratique tout ce qui est a portee ; augmenter la surface n'ajoute plus de cibles reelles."
+    },
+    "dot": {
+      "formule": "somme sur chaque effet DoT de (stacks_to_apply x pourcentage_par_tick x duree)",
+      "_comment": "Le tick est a 1 seconde. Un DoT de 3 charges a 30% pendant 4s vaut 360, soit plus qu'un sort direct a 300%. Ignorer les DoT sous-evalue massivement les classes de poison et de saignement.",
+      "pourcentage_par_tick_par_charge": {
+        "bleed": 30,
+        "burn": 25,
+        "corruption": 15,
+        "toxin": 10,
+        "chill": 10,
+        "poison": 2,
+        "holy_dot": 15
+      },
+      "_note_poison": "poison est en % des PV MAX de la cible, pas de la stat du lanceur. Non comparable directement, pondere a 2 par defaut.",
+      "_note_holy_dot": "holy_dot est croissant (10, 15, 20...). On prend 15 comme moyenne."
+    },
+    "controle": {
+      "_comment": "Un stun ou un gros debuff a de la valeur meme sans degats. Equivalent en points de puissance, par seconde d'effet.",
+      "hard_cc_par_seconde": 60,
+      "soft_cc_par_seconde": 25,
+      "debuff_offensif_par_charge_par_seconde": 4,
+      "debuff_defensif_par_charge_par_seconde": 4,
+      "_note": "Volontairement grossier. Sert a eviter qu'un sort de controle pur soit classe comme faible."
+    }
+  },
+  "temps_incantation": {
+    "_comment": "Le temps d'incantation suit la puissance. C'est la contrepartie du Mage : il frappe plus fort mais il s'expose. Depuis le retrait des auto-attaques (2026-07-30), sans cette contrepartie les classes physiques sont perdantes.",
+    "_contre_jeu": "Un cast est interrompu par un STUN (room.cpp process_casting, flags.stunned). Cooldown et Souffle sont REMBOURSES a l'interruption. Allonger un cast cree donc une vraie fenetre de contre-jeu, pas une simple punition.",
+    "grille": [
+      {
+        "puissance_max": 150,
+        "cast": 1.0
+      },
+      {
+        "puissance_max": 300,
+        "cast": 1.5
+      },
+      {
+        "puissance_max": 500,
+        "cast": 2.0
+      },
+      {
+        "puissance_max": 700,
+        "cast": 3.0
+      },
+      {
+        "puissance_max": null,
+        "cast": 4.0
+      }
+    ],
+    "plancher_par_tier": {
+      "_comment": "Une signature doit toujours offrir une fenetre d'interruption, meme si sa puissance vient de la surface et non du scaling.",
+      "signature": 2.5,
+      "strong": 2.0
+    },
+    "plafond_melee": {
+      "_comment": "Une sous-classe de melee ne peut pas rester plantee 4 secondes au contact. Concerne Spellblade et Battle Healer.",
+      "valeur": 2.5,
+      "lignes": [
+        "spellblade",
+        "battle_healer"
+      ]
+    },
+    "exemptions": {
+      "_comment": "Ne recoivent JAMAIS de temps d'incantation : ils doivent rester reactifs.",
+      "regles": [
+        "sorts sans scaling_percent (buffs, boucliers, dissipations)",
+        "boucliers reactifs : un bouclier qu'il faut anticiper 1s a l'avance arrive apres le coup",
+        "sorts de mouvement"
+      ]
+    },
+    "classes_physiques": "Aucun temps d'incantation. C'est leur avantage face au Mage, et la compensation du retrait des auto-attaques.",
+    "ponderation_controle": {
+      "valeur": 0.5,
+      "_pourquoi": "Le temps d'incantation suit les DEGATS (direct + dot). Le controle ne compte qu'a moitie : un sort de controle est deja bride par son cooldown, lui coller en plus un long cast le punit deux fois. Sans cette ponderation, une simple malediction a 40 de degats direct heritait de 3s d'incantation."
+    }
+  },
+  "cooldown": {
+    "_comment": "Le cooldown suit le tier, pas la puissance : c'est le tier qui dit a quelle frequence le sort doit revenir dans la rotation.",
+    "par_tier": {
+      "filler": {
+        "min": 0,
+        "max": 5,
+        "_note": "le sort 1 de chaque classe est a 3-5s, cout 2 Souffle +1/niv"
+      },
+      "basic": {
+        "min": 5,
+        "max": 12
+      },
+      "standard": {
+        "min": 10,
+        "max": 20
+      },
+      "advanced": {
+        "min": 4,
+        "max": 18,
+        "_note": "tier le plus large : le tier3 contient des fillers ET des gros sorts"
+      },
+      "strong": {
+        "min": 20,
+        "max": 36
+      },
+      "signature": {
+        "min": 24,
+        "max": 52
+      }
+    }
+  },
+  "portee": {
+    "_comment": "Grille 10x6 profonde depuis 2026-08-01. La portee est ce qui donne son sens a la profondeur.",
+    "contact": {
+      "min": 1,
+      "max": 2,
+      "classes": [
+        "warrior",
+        "rogue melee",
+        "spellblade",
+        "battle_healer"
+      ]
+    },
+    "mi_distance": {
+      "min": 3,
+      "max": 4,
+      "classes": [
+        "healer",
+        "artisan"
+      ]
+    },
+    "distance": {
+      "min": 5,
+      "max": 6,
+      "classes": [
+        "archer",
+        "mage"
+      ]
+    },
+    "_etat": "Le champ `range` n'est renseigne sur AUCUN des 396 sorts : tous heritent de la portee du personnage. Chantier ouvert."
+  },
+  "surface": {
+    "_comment": "Voir combat/targeting.json _meta.doctrine_ciblage pour les regles de forme. Ici seulement les tailles.",
+    "par_tier": {
+      "filler": "1 case",
+      "basic": "2 a 3",
+      "standard": "3 a 4",
+      "advanced": "4 a 6",
+      "strong": "6 a 9",
+      "signature": "9 a 25"
+    },
+    "plafond_absolu": {
+      "valeur": 25,
+      "_pourquoi": "Au-dela de 25 cases sur 60, la portee et la ligne de vue ne decident plus de rien. `all` est reserve aux auras ALLIEES (nombre d'allies borne a 10)."
+    }
+  },
+  "effets_de_statut": {
+    "_comment": "Les stat_modifier de la grille canonique ne portent leur puissance QUE par le nombre de charges. value et value_override sont interdits dessus (contrat Option A, CTO 2026-04-30).",
+    "reference": "stats/status_effects.json _meta.canonical_grid",
+    "duree_par_niveau": {
+      "_comment": "Gain RELATIF, pas absolu. Un +0.2s valait +9% sur un buff de 20s et +112% sur un buff de 4s.",
+      "formule": "duration_per_level = duree_de_base x cible / 9",
+      "cibles": {
+        "buff_debuff": 0.25,
+        "soft_cc_et_taunt": 0.15,
+        "hard_cc": 0.1
+      },
+      "plafond_absolu_hard_cc_secondes": 1.0
+    },
+    "regle_malus": "Un effet NEGATIF porte par son propre sort (le def_down de Frenzy) ne recoit JAMAIS de duration_per_level : investir dans un sort ne doit pas allonger sa propre contrepartie.",
+    "regle_uptime": "Un debuff ne doit pas atteindre 100% d'uptime sur son propre cooldown, sinon il devient une stat passive et non un choix."
+  },
+  "pieges_verifies": {
+    "_comment": "Champs qui ont ete ecrits en data en croyant qu'ils faisaient quelque chose. Verifier AVANT d'utiliser.",
+    "morts_ou_partiels": [
+      "cooldown_reduction et cast_speed : etaient fantomes, rendus vivants par BE-6 (2026-07-31)",
+      "atk_speed / haste : ne pilotait que l'intervalle d'auto-attaque, MORT depuis leur retrait",
+      "double_attack_chance : ne procque que sur basic_attack, donc mort pour le joueur (ticket BE-9 pour l'etendre aux sorts)",
+      "damage_transfer : jamais implemente, 7 sorts concernes (ticket BE-14)",
+      "max_missing_hp_bonus : lu sous un autre nom cote back, corrige BE-15",
+      "pierce et pierce_falloff : parses, jamais consommes",
+      "effects[].pct_per_level : lu en int32_t, une valeur decimale est tronquee a 0 (ticket BE-10)"
+    ],
+    "regle": "Avant d'ecrire un champ mecanique, verifier qu'un code serveur VIVANT le lit. Le parse ne suffit pas."
+  }
+}
