@@ -112,8 +112,8 @@
   },
   "combat_camera": {
     "_comment": "Combat-specific camera (more restrictive zoom)",
-    "_scale_note": "Tuned 2026-07-22 for the unified 9x5 iso board (axis_col 68/34, axis_row -68/34; player renders bottom). Default 1.6 fits the whole 9x5 board (larger than the old 2-center 4x5) in a 1920x1080 viewport without overflow.",
-    "default_zoom": 1.6,
+    "_scale_note": "Board unifie fronts-colles (AUCUNE rangee vide au milieu), dims SERVEUR-AUTORITAIRES via ROOM_JOINED (grid_rows/grid_cols). Actuel: 10x6 (5 rangs/equipe). Axes iso axis_col 68/34, axis_row -68/34; player rend en bas. default_zoom 1.25 cadre le board 10x6 en 1920x1080 sans debordement (recalcule depuis le 8x5@1.6, ratio d'etendue ~1.27x). Si les dims serveur changent, reajuster ce zoom a l'oeil sur screenshot.",
+    "default_zoom": 1.25,
     "min_zoom": 1.0,
     "max_zoom": 3.0,
     "zoom_step": 0.2,
@@ -156,12 +156,13 @@
       }
     },
     "layout": {
-      "_comment": "Unified 9x5 iso board (Canaan-style): one continuous lattice, single origin + single axis pair. Enemy = visual rows 0-3 (front = row 3, near the middle, rendered TOP of screen / far from camera), row 4 = no man's land (empty, no entity), player = visual rows 5-8 (front = row 5, near the middle, rendered BOTTOM of screen / near camera). Enemy columns are MIRRORED (vcol = (cols-1)-logical_col) so the shared column axis reproduces the server cross-team distance |col_a + col_c - 4|.",
-      "_formula": "pos(vr, vc) = origin + (vc - (cols-1)/2)*axis_col + (vr - (board_rows-1)/2)*axis_row; player: vrow = middle_row+1+logical_row, vcol = logical_col; enemy: vrow = middle_row-1-logical_row, vcol = (cols-1)-logical_col",
-      "_scale_note": "Clean iso 2:1 axes (symmetric same-length pair, diamonds 136x68 matching the 2:1 foot ellipses). Orientation fixed 2026-07-22: axis_col down-right (68,34), axis_row down-LEFT (-68,34) so rising vrow advances toward the bottom of the screen -> PLAYER team (high vrow) renders at the bottom near the camera, ENEMY (low vrow) at the top, like the legacy 2-center layout (player_center y+, enemy_center y-). board_rows and middle_row are derived at runtime from the per-team grid rows in combat_layout.gd / layout_projection.gd; they are listed here for documentation. Combat camera default_zoom = 1.6 (board is bigger than the old 2-center 4x5).",
-      "board_rows": 9,
-      "board_cols": 5,
-      "middle_row": 4,
+      "_comment": "Board iso unifie FRONTS-COLLES (Canaan-style): un seul lattice continu, single origin + single axis pair, AUCUNE rangee vide au milieu (le no man's land du modele pre-0.7.0.0 est mort). Les deux equipes se plient sur le meme board: ennemi = rangs [0, rows/2) (front = rows/2 - 1, rendu HAUT de l'ecran / loin de la camera), joueur = rangs [rows/2, rows) (front = rows/2, rendu BAS pres de la camera), fronts adjacents colles au centre. rows/cols = SERVEUR-AUTORITAIRES (ROOM_JOINED), actuel 10x6. Colonnes ennemies MIRRORED (vcol = (cols-1)-logical_col) pour que l'axe colonne partage reproduise la distance cross-team serveur.",
+      "_formula": "pos(row, col) = origin + (col - (cols-1)/2)*axis_col + (row - (rows-1)/2)*axis_row (centrage sur le board complet). row absolu = index de rang serveur (0 = fond ennemi en haut, rows-1 = fond joueur en bas), col absolu. board_cell_to_screen (layout_projection.gd) applique cette formule directement: PAS de fold, PAS de gap.",
+      "_scale_note": "Clean iso 2:1 axes (symmetric same-length pair, diamonds 136x68 matching the 2:1 foot ellipses). Orientation fixed 2026-07-22: axis_col down-right (68,34), axis_row down-LEFT (-68,34) so rising row advances toward the bottom of the screen -> PLAYER team (high rows) renders at the bottom near the camera, ENEMY (low rows) at the top. board_rows/board_cols DERIVED AT RUNTIME from the server grid dims (CombatGrid.rows/cols via ROOM_JOINED) in layout_projection.gd; the values below are documentation of the CURRENT server default only. Combat camera default_zoom = 1.25 (board 10x6, recalcule depuis 8x5@1.6).",
+      "board_rows": 10,
+      "board_cols": 6,
+      "_middle_row_note": "Legacy: plus de rangee vide. Le pli est entre le rang rows/2-1 (front ennemi) et rows/2 (front joueur), fronts colles.",
+      "middle_row": 5,
       "origin": {
         "x": 0,
         "y": 0
