@@ -14,8 +14,8 @@
       "level_offset": 0,
       "level_cap_to_owner": true,
       "damage_multiplier": 0.65,
-      "healing_multiplier": 0.70,
-      "shield_multiplier": 0.70,
+      "healing_multiplier": 0.7,
+      "shield_multiplier": 0.7,
       "cooldown_multiplier": 1.5,
       "ai_intelligence_level": 3,
       "ai_decision_delay_ticks": 2,
@@ -24,111 +24,216 @@
     }
   },
   "rarity_multipliers": {
-    "common":     { "stat_multiplier": 1.00, "color_hex": "#9E9E9E", "drop_weight": 70 },
-    "rare":       { "stat_multiplier": 1.03, "color_hex": "#3D7DFF", "drop_weight": 25 },
-    "epic":       { "stat_multiplier": 1.06, "color_hex": "#A45BFF", "drop_weight": 4 },
-    "legendary":  { "stat_multiplier": 1.10, "color_hex": "#FFB800", "drop_weight": 1 }
+    "_comment": "Rarete = multiplicateur de stats (applique au spawn par le combat host) + drop_weight = poids du roll de rarete A LA CAPTURE. Spread renforce 2026-08-01 : legendaire x1.3 pour valoriser le ~1%. Reconcilie familiar_balance (canonique) + pet_balance (legacy, a supprimer au cleanup).",
+    "common": {
+      "stat_multiplier": 1.0,
+      "drop_weight": 60,
+      "color_hex": "#9E9E9E"
+    },
+    "uncommon": {
+      "stat_multiplier": 1.06,
+      "drop_weight": 25,
+      "color_hex": "#1EFF00"
+    },
+    "rare": {
+      "stat_multiplier": 1.12,
+      "drop_weight": 10,
+      "color_hex": "#3D7DFF"
+    },
+    "epic": {
+      "stat_multiplier": 1.2,
+      "drop_weight": 4,
+      "color_hex": "#A45BFF"
+    },
+    "legendary": {
+      "stat_multiplier": 1.3,
+      "drop_weight": 1,
+      "color_hex": "#FFB800"
+    }
   },
   "slot_progression": {
     "description_fr": "Nombre de slots de skills disponibles selon le niveau du familier. Slots non-rerollable individuellement, rerollable globalement via item.",
     "description_en": "Number of skill slots available based on pet level. Slots not individually rerollable, globally rerollable via item.",
     "by_level": [
-      { "min_level": 1,   "skill_slots": 2 },
-      { "min_level": 20,  "skill_slots": 3 },
-      { "min_level": 50,  "skill_slots": 4 },
-      { "min_level": 100, "skill_slots": 5 }
+      {
+        "min_level": 1,
+        "skill_slots": 2
+      },
+      {
+        "min_level": 20,
+        "skill_slots": 3
+      },
+      {
+        "min_level": 50,
+        "skill_slots": 4
+      },
+      {
+        "min_level": 100,
+        "skill_slots": 5
+      }
     ],
     "skill_unlock_rule": "auto_roll_from_pool",
     "unlock_no_duplicates": true,
-    "rerollable_via": ["cons_pet_skill_reroll_one", "cons_pet_skill_reroll_choose"]
+    "rerollable_via": [
+      "cons_pet_skill_reroll_one",
+      "cons_pet_skill_reroll_choose"
+    ]
   },
   "stat_templates": {
     "pet_attack_v1": {
       "description_fr": "Rat d'attaque. Hauts dégâts physiques, faible HP/DEF.",
       "description_en": "Attack rat. High physical damage, low HP/DEF.",
       "base": {
-        "hp": 80, "mp": 30,
-        "atk": 18, "def": 8, "mag": 5,
-        "armor": 10, "magic_resist": 5,
-        "crit": 10, "crit_dmg": 150,
-        "hit": 105, "flee": 8,
-        "armor_pen": 0, "magic_pen": 0,
-        "attack_speed": 0.9, "cast_speed": 0,
-        "hp_regen": 1.0, "mp_regen": 1.5,
-        "heal_power": 0, "shield_power": 0,
-        "effect_chance": 5, "effect_resist": 5
+        "hp": 80,
+        "mp": 30,
+        "atk": 18,
+        "def": 8,
+        "mag": 5,
+        "armor": 10,
+        "magic_resist": 5,
+        "crit": 10,
+        "crit_dmg": 150,
+        "hit": 105,
+        "flee": 8,
+        "armor_pen": 0,
+        "magic_pen": 0,
+        "attack_speed": 0.9,
+        "cast_speed": 0,
+        "hp_regen": 1.0,
+        "mp_regen": 1.5,
+        "heal_power": 0,
+        "shield_power": 0,
+        "effect_chance": 5,
+        "effect_resist": 5
       },
       "growth": {
-        "hp": 8, "mp": 1.5,
-        "atk": 2.5, "def": 1.0, "mag": 0.5,
-        "armor": 1.5, "magic_resist": 0.8,
-        "crit": 0.3, "hp_regen": 0.05, "mp_regen": 0.05
+        "hp": 8,
+        "mp": 1.5,
+        "atk": 2.5,
+        "def": 1.0,
+        "mag": 0.5,
+        "armor": 1.5,
+        "magic_resist": 0.8,
+        "crit": 0.3,
+        "hp_regen": 0.05,
+        "mp_regen": 0.05
       }
     },
     "pet_tank_v1": {
       "description_fr": "Rat tank. Hauts HP/DEF/armure, bas dégâts.",
       "description_en": "Tank rat. High HP/DEF/armor, low damage.",
       "base": {
-        "hp": 150, "mp": 25,
-        "atk": 8, "def": 18, "mag": 5,
-        "armor": 25, "magic_resist": 15,
-        "crit": 0, "crit_dmg": 150,
-        "hit": 100, "flee": 3,
-        "armor_pen": 0, "magic_pen": 0,
-        "attack_speed": 0.7, "cast_speed": 0,
-        "hp_regen": 1.5, "mp_regen": 1.2,
-        "heal_power": 0, "shield_power": 5,
-        "effect_chance": 0, "effect_resist": 15
+        "hp": 150,
+        "mp": 25,
+        "atk": 8,
+        "def": 18,
+        "mag": 5,
+        "armor": 25,
+        "magic_resist": 15,
+        "crit": 0,
+        "crit_dmg": 150,
+        "hit": 100,
+        "flee": 3,
+        "armor_pen": 0,
+        "magic_pen": 0,
+        "attack_speed": 0.7,
+        "cast_speed": 0,
+        "hp_regen": 1.5,
+        "mp_regen": 1.2,
+        "heal_power": 0,
+        "shield_power": 5,
+        "effect_chance": 0,
+        "effect_resist": 15
       },
       "growth": {
-        "hp": 15, "mp": 1.0,
-        "atk": 1.0, "def": 2.5, "mag": 0.3,
-        "armor": 2.5, "magic_resist": 1.5,
-        "crit": 0.0, "hp_regen": 0.08, "mp_regen": 0.04
+        "hp": 15,
+        "mp": 1.0,
+        "atk": 1.0,
+        "def": 2.5,
+        "mag": 0.3,
+        "armor": 2.5,
+        "magic_resist": 1.5,
+        "crit": 0.0,
+        "hp_regen": 0.08,
+        "mp_regen": 0.04
       }
     },
     "pet_heal_v1": {
       "description_fr": "Rat soigneur. Haute MAG, faible HP/ATK. Squishy = positionnement compte.",
       "description_en": "Healer rat. High MAG, low HP/ATK. Squishy = positioning matters.",
       "base": {
-        "hp": 60, "mp": 40,
-        "atk": 5, "def": 8, "mag": 20,
-        "armor": 8, "magic_resist": 10,
-        "crit": 8, "crit_dmg": 150,
-        "hit": 100, "flee": 8,
-        "armor_pen": 0, "magic_pen": 0,
-        "attack_speed": 0.8, "cast_speed": 5,
-        "hp_regen": 1.0, "mp_regen": 2.0,
-        "heal_power": 10, "shield_power": 0,
-        "effect_chance": 0, "effect_resist": 10
+        "hp": 60,
+        "mp": 40,
+        "atk": 5,
+        "def": 8,
+        "mag": 20,
+        "armor": 8,
+        "magic_resist": 10,
+        "crit": 8,
+        "crit_dmg": 150,
+        "hit": 100,
+        "flee": 8,
+        "armor_pen": 0,
+        "magic_pen": 0,
+        "attack_speed": 0.8,
+        "cast_speed": 5,
+        "hp_regen": 1.0,
+        "mp_regen": 2.0,
+        "heal_power": 10,
+        "shield_power": 0,
+        "effect_chance": 0,
+        "effect_resist": 10
       },
       "growth": {
-        "hp": 6, "mp": 2.0,
-        "atk": 0.5, "def": 1.0, "mag": 3.0,
-        "armor": 1.0, "magic_resist": 1.2,
-        "crit": 0.2, "hp_regen": 0.04, "mp_regen": 0.08
+        "hp": 6,
+        "mp": 2.0,
+        "atk": 0.5,
+        "def": 1.0,
+        "mag": 3.0,
+        "armor": 1.0,
+        "magic_resist": 1.2,
+        "crit": 0.2,
+        "hp_regen": 0.04,
+        "mp_regen": 0.08
       }
     },
     "pet_utility_v1": {
       "description_fr": "Rat utilitaire. Stats equilibrees, hauts crit/effect_chance.",
       "description_en": "Utility rat. Balanced stats, high crit/effect_chance.",
       "base": {
-        "hp": 90, "mp": 35,
-        "atk": 10, "def": 10, "mag": 12,
-        "armor": 12, "magic_resist": 10,
-        "crit": 12, "crit_dmg": 150,
-        "hit": 105, "flee": 10,
-        "armor_pen": 0, "magic_pen": 0,
-        "attack_speed": 0.85, "cast_speed": 0,
-        "hp_regen": 1.0, "mp_regen": 1.8,
-        "heal_power": 5, "shield_power": 5,
-        "effect_chance": 10, "effect_resist": 8
+        "hp": 90,
+        "mp": 35,
+        "atk": 10,
+        "def": 10,
+        "mag": 12,
+        "armor": 12,
+        "magic_resist": 10,
+        "crit": 12,
+        "crit_dmg": 150,
+        "hit": 105,
+        "flee": 10,
+        "armor_pen": 0,
+        "magic_pen": 0,
+        "attack_speed": 0.85,
+        "cast_speed": 0,
+        "hp_regen": 1.0,
+        "mp_regen": 1.8,
+        "heal_power": 5,
+        "shield_power": 5,
+        "effect_chance": 10,
+        "effect_resist": 8
       },
       "growth": {
-        "hp": 9, "mp": 1.7,
-        "atk": 1.5, "def": 1.5, "mag": 1.8,
-        "armor": 1.5, "magic_resist": 1.0,
-        "crit": 0.4, "hp_regen": 0.05, "mp_regen": 0.06
+        "hp": 9,
+        "mp": 1.7,
+        "atk": 1.5,
+        "def": 1.5,
+        "mag": 1.8,
+        "armor": 1.5,
+        "magic_resist": 1.0,
+        "crit": 0.4,
+        "hp_regen": 0.05,
+        "mp_regen": 0.06
       }
     }
   },
