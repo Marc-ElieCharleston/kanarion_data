@@ -421,6 +421,35 @@ def validate_legacy_contradiction(skill, file_path, errors):
                     )
 
 
+def validate_damage_scaling_coherence(skill, file_path, errors):
+    """Un sort physique scale sur atk, un sort magique sur mag.
+
+    Ajoute le 2026-08-01. Mesure faite ce jour-la : 498 sorts, ZERO incoherence.
+    La propriete est donc vraie aujourd'hui par discipline, mais rien ne la protege.
+    Cette regle la verrouille avant qu'une future vague de sorts ne l'entame.
+
+    Exceptions volontaires, mesurees dans la data existante :
+      physical + armor / def / current_shield  -> degats bases sur la defense
+                                                  (Forgeron : DEF-based damage)
+      magical  + max_hp                        -> DoT en % des PV max du lanceur
+      none     + <n'importe quoi>              -> soins, boucliers, buffs
+    """
+    sid = skill.get("id", "???")
+    dt = skill.get("damage_type")
+    st = skill.get("scaling_stat")
+    if st is None:
+        return
+    allowed = {
+        "physical": {"atk", "armor", "def", "current_shield", "max_hp"},
+        "magical": {"mag", "max_hp", "def"},
+    }
+    if dt in allowed and st not in allowed[dt]:
+        errors.append(
+            f"{file_path}: skill '{sid}' INCOHERENT — damage_type '{dt}' "
+            f"mais scaling_stat '{st}' (attendu : {sorted(allowed[dt])})"
+        )
+
+
 def main():
     # Determine database root
     db_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -452,6 +481,7 @@ def main():
             validate_skill_fields(skill, skill_file, errors, warnings)
             validate_effects_array(skill, skill_file, valid_effect_ids, canonical_grid, errors, warnings)
             validate_legacy_contradiction(skill, skill_file, errors)
+            validate_damage_scaling_coherence(skill, skill_file, errors)
 
             # Count legacy usage
             for f in skill.keys():

@@ -286,7 +286,7 @@
   },
   "mutualisation_des_sorts": {
     "_question": "Faire pointer monstres et familiers vers les sorts de classe existants, simplement renommes, pour tout regrouper ?",
-    "_verdict": "NON pour la reference directe. OUI pour les templates. Tranche le 2026-08-01.",
+    "_verdict": "NON pour la reference directe. NON pour les templates non plus, apres mesure. Il n'y a rien a regrouper. Tranche le 2026-08-01, revise le meme jour.",
     "ce_qui_marcherait_deja": "Techniquement la reference directe fonctionne : SkillRegistry est un dictionnaire plat par id, classes et monstres chargent dans le MEME registre. Un monstre peut referencer skill_warrior_charge aujourd'hui. Stats compatibles (monstres : atk 177/177, mag 110/177, mp 177/177). Les mercenaires le font deja : 156 references, par design.",
     "pourquoi_c_est_quand_meme_non": {
       "couplage_de_balance": "Nerfer un sort joueur pour le PvP rebalancerait tout le bestiaire. Monstres et joueurs tournent sur deux modeles distincts (monster_scaling_model.json contre points de competence et PvP), avec deux proprietaires et deux rythmes de tuning.",
@@ -299,6 +299,18 @@
       "_etat": "DORMANT : le backend ne le lit pas, aucun sort ne le reference.",
       "_pourquoi_c_est_le_bon_niveau": "Le template partage la FORME (type de degats, stat de scaling, pattern, vfx), ce qui n'a aucune raison de differer. Chaque sort garde son nom, ses chiffres et son cooldown, ce qui doit differer. Zero couplage de balance, et pas besoin d'inventer un systeme de renommage puisque chacun garde son nom nativement.",
       "_cout": "Travail backend : resolution des templates au chargement. Post-tournoi, meme lot que BE-16 et la detonation de DoT."
+    },
+    "revision_du_2026_08_01": {
+      "_pourquoi": "J'avais recommande les templates comme la bonne voie. La mesure m'a fait changer d'avis AVANT que le back n'y passe du temps.",
+      "ce_qui_a_ete_mesure": "Pour chaque FORME de sort (type de degats + stat de scaling + cible), dispersion des autres champs a l'interieur de la forme.",
+      "resultat": {
+        "constant_dans_une_forme": "damage_type, scaling_stat, target — 3 champs.",
+        "variable_dans_une_forme": "scaling_percent de 35 a 420 (rapport 12x), cooldown de 3 a 44s, mana_cost de 2 a 50, pattern jusqu'a 15 variantes, vfx_type jusqu'a 11 variantes."
+      },
+      "conclusion": "Un template ne pourrait porter que 3 champs. Tout ce qui fait un sort — sa puissance, son rythme, sa forme, son cout — varie a l'interieur d'une meme famille. Construire un systeme d'heritage backend pour mutualiser 3 champs ne rentabilise pas son risque.",
+      "pourquoi_les_11_templates_existants_n_ont_jamais_servi": "Ils declarent scaling_percent (50, 45, 100, 90) et vfx_type, precisement les champs qui varient le plus. Ils auraient ete faux pour presque tous les sorts. Et la plupart ne declarent meme pas de `target`, ce qui les rend inapplicables : aucun ne correspond a une forme reelle de la data.",
+      "ce_qu_on_fait_a_la_place": "Une regle de validation (validate_damage_scaling_coherence, ajoutee le 2026-08-01) qui verrouille la seule chose que le template garantissait : un sort physique scale sur atk, un sort magique sur mag. Mesure faite : 498 sorts, ZERO incoherence aujourd'hui. La propriete etait vraie par discipline, elle est maintenant protegee.",
+      "_le_vrai_constat": "Il n'y a pas de duplication a resorber. 0 sort duplique, 0 incoherence, 498 sorts genuinement distincts. Ce qui ressemblait a de l'eparpillement est simplement un jeu qui a beaucoup de sorts."
     }
   },
   "deduplication": {
