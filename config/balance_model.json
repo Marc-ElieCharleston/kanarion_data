@@ -283,5 +283,34 @@
     "_comment": "Outil de tri, pas de verdict : puissance divisee par le cooldown. Sert a reperer ce qui merite un regard, jamais a decider seul.",
     "formule": "densite = puissance / cooldown",
     "_lire_avec": "la limite DoT ci-dessus, et le tier : une signature a densite elevee est normale, un tier advanced a 60+ ne l'est pas."
+  },
+  "mutualisation_des_sorts": {
+    "_question": "Faire pointer monstres et familiers vers les sorts de classe existants, simplement renommes, pour tout regrouper ?",
+    "_verdict": "NON pour la reference directe. OUI pour les templates. Tranche le 2026-08-01.",
+    "ce_qui_marcherait_deja": "Techniquement la reference directe fonctionne : SkillRegistry est un dictionnaire plat par id, classes et monstres chargent dans le MEME registre. Un monstre peut referencer skill_warrior_charge aujourd'hui. Stats compatibles (monstres : atk 177/177, mag 110/177, mp 177/177). Les mercenaires le font deja : 156 references, par design.",
+    "pourquoi_c_est_quand_meme_non": {
+      "couplage_de_balance": "Nerfer un sort joueur pour le PvP rebalancerait tout le bestiaire. Monstres et joueurs tournent sur deux modeles distincts (monster_scaling_model.json contre points de competence et PvP), avec deux proprietaires et deux rythmes de tuning.",
+      "le_renommage_est_le_signe": "Si ca merite un nom different, ca meritera bientot un cooldown puis un chiffre different. Le sort partage devient un tas d'overrides, pire que deux entrees propres. Et aucun mecanisme de name_override n'existe sur les sorts.",
+      "le_gain_est_surestime": "Mesure : 31 sorts de monstre sur 70 et 13 sur 32 chez le familier partagent la FORME d'un sort de classe. ZERO partage les chiffres. Regrouper ne serait pas une reorganisation mais un rebalancing de 44 sorts sur les nombres joueurs.",
+      "elites_et_boss": "Contrainte produit (Charleston, 2026-08-01) : les elites et les boss doivent avoir des mecaniques SPECIFIQUES. Du sur-mesure n'a par definition rien a mutualiser."
+    },
+    "la_bonne_voie": {
+      "_quoi": "config/skill_templates.json — le fichier EXISTE deja, 11 templates ecrits, description : Skill templates for reducing duplication, skills can reference a template and override specific values.",
+      "_etat": "DORMANT : le backend ne le lit pas, aucun sort ne le reference.",
+      "_pourquoi_c_est_le_bon_niveau": "Le template partage la FORME (type de degats, stat de scaling, pattern, vfx), ce qui n'a aucune raison de differer. Chaque sort garde son nom, ses chiffres et son cooldown, ce qui doit differer. Zero couplage de balance, et pas besoin d'inventer un systeme de renommage puisque chacun garde son nom nativement.",
+      "_cout": "Travail backend : resolution des templates au chargement. Post-tournoi, meme lot que BE-16 et la detonation de DoT."
+    }
+  },
+  "deduplication": {
+    "_etat_2026_08_01": "12 groupes de sorts de classe mecaniquement identiques au depart, 9 restants. Les 3 impliquant l'Archer sont resolus.",
+    "_methode": "Empreinte = pattern + cible + type de degats + stat + scaling + cooldown + nombre de coups + liste triee des effets. Deux sorts de meme empreinte sont le meme sort sous deux noms.",
+    "_piege_vecu": "Differencier un doublon peut en CREER un autre : en donnant a sharpshooter_focus le couple crit_chance_up + crit_damage_up, il est devenu identique a rogue/assassin_premeditation. TOUJOURS relancer le scan COMPLET apres chaque differenciation, jamais seulement sur la paire traitee. C'est le compte qui a trahi l'erreur : 10 restants la ou 9 etaient attendus.",
+    "_principe": "Differencier par l'IDENTITE declaree de la sous-classe, pas par les chiffres. Sharpshooter ouvre la cible pour l'equipe la ou l'Assassin ne prepare que lui-meme ; le Striker mise sur le coup en plus la ou le Quickshot mise sur le critique ; le Coup de Vent balaie deux cases parce qu'une bourrasque balaie.",
+    "restant_a_traiter": [
+      "7 groupes cross-classe",
+      "1 groupe intra-Healer : cleanse_wave / purifying_wave",
+      "8 groupes internes aux monstres",
+      "10 collisions de NOM entre sorts de monstre et de classe"
+    ]
   }
 }

@@ -643,7 +643,7 @@
               "name_en": "Focus",
               "name_fr": "Concentration",
               "tier": "advanced",
-              "target": "self",
+              "target": "enemy",
               "pattern": "single",
               "damage_type": "none",
               "base_power": 0,
@@ -651,8 +651,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 16.0,
               "vfx_type": "buff_aura",
-              "description_fr": "Le tireur d'élite règle son souffle sur la cible : il augmente sa chance de critique, ses dégâts critiques et sa précision. Augmente les chances critiques de 15% pendant 10s (+0.3s/niv), augmente les dégâts critiques de 30 pendant 10s (+0.3s/niv), augmente la précision de 25% pendant 10s (+0.3s/niv).",
-              "description_en": "The Sharpshooter steadies their breath on the target: it increases their critical chance, critical damage and accuracy. Increases crit chance by 15% for 10s (+0.3s/lvl), increases crit damage by 30 for 10s (+0.3s/lvl), increases accuracy by 25% for 10s (+0.3s/lvl).",
+              "description_fr": "Le tireur d'élite règle son souffle sur la cible et lui trouve un défaut : elle encaisse les coups critiques de toute l'équipe, et lui frappe plus fort encore. Réduit la résistance aux critiques de la cible pendant 10s (+0.3s/niv), augmente ses propres dégâts critiques de 30 pendant 10s (+0.3s/niv).",
+              "description_en": "The Sharpshooter steadies their breath on the target and finds the flaw: it takes critical hits from the whole team, and theirs bite hardest. Reduces the target's crit resistance for 10s (+0.3s/lvl), increases their own crit damage by 30 for 10s (+0.3s/lvl).",
               "tags": [
                 "buff",
                 "self",
@@ -661,8 +661,8 @@
               ],
               "effects": [
                 {
-                  "type": "buff",
-                  "stat": "crit_chance_up",
+                  "type": "debuff",
+                  "stat": "crit_resistance_down",
                   "stacks_to_apply": 3,
                   "duration": 10.0,
                   "duration_per_level": 0.3
@@ -672,13 +672,7 @@
                   "stat": "crit_damage_up",
                   "stacks_to_apply": 3,
                   "duration": 10.0,
-                  "duration_per_level": 0.3
-                },
-                {
-                  "type": "buff",
-                  "stat": "accuracy_up",
-                  "stacks_to_apply": 5,
-                  "duration": 10.0,
+                  "target": "self",
                   "duration_per_level": 0.3
                 }
               ],
@@ -687,8 +681,8 @@
               "tier3_id": "sharpshooter",
               "source_scope": "TIER3",
               "targeting": {
-                "selection_mode": "self",
-                "valid_target_team": "self",
+                "selection_mode": "entity",
+                "valid_target_team": "enemy",
                 "requires_line_of_sight": true,
                 "bypasses_los": false,
                 "requires_entity_on_target_tile": false,
@@ -1548,19 +1542,19 @@
               "name_en": "Wind Strike",
               "name_fr": "Coup de Vent",
               "tier": "advanced",
-              "target": "enemy",
-              "pattern": "single",
+              "target": "enemies",
+              "pattern": "row_2",
               "damage_type": "physical",
               "scaling_stat": "atk",
               "base_power": 0,
-              "scaling_percent": 130,
+              "scaling_percent": 95,
               "percent_per_level": 8.7,
               "mana_cost": 8,
               "mana_cost_per_level": 1,
               "cooldown": 4.0,
               "vfx_type": "falcon",
-              "description_fr": "Le tireur suit le courant du faucon et gagne en esquive. Inflige 130% ATQ (+8.7%/niv). Augmente l'esquive de 6% pendant 5s.",
-              "description_en": "The archer rides the falcon's current and gains evasion. Deals 130% ATK (+8.7%/lvl). Increases evasion by 6% for 5s.",
+              "description_fr": "Le tireur suit le courant du faucon : la bourrasque balaie deux ennemis côte à côte et il gagne en esquive. Inflige 95% ATQ (+6.3%/niv). Augmente l'esquive de 6% pendant 5s.",
+              "description_en": "The archer rides the falcon's current: the gust sweeps two enemies side by side and they gain evasion. Deals 95% ATK (+6.3%/lvl). Increases evasion by 6% for 5s.",
               "tags": [
                 "damage",
                 "ranged",
@@ -1587,7 +1581,7 @@
                 "requires_line_of_sight": true,
                 "bypasses_los": true,
                 "requires_entity_on_target_tile": false,
-                "aoe_pattern_id": "single"
+                "aoe_pattern_id": "row_2"
               }
             },
             {
@@ -2403,8 +2397,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 16.0,
               "vfx_type": "buff_aura",
-              "description_fr": "Le Striker lâche prise sur le rythme : il gagne en dégâts infligés, en chance de critique, et peut tirer deux flèches pour une. Augmente les dégâts infligés de 25% pendant 10s (+0.3s/niv), augmente les chances critiques de 15% pendant 10s (+0.3s/niv), applique Tir Double pendant 10s (+0.3s/niv).",
-              "description_en": "The Striker lets go of the rhythm: they gain damage dealt, critical chance, and can fire two arrows for one. Increases damage dealt by 25% for 10s (+0.3s/lvl), increases crit chance by 15% for 10s (+0.3s/lvl), applies Double Shot for 10s (+0.3s/lvl).",
+              "description_fr": "Le Striker lâche prise sur le rythme : chaque flèche peut en cacher une seconde. Augmente les dégâts infligés de 25% et applique Tir Double (25% de chance) pendant 10s (+0.3s/niv).",
+              "description_en": "The Striker lets go of the rhythm: every arrow may hide a second. Increases damage dealt by 25% and applies Double Shot (25% chance) for 10s (+0.3s/lvl).",
               "tags": [
                 "buff",
                 "self",
@@ -2422,15 +2416,8 @@
                 },
                 {
                   "type": "buff",
-                  "stat": "crit_chance_up",
-                  "stacks_to_apply": 3,
-                  "duration": 10.0,
-                  "duration_per_level": 0.3
-                },
-                {
-                  "type": "buff",
                   "stat": "double_attack_chance",
-                  "value": 15,
+                  "value": 25,
                   "duration": 10.0,
                   "duration_per_level": 0.3
                 }
@@ -2906,8 +2893,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 16.0,
               "vfx_type": "buff_aura",
-              "description_fr": "Le tireur entre dans une transe de poudre : il gagne en dégâts infligés, en chance de critique, et chaque coup peut en cacher un autre. Augmente les dégâts infligés de 25% pendant 10s (+0.3s/niv), augmente les chances critiques de 15% pendant 10s (+0.3s/niv), applique Tir Double pendant 10s (+0.3s/niv).",
-              "description_en": "The gunner enters a powder trance: they gain damage dealt, critical chance, and each shot may hide another. Increases damage dealt by 25% for 10s (+0.3s/lvl), increases crit chance by 15% for 10s (+0.3s/lvl), applies Double Shot for 10s (+0.3s/lvl).",
+              "description_fr": "Le tireur entre dans une transe de poudre : la cadence monte et les coups portent. Augmente les dégâts infligés de 25% et les chances critiques de 15% pendant 10s (+0.3s/niv).",
+              "description_en": "The gunner enters a powder trance: the rate climbs and the shots bite. Increases damage dealt by 25% and crit chance by 15% for 10s (+0.3s/lvl).",
               "tags": [
                 "buff",
                 "self",
@@ -2927,13 +2914,6 @@
                   "type": "buff",
                   "stat": "crit_chance_up",
                   "stacks_to_apply": 3,
-                  "duration": 10.0,
-                  "duration_per_level": 0.3
-                },
-                {
-                  "type": "buff",
-                  "stat": "double_attack_chance",
-                  "value": 20,
                   "duration": 10.0,
                   "duration_per_level": 0.3
                 }
@@ -3154,8 +3134,8 @@
               "mana_cost_per_level": 2,
               "cooldown": 16.0,
               "vfx_type": "buff_aura",
-              "description_fr": "Le Deadeye fige son regard et tout devient cible : il augmente sa chance de critique, ses dégâts critiques et sa précision. Augmente les chances critiques de 15% pendant 10s (+0.3s/niv), augmente les dégâts critiques de 30 pendant 10s (+0.3s/niv), augmente la précision de 25% pendant 10s (+0.3s/niv).",
-              "description_en": "The Deadeye fixes their gaze and everything becomes a target: it increases their critical chance, critical damage and accuracy. Increases crit chance by 15% for 10s (+0.3s/lvl), increases crit damage by 30 for 10s (+0.3s/lvl), increases accuracy by 25% for 10s (+0.3s/lvl).",
+              "description_fr": "Le Deadeye fige son regard : il ne compte pas sur la chance, il ne rate pas. Augmente la précision de 25% et les dégâts critiques de 30 pendant 10s (+0.3s/niv).",
+              "description_en": "The Deadeye fixes their gaze: they do not rely on luck, they do not miss. Increases accuracy by 25% and crit damage by 30 for 10s (+0.3s/lvl).",
               "tags": [
                 "buff",
                 "self",
@@ -3163,13 +3143,6 @@
                 "precision"
               ],
               "effects": [
-                {
-                  "type": "buff",
-                  "stat": "crit_chance_up",
-                  "stacks_to_apply": 3,
-                  "duration": 10.0,
-                  "duration_per_level": 0.3
-                },
                 {
                   "type": "buff",
                   "stat": "crit_damage_up",
