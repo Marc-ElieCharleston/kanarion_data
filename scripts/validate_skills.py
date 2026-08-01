@@ -137,6 +137,14 @@ ALLOWED_METADATA_FIELDS = {
     # Misc skill-specific fields (also Phase 4.0 whitelist)
     "exclude_caster",   # Artisan resource_share: heal allies but not caster
     "dot_heal_percent", # Martyr intercession: % of DoT damage redirected as healing
+    # Familiar pool fields (whitelist 2026-08-01). Confirmes lus cote back :
+    # services/familiar/src/db/loadout_roller.cpp:50-58 groupe le pool de skills par
+    # `role` et mappe meme les valeurs FR ("attaque" -> "dps", "utilitaire" -> "utility").
+    # Sans ces entrees la CI echouait sur 38 faux positifs.
+    "role",                  # attaque | tank | heal | utilitaire — pilote le tirage de loadout
+    "filler_variant_group",  # regroupe les fillers interchangeables d'un meme role
+    # Offsets de rendu VFX (lus cote client uniquement, pas par le moteur de combat)
+    "vfx_x_offset", "vfx_y_offset", "vfx_sprite_scale",
 }
 
 # Legacy fields: BLOCKED after Bloc 5 cleanup.
@@ -347,6 +355,9 @@ def validate_effects_array(skill, file_path, valid_effect_ids, canonical_grid, e
             "duration", "duration_per_level", "duration_scaling",
             "scaling", "target", "chance", "condition",
             "base_value",  # legacy field for shield base, kept for compat
+            # Confirme lu par content_loader.cpp:937 (bonus.applies_to) — restreint un
+            # bonus conditionnel a une cible/situation donnee.
+            "applies_to",
         }
         for field in effect.keys():
             if field not in allowed_effect_fields:
