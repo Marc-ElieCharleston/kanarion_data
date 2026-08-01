@@ -89,6 +89,21 @@
     "ponderation_controle": {
       "valeur": 0.5,
       "_pourquoi": "Le temps d'incantation suit les DEGATS (direct + dot). Le controle ne compte qu'a moitie : un sort de controle est deja bride par son cooldown, lui coller en plus un long cast le punit deux fois. Sans cette ponderation, une simple malediction a 40 de degats direct heritait de 3s d'incantation."
+    },
+    "_regle_du_GCD": {
+      "_principe": "Le GCD est de 2.0s. Une incantation INFERIEURE OU EGALE a 2.0s ne coute RIEN : le joueur attend le GCD de toute facon. Seul l'excedent au-dela de 2.0s est un cout reel de rotation.",
+      "_formule": "cout_reel = max(0, cast_time - 2.0)",
+      "_consequence_1": "Les paliers 1.0s et 1.5s de la grille sont PUREMENT COSMETIQUES. Ils habillent le sort, ils ne le ralentissent pas. Ne jamais les presenter comme un equilibrage.",
+      "_consequence_2": "Un sort qui passe de 1.0s a 2.0s n'a subi AUCUN nerf. Un sort qui passe de 2.0s a 3.0s en subit un vrai, de 1.0s.",
+      "_erreur_a_ne_pas_refaire": "Mesurer un changement de temps d'incantation en sommant les cast_time bruts. Fait le 2026-08-01 : la passe Mage annoncee a '+15% de temps d'incantation' etait en realite +44% de cout REEL, mais concentree sur 12 sorts seulement — 40 des sorts du Mage incantent sous le GCD et n'ont pas bouge d'un pouce en pratique. Le chiffre brut sur-estime la largeur et sous-estime la profondeur.",
+      "_a_verifier_aussi": "Le ratio cast/cooldown est trompeur pour la meme raison. Un filler a 1.5s de cast et 3.5s de recharge n'occupe pas 43% de son cycle : son cast est sous le GCD, donc gratuit."
+    },
+    "_impact_reel_passe_mage_2026_08_01": {
+      "sorts_reellement_ralentis": 12,
+      "sorts_reellement_accelerES": 9,
+      "sorts_sans_effet_car_sous_le_GCD": 40,
+      "cout_reel_cumule": "18.0s -> 26.0s",
+      "lignes_concernees": "Magma Sage (4 sorts), Frostcaller (3), Summoner, Sorcerer, Elementalist. Le nerf n'est PAS diffus sur la classe, il est concentre sur deux tier3."
     }
   },
   "cooldown": {
