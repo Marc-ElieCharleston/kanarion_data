@@ -123,34 +123,27 @@
     }
   },
   "portee": {
-    "_comment": "Grille 10x6 profonde depuis 2026-08-01. La portee est ce qui donne son sens a la profondeur.",
-    "contact": {
-      "min": 1,
-      "max": 2,
-      "classes": [
-        "warrior",
-        "rogue melee",
-        "spellblade",
-        "battle_healer"
-      ]
+    "_comment": "Plateau 10x6 unifie. Distance MANHATTAN sur les coordonnees reelles : 1 case = 1, DIAGONALE = 2 (grid_distance.hpp). Les deux equipes partagent un seul espace absolu, joueurs en bas, ennemis en haut.",
+    "_regle_fondamentale": "La portee est portee par le PERSONNAGE (config/roles.json base_range), pas par le sort. Cote serveur : skill.range < 0 -> heritage du base_range du lanceur. C'est le defaut de tout sort qui ne declare rien. Un `range` explicite est une DEROGATION, volontairement rare.",
+    "_ne_pas_faire": "Ne jamais remplir `range` sur tous les sorts. Cela figerait chaque sort a une valeur absolue et casserait l'heritage : un changement de base_range dans roles.json n'aurait plus aucun effet.",
+    "base_range_par_sous_classe": {
+      "contact_2": "warrior, guardian, berserker, weapon_master, warlord, rogue et ses 4 sous-classes, blacksmith, martyr",
+      "mi_distance_3": "spellblade",
+      "distance_5": "mage, elementalist, occultist, card_master, healer, lifewarden, lightbringer, cantor, artisan, alchemist, chef, musician",
+      "distance_6": "archer, ranger, falconer, ball_master, gunslinger",
+      "_note": "Martyr a 2 et Blacksmith a 2 sont des exceptions voulues : soigneur de melee et forgeron tank. Spellblade a 3 est l'hybride."
     },
-    "mi_distance": {
-      "min": 3,
-      "max": 4,
-      "classes": [
-        "healer",
-        "artisan"
-      ]
-    },
-    "distance": {
-      "min": 5,
-      "max": 6,
-      "classes": [
-        "archer",
-        "mage"
-      ]
-    },
-    "_etat": "Le champ `range` n'est renseigne sur AUCUN des 396 sorts : tous heritent de la portee du personnage. Chantier ouvert."
+    "derogations_actuelles": {
+      "_critere": "Une derogation se justifie quand l'ARME du sort n'est pas celle de la classe : une dague lancee, un pistolet, un treuil. Pas quand le sort est simplement 'fort'.",
+      "artisan_grapple": 7,
+      "rogue_throw_dagger": 5,
+      "rogue_smoke_bomb": 4,
+      "rogue_corsair_pistol_shot": 5,
+      "rogue_gunslasher_quick_shot": 4,
+      "rogue_gunslasher_precise_shot": 5,
+      "rogue_gunslasher_broadside": 5,
+      "_pourquoi_le_rogue": "La ligne Corsair / Gunslasher est un tireur greffe sur une classe a portee 2. Ses sorts d'arme a feu portent a 4 ou 5 ; ses sorts de lame restent a 2. Jamais 6 : la portee maximale reste le domaine de l'Archer."
+    }
   },
   "surface": {
     "_comment": "Voir combat/targeting.json _meta.doctrine_ciblage pour les regles de forme. Ici seulement les tailles.",
