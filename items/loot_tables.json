@@ -36,7 +36,7 @@
   "bonus_roll": {
     "_comment": "Items bonus qui peuvent drop en plus du loot normal",
     "enabled": true,
-    "base_chance_per_monster": 0.08,
+    "base_chance_per_monster": 0.03,
     "items": [
       {
         "item_id": "gem_minor",
@@ -3522,10 +3522,10 @@
     "_comment": "Drop d'équipement classique (armure, accessoires, armes). Chance par mob, rareté rollée séparément.",
     "base_equipment_chance": {
       "description": "Chance de base qu'un mob drop une pièce d'équipement. Playtest: genereux pour tester les systemes rapidement.",
-      "normal": 0.2,
-      "elite": 0.4,
-      "mini_boss": 0.6,
-      "boss": 0.8,
+      "normal": 0.06,
+      "elite": 0.25,
+      "mini_boss": 0.4,
+      "boss": 0.6,
       "world_boss": 1.0
     },
     "rarity_weights_by_danger": {
@@ -3803,14 +3803,14 @@
   },
   "keystone_drops": {
     "_comment": "Drop des Stigmates de keystone (items/keystone_items.json). Le RANG suit la bande de niveau du mob (level_req coherent, toujours utilisable) ; la FAMILLE est tiree uniformement parmi les 7 ; la FREQUENCE depend du tier de menace. TODO backend: acquisition item -> apprentissage keystone au rang -> allocation (V1 = alloue only, voir systems/keystones.json). Modele proche de pet_book_drops + unique_drops.",
-    "base_chance_per_kill": 0.01,
+    "base_chance_per_kill": 0.003,
     "tier_chance_multiplier": {
-      "_comment": "Frequence par tier. fodder=0 : les keystones viennent de vraies menaces, pas du trash.",
-      "fodder": 0.0,
+      "_comment": "Frequence par tier. Koro/keystone droppent partout (0.3% base) mais plus sur elite/boss (contenu qui compte).",
+      "fodder": 1.0,
       "standard": 1.0,
-      "tough": 1.5,
-      "elite": 2.5,
-      "boss": 4.0
+      "tough": 1.0,
+      "elite": 2.0,
+      "boss": 3.3
     },
     "rank_by_level_band": {
       "_comment": "Le rang droppe = la bande de niveau du mob, pour que le level_req de l'item colle (pas de S-rank req61 sur un mob lv10).",
@@ -3847,6 +3847,6 @@
     },
     "max_per_combat": 1,
     "formula": "final_chance = base_chance_per_kill x tier_chance_multiplier[tier] x star_mult ; si drop -> rank = rank_by_level_band[bande du mob], family = uniform(families), item_id = ks_<family>_<rank_to_suffix[rank]>",
-    "note": "1% base a titre de depart (visibilite playtest). A retune vers ~0.2-0.3% une fois le systeme valide."
+    "note": "0.3% base partout x tier_mult -> standard 0.3% / elite 0.6% / boss 1.0% (regle user : rare mais partout, valorise sur elite+boss)."
   }
 }
