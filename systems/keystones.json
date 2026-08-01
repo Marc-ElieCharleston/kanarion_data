@@ -4,13 +4,28 @@
     "last_updated": "2026-07-20",
     "description": "Keystones — Stigma-style triggers actifs. 4 slots (lv 30/50/70/100). Rangs C→SS. 3 variantes par keystone. v5.2 (2026-07-29) : passe de 5 a 4 slots, premier keystone apres la subclass (lv10 juge trop tot)."
   },
-
   "rules": {
-    "slots_unlock_levels": [30, 50, 70, 100],
+    "slots_unlock_levels": [
+      30,
+      50,
+      70,
+      100
+    ],
     "max_active": 4,
-    "ranks": ["C", "B", "A", "S", "SS"],
+    "ranks": [
+      "C",
+      "B",
+      "A",
+      "S",
+      "SS"
+    ],
     "rank_interpolation": "Valeurs B/A/S interpolees lineairement entre C et SS",
-    "categories": ["dps", "tank", "support", "utility"],
+    "categories": [
+      "dps",
+      "tank",
+      "support",
+      "utility"
+    ],
     "design_notes": [
       "Chaque keystone a un trigger (condition d'activation)",
       "3 variantes par keystone — meme trigger, effet different",
@@ -23,7 +38,20 @@
       "_note": "Keystone runtime V1 (2026-07-20). Une variante est EQUIPABLE si et seulement si elle porte un bloc 'runtime'. Une variante sans bloc runtime est RESERVEE : le character service refuse son allocation, elle n'apparait pas comme choix valide. Le bloc 'runtime' utilise le MEME schema que le bloc 'effect' de items/uniques.json (type combat_proc + triggers[] imbriques), consomme cote server-combat par UniqueItemRegistry + ProcProcessor. Aucun moteur d'effet nouveau : uniquement les appliers existants (stat_buff temporaire, apply_status canonical Option A avec stacks_to_apply, apply_shield_percent_max_hp, heal_percent_max_hp).",
       "engine": "proc_processor",
       "allocation_model_v1": "Les keystones V1 sont ALLOUEES a des slots (choix de progression, table character_keystones), pas des items lootes. Le drop/craft/trade et les rangs B/A/S/SS sont reserves pour une version future. Toutes les valeurs runtime V1 = rang C.",
-      "triggers_v1": ["combat_start", "on_kill", "on_auto_attack", "on_block", "on_dodge", "on_hp_threshold", "on_damage_taken", "on_damage_threshold", "on_buff_applied", "on_heal_cast", "first_skill_cast", "on_critical_hit"],
+      "triggers_v1": [
+        "combat_start",
+        "on_kill",
+        "on_auto_attack",
+        "on_block",
+        "on_dodge",
+        "on_hp_threshold",
+        "on_damage_taken",
+        "on_damage_threshold",
+        "on_buff_applied",
+        "on_heal_cast",
+        "first_skill_cast",
+        "on_critical_hit"
+      ],
       "runtime_extensions_required": [
         "stacks_to_apply lu par parse_effect_object et passe a StatusManager::apply_effect (statuts canoniques multi-stack)",
         "heal_percent_max_hp : heal instantane en % des HP max (reutilise apply_heal)",
@@ -33,9 +61,7 @@
       "hp_threshold_note": "on_hp_threshold ne se re-arme pas dans un meme combat (ProcStateComponent.hp_threshold_triggered). Le cooldown ne s'applique donc qu'entre combats en V1."
     }
   },
-
   "common_keystones": [
-
     {
       "id": "ks_dps_fury",
       "category": "dps",
@@ -53,8 +79,18 @@
           "description_en": "Below HP threshold, gain ATK and MAG bonus",
           "effect_type": "buff_atk_mag_pct",
           "scaling": {
-            "C":  { "trigger_pct": 25, "value": 20, "duration": 6, "cooldown": 90 },
-            "SS": { "trigger_pct": 35, "value": 50, "duration": 10, "cooldown": 45 }
+            "C": {
+              "trigger_pct": 25,
+              "value": 20,
+              "duration": 6,
+              "cooldown": 90
+            },
+            "SS": {
+              "trigger_pct": 35,
+              "value": 50,
+              "duration": 10,
+              "cooldown": 45
+            }
           },
           "runtime": {
             "type": "combat_proc",
@@ -64,8 +100,18 @@
                 "threshold": 0.25,
                 "cooldown": 90,
                 "effects": [
-                  { "apply_status": "atk_up", "stacks_to_apply": 4, "duration": 6.0, "target_rule": "self" },
-                  { "apply_status": "mag_up", "stacks_to_apply": 4, "duration": 6.0, "target_rule": "self" }
+                  {
+                    "apply_status": "atk_up",
+                    "stacks_to_apply": 4,
+                    "duration": 6.0,
+                    "target_rule": "self"
+                  },
+                  {
+                    "apply_status": "mag_up",
+                    "stacks_to_apply": 4,
+                    "duration": 6.0,
+                    "target_rule": "self"
+                  }
                 ]
               }
             ]
@@ -79,8 +125,18 @@
           "description_en": "Below HP threshold, gain critical chance bonus",
           "effect_type": "buff_crit_pct",
           "scaling": {
-            "C":  { "trigger_pct": 25, "value": 15, "duration": 6, "cooldown": 90 },
-            "SS": { "trigger_pct": 35, "value": 35, "duration": 10, "cooldown": 45 }
+            "C": {
+              "trigger_pct": 25,
+              "value": 15,
+              "duration": 6,
+              "cooldown": 90
+            },
+            "SS": {
+              "trigger_pct": 35,
+              "value": 35,
+              "duration": 10,
+              "cooldown": 45
+            }
           },
           "runtime": {
             "type": "combat_proc",
@@ -90,7 +146,11 @@
                 "threshold": 0.25,
                 "cooldown": 90,
                 "effects": [
-                  { "stat": "crit", "value": 15, "duration": 6.0 }
+                  {
+                    "stat": "crit",
+                    "value": 15,
+                    "duration": 6.0
+                  }
                 ]
               }
             ]
@@ -104,13 +164,22 @@
           "description_en": "Below HP threshold, your attacks steal life",
           "effect_type": "buff_lifesteal_pct",
           "scaling": {
-            "C":  { "trigger_pct": 25, "value": 10, "duration": 6, "cooldown": 90 },
-            "SS": { "trigger_pct": 35, "value": 25, "duration": 10, "cooldown": 45 }
+            "C": {
+              "trigger_pct": 25,
+              "value": 10,
+              "duration": 6,
+              "cooldown": 90
+            },
+            "SS": {
+              "trigger_pct": 35,
+              "value": 25,
+              "duration": 10,
+              "cooldown": 45
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_dps_executioner",
       "category": "dps",
@@ -128,8 +197,18 @@
           "description_en": "Bonus damage against weakened targets",
           "effect_type": "damage_bonus_pct",
           "scaling": {
-            "C":  { "trigger_pct": 20, "value": 20, "duration": 0, "cooldown": 15 },
-            "SS": { "trigger_pct": 30, "value": 50, "duration": 0, "cooldown": 8 }
+            "C": {
+              "trigger_pct": 20,
+              "value": 20,
+              "duration": 0,
+              "cooldown": 15
+            },
+            "SS": {
+              "trigger_pct": 30,
+              "value": 50,
+              "duration": 0,
+              "cooldown": 8
+            }
           }
         },
         {
@@ -140,8 +219,18 @@
           "description_en": "Armor penetration bonus against weakened targets",
           "effect_type": "buff_armor_pen_pct",
           "scaling": {
-            "C":  { "trigger_pct": 20, "value": 10, "duration": 0, "cooldown": 15 },
-            "SS": { "trigger_pct": 30, "value": 30, "duration": 0, "cooldown": 8 }
+            "C": {
+              "trigger_pct": 20,
+              "value": 10,
+              "duration": 0,
+              "cooldown": 15
+            },
+            "SS": {
+              "trigger_pct": 30,
+              "value": 30,
+              "duration": 0,
+              "cooldown": 8
+            }
           }
         },
         {
@@ -152,13 +241,22 @@
           "description_en": "Killing a weakened target heals you",
           "effect_type": "heal_on_kill_pct_hp",
           "scaling": {
-            "C":  { "trigger_pct": 20, "value": 8, "duration": 0, "cooldown": 20 },
-            "SS": { "trigger_pct": 30, "value": 20, "duration": 0, "cooldown": 10 }
+            "C": {
+              "trigger_pct": 20,
+              "value": 8,
+              "duration": 0,
+              "cooldown": 20
+            },
+            "SS": {
+              "trigger_pct": 30,
+              "value": 20,
+              "duration": 0,
+              "cooldown": 10
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_dps_ignition",
       "category": "dps",
@@ -176,8 +274,16 @@
           "description_en": "A critical hit applies a burn DoT on the target",
           "effect_type": "apply_dot_burn",
           "scaling": {
-            "C":  { "value": 3, "duration": 4, "cooldown": 15 },
-            "SS": { "value": 8, "duration": 6, "cooldown": 8 }
+            "C": {
+              "value": 3,
+              "duration": 4,
+              "cooldown": 15
+            },
+            "SS": {
+              "value": 8,
+              "duration": 6,
+              "cooldown": 8
+            }
           },
           "runtime": {
             "type": "combat_proc",
@@ -186,7 +292,11 @@
                 "trigger": "on_critical_hit",
                 "cooldown": 15,
                 "effects": [
-                  { "apply_status": "burn", "stacks_to_apply": 1, "duration": 4.0 }
+                  {
+                    "apply_status": "burn",
+                    "stacks_to_apply": 1,
+                    "duration": 4.0
+                  }
                 ]
               }
             ]
@@ -200,8 +310,16 @@
           "description_en": "A critical hit reduces the target's DEF",
           "effect_type": "debuff_def_pct",
           "scaling": {
-            "C":  { "value": 10, "duration": 4, "cooldown": 15 },
-            "SS": { "value": 25, "duration": 6, "cooldown": 8 }
+            "C": {
+              "value": 10,
+              "duration": 4,
+              "cooldown": 15
+            },
+            "SS": {
+              "value": 25,
+              "duration": 6,
+              "cooldown": 8
+            }
           },
           "runtime": {
             "type": "combat_proc",
@@ -210,7 +328,11 @@
                 "trigger": "on_critical_hit",
                 "cooldown": 15,
                 "effects": [
-                  { "apply_status": "def_down", "stacks_to_apply": 2, "duration": 4.0 }
+                  {
+                    "apply_status": "def_down",
+                    "stacks_to_apply": 2,
+                    "duration": 4.0
+                  }
                 ]
               }
             ]
@@ -224,13 +346,37 @@
           "description_en": "A critical hit deals bonus magic damage",
           "effect_type": "bonus_magic_damage_pct_mag",
           "scaling": {
-            "C":  { "value": 15, "duration": 0, "cooldown": 12 },
-            "SS": { "value": 40, "duration": 0, "cooldown": 6 }
+            "C": {
+              "value": 15,
+              "duration": 0,
+              "cooldown": 12
+            },
+            "SS": {
+              "value": 40,
+              "duration": 0,
+              "cooldown": 6
+            }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_critical_hit",
+                "cooldown": 12,
+                "effects": [
+                  {
+                    "apply_status": "mag_up",
+                    "stacks_to_apply": 3,
+                    "duration": 6.0,
+                    "target_rule": "self"
+                  }
+                ]
+              }
+            ]
           }
         }
       ]
     },
-
     {
       "id": "ks_dps_frenzy",
       "category": "dps",
@@ -248,8 +394,16 @@
           "description_en": "Killing an enemy temporarily boosts your ATK (does not stack)",
           "effect_type": "buff_atk_pct",
           "scaling": {
-            "C":  { "value": 10, "duration": 8, "cooldown": 8 },
-            "SS": { "value": 25, "duration": 12, "cooldown": 4 }
+            "C": {
+              "value": 10,
+              "duration": 8,
+              "cooldown": 8
+            },
+            "SS": {
+              "value": 25,
+              "duration": 12,
+              "cooldown": 4
+            }
           },
           "runtime": {
             "type": "combat_proc",
@@ -258,7 +412,11 @@
                 "trigger": "on_kill",
                 "cooldown": 8,
                 "effects": [
-                  { "stat": "atk_percent", "value": 10, "duration": 8.0 }
+                  {
+                    "stat": "atk_percent",
+                    "value": 10,
+                    "duration": 8.0
+                  }
                 ]
               }
             ]
@@ -272,8 +430,16 @@
           "description_en": "Killing an enemy temporarily reduces your cooldowns",
           "effect_type": "buff_cdr_pct",
           "scaling": {
-            "C":  { "value": 10, "duration": 8, "cooldown": 0 },
-            "SS": { "value": 25, "duration": 12, "cooldown": 0 }
+            "C": {
+              "value": 10,
+              "duration": 8,
+              "cooldown": 0
+            },
+            "SS": {
+              "value": 25,
+              "duration": 12,
+              "cooldown": 0
+            }
           }
         },
         {
@@ -284,13 +450,20 @@
           "description_en": "Killing an enemy makes your next skill free",
           "effect_type": "next_skill_free_souffle",
           "scaling": {
-            "C":  { "value": 1, "duration": 6, "cooldown": 25 },
-            "SS": { "value": 1, "duration": 10, "cooldown": 12 }
+            "C": {
+              "value": 1,
+              "duration": 6,
+              "cooldown": 25
+            },
+            "SS": {
+              "value": 1,
+              "duration": 10,
+              "cooldown": 12
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_dps_predator",
       "category": "dps",
@@ -308,8 +481,16 @@
           "description_en": "Your first skills deal bonus damage",
           "effect_type": "damage_bonus_pct",
           "scaling": {
-            "C":  { "value": 15, "duration": 1, "cooldown": 0 },
-            "SS": { "value": 50, "duration": 2, "cooldown": 0 }
+            "C": {
+              "value": 15,
+              "duration": 1,
+              "cooldown": 0
+            },
+            "SS": {
+              "value": 50,
+              "duration": 2,
+              "cooldown": 0
+            }
           }
         },
         {
@@ -320,8 +501,16 @@
           "description_en": "Your first skills have bonus critical damage",
           "effect_type": "buff_crit_damage_pct",
           "scaling": {
-            "C":  { "value": 20, "duration": 1, "cooldown": 0 },
-            "SS": { "value": 70, "duration": 2, "cooldown": 0 }
+            "C": {
+              "value": 20,
+              "duration": 1,
+              "cooldown": 0
+            },
+            "SS": {
+              "value": 70,
+              "duration": 2,
+              "cooldown": 0
+            }
           }
         },
         {
@@ -332,13 +521,20 @@
           "description_en": "Your first skills reduce target's DEF and MR",
           "effect_type": "debuff_def_mr_pct",
           "scaling": {
-            "C":  { "value": 8, "duration": 4, "cooldown": 0 },
-            "SS": { "value": 22, "duration": 8, "cooldown": 0 }
+            "C": {
+              "value": 8,
+              "duration": 4,
+              "cooldown": 0
+            },
+            "SS": {
+              "value": 22,
+              "duration": 8,
+              "cooldown": 0
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_tank_bastion",
       "category": "tank",
@@ -356,8 +552,18 @@
           "description_en": "Gain a shield based on your max HP",
           "effect_type": "shield_pct_max_hp",
           "scaling": {
-            "C":  { "trigger_pct": 25, "value": 20, "duration": 6, "cooldown": 90 },
-            "SS": { "trigger_pct": 35, "value": 50, "duration": 10, "cooldown": 45 }
+            "C": {
+              "trigger_pct": 25,
+              "value": 20,
+              "duration": 6,
+              "cooldown": 90
+            },
+            "SS": {
+              "trigger_pct": 35,
+              "value": 50,
+              "duration": 10,
+              "cooldown": 45
+            }
           },
           "runtime": {
             "type": "combat_proc",
@@ -367,7 +573,9 @@
                 "threshold": 0.25,
                 "cooldown": 90,
                 "effects": [
-                  { "apply_shield_percent_max_hp": 20 }
+                  {
+                    "apply_shield_percent_max_hp": 20
+                  }
                 ]
               }
             ]
@@ -381,8 +589,20 @@
           "description_en": "Gain a smaller shield that reflects some damage",
           "effect_type": "shield_pct_max_hp_with_thorns",
           "scaling": {
-            "C":  { "trigger_pct": 25, "shield": 12, "thorns": 8, "duration": 6, "cooldown": 90 },
-            "SS": { "trigger_pct": 35, "shield": 30, "thorns": 20, "duration": 10, "cooldown": 45 }
+            "C": {
+              "trigger_pct": 25,
+              "shield": 12,
+              "thorns": 8,
+              "duration": 6,
+              "cooldown": 90
+            },
+            "SS": {
+              "trigger_pct": 35,
+              "shield": 30,
+              "thorns": 20,
+              "duration": 10,
+              "cooldown": 45
+            }
           }
         },
         {
@@ -393,13 +613,24 @@
           "description_en": "Gain a smaller shield — heals you when it expires",
           "effect_type": "shield_pct_max_hp_heal_on_expire",
           "scaling": {
-            "C":  { "trigger_pct": 25, "shield": 10, "heal_on_expire": 8, "duration": 6, "cooldown": 90 },
-            "SS": { "trigger_pct": 35, "shield": 25, "heal_on_expire": 20, "duration": 10, "cooldown": 45 }
+            "C": {
+              "trigger_pct": 25,
+              "shield": 10,
+              "heal_on_expire": 8,
+              "duration": 6,
+              "cooldown": 90
+            },
+            "SS": {
+              "trigger_pct": 35,
+              "shield": 25,
+              "heal_on_expire": 20,
+              "duration": 10,
+              "cooldown": 45
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_tank_iron_will",
       "category": "tank",
@@ -417,8 +648,14 @@
           "description_en": "Reduces the duration of the received CC",
           "effect_type": "cc_duration_reduction_pct",
           "scaling": {
-            "C":  { "value": 25, "cooldown": 30 },
-            "SS": { "value": 50, "cooldown": 15 }
+            "C": {
+              "value": 25,
+              "cooldown": 30
+            },
+            "SS": {
+              "value": 50,
+              "cooldown": 15
+            }
           }
         },
         {
@@ -429,8 +666,16 @@
           "description_en": "Receiving CC grants you an ATK buff",
           "effect_type": "buff_atk_pct",
           "scaling": {
-            "C":  { "value": 15, "duration": 5, "cooldown": 30 },
-            "SS": { "value": 35, "duration": 8, "cooldown": 15 }
+            "C": {
+              "value": 15,
+              "duration": 5,
+              "cooldown": 30
+            },
+            "SS": {
+              "value": 35,
+              "duration": 8,
+              "cooldown": 15
+            }
           }
         },
         {
@@ -441,13 +686,18 @@
           "description_en": "Receiving CC heals you",
           "effect_type": "heal_pct_hp",
           "scaling": {
-            "C":  { "value": 6, "cooldown": 30 },
-            "SS": { "value": 15, "cooldown": 15 }
+            "C": {
+              "value": 6,
+              "cooldown": 30
+            },
+            "SS": {
+              "value": 15,
+              "cooldown": 15
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_tank_fortress",
       "category": "tank",
@@ -465,8 +715,16 @@
           "description_en": "Blocking/parrying grants temporary damage reduction",
           "effect_type": "buff_dr_pct",
           "scaling": {
-            "C":  { "value": 10, "duration": 4, "cooldown": 12 },
-            "SS": { "value": 25, "duration": 6, "cooldown": 6 }
+            "C": {
+              "value": 10,
+              "duration": 4,
+              "cooldown": 12
+            },
+            "SS": {
+              "value": 25,
+              "duration": 6,
+              "cooldown": 6
+            }
           },
           "runtime": {
             "type": "combat_proc",
@@ -475,7 +733,12 @@
                 "trigger": "on_block",
                 "cooldown": 12,
                 "effects": [
-                  { "apply_status": "damage_reduction_up", "stacks_to_apply": 2, "duration": 4.0, "target_rule": "self" }
+                  {
+                    "apply_status": "damage_reduction_up",
+                    "stacks_to_apply": 2,
+                    "duration": 4.0,
+                    "target_rule": "self"
+                  }
                 ]
               }
             ]
@@ -489,8 +752,14 @@
           "description_en": "Blocking/parrying reflects some damage back to attacker",
           "effect_type": "reflect_damage_pct",
           "scaling": {
-            "C":  { "value": 10, "cooldown": 12 },
-            "SS": { "value": 30, "cooldown": 6 }
+            "C": {
+              "value": 10,
+              "cooldown": 12
+            },
+            "SS": {
+              "value": 30,
+              "cooldown": 6
+            }
           }
         },
         {
@@ -501,8 +770,14 @@
           "description_en": "Blocking/parrying heals you slightly",
           "effect_type": "heal_pct_hp",
           "scaling": {
-            "C":  { "value": 3, "cooldown": 10 },
-            "SS": { "value": 8, "cooldown": 5 }
+            "C": {
+              "value": 3,
+              "cooldown": 10
+            },
+            "SS": {
+              "value": 8,
+              "cooldown": 5
+            }
           },
           "runtime": {
             "type": "combat_proc",
@@ -511,7 +786,9 @@
                 "trigger": "on_block",
                 "cooldown": 10,
                 "effects": [
-                  { "heal_percent_max_hp": 3 }
+                  {
+                    "heal_percent_max_hp": 3
+                  }
                 ]
               }
             ]
@@ -519,7 +796,6 @@
         }
       ]
     },
-
     {
       "id": "ks_tank_anchor",
       "category": "tank",
@@ -537,8 +813,36 @@
           "description_en": "Blocking a hit grants temporary damage reduction",
           "effect_type": "buff_dr_pct",
           "scaling": {
-            "C":  { "trigger_pct": 70, "value": 5, "duration": 4, "cooldown": 15 },
-            "SS": { "trigger_pct": 50, "value": 12, "duration": 6, "cooldown": 8 }
+            "C": {
+              "trigger_pct": 70,
+              "value": 5,
+              "duration": 4,
+              "cooldown": 15
+            },
+            "SS": {
+              "trigger_pct": 50,
+              "value": 12,
+              "duration": 6,
+              "cooldown": 8
+            }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_block",
+                "cooldown": 15,
+                "effects": [
+                  {
+                    "apply_status": "damage_reduction_up",
+                    "stacks_to_apply": 1,
+                    "duration": 4.0,
+                    "target_rule": "self"
+                  }
+                ],
+                "threshold": 0.7
+              }
+            ]
           }
         },
         {
@@ -549,8 +853,20 @@
           "description_en": "Blocking a hit boosts your aggro and DEF temporarily",
           "effect_type": "buff_aggro_def",
           "scaling": {
-            "C":  { "trigger_pct": 70, "aggro_bonus": 15, "def_bonus": 6, "duration": 5, "cooldown": 15 },
-            "SS": { "trigger_pct": 50, "aggro_bonus": 35, "def_bonus": 15, "duration": 8, "cooldown": 8 }
+            "C": {
+              "trigger_pct": 70,
+              "aggro_bonus": 15,
+              "def_bonus": 6,
+              "duration": 5,
+              "cooldown": 15
+            },
+            "SS": {
+              "trigger_pct": 50,
+              "aggro_bonus": 35,
+              "def_bonus": 15,
+              "duration": 8,
+              "cooldown": 8
+            }
           }
         },
         {
@@ -561,13 +877,22 @@
           "description_en": "Blocking a hit grants nearby allies temporary damage reduction",
           "effect_type": "buff_allies_dr_pct",
           "scaling": {
-            "C":  { "trigger_pct": 70, "value": 3, "duration": 4, "cooldown": 15 },
-            "SS": { "trigger_pct": 50, "value": 8, "duration": 6, "cooldown": 8 }
+            "C": {
+              "trigger_pct": 70,
+              "value": 3,
+              "duration": 4,
+              "cooldown": 15
+            },
+            "SS": {
+              "trigger_pct": 50,
+              "value": 8,
+              "duration": 6,
+              "cooldown": 8
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_tank_sacrifice",
       "category": "tank",
@@ -585,8 +910,18 @@
           "description_en": "Places a shield on the endangered ally",
           "effect_type": "shield_ally_pct_your_hp",
           "scaling": {
-            "C":  { "trigger_pct": 25, "value": 10, "duration": 5, "cooldown": 45 },
-            "SS": { "trigger_pct": 35, "value": 25, "duration": 8, "cooldown": 20 }
+            "C": {
+              "trigger_pct": 25,
+              "value": 10,
+              "duration": 5,
+              "cooldown": 45
+            },
+            "SS": {
+              "trigger_pct": 35,
+              "value": 25,
+              "duration": 8,
+              "cooldown": 20
+            }
           }
         },
         {
@@ -597,8 +932,18 @@
           "description_en": "Redirects some of the ally's damage to you",
           "effect_type": "redirect_damage_pct",
           "scaling": {
-            "C":  { "trigger_pct": 25, "value": 15, "duration": 5, "cooldown": 45 },
-            "SS": { "trigger_pct": 35, "value": 35, "duration": 8, "cooldown": 20 }
+            "C": {
+              "trigger_pct": 25,
+              "value": 15,
+              "duration": 5,
+              "cooldown": 45
+            },
+            "SS": {
+              "trigger_pct": 35,
+              "value": 35,
+              "duration": 8,
+              "cooldown": 20
+            }
           }
         },
         {
@@ -609,13 +954,22 @@
           "description_en": "The endangered ally gains temporary damage reduction",
           "effect_type": "buff_ally_dr_pct",
           "scaling": {
-            "C":  { "trigger_pct": 25, "value": 15, "duration": 5, "cooldown": 45 },
-            "SS": { "trigger_pct": 35, "value": 35, "duration": 8, "cooldown": 20 }
+            "C": {
+              "trigger_pct": 25,
+              "value": 15,
+              "duration": 5,
+              "cooldown": 45
+            },
+            "SS": {
+              "trigger_pct": 35,
+              "value": 35,
+              "duration": 8,
+              "cooldown": 20
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_support_life_link",
       "category": "support",
@@ -633,8 +987,14 @@
           "description_en": "Part of the heal spreads to the lowest HP ally",
           "effect_type": "spread_heal_pct",
           "scaling": {
-            "C":  { "value": 15, "cooldown": 12 },
-            "SS": { "value": 35, "cooldown": 5 }
+            "C": {
+              "value": 15,
+              "cooldown": 12
+            },
+            "SS": {
+              "value": 35,
+              "cooldown": 5
+            }
           }
         },
         {
@@ -645,8 +1005,16 @@
           "description_en": "The heal target gains a temporary DEF bonus",
           "effect_type": "buff_target_def_pct",
           "scaling": {
-            "C":  { "value": 10, "duration": 5, "cooldown": 12 },
-            "SS": { "value": 25, "duration": 8, "cooldown": 5 }
+            "C": {
+              "value": 10,
+              "duration": 5,
+              "cooldown": 12
+            },
+            "SS": {
+              "value": 25,
+              "duration": 8,
+              "cooldown": 5
+            }
           },
           "runtime": {
             "type": "combat_proc",
@@ -655,7 +1023,11 @@
                 "trigger": "on_heal_cast",
                 "cooldown": 12,
                 "effects": [
-                  { "apply_status": "def_up", "stacks_to_apply": 2, "duration": 5.0 }
+                  {
+                    "apply_status": "def_up",
+                    "stacks_to_apply": 2,
+                    "duration": 5.0
+                  }
                 ]
               }
             ]
@@ -669,13 +1041,18 @@
           "description_en": "The heal target recovers Breath",
           "effect_type": "restore_souffle_pct",
           "scaling": {
-            "C":  { "value": 5, "cooldown": 12 },
-            "SS": { "value": 15, "cooldown": 5 }
+            "C": {
+              "value": 5,
+              "cooldown": 12
+            },
+            "SS": {
+              "value": 15,
+              "cooldown": 5
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_support_rescue",
       "category": "support",
@@ -693,8 +1070,16 @@
           "description_en": "Instantly heals the endangered ally",
           "effect_type": "heal_ally_pct_hp",
           "scaling": {
-            "C":  { "trigger_pct": 25, "value": 8, "cooldown": 30 },
-            "SS": { "trigger_pct": 35, "value": 20, "cooldown": 15 }
+            "C": {
+              "trigger_pct": 25,
+              "value": 8,
+              "cooldown": 30
+            },
+            "SS": {
+              "trigger_pct": 35,
+              "value": 20,
+              "cooldown": 15
+            }
           }
         },
         {
@@ -705,8 +1090,18 @@
           "description_en": "Places a shield on the endangered ally",
           "effect_type": "shield_ally_pct_hp",
           "scaling": {
-            "C":  { "trigger_pct": 25, "value": 10, "duration": 5, "cooldown": 30 },
-            "SS": { "trigger_pct": 35, "value": 25, "duration": 8, "cooldown": 15 }
+            "C": {
+              "trigger_pct": 25,
+              "value": 10,
+              "duration": 5,
+              "cooldown": 30
+            },
+            "SS": {
+              "trigger_pct": 35,
+              "value": 25,
+              "duration": 8,
+              "cooldown": 15
+            }
           }
         },
         {
@@ -717,13 +1112,20 @@
           "description_en": "Removes a debuff from the endangered ally and heals slightly",
           "effect_type": "cleanse_and_heal",
           "scaling": {
-            "C":  { "trigger_pct": 25, "heal": 5, "cooldown": 30 },
-            "SS": { "trigger_pct": 35, "heal": 12, "cooldown": 15 }
+            "C": {
+              "trigger_pct": 25,
+              "heal": 5,
+              "cooldown": 30
+            },
+            "SS": {
+              "trigger_pct": 35,
+              "heal": 12,
+              "cooldown": 15
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_support_blessing",
       "category": "support",
@@ -741,8 +1143,14 @@
           "description_en": "Your buff durations are increased",
           "effect_type": "buff_duration_bonus_pct",
           "scaling": {
-            "C":  { "value": 20, "cooldown": 0 },
-            "SS": { "value": 50, "cooldown": 0 }
+            "C": {
+              "value": 20,
+              "cooldown": 0
+            },
+            "SS": {
+              "value": 50,
+              "cooldown": 0
+            }
           }
         },
         {
@@ -753,8 +1161,14 @@
           "description_en": "Your buff spreads to an adjacent ally",
           "effect_type": "spread_buff_to_adjacent",
           "scaling": {
-            "C":  { "value": 1, "cooldown": 20 },
-            "SS": { "value": 1, "cooldown": 8 }
+            "C": {
+              "value": 1,
+              "cooldown": 20
+            },
+            "SS": {
+              "value": 1,
+              "cooldown": 8
+            }
           }
         },
         {
@@ -765,13 +1179,20 @@
           "description_en": "The buff target gains a mini-shield",
           "effect_type": "shield_pct_your_hp",
           "scaling": {
-            "C":  { "value": 5, "duration": 6, "cooldown": 15 },
-            "SS": { "value": 15, "duration": 10, "cooldown": 6 }
+            "C": {
+              "value": 5,
+              "duration": 6,
+              "cooldown": 15
+            },
+            "SS": {
+              "value": 15,
+              "duration": 10,
+              "cooldown": 6
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_support_last_breath",
       "category": "support",
@@ -789,8 +1210,16 @@
           "description_en": "The ally survives with some HP instead of dying (once per combat)",
           "effect_type": "prevent_death_heal_pct",
           "scaling": {
-            "C":  { "value": 5, "uses_per_combat": 1, "cooldown": 120 },
-            "SS": { "value": 20, "uses_per_combat": 1, "cooldown": 60 }
+            "C": {
+              "value": 5,
+              "uses_per_combat": 1,
+              "cooldown": 120
+            },
+            "SS": {
+              "value": 20,
+              "uses_per_combat": 1,
+              "cooldown": 60
+            }
           }
         },
         {
@@ -801,8 +1230,18 @@
           "description_en": "The ally survives — you lose HP in their place",
           "effect_type": "prevent_death_transfer_hp",
           "scaling": {
-            "C":  { "ally_heal": 5, "self_damage": 15, "uses_per_combat": 1, "cooldown": 120 },
-            "SS": { "ally_heal": 18, "self_damage": 12, "uses_per_combat": 1, "cooldown": 60 }
+            "C": {
+              "ally_heal": 5,
+              "self_damage": 15,
+              "uses_per_combat": 1,
+              "cooldown": 120
+            },
+            "SS": {
+              "ally_heal": 18,
+              "self_damage": 12,
+              "uses_per_combat": 1,
+              "cooldown": 60
+            }
           }
         },
         {
@@ -813,13 +1252,24 @@
           "description_en": "The ally survives and gains a temporary ATK buff",
           "effect_type": "prevent_death_with_buff",
           "scaling": {
-            "C":  { "heal": 5, "atk_bonus": 15, "buff_duration": 6, "uses_per_combat": 1, "cooldown": 120 },
-            "SS": { "heal": 15, "atk_bonus": 35, "buff_duration": 10, "uses_per_combat": 1, "cooldown": 60 }
+            "C": {
+              "heal": 5,
+              "atk_bonus": 15,
+              "buff_duration": 6,
+              "uses_per_combat": 1,
+              "cooldown": 120
+            },
+            "SS": {
+              "heal": 15,
+              "atk_bonus": 35,
+              "buff_duration": 10,
+              "uses_per_combat": 1,
+              "cooldown": 60
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_support_harmony",
       "category": "support",
@@ -837,8 +1287,14 @@
           "description_en": "Every X skills, heals all allies",
           "effect_type": "heal_all_allies_pct",
           "scaling": {
-            "C":  { "every_n": 5, "value": 4 },
-            "SS": { "every_n": 3, "value": 10 }
+            "C": {
+              "every_n": 5,
+              "value": 4
+            },
+            "SS": {
+              "every_n": 3,
+              "value": 10
+            }
           }
         },
         {
@@ -849,8 +1305,16 @@
           "description_en": "Every X skills, places a shield on all allies",
           "effect_type": "shield_all_allies_pct",
           "scaling": {
-            "C":  { "every_n": 5, "value": 5, "duration": 5 },
-            "SS": { "every_n": 3, "value": 12, "duration": 8 }
+            "C": {
+              "every_n": 5,
+              "value": 5,
+              "duration": 5
+            },
+            "SS": {
+              "every_n": 3,
+              "value": 12,
+              "duration": 8
+            }
           }
         },
         {
@@ -861,13 +1325,20 @@
           "description_en": "Every X skills, all allies gain an ATK/MAG buff",
           "effect_type": "buff_all_allies_atk_mag_pct",
           "scaling": {
-            "C":  { "every_n": 5, "value": 8, "duration": 6 },
-            "SS": { "every_n": 3, "value": 20, "duration": 10 }
+            "C": {
+              "every_n": 5,
+              "value": 8,
+              "duration": 6
+            },
+            "SS": {
+              "every_n": 3,
+              "value": 20,
+              "duration": 10
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_util_mastery",
       "category": "utility",
@@ -885,8 +1356,14 @@
           "description_en": "Your CC durations are increased",
           "effect_type": "cc_duration_bonus_pct",
           "scaling": {
-            "C":  { "value": 15, "cooldown": 0 },
-            "SS": { "value": 40, "cooldown": 0 }
+            "C": {
+              "value": 15,
+              "cooldown": 0
+            },
+            "SS": {
+              "value": 40,
+              "cooldown": 0
+            }
           }
         },
         {
@@ -897,8 +1374,14 @@
           "description_en": "Applying CC drains the target's Breath",
           "effect_type": "drain_souffle_pct",
           "scaling": {
-            "C":  { "value": 5, "cooldown": 15 },
-            "SS": { "value": 15, "cooldown": 6 }
+            "C": {
+              "value": 5,
+              "cooldown": 15
+            },
+            "SS": {
+              "value": 15,
+              "cooldown": 6
+            }
           }
         },
         {
@@ -909,13 +1392,20 @@
           "description_en": "Applying CC reduces the target's DEF",
           "effect_type": "debuff_def_pct",
           "scaling": {
-            "C":  { "value": 8, "duration": 4, "cooldown": 15 },
-            "SS": { "value": 20, "duration": 8, "cooldown": 6 }
+            "C": {
+              "value": 8,
+              "duration": 4,
+              "cooldown": 15
+            },
+            "SS": {
+              "value": 20,
+              "duration": 8,
+              "cooldown": 6
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_util_second_wind",
       "category": "utility",
@@ -933,8 +1423,14 @@
           "description_en": "Killing an enemy regenerates HP",
           "effect_type": "heal_pct_hp",
           "scaling": {
-            "C":  { "value": 6, "cooldown": 20 },
-            "SS": { "value": 15, "cooldown": 8 }
+            "C": {
+              "value": 6,
+              "cooldown": 20
+            },
+            "SS": {
+              "value": 15,
+              "cooldown": 8
+            }
           },
           "runtime": {
             "type": "combat_proc",
@@ -943,7 +1439,9 @@
                 "trigger": "on_kill",
                 "cooldown": 20,
                 "effects": [
-                  { "heal_percent_max_hp": 6 }
+                  {
+                    "heal_percent_max_hp": 6
+                  }
                 ]
               }
             ]
@@ -957,8 +1455,14 @@
           "description_en": "Killing an enemy regenerates Breath",
           "effect_type": "restore_souffle_pct",
           "scaling": {
-            "C":  { "value": 8, "cooldown": 20 },
-            "SS": { "value": 20, "cooldown": 8 }
+            "C": {
+              "value": 8,
+              "cooldown": 20
+            },
+            "SS": {
+              "value": 20,
+              "cooldown": 8
+            }
           }
         },
         {
@@ -969,13 +1473,20 @@
           "description_en": "Killing an enemy temporarily reduces your cooldowns",
           "effect_type": "buff_cdr_pct",
           "scaling": {
-            "C":  { "value": 10, "duration": 6, "cooldown": 20 },
-            "SS": { "value": 25, "duration": 10, "cooldown": 8 }
+            "C": {
+              "value": 10,
+              "duration": 6,
+              "cooldown": 20
+            },
+            "SS": {
+              "value": 25,
+              "duration": 10,
+              "cooldown": 8
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_util_tactical",
       "category": "utility",
@@ -993,8 +1504,16 @@
           "description_en": "After an ultimate, all your cooldowns are temporarily reduced",
           "effect_type": "buff_cdr_pct",
           "scaling": {
-            "C":  { "value": 15, "duration": 8, "cooldown": 60 },
-            "SS": { "value": 35, "duration": 12, "cooldown": 30 }
+            "C": {
+              "value": 15,
+              "duration": 8,
+              "cooldown": 60
+            },
+            "SS": {
+              "value": 35,
+              "duration": 12,
+              "cooldown": 30
+            }
           }
         },
         {
@@ -1005,8 +1524,16 @@
           "description_en": "After an ultimate, you gain an ATK and MAG buff",
           "effect_type": "buff_atk_mag_pct",
           "scaling": {
-            "C":  { "value": 15, "duration": 8, "cooldown": 60 },
-            "SS": { "value": 40, "duration": 12, "cooldown": 30 }
+            "C": {
+              "value": 15,
+              "duration": 8,
+              "cooldown": 60
+            },
+            "SS": {
+              "value": 40,
+              "duration": 12,
+              "cooldown": 30
+            }
           }
         },
         {
@@ -1017,13 +1544,20 @@
           "description_en": "After an ultimate, you gain a shield",
           "effect_type": "shield_pct_max_hp",
           "scaling": {
-            "C":  { "value": 12, "duration": 6, "cooldown": 60 },
-            "SS": { "value": 30, "duration": 10, "cooldown": 30 }
+            "C": {
+              "value": 12,
+              "duration": 6,
+              "cooldown": 60
+            },
+            "SS": {
+              "value": 30,
+              "duration": 10,
+              "cooldown": 30
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_util_adaptation",
       "category": "utility",
@@ -1041,8 +1575,14 @@
           "description_en": "Chance to automatically cleanse the received debuff",
           "effect_type": "auto_cleanse_chance_pct",
           "scaling": {
-            "C":  { "value": 15, "cooldown": 25 },
-            "SS": { "value": 40, "cooldown": 10 }
+            "C": {
+              "value": 15,
+              "cooldown": 25
+            },
+            "SS": {
+              "value": 40,
+              "cooldown": 10
+            }
           }
         },
         {
@@ -1053,8 +1593,16 @@
           "description_en": "Receiving a debuff grants temporary damage reduction",
           "effect_type": "buff_dr_pct",
           "scaling": {
-            "C":  { "value": 8, "duration": 4, "cooldown": 20 },
-            "SS": { "value": 20, "duration": 6, "cooldown": 8 }
+            "C": {
+              "value": 8,
+              "duration": 4,
+              "cooldown": 20
+            },
+            "SS": {
+              "value": 20,
+              "duration": 6,
+              "cooldown": 8
+            }
           }
         },
         {
@@ -1065,13 +1613,18 @@
           "description_en": "Receiving a debuff heals you slightly",
           "effect_type": "heal_pct_hp",
           "scaling": {
-            "C":  { "value": 4, "cooldown": 20 },
-            "SS": { "value": 12, "cooldown": 8 }
+            "C": {
+              "value": 4,
+              "cooldown": 20
+            },
+            "SS": {
+              "value": 12,
+              "cooldown": 8
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_util_synergy",
       "category": "utility",
@@ -1089,8 +1642,16 @@
           "description_en": "After a chain, your next skill deals bonus damage",
           "effect_type": "next_skill_damage_bonus_pct",
           "scaling": {
-            "C":  { "combo_length": 3, "value": 25, "cooldown": 15 },
-            "SS": { "combo_length": 3, "value": 60, "cooldown": 6 }
+            "C": {
+              "combo_length": 3,
+              "value": 25,
+              "cooldown": 15
+            },
+            "SS": {
+              "combo_length": 3,
+              "value": 60,
+              "cooldown": 6
+            }
           }
         },
         {
@@ -1101,8 +1662,16 @@
           "description_en": "After a chain, your next skill costs no Breath",
           "effect_type": "next_skill_free_souffle",
           "scaling": {
-            "C":  { "combo_length": 4, "value": 1, "cooldown": 20 },
-            "SS": { "combo_length": 3, "value": 1, "cooldown": 10 }
+            "C": {
+              "combo_length": 4,
+              "value": 1,
+              "cooldown": 20
+            },
+            "SS": {
+              "combo_length": 3,
+              "value": 1,
+              "cooldown": 10
+            }
           }
         },
         {
@@ -1113,13 +1682,20 @@
           "description_en": "After a chain, your next skill is a guaranteed critical hit",
           "effect_type": "next_skill_guaranteed_crit",
           "scaling": {
-            "C":  { "combo_length": 4, "value": 1, "cooldown": 20 },
-            "SS": { "combo_length": 3, "value": 1, "cooldown": 10 }
+            "C": {
+              "combo_length": 4,
+              "value": 1,
+              "cooldown": 20
+            },
+            "SS": {
+              "combo_length": 3,
+              "value": 1,
+              "cooldown": 10
+            }
           }
         }
       ]
     },
-
     {
       "id": "ks_util_breath",
       "category": "utility",
@@ -1137,8 +1713,16 @@
           "description_en": "Instantly recover Breath",
           "effect_type": "restore_souffle_pct",
           "scaling": {
-            "C":  { "trigger_pct": 20, "value": 15, "cooldown": 60 },
-            "SS": { "trigger_pct": 30, "value": 35, "cooldown": 30 }
+            "C": {
+              "trigger_pct": 20,
+              "value": 15,
+              "cooldown": 60
+            },
+            "SS": {
+              "trigger_pct": 30,
+              "value": 35,
+              "cooldown": 30
+            }
           }
         },
         {
@@ -1149,8 +1733,20 @@
           "description_en": "Accelerated Breath regen and temporary CDR",
           "effect_type": "buff_souffle_regen_and_cdr",
           "scaling": {
-            "C":  { "trigger_pct": 20, "souffle_regen_bonus": 50, "cdr": 10, "duration": 8, "cooldown": 60 },
-            "SS": { "trigger_pct": 30, "souffle_regen_bonus": 120, "cdr": 25, "duration": 12, "cooldown": 30 }
+            "C": {
+              "trigger_pct": 20,
+              "souffle_regen_bonus": 50,
+              "cdr": 10,
+              "duration": 8,
+              "cooldown": 60
+            },
+            "SS": {
+              "trigger_pct": 30,
+              "souffle_regen_bonus": 120,
+              "cdr": 25,
+              "duration": 12,
+              "cooldown": 30
+            }
           }
         },
         {
@@ -1161,14 +1757,23 @@
           "description_en": "Sacrifice HP to recover Breath",
           "effect_type": "convert_hp_to_souffle",
           "scaling": {
-            "C":  { "trigger_pct": 20, "hp_cost": 12, "souffle_gain": 15, "cooldown": 60 },
-            "SS": { "trigger_pct": 30, "hp_cost": 10, "souffle_gain": 30, "cooldown": 30 }
+            "C": {
+              "trigger_pct": 20,
+              "hp_cost": 12,
+              "souffle_gain": 15,
+              "cooldown": 60
+            },
+            "SS": {
+              "trigger_pct": 30,
+              "hp_cost": 10,
+              "souffle_gain": 30,
+              "cooldown": 30
+            }
           }
         }
       ]
     }
   ],
-
   "class_keystones": {
     "_note": "A designer plus tard — meme structure que common_keystones, specifiques a chaque classe",
     "warrior": [],
