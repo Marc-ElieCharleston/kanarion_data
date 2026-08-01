@@ -176,18 +176,6 @@
         }
       },
       "tempo": {
-        "atk_speed_up": {
-          "value_per_stack": 5,
-          "unit": "percent",
-          "max_stacks": 5,
-          "total_max": "+25%"
-        },
-        "atk_speed_down": {
-          "value_per_stack": 5,
-          "unit": "percent",
-          "max_stacks": 5,
-          "total_max": "-25%"
-        },
         "cast_speed_up": {
           "value_per_stack": 5,
           "unit": "percent",
@@ -1344,46 +1332,6 @@
     },
     "tempo": {
       "_comment": "Attack speed modifiers - GCD reste fixe à 2s",
-      "atk_speed_up": {
-        "name_fr": "Vitesse ATK +",
-        "name_en": "Attack Speed Up",
-        "polarity": "buff",
-        "stacking": "stackable",
-        "impl": "done",
-        "formula": "+5% attack speed per stack",
-        "tooltip_fr": "Augmente la vitesse des attaques.",
-        "tooltip_en": "Increases attack speed.",
-        "description_fr": "Augmente la fréquence des auto-attaques. Temps de recharge global reste fixe à 2s. Pour DPS physiques.",
-        "description_en": "Increases auto-attack frequency. GCD stays fixed at 2s. For physical DPS.",
-        "runtime": {
-          "stat_mods": {
-            "atk_speed_percent": "value/100"
-          },
-          "vfx_type": "haste_aura"
-        },
-        "max_stacks": 5,
-        "value_per_stack": 5
-      },
-      "atk_speed_down": {
-        "name_fr": "Vitesse ATK -",
-        "name_en": "Attack Speed Down",
-        "polarity": "debuff",
-        "stacking": "stackable",
-        "impl": "done",
-        "formula": "-5% attack speed per stack",
-        "tooltip_fr": "Réduit la vitesse des attaques.",
-        "tooltip_en": "Reduces attack speed.",
-        "description_fr": "Réduit la fréquence des auto-attaques. Temps de recharge global reste fixe à 2s. Efficace contre les DPS physiques.",
-        "description_en": "Reduces auto-attack frequency. GCD stays fixed at 2s. Counters physical DPS.",
-        "runtime": {
-          "stat_mods": {
-            "atk_speed_percent": "-value/100"
-          },
-          "vfx_type": "slow_chains"
-        },
-        "max_stacks": 5,
-        "value_per_stack": 5
-      },
       "cast_speed_up": {
         "name_fr": "Vitesse Incant +",
         "name_en": "Cast Speed Up",
@@ -2089,18 +2037,19 @@
         "value_per_stack": 5
       },
       "amplify": {
-        "name_fr": "Amplification",
-        "name_en": "Amplify",
+        "name_fr": "Amplification des Soins",
+        "name_en": "Healing Amplification",
         "polarity": "buff",
         "stacking": "stackable",
-        "impl": "planned",
-        "formula": "+10% next spell/skill power per stack, consumed on use",
-        "tooltip_fr": "Augmente la puissance du prochain sort.",
-        "tooltip_en": "Increases the power of the next spell.",
-        "description_fr": "Prochain sort/compétence +10% puissance par charge. CONSOMMÉ à l'utilisation. Préparation pour un pic de dégâts.",
-        "description_en": "Next spell/skill +10% power per stack. CONSUMED on use. Setup for burst.",
-        "max_stacks": 10,
-        "_audit_note": "2026-08-01: MAINTENU en 'planned' a dessein — ce n'est PAS un label perime. L'effet existe cote back (status_manager.cpp:959-967) mais ne fait PAS ce que cette fiche annonce : le code multiplie les soins d'un HoT sur la cible (valeur x (1 + 10% x stacks)), alors que la formule declaree ici est '+10% puissance du prochain sort, CONSOMME a l'utilisation'. Ni le ciblage (sorts vs HoT) ni la consommation ne correspondent. Zero usage en data aujourd'hui, donc rien de casse. Avant de l'utiliser dans un sort : trancher laquelle des deux definitions est la bonne, et aligner l'autre."
+        "max_stacks": 5,
+        "impl": "done",
+        "formula": "Les soins periodiques (HoT) qui tickent sur la cible sont multiplies par (1 + 10% x charges). Persistant sur la duree de l'effet, NON consomme.",
+        "tooltip_fr": "Augmente les soins periodiques recus.",
+        "tooltip_en": "Increases periodic healing received.",
+        "description_fr": "Chaque charge augmente de 10% les soins des effets de regeneration qui tickent sur la cible. L'effet dure sa duree entiere et n'est pas consomme.",
+        "description_en": "Each stack increases by 10% the healing of regeneration effects ticking on the target. Lasts its full duration and is not consumed.",
+        "sources": [],
+        "_audit_note": "2026-08-01: fiche REECRITE pour coller au code, sur recommandation du back. L'ancienne annoncait '+10% puissance du prochain sort, CONSOMME a l'utilisation' — ce qui ne correspondait ni au ciblage ni au comportement reels. Le code (status_manager.cpp:959-967) amplifie les HoT qui tickent sur la CIBLE, de facon persistante et sans consommation. Zero usage en data, donc reecriture sans risque. Si le mecanisme 'empower le prochain sort, consomme' est voulu un jour, il faudra un effet NEUF et distinct : ne pas reutiliser celui-ci."
       },
       "regen": {
         "name_fr": "Régénération",

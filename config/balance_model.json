@@ -209,13 +209,6 @@
         "_comment": "Revise le 2026-08-01 apres verification exhaustive. Il n'en restait QU'UN.",
         "sacrifice": "SUPPRIME. Jamais implemente, jamais reference comme effet. Piege a connaitre : le mot 'sacrifice' apparait comme TAG dans warrior/skills.json et healer/skills.json (espace de noms different des effets) et 28 fois en prose dans le lore du Martyr. Aucun de ces usages n'est une reference d'effet."
       },
-      "obsoletes_par_design": {
-        "_comment": "La stat sous-jacente est morte avec les auto-attaques, MAIS les definitions restent : 4 scripts client les lisent (status_engine.gd, skill.gd, skill_display.gd, hud_fixtures.gd). Les supprimer casserait l'affichage. A retirer seulement en meme temps que le nettoyage client.",
-        "effets": [
-          "atk_speed_up",
-          "atk_speed_down"
-        ]
-      },
       "disponible_et_inexploite": {
         "cast_speed_down": "VIVANT et generique (status_manager.cpp:196 via starts_with('cast_speed_')), cast_speed rendu reel par BE-6. Zero usage en data. C'est un outil anti-incantateur pret a l'emploi, notamment contre le Mage dont les temps d'incantation ont ete allonges."
       },
@@ -225,8 +218,8 @@
         "_regle": "Avant de declarer un effet mort, chercher son nom en TEXTE BRUT dans tous les .json, pas seulement dans les cles d'effet connues — puis dans le code back ET client."
       },
       "ecart_declaration_vs_implementation": {
-        "amplify": "Seul effet encore en impl:'planned', et a juste titre. Le back l'implemente (status_manager.cpp:959-967) mais sur les soins d'un HoT, alors que la fiche annonce '+10% puissance du prochain sort, consomme a l'utilisation'. Deux definitions incompatibles. 0 usage en data : rien de casse, mais ne PAS l'utiliser dans un sort avant d'avoir tranche.",
-        "_regle": "Un effet peut etre implemente ET mal etiquete (label perime, cas de steady_aim / guardian_breath / savoir_faire / hp_dot) OU implemente AUTREMENT que ce qu'il declare (ce cas). Le second est plus dangereux : le label 'done' aurait fait croire que la fiche est fiable."
+        "_resolu": "amplify : fiche realignee sur le code le 2026-08-01. 101 effets, TOUS en impl:done.",
+        "_regle": "Un effet peut etre mal ETIQUETE (label perime : steady_aim, guardian_breath, savoir_faire, hp_dot) ou mal DEFINI (sa fiche decrit autre chose que le code : amplify). Le second est plus dangereux — un label 'done' fait croire que la fiche est fiable."
       }
     },
     "contre_effets": {
@@ -263,6 +256,13 @@
         "nightstalker/spellbreaker": "5 charges (-25%), cd 14s — PLAFOND, 'frappe au point ou le sort se forme'",
         "_pourquoi_ici": "Les deux premiers PROMETTAIENT deja de ralentir les incantations dans leur texte sans porter l'effet. suppressing_fire portait meme un damage_percent_down non documente a la place. Le placement ne fait que tenir la promesse."
       }
+    },
+    "detonation_de_dot": {
+      "statut": "PROPOSE, non implemente. Chantier moteur post-tournoi, PAS de la config.",
+      "idee": "A X charges de DoT sur une cible, un sort consomme les charges pour un burst = f(charges). Transforme l'empilement passif en ressource strategique.",
+      "_pourquoi_ce_n_est_PAS_de_la_config": "Verifie avec le back. La machinerie de charges existante (room.cpp:3195-3245, consumes_charges / max_charges_consumed / bonus_damage_per_charge) est 100% cote LANCEUR : elle lit le ChargesComponent du caster et consomme SES propres charges. C'est une ressource-soi. La detonation veut consommer les charges de DoT de la CIBLE, qui vivent dans son StatusEffectsComponent. Source totalement differente : le vocabulaire consumes_charges ne peut pas la cibler.",
+      "_ce_qu_il_faut": "Un nouveau type d'effet, ex. detonate_dot, dans apply_skill_effects : lire les charges de bleed/burn/toxin de la cible, les retirer, infliger un burst fonction du nombre. Petit mais reel.",
+      "_ne_pas_faire": "Declarer la detonation en data avec consumes_charges en croyant que ca marchera : ca tomberait dans le vide, sans erreur."
     }
   },
   "pieges_verifies": {
