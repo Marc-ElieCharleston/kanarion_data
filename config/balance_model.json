@@ -27,7 +27,8 @@
         "holy_dot": 15
       },
       "_note_poison": "poison est en % des PV MAX de la cible, pas de la stat du lanceur. Non comparable directement, pondere a 2 par defaut.",
-      "_note_holy_dot": "holy_dot est croissant (10, 15, 20...). On prend 15 comme moyenne."
+      "_note_holy_dot": "holy_dot est croissant (10, 15, 20...). On prend 15 comme moyenne.",
+      "_limite_importante": "La valeur DoT mesure UN lancer. Elle ne se cumule PAS d'un lancer a l'autre : chaque effet a un max_stacks (brulure 3, toxine 5...), donc relancer ne fait que rafraichir. Consequence : la densite (puissance / cooldown) SUR-EVALUE les sorts a DoT a faible recharge. spice_master_spiced_cut affiche 90 de densite a 5s, mais sa brulure plafonne a 3 charges : ce n'est pas un hors-norme. Ne jamais reequilibrer un applicateur de DoT sur sa densite seule."
     },
     "controle": {
       "_comment": "Un stun ou un gros debuff a de la valeur meme sans degats. Equivalent en points de puissance, par seconde d'effet.",
@@ -191,8 +192,14 @@
       "damage_transfer : jamais implemente, 7 sorts concernes (ticket BE-14)",
       "max_missing_hp_bonus : lu sous un autre nom cote back, corrige BE-15",
       "pierce et pierce_falloff : parses, jamais consommes",
-      "effects[].pct_per_level : lu en int32_t, une valeur decimale est tronquee a 0 (ticket BE-10)"
+      "effects[].pct_per_level : lu en int32_t, une valeur decimale est tronquee a 0 (ticket BE-10)",
+      "class_filler : bloc present sur les 6 classes (attaque gratuite cd 0 / cout 0 / 100%), lu par AUCUN code. Vestige du design abandonne 'filler gratuit separe'. Retire le 2026-08-01 : le filler est base_skills[0]."
     ],
     "regle": "Avant d'ecrire un champ mecanique, verifier qu'un code serveur VIVANT le lit. Le parse ne suffit pas."
+  },
+  "densite": {
+    "_comment": "Outil de tri, pas de verdict : puissance divisee par le cooldown. Sert a reperer ce qui merite un regard, jamais a decider seul.",
+    "formule": "densite = puissance / cooldown",
+    "_lire_avec": "la limite DoT ci-dessus, et le tier : une signature a densite elevee est normale, un tier advanced a 60+ ne l'est pas."
   }
 }
