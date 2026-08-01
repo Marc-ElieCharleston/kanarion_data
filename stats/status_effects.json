@@ -445,7 +445,7 @@
         "polarity": "debuff",
         "stacking": "refresh",
         "max_stacks": 1,
-        "impl": "planned",
+        "impl": "done",
         "damage_type": "magical",
         "true_damage": false,
         "formula": "caster_max_hp * 0.03 per tick (3% caster max HP/s)",
@@ -465,7 +465,8 @@
           "tick_rate": 1.0,
           "scaling_stat": "caster_max_hp",
           "vfx_type": "holy_brand"
-        }
+        },
+        "_audit_note": "2026-08-01: impl 'planned' -> 'done'. Verifie de bout en bout : room.cpp:4207-4233 lit le bloc top-level dot_type/dot_percent/dot_duration (le commentaire du code nomme explicitement Martyr Intercession) et applique dot_value = caster.max_hp x dot_percent/100, ce qui correspond a la formule declaree ici. Cote statut, l'effet est en categorie 'dot' donc status_manager.cpp:79-82 lui assigne StatusType::DOT et son tick_interval generiquement. Label perime, pas l'effet."
       },
       "curse_dot": {
         "name_fr": "Malédiction",
@@ -1802,18 +1803,6 @@
           "_client_note": "stat_mods.shield='power' is a marker key required by client (pve_combat_manager.gd routes shield_amount only if mods.has('shield')). The string 'power' is replaced by the server-computed numeric absorb at runtime in combat_event_router.gd. Removing this breaks client display."
         }
       },
-      "sacrifice": {
-        "name_fr": "Sacrifice",
-        "name_en": "Sacrifice",
-        "polarity": "buff",
-        "stacking": "refresh",
-        "impl": "planned",
-        "formula": "redirects [skill_value]% damage from linked ally",
-        "tooltip_fr": "Redirige vers le porteur les dégâts subis par un allié.",
-        "tooltip_en": "Redirects damage taken by an ally to the bearer.",
-        "description_fr": "Lié à un allié. Reçoit un % de ses dégâts à sa place. Lien visible. Compétence de tank.",
-        "description_en": "Links to an ally. Takes % of their damage instead. Link visible. Tank/Guardian skill."
-      },
       "cover": {
         "name_fr": "Couverture",
         "name_en": "Cover",
@@ -2110,7 +2099,8 @@
         "tooltip_en": "Increases the power of the next spell.",
         "description_fr": "Prochain sort/compétence +10% puissance par charge. CONSOMMÉ à l'utilisation. Préparation pour un pic de dégâts.",
         "description_en": "Next spell/skill +10% power per stack. CONSUMED on use. Setup for burst.",
-        "max_stacks": 10
+        "max_stacks": 10,
+        "_audit_note": "2026-08-01: MAINTENU en 'planned' a dessein — ce n'est PAS un label perime. L'effet existe cote back (status_manager.cpp:959-967) mais ne fait PAS ce que cette fiche annonce : le code multiplie les soins d'un HoT sur la cible (valeur x (1 + 10% x stacks)), alors que la formule declaree ici est '+10% puissance du prochain sort, CONSOMME a l'utilisation'. Ni le ciblage (sorts vs HoT) ni la consommation ne correspondent. Zero usage en data aujourd'hui, donc rien de casse. Avant de l'utiliser dans un sort : trancher laquelle des deux definitions est la bonne, et aligner l'autre."
       },
       "regen": {
         "name_fr": "Régénération",

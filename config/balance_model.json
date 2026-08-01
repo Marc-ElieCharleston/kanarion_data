@@ -206,12 +206,11 @@
         ]
       },
       "reellement_inertes": {
-        "_comment": "Aucune reference serveur, aucun usage data. Suppression possible, sans urgence.",
-        "hp_dot": "jamais implemente, jamais utilise",
-        "sacrifice": "jamais implemente. ATTENTION au faux positif : le mot 'sacrifice' apparait 28 fois en PROSE dans le lore du Martyr (dont l'identite est 'Self-sacrifice protector'), zero fois comme identifiant d'effet."
+        "_comment": "Revise le 2026-08-01 apres verification exhaustive. Il n'en restait QU'UN.",
+        "sacrifice": "SUPPRIME. Jamais implemente, jamais reference comme effet. Piege a connaitre : le mot 'sacrifice' apparait comme TAG dans warrior/skills.json et healer/skills.json (espace de noms different des effets) et 28 fois en prose dans le lore du Martyr. Aucun de ces usages n'est une reference d'effet."
       },
       "obsoletes_par_design": {
-        "_comment": "Encore traites generiquement par le moteur, mais la STAT sous-jacente ne fait plus rien depuis le retrait des auto-attaques (2026-07-30) : atk_speed n'alimente que `haste`, qui ne pilotait que l'intervalle d'auto-attaque.",
+        "_comment": "La stat sous-jacente est morte avec les auto-attaques, MAIS les definitions restent : 4 scripts client les lisent (status_engine.gd, skill.gd, skill_display.gd, hud_fixtures.gd). Les supprimer casserait l'affichage. A retirer seulement en meme temps que le nettoyage client.",
         "effets": [
           "atk_speed_up",
           "atk_speed_down"
@@ -219,6 +218,15 @@
       },
       "disponible_et_inexploite": {
         "cast_speed_down": "VIVANT et generique (status_manager.cpp:196 via starts_with('cast_speed_')), cast_speed rendu reel par BE-6. Zero usage en data. C'est un outil anti-incantateur pret a l'emploi, notamment contre le Mage dont les temps d'incantation ont ete allonges."
+      },
+      "faux_positifs_de_mon_propre_audit": {
+        "_comment": "Erreurs que j'ai commises en scannant, gardees pour ne pas les refaire.",
+        "hp_dot": "Annonce inerte a tort. Il est reference par la cle `dot_type` (et non `effect`/`stat`/`buff`), que mon scan ne couvrait pas, et il TOURNE. Lecon : les effets peuvent etre references par des cles inattendues.",
+        "_regle": "Avant de declarer un effet mort, chercher son nom en TEXTE BRUT dans tous les .json, pas seulement dans les cles d'effet connues — puis dans le code back ET client."
+      },
+      "ecart_declaration_vs_implementation": {
+        "amplify": "Seul effet encore en impl:'planned', et a juste titre. Le back l'implemente (status_manager.cpp:959-967) mais sur les soins d'un HoT, alors que la fiche annonce '+10% puissance du prochain sort, consomme a l'utilisation'. Deux definitions incompatibles. 0 usage en data : rien de casse, mais ne PAS l'utiliser dans un sort avant d'avoir tranche.",
+        "_regle": "Un effet peut etre implemente ET mal etiquete (label perime, cas de steady_aim / guardian_breath / savoir_faire / hp_dot) OU implemente AUTREMENT que ce qu'il declare (ce cas). Le second est plus dangereux : le label 'done' aurait fait croire que la fiche est fiable."
       }
     },
     "contre_effets": {
