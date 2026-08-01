@@ -145,6 +145,24 @@ ALLOWED_METADATA_FIELDS = {
     "filler_variant_group",  # regroupe les fillers interchangeables d'un meme role
     # Offsets de rendu VFX (lus cote client uniquement, pas par le moteur de combat)
     "vfx_x_offset", "vfx_y_offset", "vfx_sprite_scale",
+    # --- Signatures de deplacement (whitelist 2026-08-01) ---
+    # Ces 6 sorts (charge, grapple, guardian_swap, shadowstep, backstep, blink) vivent
+    # sous la cle `signature_movement`, que extract_all_skills ne parcourait pas : ils
+    # n'ont jamais ete valides. Verifie champ par champ avant whitelist :
+    "movement",          # LU — content_loader.cpp:682 + client skill_loader.gd
+    "consumes_gcd",      # LU — content_loader.cpp
+    "max_level",         # LU — combat_host.cpp + client balance_config.gd
+    "detonates_marks",   # LU — content_loader.cpp
+    "detonates_burn",    # LU — content_loader.cpp
+    "double_attack_chance",  # LU — domain/combat_profile_builder.cpp
+    # --- Champs NON LUS, conserves pour ne pas bloquer la CI, mais c'est de la dette ---
+    # Verifie le 2026-08-01 : aucune reference dans server-combat ni dans le client.
+    # Ils ne font RIEN aujourd'hui. A trancher (implementer ou supprimer) hors urgence.
+    "unlock_at_level",          # NON LU — metadonnee de progression, jamais consommee
+    "boss_bonus_percent",       # NON LU
+    "thorn_reflect_duration",   # NON LU
+    "self_heal_percent",        # NON LU
+    "counter_chance_per_level", # NON LU
 }
 
 # Legacy fields: BLOCKED after Bloc 5 cleanup.
@@ -262,20 +280,42 @@ def load_canonical_grid(db_root):
 
 
 def extract_all_skills(data):
-    """Extract all skill dicts from a skills.json file."""
+    """Extract all skill dicts from a skills.json file.
+
+    CORRECTIF 2026-08-01 — ANGLE MORT MAJEUR.
+    Cette fonction lisait base_skills et subclass_skills[*].skills, mais ne
+    descendait JAMAIS dans subclass_skills[*].tier3[*].skills. Les 240 sorts de
+    tier3 — plus de la moitie des sorts de classe du jeu — n'ont donc jamais ete
+    valides : ni la whitelist de champs, ni le contrat Option A, ni les champs
+    legacy, ni aucune regle ajoutee depuis.
+
+    C'est ce trou qui a laisse passer la regression du lifesteal : le sort casse
+    (intercessor_martyrs_cry) est un tier3, la CI ne le regardait pas. C'est le
+    gate backend qui l'a arrete, pas nous.
+
+    Le parcours est maintenant recursif : toute liste `skills` rencontree a
+    n'importe quelle profondeur est collectee. Ca couvre tier3 aujourd'hui et
+    tout niveau de hierarchie qui serait ajoute demain.
+    """
     skills = []
-    for skill in data.get("base_skills", []):
-        if isinstance(skill, dict):
-            skills.append(skill)
-    for sub_id, sub_data in data.get("subclass_skills", {}).items():
-        if isinstance(sub_data, list):
-            for skill in sub_data:
-                if isinstance(skill, dict):
-                    skills.append(skill)
-        elif isinstance(sub_data, dict):
-            for skill in sub_data.get("skills", []):
-                if isinstance(skill, dict):
-                    skills.append(skill)
+    seen = set()
+
+    def walk(node):
+        if isinstance(node, dict):
+            # un dict qui ressemble a un sort (id + tier/scaling) est collecte
+            if "id" in node and ("tier" in node or "scaling_percent" in node):
+                sid = node.get("id")
+                if sid not in seen:
+                    seen.add(sid)
+                    skills.append(node)
+                return  # ne pas descendre DANS un sort (ses effects ne sont pas des sorts)
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for item in node:
+                walk(item)
+
+    walk(data)
     return skills
 
 
@@ -421,6 +461,41 @@ def validate_legacy_contradiction(skill, file_path, errors):
                     )
 
 
+def validate_utility_effects_have_value(skill, file_path, errors):
+    """Un effet `type: utility` DOIT porter `value` — le runtime le lit directement.
+
+    Ajoute le 2026-08-01 apres une regression que cette regle aurait attrapee :
+    une passe de migration Option A avait converti 10 effets utility (lifesteal x9,
+    mana_regen) de `value: 25/30/50` vers `stacks_to_apply: 5`, en se basant sur le
+    `stat` sans regarder le `type`. Resultat : le handler runtime lisait `value`,
+    absent, donc 0 — tout le lifesteal des Martyr, Bloodrage et Occultiste soignait
+    zero. Le gate backend l'a vu, pas la CI data.
+
+    La distinction est structurelle et n'a rien d'intuitif :
+      type: buff / debuff  -> stat_modifier, la puissance vient des STACKS (Option A)
+      type: utility        -> handler dedie, la puissance vient de VALUE
+
+    Un meme `stat` peut apparaitre sous les deux formes : lifesteal existe en buff
+    (berserker_bloodlust, stacks) ET en utility (bloodrage_bloodletting, value).
+    C'est pourquoi le contrat Option A se lit sur le TYPE, jamais sur le stat seul.
+    """
+    sid = skill.get("id", "???")
+    for i, e in enumerate(skill.get("effects", []) or []):
+        if not isinstance(e, dict) or e.get("type") != "utility":
+            continue
+        stat = e.get("stat", "")
+        # cleanse / purge / interrupt et consorts sont des declencheurs sans magnitude
+        if stat in {"cleanse", "purge", "interrupt", "revive", "dispel", "steal_buff",
+                    "taunt_redirect", "shield_block"}:
+            continue
+        if "value" not in e and "pct" not in e:
+            errors.append(
+                f"{file_path}: skill '{sid}' effects[{i}] type=utility stat='{stat}' "
+                f"SANS `value` — le runtime lit value, l'effet sera inerte "
+                f"(ne pas migrer un utility vers stacks_to_apply)"
+            )
+
+
 def validate_damage_scaling_coherence(skill, file_path, errors):
     """Un sort physique scale sur atk, un sort magique sur mag.
 
@@ -482,6 +557,7 @@ def main():
             validate_effects_array(skill, skill_file, valid_effect_ids, canonical_grid, errors, warnings)
             validate_legacy_contradiction(skill, skill_file, errors)
             validate_damage_scaling_coherence(skill, skill_file, errors)
+            validate_utility_effects_have_value(skill, skill_file, errors)
 
             # Count legacy usage
             for f in skill.keys():
