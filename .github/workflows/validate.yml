@@ -233,6 +233,13 @@ jobs:
       - name: Validate skill schema (Bloc 0)
         run: python3 scripts/validate_skills.py
 
+      # 3c. Passive validation (2026-08-02). Jusqu'ici AUCUN validateur ne regardait
+      # les 126 passifs repartis dans 31 fichiers : stats inconnues, effect_id casses
+      # ou stats mortes passaient sans bruit. Des le premier passage il a trouve
+      # 5 passifs branches sur attack_speed, morte depuis le retrait des auto-attaques.
+      - name: Validate passives
+        run: python3 scripts/validate_passives.py
+
       # 4. Schema version present
       - name: Verify schema_version exists
         run: |
