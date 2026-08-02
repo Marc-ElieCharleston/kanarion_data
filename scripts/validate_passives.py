@@ -33,6 +33,15 @@ DB = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #                  Confirme par le back le 2026-08-02.
 DEAD_STATS = {
     "attack_speed": "auto-attaques desactivees : haste n'est plus consomme",
+    # Ajoutes le 2026-08-03 apres une regression que j'ai moi-meme introduite :
+    # en migrant les passifs attack_speed j'ai choisi ces deux stats comme
+    # "heritier de la cadence" sans revalider. Elles sont mortes pour la meme
+    # raison : room.cpp:3304 ne roule le proc QUE si skill.id == "basic_attack"
+    # ("Skills — including multi-hit ones — are unaffected"), et les auto-attaques
+    # sont coupees. Le champ de SORT double_hit_chance n'est meme pas parse.
+    "double_attack_chance": "ne procque que sur basic_attack, et les auto-attaques sont coupees",
+    "double_hit_chance": "ne procque que sur basic_attack, et les auto-attaques sont coupees",
+    "triple_attack_chance": "meme chemin que double_attack_chance, mort pour les memes raisons",
 }
 
 # Stats parsees mais pas encore APPLIQUEES en prod. Tolerees (la stat est legitime,
