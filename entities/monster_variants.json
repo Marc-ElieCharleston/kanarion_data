@@ -1,11 +1,24 @@
 {
   "_meta": {
-    "version": "3.0",
-    "last_updated": "2026-01-10",
-    "description": "Systeme de variantes de monstres (prefix, elite, boss)"
+    "version": "3.1",
+    "last_updated": "2026-08-02",
+    "description": "Systeme de variantes de monstres (prefix, elite, boss)",
+    "_refactor_2026_08": {
+      "status": "en_transition",
+      "direction": "Les stats_mult de ce fichier DOUBLONNENT config/monster_scaling_model.json (pivot stats derivees 2026-07-31). Modele cible = BASE(sprite) x NIVEAU(level_range) x TIER(menace) x AFFIXE-RARETE(prefix) x ETOILES(pack), stats 100% derivees.",
+      "source_unique_stats": {
+        "tier_mult (fodder..boss)": "config/monster_scaling_model.json -> tier_multipliers (PAS elite_variant/boss_variant.stats_mult ci-dessous)",
+        "rarite_mult (normal/magic/rare/champion)": "config/monster_scaling_model.json -> rarity_multipliers (PAS prefix_variants.stats_mult ci-dessous)"
+      },
+      "prefix_devient_rarete": "corrupted/angry/armored/giant/swift = saveurs nommees des tiers magic/rare/champion. Gardent leur 'special'; le stat-mult vient de rarity_multipliers. Ne plus lire prefix_variants.stats_mult au runtime.",
+      "species_families_collapse": "species_families = entites distinctes par stade de vie = cause de l'inflation 177 ids. A collapser: 1 base + level_range, l'alpha/geant = affixe champion (sprite agrandi + tint). Retombe vers ~74 sprites reels (voir memoire project_monster_affix_refactor).",
+      "elite_boss_variant": "Garder size_mult/xp/gold/loot/phases/respawn/special_abilities. RETIRER stats_mult (source = tier_multipliers).",
+      "conserves_tels_quels": "star_system (compo de pack) + size_by_danger (taille visuelle) = orthogonaux, aucun doublon."
+    }
   },
   "prefix_variants": {
     "_comment": "Modifie les stats et le nom du monstre (ex: 'Corrupted Goblin')",
+    "_deprecated_2026_08": "stats_mult DOUBLONNE rarity_multipliers (scaling_model). Runtime cible: prefix = affixe de rarete, ne garder que 'special'/'name_prefix'/'cooldown_mult'. Voir _meta._refactor_2026_08.",
     "corrupted": {
       "name_prefix": "Corrupted",
       "stats_mult": {
@@ -172,6 +185,7 @@
   },
   "elite_variant": {
     "_comment": "Version elite d'un monstre - rare spawn, stronger. Stats normalisees (CTO v2).",
+    "_deprecated_2026_08": "stats_mult DOUBLONNE tier_multipliers.elite (scaling_model). Garder size/xp/gold/loot/special_abilities/spawn_chance. Voir _meta._refactor_2026_08.",
     "name_prefix": "Elite",
     "stats_mult": {
       "hp": 1.5,
@@ -191,6 +205,7 @@
   },
   "boss_variant": {
     "_comment": "Boss version - 3 tiers: field (open world mini-boss), dungeon (end of instance), world (raid event). Stats normalisees (CTO v2).",
+    "_deprecated_2026_08": "stats_mult DOUBLONNE tier_multipliers.boss (scaling_model). Garder size/xp/gold/loot/phases/respawn/contribution. Voir _meta._refactor_2026_08.",
     "types": {
       "field_boss": {
         "_comment": "Mini-boss en open world, soloable par un bon groupe. Stats CTO: HP x2.2, ATK x1.3.",
@@ -490,6 +505,7 @@
   },
   "species_families": {
     "_comment": "Variantes par espece (style Dofus): meme animal a differents stades de vie / niveaux. Chaque variante est une entite distincte dans monsters.json avec ses propres stats/drops/skills, PAS un prefix runtime. Utilise pour permettre a une zone level_range 1-5 d'avoir cohérence biologique (ex: jeunes rats lv 1, rats adultes lv 3, alpha lv 5).",
+    "_deprecated_2026_08": "OBSOLETE avec le scaling derive: plus besoin d'entites distinctes par stade de vie (curve derive tout niveau depuis 1 base). Cible: collapse vers 1 base + level_range, alpha/geant = affixe champion (sprite agrandi + tint). C'est la cause de l'inflation 177 ids -> 74 sprites reels. Voir _meta._refactor_2026_08.",
     "rat": {
       "parent": "mob_rat",
       "variants": [
