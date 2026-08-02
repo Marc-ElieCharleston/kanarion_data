@@ -68,10 +68,10 @@
   "level_curve": {
     "_comment": "CALIBRE sur le referentiel joueur GERE (harness StatRoller reel, item 3 back 15debc0, build Equilibre) + formule de degat exacte (damage_calculator). curve(1)=1 (mob = base_lv1 au lv1). anchors_hp calent hp+mp ; anchors_offense cale atk ; anchors_defense cale def+mr (DECOUPLE de l'offense). Interpolation lineaire entre ancres. Reference = archetype MOYEN (base_hp moy 31, base_atk moy 5, = brute) : la courbe cale le mob moyen, chaque archetype spread autour.",
     "type": "anchored_interpolation",
-    "anchors_hp": { "1": 1.0, "10": 3.8, "30": 8.9, "50": 13.6, "70": 22.8, "100": 34.7 },
-    "anchors_offense": { "1": 1.0, "10": 7.4, "30": 19.4, "50": 30.2, "70": 74.2, "100": 125.8 },
-    "anchors_defense": { "1": 1.0, "10": 4.0, "30": 5.0, "50": 6.0, "70": 7.0, "100": 8.0 },
-    "REQUIRES_BACK": "anchors_defense est un 3e jeu d'ancres NOUVEAU. Le scaler doit lire anchors_defense pour def+mr (au lieu de partager anchors_offense). Sans ce decouplage, def/mr suivent anchors_offense (jusqu'a 125x) -> mob ultra-tanky -> tours-pour-tuer exploses. Petit changement scaler cote back (demande faite).",
+    "anchors_hp": { "1": 1.0, "10": 3.8, "20": 5.82, "30": 8.9, "40": 11.0, "50": 13.6, "60": 17.61, "70": 22.8, "80": 26.23, "90": 30.17, "100": 34.7 },
+    "anchors_offense": { "1": 1.0, "10": 7.4, "20": 10.14, "30": 13.89, "40": 19.03, "50": 26.07, "60": 35.72, "70": 48.93, "80": 67.04, "90": 91.85, "100": 125.8 },
+    "anchors_defense": { "1": 1.0, "10": 4.0, "20": 4.47, "30": 5.0, "40": 5.48, "50": 6.0, "60": 6.48, "70": 7.0, "80": 7.32, "90": 7.65, "100": 8.0 },
+    "REQUIRES_BACK": "(1) anchors_defense = 3e jeu d'ancres, le scaler doit lire anchors_defense pour def+mr (pas anchors_offense, sinon mob 125x tanky). (2) RE-VALIDER: anchors_offense LISSEE TOTALEMENT (2026-08-02, choix produit) = ratio ~+37%/decennie constant de lv10 a lv100, la marche gear-epique lv50-70 est SUPPRIMEE. Consequence: offense lv70 passe de 74.2 a 48.9 (-34%), lv30 de 19.4 a 13.9. Les mobs lv50-70 tapent plus doux vs un joueur fraichement epique = fenetre de reward assumee. Le back doit re-passer son harness degat (la baisse lv70 peut rendre le contenu epique trop facile ; si oui, lisser AUSSI la courbe d'armure joueur cote gear plutot que re-durcir le mob).",
     "calibration": {
       "reference_build": "Equilibre gere (socle+passifs+gear, harness back item 3)",
       "player_ref_equilibre": {
@@ -83,9 +83,10 @@
       },
       "damage_formula": "landed = (base_power + atk_mob x scaling%) x E[crit] x mitig. E[crit] = 1 + crit/100 x (crit_damage-100)/100. mitig = 100/(100+armor_eff). armor_eff = armor_joueur x (1 - armor_pen_mob/100), pen clamp [0,70]. Magique = idem avec magic_resist + magic_pen. Filler std = base_power 6, scaling 100%, scaling_stat atk. La penetration reduit l'ARMURE cible (%), pas le degat.",
       "anchors_hp_basis": "SOLIDE (independant formule) : hp_mob(standard, avg) = DPS_Equilibre(lvl) x 2.5 tours. anchors_hp[lvl] = DPS_Equilibre[lvl] x 2.5 / 31. NB: avec anchors_defense gentle (~12% mitig mob), tours effectifs ~2.8 (encore dans la bande 2-3).",
-      "anchors_offense_basis": "EXACT (formule back). Cible standard = 11% PV joueur/tour. atk_mob_cible (brute crit8/cdmg150/pen12 vs Equilibre) = {10:37, 30:97, 50:151, 70:371, 100:629}. anchors_offense[lvl] = atk_mob_cible / base_lv1_atk[brute]=5. La forte montee lv70/100 vient de l'armure joueur qui explose (149->202, mitig 0.43->0.36) : le mob doit taper fort pour percer.",
+      "anchors_offense_basis": "LISSEE (2026-08-02, choix produit 'bonne augmentation reguliere chaque 10 lvl'). Ratio constant ~x1.37/decennie de lv10 (7.4) a lv100 (125.8). Remplace la calibration exacte-par-formule qui creait une marche lv50-70 (l'armure joueur epique faisait bondir atk_mob_cible 151->371). Trade-off assume: offense lv70 74.2->48.9. Calibration EXACTE historique (reference/rollback): atk_mob_cible {10:37, 30:97, 50:151, 70:371, 100:629} / base_lv1_atk[brute]=5.",
       "anchors_defense_basis": "GENTLE (mob modestement blinde, jamais eponge). Vise ~12-18% de mitigation mob apres penetration joueur, quasi constant (leger + par niveau). base_lv1_def[brute]=4 -> def mob 16/20/24/28/32 (lv10-100). Empeche les mobs de sponger tout en gardant une identite tank (tank base_def 7 -> plus blinde, glass 2 -> papier). DECOUPLE de l'offense pour ne pas exploser les tours-pour-tuer.",
-      "discontinuite_lv50_70": "Le referentiel joueur a une marche lv50->70 (rarete rare->epic + passifs). anchors_hp la suit (mob reste ~2.5 tours). anchors_offense la suit AUSSI (l'armure joueur bondit -> le mob doit taper plus). Pas de lissage : le pic gear lv70 = reward joueur temporaire."
+      "lissage_offense_2026_08": "AVANT (calibre formule, marche): {10:7.4, 30:19.4, 50:30.2, 70:74.2, 100:125.8}, steps/decennie irreguliers +62%..+25% puis +57% (bosse gear-epique). APRES (lisse): constant ~+37%/decennie, plus de bosse. Le lv50-70 devient une fenetre de reward (mob en retrait vs joueur epique). anchors_hp/def gardent leurs ancres calibrees, juste densifiees par decennie (interp geometrique, endpoints inchanges).",
+      "discontinuite_lv50_70": "SUPPRIMEE (lissee 2026-08-02, voir lissage_offense_2026_08). anchors_hp garde une legere marche lv50-70 (mob reste ~2.5 tours a tuer) mais anchors_offense est desormais lisse."
     }
   },
 
