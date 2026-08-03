@@ -358,5 +358,25 @@
       "Trait Sacre / Decharge (monstres)": "La Decharge ralentit les incantations : elle est portee par hymn_breaker et silence_bringer, des mobs anti-incantateurs."
     },
     "_a_surveiller": "Relancer ce scan apres toute vague d'ajout de sorts. Un doublon ne se voit pas a la lecture, seulement a la comparaison."
+  },
+  "armure_brisee": {
+    "_question": "Les conditionnelles bonus_if_armor_broken et double_damage_if_armor_broken ont besoin d'un etat 'armure brisee'. Faut-il creer un statut dedie ?",
+    "_verdict": "NON. L'etat se DERIVE de armor_down a son plafond de charges. Tranche le 2026-08-03.",
+    "definition": "Une cible est en ARMURE BRISEE quand elle porte armor_down au nombre MAXIMAL de charges (max_stacks dans stats/status_effects.json, aujourd'hui 5, soit -25% d'armure). Lire le seuil depuis la grille canonique, jamais le coder en dur : si le plafond bouge, la condition suit.",
+    "_pourquoi_pas_un_statut_dedie": {
+      "rien_a_creer": "21 sorts repartis sur 4 classes appliquent deja armor_down, dont 7 posent directement les 5 charges. L'etat existe deja en jeu, il n'a simplement jamais ete nomme.",
+      "combo_inter_classes_gratuit": "Un statut dedie serait pose par l'Artisan et consomme par l'Artisan : un combo avec soi-meme. En le derivant de armor_down, un Rogue Debuffer, un Warrior Weaponmaster ou un Archer Falconer peuvent PREPARER la cible pour le Forgeron. C'est exactement le combo a deux joueurs qu'on cherche a construire.",
+      "pas_de_seconde_source": "Un statut armor_broken separe pourrait desynchroniser : une cible a -25% d'armure sans le flag, ou l'inverse. Une valeur derivee ne peut pas mentir."
+    },
+    "mise_en_place": {
+      "cote_moteur": "Remplacer un hypothetique has_status('armor_broken') par stacks_of('armor_down') >= max_stacks('armor_down'). Meme difficulte que le pattern bonus_damage_per_debuff deja livre.",
+      "cote_data": "RIEN a faire. Les deux sorts concernes portent deja leur champ : blacksmith_heavy_swing (bonus_if_armor_broken 25) et blacksmith_anvil_crash (double_damage_if_armor_broken)."
+    },
+    "le_combo_qui_en_decoule": {
+      "_exemple_solo": "blacksmith_armor_dent pose les 5 charges, puis blacksmith_anvil_crash double ses degats. Le Forgeron peut donc s'auto-preparer.",
+      "_exemple_a_deux": "debuffer_armor_break (Rogue), weaponmaster_armor_break (Warrior) ou hammer_lord_steel_crusher posent le plafond, le Forgeron encaisse la prime. Aucun des trois n'a besoin de savoir que le Forgeron existe.",
+      "_effet_de_bord_souhaite": "Toute classe qui empile de l'armor_down devient un preparateur. C'est le contraire de la situation actuelle, ou poseur et beneficiaire vivent dans la meme sous-classe."
+    },
+    "_a_surveiller": "Si d'autres conditionnelles 'X brise' apparaissent (resistance magique, garde), appliquer la meme regle : deriver du plafond de charges du debuff correspondant plutot que d'inventer un statut."
   }
 }
