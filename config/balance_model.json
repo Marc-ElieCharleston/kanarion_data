@@ -378,5 +378,30 @@
       "_effet_de_bord_souhaite": "Toute classe qui empile de l'armor_down devient un preparateur. C'est le contraire de la situation actuelle, ou poseur et beneficiaire vivent dans la meme sous-classe."
     },
     "_a_surveiller": "Si d'autres conditionnelles 'X brise' apparaissent (resistance magique, garde), appliquer la meme regle : deriver du plafond de charges du debuff correspondant plutot que d'inventer un statut."
+  },
+  "tirage_aleatoire_cardmaster": {
+    "_statut": "SCHEMA GELE le 2026-08-03. Le back code le resolver contre cette forme (OUVERT 1).",
+    "_forme": {
+      "random_buffs_min": "minimum tire au niveau 1",
+      "random_buffs_min_at_level_5": "minimum a partir du niveau 5",
+      "random_buffs_min_at_level_10": "minimum au niveau 10",
+      "random_buffs_max": "maximum tire, tous niveaux",
+      "random_buffs_duration": "duree en secondes des effets tires",
+      "buff_pool": "[{stat, stacks_to_apply} pour les canoniques | {stat, value} pour les autres]",
+      "_idem_debuffs": "random_debuffs_* et debuff_pool, meme grammaire"
+    },
+    "_regles": {
+      "cle_stat": "`stat`, jamais `buff` ni `debuff` — meme vocabulaire que effects[] partout ailleurs.",
+      "canonique_donc_charges": "Un effet de la grille canonique porte stacks_to_apply, JAMAIS value : c'est le contrat Option A. Les non-canoniques (shield, blind, slow, stun, burn, confusion) gardent value.",
+      "plafond": "stacks_to_apply ne depasse jamais le max_stacks de l'effet. Deux entrees le violaient : crit_chance_up a 4 charges et crit_chance_down a 10, pour un plafond de 3. Ramenees.",
+      "duree_obligatoire": "Aucun pool ne declarait de duree : un effet tire durait un temps indefini. Desormais explicite au niveau du sort.",
+      "montee_en_niveau": "Le MINIMUM monte par paliers 1 -> 2 -> 3 (ou 2 -> 3 -> 4 pour les sorts qui partent de 2). Le maximum suit pour ne jamais passer sous le minimum. Avant, le seul effet du niveau etait un palier unique au niveau 5, ce qui rendait les niveaux 2-4 et 6-10 vides."
+    },
+    "_ce_qui_reste_a_part": "marked_bonus_percent n'appartient PAS a ce schema : c'est un simple bonus de degats si la cible porte `marked`. 5 sorts l'utilisent (2 Archer, 3 Mage : 25 / 50 / 100%). Rien a cadrer, rien a migrer.",
+    "_semantique_attendue_du_resolver": {
+      "tirage": "N effets distincts tires dans le pool, sans doublon, N entre le minimum du niveau et le maximum.",
+      "rng": "RNG de combat de la room (deterministe, rejouable), jamais une source non deterministe — sinon un client qui se reconnecte desynchronise.",
+      "application": "Chaque effet tire s'applique avec ses stacks_to_apply (ou sa value) et la duree du sort."
+    }
   }
 }

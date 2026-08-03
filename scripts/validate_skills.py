@@ -91,6 +91,15 @@ ALLOWED_METADATA_FIELDS = {
     # Random pools (Cardmaster)
     "random_buffs_min", "random_buffs_max", "buff_pool",
     "random_buffs_min_at_level_5",
+    # Schema du tirage aleatoire GELE le 2026-08-03, pour que le back code contre une
+    # forme stable. Avant : deux schemas incompatibles, des `value` sur des effets
+    # canoniques (interdit par le contrat Option A, et deux valeurs au-dessus du
+    # plafond donc inexprimables), et aucune duree declaree nulle part.
+    # Les entrees de pool sont desormais {stat, stacks_to_apply} pour les canoniques
+    # et {stat, value} pour les autres — meme vocabulaire que effects[].
+    # EN ATTENTE du resolver moteur (OUVERT 1). Inertes jusque-la, c'est assume.
+    "random_buffs_duration", "random_debuffs_duration",
+    "random_buffs_min_at_level_10", "random_debuffs_min_at_level_10",
     "random_debuffs_min", "random_debuffs_max", "debuff_pool",
     "random_debuffs_min_at_level_5",
     "random_debuffs", "random_debuff_count_min", "random_debuff_count_max",
