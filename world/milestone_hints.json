@@ -1,0 +1,47 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-08-03",
+    "description": "Conseils de palier — le tutoriel qui continue hors tutoriel. Modale unique (HintModal) affichee aux gros moments de progression : deblocage de sous-classe, specialisation, keystones. Chaque conseil est one-shot par device, avec une case 'Ne plus afficher' persistee par hint id (HintDismissalStore). Le contenu est bilingue inline, comme quests.json et tutorial_overlays.json — pas de cle de traduction : le texte de contenu vit dans la data.",
+    "indexed_by": "id (identifiant stable, sert de cle de persistance — NE JAMAIS renommer un id deja livre, cela reafficherait le conseil a tous les joueurs)",
+    "consumers": [
+      "frontend: scripts/systems/milestone_hint_manager.gd"
+    ],
+    "trigger_types": {
+      "player_level": "Declenche quand le niveau joueur atteint ou depasse `level`. Les paliers deja franchis a la premiere evaluation sont marques vus en silence (pas d'empilement de modales a la connexion)."
+    }
+  },
+
+  "hints": [
+    {
+      "id": "hint_lv10_pathmaster",
+      "trigger": { "type": "player_level", "level": 10 },
+      "priority": 80,
+      "cta_target_npc": "npc_class_master_elwin",
+      "title_fr": "Une voie s'ouvre à toi",
+      "title_en": "A path opens to you",
+      "body_fr": "Tu as atteint le [b]niveau 10[/b].\n\nLe [b]Maître Soren[/b], le Maître des Voies, peut désormais t'orienter vers une sous-classe. C'est le choix qui donnera son identité à ton personnage : une même classe se joue très différemment selon la voie empruntée.\n\nVa le voir au village quand tu te sens prêt — rien ne presse, et il t'expliquera chaque voie avant que tu tranches.",
+      "body_en": "You have reached [b]level 10[/b].\n\n[b]Master Soren[/b], the Master of Paths, can now guide you toward a subclass. This is the choice that gives your character its identity: the same class plays very differently depending on the path you take.\n\nGo see him in the village when you feel ready — there's no rush, and he will walk you through each path before you commit.",
+      "cta_label_fr": "Où le trouver ?",
+      "cta_label_en": "Where is he?"
+    },
+    {
+      "id": "hint_lv40_specialization",
+      "trigger": { "type": "player_level", "level": 40 },
+      "priority": 80,
+      "cta_target_npc": "npc_class_master_elwin",
+      "title_fr": "L'heure de te spécialiser",
+      "title_en": "Time to specialize",
+      "body_fr": "Tu as atteint le [b]niveau 40[/b].\n\nTa [b]spécialisation[/b] est débloquée. C'est le second grand palier de ton build : elle pousse ta voie à son terme et ouvre des options que tu n'avais pas jusqu'ici.\n\nRetourne voir le [b]Maître Soren[/b], le Maître des Voies, pour faire le point sur ce qui s'offre à toi.",
+      "body_en": "You have reached [b]level 40[/b].\n\nYour [b]specialization[/b] is unlocked. This is the second major milestone of your build: it pushes your path to its conclusion and opens options you did not have before.\n\nGo back to [b]Master Soren[/b] to review what is now available to you.",
+      "cta_label_fr": "Où le trouver ?",
+      "cta_label_en": "Where is he?"
+    }
+  ],
+
+  "_summary": {
+    "total": 2,
+    "by_trigger": { "player_level": 2 },
+    "note": "Le conseil keystone sera ajoute ici quand le systeme sera livre : meme forme, trigger a definir (deblocage keystone), cta_target_npc vers le PNJ de la quete."
+  }
+}
