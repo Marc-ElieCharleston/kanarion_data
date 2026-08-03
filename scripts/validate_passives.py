@@ -46,11 +46,10 @@ DEAD_STATS = {
 
 # Stats parsees mais pas encore APPLIQUEES en prod. Tolerees (la stat est legitime,
 # le portage moteur est attendu) mais listees ici pour qu'on n'oublie pas.
-PENDING_STATS = {
-    "cooldown_reduction": "sommee dans final_stats (room.cpp:5397) mais jamais appliquee "
-                          "a un cooldown ; seule application dans skill_executor.cpp = code mort. "
-                          "Ticket back ouvert.",
-}
+# Vide depuis le 2026-08-03 : cooldown_reduction a ete portee par le back (2b7f65a),
+# elle est desormais appliquee au cooldown pour les 6 classes, l'equipement, les
+# panoplies et les affixes. Les 3 passifs qui l'utilisent fonctionnent enfin.
+PENDING_STATS = {}
 
 
 def load(path):
