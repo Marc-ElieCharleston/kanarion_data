@@ -143,6 +143,11 @@ ALLOWED_METADATA_FIELDS = {
     # Sans ces entrees la CI echouait sur 38 faux positifs.
     "role",                  # attaque | tank | heal | utilitaire — pilote le tirage de loadout
     "filler_variant_group",  # regroupe les fillers interchangeables d'un meme role
+    # core_skill (ajoute par 7d061c8, "roll garanti" sur les skills-identite par role).
+    # PAS ENCORE LU par services/familiar ni server-combat : c'est de la data EN AVANCE
+    # sur l'implementation, pas de la data morte. A re-verifier quand le roll garanti
+    # sera cable, pour confirmer que le champ est bien consomme.
+    "core_skill",
     # Offsets de rendu VFX (lus cote client uniquement, pas par le moteur de combat)
     "vfx_x_offset", "vfx_y_offset", "vfx_sprite_scale",
     # --- Signatures de deplacement (whitelist 2026-08-01) ---
