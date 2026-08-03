@@ -16,6 +16,24 @@
       "controller": "controller",
       "healer": "support",
       "support": "support"
+    },
+    "targeting_contract": {
+      "_source": "Le moteur lit priority_weights (cles attack_*) comme LA source de ciblage, pour tous les mobs (skill_util.cpp:218-262). Contrat back du 2026-08-03.",
+      "cles_supportees": [
+        "attack_backline",
+        "attack_grouped",
+        "attack_healer",
+        "attack_lowest_hp",
+        "attack_mage",
+        "attack_nearest",
+        "attack_random",
+        "attack_threat"
+      ],
+      "_toute_autre_cle_attack": "IGNOREE par le moteur. Ecrire attack_frontline ou attack_weakest ne produirait rien du tout.",
+      "cles_comportementales": "protect_ally, taunt_enemy, heal_lowest_ally, heal_critical_ally, buff_ally, debuff_enemy, cc_caster, interrupt_cast, counter_strategy. Elles choisissent l'ACTION, pas la cible, et restent la propriete des behaviors. Les laisser dans priority_weights ne gene pas le ciblage : skill_util les ignore explicitement.",
+      "_ASYMETRIE_A_CONNAITRE": "Les cles ne se valent PAS a poids egal, et c'est le piege du tuning. attack_healer / attack_mage / attack_backline / attack_threat sont BINAIRES : elles ajoutent leur poids ENTIER si la cible correspond, zero sinon. attack_nearest / attack_lowest_hp / attack_random / attack_grouped sont SCALAIRES : le poids est multiplie par un facteur 0 a 1 (proximite, PV manquants, hasard, densite). Un poids 50 sur attack_healer bat donc presque toujours un poids 50 sur attack_nearest. Pour qu'une preference binaire reste une preference et non une obsession, la garder sous le poids des scalaires du meme role.",
+      "_pas_de_normalisation": "Les scores sont additifs bruts, le plus haut gagne. Faire somme=100 n'est pas exige par le moteur, c'est une convention de lisibilite.",
+      "target_priority_par_role": "SUPPRIME le 2026-08-03 : n'etait lu par personne. Ne pas le reintroduire. Ne pas confondre avec target_priority_by_class (racine du fichier), lui BIEN lu par monster_ai.cpp:91."
     }
   },
   "intelligence_levels": {
@@ -115,13 +133,6 @@
         "self_preservation": 0.4,
         "support_allies": 0.1
       },
-      "target_priority": [
-        "healer",
-        "mage",
-        "archer",
-        "rogue",
-        "warrior"
-      ],
       "preferred_skills": [
         "gap_closer",
         "teleport",
@@ -136,10 +147,11 @@
       "description_en": "Soaks damage on the frontline and pulls aggro to protect its allies.",
       "preferred_row": "front",
       "priority_weights": {
+        "attack_nearest": 70,
+        "attack_lowest_hp": 15,
+        "attack_random": 15,
         "protect_ally": 40,
-        "taunt_enemy": 30,
-        "attack_nearest": 20,
-        "attack_random": 10
+        "taunt_enemy": 30
       },
       "behavior": {
         "aggression": 0.4,
@@ -159,9 +171,11 @@
       "description_en": "Heals allies in priority, starting with the lowest HP. Focus it first or the fight will drag on.",
       "preferred_row": "back",
       "priority_weights": {
+        "attack_nearest": 50,
+        "attack_lowest_hp": 30,
+        "attack_random": 20,
         "heal_lowest_ally": 60,
         "heal_critical_ally": 25,
-        "attack_nearest": 10,
         "buff_ally": 5
       },
       "behavior": {
@@ -184,10 +198,12 @@
       "description_en": "Buffs allies and debuffs your team. Deals little damage but can swing a fight.",
       "preferred_row": "back",
       "priority_weights": {
+        "attack_threat": 40,
+        "attack_nearest": 40,
+        "attack_random": 20,
         "buff_ally": 35,
         "debuff_enemy": 35,
-        "heal_ally": 20,
-        "attack_random": 10
+        "heal_ally": 20
       },
       "behavior": {
         "aggression": 0.3,
@@ -231,10 +247,12 @@
       "description_en": "Analyzes your composition and adapts its skills to exploit weaknesses. Very dangerous against an unbalanced team.",
       "preferred_row": "mid",
       "priority_weights": {
+        "attack_threat": 40,
+        "attack_backline": 25,
+        "attack_lowest_hp": 20,
+        "attack_random": 15,
         "counter_strategy": 40,
-        "attack_threat": 30,
-        "debuff_enemy": 20,
-        "attack_random": 10
+        "debuff_enemy": 20
       },
       "behavior": {
         "aggression": 0.5,
@@ -307,13 +325,6 @@
         "self_preservation": 0.5,
         "support_allies": 0.15
       },
-      "target_priority": [
-        "healer",
-        "mage",
-        "archer",
-        "rogue",
-        "warrior"
-      ],
       "preferred_skills": [
         "ranged_damage",
         "aoe_damage"
@@ -326,23 +337,19 @@
       "description_en": "Locks down your casters with CC and debuffs from the rear. Interrupts casts.",
       "preferred_row": "back",
       "priority_weights": {
+        "attack_mage": 40,
+        "attack_backline": 25,
+        "attack_nearest": 20,
+        "attack_random": 15,
         "cc_caster": 40,
         "debuff_enemy": 30,
-        "interrupt_cast": 20,
-        "attack_random": 10
+        "interrupt_cast": 20
       },
       "behavior": {
         "aggression": 0.5,
         "self_preservation": 0.5,
         "support_allies": 0.35
       },
-      "target_priority": [
-        "mage",
-        "healer",
-        "archer",
-        "rogue",
-        "warrior"
-      ],
       "preferred_skills": [
         "cc",
         "debuff",
