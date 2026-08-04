@@ -388,7 +388,7 @@
     ],
     "regle": "Avant d'ecrire un champ mecanique, verifier qu'un code serveur VIVANT le lit. Le parse ne suffit pas.",
     "deux_entrees_du_meme_effet": {
-      "_comment": "Deux entrees effects[] portant le MEME stat dans un seul sort ne sont pas representables par le moteur. Verifie 2026-08-04 dans le code, pas suppose.",
+      "_comment": "CORRIGE cote moteur le 2026-08-04 (aab81a0). Conserve comme trace : le symptome etait une INVERSION DE CIBLE, pas une perte de valeur, et c'est le genre de defaut qu'aucune validation de schema ne peut voir.",
       "mecanique": "content_loader.cpp : applied_effects est un VECTEUR (un push par entree, ligne 581) mais effect_pct, effect_targets, effect_durations_sec, effect_pct_per_level et effect_duration_per_level sont des MAPS clees par effect_id seul (lignes 634 et 663-665). La derniere entree ecrase les precedentes, puis room.cpp:4263 itere le vecteur et applique N fois ces memes parametres ecrases.",
       "consequence": "Le beneficiaire principal ne recoit RIEN et le beneficiaire secondaire recoit le double. Ce n est pas une simple perte de valeur : la cible est inversee.",
       "cas_reels": {
@@ -396,8 +396,9 @@
         "skill_artisan_blacksmith_metalguard": "effects = [shield_def pct 80 sur allies, shield_def pct 40 target ally]. Le moteur retient target=ally pct=40 applique 2x : l allie prend 80%, le forgeron 0. Intention inverse."
       },
       "portee": "2 sorts dans toute la base. Les deux viennent du meme commit de migration d7c2df7 (PR3 typed shields).",
-      "la_fusion_est_une_FAUSSE_solution": "Fusionner en une entree unique detruirait le design : les deux entrees encodent deux CIBLES differentes (un bouclier sur l allie + une part sur le lanceur). Le correctif est moteur — parametres par entree au lieu de maps clees par effect_id — pas data.",
-      "regle_data": "Tant que le moteur flatte par effect_id : ne jamais ecrire deux entrees du meme stat dans un sort. Pour un effet a deux cibles et deux valeurs, il faut soit deux effect_id distincts, soit attendre le correctif moteur."
+      "regle_data": "LEVEE. Deux entrees du meme stat avec des cibles differentes sont desormais sures et expressives. La donnee etait juste depuis le debut, c'est le parser qui l'aplatissait.",
+      "statut": "RESOLU. SkillData porte desormais applied_effect_list : chaque entree effects[] garde SON target, SON pct, SA duree. Verifie e2e par le back — holy_shield pose 100% de MAG sur l'allie ET 65% sur le lanceur, metalguard 80% sur soi et 40% sur l'allie. Les textes sont enfin rendus tels qu'ecrits.",
+      "pourquoi_la_fusion_aurait_ete_une_erreur": "Reflexe a garder : la premiere reponse envisagee etait de fusionner les deux entrees en une seule. Cela aurait detruit le design — les deux entrees encodaient deux CIBLES. Quand une donnee expressive ne passe pas, verifier si le moteur sait la lire avant de simplifier la donnee pour lui plaire."
     }
   },
   "densite": {

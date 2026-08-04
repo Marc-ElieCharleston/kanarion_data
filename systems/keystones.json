@@ -51,7 +51,8 @@
         "on_heal_cast",
         "first_skill_cast",
         "on_critical_hit",
-        "ally_hp_below_pct"
+        "ally_hp_below_pct",
+        "ally_reaches_zero_hp"
       ],
       "runtime_extensions_required": [
         "stacks_to_apply lu par parse_effect_object et passe a StatusManager::apply_effect (statuts canoniques multi-stack)",
@@ -60,16 +61,17 @@
         "target_rule 'self' respecte par status_proc (forcer le statut sur le porteur, pas la cible du trigger)"
       ],
       "hp_threshold_note": "on_hp_threshold ne se re-arme pas dans un meme combat (ProcStateComponent.hp_threshold_triggered). Le cooldown ne s'applique donc qu'entre combats en V1.",
-      "prerequis_ally_reaches_zero_hp": {
-        "_comment": "Verifie dans le code 2026-08-04 : cabler le trigger seul ne rendra AUCUNE des 3 variantes ks_support_last_breath fonctionnelle. Trois capacites manquent, pas une.",
-        "manquant": {
-          "prevent_death": "0 occurrence dans server-combat/src. C est le coeur des 3 variantes.",
-          "uses_per_combat": "0 occurrence. Aucun compteur par combat n existe dans le chemin keystone. Precedent a copier : hp_threshold_fired_ dans innate_passive_processor.cpp:531-539, mais c est un autre processor.",
-          "damage_transfer": "0 occurrence (ticket BE-14). Necessaire uniquement a la variante martyr."
+      "prevent_death_v1": {
+        "_comment": "Livre par le back (aab81a0). Ce n'est PAS un proc reactif mais un hook pre-mort, place avant les 6 emplace<DeadComponent> de room.cpp — un proc qui reagit apres la resolution des degats ne pourrait pas empecher la mort.",
+        "champs": {
+          "revive_percent": "% des PV max de l'allie sauve. > 0 OBLIGATOIRE : c'est lui qui infere le type 'prevent_death' (unique_item_registry.cpp:67).",
+          "uses_per_combat": "OBLIGATOIRE > 0. proc_processor.cpp:738 saute l'effet sinon — un revive sans plafond n'est jamais autorise.",
+          "revive_atk_bonus": "optionnel, % ATK pose sur l'allie releve",
+          "revive_buff_duration": "optionnel, duree du buff ci-dessus (defaut 6.0s)",
+          "revive_self_damage_percent": "optionnel, % des PV max DU PORTEUR qu'il perd a la place"
         },
-        "contrainte_architecturale": "DeadComponent est pose EN LIGNE sur le site des degats, a 6 endroits de room.cpp (3906, 4029, 4090, 4497, 4974, 5045), motif if (health.current <= 0 && !all_of<DeadComponent>). Et check_victory_condition compte les survivants via view<TeamComponent>(exclude<DeadComponent>). Un proc qui reagit APRES la resolution des degats ne peut donc pas empecher la mort : le composant est deja pose. prevent_death doit etre un hook AVANT ces emplace, pas un trigger reactif comme ally_hp_below_pct.",
-        "deblocage": "save et vengeance ne demandent que prevent_death + le garde par combat (leur buff atk_up est canonique et existe deja). martyr demande en plus BE-14.",
-        "statut_data": "Les 3 variantes restent SANS bloc runtime, donc non equipables, tant que ces capacites ne sont pas livrees. Les ecrire maintenant produirait exactement les variantes inertes que le controle anti-inerte doit empecher."
+        "piege_a_ne_pas_reproduire": "heal_percent_max_hp est teste AVANT revive_percent dans la chaine d'inference de type. Mettre les deux dans le meme effet donnerait le type 'heal_percent_max_hp' et le revive ne partirait jamais. Un effet = un role.",
+        "trigger_documentaire": "Le hook scanne tous les effets de l'objet equipe et ne filtre que sur le type (proc_processor.cpp:737) : la chaine de trigger n'a aucune incidence sur le declenchement. ATTENTION cote moteur : 'ally_reaches_zero_hp' n'est PAS dans la table de triggers (unique_item_registry.cpp:408). Un trigger inconnu loggue un warning et retombe sur ProcTrigger::PASSIVE_MODIFIER. Sans consequence pour prevent_death, mais a mapper pour eviter le bruit au demarrage."
       }
     }
   },
@@ -1296,6 +1298,21 @@
               "uses_per_combat": 1,
               "cooldown": 60
             }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "ally_reaches_zero_hp",
+                "cooldown": 120,
+                "effects": [
+                  {
+                    "revive_percent": 5,
+                    "uses_per_combat": 1
+                  }
+                ]
+              }
+            ]
           }
         },
         {
@@ -1318,6 +1335,22 @@
               "uses_per_combat": 1,
               "cooldown": 60
             }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "ally_reaches_zero_hp",
+                "cooldown": 120,
+                "effects": [
+                  {
+                    "revive_percent": 5,
+                    "revive_self_damage_percent": 15,
+                    "uses_per_combat": 1
+                  }
+                ]
+              }
+            ]
           }
         },
         {
@@ -1342,6 +1375,23 @@
               "uses_per_combat": 1,
               "cooldown": 60
             }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "ally_reaches_zero_hp",
+                "cooldown": 120,
+                "effects": [
+                  {
+                    "revive_percent": 5,
+                    "revive_atk_bonus": 15,
+                    "revive_buff_duration": 6.0,
+                    "uses_per_combat": 1
+                  }
+                ]
+              }
+            ]
           }
         }
       ]
