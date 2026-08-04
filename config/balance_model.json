@@ -7,7 +7,7 @@
   },
   "puissance_effective": {
     "_comment": "Mesure unique qui rend les sorts comparables entre eux, quelle que soit leur forme. Exprimee en % de la stat de scaling.",
-    "formule": "puissance = direct + dot + controle",
+    "formule": "puissance = direct + soin + dot + 0.5 x controle + bouclier + regeneration + amelioration",
     "direct": {
       "formule": "scaling_percent x hit_count x facteur_surface",
       "facteur_surface": "racine(min(cases, 9))",
@@ -37,6 +37,75 @@
       "debuff_offensif_par_charge_par_seconde": 4,
       "debuff_defensif_par_charge_par_seconde": 4,
       "_note": "Volontairement grossier. Sert a eviter qu'un sort de controle pur soit classe comme faible."
+    },
+    "soin_et_bouclier": {
+      "_comment": "Avant cette extension, le modele ne comptait que degats + DoT + controle. Il mesurait donc ZERO sur une signature de soigneur : 20 specialisations sur 48 etaient invisibles, donc inarbitrables.",
+      "_principe": "Un point de vie rendu vaut un point de degat inflige. Un soin de 180% MAG et des degats de 180% MAG entrent sur la meme echelle.",
+      "soin_direct": "heal_scaling_percent x facteur_surface. Deja exprime en % de MAG, donc directement comparable au degat.",
+      "bouclier": {
+        "formule": "pct x conversion(stat de base) x facteur_surface",
+        "_comment": "Un bouclier absorbe des degats : ce qu'il absorbe vaut ce qu'il aurait coute.",
+        "shield_mag / shield_atk": "deja en % de la stat offensive, aucune conversion",
+        "shield_max_hp": "converti via le rapport PV/MAG de la CLASSE du lanceur",
+        "shield_def": "converti via (PV/MAG) / (PV/DEF) de la classe"
+      },
+      "regeneration": "pourcentage par tick x duree x facteur_surface, meme conversion que le bouclier",
+      "amelioration": {
+        "_comment": "74 sorts sur 428 n'ont QUE des buffs : ni degats, ni soin, ni bouclier. Les ignorer rendait 17% du contenu invisible.",
+        "canonique": "stacks_to_apply x 4 x duree x facteur_surface (bareme controle.debuff)",
+        "non_canonique": "value x 0.8 x duree x facteur_surface"
+      },
+      "conversion_pv": {
+        "_pourquoi_par_classe": "Le rapport PV/MAG va de 5.0 (Mage) a 30.0 (Warrior). Une conversion globale serait fausse d'un facteur 6 selon la classe : un bouclier de 20% PV max ne vaut pas la meme chose sur un Warrior et sur un Mage.",
+        "source": "stats/class_base_stats.json",
+        "ratios": {
+          "warrior": {
+            "pv_par_mag": 30.0,
+            "pv_par_def": 12.0
+          },
+          "mage": {
+            "pv_par_mag": 5.0,
+            "pv_par_def": 20.0
+          },
+          "healer": {
+            "pv_par_mag": 6.9,
+            "pv_par_def": 12.9
+          },
+          "archer": {
+            "pv_par_mag": 19.0,
+            "pv_par_def": 19.0
+          },
+          "rogue": {
+            "pv_par_mag": 25.0,
+            "pv_par_def": 25.0
+          },
+          "artisan": {
+            "pv_par_mag": 11.1,
+            "pv_par_def": 14.3
+          }
+        }
+      },
+      "resurrection": "valeur CONVENTIONNELLE de 1500. Ramener un allie mort ne se compare a rien : le chiffre existe pour que le sort ne sorte pas a zero, pas pour pretendre le mesurer."
+    },
+    "limites_du_modele": {
+      "_comment": "Ce que le modele ne sait PAS chiffrer. A lire AVANT de conclure qu'une specialisation est faible : un score bas peut etre un angle mort de la mesure, pas un defaut de design.",
+      "verbes_moteur_non_prices": {
+        "liste": [
+          "cleanse",
+          "purge",
+          "cc_immune",
+          "interrupt",
+          "steal_buff",
+          "mana_steal",
+          "invisible"
+        ],
+        "_comment": "27 effets nommes, 83 usages. Ce sont des VERBES traites par le moteur (room.cpp apply_skill_effects), pas des status effects : ils n'ont donc legitimement aucune definition chiffree dans status_effects.json, et le validateur les exempte a juste titre.",
+        "consequence_mesuree": "Le Sanctifier porte cleanse sur ses 5 sorts. Le modele le note 5.5 quand magma_sage est a 19.2. L'ecart est en grande partie un artefact : cleanse vaut reellement quelque chose et est bien implemente cote moteur (room.cpp ~4695).",
+        "regle": "NE PAS baisser les cooldowns d'une specialisation de soutien sur la seule foi d'un rendement bas. Verifier d'abord si sa puissance passe par des verbes non prices."
+      },
+      "mobilite": "blink, backstep, shadowstep, grapple : un repositionnement n'a pas d'equivalent en points. Score 0 attendu, ce n'est pas un defaut.",
+      "tirage_aleatoire": "lucky_draw, double_or_nothing : la puissance vit dans buff_pool, pas dans effects[]. Non lue par le modele.",
+      "sorts_a_zero": "15 sorts sur 396. Tous relevent des trois cas ci-dessus."
     }
   },
   "temps_incantation": {
@@ -416,6 +485,738 @@
       "tirage": "N effets distincts tires dans le pool, sans doublon, N entre le minimum du niveau et le maximum.",
       "rng": "RNG de combat de la room (deterministe, rejouable), jamais une source non deterministe — sinon un client qui se reconnecte desynchronise.",
       "application": "Chaque effet tire s'applique avec ses stacks_to_apply (ou sa value) et la duree du sort."
+    }
+  },
+  "identite_des_specialisations": {
+    "_comment": "Table de reference des 48 specialisations (tier3). N'existait pas : les arbitrages se faisaient sans vue d'ensemble. Chaque ligne est MESUREE, pas declaree — l'archetype se deduit de la repartition reelle de la puissance.",
+    "_archetypes": {
+      "soutien": "soin + bouclier + regeneration + amelioration >= 60% de la puissance du kit",
+      "dps_soutenu": "DoT >= 25% de la puissance : le degat s'installe dans la duree",
+      "dps_burst": "degat direct dominant"
+    },
+    "_regle_de_monotonie": "Dans un meme kit, un sort dont le cooldown est plus long doit rendre PLUS. C'est un OUTIL DE DETECTION, pas une regle a appliquer aveuglement : sur les 116 ruptures relevees, la majorite vient des verbes non prices ci-dessus (un sort note 0 parait toujours plus faible). Ne corriger qu'apres avoir verifie que les deux sorts compares sont entierement mesurables.",
+    "_regle_du_gros_sort": "Le GCD est a 2.0s : une incantation de 2.0s ou moins est GRATUITE, elle tient entierement dedans. Un sort qui decide d'un combat doit se voir venir, donc couter du temps REEL. Seuils : puissance >= 600 -> 2.5s, >= 1000 -> 3.0s, >= 1400 -> 4.0s. Exemption corps a corps (rogue, warrior) : leur gros sort se paie au cooldown, pas a l'incantation — un assassin ne psalmodie pas.",
+    "specialisations": {
+      "sharpshooter": {
+        "classe": "archer",
+        "sous_classe": "ranger",
+        "archetype": "dps_burst",
+        "part_soutien": 0.27,
+        "rendement": 8.2,
+        "cooldowns": [
+          12.0,
+          30.0,
+          42.0,
+          48.0,
+          78.0
+        ],
+        "incantation_max": 2.0
+      },
+      "skirmisher": {
+        "classe": "archer",
+        "sous_classe": "ranger",
+        "archetype": "dps_burst",
+        "part_soutien": 0.46,
+        "rendement": 13.7,
+        "cooldowns": [
+          12.0,
+          36.0,
+          42.0,
+          48.0,
+          84.0
+        ],
+        "incantation_max": 4.0
+      },
+      "falcon_striker": {
+        "classe": "archer",
+        "sous_classe": "falconer",
+        "archetype": "dps_soutenu",
+        "part_soutien": 0.01,
+        "rendement": 16.4,
+        "cooldowns": [
+          12.0,
+          30.0,
+          36.0,
+          42.0,
+          78.0
+        ],
+        "incantation_max": 4.0
+      },
+      "wind_hunter": {
+        "classe": "archer",
+        "sous_classe": "falconer",
+        "archetype": "dps_burst",
+        "part_soutien": 0.51,
+        "rendement": 13.8,
+        "cooldowns": [
+          12.0,
+          36.0,
+          42.0,
+          48.0,
+          84.0
+        ],
+        "incantation_max": 4.0
+      },
+      "bouncer": {
+        "classe": "archer",
+        "sous_classe": "ballmaster",
+        "archetype": "dps_burst",
+        "part_soutien": 0.15,
+        "rendement": 13.3,
+        "cooldowns": [
+          12.0,
+          30.0,
+          42.0,
+          48.0,
+          84.0
+        ],
+        "incantation_max": 2.0
+      },
+      "striker": {
+        "classe": "archer",
+        "sous_classe": "ballmaster",
+        "archetype": "dps_burst",
+        "part_soutien": 0.27,
+        "rendement": 12.1,
+        "cooldowns": [
+          12.0,
+          30.0,
+          36.0,
+          48.0,
+          84.0
+        ],
+        "incantation_max": 4.0
+      },
+      "quickshot": {
+        "classe": "archer",
+        "sous_classe": "gunslinger",
+        "archetype": "dps_burst",
+        "part_soutien": 0.31,
+        "rendement": 10.9,
+        "cooldowns": [
+          12.0,
+          36.0,
+          42.0,
+          48.0,
+          84.0
+        ],
+        "incantation_max": 4.0
+      },
+      "deadeye": {
+        "classe": "archer",
+        "sous_classe": "gunslinger",
+        "archetype": "dps_burst",
+        "part_soutien": 0.27,
+        "rendement": 8.5,
+        "cooldowns": [
+          12.0,
+          30.0,
+          42.0,
+          48.0,
+          78.0
+        ],
+        "incantation_max": 2.0
+      },
+      "forgemaster": {
+        "classe": "artisan",
+        "sous_classe": "blacksmith",
+        "archetype": "soutien",
+        "part_soutien": 1.0,
+        "rendement": 4.2,
+        "cooldowns": [
+          12.0,
+          36.0,
+          42.0,
+          48.0,
+          84.0
+        ],
+        "incantation_max": 2.0
+      },
+      "breaker": {
+        "classe": "artisan",
+        "sous_classe": "blacksmith",
+        "archetype": "dps_burst",
+        "part_soutien": 0.3,
+        "rendement": 12.5,
+        "cooldowns": [
+          15.0,
+          30.0,
+          36.0,
+          42.0,
+          78.0
+        ],
+        "incantation_max": 4.0
+      },
+      "plague_brewer": {
+        "classe": "artisan",
+        "sous_classe": "alchemist",
+        "archetype": "dps_soutenu",
+        "part_soutien": 0.15,
+        "rendement": 17.3,
+        "cooldowns": [
+          12.0,
+          36.0,
+          42.0,
+          48.0,
+          84.0
+        ],
+        "incantation_max": 3.0
+      },
+      "reactionist": {
+        "classe": "artisan",
+        "sous_classe": "alchemist",
+        "archetype": "dps_burst",
+        "part_soutien": 0.28,
+        "rendement": 13.6,
+        "cooldowns": [
+          12.0,
+          36.0,
+          42.0,
+          48.0,
+          84.0
+        ],
+        "incantation_max": 3.0
+      },
+      "battle_cook": {
+        "classe": "artisan",
+        "sous_classe": "chef",
+        "archetype": "soutien",
+        "part_soutien": 1.0,
+        "rendement": 9.1,
+        "cooldowns": [
+          15.0,
+          36.0,
+          42.0,
+          54.0,
+          84.0
+        ],
+        "incantation_max": 2.5
+      },
+      "spice_master": {
+        "classe": "artisan",
+        "sous_classe": "chef",
+        "archetype": "dps_soutenu",
+        "part_soutien": 0.05,
+        "rendement": 17.7,
+        "cooldowns": [
+          15.0,
+          36.0,
+          42.0,
+          48.0,
+          84.0
+        ],
+        "incantation_max": 3.0
+      },
+      "guitarist": {
+        "classe": "artisan",
+        "sous_classe": "musician",
+        "archetype": "soutien",
+        "part_soutien": 1.0,
+        "rendement": 7.5,
+        "cooldowns": [
+          15.0,
+          42.0,
+          48.0,
+          54.0,
+          84.0
+        ],
+        "incantation_max": 2.0
+      },
+      "war_drummer": {
+        "classe": "artisan",
+        "sous_classe": "musician",
+        "archetype": "dps_burst",
+        "part_soutien": 0.29,
+        "rendement": 16.2,
+        "cooldowns": [
+          18.0,
+          30.0,
+          36.0,
+          42.0,
+          84.0
+        ],
+        "incantation_max": 3.0
+      },
+      "druidic_healer": {
+        "classe": "healer",
+        "sous_classe": "lifewarden",
+        "archetype": "soutien",
+        "part_soutien": 1.0,
+        "rendement": 11.0,
+        "cooldowns": [
+          15.0,
+          36.0,
+          42.0,
+          48.0,
+          84.0
+        ],
+        "incantation_max": 3.0
+      },
+      "grove_warden": {
+        "classe": "healer",
+        "sous_classe": "lifewarden",
+        "archetype": "soutien",
+        "part_soutien": 0.91,
+        "rendement": 6.6,
+        "cooldowns": [
+          15.0,
+          36.0,
+          42.0,
+          54.0,
+          84.0
+        ],
+        "incantation_max": 2.0
+      },
+      "sanctifier": {
+        "classe": "healer",
+        "sous_classe": "lightbringer",
+        "archetype": "soutien",
+        "part_soutien": 0.88,
+        "rendement": 5.5,
+        "cooldowns": [
+          15.0,
+          36.0,
+          42.0,
+          48.0,
+          84.0
+        ],
+        "incantation_max": 2.0
+      },
+      "battle_healer": {
+        "classe": "healer",
+        "sous_classe": "lightbringer",
+        "archetype": "dps_burst",
+        "part_soutien": 0.43,
+        "rendement": 11.9,
+        "cooldowns": [
+          15.0,
+          36.0,
+          42.0,
+          48.0,
+          84.0
+        ],
+        "incantation_max": 3.0
+      },
+      "requiem": {
+        "classe": "healer",
+        "sous_classe": "cantor",
+        "archetype": "dps_burst",
+        "part_soutien": 0.18,
+        "rendement": 10.4,
+        "cooldowns": [
+          15.0,
+          36.0,
+          42.0,
+          48.0,
+          84.0
+        ],
+        "incantation_max": 4.0
+      },
+      "choirmaster": {
+        "classe": "healer",
+        "sous_classe": "cantor",
+        "archetype": "soutien",
+        "part_soutien": 1.0,
+        "rendement": 8.1,
+        "cooldowns": [
+          15.0,
+          36.0,
+          42.0,
+          54.0,
+          90.0
+        ],
+        "incantation_max": 2.5
+      },
+      "intercessor": {
+        "classe": "healer",
+        "sous_classe": "martyr",
+        "archetype": "dps_burst",
+        "part_soutien": 0.56,
+        "rendement": 11.1,
+        "cooldowns": [
+          15.0,
+          36.0,
+          42.0,
+          48.0,
+          84.0
+        ],
+        "incantation_max": 2.0
+      },
+      "covenant": {
+        "classe": "healer",
+        "sous_classe": "martyr",
+        "archetype": "soutien",
+        "part_soutien": 1.0,
+        "rendement": 9.4,
+        "cooldowns": [
+          15.0,
+          36.0,
+          42.0,
+          54.0,
+          90.0
+        ],
+        "incantation_max": 3.0
+      },
+      "frostcaller": {
+        "classe": "mage",
+        "sous_classe": "elementalist",
+        "archetype": "dps_soutenu",
+        "part_soutien": 0.03,
+        "rendement": 17.0,
+        "cooldowns": [
+          12.0,
+          30.0,
+          36.0,
+          42.0,
+          84.0
+        ],
+        "incantation_max": 4.0
+      },
+      "magma_sage": {
+        "classe": "mage",
+        "sous_classe": "elementalist",
+        "archetype": "dps_soutenu",
+        "part_soutien": 0.0,
+        "rendement": 19.2,
+        "cooldowns": [
+          15.0,
+          36.0,
+          42.0,
+          48.0,
+          90.0
+        ],
+        "incantation_max": 4.0
+      },
+      "sorcerer": {
+        "classe": "mage",
+        "sous_classe": "occultist",
+        "archetype": "dps_burst",
+        "part_soutien": 0.25,
+        "rendement": 12.6,
+        "cooldowns": [
+          12.0,
+          30.0,
+          36.0,
+          42.0,
+          78.0
+        ],
+        "incantation_max": 4.0
+      },
+      "summoner": {
+        "classe": "mage",
+        "sous_classe": "occultist",
+        "archetype": "dps_burst",
+        "part_soutien": 0.12,
+        "rendement": 14.1,
+        "cooldowns": [
+          12.0,
+          30.0,
+          36.0,
+          42.0,
+          84.0
+        ],
+        "incantation_max": 4.0
+      },
+      "arcane_dealer": {
+        "classe": "mage",
+        "sous_classe": "cardmaster",
+        "archetype": "dps_burst",
+        "part_soutien": 0.12,
+        "rendement": 12.2,
+        "cooldowns": [
+          12.0,
+          30.0,
+          36.0,
+          42.0,
+          72.0
+        ],
+        "incantation_max": 3.0
+      },
+      "fate_gambler": {
+        "classe": "mage",
+        "sous_classe": "cardmaster",
+        "archetype": "dps_burst",
+        "part_soutien": 0.0,
+        "rendement": 5.8,
+        "cooldowns": [
+          15.0,
+          30.0,
+          42.0,
+          48.0,
+          84.0
+        ],
+        "incantation_max": 3.0
+      },
+      "battlemage": {
+        "classe": "mage",
+        "sous_classe": "spellblade",
+        "archetype": "dps_burst",
+        "part_soutien": 0.0,
+        "rendement": 11.7,
+        "cooldowns": [
+          12.0,
+          30.0,
+          36.0,
+          42.0,
+          78.0
+        ],
+        "incantation_max": 2.5
+      },
+      "runeknight": {
+        "classe": "mage",
+        "sous_classe": "spellblade",
+        "archetype": "soutien",
+        "part_soutien": 0.67,
+        "rendement": 8.2,
+        "cooldowns": [
+          12.0,
+          36.0,
+          48.0,
+          54.0,
+          78.0
+        ],
+        "incantation_max": 2.5
+      },
+      "nightstalker": {
+        "classe": "rogue",
+        "sous_classe": "shadowblade",
+        "archetype": "dps_burst",
+        "part_soutien": 0.3,
+        "rendement": 9.1,
+        "cooldowns": [
+          12.0,
+          30.0,
+          42.0,
+          48.0,
+          78.0
+        ],
+        "incantation_max": 2.0
+      },
+      "assassin": {
+        "classe": "rogue",
+        "sous_classe": "shadowblade",
+        "archetype": "dps_soutenu",
+        "part_soutien": 0.09,
+        "rendement": 16.2,
+        "cooldowns": [
+          12.0,
+          30.0,
+          42.0,
+          48.0,
+          78.0
+        ],
+        "incantation_max": 2.0
+      },
+      "debuffer": {
+        "classe": "rogue",
+        "sous_classe": "trickster",
+        "archetype": "dps_burst",
+        "part_soutien": 0.57,
+        "rendement": 15.8,
+        "cooldowns": [
+          9.0,
+          21.0,
+          36.0,
+          42.0,
+          90.0
+        ],
+        "incantation_max": 0
+      },
+      "blinker": {
+        "classe": "rogue",
+        "sous_classe": "trickster",
+        "archetype": "dps_burst",
+        "part_soutien": 0.22,
+        "rendement": 9.7,
+        "cooldowns": [
+          9.0,
+          21.0,
+          42.0,
+          48.0,
+          90.0
+        ],
+        "incantation_max": 0
+      },
+      "cutthroat": {
+        "classe": "rogue",
+        "sous_classe": "corsair",
+        "archetype": "dps_soutenu",
+        "part_soutien": 0.07,
+        "rendement": 17.6,
+        "cooldowns": [
+          9.0,
+          21.0,
+          36.0,
+          42.0,
+          90.0
+        ],
+        "incantation_max": 0
+      },
+      "gunslasher": {
+        "classe": "rogue",
+        "sous_classe": "corsair",
+        "archetype": "dps_burst",
+        "part_soutien": 0.09,
+        "rendement": 13.9,
+        "cooldowns": [
+          9.0,
+          21.0,
+          30.0,
+          42.0,
+          90.0
+        ],
+        "incantation_max": 0
+      },
+      "blade_dancer": {
+        "classe": "rogue",
+        "sous_classe": "duelist",
+        "archetype": "dps_burst",
+        "part_soutien": 0.17,
+        "rendement": 10.0,
+        "cooldowns": [
+          9.0,
+          18.0,
+          36.0,
+          42.0,
+          90.0
+        ],
+        "incantation_max": 0
+      },
+      "countermaster": {
+        "classe": "rogue",
+        "sous_classe": "duelist",
+        "archetype": "dps_burst",
+        "part_soutien": 0.58,
+        "rendement": 10.3,
+        "cooldowns": [
+          9.0,
+          21.0,
+          42.0,
+          48.0,
+          90.0
+        ],
+        "incantation_max": 0
+      },
+      "bulwark": {
+        "classe": "warrior",
+        "sous_classe": "guardian",
+        "archetype": "soutien",
+        "part_soutien": 0.9,
+        "rendement": 15.9,
+        "cooldowns": [
+          15.0,
+          36.0,
+          42.0,
+          54.0,
+          84.0
+        ],
+        "incantation_max": 1.5
+      },
+      "sentinel": {
+        "classe": "warrior",
+        "sous_classe": "guardian",
+        "archetype": "soutien",
+        "part_soutien": 1.0,
+        "rendement": 16.9,
+        "cooldowns": [
+          15.0,
+          30.0,
+          42.0,
+          54.0,
+          90.0
+        ],
+        "incantation_max": 2.0
+      },
+      "bloodrage": {
+        "classe": "warrior",
+        "sous_classe": "berserker",
+        "archetype": "dps_soutenu",
+        "part_soutien": 0.16,
+        "rendement": 17.6,
+        "cooldowns": [
+          12.0,
+          24.0,
+          42.0,
+          54.0,
+          66.0
+        ],
+        "incantation_max": 1.5
+      },
+      "frenzied": {
+        "classe": "warrior",
+        "sous_classe": "berserker",
+        "archetype": "dps_burst",
+        "part_soutien": 0.31,
+        "rendement": 15.5,
+        "cooldowns": [
+          12.0,
+          27.0,
+          36.0,
+          54.0,
+          72.0
+        ],
+        "incantation_max": 1.5
+      },
+      "hammer_lord": {
+        "classe": "warrior",
+        "sous_classe": "weaponmaster",
+        "archetype": "dps_burst",
+        "part_soutien": 0.37,
+        "rendement": 14.9,
+        "cooldowns": [
+          18.0,
+          36.0,
+          42.0,
+          54.0,
+          78.0
+        ],
+        "incantation_max": 1.5
+      },
+      "dual_axe_reaver": {
+        "classe": "warrior",
+        "sous_classe": "weaponmaster",
+        "archetype": "dps_soutenu",
+        "part_soutien": 0.24,
+        "rendement": 14.9,
+        "cooldowns": [
+          15.0,
+          36.0,
+          42.0,
+          54.0,
+          72.0
+        ],
+        "incantation_max": 1.5
+      },
+      "commander": {
+        "classe": "warrior",
+        "sous_classe": "warlord",
+        "archetype": "soutien",
+        "part_soutien": 1.0,
+        "rendement": 11.0,
+        "cooldowns": [
+          15.0,
+          36.0,
+          48.0,
+          54.0,
+          84.0
+        ],
+        "incantation_max": 2.0
+      },
+      "dreadlord": {
+        "classe": "warrior",
+        "sous_classe": "warlord",
+        "archetype": "soutien",
+        "part_soutien": 0.89,
+        "rendement": 15.5,
+        "cooldowns": [
+          15.0,
+          36.0,
+          42.0,
+          48.0,
+          84.0
+        ],
+        "incantation_max": 2.0
+      }
     }
   }
 }
