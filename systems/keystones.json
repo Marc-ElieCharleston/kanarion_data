@@ -72,6 +72,15 @@
         },
         "piege_a_ne_pas_reproduire": "heal_percent_max_hp est teste AVANT revive_percent dans la chaine d'inference de type. Mettre les deux dans le meme effet donnerait le type 'heal_percent_max_hp' et le revive ne partirait jamais. Un effet = un role.",
         "trigger_documentaire": "Le hook scanne tous les effets de l'objet equipe et ne filtre que sur le type (proc_processor.cpp:737) : la chaine de trigger n'a aucune incidence sur le declenchement. ATTENTION cote moteur : 'ally_reaches_zero_hp' n'est PAS dans la table de triggers (unique_item_registry.cpp:408). Un trigger inconnu loggue un warning et retombe sur ProcTrigger::PASSIVE_MODIFIER. Sans consequence pour prevent_death, mais a mapper pour eviter le bruit au demarrage."
+      },
+      "noms_de_trigger_design_vs_moteur": {
+        "_comment": "Le champ `trigger` d'une keystone est un nom de DESIGN. Le champ `trigger` d'un bloc runtime est un nom MOTEUR, et les deux different parfois. Confondre les deux faisait croire que des triggers manquaient alors qu'ils existaient.",
+        "equivalences": {
+          "hp_below_pct": "on_hp_threshold + threshold",
+          "on_block_while_hp_above_pct": "on_block + threshold",
+          "on_buff_cast": "on_buff_applied"
+        },
+        "target_rule_disponibles": "self et nearest_ally UNIQUEMENT (proc_processor.cpp:702 et 712). Pas d'allies au pluriel, pas d'ennemi, pas de cible-du-buff. Verifier avant d'ecrire une variante dont le texte promet autre chose."
       }
     }
   },
@@ -190,6 +199,24 @@
               "duration": 10,
               "cooldown": 45
             }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hp_threshold",
+                "threshold": 0.25,
+                "cooldown": 90,
+                "effects": [
+                  {
+                    "apply_status": "lifesteal",
+                    "stacks_to_apply": 2,
+                    "duration": 6.0,
+                    "target_rule": "self"
+                  }
+                ]
+              }
+            ]
           }
         }
       ]
@@ -505,6 +532,23 @@
               "duration": 2,
               "cooldown": 0
             }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "combat_start",
+                "cooldown": 0,
+                "effects": [
+                  {
+                    "apply_status": "damage_percent_up",
+                    "stacks_to_apply": 3,
+                    "duration": 8.0,
+                    "target_rule": "self"
+                  }
+                ]
+              }
+            ]
           }
         },
         {
@@ -525,6 +569,23 @@
               "duration": 2,
               "cooldown": 0
             }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "combat_start",
+                "cooldown": 0,
+                "effects": [
+                  {
+                    "apply_status": "crit_damage_up",
+                    "stacks_to_apply": 2,
+                    "duration": 8.0,
+                    "target_rule": "self"
+                  }
+                ]
+              }
+            ]
           }
         },
         {
@@ -887,8 +948,8 @@
           "id": "ks_tank_anchor_protector",
           "name_fr": "Protecteur",
           "name_en": "Protector",
-          "description_fr": "Bloquer un coup donne une réduction de dégâts temporaire aux alliés proches",
-          "description_en": "Blocking a hit grants nearby allies temporary damage reduction",
+          "description_fr": "Bloquer un coup protege l'allie le plus proche : il gagne 5% de reduction de degats pendant 4s",
+          "description_en": "Blocking a blow protects your nearest ally: they gain 5% damage reduction for 4s",
           "effect_type": "buff_allies_dr_pct",
           "scaling": {
             "C": {
@@ -903,6 +964,24 @@
               "duration": 6,
               "cooldown": 8
             }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_block",
+                "threshold": 0.7,
+                "cooldown": 15,
+                "effects": [
+                  {
+                    "apply_status": "damage_reduction_up",
+                    "stacks_to_apply": 1,
+                    "duration": 4.0,
+                    "target_rule": "nearest_ally"
+                  }
+                ]
+              }
+            ]
           }
         }
       ]
