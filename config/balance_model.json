@@ -386,7 +386,19 @@
       "effects[].pct_per_level : lu en int32_t, une valeur decimale est tronquee a 0 (ticket BE-10)",
       "class_filler : bloc present sur les 6 classes (attaque gratuite cd 0 / cout 0 / 100%), lu par AUCUN code. Vestige du design abandonne 'filler gratuit separe'. Retire le 2026-08-01 : le filler est base_skills[0]."
     ],
-    "regle": "Avant d'ecrire un champ mecanique, verifier qu'un code serveur VIVANT le lit. Le parse ne suffit pas."
+    "regle": "Avant d'ecrire un champ mecanique, verifier qu'un code serveur VIVANT le lit. Le parse ne suffit pas.",
+    "deux_entrees_du_meme_effet": {
+      "_comment": "Deux entrees effects[] portant le MEME stat dans un seul sort ne sont pas representables par le moteur. Verifie 2026-08-04 dans le code, pas suppose.",
+      "mecanique": "content_loader.cpp : applied_effects est un VECTEUR (un push par entree, ligne 581) mais effect_pct, effect_targets, effect_durations_sec, effect_pct_per_level et effect_duration_per_level sont des MAPS clees par effect_id seul (lignes 634 et 663-665). La derniere entree ecrase les precedentes, puis room.cpp:4263 itere le vecteur et applique N fois ces memes parametres ecrases.",
+      "consequence": "Le beneficiaire principal ne recoit RIEN et le beneficiaire secondaire recoit le double. Ce n est pas une simple perte de valeur : la cible est inversee.",
+      "cas_reels": {
+        "skill_healer_holy_shield": "effects = [shield_mag pct 100 sur la cible du sort (ally), shield_mag pct 65 target self]. Le moteur retient target=self pct=65 et l applique 2x : le lanceur prend 130%, l allie 0. Or le sort est target=ally et sa description promet un bouclier sur l allie.",
+        "skill_artisan_blacksmith_metalguard": "effects = [shield_def pct 80 sur allies, shield_def pct 40 target ally]. Le moteur retient target=ally pct=40 applique 2x : l allie prend 80%, le forgeron 0. Intention inverse."
+      },
+      "portee": "2 sorts dans toute la base. Les deux viennent du meme commit de migration d7c2df7 (PR3 typed shields).",
+      "la_fusion_est_une_FAUSSE_solution": "Fusionner en une entree unique detruirait le design : les deux entrees encodent deux CIBLES differentes (un bouclier sur l allie + une part sur le lanceur). Le correctif est moteur — parametres par entree au lieu de maps clees par effect_id — pas data.",
+      "regle_data": "Tant que le moteur flatte par effect_id : ne jamais ecrire deux entrees du meme stat dans un sort. Pour un effet a deux cibles et deux valeurs, il faut soit deux effect_id distincts, soit attendre le correctif moteur."
+    }
   },
   "densite": {
     "_comment": "Outil de tri, pas de verdict : puissance divisee par le cooldown. Sert a reperer ce qui merite un regard, jamais a decider seul.",
