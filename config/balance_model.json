@@ -107,34 +107,33 @@
     }
   },
   "cooldown": {
-    "_comment": "Fourchettes RECALIBREES le 2026-08-01 sur la distribution reelle. Les valeurs precedentes etaient devinees et 62 sorts sur 428 les depassaient — un detecteur que 15% de la data declenche ne detecte rien. Ce sont maintenant les bornes observees : sortir de la fourchette est desormais un vrai signal.",
+    "_comment": "Fourchettes recalibrees le 2026-08-04, apres la passe x3 sur les sorts de SPECIALISATION. Intention produit : c'est un jeu de reflexion, chaque sort lance doit etre un choix. Les sorts de spe revenaient toutes les 14s en mediane, ce qui en faisait une rotation automatique plutot qu'une decision.",
     "par_tier": {
       "filler": {
         "min": 3.0,
         "max": 5.0,
-        "_median": 4.0,
-        "_n": 18,
-        "_note": "le sort 1 de chaque classe, cout 2 Souffle +1/niv"
+        "_median": 3.5,
+        "_n": 12,
+        "_note": "le sort 1 de chaque classe, non touche par la passe x3"
       },
       "basic": {
-        "min": 4.0,
+        "min": 6.0,
         "max": 36.0,
-        "_median": 11.5,
-        "_n": 50,
-        "_note": "tier LACHE : 11 sorts etiquetes basic ont une recharge de 20 a 36s (mana_shield, hunter_mark, eagle_eye, elem_elemental_focus...). Ce sont des tiers mal poses, pas des cooldowns mal regles. `tier` n'est PAS lu par le moteur de combat (seulement par le client, skill.gd:1448) donc l'impact est cosmetique — mais un 'basic' a 36s de recharge trompe le joueur dans l'interface."
+        "_median": 12.0,
+        "_n": 33
       },
       "standard": {
         "min": 10.0,
         "max": 36.0,
         "_median": 24.0,
-        "_n": 53,
-        "_note": "tier le plus disperse apres basic : mediane 24s, jusqu'a 36s"
+        "_n": 53
       },
       "advanced": {
-        "min": 3.0,
-        "max": 18.0,
-        "_median": 12.0,
-        "_n": 201
+        "min": 9.0,
+        "max": 54.0,
+        "_median": 36.0,
+        "_n": 192,
+        "_note": "quasi exclusivement des sorts de SPECIALISATION : c'est ce tier qui a pris le x3"
       },
       "strong": {
         "min": 12.0,
@@ -143,11 +142,24 @@
         "_n": 28
       },
       "signature": {
-        "min": 20.0,
+        "min": 26.0,
         "max": 90.0,
-        "_median": 28.0,
-        "_n": 78
+        "_median": 78.0,
+        "_n": 72,
+        "_note": "melange sous-classe (26-90) et specialisation (66-90 apres x3)"
       }
+    },
+    "par_niveau_de_hierarchie": {
+      "_comment": "Lecture plus utile que le tier : elle dit a quel rythme chaque palier du kit revient.",
+      "base": "median 19.5s",
+      "sous-classe": "median 24.0s",
+      "specialisation": "median 42.0s — apres x3",
+      "_intention": "La specialisation est le palier le plus PUISSANT (puissance mediane 1.6x celle des signatures de sous-classe). Il est donc aussi le plus lent : on ne lache pas son meilleur sort toutes les 14 secondes."
+    },
+    "regles_par_kit": {
+      "pas_deux_sorts_au_meme_cooldown": "Deux sorts qui reviennent au meme instant, c'est une decision en moins : le joueur prend le plus fort, l'autre ne sert jamais. 13 collisions creees par le x3 brut ont ete separees, le plus puissant reculant.",
+      "au_moins_un_sort_sous_20s": "Chaque kit de spe garde un sort de tempo. Sans lui le joueur n'a plus rien a faire entre deux gros cooldowns. Un seul kit l'avait perdu (war_drummer), corrige.",
+      "_verification": "Relancer ces deux controles apres toute passe de cooldown : ils ne se voient pas a la lecture, seulement au comptage."
     }
   },
   "portee": {
