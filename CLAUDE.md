@@ -110,6 +110,17 @@ Players choose a faction at level 60. Subclass lore must NOT lock players into a
 | Consumable | `cons_` | `cons_health_potion` |
 | NPC | `npc_` | `npc_merchant` |
 
+### Equipment & Icon Contract (rework C→SS)
+
+**130 items de base** = 30 armes (6 types × 5 rangs) + 90 armures (6 slots × 3 poids × 5 rangs) + 10 bijoux (anneau/collier × 5 rangs). Déployé prod (`bb4ced2`).
+
+- **Nomenclature d'ID** : armes `wpn_<type>_b<N>` (bow/dagger/scepter/staff/sword/tool), armures `<slot>_<poids>_b<N>` (ex `cape_light_b2`, `chest_heavy_b4` ; poids = light/medium/heavy), bijoux `acc_*`.
+- **Rang = bracket = band de niveau** : `b1`=C=lv1-20, `b2`=B=21-40, `b3`=A=41-60, `b4`=S=61-80, `b5`=SS=81-100. Le `b<N>` de l'ID EST le rang.
+- **La rareté (common→legendary) est un axe SÉPARÉ** (affixes/qualité), à ne pas confondre avec le rang.
+- **⚠️ CONTRAT ICÔNE : l'icône = l'ID de l'item.** `base_items` = squelettes d'IDs (contrat icône) ; les items ont `icon: null` et se résolvent par ID côté client. **Un asset d'icône DOIT être nommé exactement comme l'item** (`wpn_bow_b3.png` pour `wpn_bow_b3`). Ne JAMAIS renommer un item sans renommer son asset (et inversement) — c'est ce qui a cassé les capes (items renommés `light/medium/heavy`, assets restés `cloth/silk`) et les 30 armes (assets en français `arc_rank_a`). Mapping de migration : `_meta/icon_migration.json`.
+- **Stats dérivées, pas hand-authored** : `base_items.base_stats` est vestigial (jamais lu). Le `StatRoller` roll depuis `items/equipment_stats.json` (QUOI + magnitude) × `items/equipment_scaling.json` (COMBIEN, level→mult). Voir mémoire `project_equipment_loot_rework`.
+- **CI** : `scripts/validate_cross_references.py` étape 6 valide que tout `recipes.json` `output_item` existe (sinon item fantôme : id brut affiché, icône vide, pas de stats).
+
 ### Skill Structure
 - **Tiers:** `filler` (low CD, always usable), `basic`, `advanced`, `ultimate`
 - **Per character:** 15 skills (5 base + 5 subclass + 5 tier3), max 100 skill points, 150 needed to max all (intentional -50 deficit forcing build choices)
