@@ -81,6 +81,21 @@
           "on_buff_cast": "on_buff_applied"
         },
         "target_rule_disponibles": "self et nearest_ally UNIQUEMENT (proc_processor.cpp:702 et 712). Pas d'allies au pluriel, pas d'ennemi, pas de cible-du-buff. Verifier avant d'ecrire une variante dont le texte promet autre chose."
+      },
+      "souffle_v1": {
+        "_comment": "Livre par le back (67f20aa). 3 appliers sur 4 ; next_skill_free_souffle attend un hook au check de cout-mana.",
+        "champs": {
+          "restore_souffle_pct": "+% du Souffle max du beneficiaire, route par target_rule (self / nearest_ally)",
+          "drain_souffle_pct": "-% du Souffle max de l'ennemi. Vise l'entite tierce du proc, donc no-op sur un trigger qui passe null (combat_start, on_buff_applied).",
+          "convert_hp_to_souffle": "le porteur paie X% de ses PV max et gagne autant de Souffle. Clampe : ni suicide, ni surremplissage."
+        },
+        "inference_de_type": "Comme revive_percent, ces 3 champs INFERENT le type et sont testes APRES heal_percent_max_hp et consorts (unique_item_registry.cpp:73-78). Un effet portant a la fois un soin et un restore_souffle resoudrait vers le soin et perdrait le Souffle en silence. ATTENTION : le throw pose pour revive_percent ne couvre PAS encore ces 3 champs.",
+        "pourquoi_1_variante_sur_5": "Un applier ne suffit pas : il faut aussi que le trigger existe ET que le ciblage dise la verite du texte. C'est la lecon de anchor_protector — une variante qui parse mais ne fait pas ce que son texte promet est pire qu'une variante absente.",
+        "en_attente": {
+          "ks_support_life_link_energize": "Son texte dit 'la cible du soin'. nearest_ally n'est PAS la cible du soin : on soigne qui est blesse, pas qui est proche. Attend target_rule 'trigger_target'. Peu couteux cote moteur : ON_HEAL_CAST passe DEJA heal_target en entite tierce (proc_processor.cpp:255), seule la regle de routage manque.",
+          "ks_util_mastery_drain": "attend le trigger on_cc_applied",
+          "ks_util_breath_burst + ks_util_breath_sacrifice": "attendent le trigger souffle_below_pct. Aucun equivalent moteur, contrairement a hp_below_pct qui EST on_hp_threshold — verifie dans la table de triggers."
+        }
       }
     }
   },
@@ -1668,6 +1683,21 @@
               "value": 20,
               "cooldown": 8
             }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_kill",
+                "cooldown": 20,
+                "effects": [
+                  {
+                    "restore_souffle_pct": 8,
+                    "target_rule": "self"
+                  }
+                ]
+              }
+            ]
           }
         },
         {
