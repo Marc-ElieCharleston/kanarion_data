@@ -50,7 +50,8 @@
         "on_buff_applied",
         "on_heal_cast",
         "first_skill_cast",
-        "on_critical_hit"
+        "on_critical_hit",
+        "ally_hp_below_pct"
       ],
       "runtime_extensions_required": [
         "stacks_to_apply lu par parse_effect_object et passe a StatusManager::apply_effect (statuts canoniques multi-stack)",
@@ -58,7 +59,18 @@
         "trigger on_critical_hit : hook dans la resolution de degats quand is_crit",
         "target_rule 'self' respecte par status_proc (forcer le statut sur le porteur, pas la cible du trigger)"
       ],
-      "hp_threshold_note": "on_hp_threshold ne se re-arme pas dans un meme combat (ProcStateComponent.hp_threshold_triggered). Le cooldown ne s'applique donc qu'entre combats en V1."
+      "hp_threshold_note": "on_hp_threshold ne se re-arme pas dans un meme combat (ProcStateComponent.hp_threshold_triggered). Le cooldown ne s'applique donc qu'entre combats en V1.",
+      "prerequis_ally_reaches_zero_hp": {
+        "_comment": "Verifie dans le code 2026-08-04 : cabler le trigger seul ne rendra AUCUNE des 3 variantes ks_support_last_breath fonctionnelle. Trois capacites manquent, pas une.",
+        "manquant": {
+          "prevent_death": "0 occurrence dans server-combat/src. C est le coeur des 3 variantes.",
+          "uses_per_combat": "0 occurrence. Aucun compteur par combat n existe dans le chemin keystone. Precedent a copier : hp_threshold_fired_ dans innate_passive_processor.cpp:531-539, mais c est un autre processor.",
+          "damage_transfer": "0 occurrence (ticket BE-14). Necessaire uniquement a la variante martyr."
+        },
+        "contrainte_architecturale": "DeadComponent est pose EN LIGNE sur le site des degats, a 6 endroits de room.cpp (3906, 4029, 4090, 4497, 4974, 5045), motif if (health.current <= 0 && !all_of<DeadComponent>). Et check_victory_condition compte les survivants via view<TeamComponent>(exclude<DeadComponent>). Un proc qui reagit APRES la resolution des degats ne peut donc pas empecher la mort : le composant est deja pose. prevent_death doit etre un hook AVANT ces emplace, pas un trigger reactif comme ally_hp_below_pct.",
+        "deblocage": "save et vengeance ne demandent que prevent_death + le garde par combat (leur buff atk_up est canonique et existe deja). martyr demande en plus BE-14.",
+        "statut_data": "Les 3 variantes restent SANS bloc runtime, donc non equipables, tant que ces capacites ne sont pas livrees. Les ecrire maintenant produirait exactement les variantes inertes que le controle anti-inerte doit empecher."
+      }
     }
   },
   "common_keystones": [
@@ -922,6 +934,22 @@
               "duration": 8,
               "cooldown": 20
             }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "ally_hp_below_pct",
+                "threshold": 0.25,
+                "cooldown": 45,
+                "effects": [
+                  {
+                    "apply_shield_percent_max_hp": 10,
+                    "duration": 5.0
+                  }
+                ]
+              }
+            ]
           }
         },
         {
@@ -966,6 +994,23 @@
               "duration": 8,
               "cooldown": 20
             }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "ally_hp_below_pct",
+                "threshold": 0.25,
+                "cooldown": 45,
+                "effects": [
+                  {
+                    "apply_status": "damage_reduction_up",
+                    "stacks_to_apply": 3,
+                    "duration": 5.0
+                  }
+                ]
+              }
+            ]
           }
         }
       ]
@@ -1080,6 +1125,21 @@
               "value": 20,
               "cooldown": 15
             }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "ally_hp_below_pct",
+                "threshold": 0.25,
+                "cooldown": 30,
+                "effects": [
+                  {
+                    "heal_percent_max_hp": 8
+                  }
+                ]
+              }
+            ]
           }
         },
         {
@@ -1102,6 +1162,22 @@
               "duration": 8,
               "cooldown": 15
             }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "ally_hp_below_pct",
+                "threshold": 0.25,
+                "cooldown": 30,
+                "effects": [
+                  {
+                    "apply_shield_percent_max_hp": 10,
+                    "duration": 5.0
+                  }
+                ]
+              }
+            ]
           }
         },
         {
