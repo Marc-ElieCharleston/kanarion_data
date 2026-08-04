@@ -11,6 +11,7 @@ Checks:
   3. All class_tags in equipment.json are valid class IDs
   4. All item_ids in loot_tables.json exist in item database files
   5. All set_ids referenced exist in panoplies.json
+  6. All output_item in recipes.json exist in item database files
 
 Exit code 0 = pass, 1 = failures found.
 """
@@ -264,6 +265,40 @@ def validate_set_ids(db: Path) -> list:
     return errors
 
 
+def validate_recipe_outputs(db: Path, all_item_ids: set) -> list:
+    """Check all recipe output_item references exist in the item database.
+
+    Bug historique (2026-08-03) : la nomenclature des capes est passee de
+    cloth/silk a light/medium/heavy sans que les recettes suivent. Deux recettes
+    produisaient un item fantome (cape_cloth_b1, cape_silk_b3) -> pas de nom, pas
+    d'icone, pas de stats cote client. loot_tables etait valide mais PAS les
+    output_item des recettes. Cette passe ferme le trou.
+    """
+    errors = []
+    path = db / "items" / "recipes.json"
+    if not path.exists():
+        return []
+
+    data = load_json(path)
+
+    def check_recipes(obj, context):
+        if isinstance(obj, dict):
+            out = obj.get("output_item")
+            if isinstance(out, str) and out and out not in all_item_ids:
+                if not any(c in out for c in ("*", "{", "random")):
+                    rid = obj.get("id", "?")
+                    errors.append(
+                        f"[recipes.json] Unknown output_item '{out}' in recipe '{rid}' ({context})")
+            for key, val in obj.items():
+                check_recipes(val, f"{context}.{key}")
+        elif isinstance(obj, list):
+            for i, item in enumerate(obj):
+                check_recipes(item, f"{context}[{i}]")
+
+    check_recipes(data, "root")
+    return errors
+
+
 def main():
     # Find database root
     db_root = os.environ.get("DB_ROOT", "")
@@ -293,30 +328,35 @@ def main():
     # Run all validations
     all_errors = []
 
-    print("\n[1/5] Validating affix stat names...")
+    print("\n[1/6] Validating affix stat names...")
     errs = validate_affixes(db, valid_stats)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[2/5] Validating equipment_stats stat names...")
+    print("[2/6] Validating equipment_stats stat names...")
     errs = validate_equipment_stats(db, valid_stats)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[3/5] Validating class_tags...")
+    print("[3/6] Validating class_tags...")
     errs = validate_class_tags(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[4/5] Validating loot table item references...")
+    print("[4/6] Validating loot table item references...")
     all_item_ids = collect_all_item_ids(db)
     print(f"  Collected {len(all_item_ids)} item IDs from database")
     errs = validate_loot_table_refs(db, all_item_ids)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[5/5] Validating set_id references...")
+    print("[5/6] Validating set_id references...")
     errs = validate_set_ids(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[6/6] Validating recipe output_item references...")
+    errs = validate_recipe_outputs(db, all_item_ids)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
