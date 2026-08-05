@@ -86,6 +86,11 @@ def build_traces():
                 "item_type": "familiar_trace",
                 "family": fam_id,
                 "trace_rarity": rar_id,
+                # Icone d'empreinte = PAR RARETE (choix produit 2026-08-05) : 5 icones
+                # partagees (empreinte_<rarity>), pas 145. Le client lit item.icon.
+                # NB: contrat icone=ID casse ici a dessein (l'empreinte a 145 ids pour
+                # 5 icones). Les 20 imprint_<role>_<rarete> vont sur le FAMILIER incube.
+                "icon": f"empreinte_{rar_id}",
                 "effect": {"type": "familiar_trace_deposit", "value": 0},
                 "tradeable": True,
                 "hdv_listable": True,
