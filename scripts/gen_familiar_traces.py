@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Deterministic generator for familiar trace items (Capture MVP).
 
-Produces 29 families x 4 rarities = 116 trace items and merges them into
+Produces 29 families x 5 rarities = 145 trace items and merges them into
 items/consumables.json under the top-level array key "familiar_traces"
 (idempotent: the array is fully replaced if it already exists).
 
@@ -59,6 +59,7 @@ FAMILIES = [
 # rarity_id -> (FR label, EN label, sell_price)
 RARITIES = [
     ("common", "Commun", "Common", 40),
+    ("uncommon", "Peu commun", "Uncommon", 70),
     ("rare", "Rare", "Rare", 120),
     ("epic", "Epique", "Epic", 400),
     ("legendary", "Legendaire", "Legendary", 1200),
@@ -101,7 +102,7 @@ def main():
         data = json.load(fh)
 
     traces = build_traces()
-    assert len(traces) == len(FAMILIES) * len(RARITIES) == 116, len(traces)
+    assert len(traces) == len(FAMILIES) * len(RARITIES) == 145, len(traces)
 
     # Idempotent: replace the array if present, else append as last key.
     data["familiar_traces"] = traces
