@@ -11,28 +11,149 @@
       "note_crit_pen": "Les monstres portent crit/crit_damage/armor_pen/magic_pen comme les joueurs. Le moteur doit les appliquer au calcul mob->joueur : roll crit, mult crit_damage (%, base 150=x1.5), penetration armor_pen (perce def joueur) ET magic_pen (perce magic_resist joueur). PENETRATION DOUBLE OBLIGATOIRE sur brute + DPS (assassin/archer/mage) sinon les joueurs tanks ne meurent jamais. Ces 4 stats sont FIXED (voir archetypes_lv1_standard._stat_classes) : ne scalent PAS avec curve/tier, rarity bump modere, clampe par _caps (crit 60, crit_damage 220, armor_pen 70, magic_pen 70)."
     }
   },
-
   "archetypes_lv1_standard": {
     "_comment": "Profil lv1 tier=standard rarity=normal. Fiche complete par archetype. L'identite = les RATIOS (tanky vs glassy) + le profil crit + la penetration. Grounded sur les vrais mobs bas-niveau par ai_role.",
     "_stat_classes": {
-      "growth": ["hp", "atk", "def", "magic_resist", "mp"],
-      "fixed": ["crit", "crit_damage", "armor_pen", "magic_pen", "range"],
+      "growth": [
+        "hp",
+        "atk",
+        "def",
+        "magic_resist",
+        "mp"
+      ],
+      "fixed": [
+        "crit",
+        "crit_damage",
+        "armor_pen",
+        "magic_pen",
+        "range"
+      ],
       "note": "GROWTH = stats brutes, scalent x curve(lvl) x tier_mult x rarity_mult (magnitude calibree aux ancres 10/30/50/70/100). FIXED = ne scalent PAS avec curve ni tier (crit/crit_damage/armor_pen/magic_pen = taux comme un joueur, rarity bump modere clampe par _caps ; range = constante positionnelle 2-7). PAS de 'speed' : combat statique, GCD fixe, aucune initiative par entite. crit/armor_pen/magic_pen en % ; crit_damage en % de mult (base 150 = x1.5)."
     },
     "_caps": {
-      "crit": 60, "crit_damage": 220, "armor_pen": 70, "magic_pen": 70, "range_min": 2, "range_max": 7,
+      "crit": 60,
+      "crit_damage": 220,
+      "armor_pen": 70,
+      "magic_pen": 70,
+      "range_min": 2,
+      "range_max": 7,
       "note": "Caps monstres. armor_pen/magic_pen reutilisent le cap joueur (70). crit cap 60 (< joueur 100, evite le crit-lock apres rarity). crit_damage cap 220 (base 150 + max 70). range borne [2,7]."
     },
     "_range_note": "range = base_range de l'entite (fallback moteur : eff_range = skill.range >= 0 ? skill.range : base_range). Les 66 skills monstres ont deja leur range explicite 2-7 ; ce base_range sert de defaut pour tout skill sans range + porte l'identite de reach de l'archetype (melee 2 / ranged 6-7).",
-    "tank":       { "hp": 48, "atk": 3, "def": 7, "magic_resist": 5, "mp": 60,  "crit": 2,  "crit_damage": 150, "armor_pen": 0,  "magic_pen": 0,  "range": 2, "identity": "mur melee: hp+def eleves, atk faible, crit quasi nul, aucune penetration" },
-    "brute":      { "hp": 36, "atk": 5, "def": 4, "magic_resist": 4, "mp": 50,  "crit": 8,  "crit_damage": 150, "armor_pen": 12, "magic_pen": 8,  "range": 2, "identity": "frontline melee equilibre hp/atk, penetration phys+mag moderee pour percer les tanks (ex-berserker/bruiser)" },
-    "assassin":   { "hp": 24, "atk": 7, "def": 2, "magic_resist": 3, "mp": 50,  "crit": 22, "crit_damage": 185, "armor_pen": 22, "magic_pen": 12, "range": 2, "identity": "glass melee: burst crit, tres fragile, forte penetration armure" },
-    "archer":     { "hp": 26, "atk": 6, "def": 2, "magic_resist": 4, "mp": 60,  "crit": 16, "crit_damage": 165, "armor_pen": 20, "magic_pen": 12, "range": 7, "identity": "glass ranged PHYSIQUE: crit eleve, perce l'armure, longue portee (ex-artillery physique)" },
-    "mage":       { "hp": 26, "atk": 7, "def": 2, "magic_resist": 6, "mp": 120, "crit": 12, "crit_damage": 155, "armor_pen": 12, "magic_pen": 22, "range": 7, "identity": "glass ranged MAGIQUE: crit + un peu de crit_damage, forte penetration magique, longue portee (ex-artillery magique + caster)" },
-    "controller": { "hp": 30, "atk": 4, "def": 3, "magic_resist": 6, "mp": 150, "crit": 6,  "crit_damage": 150, "armor_pen": 6,  "magic_pen": 8,  "range": 6, "identity": "utilitaire ranged: CC/debuffs, mr moyen, penetration legere (ex-tactician)" },
-    "support":    { "hp": 28, "atk": 3, "def": 3, "magic_resist": 7, "mp": 180, "crit": 3,  "crit_damage": 150, "armor_pen": 0,  "magic_pen": 0,  "range": 6, "identity": "backline ranged: heal/buff, mr eleve, atk faible, aucune penetration (ex-healer)" }
+    "tank": {
+      "hp": 48,
+      "atk": 3,
+      "def": 7,
+      "magic_resist": 5,
+      "mp": 60,
+      "crit": 2,
+      "crit_damage": 150,
+      "armor_pen": 0,
+      "magic_pen": 0,
+      "range": 2,
+      "identity": "mur melee: hp+def eleves, atk faible, crit quasi nul, aucune penetration",
+      "tenacity": 25,
+      "block_chance": 20,
+      "evasion": 0
+    },
+    "brute": {
+      "hp": 36,
+      "atk": 5,
+      "def": 4,
+      "magic_resist": 4,
+      "mp": 50,
+      "crit": 8,
+      "crit_damage": 150,
+      "armor_pen": 12,
+      "magic_pen": 8,
+      "range": 2,
+      "identity": "frontline melee equilibre hp/atk, penetration phys+mag moderee pour percer les tanks (ex-berserker/bruiser)",
+      "tenacity": 15,
+      "block_chance": 8,
+      "evasion": 3
+    },
+    "assassin": {
+      "hp": 24,
+      "atk": 7,
+      "def": 2,
+      "magic_resist": 3,
+      "mp": 50,
+      "crit": 22,
+      "crit_damage": 185,
+      "armor_pen": 22,
+      "magic_pen": 12,
+      "range": 2,
+      "identity": "glass melee: burst crit, tres fragile, forte penetration armure",
+      "tenacity": 8,
+      "block_chance": 0,
+      "evasion": 15
+    },
+    "archer": {
+      "hp": 26,
+      "atk": 6,
+      "def": 2,
+      "magic_resist": 4,
+      "mp": 60,
+      "crit": 16,
+      "crit_damage": 165,
+      "armor_pen": 20,
+      "magic_pen": 12,
+      "range": 7,
+      "identity": "glass ranged PHYSIQUE: crit eleve, perce l'armure, longue portee (ex-artillery physique)",
+      "tenacity": 10,
+      "block_chance": 0,
+      "evasion": 10
+    },
+    "mage": {
+      "hp": 26,
+      "atk": 7,
+      "def": 2,
+      "magic_resist": 6,
+      "mp": 120,
+      "crit": 12,
+      "crit_damage": 155,
+      "armor_pen": 12,
+      "magic_pen": 22,
+      "range": 7,
+      "identity": "glass ranged MAGIQUE: crit + un peu de crit_damage, forte penetration magique, longue portee (ex-artillery magique + caster)",
+      "tenacity": 10,
+      "block_chance": 0,
+      "evasion": 3
+    },
+    "controller": {
+      "hp": 30,
+      "atk": 4,
+      "def": 3,
+      "magic_resist": 6,
+      "mp": 150,
+      "crit": 6,
+      "crit_damage": 150,
+      "armor_pen": 6,
+      "magic_pen": 8,
+      "range": 6,
+      "identity": "utilitaire ranged: CC/debuffs, mr moyen, penetration legere (ex-tactician)",
+      "tenacity": 20,
+      "block_chance": 5,
+      "evasion": 5
+    },
+    "support": {
+      "hp": 28,
+      "atk": 3,
+      "def": 3,
+      "magic_resist": 7,
+      "mp": 180,
+      "crit": 3,
+      "crit_damage": 150,
+      "armor_pen": 0,
+      "magic_pen": 0,
+      "range": 6,
+      "identity": "backline ranged: heal/buff, mr eleve, atk faible, aucune penetration (ex-healer)",
+      "tenacity": 15,
+      "block_chance": 3,
+      "evasion": 0
+    },
+    "_defensive_note": "tenacity (resist CC) + block_chance (bloque, tank-lourd) + evasion (esquive, agile-leger) par archetype = identite defensive. tank bloque/resiste, assassin/archer esquivent, glass ne bloque pas. FIXES (taux, ne scalent pas avec le niveau). tenacity a un bonus tier+star (voir tier_multipliers + star_system) ; block/evasion = base archetype seule."
   },
-
   "archetype_consolidation": {
     "_comment": "Mapping des 11 ai_role existants vers les 7 archetypes. Le champ ai_role du mob reste (pilote l'IA/skills) ; le stat_archetype (nouveau) pilote les stats. artillery se split : les mobs a skills majoritairement damage_type=physical -> archer, sinon -> mage.",
     "tank": "tank",
@@ -47,39 +168,132 @@
     "support": "support",
     "healer": "support"
   },
-
   "tier_multipliers": {
     "_comment": "Applique sur base_lv1 x curve. hp = survie, atk = menace, def/mr = mitigation. Remplace hp_multiplier bake de monster_tiers.json (plus de double-dip : le runtime applique TOUT).",
-    "fodder":   { "hp": 0.60, "atk": 0.85, "def": 0.85, "magic_resist": 0.85 },
-    "standard": { "hp": 1.00, "atk": 1.00, "def": 1.00, "magic_resist": 1.00 },
-    "tough":    { "hp": 1.60, "atk": 1.15, "def": 1.15, "magic_resist": 1.15 },
-    "elite":    { "hp": 2.20, "atk": 1.30, "def": 1.25, "magic_resist": 1.25 },
-    "boss":     { "hp": 4.00, "atk": 1.60, "def": 1.40, "magic_resist": 1.40 }
+    "fodder": {
+      "hp": 0.6,
+      "atk": 0.85,
+      "def": 0.85,
+      "magic_resist": 0.85,
+      "tenacity_bonus": 0
+    },
+    "standard": {
+      "hp": 1.0,
+      "atk": 1.0,
+      "def": 1.0,
+      "magic_resist": 1.0,
+      "tenacity_bonus": 0
+    },
+    "tough": {
+      "hp": 1.6,
+      "atk": 1.15,
+      "def": 1.15,
+      "magic_resist": 1.15,
+      "tenacity_bonus": 10
+    },
+    "elite": {
+      "hp": 2.2,
+      "atk": 1.3,
+      "def": 1.25,
+      "magic_resist": 1.25,
+      "tenacity_bonus": 20
+    },
+    "boss": {
+      "hp": 4.0,
+      "atk": 1.6,
+      "def": 1.4,
+      "magic_resist": 1.4,
+      "tenacity_bonus": 40
+    }
   },
-
   "rarity_multipliers": {
     "_comment": "Overlay variant optionnel (spawn d'une version superieure du meme mob). Applique sur toutes les stats. Defaut = normal.",
-    "normal":   1.00,
-    "magic":    1.15,
-    "rare":     1.40,
-    "champion": 1.80
+    "normal": 1.0,
+    "magic": 1.15,
+    "rare": 1.4,
+    "champion": 1.8
   },
-
   "level_curve": {
     "_comment": "CALIBRE sur le referentiel joueur GERE (harness StatRoller reel, item 3 back 15debc0, build Equilibre) + formule de degat exacte (damage_calculator). curve(1)=1 (mob = base_lv1 au lv1). anchors_hp calent hp+mp ; anchors_offense cale atk ; anchors_defense cale def+mr (DECOUPLE de l'offense). Interpolation lineaire entre ancres. Reference = archetype MOYEN (base_hp moy 31, base_atk moy 5, = brute) : la courbe cale le mob moyen, chaque archetype spread autour.",
     "type": "anchored_interpolation",
-    "anchors_hp": { "1": 1.0, "10": 10, "20": 26, "30": 48, "40": 80, "50": 115, "60": 158, "70": 230, "80": 350, "90": 556, "100": 800 },
-    "anchors_offense": { "1": 1.0, "10": 7.4, "20": 11.0, "30": 14.6, "40": 19.4, "50": 27.2, "60": 34.6, "70": 44.0, "80": 55.9, "90": 71.1, "100": 90.4 },
-    "anchors_defense": { "1": 1.0, "10": 4.0, "20": 4.47, "30": 5.0, "40": 5.48, "50": 6.0, "60": 6.48, "70": 7.0, "80": 7.32, "90": 7.65, "100": 8.0 },
+    "anchors_hp": {
+      "1": 1.0,
+      "10": 10,
+      "20": 26,
+      "30": 48,
+      "40": 80,
+      "50": 115,
+      "60": 158,
+      "70": 230,
+      "80": 350,
+      "90": 556,
+      "100": 800
+    },
+    "anchors_offense": {
+      "1": 1.0,
+      "10": 7.4,
+      "20": 11.0,
+      "30": 14.6,
+      "40": 19.4,
+      "50": 27.2,
+      "60": 34.6,
+      "70": 44.0,
+      "80": 55.9,
+      "90": 71.1,
+      "100": 90.4
+    },
+    "anchors_defense": {
+      "1": 1.0,
+      "10": 4.0,
+      "20": 4.47,
+      "30": 5.0,
+      "40": 5.48,
+      "50": 6.0,
+      "60": 6.48,
+      "70": 7.0,
+      "80": 7.32,
+      "90": 7.65,
+      "100": 8.0
+    },
     "REQUIRES_BACK": "(1) anchors_defense = 3e jeu d'ancres, le scaler doit lire anchors_defense pour def+mr -- DEJA LIVE cote back (d22b67c, interpolate generique). (2) anchors_offense RE-CALIBRE (2026-08-02) apres mesure harness back : lv10-50 milestone (bump subclass lv20) + lv50-100 lisse +27%/decennie qui track le DPS joueur (cibles back lv70=44, lv100=90). Corrige la v1 milestone qui sur-scalait le haut (~x1.9 a lv100). Harness a re-passer sur le nouveau haut (lv60-100) pour confirmer le fit ; grain fin par decennie possible si besoin. (3) anchors_hp REHAUSSE x8-20 (2026-08-03, directive produit tanky : lv50 490->~4.1k, lv90 1086->~20k). Le scaler applique deja anchors_hp, aucun changement code, mais REDEPLOY requis pour charger la nouvelle courbe + le back doit re-passer le harness 'tours-pour-tuer' avec joueur+familier+merc (pas solo) pour verifier que ce n'est pas un slog injouable pour un joueur GEARE (attendu : long mais faisable gear, impossible AFK). Ajuster atk si les fights tankys deviennent des slogs sans menace.",
     "calibration": {
       "reference_build": "Equilibre gere (socle+passifs+gear, harness back item 3)",
       "player_ref_equilibre": {
-        "hp":     { "10": 325, "30": 657, "50": 901, "70": 1541, "100": 2158 },
-        "dps_per_turn": { "10": 47, "30": 111, "50": 169, "70": 284, "100": 431 },
-        "armor":  { "10": 28, "30": 55, "50": 74, "70": 149, "100": 202 },
-        "magic_resist": { "10": 30, "30": 59, "50": 77, "70": 142, "100": 207 },
-        "crit_pct": { "10": 8, "30": 12, "50": 15, "70": 28, "100": 38 }
+        "hp": {
+          "10": 325,
+          "30": 657,
+          "50": 901,
+          "70": 1541,
+          "100": 2158
+        },
+        "dps_per_turn": {
+          "10": 47,
+          "30": 111,
+          "50": 169,
+          "70": 284,
+          "100": 431
+        },
+        "armor": {
+          "10": 28,
+          "30": 55,
+          "50": 74,
+          "70": 149,
+          "100": 202
+        },
+        "magic_resist": {
+          "10": 30,
+          "30": 59,
+          "50": 77,
+          "70": 142,
+          "100": 207
+        },
+        "crit_pct": {
+          "10": 8,
+          "30": 12,
+          "50": 15,
+          "70": 28,
+          "100": 38
+        }
       },
       "damage_formula": "landed = (base_power + atk_mob x scaling%) x E[crit] x mitig. E[crit] = 1 + crit/100 x (crit_damage-100)/100. mitig = 100/(100+armor_eff). armor_eff = armor_joueur x (1 - armor_pen_mob/100), pen clamp [0,70]. Magique = idem avec magic_resist + magic_pen. Filler std = base_power 6, scaling 100%, scaling_stat atk. La penetration reduit l'ARMURE cible (%), pas le degat.",
       "anchors_hp_basis": "DIRECTIVE PRODUIT (2026-08-03) : monstres TANKY, forcer l'investissement (anti-AFK familier+merc). L'ancienne calibration '2.5 tours solo' donnait des mobs trop fragiles (lv50 standard ~490 HP, lv90 ~1086) -> un familier lv40 solotait un lv60. Nouvelle cible sur mob STANDARD archetype brute (base_hp 36) : lv50~4.1k, lv60~5.7k, lv90~20k, lv100~29k. Montee 'de plus en plus raide' en haut (+37%..+59%/decennie de lv50 a lv90). Tank archetype + tough/elite/boss tier scalent au-dessus (lv90 tank-tough ~43k, boss ~80k+). Le joueur doit gear+stats+skill pour percer ; un familier+merc AFK ne chew plus 20k HP. On NE plafonne PAS l'XP (tuer un groupe HL = XP meritee). anchors_hp = target_brute / 36.",
@@ -89,7 +303,6 @@
       "anchors_hp_def_note": "anchors_hp/def gardent leurs ancres calibrees, densifiees par decennie (interp geometrique, endpoints inchanges) -> montent AUSSI chaque decennie. Le milestone-weighting s'applique surtout a l'offense (levier ressenti). TODO possible: appliquer le meme rythme milestone a hp (le DPS joueur saute aussi aux unlocks, donc le HP mob devrait suivre pour ne pas se faire one-shot apres subclass/spe)."
     }
   },
-
   "per_mob_override": {
     "_comment": "La plupart des mobs derivent purement (stat_archetype, base_level, threat_tier, rarity). Un mob special (boss signature) peut porter un stat_override optionnel {hp?, atk?, def?, mr?} ou un stat_scalar {x1.2} pour se demarquer sans casser le modele."
   }
