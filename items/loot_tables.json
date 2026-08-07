@@ -4,7 +4,7 @@
     "version": "2.0",
     "last_updated": "2026-03-04",
     "description": "Système de loot global avec multiplicateurs. Inclut drops de matériaux, équipements, panoplies et uniques.",
-    "formula_overview": "final_drop_chance = base_chance × encounter_stars_mult × state_mult × dungeon_mult × group_mult × luck_mult × event_mult × level_penalty"
+    "formula_overview": "final_drop_chance = base_chance × encounter_stars_mult × state_mult × dungeon_mult × group_mult × event_mult × level_penalty"
   },
   "drop_chances_by_rarity": {
     "_comment": "Chances de base par rareté de matériau (utilisé si l'item n'a pas de chance explicite)",
@@ -3367,65 +3367,6 @@
       ]
     }
   },
-  "luck_system": {
-    "description": "Comment la luck et les bonus affectent le loot",
-    "base_luck": 0,
-    "luck_stat_formula": {
-      "drop_chance_bonus": "luck × 0.002",
-      "rarity_bonus": "luck × 0.001",
-      "gold_bonus": "luck × 0.001",
-      "example": "100 luck = +20% drop chance, +10% rarity, +10% gold"
-    },
-    "passive_bonuses": {
-      "description": "Bonus de passifs, équipements, buffs",
-      "types": [
-        {
-          "id": "loot_chance_percent",
-          "description": "+X% chance de drop",
-          "stacks": "additive"
-        },
-        {
-          "id": "gold_find_percent",
-          "description": "+X% gold trouvé",
-          "stacks": "additive"
-        },
-        {
-          "id": "magic_find_percent",
-          "description": "+X% chance de rareté supérieure",
-          "stacks": "additive"
-        },
-        {
-          "id": "xp_bonus_percent",
-          "description": "+X% XP gagné",
-          "stacks": "additive"
-        }
-      ],
-      "examples": [
-        {
-          "source": "Parchemin de Fortune",
-          "bonus": "loot_chance_percent",
-          "value": 25,
-          "duration": "30min"
-        },
-        {
-          "source": "Set Davar 6p",
-          "bonus": "gold_find_percent",
-          "value": 10,
-          "duration": "permanent"
-        },
-        {
-          "source": "Guilde buff",
-          "bonus": "xp_bonus_percent",
-          "value": 10,
-          "duration": "24h"
-        }
-      ]
-    },
-    "final_formula": {
-      "luck_mult": "1 + (luck_stat_bonus + sum(passive_bonuses)) / 100",
-      "example": "100 luck (+20%) + Parchemin (+25%) + Set (+10%) = luck_mult = 1.55"
-    }
-  },
   "events": {
     "description": "Événements spéciaux avec bonus de loot",
     "event_types": {
@@ -3493,12 +3434,11 @@
       "2. Appliquer monster_state.drop_chance",
       "3. Appliquer dungeon_difficulty.drop_chance",
       "4. Appliquer group_size multiplier",
-      "5. Appliquer luck_mult (luck stat + passives)",
       "6. Appliquer event multiplier (si actif)",
       "7. Appliquer level_difference penalty",
       "8. Roll random [0, 1] et comparer"
     ],
-    "formula": "final_chance = base_chance × state_mult × dungeon_mult × group_mult × luck_mult × event_mult × (1 - level_penalty)",
+    "formula": "final_chance = base_chance × state_mult × dungeon_mult × group_mult × event_mult × (1 - level_penalty)",
     "rarity_roll": {
       "description": "Pour les items avec rareté variable",
       "steps": [
@@ -3685,7 +3625,7 @@
       }
     },
     "max_unique_per_combat": 1,
-    "formula": "final_chance = base_drop_chance (from uniques.json) × star_mult × monster_state_mult × luck_mult",
+    "formula": "final_chance = base_drop_chance (from uniques.json) × star_mult × monster_state_mult",
     "examples": {
       "wolf_normal_0star": {
         "scenario": "Loup normal, 0 étoile",
