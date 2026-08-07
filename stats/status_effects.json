@@ -57,24 +57,19 @@
           "max_stacks": 5,
           "total_max": "-25%"
         },
-        "atk_percent_up": {
-          "value_per_stack": 5,
-          "unit": "percent",
-          "max_stacks": 5,
-          "total_max": "+25%",
-          "_note": "Berserker innate, alias possible de atk_up"
-        },
         "damage_percent_up": {
           "value_per_stack": 5,
-          "unit": "percent",
+          "unit": "percent_dmg_dealt",
           "max_stacks": 5,
-          "total_max": "+25%"
+          "total_max": "+25%",
+          "_note": "Degats INFLIGES (bucket offensif sortant), pas degats subis. Route vers StatsComponent.damage_percent_out cote moteur, comme les bonus d'equipement et de passifs. Ne pas confondre avec vulnerable/exposed/marked qui touchent damage_taken_percent."
         },
         "damage_percent_down": {
           "value_per_stack": 5,
-          "unit": "percent",
+          "unit": "percent_dmg_dealt",
           "max_stacks": 5,
-          "total_max": "-25%"
+          "total_max": "-25%",
+          "_note": "Miroir de damage_percent_up: reduit les degats INFLIGES par la cible. Ne pas confondre avec damage_reduction_up qui reduit les degats SUBIS."
         },
         "crit_chance_up": {
           "value_per_stack": 5,
@@ -202,12 +197,6 @@
           "max_stacks": 5,
           "total_max": "-25%"
         },
-        "heal_received_down": {
-          "value_per_stack": 15,
-          "unit": "percent",
-          "max_stacks": 3,
-          "total_max": "-45%"
-        },
         "heal_reduction": {
           "value_per_stack": 15,
           "unit": "percent",
@@ -256,28 +245,17 @@
           "_note": "Pour mark de classe, creer hunter_mark/assassin_mark separes"
         },
         "berserk": {
-          "value_per_stack": 5,
+          "value_per_stack": 10,
           "unit": "percent_both",
           "max_stacks": 5,
-          "total_max": "+25% dmg dealt ET dmg taken"
+          "total_max": "+50% ATK ET +50% dmg taken",
+          "_note": "2026-08-06: value_per_stack aligne de 5 a 10 sur le handler moteur (status_manager apply_stat_modifications) et sur les descriptions de skills, qui annoncent tous 10%/stack. La grille etait le seul point a 5, elle faisait mentir l'UI d'un facteur 2."
         },
         "lifesteal": {
           "value_per_stack": 5,
           "unit": "percent",
           "max_stacks": 5,
           "total_max": "+25%"
-        },
-        "thorns": {
-          "value_per_stack": 1,
-          "unit": "stacks_of_DEF*0.1",
-          "max_stacks": 10,
-          "total_max": "DEF*1.0"
-        },
-        "regen": {
-          "value_per_stack": 1,
-          "unit": "percent_max_hp_per_sec",
-          "max_stacks": 5,
-          "total_max": "+5% maxHP/s"
         }
       },
       "dot": {
@@ -607,25 +585,26 @@
         "stacking": "stackable",
         "max_stacks": 3,
         "impl": "done",
-        "formula": "heal_power * 0.2 per tick per stack",
+        "formula": "1% des PV max de la cible par seconde et par charge (max 3 charges = 3%/s)",
         "tick_interval": 1.0,
         "tooltip_fr": "Soigne la cible chaque seconde.",
         "tooltip_en": "Heals the target every second.",
-        "description_fr": "Soigne X PV par seconde. Se cumule jusqu'à 3 charges. Appliqué par sorts de Healer.",
-        "description_en": "Heals X HP per second. Stacks up to 3. Applied by Healer spells.",
+        "description_fr": "Soigne 1% des PV max par seconde et par charge. Se cumule jusqu'à 3 charges. Absorbe l'ancien effet Régénération, qui était identique.",
+        "description_en": "Heals 1% of max HP per second per stack. Stacks up to 3. Absorbs the former Regeneration effect, which was identical.",
         "sources": [
           "Healer",
+          "Familier",
           "potions"
         ],
         "runtime": {
-          "tick_damage": "value",
+          "tick_heal": "target_max_hp_percent",
+          "tick_percent": 0.01,
           "tick_rate": 1.0,
           "scaling_stat": "target_max_hp",
-          "scaling_percent": 0.02,
-          "scaling_behavior": "flat",
           "vfx_type": "heal_glow"
         },
-        "value_per_stack": 1
+        "value_per_stack": 1,
+        "_audit_note": "2026-08-06: l'effet soignait ZERO. Aucune branche moteur ne le traitait (seuls heal_over_time_mag et heal_over_time_max_hp en avaient une), et StatusEffectData.tick_value n'est jamais renseigne au chargement, donc la valeur par tick valait toujours 0. Les deux skills familiers qui l'appliquent (regen_wave, mending_pulse) ne soignaient rien. Le moteur derive desormais le tick de la grille canonique pour l'unite percent_max_hp_per_sec. L'ancienne formula heal_power*0.2 et le scaling_percent 0.02 du bloc runtime etaient tous deux faux par rapport a la grille (1%/s/charge), ils sont supprimes."
       },
       "heal_over_time_mag": {
         "name_fr": "Soin Continu Magique",
@@ -1103,7 +1082,7 @@
         "polarity": "buff",
         "stacking": "stackable",
         "impl": "done",
-        "formula": "+5% all damage per stack",
+        "formula": "+5% degats INFLIGES par stack (bucket offensif sortant)",
         "tooltip_fr": "Augmente tous les dégâts infligés.",
         "tooltip_en": "Increases all damage dealt.",
         "description_fr": "Augmente tous les dégâts infligés",
@@ -1113,12 +1092,13 @@
         ],
         "runtime": {
           "stat_mods": {
-            "damage_percent": "value/100"
+            "damage_dealt_percent": "value/100"
           },
           "vfx_type": "power_aura"
         },
         "max_stacks": 5,
-        "value_per_stack": 5
+        "value_per_stack": 5,
+        "_audit_note": "2026-08-06: correction d'une INVERSION. Le loader mappait damage_percent_* sur StatModType::DAMAGE_PERCENT, qui ecrit dans StatsComponent.damage_taken_percent (degats SUBIS). Les ~40 skills qui appliquent cet effet en buff sur soi ou ses allies (Call to Glory, War Anthem, Frenzy, Bloodlust...) faisaient donc prendre +25% de degats a leur propre camp au lieu d'en infliger +25%. Route desormais vers StatModType::DAMAGE_DEALT -> StatsComponent.damage_percent_out, le meme bucket que les bonus d'equipement et de passifs, deja consomme par damage_calculator.cpp."
       },
       "damage_percent_down": {
         "name_fr": "Dégâts % -",
@@ -1126,19 +1106,20 @@
         "polarity": "debuff",
         "stacking": "stackable",
         "impl": "done",
-        "formula": "-5% all damage per stack",
+        "formula": "-5% degats INFLIGES par stack (bucket offensif sortant)",
         "tooltip_fr": "Réduit tous les dégâts infligés.",
         "tooltip_en": "Reduces all damage dealt.",
         "description_fr": "Réduit tous les dégâts infligés",
         "description_en": "Reduces all damage dealt",
         "runtime": {
           "stat_mods": {
-            "damage_percent": "-value/100"
+            "damage_dealt_percent": "-value/100"
           },
           "vfx_type": "weaken_aura"
         },
         "max_stacks": 5,
-        "value_per_stack": 5
+        "value_per_stack": 5,
+        "_audit_note": "2026-08-06: meme inversion que damage_percent_up, corrigee. Applique en debuff sur les ennemis (Volley, Crippling Arrow, Total Shutdown), il leur donnait -X% de degats SUBIS, donc un cadeau defensif. Applique en drawback sur soi par les postures de tank (Iron Stance, Stone Form, Forge Stance, Stoicisme), il offrait -25% de degats subis au lieu du malus offensif voulu par la description."
       },
       "damage_reduction_up": {
         "name_fr": "Réduction Dégâts +",
@@ -1179,57 +1160,6 @@
         },
         "max_stacks": 3,
         "value_per_stack": 5
-      },
-      "atk_percent_up": {
-        "name_fr": "ATK % +",
-        "name_en": "ATK % Up",
-        "polarity": "buff",
-        "stacking": "stackable",
-        "max_stacks": 5,
-        "impl": "done",
-        "formula": "+5% ATK per stack",
-        "tooltip_fr": "Augmente la puissance d'attaque.",
-        "tooltip_en": "Increases attack power.",
-        "description_fr": "Augmente la puissance d'attaque en pourcentage",
-        "description_en": "Increases attack power by a percentage",
-        "sources": [
-          "Warrior Berserker"
-        ],
-        "runtime": {
-          "stat_mods": {
-            "attack_percent": "value/100"
-          },
-          "vfx_type": "power_aura"
-        },
-        "value_per_stack": 5
-      },
-      "heal_received_down": {
-        "name_fr": "Soins Reçus -",
-        "name_en": "Healing Received Down",
-        "polarity": "debuff",
-        "stacking": "stackable",
-        "max_stacks": 3,
-        "impl": "done",
-        "formula": "-15% healing received per stack",
-        "tooltip_fr": "Réduit les soins reçus.",
-        "tooltip_en": "Reduces healing received.",
-        "description_fr": "Réduit l'efficacité des soins reçus en pourcentage",
-        "description_en": "Reduces healing received effectiveness by a percentage",
-        "sources": [
-          "Archer Ranger",
-          "Artisan Musician"
-        ],
-        "runtime": {
-          "stat_mods": {
-            "heal_received_percent": "-value/100"
-          },
-          "vfx_type": "anti_heal_aura"
-        },
-        "value_per_stack": 15,
-        "stat_mods": {
-          "heal_received_percent": -0.15
-        },
-        "_audit_note": "PR A2 cleanup 2026-05-02: stat_mods migrated from runtime block to top-level (numeric, machine-readable). The runtime block keeps template strings as designer documentation only."
       },
       "crit_resistance_down": {
         "name_fr": "Résist Critique -",
@@ -1311,23 +1241,24 @@
         "name_en": "Exposed",
         "polarity": "debuff",
         "stacking": "stackable",
-        "max_stacks": 5,
+        "max_stacks": 3,
         "impl": "done",
-        "formula": "+5% damage taken per stack",
+        "formula": "+10% damage taken per stack (max 3 stacks = +30%)",
         "tooltip_fr": "Augmente les dégâts reçus.",
         "tooltip_en": "Increases damage taken.",
-        "description_fr": "La cible reçoit davantage de dégâts de toutes les sources. Cumulable.",
-        "description_en": "The target takes increased damage from all sources. Stacks.",
+        "description_fr": "La cible reçoit davantage de dégâts de toutes les sources. Cumulable jusqu'à 3 charges.",
+        "description_en": "The target takes increased damage from all sources. Stacks up to 3.",
         "sources": [
           "Rogue (Mark Target, Expose Weakness)"
         ],
         "stat_mods": {
-          "damage_taken_percent": 0.05
+          "damage_taken_percent": 0.1
         },
         "runtime": {
           "vfx_type": "exposed_mark"
         },
-        "value_per_stack": 10
+        "value_per_stack": 10,
+        "_audit_note": "2026-08-06: l'effet se contredisait sur trois points. max_stacks valait 5 dans la definition contre 3 dans la grille canonique, et stat_mods valait 0.05 contre value_per_stack 10 et grille 10. Le loader lit stat_mods en dernier, donc le runtime appliquait 5%/stack la ou l'UI affichait 10%/stack depuis la grille. Aligne sur la grille (10%/stack, max 3), ce que les descriptions de skills annoncent deja (Expose Weakness 3 charges = +30%)."
       }
     },
     "tempo": {
@@ -1536,11 +1467,11 @@
         "polarity": "debuff",
         "stacking": "stackable",
         "impl": "done",
-        "formula": "-[skill_value]% attack/cast speed",
+        "formula": "-[skill_value] points de hate par charge (hate de base 100, donc value 20 = -20% de vitesse). Defaut 10 si le skill ne fournit pas de value.",
         "tooltip_fr": "Réduit la vitesse d'attaque et d'incantation.",
         "tooltip_en": "Reduces attack speed and cast speed.",
-        "description_fr": "Réduit la vitesse d'attaque et d'incantation. Se cumule.",
-        "description_en": "Reduces attack speed and cast speed. Stacks.",
+        "description_fr": "Réduit la vitesse d'attaque et d'incantation. Se cumule jusqu'à 3 charges.",
+        "description_en": "Reduces attack speed and cast speed. Stacks up to 3.",
         "sources": [
           "Mage Cardmaster",
           "Boss",
@@ -1548,15 +1479,15 @@
         ],
         "runtime": {
           "stat_mods": {
-            "atk_speed_percent": "-value/100",
-            "cast_speed_percent": "-value/100"
+            "haste_flat": "-value"
           },
           "vfx_type": "slow_chains",
           "cc_type": "slow",
           "blocks_movement": false,
           "blocks_skills": false
         },
-        "max_stacks": 10
+        "max_stacks": 3,
+        "_audit_note": "2026-08-06: l'effet etait INERTE. StatusType::SLOW tombait dans le default du switch de update_status_flags, aucun champ slowed n'existe dans StatusFlagsComponent, et l'absence de stat_mods laissait stat_mod_type a NONE. Trois skills de base monstre (tank_slam, controller_jinx, archer_crippling_shot) plus controller_slow posaient donc une icone sans aucun ralentissement. Le loader mappe desormais cc_type slow sur StatModType::HASTE, et le flip de signe des debuffs couvre StatusType::SLOW pour que le value du skill se retranche. max_stacks ramene de 10 a 3: a 10 charges x 20 points, la hate tapait son plancher et le stun devenait strictement inferieur au slow."
       },
       "taunt_redirect": {
         "name_fr": "Redirection",
@@ -1768,7 +1699,8 @@
           ],
           "charges": 1,
           "vfx_type": "shield_guard"
-        }
+        },
+        "_audit_note": "2026-08-06: l'effet n'avait JAMAIS fonctionne. Son unique lecture moteur vivait dans server-combat/src/skills/skill_executor.cpp, du dead code prod (piege #13 du CLAUDE.md racine) instancie seulement par des tests unitaires; le vrai chemin runtime, room.cpp::apply_skill_effects, ne connaissait pas cover. | 2026-08-07: CONSTRUIT dans Room::apply_guardian_redirect, appele juste avant l'ecriture des PV. L'effet est pose sur l'ALLIE et StatusInstance::source_entity porte le protecteur, donc aucun composant de lien supplementaire n'est necessaire. Interception totale d'UN coup mono-cible, puis consommation de la charge. Le redirect est refuse (les degats restent sur l'allie) si le protecteur est mort, invalide ou invulnerable: sans ce garde, un gardien invulnerable effacerait les degats de toute l'equipe."
       },
       "damage_transfer": {
         "name_fr": "Transfert de Dégâts",
@@ -1790,7 +1722,8 @@
           },
           "caster_meta": "transfer_target_id",
           "vfx_type": "shield_aura"
-        }
+        },
+        "_audit_note": "2026-08-06: l'effet n'avait AUCUNE machinerie moteur. Aucune occurrence dans server-combat hors du canary de chargement, et la cle damage_transfer_percent n'existait ni dans StatsComponent ni dans le loader. Le warning [STATUS_LOAD] 'declares stat_mods keys but the loader recognizes none' le signalait a chaque boot, noye sous 4 faux positifs de shields. | 2026-08-07: CONSTRUIT dans Room::apply_guardian_redirect. Le `value` du skill (25 a 50 selon les 7 skills) est le POURCENTAGE absorbe par le protecteur, clampe [0,100]. L'effet est pose sur l'ALLIE, source_entity porte le protecteur, et il n'est jamais consomme: il absorbe pendant toute sa duree. S'applique APRES cover et apres mitigation. Le bloc runtime.stat_mods damage_transfer_percent est laisse comme documentation designer; le loader ne le lit pas, la mecanique passe par le hook de degats, pas par une stat."
       },
       "en_garde_stance": {
         "name_fr": "En Garde",
@@ -1939,11 +1872,13 @@
         "description_en": "Target MUST attack caster for duration. Ignores normal threat. Essential tank skill.",
         "runtime": {
           "forces_target_on_source": true,
+          "cc_type": "taunt",
           "stat_mods": {
             "taunted": 1
           },
           "vfx_type": "taunt_aura"
-        }
+        },
+        "_audit_note": "2026-08-06: ajout de runtime.cc_type. Le serveur derivait deja le type TAUNT de la categorie aggro, mais le client lit exclusivement cc_type pour peupler StatusEffect.cc_type. Sans lui, la provocation s'affichait comme un debuff neutre, sans marquage CC dans le HUD."
       }
     },
     "special": {
@@ -1997,11 +1932,11 @@
         "polarity": "debuff",
         "stacking": "stackable",
         "impl": "done",
-        "formula": "+5% ALL damage taken per stack",
+        "formula": "+5% ALL damage taken per stack (max 5 stacks = +25%)",
         "tooltip_fr": "Augmente les dégâts subis.",
         "tooltip_en": "Increases damage taken.",
-        "description_fr": "Reçoit +10% dégâts de TOUTES sources par charge. Se cumule avec marqué. Debuff générique puissant.",
-        "description_en": "Takes +10% damage from ALL sources per stack. Stacks with marked. Powerful generic debuff.",
+        "description_fr": "Reçoit +5% dégâts de TOUTES sources par charge, jusqu'à +25% à 5 charges. Se cumule avec Marqué. Debuff générique puissant.",
+        "description_en": "Takes +5% damage from ALL sources per stack, up to +25% at 5 stacks. Stacks with Marked. Powerful generic debuff.",
         "runtime": {
           "stat_mods": {
             "damage_taken_percent": "value/100"
@@ -2011,9 +1946,9 @@
         "max_stacks": 5,
         "value_per_stack": 5,
         "stat_mods": {
-          "damage_taken_percent": 0.1
+          "damage_taken_percent": 0.05
         },
-        "_audit_note": "PR A2 cleanup 2026-05-02: stat_mods migrated from runtime block to top-level (numeric, machine-readable). The runtime block keeps template strings as designer documentation only."
+        "_audit_note": "PR A2 cleanup 2026-05-02: stat_mods migrated from runtime block to top-level (numeric, machine-readable). The runtime block keeps template strings as designer documentation only. | 2026-08-06: stat_mods corrige de 0.1 a 0.05. Le loader lit stat_mods en dernier et ecrase la grille canonique, donc le runtime appliquait 10%/stack (+50% a 5 charges) la ou la grille, value_per_stack et l'UI annoncent 5%/stack (+25%). Les descriptions FR/EN, qui disaient +10%, sont realignees sur la grille."
       },
       "berserk": {
         "name_fr": "Berserk",
@@ -2021,20 +1956,21 @@
         "polarity": "buff",
         "stacking": "stackable",
         "impl": "done",
-        "formula": "+10% damage dealt AND +10% damage taken per stack",
+        "formula": "+10% ATK AND +10% damage taken per stack (max 5 stacks)",
         "tooltip_fr": "Augmente les dégâts mais réduit la défense.",
         "tooltip_en": "Increases damage but reduces defense.",
-        "description_fr": "Augmente dégâts infligés ET reçus. Risque/récompense. Pour builds offensifs. Warrior berserker.",
-        "description_en": "Increases damage dealt AND taken. Risk/reward. For offensive builds. Warrior berserker.",
+        "description_fr": "Augmente l'ATQ de 10% et les dégâts subis de 10% par charge, jusqu'à +50% des deux à 5 charges. Risque/récompense, pour builds offensifs.",
+        "description_en": "Increases ATK by 10% and damage taken by 10% per stack, up to +50% of both at 5 stacks. Risk/reward, for offensive builds.",
         "runtime": {
           "stat_mods": {
-            "damage_percent": "value/100",
+            "attack_percent": "value/100",
             "damage_taken_percent": "value/100"
           },
           "vfx_type": "berserk_flames"
         },
         "max_stacks": 5,
-        "value_per_stack": 5
+        "value_per_stack": 10,
+        "_audit_note": "2026-08-06: value_per_stack aligne de 5 a 10 sur le handler moteur, qui code en dur +10% ATK et +10 damage_taken par charge. La grille et cette fiche etaient les seuls points a 5, ils faisaient afficher la moitie de la valeur reelle. Le runtime doc dit desormais attack_percent (et non damage_percent) car le handler bump bien stats.attack_power, pas le bucket de degats sortants."
       },
       "amplify": {
         "name_fr": "Amplification des Soins",
@@ -2050,25 +1986,6 @@
         "description_en": "Each stack increases by 10% the healing of regeneration effects ticking on the target. Lasts its full duration and is not consumed.",
         "sources": [],
         "_audit_note": "2026-08-01: fiche REECRITE pour coller au code, sur recommandation du back. L'ancienne annoncait '+10% puissance du prochain sort, CONSOMME a l'utilisation' — ce qui ne correspondait ni au ciblage ni au comportement reels. Le code (status_manager.cpp:959-967) amplifie les HoT qui tickent sur la CIBLE, de facon persistante et sans consommation. Zero usage en data, donc reecriture sans risque. Si le mecanisme 'empower le prochain sort, consomme' est voulu un jour, il faudra un effet NEUF et distinct : ne pas reutiliser celui-ci."
-      },
-      "regen": {
-        "name_fr": "Régénération",
-        "name_en": "Regeneration",
-        "polarity": "buff",
-        "stacking": "stackable",
-        "impl": "done",
-        "formula": "max_HP * 0.01 per second per stack",
-        "tooltip_fr": "Régénère progressivement les PV.",
-        "tooltip_en": "Gradually regenerates HP.",
-        "description_fr": "Régénère 1% PV max par seconde par charge. Passif, hors combat principalement. Amélioration d'endurance.",
-        "description_en": "Regenerates 1% max HP per second per stack. Passive, mainly out of combat. Sustain buff.",
-        "runtime": {
-          "tick_heal": "value",
-          "tick_rate": 1.0,
-          "vfx_type": "heal_particles"
-        },
-        "max_stacks": 5,
-        "value_per_stack": 1
       },
       "mana_regen": {
         "name_fr": "Régen Souffle",
@@ -2170,19 +2087,31 @@
         "polarity": "debuff",
         "stacking": "stackable",
         "impl": "done",
-        "formula": "-50% healing received per stack (cap 95%)",
+        "formula": "-15% healing received per stack (cap 95%)",
         "tooltip_fr": "Réduit les soins reçus.",
         "tooltip_en": "Reduces incoming healing.",
-        "description_fr": "-50% soins reçus par charge. Cap à 95% (5% soins minimum). Efficace contre les healers et builds lifesteal.",
-        "description_en": "-50% healing received per stack. Capped at 95% (5% healing minimum). Counters healers and lifesteal builds.",
+        "description_fr": "-15% soins reçus par charge, jusqu'à -45% à 3 charges. Cap dur à 95% (5% soins minimum). Efficace contre les healers et builds vol de vie.",
+        "description_en": "-15% healing received per stack, up to -45% at 3 stacks. Hard cap at 95% (5% healing minimum). Counters healers and lifesteal builds.",
+        "sources": [
+          "Healer Martyr",
+          "Archer Ranger",
+          "Artisan Musician",
+          "Artisan Plague Brewer",
+          "Mage Occultist",
+          "Rogue Cutthroat"
+        ],
         "runtime": {
           "stat_mods": {
-            "heal_reduction_percent": "value/100"
+            "heal_received_percent": "-value/100"
           },
           "vfx_type": "anti_heal_aura"
         },
         "max_stacks": 3,
-        "value_per_stack": 15
+        "value_per_stack": 15,
+        "stat_mods": {
+          "heal_received_percent": -0.15
+        },
+        "_audit_note": "2026-08-06: deux corrections. (1) L'effet n'avait AUCUN stat_mods top-level, donc le handler moteur tombait sur son fallback code en dur de 0.5 par stack: 3 charges donnaient 150% clampe a 100%, soit un blocage TOTAL des soins la ou la grille et les descriptions annoncent -45%. Le stat_mods numerique le ramene a -15%/stack. (2) Absorbe heal_received_down, qui etait un doublon strict (meme -15%/stack, meme max_stacks 3, meme chemin runtime par correspondance de sous-chaine sur l'id). heal_reduction est le nom canonique designe par le CTO."
       },
       "shield_block": {
         "name_fr": "Brise-Bouclier",
@@ -2579,22 +2508,23 @@
     }
   },
   "_summary": {
-    "total": 104,
+    "total": 98,
     "categories": 9,
     "by_polarity": {
-      "buff": 53,
-      "debuff": 51
+      "buff": 49,
+      "debuff": 49
     },
     "breakdown": {
       "dot": 9,
       "hot": 3,
-      "stat_modifiers": 30,
-      "tempo": 4,
+      "stat_modifiers": 28,
+      "tempo": 2,
       "control": 11,
-      "defensive": 10,
+      "defensive": 9,
       "immunity": 5,
       "aggro": 1,
-      "special": 31
-    }
+      "special": 30
+    },
+    "_audit_note": "2026-08-06: bloc recompte a partir du fichier. Il annoncait 104 effets pour 101 reels, et se trompait aussi sur tempo, defensive et special. Le total passe a 98 apres la fusion de trois doublons stricts: atk_percent_up absorbe par atk_up (meme 5%/stack, meme max 5, la grille le notait deja comme alias possible), heal_received_down absorbe par heal_reduction (meme -15%/stack, meme max 3, meme chemin runtime), et regen supprime (zero applicateur, identique a heal_over_time a 1% maxHP/s/charge)."
   }
 }
