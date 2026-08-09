@@ -1,0 +1,43 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-08-10",
+    "description": "Buffs MONDE persistants, server-authoritative. Distincts des status_effects.json qui sont les effets de COMBAT (volatils, lifecycle = combat). Ici : les buffs qui survivent au-dela d'un combat et vivent dans le StatsProfileSnapshot (regle R4 : Profile, pas Overlay). Sources : taverne, nourriture, aura de guilde, benediction de sanctuaire, titre.",
+    "authority": {
+      "rule": "Le serveur applique, persiste (table character_buffs) et fait expirer. Il bump stats_revision a chaque mutation et republie 0x091B CHARACTER_STATS_FULL_UPDATED avec la liste complete des buffs actifs.",
+      "client": "Le client N'APPLIQUE RIEN et ne calcule aucune duree. Il recoit un WorldBuff {id, icon, is_debuff, expires_at_ms} et resout name/description ICI, par l'id. Le temps restant se derive de expires_at_ms contre server_timestamp_ms du meme message, jamais contre un timer local.",
+      "list_contract": "La liste REMPLACE. Chaque 0x091B redefinit l'ensemble des buffs monde actifs. Vecteur absent = serveur qui ne connait pas les buffs monde. Vecteur present et vide = aucun buff actif."
+    },
+    "schema": {
+      "id": "Identifiant canonique, prefixe wbuff_. C'est la cle emise par le serveur et la cle de resolution du texte cote client.",
+      "icon": "Nom d'icone. Repli d'affichage si le pin de donnees du client ignore l'id.",
+      "is_debuff": "Teinte de la pastille cote client.",
+      "source": "Origine metier (tavern, food, guild, sanctuary, title). Sert au regroupement HUD et aux regles d'exclusivite.",
+      "duration_seconds": "Duree de reference appliquee par le serveur. Le client ne la lit jamais pour decompter, il lit expires_at_ms.",
+      "stacking": "refresh (reapplication remet la duree a zero, une seule instance) ou unique (reapplication refusee tant que le buff est actif).",
+      "stats": "Liste de modificateurs {stat, mode, value}. stat = cle canonique de stats/definitions.json. mode = flat ou percent. percent s'applique au total AVANT buff monde, jamais en cascade sur un autre buff monde."
+    },
+    "_todo": "Les food_buffs de items/consumables.json (food_hp_small, food_mp_small, food_atk_small, food_regen_small) sont le meme concept et devront migrer ici quand le serveur les prendra en charge. Ils n'ont aujourd'hui ni nom, ni description, ni icone, donc le client ne peut pas les afficher."
+  },
+  "world_buffs": {
+    "wbuff_tavern_rest": {
+      "id": "wbuff_tavern_rest",
+      "name_fr": "Repos de taverne",
+      "name_en": "Tavern Rest",
+      "description_fr": "Une vraie nuit sous un toit, un repas chaud et un peu de calme. Le corps encaisse mieux et le Souffle revient plus vite.",
+      "description_en": "A real night under a roof, a hot meal and some quiet. The body holds up better and Breath comes back faster.",
+      "icon": "tavern_rest",
+      "is_debuff": false,
+      "source": "tavern",
+      "duration_seconds": 600,
+      "stacking": "refresh",
+      "stats": [
+        { "stat": "hp", "mode": "percent", "value": 5 },
+        { "stat": "mp", "mode": "percent", "value": 5 },
+        { "stat": "hp_regen", "mode": "flat", "value": 2 },
+        { "stat": "mp_regen", "mode": "flat", "value": 2 }
+      ],
+      "_balance_note": "Volontairement une endurance et une recuperation, pas un multiplicateur de degats. Le buff etait annonce a +5% sur atk/def/mag par l'ancien code client, mais il n'a JAMAIS eu d'effet reel : le serveur ne l'a jamais connu. Le rendre reel est donc un choix neuf, et un pourcentage de degats adosse a un cout fixe de 10 or se renforcerait indefiniment avec le niveau. A retuner librement, c'est une entree JSON, aucun code ne depend des valeurs."
+    }
+  }
+}
