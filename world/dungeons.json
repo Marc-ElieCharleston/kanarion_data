@@ -1878,7 +1878,7 @@
     {
       "id": "dungeon_rat_den",
       "zone_prefix": "dungeon_rat_den",
-      "zone_id_pattern": "{zone_prefix}_f{floor}",
+      "zone_id_pattern": "{zone_prefix}_f{floor}_{difficulty}",
       "_comment_zone_prefix": "Base de zone DECLAREE, jamais derivee par strip de suffixe. Les difficultes fissure_1/2/3 contiennent un underscore, donc template_id = dungeon_rat_den_fissure_1 n est PAS splittable de facon fiable. Contrat: zone d etage = zone_prefix + _f + floor (dungeon_rat_den_f1/f2/f3). Valeur identique sur les 3 lignes du seed PG.",
       "name": "Rat Den",
       "name_fr": "Repaire des Rats",
@@ -1912,44 +1912,11 @@
       "difficulties": {
         "fissure_1": {
           "key_required": null,
-          "modifiers": {
-            "hp_mult": 1.0,
-            "dmg_mult": 1.0,
-            "xp_mult": 1.0,
-            "gold_mult": 1.0,
-            "loot_quality_bonus": 0
-          },
-          "guaranteed_substats": 0,
           "description_fr": "Emprise faible. La Fissure tient a peine le terrier.",
           "description_en": "Weak hold. The Fissure barely grips the burrow."
-        },
-        "fissure_2": {
-          "key_required": null,
-          "modifiers": {
-            "hp_mult": 1.4,
-            "dmg_mult": 1.3,
-            "xp_mult": 1.5,
-            "gold_mult": 1.5,
-            "loot_quality_bonus": 1
-          },
-          "guaranteed_substats": 1,
-          "description_fr": "Emprise resserree. Les betes ne reculent plus.",
-          "description_en": "Tighter hold. The beasts no longer back away."
-        },
-        "fissure_3": {
-          "key_required": null,
-          "modifiers": {
-            "hp_mult": 2.0,
-            "dmg_mult": 1.6,
-            "xp_mult": 2.0,
-            "gold_mult": 2.0,
-            "loot_quality_bonus": 2
-          },
-          "guaranteed_substats": 2,
-          "description_fr": "Emprise maximale. Ici la Fissure ne rend rien de bon gre.",
-          "description_en": "Maximum hold. Here the Fissure gives nothing back willingly."
         }
       },
+      "_comment_difficulties": "MVP: fissure_1 SEULE. La difficulte vient des MONSTRES (max_stars + level_range + poids de mobs par zone d etage), pas d un multiplicateur d instance : le modele hp_mult/dmg_mult a ete abandonne, rien ne le lisait au runtime. Chaque palier aura ses PROPRES zones instanciees (dungeon_rat_den_f<N>_fissure_<M>) avec son propre jeu de spawns. Ne pas declarer fissure_2/3 ici tant que leurs zones n existent pas : le popup client est data-driven, il afficherait des paliers qui servent les monstres de fissure_1.",
       "_comment_keys": "MVP: les 3 paliers sont ouverts (key_required null). Le drop de cle n'est lu par aucun .cpp au runtime (dungeon_key_drops/zone_drops dans loot_tables.json sont de la data morte), donc gater fissure_2/3 sur une cle les rendrait inatteignables. Allumer le gate quand le drop de cle sera cable.",
       "floors": [
         {
