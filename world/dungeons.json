@@ -1874,6 +1874,187 @@
           ]
         }
       }
+    },
+    {
+      "id": "dungeon_rat_den",
+      "name": "Rat Den",
+      "name_fr": "Repaire des Rats",
+      "name_en": "Rat Den",
+      "description_fr": "Un terrier creuse sous le desert, tenu par une Fissure mineure. Les rats qui y vivent ne fuient plus. On descend, on libere ce qui peut l'etre.",
+      "description_en": "A burrow dug beneath the desert, held by a minor Fissure. The rats living there no longer flee. You go down, and you free what can be freed.",
+      "level_range": [
+        1,
+        5
+      ],
+      "min_level": 1,
+      "recommended_party_size": [
+        1,
+        4
+      ],
+      "type": "open_instance",
+      "lockout_type": "",
+      "_comment_lockout": "Chaine VIDE volontaire, pas 'none'. Le service teste !lockout_type.empty(), donc 'none' serait lu comme lockout actif et poserait 24h de blocage (bug actif sur dungeon_lvl20_bandit_den).",
+      "entry_location": "desert_playtest",
+      "duration_estimate_minutes": [
+        4,
+        8
+      ],
+      "structure": {
+        "floor_count": 3,
+        "groups_per_floor": 3,
+        "groups_needed_to_advance": 1,
+        "boss_floor_index": 2,
+        "_comment": "3 etages ouverts. Modele roam: les packs sont spawnes par presence via les spawn_areas des zones dungeon_rat_den_f1/f2/f3 (zones.json), pas via DUNGEON_SELECT_GROUP. Les monster_groups ci-dessous restent necessaires: c'est ce que lit boss_floor_index_for cote service, sinon le boss_idx retombe sur son fallback code en dur a 7."
+      },
+      "difficulties": {
+        "fissure_1": {
+          "key_required": null,
+          "modifiers": {
+            "hp_mult": 1.0,
+            "dmg_mult": 1.0,
+            "xp_mult": 1.0,
+            "gold_mult": 1.0,
+            "loot_quality_bonus": 0
+          },
+          "guaranteed_substats": 0,
+          "description_fr": "Emprise faible. La Fissure tient a peine le terrier.",
+          "description_en": "Weak hold. The Fissure barely grips the burrow."
+        },
+        "fissure_2": {
+          "key_required": null,
+          "modifiers": {
+            "hp_mult": 1.4,
+            "dmg_mult": 1.3,
+            "xp_mult": 1.5,
+            "gold_mult": 1.5,
+            "loot_quality_bonus": 1
+          },
+          "guaranteed_substats": 1,
+          "description_fr": "Emprise resserree. Les betes ne reculent plus.",
+          "description_en": "Tighter hold. The beasts no longer back away."
+        },
+        "fissure_3": {
+          "key_required": null,
+          "modifiers": {
+            "hp_mult": 2.0,
+            "dmg_mult": 1.6,
+            "xp_mult": 2.0,
+            "gold_mult": 2.0,
+            "loot_quality_bonus": 2
+          },
+          "guaranteed_substats": 2,
+          "description_fr": "Emprise maximale. Ici la Fissure ne rend rien de bon gre.",
+          "description_en": "Maximum hold. Here the Fissure gives nothing back willingly."
+        }
+      },
+      "_comment_keys": "MVP: les 3 paliers sont ouverts (key_required null). Le drop de cle n'est lu par aucun .cpp au runtime (dungeon_key_drops/zone_drops dans loot_tables.json sont de la data morte), donc gater fissure_2/3 sur une cle les rendrait inatteignables. Allumer le gate quand le drop de cle sera cable.",
+      "floors": [
+        {
+          "floor": 1,
+          "name_fr": "Galeries Grignotees",
+          "name_en": "Gnawed Galleries",
+          "mob_level_range": [
+            1,
+            2
+          ],
+          "monster_groups": [
+            {
+              "id": "f1_3star_portee",
+              "stars": 3,
+              "members": [
+                "mob_rat_jeune",
+                "mob_rat_jeune",
+                "mob_scarab_larve"
+              ]
+            },
+            {
+              "id": "f1_4star_fouisseurs",
+              "stars": 4,
+              "members": [
+                "mob_rat",
+                "mob_rat_jeune",
+                "mob_scarab"
+              ]
+            },
+            {
+              "id": "f1_5star_meute",
+              "stars": 5,
+              "members": [
+                "mob_rat",
+                "mob_rat",
+                "mob_scarab"
+              ]
+            }
+          ]
+        },
+        {
+          "floor": 2,
+          "name_fr": "Nid Profond",
+          "name_en": "Deep Nest",
+          "mob_level_range": [
+            2,
+            4
+          ],
+          "monster_groups": [
+            {
+              "id": "f2_3star_couvee",
+              "stars": 3,
+              "members": [
+                "mob_rat",
+                "mob_scarab_larve",
+                "mob_scarab"
+              ]
+            },
+            {
+              "id": "f2_4star_carapaces",
+              "stars": 4,
+              "members": [
+                "mob_rat",
+                "mob_rat",
+                "mob_scarab_geant"
+              ]
+            },
+            {
+              "id": "f2_5star_horde",
+              "stars": 5,
+              "members": [
+                "mob_rat_alpha",
+                "mob_rat",
+                "mob_rat"
+              ]
+            }
+          ]
+        },
+        {
+          "floor": 3,
+          "name_fr": "Terrier du Rongeur",
+          "name_en": "Gnawer's Burrow",
+          "mob_level_range": [
+            5,
+            5
+          ],
+          "is_boss_room": true,
+          "monster_groups": [
+            {
+              "id": "f3_boss_rongeur",
+              "stars": 5,
+              "forced": true,
+              "is_boss": true,
+              "members": [
+                "mob_rat_alpha"
+              ]
+            }
+          ]
+        }
+      ],
+      "boss": {
+        "id": "mob_rat_alpha",
+        "name_fr": "Le Rongeur",
+        "name_en": "The Gnawer",
+        "capturable": true,
+        "capture_profile": "beast_boss_v1",
+        "_comment_capture": "Capture preparee V2 familier, ignoree backend V1"
+      }
     }
   ],
   "dungeon_systems": {
