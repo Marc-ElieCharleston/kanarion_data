@@ -283,6 +283,22 @@ def validate_recipe_outputs(db: Path, all_item_ids: set) -> list:
 
     data = load_json(path)
 
+    # Une recette n'a PAS de nom a elle : elle s'affiche par son output_item, qui porte
+    # deja name_fr/name_en. Ecrire un nom ici creerait une deuxieme source pour le meme
+    # texte, a traduire et a maintenir deux fois — et a laisser deriver. Audit client du
+    # 2026-08-14 : "110 recettes sans name_fr/name_en" remonte comme un defaut. Il y en a
+    # 49, et l'absence est le comportement correct ; c'est cote client que le nom se
+    # resout depuis output_item.
+    for recipe in data.get("recipes", []):
+        if not isinstance(recipe, dict):
+            continue
+        named = [k for k in ("name_fr", "name_en") if k in recipe]
+        if named:
+            errors.append(
+                f"[recipes.json] la recette '{recipe.get('id', '?')}' porte {named} : une "
+                f"recette s'affiche par le nom de son output_item, pas par un nom propre. "
+                f"Deux sources pour le meme texte = derive garantie.")
+
     def check_recipes(obj, context):
         if isinstance(obj, dict):
             out = obj.get("output_item")
