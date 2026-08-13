@@ -229,6 +229,17 @@ jobs:
               print(f"Cross-references OK ({len(item_ids)} items, {len(monster_ids)} monsters, {len(all_skill_ids)} skills [{len(skill_ids)} player + {len(monster_skill_ids)} monster], {len(effect_ids)} effects, {len(valid_roles)} ai_roles)")
           PYEOF
 
+      # 3a-bis. scripts/validate_cross_references.py (2026-08-13). Ce script existait
+      # depuis longtemps mais n'etait invoque NULLE PART : ni ici, ni dans le hook
+      # pre-commit. Ses 6 passes (stats d'affixes, class_tags, refs de loot table,
+      # set_id, output_item de recettes) n'avaient donc jamais tourne en CI, alors
+      # que le CLAUDE.md les decrit comme actives. Le heredoc de l'etape 3 ci-dessus
+      # couvre un sous-ensemble different — les deux se completent, ils ne font pas
+      # doublon. La passe 7 (concordance des 5 bandes de rang C->SS entre leurs 3
+      # copies) est la raison pour laquelle on branche enfin le fil.
+      - name: Validate cross-references (script)
+        run: python3 scripts/validate_cross_references.py
+
       # 3b. Skill schema validation (Bloc 0): whitelists, effects[] cross-refs, legacy detection
       - name: Validate skill schema (Bloc 0)
         run: python3 scripts/validate_skills.py

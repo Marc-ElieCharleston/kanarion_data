@@ -12,6 +12,7 @@ Checks:
   4. All item_ids in loot_tables.json exist in item database files
   5. All set_ids referenced exist in panoplies.json
   6. All output_item in recipes.json exist in item database files
+  7. The 5 item-rank bands (C->SS) agree across their 3 copies
 
 Exit code 0 = pass, 1 = failures found.
 """
@@ -299,6 +300,167 @@ def validate_recipe_outputs(db: Path, all_item_ids: set) -> list:
     return errors
 
 
+# Sequence canonique des labels de rang. Ce n'est PAS une 4e copie de la table :
+# c'est le contrat que le CLIENT code en dur (`RANK_LETTERS` dans
+# kanarion_front/scripts/data/loaders/item_database.gd) pour traduire un label en
+# numero de rang. Si un label derive dans la data, le client ne resout plus le
+# rang et l'item retombe silencieusement a 0 — d'ou le check ici.
+CANONICAL_RANK_LABELS = ["C", "B", "A", "S", "SS"]
+
+
+def validate_item_ranks(db: Path) -> list:
+    """Verifie que les 5 paliers de rang d'item concordent entre leurs 3 copies.
+
+    Les memes bandes de niveau (lv1-20 / 21-40 / 41-60 / 61-80 / 81-100 = C->SS)
+    sont recopiees dans trois fichiers, chacun lu par des consommateurs distincts :
+
+      - items/panoplies.json        `_meta.rank_system.rang_N`
+        -> shared/domain/panoplie_registry.cpp, item_database.gd (bandes
+           GENERALES de rang cote client), inventory_screen.gd
+      - items/uniques.json          `_meta.rank_system.rang_N`
+        -> unique_item_registry.cpp, unique_static_registry.cpp,
+           unique_effect_text.gd
+      - items/equipment_scaling.json `tier_system.tiers.TN`
+        -> stat_roller.cpp, affix_roller.cpp
+
+    Personne ne lit la table d'un autre : ce sont trois copies independantes.
+    Aujourd'hui elles concordent. Le risque n'est pas le desordre, c'est la
+    DERIVE SILENCIEUSE : le jour ou l'une bouge seule, rien ne le signale et le
+    bug se manifeste comme un ecart de multiplicateur invisible en test. Cette
+    passe est la garde. Elle ne remplace pas le rangement propre
+    (_meta/item_ranks.json), elle rend son absence sans danger.
+
+    Verifie : les bornes de niveau, les labels C->SS, les stat_multiplier, la
+    contiguite des bandes sur 1..100, et l'absence de retour de l'homonyme
+    `rank_system` dans recipes.json (rangs de CRAFT, semantique incompatible,
+    renomme `craft_ranks` le 2026-08-13).
+    """
+    errors = []
+
+    def band_key(i):
+        return "rang_%d" % i
+
+    # --- Chargement des 3 tables -------------------------------------------
+    pano_path = db / "items" / "panoplies.json"
+    uniq_path = db / "items" / "uniques.json"
+    scal_path = db / "items" / "equipment_scaling.json"
+
+    tables = {}  # nom affiche -> { rank_index -> {level_range, rank_label, stat_multiplier} }
+
+    if pano_path.exists():
+        rs = load_json(pano_path).get("_meta", {}).get("rank_system", {})
+        tables["panoplies.json _meta.rank_system"] = {
+            i: rs[band_key(i)] for i in range(1, 6)
+            if isinstance(rs.get(band_key(i)), dict)
+        }
+    if uniq_path.exists():
+        rs = load_json(uniq_path).get("_meta", {}).get("rank_system", {})
+        tables["uniques.json _meta.rank_system"] = {
+            i: rs[band_key(i)] for i in range(1, 6)
+            if isinstance(rs.get(band_key(i)), dict)
+        }
+    if scal_path.exists():
+        tiers = load_json(scal_path).get("tier_system", {}).get("tiers", {})
+        tables["equipment_scaling.json tier_system.tiers"] = {
+            i: tiers["T%d" % i] for i in range(1, 6)
+            if isinstance(tiers.get("T%d" % i), dict)
+        }
+
+    if not tables:
+        return ["[item_ranks] Aucune table de rang trouvee (les 3 fichiers sont absents ?)"]
+
+    for name, bands in tables.items():
+        missing = [i for i in range(1, 6) if i not in bands]
+        if missing:
+            errors.append(
+                f"[item_ranks] {name} : rang(s) manquant(s) {missing} — la table doit "
+                f"couvrir les 5 paliers C->SS")
+
+    # --- Bornes de niveau identiques partout -------------------------------
+    for i in range(1, 6):
+        seen = {}
+        for name, bands in tables.items():
+            band = bands.get(i)
+            if not band:
+                continue
+            span = band.get("level_range")
+            if not (isinstance(span, list) and len(span) == 2):
+                errors.append(f"[item_ranks] {name} rang {i} : level_range absent ou malforme")
+                continue
+            seen[name] = (int(span[0]), int(span[1]))
+        if len(set(seen.values())) > 1:
+            detail = ", ".join(f"{n}={v}" for n, v in sorted(seen.items()))
+            errors.append(
+                f"[item_ranks] DERIVE rang {i} : les bornes de niveau divergent — {detail}")
+
+    # --- Labels C->SS ------------------------------------------------------
+    # Le champ dont le client se sert pour resoudre le rang : une derive ici est
+    # silencieuse cote joueur (rang non resolu, pas d'erreur).
+    for i in range(1, 6):
+        expected = CANONICAL_RANK_LABELS[i - 1]
+        for name, bands in tables.items():
+            band = bands.get(i)
+            if not band:
+                continue
+            if "rank_label" not in band:
+                # equipment_scaling n'a jamais porte de label (ses cles sont T1..T5).
+                # On n'en exige un que sur les tables qui en declarent au moins un.
+                if any("rank_label" in b for b in bands.values()):
+                    errors.append(f"[item_ranks] {name} rang {i} : rank_label manquant")
+                continue
+            actual = str(band["rank_label"])
+            if actual != expected:
+                errors.append(
+                    f"[item_ranks] DERIVE rang {i} : {name} porte rank_label "
+                    f"'{actual}', attendu '{expected}' (contrat RANK_LETTERS du client)")
+
+    # --- Multiplicateurs de stats ------------------------------------------
+    for i in range(1, 6):
+        seen = {}
+        for name, bands in tables.items():
+            band = bands.get(i)
+            if band and "stat_multiplier" in band:
+                seen[name] = float(band["stat_multiplier"])
+        if len(set(seen.values())) > 1:
+            detail = ", ".join(f"{n}={v}" for n, v in sorted(seen.items()))
+            errors.append(
+                f"[item_ranks] DERIVE rang {i} : les stat_multiplier divergent — {detail}")
+
+    # --- Contiguite des bandes sur 1..100 ----------------------------------
+    for name, bands in tables.items():
+        spans = []
+        for i in range(1, 6):
+            band = bands.get(i)
+            span = band.get("level_range") if band else None
+            if isinstance(span, list) and len(span) == 2:
+                spans.append((i, int(span[0]), int(span[1])))
+        if len(spans) != 5:
+            continue
+        if spans[0][1] != 1:
+            errors.append(f"[item_ranks] {name} : la premiere bande demarre a {spans[0][1]}, attendu 1")
+        if spans[-1][2] != 100:
+            errors.append(f"[item_ranks] {name} : la derniere bande finit a {spans[-1][2]}, attendu 100")
+        for (i, lo, hi), (j, next_lo, _) in zip(spans, spans[1:]):
+            if hi >= next_lo:
+                errors.append(
+                    f"[item_ranks] {name} : rang {i} ({lo}-{hi}) chevauche rang {j} (demarre a {next_lo})")
+            elif next_lo != hi + 1:
+                errors.append(
+                    f"[item_ranks] {name} : trou de niveaux entre rang {i} (finit a {hi}) "
+                    f"et rang {j} (demarre a {next_lo})")
+
+    # --- L'homonyme ne doit pas revenir ------------------------------------
+    rec_path = db / "items" / "recipes.json"
+    if rec_path.exists():
+        if "rank_system" in load_json(rec_path).get("_meta", {}):
+            errors.append(
+                "[item_ranks] recipes.json _meta.rank_system est de retour : ce sont les rangs "
+                "de CRAFT (bandes de 10 niveaux), semantique incompatible avec les 5 rangs "
+                "d'item C->SS. Utiliser la cle `craft_ranks`.")
+
+    return errors
+
+
 def main():
     # Find database root
     db_root = os.environ.get("DB_ROOT", "")
@@ -328,35 +490,40 @@ def main():
     # Run all validations
     all_errors = []
 
-    print("\n[1/6] Validating affix stat names...")
+    print("\n[1/7] Validating affix stat names...")
     errs = validate_affixes(db, valid_stats)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[2/6] Validating equipment_stats stat names...")
+    print("[2/7] Validating equipment_stats stat names...")
     errs = validate_equipment_stats(db, valid_stats)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[3/6] Validating class_tags...")
+    print("[3/7] Validating class_tags...")
     errs = validate_class_tags(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[4/6] Validating loot table item references...")
+    print("[4/7] Validating loot table item references...")
     all_item_ids = collect_all_item_ids(db)
     print(f"  Collected {len(all_item_ids)} item IDs from database")
     errs = validate_loot_table_refs(db, all_item_ids)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[5/6] Validating set_id references...")
+    print("[5/7] Validating set_id references...")
     errs = validate_set_ids(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[6/6] Validating recipe output_item references...")
+    print("[6/7] Validating recipe output_item references...")
     errs = validate_recipe_outputs(db, all_item_ids)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[7/7] Validating item rank bands (C->SS) across their 3 copies...")
+    errs = validate_item_ranks(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
