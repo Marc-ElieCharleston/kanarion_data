@@ -570,12 +570,37 @@ def validate_rewards(db: Path) -> list:
                 continue
             compare("events", {name: body.get("bonuses", {})}, ev_new, num)
 
-    # La formule du bonus de groupe est desormais la donnee ; le chargeur codait 0.05 en dur.
+    # Bonus de groupe : ancre sur les CONSTANTES DU MOTEUR, pas sur la table de loot_tables.
+    #
+    # La v1.0 de ce check comparait a 0.05, la valeur de items/loot_tables.json — une table
+    # morte, que content_loader.cpp:1527 charge pourtant dans un champ
+    # (group_size_bonus_per_player) qu'aucun code ne lit ensuite. Le moteur applique en
+    # realite 1 + (N-1) * 0.055 plafonne a 1.5, depuis des defauts de struct
+    # (loot_types.hpp:209-210) qu'aucun fichier ne charge. Le check etait donc aveugle a un
+    # ecart reel : 1.165 contre 1.20 a quatre joueurs. Attrape par une contre-lecture du
+    # backend le 2026-08-14, pas par cette garde — d'ou la reecriture.
+    #
+    # Tant que le moteur ne lit pas ces deux valeurs depuis la donnee (etape 2), l'ancre est
+    # manuelle : elle fige ce que le C++ applique, pour qu'une edition de la donnee seule ne
+    # puisse pas se croire effective.
+    ENGINE_GROUP_BONUS_PER_EXTRA = 0.055   # loot_types.hpp:209
+    ENGINE_GROUP_CAP = 1.5                 # loot_types.hpp:210
     gs = families.get("group_size", {})
-    if abs(float(gs.get("bonus_per_player", 0)) - 0.05) > 1e-9:
-        errors.append(f"[rewards] group_size.bonus_per_player={gs.get('bonus_per_player')} — "
-                      f"le moteur applique 0.05 (content_loader.cpp), changer l'un sans l'autre "
-                      f"casse le no-op")
+    for field, engine, where in (("bonus_per_extra_player", ENGINE_GROUP_BONUS_PER_EXTRA,
+                                  "loot_types.hpp:209"),
+                                 ("cap", ENGINE_GROUP_CAP, "loot_types.hpp:210")):
+        if field not in gs:
+            errors.append(f"[rewards] group_size.{field} est absent — le moteur applique "
+                          f"{engine} ({where}), la donnee doit le dire")
+        elif abs(float(gs[field]) - engine) > 1e-9:
+            errors.append(f"[rewards] group_size.{field}={gs[field]} alors que le moteur "
+                          f"applique {engine} ({where}). Changer la donnee seule ne change "
+                          f"rien au jeu : ces valeurs sont encore des constantes C++.")
+    if "bonus_per_player" in gs or "max_players" in gs:
+        errors.append("[rewards] group_size porte bonus_per_player/max_players : c'est la "
+                      "forme de la table MORTE de loot_tables (1 + N * 0.05). Le moteur "
+                      "applique 1 + (N-1) * 0.055 plafonne. Utiliser "
+                      "bonus_per_extra_player + cap.")
 
     mt_path = db / "config" / "monster_tiers.json"
     tier_xp = {}

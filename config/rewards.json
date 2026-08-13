@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "version": "1.0",
+    "version": "1.1",
     "last_updated": "2026-08-14",
     "schema_version": 1,
     "description": "Proprietaire UNIQUE des recompenses : XP, or et chance de drop. Toute quantite qui depend du CONTEXTE d'un combat vit ici. Ce que la rencontre EST (stats, IA, composition, tirage des etoiles) vit dans entities/monster_variants.json star_system. Le critere de rangement est le verbe : ETRE vs RAPPORTER.",
@@ -206,17 +206,18 @@
       }
     },
     "group_size": {
-      "description": "Bonus de groupe : +5% par joueur, plafonne a 10 joueurs.",
-      "_migrated_from": "items/loot_tables.json multipliers.group_size",
-      "formula": "mult = 1 + (nombre_de_joueurs * bonus_per_player)",
-      "bonus_per_player": 0.05,
-      "max_players": 10,
+      "description": "Bonus de groupe : rampe douce par joueur SUPPLEMENTAIRE, plafonnee.",
+      "_migrated_from": "server-combat/src/loot/loot_types.hpp:209-210 (defauts de struct)",
+      "formula": "mult = min(cap, 1 + (nombre_de_joueurs - 1) * bonus_per_extra_player)",
       "applies_to": [
         "gold",
         "xp",
         "drop_chance"
       ],
-      "_no_op_note": "Le bloc d'origine portait une table de 10 lignes que le chargeur ignorait : content_loader.cpp:1527 codait 0.05f en dur. La formule EST desormais la donnee, la table redondante disparait."
+      "bonus_per_extra_player": 0.055,
+      "cap": 1.5,
+      "_correction": "CORRIGE le 2026-08-14 apres contre-lecture du backend. La v1.0 de ce fichier decrivait '1 + N * 0.05, max 10 joueurs' : c'etait la table de items/loot_tables.json, qui est MORTE. Le moteur applique 1 + (N-1) * 0.055 plafonne a 1.5 (loot_roller.cpp calc_group_mult), depuis des defauts de struct qu'AUCUN fichier ne charge. Le 0.05f ecrit par content_loader.cpp:1527 va dans group_size_bonus_per_player, un champ sans aucun lecteur. Ecart reel a 4 joueurs : live 1.165 contre 1.20 annonce. C'est le meme piege que le reste du chantier, avec une couche de plus : ici la donnee morte avait un chargeur, ce qui la faisait passer pour vivante.",
+      "_engine_anchor": "Ces deux valeurs sont aujourd'hui des CONSTANTES C++, pas de la donnee. L'etape 2 doit les faire lire d'ici. Tant que ce n'est pas fait, l'etape 8 de la CI les compare aux constantes du moteur : les changer dans ce fichier seul ne changerait rien au jeu."
     },
     "events": {
       "description": "Evenements temporaires actives par l'exploitation. Le contexte passe l'evenement actif, ou aucun.",
@@ -248,7 +249,8 @@
           "xp": 1.5,
           "drop_chance": 1.5
         }
-      }
+      },
+      "_no_producer_yet": "DECLAREE, PAS ENCORE ALIMENTEE. Aucun producteur n'ecrit d'evenement actif dans le contexte de loot aujourd'hui : event_xp_mult / event_gold_mult / event_drop_mult valent 1.0 en permanence. La famille existe pour que le cablage n'ait rien a inventer, mais tant qu'aucun service ne pousse d'evenement, elle est neutre. Ne pas la lire comme une regle appliquee."
     }
   },
   "level_difference": {
