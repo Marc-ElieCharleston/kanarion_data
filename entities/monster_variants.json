@@ -91,14 +91,14 @@
   "star_system": {
     "_comment": "High risk high reward - Plus d'etoiles = plus de mobs + stats buffees + elites/boss possibles. Encourage le grouping.",
     "roll_weights": [
-      25.0,
-      25.0,
-      20.0,
       15.0,
-      10.0,
-      5.0
+      32.0,
+      28.0,
+      15.0,
+      7.0,
+      3.0
     ],
-    "roll_weights_comment": "0★=25%, 1★=25%, 2★=20%, 3★=15%, 4★=10%, 5★=5%",
+    "roll_weights_comment": "0*=15% 1*=32% 2*=28% 3*=15% 4*=7% 5*=3% (poids, pas des pourcentages : normalises a la somme). Valeurs VIVANTES, reprises de config/game.json spawner.star_roll_weights le 2026-08-14. L'ancienne table de ce fichier ([25,25,20,15,10,5]) n'etait lue par personne et annoncait une distribution fausse ; le C++ portait en plus la meme table morte en dur comme dernier recours.",
     "max_elites_per_pack": 2,
     "max_bosses_per_pack": 1,
     "packs": {
@@ -112,7 +112,9 @@
           "guaranteed_roles": {},
           "elite_count": 0,
           "boss_count": 0,
-          "fill": "any"
+          "fill": "any",
+          "elite_count_min": 0,
+          "elite_count_max": 0
         },
         "hp_mult": 1.0,
         "atk_mult": 1.0,
@@ -124,19 +126,34 @@
         "keystone_koro_boost": 1.0,
         "crit_mult": 1.0,
         "crit_damage_mult": 1.0,
-        "tenacity_bonus": 0
+        "tenacity_bonus": 0,
+        "elite_chance": 0,
+        "boss_chance": 0,
+        "_dead_fields": {
+          "fields": [
+            "stats_mult",
+            "xp_mult",
+            "loot_mult",
+            "guaranteed_rarity",
+            "keystone_koro_boost"
+          ],
+          "status": "Aucun lecteur serveur. xp_mult et loot_mult sont contredits par config/rewards.json, qui fait autorite sur les recompenses. stats_mult etait un repli DANS la donnee ('=hp_mult si le moteur ne lit pas encore le split') : le moteur lit le split depuis 2026-08-05. guaranteed_rarity et keystone_koro_boost sont du design jamais cable.",
+          "removal": "Etape 2, avec la bascule backend. Ne rien y brancher entre-temps."
+        }
       },
       "1": {
         "name": "Pack",
         "color": "white",
-        "mob_count_min": 2,
+        "mob_count_min": 1,
         "mob_count_max": 3,
         "ai_intelligence": 1,
         "composition": {
           "guaranteed_roles": {},
           "elite_count": 0,
           "boss_count": 0,
-          "fill": "any"
+          "fill": "any",
+          "elite_count_min": 0,
+          "elite_count_max": 0
         },
         "hp_mult": 1.1,
         "atk_mult": 1.05,
@@ -148,12 +165,25 @@
         "keystone_koro_boost": 1.0,
         "crit_mult": 1.0,
         "crit_damage_mult": 1.0,
-        "tenacity_bonus": 0
+        "tenacity_bonus": 0,
+        "elite_chance": 0,
+        "boss_chance": 0,
+        "_dead_fields": {
+          "fields": [
+            "stats_mult",
+            "xp_mult",
+            "loot_mult",
+            "guaranteed_rarity",
+            "keystone_koro_boost"
+          ],
+          "status": "Aucun lecteur serveur. xp_mult et loot_mult sont contredits par config/rewards.json, qui fait autorite sur les recompenses. stats_mult etait un repli DANS la donnee ('=hp_mult si le moteur ne lit pas encore le split') : le moteur lit le split depuis 2026-08-05. guaranteed_rarity et keystone_koro_boost sont du design jamais cable.",
+          "removal": "Etape 2, avec la bascule backend. Ne rien y brancher entre-temps."
+        }
       },
       "2": {
         "name": "Veteran",
         "color": "yellow",
-        "mob_count_min": 3,
+        "mob_count_min": 2,
         "mob_count_max": 4,
         "ai_intelligence": 2,
         "composition": {
@@ -162,7 +192,9 @@
           },
           "elite_count": 0,
           "boss_count": 0,
-          "fill": "dps"
+          "fill": "dps",
+          "elite_count_min": 0,
+          "elite_count_max": 0
         },
         "hp_mult": 1.25,
         "atk_mult": 1.1,
@@ -174,12 +206,25 @@
         "keystone_koro_boost": 1.0,
         "crit_mult": 1.15,
         "crit_damage_mult": 1.0,
-        "tenacity_bonus": 0
+        "tenacity_bonus": 0,
+        "elite_chance": 0,
+        "boss_chance": 0,
+        "_dead_fields": {
+          "fields": [
+            "stats_mult",
+            "xp_mult",
+            "loot_mult",
+            "guaranteed_rarity",
+            "keystone_koro_boost"
+          ],
+          "status": "Aucun lecteur serveur. xp_mult et loot_mult sont contredits par config/rewards.json, qui fait autorite sur les recompenses. stats_mult etait un repli DANS la donnee ('=hp_mult si le moteur ne lit pas encore le split') : le moteur lit le split depuis 2026-08-05. guaranteed_rarity et keystone_koro_boost sont du design jamais cable.",
+          "removal": "Etape 2, avec la bascule backend. Ne rien y brancher entre-temps."
+        }
       },
       "3": {
         "name": "Dangerous",
         "color": "orange",
-        "mob_count_min": 4,
+        "mob_count_min": 3,
         "mob_count_max": 6,
         "ai_intelligence": 3,
         "composition": {
@@ -189,7 +234,9 @@
           },
           "elite_count": 1,
           "boss_count": 0,
-          "fill": "dps"
+          "fill": "dps",
+          "elite_count_min": 0,
+          "elite_count_max": 1
         },
         "hp_mult": 1.5,
         "atk_mult": 1.2,
@@ -201,12 +248,25 @@
         "keystone_koro_boost": 1.5,
         "crit_mult": 1.3,
         "crit_damage_mult": 1.1,
-        "tenacity_bonus": 5
+        "tenacity_bonus": 5,
+        "elite_chance": 10,
+        "boss_chance": 0,
+        "_dead_fields": {
+          "fields": [
+            "stats_mult",
+            "xp_mult",
+            "loot_mult",
+            "guaranteed_rarity",
+            "keystone_koro_boost"
+          ],
+          "status": "Aucun lecteur serveur. xp_mult et loot_mult sont contredits par config/rewards.json, qui fait autorite sur les recompenses. stats_mult etait un repli DANS la donnee ('=hp_mult si le moteur ne lit pas encore le split') : le moteur lit le split depuis 2026-08-05. guaranteed_rarity et keystone_koro_boost sont du design jamais cable.",
+          "removal": "Etape 2, avec la bascule backend. Ne rien y brancher entre-temps."
+        }
       },
       "4": {
         "name": "Mythic",
         "color": "purple",
-        "mob_count_min": 6,
+        "mob_count_min": 5,
         "mob_count_max": 8,
         "ai_intelligence": 4,
         "composition": {
@@ -217,7 +277,9 @@
           },
           "elite_count": 2,
           "boss_count": 0,
-          "fill": "dps_pressure"
+          "fill": "dps_pressure",
+          "elite_count_min": 0,
+          "elite_count_max": 2
         },
         "hp_mult": 1.9,
         "atk_mult": 1.3,
@@ -229,12 +291,25 @@
         "keystone_koro_boost": 2.0,
         "crit_mult": 1.5,
         "crit_damage_mult": 1.15,
-        "tenacity_bonus": 10
+        "tenacity_bonus": 10,
+        "elite_chance": 20,
+        "boss_chance": 10,
+        "_dead_fields": {
+          "fields": [
+            "stats_mult",
+            "xp_mult",
+            "loot_mult",
+            "guaranteed_rarity",
+            "keystone_koro_boost"
+          ],
+          "status": "Aucun lecteur serveur. xp_mult et loot_mult sont contredits par config/rewards.json, qui fait autorite sur les recompenses. stats_mult etait un repli DANS la donnee ('=hp_mult si le moteur ne lit pas encore le split') : le moteur lit le split depuis 2026-08-05. guaranteed_rarity et keystone_koro_boost sont du design jamais cable.",
+          "removal": "Etape 2, avec la bascule backend. Ne rien y brancher entre-temps."
+        }
       },
       "5": {
         "name": "Legendary",
         "color": "red",
-        "mob_count_min": 9,
+        "mob_count_min": 8,
         "mob_count_max": 10,
         "ai_intelligence": 5,
         "composition": {
@@ -245,7 +320,9 @@
           },
           "elite_count": 2,
           "boss_count": 1,
-          "fill": "dps_pressure"
+          "fill": "dps_pressure",
+          "elite_count_min": 2,
+          "elite_count_max": 4
         },
         "hp_mult": 2.5,
         "atk_mult": 1.4,
@@ -259,11 +336,30 @@
         "boss_phases": true,
         "crit_mult": 1.7,
         "crit_damage_mult": 1.2,
-        "tenacity_bonus": 20
+        "tenacity_bonus": 20,
+        "elite_chance": 100,
+        "boss_chance": 100,
+        "_dead_fields": {
+          "fields": [
+            "stats_mult",
+            "xp_mult",
+            "loot_mult",
+            "guaranteed_rarity",
+            "keystone_koro_boost"
+          ],
+          "status": "Aucun lecteur serveur. xp_mult et loot_mult sont contredits par config/rewards.json, qui fait autorite sur les recompenses. stats_mult etait un repli DANS la donnee ('=hp_mult si le moteur ne lit pas encore le split') : le moteur lit le split depuis 2026-08-05. guaranteed_rarity et keystone_koro_boost sont du design jamais cable.",
+          "removal": "Etape 2, avec la bascule backend. Ne rien y brancher entre-temps."
+        }
       }
     },
     "_targeting_note": "hp_mult separe de atk_mult (2026-08-05) : le HP monte fort (5star x2.5 = mur anti-burst DPS-stack) mais l'atk reste modere (x1.4) pour ne pas one-shot. stats_mult = fallback (=hp_mult) si le moteur ne lit pas encore le split. composition = role slots pre-composes (level-agnostic, se remplit depuis le pool de l'aire via level_range + pack_composition). ai_intelligence = niveau IA par star (5=adaptatif/tactique). Difficulte = HP(anti-cheese) + IA(tactique) ; reward = XP haute + rarete garantie, loot QUANTITE reduite (qualite>flood). 5star = anomalie rare, PAS le farm principal (contrats + boss donjon = le vrai chase).",
-    "_crit_note": "crit_mult/crit_damage_mult MULTIPLICATIFS sur le crit de BASE de l'archetype (2026-08-05) -> respecte l'identite : un tank (crit base 2%) x1.7 = 3.4% = reste un mur ; un assassin (22%) x1.7 = 37% = pique. JAMAIS additif (un +15% flat donnerait du crit a un tank). crit cap 100%. Un 5star DPS pique fort mais le tank ne crit toujours pas."
+    "_crit_note": "crit_mult/crit_damage_mult MULTIPLICATIFS sur le crit de BASE de l'archetype (2026-08-05) -> respecte l'identite : un tank (crit base 2%) x1.7 = 3.4% = reste un mur ; un assassin (22%) x1.7 = 37% = pique. JAMAIS additif (un +15% flat donnerait du crit a un tank). crit cap 100%. Un 5star DPS pique fort mais le tank ne crit toujours pas.",
+    "_ownership": {
+      "owns": "Ce que la rencontre etoilee EST : stats (hp/atk/def), IA, crit/tenacite, composition, nombre de mobs, chances elite/boss, poids de tirage, respawn.",
+      "does_not_own": "Ce qu'elle RAPPORTE. Tout multiplicateur d'XP, d'or ou de drop vit dans config/rewards.json, famille encounter_stars.",
+      "runtime_owner": "Presence tire le star_level au spawn (presence_service.cpp roll_star_level) et le tamponne sur le pack. Combat le LIT via origin_monster_mappings et ne le recalcule jamais. Le client l'affiche, rien de plus.",
+      "migration_status": "ETAPE 1/2 — ce bloc est desormais complet et suffit a lui seul. systems/encounter_stars.json et config/game.json spawner.star_roll_weights restent en place, marques deplaces, jusqu'a la bascule backend."
+    }
   },
   "elite_variant": {
     "_comment": "Version elite d'un monstre - rare spawn, stronger. Stats normalisees (CTO v2).",

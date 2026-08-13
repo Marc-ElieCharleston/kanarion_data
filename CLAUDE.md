@@ -45,7 +45,7 @@ Validation happens at three levels:
 - **`_meta/`** — Version info (`version.json`), roadmap (`ROADMAP.md`), ideas backlog, 15 design suggestions in `suggestions/`
 - **`classes/`** — 6 base classes (warrior, mage, healer, archer, rogue, artisan), each with `skills.json` and `passives.json`. Also `common_passives.json` (10 universal passives) and `_classes_index.json` (6 classes x 4 subclasses x 2 tier3 = 48 tier3 specs)
 - **`combat/`** — Targeting system (`targeting.json`: 4x4 grid), LoS mechanics, ability ideas
-- **`config/`** — Combat formulas (`combat.json`), game constants (`game.json`), monster AI (`monster_ai.json`), skill system (`skill_system.json`), skill templates (`skill_templates.json`), role tags (`roles.json`), monster archetypes, monster skill scaling, **monster scaling model (`monster_scaling_model.json`: derived-stats architecture — see Monster Structure)**, threat tiers (`monster_tiers.json`: xp/aggro)
+- **`config/`** — Combat formulas (`combat.json`), game constants (`game.json`), monster AI (`monster_ai.json`), skill system (`skill_system.json`), skill templates (`skill_templates.json`), role tags (`roles.json`), monster archetypes, monster skill scaling, **monster scaling model (`monster_scaling_model.json`: derived-stats architecture — see Monster Structure)**, **récompenses (`rewards.json`: propriétaire unique XP/or/drop — voir « Récompenses »)**, threat tiers (`monster_tiers.json`: ⚠️ déprécié, son `xp_multiplier` a migré vers `rewards.json`, son `aggro` n'a jamais eu de lecteur)
 - **`entities/`** — Monsters (`monsters.json`), NPCs, boss mechanics, summons (`summons.json`: max 6/team), monster archetypes/variants, healer/support monsters
 - **`items/`** — Equipment (10 slots, 5 rarities, T1-T5 scaling), consumables, materials, affixes, panoplies (25 sets with intentional Hebrew names), loot tables, currencies, substat crafting system
 - **`stats/`** — 40+ stat definitions, class base stats, growth rates, status effect definitions with IDs (`stats/status_effects.json` is the single canonical source for all status effects — definitions, balance rules, durations, stacking, formulas)
@@ -139,7 +139,7 @@ Players choose a faction at level 60. Subclass lore must NOT lock players into a
 - **Required fields:** `id`, `name_fr`, `name_en`, `category`, `base_level`, `danger_level`, `tags[]`, `ai_role`, `stat_archetype`, `threat_tier`, `rarity`, `base_xp` (flat XP per kill), `gold_weight` (0.0-3.0), `base_stats{}`, `drops[]`
 - **Stats DÉRIVÉES, plus de hand-authoring (pivot 2026-07-31) :** `stat(mob, lvl) = base_lv1[stat_archetype] × curve(lvl) × tier_mult × rarity_mult`. Source de vérité = **`config/monster_scaling_model.json`**. Le tuning des stats à la main par niveau est mort (il causait une dérive non-monotone lv60-100 : un mob lv72 plus faible qu'un lv61). `base_stats{}` reste dans le fichier comme cache/legacy le temps de la transition — le moteur bascule vers la dérivation au spawn (scaler `combat_host`). **Ne plus tuner `base_stats` à la main : ajuster `base_lv1[archetype]`, `tier_multipliers`, `rarity_multipliers`, ou la `level_curve` du modèle.**
 - **`stat_archetype` (7)** : tank / brute / assassin / archer / mage / controller / support. Pilote les STATS (ratios lv1 + profil crit). **Distinct de `ai_role`** (qui pilote l'IA + le kit de skills). Split archer (physique) vs mage (magique). Mapping des 11 `ai_role` → 7 archétypes dans le modèle (`archetype_consolidation`).
-- **`threat_tier` (5)** : fodder / standard / tough / elite / boss — multiplicateur de menace (hp/atk/def par tier). **`rarity` (4)** : normal / magic / rare / champion — overlay variant (défaut `normal`). Multiplicateurs dans le modèle. (`monster_tiers.json` garde xp_multiplier + aggro ; les mults de STATS vivent dans `monster_scaling_model.json`.)
+- **`threat_tier` (5)** : fodder / standard / tough / elite / boss — multiplicateur de menace (hp/atk/def par tier). **`rarity` (4)** : normal / magic / rare / champion — overlay variant (défaut `normal`). Multiplicateurs dans le modèle. (Les mults de STATS vivent dans `monster_scaling_model.json` ; le mult d'**XP** par palier vit dans `config/rewards.json` famille `monster_threat_tier` — `monster_tiers.json` est déprécié et n'a jamais eu de lecteur, malgré un `_meta.consumers` qui en désignait un.)
 - **Les monstres portent du crit « comme les joueurs » :** `crit` / `crit_damage` / `armor_pen` viennent de l'archétype (assassin/archer élevés, tank quasi nul). Le moteur les applique au calcul mob→joueur. Ces 3 stats **ne scalent PAS** avec la courbe (ce sont des taux). Seuls hp/atk/def/mr/mp/speed scalent.
 - **Un seul stat offensif `atk`** (pas de `mag` séparé) ; le `damage_type` du skill route vers `def` ou `magic_resist` du JOUEUR. Le `def`/`mr` du MOB gère sa propre mitigation.
 - Un boss signature peut porter un `stat_override` / `stat_scalar` optionnel pour se démarquer sans casser le modèle.
@@ -248,6 +248,26 @@ Deux modes coexistent V1 :
 **Anti-pattern interdit :** convertir un familier `character` en `account` ou vice-versa. Le mode est immutable a la creation. Voir `entities/pets.json` `_meta.instance_fields.immutable_after_summon`.
 
 ## Game Systems Knowledge
+
+### Récompenses (XP / or / drop) — propriétaire unique
+
+**`config/rewards.json` est le seul endroit où l'on tune une récompense.** Toute quantité qui dépend du *contexte* d'un combat y vit : palier de menace, variante du monstre, étoiles, difficulté de donjon, acte, taille de groupe, événements, écart de niveau, cap global. La formule réelle y est écrite noir sur blanc, avec l'ordre des facteurs et la règle d'arrondi.
+
+Le critère de rangement est le **verbe** :
+
+| | Fichier | Contenu |
+|---|---|---|
+| ce que la rencontre **rapporte** | `config/rewards.json` | tous les multiplicateurs xp / or / drop |
+| ce que la rencontre **est** | `entities/monster_variants.json` `star_system` | stats, IA, crit/ténacité, composition, nombre de mobs, poids de tirage |
+| ce qui **drop** | `items/loot_tables.json` | tables, raretés, chances de base |
+
+**Ajouter une famille** (donjons, contrats du Maître Combat, Failles) : une entrée dans `multiplier_families`, son nom dans `formula.families_order`, et c'est tout — le moteur itère l'ordre, il n'a pas de ligne par famille. Procédure complète dans `extension_procedure` du fichier.
+
+**Deux entrées de la formule vivent ailleurs, et c'est voulu** — les rapatrier reviendrait à les dupliquer : la courbe `base_xp_pour_niveau` (`systems/progression.json`, partagée avec la montée de niveau du joueur) et le `xp_multiplier` **override** d'un monstre (`entities/monsters.json`). Par défaut l'XP d'un monstre vient de son `threat_tier` ; le champ ne s'écrit que pour s'en écarter, et l'écart doit être déclaré dans `inputs_declared_elsewhere.known_overrides` — sinon la CI le refuse.
+
+**Anti-pattern :** écrire un multiplicateur de récompense ailleurs, « juste pour ce donjon ». C'est exactement comme ça que les quatre sources précédentes sont nées — jusqu'à trois valeurs contradictoires pour l'XP à 5★ (14.0 / 3.0 / 2.3), dont une seule était lue.
+
+**Migration en cours (étape 1/2, 2026-08-14) :** les blocs d'origine sont encore là, marqués `_deprecated_moved_to`, avec des valeurs identiques, le temps que le backend bascule ses lecteurs. L'étape 8 de `validate_cross_references.py` vérifie l'égalité tant que les deux coexistent. Étape 2 = suppression des blocs, et la garde devient anti-retour.
 
 ### Combat System
 - **Grid:** 4×5 per team (20 slots per team), max 10 players per team — single active format since the Arena Hub pivot (2026-05-01). Source: `config/game.json` `combat_grids`. Each room supports up to 32 entities total (backend `combat.json` `max_entities_per_room`).

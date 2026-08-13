@@ -1,0 +1,308 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-08-14",
+    "schema_version": 1,
+    "description": "Proprietaire UNIQUE des recompenses : XP, or et chance de drop. Toute quantite qui depend du CONTEXTE d'un combat vit ici. Ce que la rencontre EST (stats, IA, composition, tirage des etoiles) vit dans entities/monster_variants.json star_system. Le critere de rangement est le verbe : ETRE vs RAPPORTER.",
+    "why": "Avant ce fichier, la meme quantite etait ecrite dans jusqu'a cinq endroits dont quatre morts. Releve du 2026-08-13 : le multiplicateur d'XP a 5 etoiles valait 14.0 dans monster_variants, 3.0 dans encounter_stars et 2.3 dans loot_tables — seul le dernier etait lu. Les 180 monstres portaient un base_xp ecrit a la main que le moteur n'a jamais lu. config/monster_tiers.json documentait son propre consommateur (loot_roller) qui ne l'a jamais ouvert. La formule documentee dans loot_tables.final_calculation avait perdu son etape 5 (les etoiles) que le code applique pourtant. Un seul proprietaire supprime la question.",
+    "migration_status": "ETAPE 1/2 — ce fichier est la nouvelle source canonique. Les blocs d'origine restent en place, marques _deprecated_moved_to, avec des valeurs IDENTIQUES, le temps que le backend bascule ses lecteurs. Une garde CI verifie l'egalite tant que les deux coexistent. ETAPE 2 = suppression des blocs d'origine, et la garde devient anti-retour."
+  },
+  "formula": {
+    "_comment": "Formule reelle, relevee dans server-combat/src/loot/loot_roller.cpp:98-122. Elle fait autorite : tout lecteur doit appliquer ces facteurs, dans cet ordre, avec ce cap et cet arrondi.",
+    "xp": "round( base_xp_pour_niveau(niveau_mob) * mult_threat_tier * PRODUIT(familles.xp) * (1 - penalite_ecart_niveau) )",
+    "gold": "max(1, or_base_par_niveau(niveau_mob) * variance * PRODUIT(familles.gold) * (1 - penalite_ecart_niveau) )",
+    "drop_chance": "chance_de_base_item * PRODUIT(familles.drop_chance)   [PAS de penalite d'ecart de niveau : un mob drop ce qu'il drop, quel que soit le niveau de qui le tue]",
+    "rarity_boost": "SOMME(familles.rarity_boost)",
+    "product_cap": "Le produit des familles est plafonne a global_cap AVANT l'arrondi final, separement pour xp, gold et drop_chance.",
+    "rounding": "Aucun arrondi intermediaire. Un seul arrondi final, sauf base_xp_pour_niveau qui arrondit sa propre sortie.",
+    "families_order": [
+      "monster_threat_tier",
+      "monster_state",
+      "encounter_stars",
+      "dungeon_difficulty",
+      "act_progression",
+      "group_size",
+      "events"
+    ]
+  },
+  "inputs_declared_elsewhere": {
+    "_comment": "Deux entrees de la formule ne sont PAS des reglages de contexte et vivent donc chez leur proprietaire naturel. Les rapatrier ici reviendrait a les dupliquer, ce que ce fichier existe precisement pour supprimer. Elles sont nommees pour qu'on sache qu'elles existent et ou les trouver.",
+    "base_xp_pour_niveau": {
+      "owner": "systems/progression.json",
+      "why": "Derive de la courbe xp_to_next, partagee avec la montee de niveau du joueur. Une copie ici desynchroniserait la progression.",
+      "formula": "round( xp_to_next(niveau) / (divisor_base + min(niveau, divisor_cap_level) / divisor_cap_level * divisor_ramp) )"
+    },
+    "xp_multiplier_par_monstre": {
+      "owner": "entities/monsters.json",
+      "why": "OPTIONNEL, et override uniquement. Par defaut l'XP d'un monstre vient de son threat_tier via la famille monster_threat_tier. Le champ n'est ecrit sur un monstre que lorsqu'il doit s'ecarter de son palier.",
+      "known_overrides": {
+        "mob_training_dummy": "0 = aucune XP (mannequin d'entrainement), contourne le clamp",
+        "mob_wolf_soigneur": "1.5 au lieu de 1.6 (palier tough)",
+        "mob_hyene_soigneur": "1.5 au lieu de 1.6 (palier tough)"
+      },
+      "clamp": "[0.5, 5.0], sauf la valeur 0 qui signifie explicitement aucune XP"
+    }
+  },
+  "multiplier_families": {
+    "monster_threat_tier": {
+      "description": "Palier de menace du monstre (champ threat_tier de entities/monsters.json). Permanent, inscrit dans la donnee du mob.",
+      "_migrated_from": "config/monster_tiers.json threat_tiers",
+      "values": {
+        "fodder": {
+          "xp": 0.6
+        },
+        "standard": {
+          "xp": 1.0
+        },
+        "tough": {
+          "xp": 1.6
+        },
+        "elite": {
+          "xp": 2.5
+        },
+        "boss": {
+          "xp": 4.0
+        }
+      },
+      "_no_op_note": "Ces valeurs sont DEJA celles appliquees aujourd'hui, mais recopiees a la main dans le xp_multiplier de chacun des 180 monstres : 177 copies exactes, 3 ecarts conserves en overrides. Lire le palier au lieu de la copie donne le meme resultat et supprime 180 duplications."
+    },
+    "monster_state": {
+      "description": "Variante appliquee au spawn par Presence. Orthogonale au palier de menace : un mob fodder peut spawner en elite, les deux facteurs se multiplient.",
+      "_migrated_from": "items/loot_tables.json multipliers.monster_state",
+      "values": {
+        "normal": {
+          "gold": 1.0,
+          "xp": 1.0,
+          "drop_chance": 1.0,
+          "rarity_boost": 0
+        },
+        "elite": {
+          "gold": 3.0,
+          "xp": 2.5,
+          "drop_chance": 2.0,
+          "rarity_boost": 1
+        },
+        "mini_boss": {
+          "gold": 5.0,
+          "xp": 4.0,
+          "drop_chance": 3.0,
+          "rarity_boost": 1
+        },
+        "boss": {
+          "gold": 10.0,
+          "xp": 8.0,
+          "drop_chance": 5.0,
+          "rarity_boost": 2
+        },
+        "world_boss": {
+          "gold": 25.0,
+          "xp": 15.0,
+          "drop_chance": 8.0,
+          "rarity_boost": 3
+        }
+      }
+    },
+    "encounter_stars": {
+      "description": "Etoiles de la rencontre, tirees par Presence au spawn (proprietaire unique du star_level). Ce que la rencontre RAPPORTE. Ce qu'elle EST vit dans entities/monster_variants.json star_system.",
+      "_migrated_from": "items/loot_tables.json multipliers.encounter_stars",
+      "values": {
+        "0": {
+          "gold": 1.0,
+          "xp": 1.0,
+          "drop_chance": 1.0,
+          "rarity_boost": 0
+        },
+        "1": {
+          "gold": 1.1,
+          "xp": 1.05,
+          "drop_chance": 1.1,
+          "rarity_boost": 0
+        },
+        "2": {
+          "gold": 1.2,
+          "xp": 1.15,
+          "drop_chance": 1.25,
+          "rarity_boost": 0
+        },
+        "3": {
+          "gold": 1.4,
+          "xp": 1.4,
+          "drop_chance": 1.5,
+          "rarity_boost": 1
+        },
+        "4": {
+          "gold": 1.8,
+          "xp": 1.8,
+          "drop_chance": 2.0,
+          "rarity_boost": 1
+        },
+        "5": {
+          "gold": 2.5,
+          "xp": 2.3,
+          "drop_chance": 3.0,
+          "rarity_boost": 2,
+          "guaranteed_loot": true
+        }
+      }
+    },
+    "dungeon_difficulty": {
+      "description": "Palier de difficulte du donjon.",
+      "_migrated_from": "items/loot_tables.json multipliers.dungeon_difficulty",
+      "values": {
+        "open_world": {
+          "gold": 1.0,
+          "xp": 1.0,
+          "drop_chance": 1.0,
+          "rarity_boost": 0
+        },
+        "dungeon_normal": {
+          "gold": 1.5,
+          "xp": 1.3,
+          "drop_chance": 1.5,
+          "rarity_boost": 0
+        },
+        "dungeon_hard": {
+          "gold": 2.5,
+          "xp": 2.0,
+          "drop_chance": 2.5,
+          "rarity_boost": 1
+        },
+        "dungeon_nightmare": {
+          "gold": 4.0,
+          "xp": 3.0,
+          "drop_chance": 4.0,
+          "rarity_boost": 2
+        },
+        "dungeon_inferno": {
+          "gold": 6.0,
+          "xp": 4.0,
+          "drop_chance": 6.0,
+          "rarity_boost": 3
+        }
+      }
+    },
+    "act_progression": {
+      "description": "Acte de progression. N'affecte que l'or. base_item_level et max_rarity du bloc d'origine ne sont pas des multiplicateurs : ce sont des contraintes de generation, elles restent dans items/loot_tables.json.",
+      "_migrated_from": "items/loot_tables.json multipliers.act_progression",
+      "values": {
+        "act_1": {
+          "gold": 1.0
+        },
+        "act_2": {
+          "gold": 1.2
+        },
+        "act_3": {
+          "gold": 1.5
+        },
+        "act_4": {
+          "gold": 2.0
+        },
+        "act_5": {
+          "gold": 2.5
+        },
+        "endgame": {
+          "gold": 3.0
+        }
+      }
+    },
+    "group_size": {
+      "description": "Bonus de groupe : +5% par joueur, plafonne a 10 joueurs.",
+      "_migrated_from": "items/loot_tables.json multipliers.group_size",
+      "formula": "mult = 1 + (nombre_de_joueurs * bonus_per_player)",
+      "bonus_per_player": 0.05,
+      "max_players": 10,
+      "applies_to": [
+        "gold",
+        "xp",
+        "drop_chance"
+      ],
+      "_no_op_note": "Le bloc d'origine portait une table de 10 lignes que le chargeur ignorait : content_loader.cpp:1527 codait 0.05f en dur. La formule EST desormais la donnee, la table redondante disparait."
+    },
+    "events": {
+      "description": "Evenements temporaires actives par l'exploitation. Le contexte passe l'evenement actif, ou aucun.",
+      "_migrated_from": "items/loot_tables.json events.event_types",
+      "values": {
+        "weekend_bonus": {
+          "gold": 2.0,
+          "xp": 1.5,
+          "drop_chance": 1.0
+        },
+        "double_drop": {
+          "gold": 1.0,
+          "xp": 1.0,
+          "drop_chance": 2.0
+        },
+        "double_xp": {
+          "gold": 1.0,
+          "xp": 2.0,
+          "drop_chance": 1.0
+        },
+        "treasure_hunt": {
+          "gold": 3.0,
+          "xp": 1.0,
+          "drop_chance": 1.5,
+          "rarity_boost": 1
+        },
+        "festival": {
+          "gold": 1.5,
+          "xp": 1.5,
+          "drop_chance": 1.5
+        }
+      }
+    }
+  },
+  "level_difference": {
+    "description": "Pénalité XP/gold si le joueur est trop haut niveau par rapport au mob. Le loot (items, équipement, matériaux) n'est PAS affecté — un mob drop ce qu'il drop quel que soit le niveau du joueur.",
+    "no_penalty_range": 3,
+    "penalty_per_level": 0.2,
+    "max_penalty": 0.95,
+    "min_drop_rate": 0.05,
+    "formula": "Si (player_level - mob_level) > no_penalty_range: penalty = min(max_penalty, (diff - no_penalty_range) × penalty_per_level)",
+    "examples": [
+      {
+        "player": 5,
+        "mob": 1,
+        "penalty": 0.2,
+        "note": "4 niveaux d'écart, -20% (1 au-delà de la range)"
+      },
+      {
+        "player": 7,
+        "mob": 1,
+        "penalty": 0.6,
+        "note": "6 niveaux, diff-3=3 × 0.2 = -60%"
+      },
+      {
+        "player": 9,
+        "mob": 1,
+        "penalty": 0.95,
+        "note": "8+ niveaux, pénalité max -95% (quasi rien)"
+      },
+      {
+        "player": 20,
+        "mob": 15,
+        "penalty": 0.4,
+        "note": "5 niveaux, diff-3=2 × 0.2 = -40%"
+      }
+    ],
+    "_migrated_from": "items/loot_tables.json multipliers.level_difference"
+  },
+  "global_cap": {
+    "max_total_multiplier": 50.0,
+    "applies_to": "Le produit des familles, separement pour xp, gold et drop_chance.",
+    "note": "Hard cap on all stacked multipliers to prevent guaranteed legendary drops"
+  },
+  "extension_procedure": {
+    "_comment": "Les donjons, les contrats du Maitre Combat et les Failles apporteront leurs propres multiplicateurs. Ils s'ajoutent ICI, comme familles, sans toucher au moteur.",
+    "steps": [
+      "1. Ajouter une entree dans multiplier_families, meme forme que les autres : description, values, et par valeur les clefs gold / xp / drop_chance / rarity_boost qui s'appliquent.",
+      "2. Ajouter son nom dans formula.families_order, a la place voulue dans le produit.",
+      "3. Cote moteur, aucune ligne specifique a ecrire : le lecteur itere families_order et compose. Une famille absente du contexte vaut 1.0 (neutre), jamais 0.",
+      "4. La garde CI verifie que toute famille nommee dans families_order existe, et que toute famille declaree est nommee."
+    ],
+    "planned": [
+      "contract_tier (contrats du Maitre Combat)",
+      "rift_depth (Failles)"
+    ],
+    "anti_pattern": "Ne JAMAIS ecrire un multiplicateur de recompense ailleurs que dans ce fichier, meme 'juste pour ce donjon'. C'est exactement comme ca que les quatre sources precedentes sont nees."
+  }
+}

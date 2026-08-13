@@ -13,6 +13,7 @@ Checks:
   5. All set_ids referenced exist in panoplies.json
   6. All output_item in recipes.json exist in item database files
   7. The 5 item-rank bands (C->SS) agree across their 3 copies
+  8. config/rewards.json is coherent and matches the blocks it replaces
 
 Exit code 0 = pass, 1 = failures found.
 """
@@ -461,6 +462,149 @@ def validate_item_ranks(db: Path) -> list:
     return errors
 
 
+def validate_rewards(db: Path) -> list:
+    """Verifie le contrat de config/rewards.json, proprietaire unique des recompenses.
+
+    Trois familles de checks :
+
+    1. COHERENCE INTERNE — toute famille nommee dans formula.families_order existe dans
+       multiplier_families, et toute famille declaree est nommee dans l'ordre. Sans ca, une
+       famille ajoutee mais oubliee de l'ordre serait silencieusement ignoree par le moteur :
+       exactement le mode de panne qu'on vient de passer trois jours a extirper.
+
+    2. EGALITE AVEC LES SOURCES D'ORIGINE — pendant l'etape 1/2 de la migration, rewards.json
+       et les blocs qu'il remplace coexistent. Cette passe est la preuve MECANISEE que le
+       refactor est un no-op : si un chiffre diverge, la CI le dit. Quand un bloc d'origine
+       disparait (etape 2), son check se desactive tout seul.
+
+    3. DERIVATION DE L'XP PAR MONSTRE — le xp_multiplier d'un mob doit valoir celui de son
+       threat_tier, sauf override declare. C'est ce qui empeche les 180 copies manuelles de
+       reapparaitre et de deriver comme l'avaient fait mob_wolf_soigneur et mob_hyene_soigneur
+       (1.5 au lieu de 1.6, sans trace de decision).
+    """
+    errors = []
+    rw_path = db / "config" / "rewards.json"
+    if not rw_path.exists():
+        return ["[rewards] config/rewards.json est introuvable — c'est le proprietaire unique "
+                "des recompenses, il ne peut pas manquer"]
+
+    rw = load_json(rw_path)
+    families = rw.get("multiplier_families", {})
+    order = rw.get("formula", {}).get("families_order", [])
+
+    # --- 1. Coherence interne ----------------------------------------------
+    for name in order:
+        if name not in families:
+            errors.append(f"[rewards] formula.families_order nomme '{name}', absente de "
+                          f"multiplier_families — le moteur composerait un facteur inexistant")
+    for name in families:
+        if name not in order:
+            errors.append(f"[rewards] la famille '{name}' est declaree mais absente de "
+                          f"formula.families_order — elle serait silencieusement ignoree")
+
+    def fam_values(name):
+        return families.get(name, {}).get("values", {})
+
+    # --- 2. Egalite avec les sources d'origine ------------------------------
+    def compare(label, live, new, keys):
+        """Compare deux tables de multiplicateurs sur les clefs demandees."""
+        for entry, src in live.items():
+            if entry in ("description", "reference") or entry.startswith("_"):
+                continue
+            dst = new.get(entry)
+            if dst is None:
+                errors.append(f"[rewards] {label} : '{entry}' existe dans la source d'origine "
+                              f"mais pas dans rewards.json")
+                continue
+            for k in keys:
+                if k not in src:
+                    continue
+                if abs(float(src[k]) - float(dst.get(k, "nan" if False else 0))) > 1e-6:
+                    errors.append(f"[rewards] DERIVE {label}.{entry}.{k} : origine={src[k]} "
+                                  f"rewards.json={dst.get(k)} — le refactor devait etre un no-op")
+
+    lt_path = db / "items" / "loot_tables.json"
+    if lt_path.exists():
+        lt = load_json(lt_path)
+        mults = lt.get("multipliers", {})
+        num = ("gold", "xp", "drop_chance", "rarity_boost")
+        for legacy, fam in (("monster_state", "monster_state"),
+                            ("encounter_stars", "encounter_stars"),
+                            ("dungeon_difficulty", "dungeon_difficulty")):
+            if legacy in mults:
+                compare(legacy, mults[legacy], fam_values(fam), num)
+        if "act_progression" in mults:
+            compare("act_progression", mults["act_progression"],
+                    fam_values("act_progression"), ("gold",))
+        if "global_cap" in mults:
+            a = float(mults["global_cap"].get("max_total_multiplier", 0))
+            b = float(rw.get("global_cap", {}).get("max_total_multiplier", -1))
+            if abs(a - b) > 1e-6:
+                errors.append(f"[rewards] DERIVE global_cap : origine={a} rewards.json={b}")
+        if "level_difference" in mults:
+            ld_live, ld_new = mults["level_difference"], rw.get("level_difference", {})
+            for k in ("no_penalty_range", "penalty_per_level", "max_penalty"):
+                if k in ld_live and abs(float(ld_live[k]) - float(ld_new.get(k, -1))) > 1e-6:
+                    errors.append(f"[rewards] DERIVE level_difference.{k} : "
+                                  f"origine={ld_live[k]} rewards.json={ld_new.get(k)}")
+        ev_live = lt.get("events", {}).get("event_types", {})
+        ev_new = fam_values("events")
+        for name, body in ev_live.items():
+            if name.startswith("_") or not isinstance(body, dict):
+                continue
+            compare("events", {name: body.get("bonuses", {})}, ev_new, num)
+
+    # La formule du bonus de groupe est desormais la donnee ; le chargeur codait 0.05 en dur.
+    gs = families.get("group_size", {})
+    if abs(float(gs.get("bonus_per_player", 0)) - 0.05) > 1e-9:
+        errors.append(f"[rewards] group_size.bonus_per_player={gs.get('bonus_per_player')} — "
+                      f"le moteur applique 0.05 (content_loader.cpp), changer l'un sans l'autre "
+                      f"casse le no-op")
+
+    mt_path = db / "config" / "monster_tiers.json"
+    tier_xp = {}
+    if mt_path.exists():
+        for name, body in load_json(mt_path).get("threat_tiers", {}).items():
+            if isinstance(body, dict) and "xp_multiplier" in body:
+                tier_xp[name] = float(body["xp_multiplier"])
+        for name, live in tier_xp.items():
+            new = fam_values("monster_threat_tier").get(name, {}).get("xp")
+            if new is None or abs(live - float(new)) > 1e-6:
+                errors.append(f"[rewards] DERIVE monster_threat_tier.{name}.xp : "
+                              f"origine={live} rewards.json={new}")
+    if not tier_xp:
+        tier_xp = {n: float(v.get("xp", 1.0))
+                   for n, v in fam_values("monster_threat_tier").items()}
+
+    # --- 3. Derivation de l'XP par monstre ----------------------------------
+    overrides = (rw.get("inputs_declared_elsewhere", {})
+                   .get("xp_multiplier_par_monstre", {})
+                   .get("known_overrides", {}))
+    mon_path = db / "entities" / "monsters.json"
+    if mon_path.exists() and tier_xp:
+        data = load_json(mon_path)
+        monsters = data.get("monsters", data)
+        if isinstance(monsters, dict):
+            monsters = list(monsters.values())
+        for mon in monsters if isinstance(monsters, list) else []:
+            if not isinstance(mon, dict) or "xp_multiplier" not in mon:
+                continue
+            mid = mon.get("id", "?")
+            tier = mon.get("threat_tier")
+            if tier not in tier_xp:
+                continue
+            if abs(float(mon["xp_multiplier"]) - tier_xp[tier]) <= 1e-6:
+                continue
+            if mid not in overrides:
+                errors.append(
+                    f"[rewards] {mid} porte xp_multiplier={mon['xp_multiplier']} alors que son "
+                    f"palier '{tier}' vaut {tier_xp[tier]}, et il n'est pas declare comme "
+                    f"override dans rewards.json inputs_declared_elsewhere. Soit c'est une "
+                    f"copie qui a derive, soit c'est un choix — dans ce cas, declare-le.")
+
+    return errors
+
+
 def main():
     # Find database root
     db_root = os.environ.get("DB_ROOT", "")
@@ -490,40 +634,45 @@ def main():
     # Run all validations
     all_errors = []
 
-    print("\n[1/7] Validating affix stat names...")
+    print("\n[1/8] Validating affix stat names...")
     errs = validate_affixes(db, valid_stats)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[2/7] Validating equipment_stats stat names...")
+    print("[2/8] Validating equipment_stats stat names...")
     errs = validate_equipment_stats(db, valid_stats)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[3/7] Validating class_tags...")
+    print("[3/8] Validating class_tags...")
     errs = validate_class_tags(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[4/7] Validating loot table item references...")
+    print("[4/8] Validating loot table item references...")
     all_item_ids = collect_all_item_ids(db)
     print(f"  Collected {len(all_item_ids)} item IDs from database")
     errs = validate_loot_table_refs(db, all_item_ids)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[5/7] Validating set_id references...")
+    print("[5/8] Validating set_id references...")
     errs = validate_set_ids(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[6/7] Validating recipe output_item references...")
+    print("[6/8] Validating recipe output_item references...")
     errs = validate_recipe_outputs(db, all_item_ids)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[7/7] Validating item rank bands (C->SS) across their 3 copies...")
+    print("[7/8] Validating item rank bands (C->SS) across their 3 copies...")
     errs = validate_item_ranks(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[8/8] Validating rewards contract (config/rewards.json)...")
+    errs = validate_rewards(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
