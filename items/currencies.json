@@ -4,7 +4,6 @@
     "last_updated": "2026-02-15",
     "description": "Monnaies du jeu"
   },
-
   "currencies": [
     {
       "id": "gold",
@@ -12,18 +11,43 @@
       "name_en": "Gold",
       "is_soft_currency": true,
       "icon": "currency_gold",
-      "sources": ["monster_drops", "quests", "vendor_sell", "achievements"],
-      "uses": ["vendor_buy", "teleport", "storage", "guild", "respec"]
+      "sources": [
+        "monster_drops",
+        "quests",
+        "vendor_sell",
+        "achievements"
+      ],
+      "uses": [
+        "vendor_buy",
+        "teleport",
+        "storage",
+        "guild",
+        "respec"
+      ]
     },
     {
-      "id": "gems",
-      "name_fr": "Gemmes",
-      "name_en": "Gems",
+      "id": "diamonds",
+      "name_fr": "Diamants",
+      "name_en": "Diamonds",
+      "name_short_fr": "Diamants",
+      "name_short_en": "Diamonds",
+      "description_fr": "Monnaie premium, obtenue en soutenant le jeu. Sert aux cosmétiques et au confort, jamais à un avantage de jeu.",
+      "description_en": "Premium currency, obtained by supporting the game. Used for cosmetics and convenience, never for a gameplay advantage.",
       "is_soft_currency": false,
+      "is_premium": true,
+      "scope": "account",
       "enabled": false,
-      "icon": "currency_gems",
-      "sources": ["shop_purchase", "events", "achievements"],
-      "uses": ["premium_items", "cosmetics", "convenience"]
+      "icon": "currency_diamonds",
+      "sources": [
+        "real_money_purchase",
+        "events"
+      ],
+      "uses": [
+        "cosmetics",
+        "convenience",
+        "character_slots"
+      ],
+      "_design_note": "Portefeuille ACCOUNT-scoped obligatoire : jamais character-scoped comme l'ancienne colonne premium_currency, sinon la monnaie est piégée sur un perso. Crédit/débit idempotents via audit_log.idempotency_key. La conversion en euros, les packs et les stripe_price_id restent BACKEND et privés, jamais dans ce fichier public rendu dans le wiki. Ratio de référence : 100 diamants = 1 euro."
     },
     {
       "id": "souffle_crystal",
@@ -37,18 +61,43 @@
       "lore_en": "Every creature in the world carries a breath of life. The Fissures seize it without ever destroying it. When you free a taken beast, that breath belongs neither to it nor to them: it stays, and it holds.",
       "is_soft_currency": false,
       "icon": "currency_souffle_crystal",
-      "sources": ["fissure_touched_monsters", "contracts", "dungeons"],
-      "uses": ["souffle_counter"],
+      "sources": [
+        "fissure_touched_monsters",
+        "contracts",
+        "dungeons"
+      ],
+      "uses": [
+        "souffle_counter"
+      ],
       "_design_note": "Ne tombe QUE sur les créatures touchées par les Fissures : une bête saine ne rend rien. La quantité mesure à quel point l'emprise la tenait, d'où très peu sur du fodder et beaucoup sur une élite ou un contrat. Taux de drop et prix à définir côté balance. Nécessite un champ de portefeuille backend.",
       "_design_note_shop": "Comptoir tenu par Milo. Le catalogue tourne chaque semaine (ce que le village arrive à stabiliser varie), mais le STOCK est illimité : on fait tourner l'offre, jamais la quantité."
     }
   ],
-
   "rarity_colors": {
-    "common": {"hex": "#FFFFFF", "name_fr": "Blanc", "name_en": "White"},
-    "uncommon": {"hex": "#00FF00", "name_fr": "Vert", "name_en": "Green"},
-    "rare": {"hex": "#0088FF", "name_fr": "Bleu", "name_en": "Blue"},
-    "epic": {"hex": "#AA00FF", "name_fr": "Violet", "name_en": "Purple"},
-    "legendary": {"hex": "#FF8800", "name_fr": "Orange", "name_en": "Orange"}
+    "common": {
+      "hex": "#FFFFFF",
+      "name_fr": "Blanc",
+      "name_en": "White"
+    },
+    "uncommon": {
+      "hex": "#00FF00",
+      "name_fr": "Vert",
+      "name_en": "Green"
+    },
+    "rare": {
+      "hex": "#0088FF",
+      "name_fr": "Bleu",
+      "name_en": "Blue"
+    },
+    "epic": {
+      "hex": "#AA00FF",
+      "name_fr": "Violet",
+      "name_en": "Purple"
+    },
+    "legendary": {
+      "hex": "#FF8800",
+      "name_fr": "Orange",
+      "name_en": "Orange"
+    }
   }
 }
