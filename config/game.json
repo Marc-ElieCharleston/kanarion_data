@@ -112,9 +112,9 @@
   },
   "combat_camera": {
     "_comment": "Combat-specific camera (more restrictive zoom)",
-    "_scale_note": "Board unifie fronts-colles (AUCUNE rangee vide au milieu), dims SERVEUR-AUTORITAIRES via ROOM_JOINED (grid_rows/grid_cols). Actuel: 10x6 (5 rangs/equipe). Axes iso axis_col 68/34, axis_row -68/34; player rend en bas. default_zoom 1.25 cadre le board 10x6 en 1920x1080 sans debordement (recalcule depuis le 8x5@1.6, ratio d'etendue ~1.27x). Si les dims serveur changent, reajuster ce zoom a l'oeil sur screenshot.",
-    "default_zoom": 1.25,
-    "min_zoom": 1.0,
+    "_scale_note": "Board unifie fronts-colles, dims SERVEUR-AUTORITAIRES via ROOM_JOINED (grid_rows/grid_cols). Actuel 10x6. Axes iso axis_col 64/30, axis_row -64/30 (case 128x60 = 2x2 tuiles terrain_v2) — les 68/34 cites ici jusqu'au 2026-08-14 etaient perimes. min_zoom EGALE default_zoom : on ne dezoome PAS en dessous du cadrage nominal, sinon les personnages deviennent trop petits pour se lire sur un sol texture. default_zoom 1.45 cadre le 10x6 en 1920x1080 (1024x480 de plateau -> 1485x696 a l'ecran). A REAJUSTER si le board grandit : un 14x8 deborderait a cette valeur.",
+    "default_zoom": 1.45,
+    "min_zoom": 1.45,
     "max_zoom": 3.0,
     "zoom_step": 0.2,
     "pinch_sensitivity": 0.003
@@ -141,19 +141,13 @@
     "slots_per_row": 4
   },
   "combat_grids": {
-    "_comment": "Grille unifiee 10x6 (6 colonnes x 10 rangs TOTAL, soit 5 rangs et 30 slots par equipe). rows/cols sont SERVEUR-AUTORITAIRES et envoyes au ROOM_JOINED : cette entree ne sert qu'au boot client avant la premiere reponse serveur. L'ancien 4x5 (pivot Arena Hub 2026-05-01) est conserve en legacy.",
+    "_comment": "Grille unifiee 10x6 : l'id se lit RANGS x COLONNES, soit 10 rangs de 6 colonnes = 5 rangs et 30 slots par equipe, 60 cases au total. SOURCE UNIQUE : 'default' + 'available'. Les cles 'usage' (par contexte) et 'notes' ont ete retirees le 2026-08-14 : elles annoncaient encore 4x5 alors que default valait deja 10x6, et personne ne les lisait. rows/cols sont SERVEUR-AUTORITAIRES et envoyes au ROOM_JOINED ; cette entree ne sert qu'au boot client avant la premiere reponse serveur. 4x5 reste dans 'available' en LEGACY (plus utilise depuis 2026-07-28). Un 12x6 est prevu.",
     "default": "10x6",
     "playtest_mode": false,
     "playtest_grids": [
       "10x6"
     ],
     "available": {
-      "4x5": {
-        "rows": 4,
-        "cols": 5,
-        "total_slots": 20,
-        "description": "LEGACY (pre 2026-07-28) - conserve pour compat, plus utilise"
-      },
       "10x6": {
         "rows": 10,
         "cols": 6,
@@ -173,23 +167,16 @@
         "x": 0,
         "y": 0
       },
+      "_axis_comment": "Case = 128x64, soit EXACTEMENT 2x2 tuiles des atlas de combat V3 (face 64x32, un VRAI 2:1). Les 128x60 precedents suivaient terrain_v2 (64x30, rapport 2,133) ; les tuiles V3 mesurees donnent un pas de (32,16) contre (32,15), donc la maille devait suivre. Les anciens 68/34 donnaient une case de 136x68 : ni le meme pas ni le meme rapport que la tuile (2,000 contre 2,133), donc le sol tuile et la grille derivaient l'un par rapport a l'autre en travers du plateau, et aucune mise a l'echelle uniforme ne les reconciliait. Changer ces axes est la CONDITION pour poser un sol tuile aligne.",
       "axis_col": {
-        "x": 68,
-        "y": 34
+        "x": 64,
+        "y": 32
       },
       "axis_row": {
-        "x": -68,
-        "y": 34
+        "x": -64,
+        "y": 32
       }
-    },
-    "usage": {
-      "open_world": "4x5",
-      "dungeon": "4x5",
-      "pvp_arena": "4x5",
-      "boss_fight": "4x5",
-      "playtest": "4x5"
-    },
-    "notes": "4x5 (4 rows x 5 cols) — seul format actif. Tutorial supprime au pivot Arena Hub 2026-05-01."
+    }
   },
   "dungeon_formats": {
     "_comment": "Formats de combat pour les donjons — chaque format force une strategie differente",
