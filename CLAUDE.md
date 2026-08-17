@@ -185,16 +185,17 @@ Profils de balance applique au spawn d'un mercenaire en combat. Format :
 - `pvp_filler_v1` (FUTURE) : bot PvP, stats ≈ joueur reel (level_offset=0, multipliers=1.0)
 
 ### Mercenary Potions (`items/consumables.json`)
-Potions dediees au merc (le joueur les boit, l'effet va sur son merc) :
-- `cons_hp_potion_merc_small` : `effect_type=heal_merc_hp_flat`, `value=50`
-- `cons_mp_potion_merc_small` : `effect_type=restore_merc_mp_flat`, `value=30`
+Potions dediees au merc (le joueur les boit, l'effet va sur son merc actif). **Echelle 5 tiers** (miroir des potions familier), **re-declaree 2026-08-16** apres une suppression accidentelle (le merc avait ete cru remplace par le familier — il ne l'est pas, cf section Familiar) :
+- `cons_hp_potion_merc_t1..t5` : `effect_type=heal_merc_hp_flat`, values 40/120/280/550/900
+- `cons_mp_potion_merc_t1..t5` : `effect_type=restore_merc_mp_flat`, values 30/90/200/380/600
+- Prix : achat 10/30/80/200/500, vente 4/10/28/70/175
 
-Drops dans `items/loot_tables.json` `common_consumables.drops` chance 5%.
+Vendues chez Milo (`npc_vendor_milo`, categorie `mercenary_potions`, tiers t1/t3/t5) comme les potions familier. ⚠️ **Depend de l'emetteur** `heal_merc_hp_flat`/`restore_merc_mp_flat` dans `economy_service.cpp handle_use_item` : sans lui les potions sont **inertes** (le recepteur `kanarion.mercenary.event.potion_applied` cote mercenary_service est intact, c'est l'emetteur economy qui avait ete supprime).
 
 ### Familiar Structure (`entities/familiars.json` ← canonical V1, `entities/pets.json` ← legacy naming en cours de rename)
 > **⚠️ CORRECTION DRIFT (audit F-21, 2026-08-08) — cette section decrit un design V1 en grande partie DEPASSE.** Etat reel du runtime : **100% PostgreSQL** (service `services/familiar/`, tables `familiars` + `character_familiar_loadouts`, migrations 050->067) — PAS de Redis, PAS de `fam-rt-<UUID>`, PAS de TTL 24h. Le fichier canonique est **`entities/familiars.json`** ; `pets.json` / `pet_souls.json` / `pet_balance.json` / « Maitre des Liens » sont l'ancien nommage. **29 familles capturables** (plus « 1 espece rat V1 »). Rarete **retunee** (5 paliers incl `uncommon`, ex-legendaire ×1.10 est passe a ×1.30 — lire la data, pas les chiffres ci-dessous). NPC de stabilisation = **Colette**. Loop reelle : drop de trace -> depot Colette -> incubation PG minutee -> claim -> familier lv1 account-bound. Cap de niveau combat = niveau owner (F-01). Les conventions de schema ci-dessous restent utiles ; les valeurs de balance et le nommage `pet_*` sont a lire avec ce filtre.
 
-Compagnons de combat persistants attaches au joueur. Remplacent le slot mercenaire cote joueur (les mercenaires deviennent un systeme purement serveur pour bots PvP/PvE matchmaking). Voir `world/lore.json` section `les_familiers` pour la fondation narrative (Le Lien, les Ames, Colette / Maitre des Liens). Memoire de design : `project_familiar_system_v1`.
+Compagnons de combat persistants attaches au joueur. ⚠️ **Le familier NE remplace PAS le mercenaire (correction 2026-08-16, decision produit Charleston).** Le mercenaire **reste recrutable par les joueurs** (potions dediees, slot actif) ; son usage comme bot serveur de remplissage PvP/PvE matchmaking est **supplementaire, pas un remplacement**. Familier et mercenaire **coexistent cote joueur**. Ne pas re-supprimer la ligne merc (potions, archetypes) en se fiant a l'ancienne doc « remplace » : c'est ce qui a orphelin 79 sacs en aout 2026. Voir `world/lore.json` section `les_familiers` pour la fondation narrative (Le Lien, les Ames, Colette / Maitre des Liens). Memoire de design : `project_familiar_system_v1`.
 
 **Naming en transition :** `entities/familiars.json` (v1.0, 2026-05-11) est le fichier canonique courant — IDs `familiar_<animal>_<role>`, balance via `config/familiar_balance.json`, NPC stabilisation = Colette. `entities/pets.json` (v1.1, plus ancien) garde l'ancienne nomenclature `pet_<species>_<role>` + `pet_balance.json` + Maitre des Liens. Les deux coexistent le temps de la migration ; toute nouvelle entree va dans `familiars.json`. Les conventions ci-dessous parlent au format historique `pet_*` — mentalement traduire `pet_` → `familiar_` quand on edite le nouveau fichier.
 
