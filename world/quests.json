@@ -1774,6 +1774,7 @@
         "xp": 200,
         "gold": 80
       },
+      "chain_next": "q_havreden_tour_02",
       "_note": "Vague 1 du tour de Havreden (niveau 5). Remplace q_hub_tour_01/02/03. objective_mode parallel : la tournee se fait dans l'ordre que le joueur veut. Les vraies actions sont dans les satellites donnes par Milo et Gorik."
     },
     {
@@ -1839,6 +1840,171 @@
         "gold": 120
       },
       "_note": "Cibles volontairement differentes de q_milo_ravitaillement (loups/sangliers vs rats/scarabes) : les deux satellites de la vague 1 ne doivent pas etre la meme chasse. Les deux especes apparaissent dans la spawn_area hav_flanc_ouest de world/zones.json, niveau 1-10."
+    },
+    {
+      "id": "q_havreden_tour_02",
+      "type": "main",
+      "zone": "village",
+      "min_level": 7,
+      "title_fr": "Ne pars pas seul",
+      "title_en": "Don't Go Out Alone",
+      "summary_fr": "Personne ne tient longtemps seul dehors. Colette élève les familiers, Hestia loue des bras solides, et Verena tient le registre des guildes. Va les voir avant de repartir.",
+      "summary_en": "Nobody lasts long alone out there. Colette raises the familiars, Hestia hires out steady hands, and Verena keeps the guild register. Go and see them before you head back out.",
+      "npc_giver": "npc_hub_guide_tobin",
+      "objective_mode": "parallel",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_familiar_breeder_colette",
+          "count": 1,
+          "description_fr": "Parler à Colette, l'éleveuse de familiers",
+          "description_en": "Talk to Colette, the familiar breeder",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_tour_02_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_familiar_breeder_colette",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Colette",
+                  "label_en": "Go see Colette"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_dungeon_keeper_hestia",
+          "count": 1,
+          "description_fr": "Parler à Hestia, la recruteuse",
+          "description_en": "Talk to Hestia, the recruiter",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_tour_02_obj1_arrow",
+                "type": "arrow",
+                "target": "npc_dungeon_keeper_hestia",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Hestia",
+                  "label_en": "Go see Hestia"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_guild_master_verena",
+          "count": 1,
+          "description_fr": "Parler à Verena, la maîtresse des guildes",
+          "description_en": "Talk to Verena, the guild mistress",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_tour_02_obj2_arrow",
+                "type": "arrow",
+                "target": "npc_guild_master_verena",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Verena",
+                  "label_en": "Go see Verena"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "rewards": {
+        "xp": 350,
+        "gold": 120
+      },
+      "_note": "Vague 2 du tour de Havreden (niveau 7). Verena reste une etape de service : aucun evenement de guilde n'est publie par le service guilde, donc rien n'est comptable cote quete."
+    },
+    {
+      "id": "q_colette_incubation",
+      "type": "side",
+      "zone": "village",
+      "min_level": 7,
+      "title_fr": "Ce qui a refusé de lâcher",
+      "title_en": "What Refused to Let Go",
+      "summary_fr": "Colette sait faire éclore une empreinte de Souffle. Trouves-en une sur une bête libérée, ou achète-lui-en une, et rapporte-la-lui pour la faire incuber.",
+      "summary_en": "Colette knows how to hatch a Breath imprint. Find one on a freed beast, or buy one from her, and bring it back for her to incubate.",
+      "npc_giver": "npc_familiar_breeder_colette",
+      "objectives": [
+        {
+          "template": "deposit_familiar_trace",
+          "count": 1,
+          "description_fr": "Faire éclore une empreinte de Souffle",
+          "description_en": "Hatch a Breath imprint",
+          "_note": "TEMPLATE A CREER cote quest service. L'evenement existe DEJA et n'est ecoute par personne : kanarion.familiar.event.trace_deposited, publie par le service familier au depot d'une empreinte. C'est le cas le moins cher de la liste : une souscription dans QuestService::setup_subscriptions + l'entree dans SUPPORTED_TEMPLATES. TANT QU'IL N'EXISTE PAS, CETTE QUETE EST INFRANCHISSABLE."
+        }
+      ],
+      "rewards": {
+        "xp": 400,
+        "gold": 150
+      },
+      "chain_next": "q_colette_grimoire"
+    },
+    {
+      "id": "q_colette_grimoire",
+      "type": "side",
+      "zone": "village",
+      "min_level": 7,
+      "title_fr": "Apprendre à un compagnon",
+      "title_en": "Teaching a Companion",
+      "summary_fr": "Un familier ne connaît qu'une compétence en sortant de l'œuf. Procure-toi un grimoire, chez Colette ou sur une bête, et apprends-lui ce qu'il contient.",
+      "summary_en": "A familiar only knows one skill when it hatches. Get hold of a book, from Colette or off a beast, and teach it what's inside.",
+      "npc_giver": "npc_familiar_breeder_colette",
+      "objectives": [
+        {
+          "template": "familiar_learn_skill",
+          "count": 1,
+          "description_fr": "Apprendre une compétence à ton familier",
+          "description_en": "Teach your familiar a skill"
+        }
+      ],
+      "rewards": {
+        "xp": 400,
+        "gold": 150
+      },
+      "_note": "Template deja branche (kanarion.familiar.event.skill_learned), le tutoriel s'en sert deja sur q_tut_intro_05b. Colette stocke tout le catalogue de grimoires rang C dans son shop_inventory, mais son menu client n'a AUCUNE action boutique : sa boutique est injoignable tant que npc_shop n'est pas ajoute a ses cles de role."
+    },
+    {
+      "id": "q_hestia_ne_pars_pas_seul",
+      "type": "side",
+      "zone": "village",
+      "min_level": 7,
+      "title_fr": "Ne descends pas seule",
+      "title_en": "Don't Go Down Alone",
+      "summary_fr": "Hestia a perdu toute son équipe sous terre et ne laisse plus personne partir seul. Engage un mercenaire, même si tu penses ne pas en avoir besoin, et emmène-le au combat.",
+      "summary_en": "Hestia lost her entire team underground and won't let anyone leave alone any more. Hire a mercenary, even if you think you don't need one, and take it into a fight.",
+      "npc_giver": "npc_dungeon_keeper_hestia",
+      "objective_mode": "sequential",
+      "objectives": [
+        {
+          "template": "recruit_mercenary",
+          "count": 1,
+          "description_fr": "Engager un mercenaire",
+          "description_en": "Hire a mercenary"
+        },
+        {
+          "template": "win_combats",
+          "count": 5,
+          "description_fr": "Remporter 5 combats",
+          "description_en": "Win 5 fights"
+        }
+      ],
+      "rewards": {
+        "xp": 500,
+        "gold": 180
+      },
+      "_note": "recruit_mercenary est branche (souscription a kanarion.mercenary.event.hired). Sequential : engager d'abord, se battre ensuite, sinon les 5 combats peuvent etre gagnes sans mercenaire et la lecon tombe a plat."
     },
     {
       "id": "quest_playtest_talk",
