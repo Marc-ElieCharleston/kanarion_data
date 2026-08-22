@@ -1691,6 +1691,156 @@
       "description_en": "The Tower collapses. You feel something inside you. Not victory. Something else. Return to Havreden. Everything has changed."
     },
     {
+      "id": "q_havreden_tour_01",
+      "type": "main",
+      "zone": "village",
+      "min_level": 5,
+      "title_fr": "Se préparer pour l'expédition",
+      "title_en": "Getting Ready for the Expedition",
+      "summary_fr": "Tobin veut te présenter ceux qui te garderont en vie. Milo, Gorik et Naya ont chacun quelque chose à te dire avant que tu sortes.",
+      "summary_en": "Tobin wants to introduce you to the people who will keep you alive. Milo, Gorik and Naya each have something to tell you before you head out.",
+      "npc_giver": "npc_hub_guide_tobin",
+      "objective_mode": "parallel",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_vendor_milo",
+          "count": 1,
+          "description_fr": "Parler à Milo, le marchand",
+          "description_en": "Talk to Milo, the merchant",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_tour_01_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_vendor_milo",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Milo",
+                  "label_en": "Go see Milo"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_blacksmith_gorik",
+          "count": 1,
+          "description_fr": "Parler à Gorik, le forgeron",
+          "description_en": "Talk to Gorik, the blacksmith",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_tour_01_obj1_arrow",
+                "type": "arrow",
+                "target": "npc_blacksmith_gorik",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Gorik",
+                  "label_en": "Go see Gorik"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_naya",
+          "count": 1,
+          "description_fr": "Passer voir Naya, la guérisseuse",
+          "description_en": "Stop by Naya, the healer",
+          "_note": "CIBLE PRODUIT : cet objectif doit devenir 'recois la benediction de Naya' plutot que 'parle-lui', pour montrer la mecanique de buff au joueur a la maniere de Ragnarok. Bloque sur deux choses. (1) Les actions npc_heal et npc_buff ont ete retirees des menus client (interaction_popup.gd) parce qu'elles appliquaient le soin en local sans que le serveur le sache ; elles attendent un endpoint serveur. (2) Aucun evenement de buff n'est publie, donc rien n'est comptable cote quete. Quand le buff persistant existera : publier sur kanarion.events.character.<BlessingReceived> comme le fait economy pour ItemEquipped, et ajouter un template receive_blessing dans SUPPORTED_TEMPLATES.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_tour_01_obj2_arrow",
+                "type": "arrow",
+                "target": "npc_naya",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Naya",
+                  "label_en": "Go see Naya"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "rewards": {
+        "xp": 200,
+        "gold": 80
+      },
+      "_note": "Vague 1 du tour de Havreden (niveau 5). Remplace q_hub_tour_01/02/03. objective_mode parallel : la tournee se fait dans l'ordre que le joueur veut. Les vraies actions sont dans les satellites donnes par Milo et Gorik."
+    },
+    {
+      "id": "q_milo_ravitaillement",
+      "type": "side",
+      "zone": "village",
+      "min_level": 5,
+      "title_fr": "Ce qui rentre au village",
+      "title_en": "What Comes Into the Village",
+      "summary_fr": "Les fournisseurs de Milo ne passent plus par les routes du sud. Le village vit de ce que les volontaires rapportent : abats des bêtes près de la lisière et ramène-lui de quoi tenir son comptoir.",
+      "summary_en": "Milo's suppliers no longer make it up the southern roads. The village lives on what the volunteers bring back: hunt beasts near the verge and bring him enough to keep his counter stocked.",
+      "npc_giver": "npc_vendor_milo",
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "mobs": [
+            "mob_rat",
+            "mob_rat_jeune",
+            "mob_scarab",
+            "mob_scarab_larve"
+          ],
+          "count": 8,
+          "description_fr": "Abattre 8 bêtes près du village",
+          "description_en": "Bring down 8 beasts near the village"
+        }
+      ],
+      "rewards": {
+        "xp": 300,
+        "gold": 120,
+        "items": [
+          {
+            "id": "cons_hp_potion_t1",
+            "qty": 3
+          }
+        ]
+      },
+      "_note": "Version provisoire. L'intention produit est 'achete N objets chez Milo' : elle attend l'evenement ItemPurchased (economy handle_buy_item, economy_service.cpp:4239) et le template buy_item cote quest. Basculer des qu'il existe."
+    },
+    {
+      "id": "q_gorik_crocs_et_cuirs",
+      "type": "side",
+      "zone": "village",
+      "min_level": 5,
+      "title_fr": "Crocs et cuirs",
+      "title_en": "Fangs and Hides",
+      "summary_fr": "Gorik ne travaille qu'avec ce qu'on lui rapporte. Les crocs font des lames et les cuirs font des armures : va lui chercher de quoi allumer sa forge.",
+      "summary_en": "Gorik only works with what people bring him. Fangs make blades and hides make armour: go and fetch him something to fire up his forge with.",
+      "npc_giver": "npc_blacksmith_gorik",
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "mobs": [
+            "mob_wolf",
+            "mob_boar"
+          ],
+          "count": 6,
+          "description_fr": "Chasser 6 loups ou sangliers",
+          "description_en": "Hunt 6 wolves or boars"
+        }
+      ],
+      "rewards": {
+        "xp": 300,
+        "gold": 120
+      },
+      "_note": "Cibles volontairement differentes de q_milo_ravitaillement (loups/sangliers vs rats/scarabes) : les deux satellites de la vague 1 ne doivent pas etre la meme chasse. Les deux especes apparaissent dans la spawn_area hav_flanc_ouest de world/zones.json, niveau 1-10."
+    },
+    {
       "id": "quest_playtest_talk",
       "type": "main",
       "zone": "village",
@@ -2593,237 +2743,6 @@
         "gold": 100
       },
       "_note_hub_tour": "Lot B3a : PAS de chain_next vers q_hub_tour_01 ici, c'est VOULU. q_hub_tour_01 est attribuee par auto_accept_on_zone_enter=desert_playtest (couvre aussi les joueurs qui skippent le tuto, que le filtre client has_uncompleted_predecessor exclurait avec un chain). Un chain_next ici creerait en plus un double-accept (auto turn-in client tuto + auto-accept serveur zone) avec toast d'erreur visible."
-    },
-    {
-      "id": "q_hub_tour_01",
-      "type": "main",
-      "zone": "village",
-      "min_level": 1,
-      "title_fr": "Le tour du village",
-      "title_en": "The Village Tour",
-      "summary_fr": "Tobin te fait faire le tour du village : Naya la guérisseuse, un premier combat aux alentours, et Colette qui élève les familiers.",
-      "summary_en": "Tobin shows you around the village: Naya the healer, a first fight nearby, and Colette who raises the familiars.",
-      "npc_giver": "npc_hub_guide_tobin",
-      "auto_accept_on_zone_enter": "village",
-      "objective_mode": "parallel",
-      "_comment": "Lot B3a (2026-07-21), voir kanarion_front/PLAN_HUB_TOUR.md. Objectifs en ordre libre (parallel). Retirés vs plan : « Achète une potion à la boutique » (aucun PNJ boutique dans desert_playtest et aucun template purchase_item côté quest service) ; « Rejoins ou fonde une guilde (optionnel) » (le moteur de quêtes n'a pas d'objectif optionnel, QuestObjectiveDef sans flag required) : la guilde est routée via le nœud Discuter de Tobin. Potions familier restaurées (2026-07-21, handler pet_service branché : economy reconnait heal_pet_hp_flat/restore_pet_mp_flat, familiar service applique sur l'actif + push 0x0F07). NOTE lot backend : ces potions ne sont pas encore dans loot_tables.json et les vieilles cons_*_potion_merc_* y traînent. q_hub_tour_02 « L'épreuve » LIVRÉ (lot B3b 2026-07-21) : chain Q1 -> Q2 -> Q3.",
-      "dialogue_give_fr": "Ça y est, tu as fini chez Aldric ? Il était temps. Depuis que le village recrute, tout passe par les maîtres : missions, arène, donjons. Je te remets ça au clair ? Reviens me voir quand tu as coché tout ça.",
-      "dialogue_give_en": "Fresh through the portal? Perfect. Around here, everything goes through the masters: missions, arena, dungeons. Shall I show you around? Come back once you've checked all of that off.",
-      "dialogue_complete_fr": "Déjà de retour ? Tu connais le village mieux que certains anciens. Tiens, de quoi voir venir. Et si tu veux des compagnons de route, va saluer Verena, elle enregistre les guildes.",
-      "dialogue_complete_en": "Back already? You know the village better than some of the old-timers. Here, something to keep you going. And if you want traveling companions, go greet Verena, she registers the guilds.",
-      "objectives": [
-        {
-          "template": "talk_to_npc",
-          "npc_id": "npc_hub_guide_tobin",
-          "count": 1,
-          "description_fr": "Écouter Tobin, le guide du village",
-          "description_en": "Listen to Tobin, the village guide",
-          "hints": {
-            "on_active": [
-              {
-                "id": "q_hub_tour_01_obj0_tobin",
-                "type": "arrow",
-                "target": "npc_hub_guide_tobin",
-                "priority": 90,
-                "show_once": true,
-                "payload": {
-                  "label_fr": "Va voir Tobin",
-                  "label_en": "Go see Tobin"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "template": "talk_to_npc",
-          "npc_id": "npc_naya",
-          "count": 1,
-          "description_fr": "Rencontrer Naya, la guérisseuse",
-          "description_en": "Meet Naya, the healer",
-          "_note": "Remplace « Valide une quête de Naya » et « Prends un contrat auprès du Maître Combat » du plan : aucun template complete_quest/take_contract dans le quest service (SUPPORTED_TEMPLATES, quest_service.cpp:153), et aucun PNJ Maître Combat dans le hub. Naya porte le service quest_hub (missions répétables).",
-          "hints": {
-            "on_active": [
-              {
-                "id": "q_hub_tour_01_obj1_naya",
-                "type": "arrow",
-                "target": "npc_naya",
-                "priority": 85,
-                "show_once": true,
-                "payload": {
-                  "label_fr": "Rencontre Naya",
-                  "label_en": "Meet Naya"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "template": "win_combats_in_zone",
-          "zone_id": "village",
-          "count": 1,
-          "description_fr": "Remporter un combat aux alentours du village",
-          "description_en": "Win a fight around the village",
-          "_note": "Server-driven : combat publie origin_zone_id dans room_ended (combat_host.cpp:4671), quest service update_win_progress_in_zone (quest_service.cpp:1542). Couvre l'esprit « fais une mission de Naya » sans dépendre d'un template complete_quest."
-        },
-        {
-          "template": "talk_to_npc",
-          "npc_id": "npc_familiar_breeder_colette",
-          "count": 1,
-          "description_fr": "Rendre visite à Colette, qui élève les familiers",
-          "description_en": "Visit Colette, who raises the familiars",
-          "_note": "Le plan prévoyait « Fais renommer ton familier ». Le handler RENAME existe désormais (commits back d417b30 + client bouton Renommer v1.9) mais AUCUN template de quête ne détecte un rename (il faudrait un template rename_familiar abonné à l'event familiar). L'objectif reste talk_to_npc ; Colette INVITE au rename dans ses dialogues (texte seul).",
-          "hints": {
-            "on_active": [
-              {
-                "id": "q_hub_tour_01_obj3_colette",
-                "type": "arrow",
-                "target": "npc_familiar_breeder_colette",
-                "priority": 80,
-                "show_once": true,
-                "payload": {
-                  "label_fr": "Va voir Colette",
-                  "label_en": "Go see Colette"
-                }
-              }
-            ]
-          }
-        }
-      ],
-      "rewards": {
-        "gold": 120,
-        "items": [
-          {
-            "id": "cons_hp_potion_t1",
-            "qty": 2
-          },
-          {
-            "id": "cons_hp_potion_pet_t1",
-            "qty": 1
-          },
-          {
-            "id": "cons_mp_potion_pet_t1",
-            "qty": 1
-          }
-        ]
-      },
-      "chain_next": "q_hub_tour_02"
-    },
-    {
-      "id": "q_hub_tour_02",
-      "type": "main",
-      "zone": "village",
-      "min_level": 1,
-      "title_fr": "L'épreuve",
-      "title_en": "The Trial",
-      "summary_fr": "Tobin t'envoie goûter au vrai jeu : présente-toi à Dargo le Maître d'Arène, puis va vaincre un premier groupe dans le Repaire des Bandits.",
-      "summary_en": "Tobin sends you to taste the real game: introduce yourself to Dargo the Arena Master, then defeat a first pack inside the Bandit Den.",
-      "npc_giver": "npc_hub_guide_tobin",
-      "prerequisites": [
-        "q_hub_tour_01"
-      ],
-      "objective_mode": "parallel",
-      "_comment": "Lot B3b (2026-07-21). L'objectif « duel d'entraînement à l'arène » du plan est REMPLACÉ par talk_to_npc Dargo, deux raisons backend prouvées : (1) le spawn trinité (handle_tutorial_combat_start, commit 5238750) est contractuellement tuto-only (zone tutorial_tavern, Step 6) ; (2) les rooms d'exhibition d'arène sont en mode DUEL/is_pvp et publish_combat_event_for_quests est gated par !is_pvp (combat_host.cpp:4413) : AUCUN event quête n'existe pour un combat d'arène. Branchement backend manquant documenté au plan. Ordre libre (parallel) VOLONTAIRE : l'enforcement sequential ne couvre que le chemin client-notified, pas les events zone/combat, un mode sequential ici créerait des progressions incohérentes. Détection donjon prouvée : zone_id == dungeon_id (dungeon_service.cpp:789, zone dungeon_open dans world/zones.json), entrée via Varn (main.gd:2662 -> DUNGEON_ENTER_ZONE -> scène dungeon_bandit_den, zone client dungeon_lvl20_bandit_den), combats internes = pipeline zone standard donc origin_zone_id = dungeon_lvl20_bandit_den. « Première salle » mappée sur win_combats_in_zone count 1 (un avant-goût, pas un mur, difficulté easy sans clé, migration 053). Récompense : pas d'XP (cohérence économie, l'XP vient du contenu), unique_dam_rishon distribué via le canal générique kanarion.economy.inventory.add (economy charge uniques.json via UniqueStaticRegistry) : à smoke-tester au déploiement.",
-      "dialogue_give_fr": "Le tour est fini, place à l'épreuve. Présente-toi à Dargo, puis descends au Repaire des Bandits faire tomber un premier groupe. Et reviens entier, c'est tout ce que je demande.",
-      "dialogue_give_en": "The tour is over, time for the trial. Introduce yourself to Dargo, then head down into the Bandit Den and take out a first pack. And come back in one piece, that's all I ask.",
-      "dialogue_complete_fr": "Le Repaire, déjà ? Certains attendent des semaines avant d'oser y descendre. Tiens, un anneau qui a fait ses preuves : Dam Rishon. Dans la vieille langue, ça veut dire Premier Sang. Il ouvre bien les combats, tu verras.",
-      "dialogue_complete_en": "The Den already? Some wait weeks before daring to go down there. Here, a ring that has proven itself: Dam Rishon. In the old tongue, that means First Blood. It opens fights well, you'll see.",
-      "objectives": [
-        {
-          "template": "talk_to_npc",
-          "npc_id": "npc_arena_dargo",
-          "count": 1,
-          "description_fr": "Se présenter à Dargo, le Maître d'Arène",
-          "description_en": "Introduce yourself to Dargo, the Arena Master",
-          "_note": "Remplace le duel d'entraînement d'arène du plan (indétectable aujourd'hui, voir _comment). Reviendra en vrai duel quand le déclencheur arène + l'event quête existeront.",
-          "hints": {
-            "on_active": [
-              {
-                "id": "q_hub_tour_02_obj0_dargo",
-                "type": "arrow",
-                "target": "npc_arena_dargo",
-                "priority": 88,
-                "show_once": true,
-                "payload": {
-                  "label_fr": "Va voir Dargo",
-                  "label_en": "Go see Dargo"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "template": "enter_zone",
-          "zone_id": "dungeon_lvl20_bandit_den",
-          "count": 1,
-          "description_fr": "Entrer dans le Repaire des Bandits",
-          "description_en": "Enter the Bandit Den",
-          "_note": "Détection : presence zone_changed avec zone_id = dungeon_lvl20_bandit_den (zone dungeon_open, accès via Varn, difficulté easy sans clé).",
-          "hints": {
-            "on_active": [
-              {
-                "id": "q_hub_tour_02_obj1_varn",
-                "type": "arrow",
-                "target": "npc_bounty_hunter_varn",
-                "priority": 84,
-                "show_once": true,
-                "payload": {
-                  "label_fr": "L'accès au Repaire passe par Varn",
-                  "label_en": "Varn opens the way to the Den"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "template": "win_combats_in_zone",
-          "zone_id": "dungeon_lvl20_bandit_den",
-          "count": 1,
-          "description_fr": "Vaincre un premier groupe dans le Repaire",
-          "description_en": "Defeat a first pack in the Den",
-          "_note": "« Terminer la première salle » du plan, mappé sur la réalité : 1 victoire de combat dont origin_zone_id = dungeon_lvl20_bandit_den (server-driven, combat_host.cpp:4671 + quest_service.cpp:1542)."
-        }
-      ],
-      "rewards": {
-        "gold": 150,
-        "items": [
-          {
-            "id": "unique_dam_rishon",
-            "qty": 1
-          }
-        ]
-      },
-      "chain_next": "q_hub_tour_03"
-    },
-    {
-      "id": "q_hub_tour_03",
-      "type": "main",
-      "zone": "village",
-      "min_level": 1,
-      "title_fr": "La voie s'éveille",
-      "title_en": "The Path Awakens",
-      "summary_fr": "Tobin veut te revoir quand tu auras atteint le niveau 10. Le premier vrai cap d'un volontaire.",
-      "summary_en": "Tobin wants to see you again once you reach level 10. The first real milestone for a volunteer.",
-      "npc_giver": "npc_hub_guide_tobin",
-      "prerequisites": [
-        "q_hub_tour_02"
-      ],
-      "_comment": "Capstone jalon niveau 10 (décision backend 2026-07-21 : le gate sous-classe passera à lv10 en stopgap config ; le chiffre du jalon suivra le gate config à la release). Texte VOLONTAIREMENT sans revendication de déblocage mécanique : en playtest les skills de sous-classe sont disponibles dès le niveau 1 (character_manager.cpp:161). À la release, dialogue_complete pourra mentionner le déblocage des compétences de sous-classe. Nit backend connu : reach_level n'est pas réconcilié à l'accept (quest_service ne lit le level courant qu'aux CHARACTER_LEVELED_UP), un perso déjà au niveau cible doit prendre un niveau supplémentaire pour valider.",
-      "dialogue_give_fr": "Tu tiens sur tes jambes, c'est bien. Maintenant, va grandir. Missions, combats, donjons : tout compte. Reviens me voir au niveau 10. C'est là que les choses sérieuses commencent.",
-      "dialogue_give_en": "You can stand on your own two feet, good. Now go and grow. Missions, fights, dungeons: it all counts. Come back and see me at level 10. That's when things get serious.",
-      "dialogue_complete_fr": "Niveau 10 ! Tu n'es plus un débutant. Ta voie est tracée, et le village le sait maintenant. Montre ce qu'elle vaut.",
-      "dialogue_complete_en": "Level 10! You're no beginner anymore. Your path is set, and the village knows it now. Show what it's worth.",
-      "objectives": [
-        {
-          "template": "reach_level",
-          "level": 10,
-          "count": 1,
-          "description_fr": "Atteindre le niveau 10",
-          "description_en": "Reach level 10"
-        }
-      ],
-      "rewards": {
-        "gold": 200
-      }
     },
     {
       "id": "q_desert_first_crystal",
