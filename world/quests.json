@@ -1747,12 +1747,12 @@
           }
         },
         {
-          "template": "talk_to_npc",
-          "npc_id": "npc_naya",
+          "template": "receive_blessing",
+          "buff_id": "wbuff_naya_blessing",
           "count": 1,
-          "description_fr": "Passer voir Naya, la guérisseuse",
-          "description_en": "Stop by Naya, the healer",
-          "_note": "CIBLE PRODUIT : cet objectif doit devenir 'recois la benediction de Naya' plutot que 'parle-lui', pour montrer la mecanique de buff au joueur a la maniere de Ragnarok. Bloque sur deux choses. (1) Les actions npc_heal et npc_buff ont ete retirees des menus client (interaction_popup.gd) parce qu'elles appliquaient le soin en local sans que le serveur le sache ; elles attendent un endpoint serveur. (2) Aucun evenement de buff n'est publie, donc rien n'est comptable cote quete. Quand le buff persistant existera : publier sur kanarion.events.character.<BlessingReceived> comme le fait economy pour ItemEquipped, et ajouter un template receive_blessing dans SUPPORTED_TEMPLATES.",
+          "description_fr": "Te faire soigner par Naya",
+          "description_en": "Get healed by Naya",
+          "_note": "Livre 2026-08-22 : le back publie BlessingReceived depuis economy handle_tavern_rest (parametre par npc_id) et le template receive_blessing existe ; le client rebranche l'action sur le role soigneuse via npc_tavern, qui envoie deja le npc_id du PNJ clique. Le buff wbuff_naya_blessing vit dans stats/world_buffs.json.",
           "hints": {
             "on_active": [
               {
@@ -1789,16 +1789,11 @@
       "npc_giver": "npc_vendor_milo",
       "objectives": [
         {
-          "template": "kill_mobs",
-          "mobs": [
-            "mob_rat",
-            "mob_rat_jeune",
-            "mob_scarab",
-            "mob_scarab_larve"
-          ],
-          "count": 8,
-          "description_fr": "Abattre 8 bêtes près du village",
-          "description_en": "Bring down 8 beasts near the village"
+          "template": "buy_item",
+          "item_id": "cons_hp_potion_t1",
+          "count": 5,
+          "description_fr": "Acheter 5 potions de soin chez Milo",
+          "description_en": "Buy 5 healing potions from Milo"
         }
       ],
       "rewards": {
@@ -1811,7 +1806,7 @@
           }
         ]
       },
-      "_note": "Version provisoire. L'intention produit est 'achete N objets chez Milo' : elle attend l'evenement ItemPurchased (economy handle_buy_item, economy_service.cpp:4239) et le template buy_item cote quest. Basculer des qu'il existe."
+      "_note": "Bascule 2026-08-22 vers l'intention produit d'origine : acheter chez Milo. Template buy_item, filtre item_id, evenement ItemPurchased publie par economy handle_buy_item. La version chasse provisoire est retiree."
     },
     {
       "id": "q_gorik_crocs_et_cuirs",
@@ -1938,11 +1933,11 @@
       "npc_giver": "npc_familiar_breeder_colette",
       "objectives": [
         {
-          "template": "deposit_familiar_trace",
+          "template": "capture_familiar",
           "count": 1,
           "description_fr": "Faire éclore une empreinte de Souffle",
           "description_en": "Hatch a Breath imprint",
-          "_note": "TEMPLATE A CREER cote quest service. L'evenement existe DEJA et n'est ecoute par personne : kanarion.familiar.event.trace_deposited, publie par le service familier au depot d'une empreinte. C'est le cas le moins cher de la liste : une souscription dans QuestService::setup_subscriptions + l'entree dans SUPPORTED_TEMPLATES. TANT QU'IL N'EXISTE PAS, CETTE QUETE EST INFRANCHISSABLE."
+          "_note": "Livre back 2026-08-22 (62b47b1) : template capture_familiar branche sur kanarion.familiar.event.trace_deposited. Le champ optionnel est \"family\" (vide = n'importe quelle espece), volontairement laisse vide ici."
         }
       ],
       "rewards": {
