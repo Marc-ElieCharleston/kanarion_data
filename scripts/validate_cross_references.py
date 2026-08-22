@@ -167,6 +167,7 @@ def collect_all_item_ids(db: Path) -> set:
         "items/equipment.json",
         "items/panoplies.json",
         "items/uniques.json",
+        "items/pet_books.json",
     ]
 
     for rel_path in item_files:
