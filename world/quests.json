@@ -1691,6 +1691,48 @@
       "description_en": "The Tower collapses. You feel something inside you. Not victory. Something else. Return to Havreden. Everything has changed."
     },
     {
+      "id": "q_havreden_arrivee",
+      "type": "main",
+      "zone": "village",
+      "min_level": 1,
+      "auto_accept_on_zone_enter": "village",
+      "title_fr": "L'arrivée à Havreden",
+      "title_en": "Arriving in Havreden",
+      "summary_fr": "Aldric t'a dit de demander Tobin en arrivant. Il connaît le village mieux que personne, et il sait qui cherche des bras en ce moment.",
+      "summary_en": "Aldric told you to ask for Tobin when you got here. He knows the village better than anyone, and he knows who's looking for hands right now.",
+      "npc_giver": "npc_hub_guide_tobin",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_hub_guide_tobin",
+          "count": 1,
+          "description_fr": "Trouver Tobin, le guide du village",
+          "description_en": "Find Tobin, the village guide",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_arrivee_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_hub_guide_tobin",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Tobin",
+                  "label_en": "Go see Tobin"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "rewards": {
+        "xp": 100,
+        "gold": 40
+      },
+      "chain_next": "q_havreden_tour_01",
+      "_note": "Remplace quest_playtest_talk, que le client acceptait EN DUR a l'entree dans village (main.gd _check_auto_accept_quests) et dont l'objectif etait 'Rejoindre le desert' sur zone_id=village : elle se validait donc toute seule au premier pas dans Havreden. Ici c'est le mecanisme serveur auto_accept_on_zone_enter qui prend le relais, le meme que le tutoriel utilise sur tutorial_tavern. Elle comble le trou de fin de tutoriel : q_tut_intro_08 n'avait aucun chain_next, donc rien ne conduisait le joueur a Tobin alors qu'Aldric le lui dit."
+    },
+    {
       "id": "q_havreden_tour_01",
       "type": "main",
       "zone": "village",
@@ -2184,50 +2226,6 @@
         "gold": 300
       },
       "_note": "DEMANDE BACK : cette quete devrait s'auto-accepter a la montee au niveau 20, pas etre prise a 9. Il n'existe aujourd'hui que auto_accept_on_zone_enter, indexe sur la zone seule et sans filtre de niveau, et min_level n'est lu nulle part cote serveur. Ajouter un auto_accept_on_level symetrique : le service quete est DEJA abonne a kanarion.events.character.CharacterLeveledUp. Sans ca, un joueur qui ne clique jamais une quete (bash, PvP) n'apprend jamais ou debloquer sa sous-classe. En attendant, la quete est offerte des la vague 3 et reste au journal pendant onze niveaux."
-    },
-    {
-      "id": "quest_playtest_talk",
-      "type": "main",
-      "zone": "village",
-      "title_fr": "Vers le désert",
-      "title_en": "To the Desert",
-      "summary_fr": "Rends-toi dans le désert au sud du village pour commencer ton aventure.",
-      "summary_en": "Head to the desert south of the village to begin your adventure.",
-      "objectives": [
-        {
-          "template": "enter_zone",
-          "zone_id": "village",
-          "count": 1,
-          "description_fr": "Rejoindre le désert",
-          "description_en": "Reach the desert"
-        }
-      ],
-      "rewards": {
-        "xp": 100
-      },
-      "npc_giver": "npc_gm_villageois"
-    },
-    {
-      "id": "quest_playtest_intro",
-      "type": "main",
-      "zone": "village",
-      "title_fr": "L'aventure commence !",
-      "title_en": "The Adventure Begins!",
-      "summary_fr": "Rejoins le désert au sud et essaie d'atteindre le niveau 20. Amuse-toi bien !",
-      "summary_en": "Head to the desert south and try to reach level 20. Have fun!",
-      "objectives": [
-        {
-          "template": "reach_level",
-          "level": 20,
-          "count": 1,
-          "description_fr": "Atteindre le niveau 20",
-          "description_en": "Reach level 20"
-        }
-      ],
-      "rewards": {
-        "xp": 5000
-      },
-      "npc_giver": "npc_gm_villageois"
     },
     {
       "id": "quest_playtest_1",
@@ -3081,7 +3079,8 @@
         "xp": 240,
         "gold": 100
       },
-      "_note_hub_tour": "Lot B3a : PAS de chain_next vers q_hub_tour_01 ici, c'est VOULU. q_hub_tour_01 est attribuee par auto_accept_on_zone_enter=desert_playtest (couvre aussi les joueurs qui skippent le tuto, que le filtre client has_uncompleted_predecessor exclurait avec un chain). Un chain_next ici creerait en plus un double-accept (auto turn-in client tuto + auto-accept serveur zone) avec toast d'erreur visible."
+      "_note_hub_tour": "Lot B3a : PAS de chain_next vers q_hub_tour_01 ici, c'est VOULU. q_hub_tour_01 est attribuee par auto_accept_on_zone_enter=desert_playtest (couvre aussi les joueurs qui skippent le tuto, que le filtre client has_uncompleted_predecessor exclurait avec un chain). Un chain_next ici creerait en plus un double-accept (auto turn-in client tuto + auto-accept serveur zone) avec toast d'erreur visible.",
+      "chain_next": "q_havreden_arrivee"
     },
     {
       "id": "q_desert_first_crystal",
