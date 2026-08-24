@@ -30,7 +30,8 @@
         "pvp_filler_controller_v1"
       ]
     },
-    "calibration_philosophy": "Bot stats = class_base * growth(level) * role_multiplier. Multipliers calibrated so a lv23 bot reaches ~'real player no-stuff with passives+equipment+skill_levelups' feel (~780-1000 HP at lv23). Solo_helper kept a cran sous (PvE compagnon, owner master). V2.1 conservatrice (CTO 2026-05-16) : tanks ~3.8x HP, healers ~3.0x, dps ~2.8x ; damage tilts 1.3x (tank) to 2.5x (dps). PR-A2 follow-up."
+    "calibration_philosophy": "Bot stats = class_base * growth(level) * role_multiplier. Multipliers calibrated so a lv23 bot reaches ~'real player no-stuff with passives+equipment+skill_levelups' feel (~780-1000 HP at lv23). Solo_helper kept a cran sous (PvE compagnon, owner master). V2.1 conservatrice (CTO 2026-05-16) : tanks ~3.8x HP, healers ~3.0x, dps ~2.8x ; damage tilts 1.3x (tank) to 2.5x (dps). PR-A2 follow-up.",
+    "_removed_2026_08_24": "ai_intelligence_level, ai_decision_delay_ticks, aggro_bias, uses_high_skill_synergies, uses_consumables : parses dans les structs C++ et lus par personne. C'etaient des seuils d'IA, et KitBehavior est sans seuil par conception (il borne chaque gain a ce que la cible peut encaisser). Ne pas les readeclarer : ajouter le comportement au scorer."
   },
   "profiles": {
     "solo_helper_v1": {
@@ -39,12 +40,7 @@
       "healing_multiplier": 0.9,
       "shield_multiplier": 1.6,
       "hp_multiplier": 2.0,
-      "mp_multiplier": 1.3,
-      "ai_intelligence_level": 3,
-      "ai_decision_delay_ticks": 2,
-      "aggro_bias": 0.8,
-      "uses_high_skill_synergies": false,
-      "uses_consumables": false
+      "mp_multiplier": 1.3
     },
     "tutorial_sparring_ally_v1": {
       "_note": "Allies lv2 du sparring trinite tuto (config/tutorial_encounters.json scenario sparring_trinity). Spawn a level EXPLICITE 2 (pas de level_offset joueur). hp x2.0 = ~300 HP : contre des ennemis a damage x0.6, aucun allie ne meurt (la lecon porte sur la priorite de cible, pas la survie). IA lente (delay 3 ticks) pour que le joueur mene le combat.",
@@ -53,12 +49,7 @@
       "healing_multiplier": 1.0,
       "shield_multiplier": 1.2,
       "hp_multiplier": 2.0,
-      "mp_multiplier": 1.5,
-      "ai_intelligence_level": 3,
-      "ai_decision_delay_ticks": 3,
-      "aggro_bias": 1.0,
-      "uses_high_skill_synergies": false,
-      "uses_consumables": false
+      "mp_multiplier": 1.5
     },
     "tutorial_sparring_enemy_v1": {
       "_note": "Ennemis warrior + mage lv1 du sparring trinite tuto. damage x0.6 : le joueur ne peut pas perdre, mais sent la pression. hp x1.5 = ~225 HP : tombent en ~15-20s sous focus SANS heal ennemi, mais trainent des dizaines de secondes si le soigneur ennemi est ignore.",
@@ -67,12 +58,7 @@
       "healing_multiplier": 1.0,
       "shield_multiplier": 1.0,
       "hp_multiplier": 1.5,
-      "mp_multiplier": 1.5,
-      "ai_intelligence_level": 2,
-      "ai_decision_delay_ticks": 3,
-      "aggro_bias": 1.0,
-      "uses_high_skill_synergies": false,
-      "uses_consumables": false
+      "mp_multiplier": 1.5
     },
     "tutorial_sparring_enemy_healer_v1": {
       "_note": "LE coeur de la lecon 'tue le soigneur d'abord'. healing x2.5 : Soin 180% mag(10) = 18 -> 45 par cast / cd 8s = ~5.6 HP/s + HoT, assez pour quasi annuler le focus de l'equipe sur le tank ennemi (combat traine si ignore). hp x0.9 = ~135 HP : focus = tombe en ~15-25s malgre son self-heal. mp x2.5 = jamais a sec pendant la duree du tuto. Knobs de tuning : healing_multiplier (traine) et hp_multiplier (tombe).",
@@ -81,12 +67,7 @@
       "healing_multiplier": 2.5,
       "shield_multiplier": 1.5,
       "hp_multiplier": 0.9,
-      "mp_multiplier": 2.5,
-      "ai_intelligence_level": 3,
-      "ai_decision_delay_ticks": 2,
-      "aggro_bias": 0.3,
-      "uses_high_skill_synergies": false,
-      "uses_consumables": false
+      "mp_multiplier": 2.5
     },
     "pvp_filler_v1": {
       "level_offset": 0,
@@ -95,11 +76,6 @@
       "shield_multiplier": 1.7,
       "hp_multiplier": 2.5,
       "mp_multiplier": 1.7,
-      "ai_intelligence_level": 4,
-      "ai_decision_delay_ticks": 1,
-      "aggro_bias": 1.0,
-      "uses_high_skill_synergies": true,
-      "uses_consumables": false,
       "level_strategy": "average_team_level"
     },
     "pvp_filler_tank_v1": {
@@ -109,11 +85,7 @@
       "healing_multiplier": 1.1,
       "shield_multiplier": 2.6,
       "hp_multiplier": 3.8,
-      "mp_multiplier": 1.5,
-      "ai_intelligence_level": 4,
-      "aggro_bias": 1.5,
-      "uses_high_skill_synergies": true,
-      "uses_consumables": false
+      "mp_multiplier": 1.5
     },
     "pvp_filler_bruiser_v1": {
       "role": "bruiser",
@@ -122,11 +94,7 @@
       "healing_multiplier": 1.1,
       "shield_multiplier": 2.0,
       "hp_multiplier": 3.5,
-      "mp_multiplier": 1.5,
-      "ai_intelligence_level": 4,
-      "aggro_bias": 1.2,
-      "uses_high_skill_synergies": true,
-      "uses_consumables": false
+      "mp_multiplier": 1.5
     },
     "pvp_filler_healer_v1": {
       "role": "healer",
@@ -135,11 +103,7 @@
       "healing_multiplier": 1.4,
       "shield_multiplier": 1.8,
       "hp_multiplier": 3.0,
-      "mp_multiplier": 2.2,
-      "ai_intelligence_level": 5,
-      "aggro_bias": 0.3,
-      "uses_high_skill_synergies": true,
-      "uses_consumables": true
+      "mp_multiplier": 2.2
     },
     "pvp_filler_support_v1": {
       "role": "support",
@@ -148,11 +112,7 @@
       "healing_multiplier": 1.2,
       "shield_multiplier": 1.8,
       "hp_multiplier": 3.0,
-      "mp_multiplier": 2.0,
-      "ai_intelligence_level": 5,
-      "aggro_bias": 0.5,
-      "uses_high_skill_synergies": true,
-      "uses_consumables": false
+      "mp_multiplier": 2.0
     },
     "pvp_filler_dps_physical_v1": {
       "role": "dps_physical",
@@ -161,11 +121,7 @@
       "healing_multiplier": 1.0,
       "shield_multiplier": 1.7,
       "hp_multiplier": 2.8,
-      "mp_multiplier": 1.5,
-      "ai_intelligence_level": 4,
-      "aggro_bias": 1.0,
-      "uses_high_skill_synergies": true,
-      "uses_consumables": false
+      "mp_multiplier": 1.5
     },
     "pvp_filler_dps_magical_v1": {
       "role": "dps_magical",
@@ -174,11 +130,7 @@
       "healing_multiplier": 1.1,
       "shield_multiplier": 1.6,
       "hp_multiplier": 2.8,
-      "mp_multiplier": 2.2,
-      "ai_intelligence_level": 4,
-      "aggro_bias": 0.9,
-      "uses_high_skill_synergies": true,
-      "uses_consumables": false
+      "mp_multiplier": 2.2
     },
     "pvp_filler_dps_ranged_v1": {
       "role": "dps_ranged",
@@ -187,11 +139,7 @@
       "healing_multiplier": 1.0,
       "shield_multiplier": 1.6,
       "hp_multiplier": 2.8,
-      "mp_multiplier": 1.7,
-      "ai_intelligence_level": 4,
-      "aggro_bias": 0.8,
-      "uses_high_skill_synergies": true,
-      "uses_consumables": false
+      "mp_multiplier": 1.7
     },
     "pvp_filler_debuffer_v1": {
       "role": "debuffer",
@@ -200,11 +148,7 @@
       "healing_multiplier": 1.0,
       "shield_multiplier": 1.7,
       "hp_multiplier": 2.9,
-      "mp_multiplier": 1.9,
-      "ai_intelligence_level": 5,
-      "aggro_bias": 0.7,
-      "uses_high_skill_synergies": true,
-      "uses_consumables": false
+      "mp_multiplier": 1.9
     },
     "pvp_filler_controller_v1": {
       "role": "controller",
@@ -213,11 +157,7 @@
       "healing_multiplier": 1.1,
       "shield_multiplier": 1.8,
       "hp_multiplier": 3.0,
-      "mp_multiplier": 1.9,
-      "ai_intelligence_level": 5,
-      "aggro_bias": 0.8,
-      "uses_high_skill_synergies": true,
-      "uses_consumables": false
+      "mp_multiplier": 1.9
     }
   }
 }

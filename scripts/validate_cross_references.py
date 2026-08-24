@@ -647,6 +647,51 @@ def validate_rewards(db: Path) -> list:
     return errors
 
 
+def validate_mercenary_balance_slots(db: Path) -> list:
+    """Etape 9 - le profil de balance mercenaire doit correspondre a son CONTEXTE.
+
+    Deux champs, deux contextes, deux lecteurs distincts cote backend :
+      - balance_profile      -> PvE, lu par CombatHost::try_spawn_mercenary_for
+      - pvp_balance_profile  -> PvP, lu par le chemin arena bot-fill
+
+    Rien dans le format n'empechait d'ecrire un pvp_filler_* dans le slot PvE, et c'est ce
+    qui est arrive aux 24 archetypes subclass : un joueur qui en engageait un en PvE recevait
+    un bot a x2.2-2.5 degats et x2.8-3.8 PV sans malus de niveau, la ou un mercenaire de base
+    est a x1.5 / x2.0 / niveau -2. Invisible en test : les deux profils existent, les deux se
+    chargent, seul le contexte est faux.
+    """
+    errors = []
+    mercs_path = db / "entities" / "mercenaries.json"
+    bal_path = db / "config" / "mercenary_balance.json"
+    if not mercs_path.exists() or not bal_path.exists():
+        return errors
+
+    known = set(load_json(bal_path).get("profiles", {}).keys())
+
+    for m in load_json(mercs_path).get("mercenaries", []):
+        mid = m.get("id", "<no id>")
+        pve = m.get("balance_profile") or ""
+        pvp = m.get("pvp_balance_profile") or ""
+
+        if not pve:
+            errors.append(f"mercenaries.json: '{mid}' n'a pas de balance_profile (PvE)")
+        elif pve.startswith("pvp_filler_"):
+            errors.append(
+                f"mercenaries.json: '{mid}' porte le profil PvP '{pve}' dans balance_profile "
+                f"(slot PvE) - le deplacer dans pvp_balance_profile")
+        elif pve not in known:
+            errors.append(
+                f"mercenaries.json: '{mid}' balance_profile '{pve}' absent de "
+                f"config/mercenary_balance.json")
+
+        if pvp and pvp not in known:
+            errors.append(
+                f"mercenaries.json: '{mid}' pvp_balance_profile '{pvp}' absent de "
+                f"config/mercenary_balance.json")
+
+    return errors
+
+
 def main():
     # Find database root
     db_root = os.environ.get("DB_ROOT", "")
@@ -676,48 +721,52 @@ def main():
     # Run all validations
     all_errors = []
 
-    print("\n[1/8] Validating affix stat names...")
+    print("\n[1/9] Validating affix stat names...")
     errs = validate_affixes(db, valid_stats)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[2/8] Validating equipment_stats stat names...")
+    print("[2/9] Validating equipment_stats stat names...")
     errs = validate_equipment_stats(db, valid_stats)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[3/8] Validating class_tags...")
+    print("[3/9] Validating class_tags...")
     errs = validate_class_tags(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[4/8] Validating loot table item references...")
+    print("[4/9] Validating loot table item references...")
     all_item_ids = collect_all_item_ids(db)
     print(f"  Collected {len(all_item_ids)} item IDs from database")
     errs = validate_loot_table_refs(db, all_item_ids)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[5/8] Validating set_id references...")
+    print("[5/9] Validating set_id references...")
     errs = validate_set_ids(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[6/8] Validating recipe output_item references...")
+    print("[6/9] Validating recipe output_item references...")
     errs = validate_recipe_outputs(db, all_item_ids)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[7/8] Validating item rank bands (C->SS) across their 3 copies...")
+    print("[7/9] Validating item rank bands (C->SS) across their 3 copies...")
     errs = validate_item_ranks(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[8/8] Validating rewards contract (config/rewards.json)...")
+    print("[8/9] Validating rewards contract (config/rewards.json)...")
     errs = validate_rewards(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
+    print("[9/9] Validating mercenary balance profile slots (PvE vs PvP)...")
+    errs = validate_mercenary_balance_slots(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
     # Report
     print("\n" + "=" * 60)
     if all_errors:
