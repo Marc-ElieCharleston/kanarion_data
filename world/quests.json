@@ -1919,6 +1919,7 @@
         "xp": 350,
         "gold": 120
       },
+      "chain_next": "q_havreden_tour_03",
       "_note": "Vague 2 du tour de Havreden (niveau 7). Verena reste une etape de service : aucun evenement de guilde n'est publie par le service guilde, donc rien n'est comptable cote quete."
     },
     {
@@ -2000,6 +2001,189 @@
         "gold": 180
       },
       "_note": "recruit_mercenary est branche (souscription a kanarion.mercenary.event.hired). Sequential : engager d'abord, se battre ensuite, sinon les 5 combats peuvent etre gagnes sans mercenaire et la lecon tombe a plat."
+    },
+    {
+      "id": "q_havreden_tour_03",
+      "type": "main",
+      "zone": "village",
+      "min_level": 9,
+      "title_fr": "Où aller maintenant",
+      "title_en": "Where To Go Now",
+      "summary_fr": "Tu sais te battre et tu as de quoi tenir. Reste à savoir où trouver du travail. Varn paye pour les têtes, Dargo prête son arène pour s'entraîner, et Soren s'occupe des voies quand tu seras assez haut.",
+      "summary_en": "You can fight and you have what it takes to hold out. What's left is knowing where to find work. Varn pays for heads, Dargo lends his arena for training, and Soren handles the paths once you're high enough.",
+      "npc_giver": "npc_hub_guide_tobin",
+      "objective_mode": "parallel",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_bounty_hunter_varn",
+          "count": 1,
+          "description_fr": "Parler à Varn, le chasseur de primes",
+          "description_en": "Talk to Varn, the bounty hunter",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_tour_03_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_bounty_hunter_varn",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Varn",
+                  "label_en": "Go see Varn"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_arena_dargo",
+          "count": 1,
+          "description_fr": "Parler à Dargo, le maître d'arène",
+          "description_en": "Talk to Dargo, the arena master",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_tour_03_obj1_arrow",
+                "type": "arrow",
+                "target": "npc_arena_dargo",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Dargo",
+                  "label_en": "Go see Dargo"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_class_master_elwin",
+          "count": 1,
+          "description_fr": "Parler à Soren, le maître des Voies",
+          "description_en": "Talk to Soren, the Master of Paths",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_tour_03_obj2_arrow",
+                "type": "arrow",
+                "target": "npc_class_master_elwin",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Soren",
+                  "label_en": "Go see Soren"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "rewards": {
+        "xp": 450,
+        "gold": 150
+      },
+      "_note": "Vague 3 du tour de Havreden (niveau 9)."
+    },
+    {
+      "id": "q_varn_egouts",
+      "type": "side",
+      "zone": "village",
+      "min_level": 9,
+      "title_fr": "Une première piste",
+      "title_en": "A First Lead",
+      "summary_fr": "Le voyageur qui traîne au village a dit à Varn que les rats des égouts sont devenus bien plus agressifs qu'avant. Il veut que quelqu'un descende voir, et il préfère que tu n'y ailles pas seul.",
+      "summary_en": "The traveller hanging around the village told Varn the sewer rats have turned far more aggressive than they used to be. He wants someone to go down and look, and he'd rather you didn't go alone.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "objectives": [
+        {
+          "template": "enter_zone",
+          "zone_id": "dungeon_rat_den_f1_fissure_1",
+          "count": 1,
+          "description_fr": "Entrer dans les Égouts de Havreden",
+          "description_en": "Enter the Havreden Sewers",
+          "_note": "Cible la zone du PREMIER ETAGE : aucune zone plate 'dungeon_rat_den' n'existe dans zones.json, seules les zones d'etage dungeon_rat_den_f<N>_fissure_1. Le donjon est en niveau 10-14, la quete est offerte a 9 : c'est volontaire, le joueur monte un niveau en chemin."
+        }
+      ],
+      "rewards": {
+        "xp": 500,
+        "gold": 200
+      },
+      "_note": "Le voyageur cite ici est npc_wanderer (Le Marcheur). Varn ne le nomme pas : pour lui c'est un voyageur de passage. C'est la premiere apparition de X dans une quete."
+    },
+    {
+      "id": "q_dargo_arene",
+      "type": "side",
+      "zone": "village",
+      "min_level": 9,
+      "title_fr": "Teste tes compétences",
+      "title_en": "Test Your Skills",
+      "summary_fr": "Le meilleur moyen de devenir fort, c'est de se battre, et tant qu'à faire autant s'entraîner entre nous. Lance un combat d'arène et gagne-le.",
+      "summary_en": "The best way to get strong is to fight, and if you're going to fight you may as well train against each other. Start an arena match and win it.",
+      "npc_giver": "npc_arena_dargo",
+      "objectives": [
+        {
+          "template": "win_arena",
+          "count": 1,
+          "description_fr": "Remporter un combat d'arène",
+          "description_en": "Win an arena match"
+        }
+      ],
+      "rewards": {
+        "xp": 500,
+        "gold": 200
+      },
+      "_note": "Premiere quete PvP du jeu. Template win_arena livre le 2026-08-22 (62b47b1), avance sur l'evenement match_ended republie par le service pvp."
+    },
+    {
+      "id": "q_soren_voie",
+      "type": "main",
+      "zone": "village",
+      "min_level": 9,
+      "title_fr": "Reviens quand tu seras prêt",
+      "title_en": "Come Back When You're Ready",
+      "summary_fr": "Soren ne peut rien pour toi avant le niveau vingt. Va gagner de l'expérience, et retourne le voir quand tu y seras : c'est lui qui ouvre les sous-classes.",
+      "summary_en": "Soren can do nothing for you before level twenty. Go and earn your experience, then go back to him when you get there: he is the one who opens the subclasses.",
+      "npc_giver": "npc_class_master_elwin",
+      "objective_mode": "sequential",
+      "objectives": [
+        {
+          "template": "reach_level",
+          "level": 20,
+          "count": 1,
+          "description_fr": "Atteindre le niveau 20",
+          "description_en": "Reach level 20"
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_class_master_elwin",
+          "count": 1,
+          "description_fr": "Retourner voir Soren",
+          "description_en": "Go back to Soren",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_soren_voie_obj1_arrow",
+                "type": "arrow",
+                "target": "npc_class_master_elwin",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Soren",
+                  "label_en": "Go see Soren"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "rewards": {
+        "xp": 800,
+        "gold": 300
+      },
+      "_note": "DEMANDE BACK : cette quete devrait s'auto-accepter a la montee au niveau 20, pas etre prise a 9. Il n'existe aujourd'hui que auto_accept_on_zone_enter, indexe sur la zone seule et sans filtre de niveau, et min_level n'est lu nulle part cote serveur. Ajouter un auto_accept_on_level symetrique : le service quete est DEJA abonne a kanarion.events.character.CharacterLeveledUp. Sans ca, un joueur qui ne clique jamais une quete (bash, PvP) n'apprend jamais ou debloquer sa sous-classe. En attendant, la quete est offerte des la vague 3 et reste au journal pendant onze niveaux."
     },
     {
       "id": "quest_playtest_talk",
