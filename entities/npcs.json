@@ -2,7 +2,8 @@
   "_meta": {
     "version": "3.1",
     "last_updated": "2026-04-26",
-    "description": "NPCs: service, quest, class_master, ambient. Enriched profiles with dialogues, shop inventory, bilingual text."
+    "description": "NPCs: service, quest, class_master, ambient. Enriched profiles with dialogues, shop inventory, bilingual text.",
+    "ambient_npcs_note": "PNJ d'ambiance du village. Ils n'existaient qu'en @export dans havreden_map.tscn, donc _update_labels() ne trouvait aucune entree et retombait sur le role FR en dur : un joueur EN voyait 26 roles francais autour du village. role_fr est recopie OCTET POUR OCTET depuis la scene, car normalize_role_key(role_fr) est la cle qui choisit les actions du popup d'interaction (chat_du_marche -> Caresser, garde -> Parler...) : la retoucher retirerait des interactions du jeu. Seul role_en est nouveau. Les PNJ sans npc_id_override prennent l'id derive par get_npc_id() : 'npc_' + display_name en minuscules, espaces en underscores."
   },
   "types": [
     "service",
@@ -3743,64 +3744,212 @@
   ],
   "ambient_npcs": [
     {
-      "id": "amb_villager_01",
-      "name": "Villager",
-      "type": "standing",
-      "day_night": "day"
+      "id": "npc_wanderer",
+      "name_fr": "Le Marcheur",
+      "name_en": "The Wanderer",
+      "role_fr": "Voyageur",
+      "role_en": "Wanderer",
+      "location": "havreden"
     },
     {
-      "id": "amb_guard_01",
-      "name": "Patrolling Guard",
-      "type": "patrol",
-      "day_night": "any"
+      "id": "npc_chat_marche",
+      "name_fr": "Moustache",
+      "name_en": "Moustache",
+      "role_fr": "Chat du Marche",
+      "role_en": "Market Cat",
+      "location": "havreden"
     },
     {
-      "id": "amb_child_01",
-      "name": "Running Child",
-      "type": "running",
-      "day_night": "day"
+      "id": "npc_enfant_court",
+      "name_fr": "Tim",
+      "name_en": "Tim",
+      "role_fr": "Enfant",
+      "role_en": "Child",
+      "location": "havreden"
     },
     {
-      "id": "amb_cat_01",
-      "name": "Market Cat",
-      "type": "idle",
-      "day_night": "any"
+      "id": "npc_perrin",
+      "name_fr": "Perrin",
+      "name_en": "Perrin",
+      "role_fr": "Villageois",
+      "role_en": "Villager",
+      "location": "havreden"
     },
     {
-      "id": "amb_dog_01",
-      "name": "Wandering Dog",
-      "type": "wander",
-      "day_night": "any"
+      "id": "npc_nils",
+      "name_fr": "Nils",
+      "name_en": "Nils",
+      "role_fr": "Apprenti",
+      "role_en": "Apprentice",
+      "location": "havreden"
     },
     {
-      "id": "amb_farmer_01",
-      "name": "Farmer",
-      "type": "carry",
-      "day_night": "day"
+      "id": "npc_maelle",
+      "name_fr": "Maelle",
+      "name_en": "Maelle",
+      "role_fr": "Fermiere",
+      "role_en": "Farmer",
+      "location": "havreden"
     },
     {
-      "id": "amb_tavern_patron_01",
-      "name": "Tavern Patron",
-      "type": "sitting",
-      "day_night": "night"
+      "id": "npc_brise",
+      "name_fr": "Brise",
+      "name_en": "Brise",
+      "role_fr": "Serveuse",
+      "role_en": "Server",
+      "location": "havreden"
     },
     {
-      "id": "amb_priest_01",
-      "name": "Praying Faithful",
-      "type": "kneeling",
-      "day_night": "any"
+      "id": "npc_alise",
+      "name_fr": "Alise",
+      "name_en": "Alise",
+      "role_fr": "Villageoise",
+      "role_en": "Villager",
+      "location": "havreden"
     },
     {
-      "id": "amb_fisher_01",
-      "name": "Silent Fisher",
-      "type": "fishing",
-      "day_night": "day"
+      "id": "npc_nara",
+      "name_fr": "Nara",
+      "name_en": "Nara",
+      "role_fr": "Doyenne",
+      "role_en": "Elder",
+      "location": "havreden"
     },
     {
-      "id": "amb_messenger_01",
-      "name": "Hurrying Messenger",
-      "type": "running",
-      "day_night": "any"
+      "id": "npc_aldo",
+      "name_fr": "Aldo",
+      "name_en": "Aldo",
+      "role_fr": "Garde",
+      "role_en": "Guard",
+      "location": "havreden"
+    },
+    {
+      "id": "npc_marcus",
+      "name_fr": "Marcus",
+      "name_en": "Marcus",
+      "role_fr": "Garde",
+      "role_en": "Guard",
+      "location": "havreden"
+    },
+    {
+      "id": "npc_villageoise_simone",
+      "name_fr": "Simone",
+      "name_en": "Simone",
+      "role_fr": "Villageoise",
+      "role_en": "Villager",
+      "location": "havreden"
+    },
+    {
+      "id": "npc_farmer_owen",
+      "name_fr": "Owen",
+      "name_en": "Owen",
+      "role_fr": "Fermier",
+      "role_en": "Farmer",
+      "location": "havreden"
+    },
+    {
+      "id": "npc_refugee_lena",
+      "name_fr": "Lena",
+      "name_en": "Lena",
+      "role_fr": "Refugie",
+      "role_en": "Refugee",
+      "location": "havreden"
+    },
+    {
+      "id": "npc_zealot_repenti_kael",
+      "name_fr": "Kael",
+      "name_en": "Kael",
+      "role_fr": "Zelote Repenti",
+      "role_en": "Repentant Zealot",
+      "location": "havreden"
+    },
+    {
+      "id": "npc_villageois_fermiere",
+      "name_fr": "Rosine",
+      "name_en": "Rosine",
+      "role_fr": "Fermiere",
+      "role_en": "Farmer",
+      "location": "havreden"
+    },
+    {
+      "id": "npc_villageois_apprenti",
+      "name_fr": "Elian",
+      "name_en": "Elian",
+      "role_fr": "Apprenti",
+      "role_en": "Apprentice",
+      "location": "havreden"
+    },
+    {
+      "id": "npc_villageois_garde",
+      "name_fr": "Felix",
+      "name_en": "Felix",
+      "role_fr": "Garde",
+      "role_en": "Guard",
+      "location": "havreden"
+    },
+    {
+      "id": "npc_sevik",
+      "name_fr": "Conseiller Sevik",
+      "name_en": "Councillor Sevik",
+      "role_fr": "Conseiller",
+      "role_en": "Councillor",
+      "location": "havreden"
+    },
+    {
+      "id": "npc_villager_01",
+      "name_fr": "Elara",
+      "name_en": "Elara",
+      "role_fr": "Villageoise",
+      "role_en": "Villager",
+      "location": "havreden"
+    },
+    {
+      "id": "npc_villager_02",
+      "name_fr": "Dorian",
+      "name_en": "Dorian",
+      "role_fr": "Berger",
+      "role_en": "Shepherd",
+      "location": "havreden"
+    },
+    {
+      "id": "npc_villager_03",
+      "name_fr": "Hilda",
+      "name_en": "Hilda",
+      "role_fr": "Herboriste",
+      "role_en": "Herbalist",
+      "location": "havreden"
+    },
+    {
+      "id": "npc_villager_04",
+      "name_fr": "Gaspard",
+      "name_en": "Gaspard",
+      "role_fr": "Soldat",
+      "role_en": "Soldier",
+      "location": "havreden"
+    },
+    {
+      "id": "npc_villager_05",
+      "name_fr": "Nessa",
+      "name_en": "Nessa",
+      "role_fr": "Marchande itinérante",
+      "role_en": "Travelling Merchant",
+      "location": "havreden"
+    },
+    {
+      "id": "npc_rochebourg_villager",
+      "name_fr": "Villageois Rochebourg",
+      "name_en": "Rochebourg Villager",
+      "role_fr": "Habitant",
+      "role_en": "Resident",
+      "location": "havreden"
+    },
+    {
+      "id": "npc_marcheur_pecheur",
+      "name_fr": "Pecheur",
+      "name_en": "Fisher",
+      "role_fr": "Marcheur Pecheur",
+      "role_en": "Fisher Wanderer",
+      "location": "havreden"
     }
   ],
   "special_npcs": [
