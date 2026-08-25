@@ -110,6 +110,101 @@
       "_safe_polygon_note": "Contour du village, lu par le serveur (presence_service : toute position de pack tiree a l'interieur est rejetee, quelle que soit la bande). Transcrit depuis le Polygon2D 'Village area' de kanarion_front/scenes/world/havreden_map.tscn (position + polygon x scale). Le .tscn est l'outil de DESSIN, ce champ est la donnee serveur : si le polygone bouge cote client, resynchroniser ici, sinon l'art et les spawns rederivent en silence.",
       "spawn_areas": [
         {
+          "id": "hav_nord",
+          "name_fr": "Prairies du Nord",
+          "name_en": "Northern Meadows",
+          "level_range": [
+            1,
+            10
+          ],
+          "count": 90,
+          "max_stars": 2,
+          "bounds": {
+            "x_min": 0,
+            "x_max": 5120,
+            "y_min": 0,
+            "y_max": 850
+          },
+          "mobs": [
+            {
+              "id": "mob_rat",
+              "weight": 13
+            },
+            {
+              "id": "mob_rat_jeune",
+              "weight": 13
+            },
+            {
+              "id": "mob_rat_tutorial",
+              "weight": 13
+            },
+            {
+              "id": "mob_rat_alpha",
+              "weight": 13
+            },
+            {
+              "id": "mob_scarab",
+              "weight": 13
+            },
+            {
+              "id": "mob_scarab_larve",
+              "weight": 13
+            },
+            {
+              "id": "mob_scarab_geant",
+              "weight": 13
+            },
+            {
+              "id": "mob_boar",
+              "weight": 13
+            },
+            {
+              "id": "mob_enraged_boar",
+              "weight": 13
+            },
+            {
+              "id": "mob_wolf",
+              "weight": 12
+            },
+            {
+              "id": "mob_wolf_soigneur",
+              "weight": 8
+            },
+            {
+              "id": "mob_frothing_wolf",
+              "weight": 13
+            },
+            {
+              "id": "mob_wolf_packleader",
+              "weight": 8
+            },
+            {
+              "id": "mob_rock_scorpion",
+              "weight": 11
+            },
+            {
+              "id": "mob_belier",
+              "weight": 11
+            },
+            {
+              "id": "mob_alpha_hyena",
+              "weight": 13
+            },
+            {
+              "id": "mob_hyene",
+              "weight": 14
+            },
+            {
+              "id": "mob_taureau",
+              "weight": 11
+            },
+            {
+              "id": "mob_hyene_soigneur",
+              "weight": 10
+            }
+          ]
+        },
+        {
           "id": "hav_flanc_ouest",
           "name_fr": "Lisiere Ouest",
           "name_en": "West Verge",
@@ -972,7 +1067,7 @@
           ]
         }
       ],
-      "_pack_composition_doc": "Anneau lv1-30 autour du village (flancs lv1-10 + bandes sud lv1-10/11-20/21-30), puis descente lv31-100 plein sud, mobs de plus en plus corrompus (culte -> corruption -> faille -> abysses). Etoiles independantes du niveau. ATTENTION : il n'y a AUCUNE bande au nord — rien ne couvre y<850. L'anneau est un arc ouest/est/sud, perce au nord ; la bande nord annoncee par cette note depuis l'origine n'a jamais ete ecrite.",
+      "_pack_composition_doc": "Anneau lv1-10 ferme autour du village : hav_nord (y[0,850] pleine largeur), hav_flanc_ouest, hav_flanc_est, hav_sud_1. Un joueur qui sort du village dans n'importe quelle direction rencontre des betes de son niveau. Puis descente plein sud : lv11-20, lv21-30, et lv31-100 de plus en plus corrompus (culte -> corruption -> faille -> abysses). Etoiles independantes du niveau. hav_nord est plafonne a 2 etoiles : c'est la premiere bande qu'un debutant croise, et un testeur a signale des rencontres trop dures au niveau debutant. Les bandes se declarent en rectangles pleins et se font decouper par safe_polygon — inutile de contourner le village a la main.",
       "_sanctuaire_note": "Le sanctuaire n'est plus un rectangle : voir safe_polygon. L'ancien rect x[900,4250] y[0,2700] etait faux — le village dessine deborde des deux cotes, donc hav_flanc_ouest et hav_flanc_est mordaient dedans : d'ou les rats en pleine ville. Contour agrandi et fige par Charleston le 2026-08-24. Mesure du filtre sur 20k tirages par bande : hav_flanc_est 28.4%, toutes les autres 0%. Aucune bande perdue."
     },
     {
