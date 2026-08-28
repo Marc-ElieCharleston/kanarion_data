@@ -131,119 +131,180 @@
       "description_en": "The beasts in the Green Plains have grown nervous. Aldric asks you to thin out their ranks."
     },
     {
-      "id": "q_contract_chasse_c",
+      "id": "q_contract_chasse_c_1",
       "type": "repeatable",
       "zone": "village",
-      "min_level": 5,
+      "min_level": 1,
       "contract_rank": "C",
-      "title_fr": "Chasse (rang C)",
-      "title_en": "Hunt (rank C)",
-      "summary_fr": "Varn paye a la tete. Abats 10 creatures, il ne demande pas lesquelles.",
-      "summary_en": "Varn pays by the head. Bring down 10 creatures, he doesn't ask which.",
+      "contract_band": [
+        1,
+        20
+      ],
+      "title_fr": "Chasse 1-20 (rang C)",
+      "title_en": "Hunt 1-20 (rank C)",
+      "summary_fr": "Varn paye à la tête. Abats 10 créatures dans les alentours du village, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 10 creatures in the land around the village, he doesn't ask which.",
       "npc_giver": "npc_bounty_hunter_varn",
       "repeatable": true,
       "objectives": [
         {
           "template": "kill_mobs",
           "count": 10,
-          "description_fr": "Abattre 10 créatures",
-          "description_en": "Bring down 10 creatures"
+          "description_fr": "Abattre 10 créatures de niveau 1 à 20",
+          "description_en": "Bring down 10 creatures of level 1 to 20",
+          "min_mob_level": 1,
+          "max_mob_level": 20
         }
       ],
       "rewards": {
-        "xp": 20,
-        "gold": 10
+        "xp": 40,
+        "gold": 20
       },
-      "_note": "Panneau de contrats de Varn. Le champ contract_rank (C/B/A/S) est LU PAR LE CLIENT pour regrouper les contrats par rang sur le panneau ; il n'est pas lu par le serveur, qui ne voit qu'une repeatable de plus. Bareme volontairement plat en bas de gamme : un rang C rapporte 6% du niveau suivant, un rang S 20%. Farmer du C reste possible et reste peu rentable, c'est l'objectif."
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
     },
     {
-      "id": "q_contract_endurance_c",
+      "id": "q_contract_endurance_c_1",
       "type": "repeatable",
       "zone": "village",
-      "min_level": 5,
+      "min_level": 1,
       "contract_rank": "C",
-      "title_fr": "Endurance (rang C)",
-      "title_en": "Endurance (rank C)",
-      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 3 combats.",
-      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 3 fights.",
+      "contract_band": [
+        1,
+        20
+      ],
+      "title_fr": "Endurance 1-20 (rang C)",
+      "title_en": "Endurance 1-20 (rank C)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 3 combats dans les alentours du village.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 3 fights in the land around the village.",
       "npc_giver": "npc_bounty_hunter_varn",
       "repeatable": true,
       "objectives": [
         {
           "template": "win_combats",
           "count": 3,
-          "description_fr": "Remporter 3 combats",
-          "description_en": "Win 3 fights"
+          "description_fr": "Remporter 3 combats contre du niveau 1 à 20",
+          "description_en": "Win 3 fights against level 1 to 20",
+          "min_mob_level": 1,
+          "max_mob_level": 20
         }
       ],
       "rewards": {
-        "xp": 20,
-        "gold": 10
+        "xp": 40,
+        "gold": 20
       },
-      "_note": "Panneau de contrats de Varn. Le champ contract_rank (C/B/A/S) est LU PAR LE CLIENT pour regrouper les contrats par rang sur le panneau ; il n'est pas lu par le serveur, qui ne voit qu'une repeatable de plus. Bareme volontairement plat en bas de gamme : un rang C rapporte 6% du niveau suivant, un rang S 20%. Farmer du C reste possible et reste peu rentable, c'est l'objectif."
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
     },
     {
-      "id": "q_contract_chasse_b",
+      "id": "q_contract_meute_c_1",
       "type": "repeatable",
       "zone": "village",
-      "min_level": 12,
+      "min_level": 1,
+      "contract_rank": "C",
+      "contract_band": [
+        1,
+        20
+      ],
+      "title_fr": "Meute 1-20 (rang C)",
+      "title_en": "Pack 1-20 (rank C)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 2 dans les alentours du village.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 2 of them in the land around the village.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 2,
+          "stars": 2,
+          "description_fr": "Disperser 2 groupes de 2 étoiles, niveau 1 à 20",
+          "description_en": "Scatter 2 packs of 2 stars, level 1 to 20",
+          "min_mob_level": 1,
+          "max_mob_level": 20
+        }
+      ],
+      "rewards": {
+        "xp": 40,
+        "gold": 20
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_chasse_b_1",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 1,
       "contract_rank": "B",
-      "title_fr": "Chasse (rang B)",
-      "title_en": "Hunt (rank B)",
-      "summary_fr": "Varn paye a la tete. Abats 15 creatures, il ne demande pas lesquelles.",
-      "summary_en": "Varn pays by the head. Bring down 15 creatures, he doesn't ask which.",
+      "contract_band": [
+        1,
+        20
+      ],
+      "title_fr": "Chasse 1-20 (rang B)",
+      "title_en": "Hunt 1-20 (rank B)",
+      "summary_fr": "Varn paye à la tête. Abats 15 créatures dans les alentours du village, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 15 creatures in the land around the village, he doesn't ask which.",
       "npc_giver": "npc_bounty_hunter_varn",
       "repeatable": true,
       "objectives": [
         {
           "template": "kill_mobs",
           "count": 15,
-          "description_fr": "Abattre 15 créatures",
-          "description_en": "Bring down 15 creatures"
+          "description_fr": "Abattre 15 créatures de niveau 1 à 20",
+          "description_en": "Bring down 15 creatures of level 1 to 20",
+          "min_mob_level": 1,
+          "max_mob_level": 20
         }
       ],
       "rewards": {
-        "xp": 90,
-        "gold": 45
+        "xp": 70,
+        "gold": 35
       },
-      "_note": "Panneau de contrats de Varn. Le champ contract_rank (C/B/A/S) est LU PAR LE CLIENT pour regrouper les contrats par rang sur le panneau ; il n'est pas lu par le serveur, qui ne voit qu'une repeatable de plus. Bareme volontairement plat en bas de gamme : un rang C rapporte 6% du niveau suivant, un rang S 20%. Farmer du C reste possible et reste peu rentable, c'est l'objectif."
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
     },
     {
-      "id": "q_contract_endurance_b",
+      "id": "q_contract_endurance_b_1",
       "type": "repeatable",
       "zone": "village",
-      "min_level": 12,
+      "min_level": 1,
       "contract_rank": "B",
-      "title_fr": "Endurance (rang B)",
-      "title_en": "Endurance (rank B)",
-      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 5 combats.",
-      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 5 fights.",
+      "contract_band": [
+        1,
+        20
+      ],
+      "title_fr": "Endurance 1-20 (rang B)",
+      "title_en": "Endurance 1-20 (rank B)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 5 combats dans les alentours du village.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 5 fights in the land around the village.",
       "npc_giver": "npc_bounty_hunter_varn",
       "repeatable": true,
       "objectives": [
         {
           "template": "win_combats",
           "count": 5,
-          "description_fr": "Remporter 5 combats",
-          "description_en": "Win 5 fights"
+          "description_fr": "Remporter 5 combats contre du niveau 1 à 20",
+          "description_en": "Win 5 fights against level 1 to 20",
+          "min_mob_level": 1,
+          "max_mob_level": 20
         }
       ],
       "rewards": {
-        "xp": 90,
-        "gold": 45
+        "xp": 70,
+        "gold": 35
       },
-      "_note": "Panneau de contrats de Varn. Le champ contract_rank (C/B/A/S) est LU PAR LE CLIENT pour regrouper les contrats par rang sur le panneau ; il n'est pas lu par le serveur, qui ne voit qu'une repeatable de plus. Bareme volontairement plat en bas de gamme : un rang C rapporte 6% du niveau suivant, un rang S 20%. Farmer du C reste possible et reste peu rentable, c'est l'objectif."
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
     },
     {
-      "id": "q_contract_meute_b",
+      "id": "q_contract_meute_b_1",
       "type": "repeatable",
       "zone": "village",
-      "min_level": 12,
+      "min_level": 1,
       "contract_rank": "B",
-      "title_fr": "Meute (rang B)",
-      "title_en": "Pack (rank B)",
-      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les plus dangereux, et les mieux payes. Disperse-en 2.",
-      "summary_en": "The packs the Fissure holds hardest are the most dangerous, and the best paid. Scatter 2 of them.",
+      "contract_band": [
+        1,
+        20
+      ],
+      "title_fr": "Meute 1-20 (rang B)",
+      "title_en": "Pack 1-20 (rank B)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 2 dans les alentours du village.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 2 of them in the land around the village.",
       "npc_giver": "npc_bounty_hunter_varn",
       "repeatable": true,
       "objectives": [
@@ -251,173 +312,1787 @@
           "template": "clear_star_packs",
           "count": 2,
           "stars": 3,
-          "description_fr": "Disperser 2 groupes de 3 étoiles ou plus",
-          "description_en": "Scatter 2 packs of 3 stars or more"
+          "description_fr": "Disperser 2 groupes de 3 étoiles, niveau 1 à 20",
+          "description_en": "Scatter 2 packs of 3 stars, level 1 to 20",
+          "min_mob_level": 1,
+          "max_mob_level": 20
         }
       ],
       "rewards": {
-        "xp": 90,
-        "gold": 45
+        "xp": 70,
+        "gold": 35
       },
-      "_note": "Panneau de contrats de Varn. Le champ contract_rank (C/B/A/S) est LU PAR LE CLIENT pour regrouper les contrats par rang sur le panneau ; il n'est pas lu par le serveur, qui ne voit qu'une repeatable de plus. Bareme volontairement plat en bas de gamme : un rang C rapporte 6% du niveau suivant, un rang S 20%. Farmer du C reste possible et reste peu rentable, c'est l'objectif."
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
     },
     {
-      "id": "q_contract_chasse_a",
+      "id": "q_contract_chasse_a_1",
       "type": "repeatable",
       "zone": "village",
-      "min_level": 20,
+      "min_level": 1,
       "contract_rank": "A",
-      "title_fr": "Chasse (rang A)",
-      "title_en": "Hunt (rank A)",
-      "summary_fr": "Varn paye a la tete. Abats 20 creatures, il ne demande pas lesquelles.",
-      "summary_en": "Varn pays by the head. Bring down 20 creatures, he doesn't ask which.",
+      "contract_band": [
+        1,
+        20
+      ],
+      "title_fr": "Chasse 1-20 (rang A)",
+      "title_en": "Hunt 1-20 (rank A)",
+      "summary_fr": "Varn paye à la tête. Abats 20 créatures dans les alentours du village, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 20 creatures in the land around the village, he doesn't ask which.",
       "npc_giver": "npc_bounty_hunter_varn",
       "repeatable": true,
       "objectives": [
         {
           "template": "kill_mobs",
           "count": 20,
-          "description_fr": "Abattre 20 créatures",
-          "description_en": "Bring down 20 creatures"
+          "description_fr": "Abattre 20 créatures de niveau 1 à 20",
+          "description_en": "Bring down 20 creatures of level 1 to 20",
+          "min_mob_level": 1,
+          "max_mob_level": 20
         }
       ],
       "rewards": {
-        "xp": 330,
-        "gold": 165
+        "xp": 95,
+        "gold": 50
       },
-      "_note": "Panneau de contrats de Varn. Le champ contract_rank (C/B/A/S) est LU PAR LE CLIENT pour regrouper les contrats par rang sur le panneau ; il n'est pas lu par le serveur, qui ne voit qu'une repeatable de plus. Bareme volontairement plat en bas de gamme : un rang C rapporte 6% du niveau suivant, un rang S 20%. Farmer du C reste possible et reste peu rentable, c'est l'objectif."
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
     },
     {
-      "id": "q_contract_endurance_a",
+      "id": "q_contract_endurance_a_1",
       "type": "repeatable",
       "zone": "village",
-      "min_level": 20,
+      "min_level": 1,
       "contract_rank": "A",
-      "title_fr": "Endurance (rang A)",
-      "title_en": "Endurance (rank A)",
-      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 8 combats.",
-      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 8 fights.",
+      "contract_band": [
+        1,
+        20
+      ],
+      "title_fr": "Endurance 1-20 (rang A)",
+      "title_en": "Endurance 1-20 (rank A)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 8 combats dans les alentours du village.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 8 fights in the land around the village.",
       "npc_giver": "npc_bounty_hunter_varn",
       "repeatable": true,
       "objectives": [
         {
           "template": "win_combats",
           "count": 8,
-          "description_fr": "Remporter 8 combats",
-          "description_en": "Win 8 fights"
+          "description_fr": "Remporter 8 combats contre du niveau 1 à 20",
+          "description_en": "Win 8 fights against level 1 to 20",
+          "min_mob_level": 1,
+          "max_mob_level": 20
         }
       ],
       "rewards": {
-        "xp": 330,
-        "gold": 165
+        "xp": 95,
+        "gold": 50
       },
-      "_note": "Panneau de contrats de Varn. Le champ contract_rank (C/B/A/S) est LU PAR LE CLIENT pour regrouper les contrats par rang sur le panneau ; il n'est pas lu par le serveur, qui ne voit qu'une repeatable de plus. Bareme volontairement plat en bas de gamme : un rang C rapporte 6% du niveau suivant, un rang S 20%. Farmer du C reste possible et reste peu rentable, c'est l'objectif."
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
     },
     {
-      "id": "q_contract_meute_a",
+      "id": "q_contract_meute_a_1",
       "type": "repeatable",
       "zone": "village",
-      "min_level": 20,
+      "min_level": 1,
       "contract_rank": "A",
-      "title_fr": "Meute (rang A)",
-      "title_en": "Pack (rank A)",
-      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les plus dangereux, et les mieux payes. Disperse-en 2.",
-      "summary_en": "The packs the Fissure holds hardest are the most dangerous, and the best paid. Scatter 2 of them.",
+      "contract_band": [
+        1,
+        20
+      ],
+      "title_fr": "Meute 1-20 (rang A)",
+      "title_en": "Pack 1-20 (rank A)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 3 dans les alentours du village.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 3 of them in the land around the village.",
       "npc_giver": "npc_bounty_hunter_varn",
       "repeatable": true,
       "objectives": [
         {
           "template": "clear_star_packs",
-          "count": 2,
+          "count": 3,
           "stars": 4,
-          "description_fr": "Disperser 2 groupes de 4 étoiles ou plus",
-          "description_en": "Scatter 2 packs of 4 stars or more"
+          "description_fr": "Disperser 3 groupes de 4 étoiles, niveau 1 à 20",
+          "description_en": "Scatter 3 packs of 4 stars, level 1 to 20",
+          "min_mob_level": 1,
+          "max_mob_level": 20
         }
       ],
       "rewards": {
-        "xp": 330,
-        "gold": 165
+        "xp": 95,
+        "gold": 50
       },
-      "_note": "Panneau de contrats de Varn. Le champ contract_rank (C/B/A/S) est LU PAR LE CLIENT pour regrouper les contrats par rang sur le panneau ; il n'est pas lu par le serveur, qui ne voit qu'une repeatable de plus. Bareme volontairement plat en bas de gamme : un rang C rapporte 6% du niveau suivant, un rang S 20%. Farmer du C reste possible et reste peu rentable, c'est l'objectif."
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
     },
     {
-      "id": "q_contract_chasse_s",
+      "id": "q_contract_chasse_s_1",
       "type": "repeatable",
       "zone": "village",
-      "min_level": 30,
+      "min_level": 1,
       "contract_rank": "S",
-      "title_fr": "Chasse (rang S)",
-      "title_en": "Hunt (rank S)",
-      "summary_fr": "Varn paye a la tete. Abats 25 creatures, il ne demande pas lesquelles.",
-      "summary_en": "Varn pays by the head. Bring down 25 creatures, he doesn't ask which.",
+      "contract_band": [
+        1,
+        20
+      ],
+      "title_fr": "Chasse 1-20 (rang S)",
+      "title_en": "Hunt 1-20 (rank S)",
+      "summary_fr": "Varn paye à la tête. Abats 25 créatures dans les alentours du village, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 25 creatures in the land around the village, he doesn't ask which.",
       "npc_giver": "npc_bounty_hunter_varn",
       "repeatable": true,
       "objectives": [
         {
           "template": "kill_mobs",
           "count": 25,
-          "description_fr": "Abattre 25 créatures",
-          "description_en": "Bring down 25 creatures"
+          "description_fr": "Abattre 25 créatures de niveau 1 à 20",
+          "description_en": "Bring down 25 creatures of level 1 to 20",
+          "min_mob_level": 1,
+          "max_mob_level": 20
         }
       ],
       "rewards": {
-        "xp": 960,
-        "gold": 480
+        "xp": 140,
+        "gold": 70
       },
-      "_note": "Panneau de contrats de Varn. Le champ contract_rank (C/B/A/S) est LU PAR LE CLIENT pour regrouper les contrats par rang sur le panneau ; il n'est pas lu par le serveur, qui ne voit qu'une repeatable de plus. Bareme volontairement plat en bas de gamme : un rang C rapporte 6% du niveau suivant, un rang S 20%. Farmer du C reste possible et reste peu rentable, c'est l'objectif."
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
     },
     {
-      "id": "q_contract_endurance_s",
+      "id": "q_contract_endurance_s_1",
       "type": "repeatable",
       "zone": "village",
-      "min_level": 30,
+      "min_level": 1,
       "contract_rank": "S",
-      "title_fr": "Endurance (rang S)",
-      "title_en": "Endurance (rank S)",
-      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 12 combats.",
-      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 12 fights.",
+      "contract_band": [
+        1,
+        20
+      ],
+      "title_fr": "Endurance 1-20 (rang S)",
+      "title_en": "Endurance 1-20 (rank S)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 12 combats dans les alentours du village.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 12 fights in the land around the village.",
       "npc_giver": "npc_bounty_hunter_varn",
       "repeatable": true,
       "objectives": [
         {
           "template": "win_combats",
           "count": 12,
-          "description_fr": "Remporter 12 combats",
-          "description_en": "Win 12 fights"
+          "description_fr": "Remporter 12 combats contre du niveau 1 à 20",
+          "description_en": "Win 12 fights against level 1 to 20",
+          "min_mob_level": 1,
+          "max_mob_level": 20
         }
       ],
       "rewards": {
-        "xp": 960,
-        "gold": 480
+        "xp": 140,
+        "gold": 70
       },
-      "_note": "Panneau de contrats de Varn. Le champ contract_rank (C/B/A/S) est LU PAR LE CLIENT pour regrouper les contrats par rang sur le panneau ; il n'est pas lu par le serveur, qui ne voit qu'une repeatable de plus. Bareme volontairement plat en bas de gamme : un rang C rapporte 6% du niveau suivant, un rang S 20%. Farmer du C reste possible et reste peu rentable, c'est l'objectif."
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
     },
     {
-      "id": "q_contract_meute_s",
+      "id": "q_contract_meute_s_1",
       "type": "repeatable",
       "zone": "village",
-      "min_level": 30,
+      "min_level": 1,
       "contract_rank": "S",
-      "title_fr": "Meute (rang S)",
-      "title_en": "Pack (rank S)",
-      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les plus dangereux, et les mieux payes. Disperse-en 2.",
-      "summary_en": "The packs the Fissure holds hardest are the most dangerous, and the best paid. Scatter 2 of them.",
+      "contract_band": [
+        1,
+        20
+      ],
+      "title_fr": "Meute 1-20 (rang S)",
+      "title_en": "Pack 1-20 (rank S)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 3 dans les alentours du village.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 3 of them in the land around the village.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 3,
+          "stars": 5,
+          "description_fr": "Disperser 3 groupes de 5 étoiles, niveau 1 à 20",
+          "description_en": "Scatter 3 packs of 5 stars, level 1 to 20",
+          "min_mob_level": 1,
+          "max_mob_level": 20
+        }
+      ],
+      "rewards": {
+        "xp": 140,
+        "gold": 70
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_chasse_c_21",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 17,
+      "contract_rank": "C",
+      "contract_band": [
+        21,
+        40
+      ],
+      "title_fr": "Chasse 21-40 (rang C)",
+      "title_en": "Hunt 21-40 (rank C)",
+      "summary_fr": "Varn paye à la tête. Abats 10 créatures dans les terres au sud, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 10 creatures in the southern lands, he doesn't ask which.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "count": 10,
+          "description_fr": "Abattre 10 créatures de niveau 21 à 40",
+          "description_en": "Bring down 10 creatures of level 21 to 40",
+          "min_mob_level": 21,
+          "max_mob_level": 40
+        }
+      ],
+      "rewards": {
+        "xp": 310,
+        "gold": 155
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_endurance_c_21",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 17,
+      "contract_rank": "C",
+      "contract_band": [
+        21,
+        40
+      ],
+      "title_fr": "Endurance 21-40 (rang C)",
+      "title_en": "Endurance 21-40 (rank C)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 3 combats dans les terres au sud.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 3 fights in the southern lands.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "win_combats",
+          "count": 3,
+          "description_fr": "Remporter 3 combats contre du niveau 21 à 40",
+          "description_en": "Win 3 fights against level 21 to 40",
+          "min_mob_level": 21,
+          "max_mob_level": 40
+        }
+      ],
+      "rewards": {
+        "xp": 310,
+        "gold": 155
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_meute_c_21",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 17,
+      "contract_rank": "C",
+      "contract_band": [
+        21,
+        40
+      ],
+      "title_fr": "Meute 21-40 (rang C)",
+      "title_en": "Pack 21-40 (rank C)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 2 dans les terres au sud.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 2 of them in the southern lands.",
       "npc_giver": "npc_bounty_hunter_varn",
       "repeatable": true,
       "objectives": [
         {
           "template": "clear_star_packs",
           "count": 2,
-          "stars": 5,
-          "description_fr": "Disperser 2 groupes de 5 étoiles ou plus",
-          "description_en": "Scatter 2 packs of 5 stars or more"
+          "stars": 2,
+          "description_fr": "Disperser 2 groupes de 2 étoiles, niveau 21 à 40",
+          "description_en": "Scatter 2 packs of 2 stars, level 21 to 40",
+          "min_mob_level": 21,
+          "max_mob_level": 40
         }
       ],
       "rewards": {
-        "xp": 960,
-        "gold": 480
+        "xp": 310,
+        "gold": 155
       },
-      "_note": "Panneau de contrats de Varn. Le champ contract_rank (C/B/A/S) est LU PAR LE CLIENT pour regrouper les contrats par rang sur le panneau ; il n'est pas lu par le serveur, qui ne voit qu'une repeatable de plus. Bareme volontairement plat en bas de gamme : un rang C rapporte 6% du niveau suivant, un rang S 20%. Farmer du C reste possible et reste peu rentable, c'est l'objectif."
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_chasse_b_21",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 17,
+      "contract_rank": "B",
+      "contract_band": [
+        21,
+        40
+      ],
+      "title_fr": "Chasse 21-40 (rang B)",
+      "title_en": "Hunt 21-40 (rank B)",
+      "summary_fr": "Varn paye à la tête. Abats 15 créatures dans les terres au sud, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 15 creatures in the southern lands, he doesn't ask which.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "count": 15,
+          "description_fr": "Abattre 15 créatures de niveau 21 à 40",
+          "description_en": "Bring down 15 creatures of level 21 to 40",
+          "min_mob_level": 21,
+          "max_mob_level": 40
+        }
+      ],
+      "rewards": {
+        "xp": 515,
+        "gold": 260
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_endurance_b_21",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 17,
+      "contract_rank": "B",
+      "contract_band": [
+        21,
+        40
+      ],
+      "title_fr": "Endurance 21-40 (rang B)",
+      "title_en": "Endurance 21-40 (rank B)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 5 combats dans les terres au sud.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 5 fights in the southern lands.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "win_combats",
+          "count": 5,
+          "description_fr": "Remporter 5 combats contre du niveau 21 à 40",
+          "description_en": "Win 5 fights against level 21 to 40",
+          "min_mob_level": 21,
+          "max_mob_level": 40
+        }
+      ],
+      "rewards": {
+        "xp": 515,
+        "gold": 260
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_meute_b_21",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 17,
+      "contract_rank": "B",
+      "contract_band": [
+        21,
+        40
+      ],
+      "title_fr": "Meute 21-40 (rang B)",
+      "title_en": "Pack 21-40 (rank B)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 2 dans les terres au sud.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 2 of them in the southern lands.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 2,
+          "stars": 3,
+          "description_fr": "Disperser 2 groupes de 3 étoiles, niveau 21 à 40",
+          "description_en": "Scatter 2 packs of 3 stars, level 21 to 40",
+          "min_mob_level": 21,
+          "max_mob_level": 40
+        }
+      ],
+      "rewards": {
+        "xp": 515,
+        "gold": 260
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_chasse_a_21",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 17,
+      "contract_rank": "A",
+      "contract_band": [
+        21,
+        40
+      ],
+      "title_fr": "Chasse 21-40 (rang A)",
+      "title_en": "Hunt 21-40 (rank A)",
+      "summary_fr": "Varn paye à la tête. Abats 20 créatures dans les terres au sud, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 20 creatures in the southern lands, he doesn't ask which.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "count": 20,
+          "description_fr": "Abattre 20 créatures de niveau 21 à 40",
+          "description_en": "Bring down 20 creatures of level 21 to 40",
+          "min_mob_level": 21,
+          "max_mob_level": 40
+        }
+      ],
+      "rewards": {
+        "xp": 720,
+        "gold": 360
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_endurance_a_21",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 17,
+      "contract_rank": "A",
+      "contract_band": [
+        21,
+        40
+      ],
+      "title_fr": "Endurance 21-40 (rang A)",
+      "title_en": "Endurance 21-40 (rank A)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 8 combats dans les terres au sud.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 8 fights in the southern lands.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "win_combats",
+          "count": 8,
+          "description_fr": "Remporter 8 combats contre du niveau 21 à 40",
+          "description_en": "Win 8 fights against level 21 to 40",
+          "min_mob_level": 21,
+          "max_mob_level": 40
+        }
+      ],
+      "rewards": {
+        "xp": 720,
+        "gold": 360
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_meute_a_21",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 17,
+      "contract_rank": "A",
+      "contract_band": [
+        21,
+        40
+      ],
+      "title_fr": "Meute 21-40 (rang A)",
+      "title_en": "Pack 21-40 (rank A)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 3 dans les terres au sud.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 3 of them in the southern lands.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 3,
+          "stars": 4,
+          "description_fr": "Disperser 3 groupes de 4 étoiles, niveau 21 à 40",
+          "description_en": "Scatter 3 packs of 4 stars, level 21 to 40",
+          "min_mob_level": 21,
+          "max_mob_level": 40
+        }
+      ],
+      "rewards": {
+        "xp": 720,
+        "gold": 360
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_chasse_s_21",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 17,
+      "contract_rank": "S",
+      "contract_band": [
+        21,
+        40
+      ],
+      "title_fr": "Chasse 21-40 (rang S)",
+      "title_en": "Hunt 21-40 (rank S)",
+      "summary_fr": "Varn paye à la tête. Abats 25 créatures dans les terres au sud, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 25 creatures in the southern lands, he doesn't ask which.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "count": 25,
+          "description_fr": "Abattre 25 créatures de niveau 21 à 40",
+          "description_en": "Bring down 25 creatures of level 21 to 40",
+          "min_mob_level": 21,
+          "max_mob_level": 40
+        }
+      ],
+      "rewards": {
+        "xp": 1030,
+        "gold": 515
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_endurance_s_21",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 17,
+      "contract_rank": "S",
+      "contract_band": [
+        21,
+        40
+      ],
+      "title_fr": "Endurance 21-40 (rang S)",
+      "title_en": "Endurance 21-40 (rank S)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 12 combats dans les terres au sud.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 12 fights in the southern lands.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "win_combats",
+          "count": 12,
+          "description_fr": "Remporter 12 combats contre du niveau 21 à 40",
+          "description_en": "Win 12 fights against level 21 to 40",
+          "min_mob_level": 21,
+          "max_mob_level": 40
+        }
+      ],
+      "rewards": {
+        "xp": 1030,
+        "gold": 515
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_meute_s_21",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 17,
+      "contract_rank": "S",
+      "contract_band": [
+        21,
+        40
+      ],
+      "title_fr": "Meute 21-40 (rang S)",
+      "title_en": "Pack 21-40 (rank S)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 3 dans les terres au sud.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 3 of them in the southern lands.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 3,
+          "stars": 5,
+          "description_fr": "Disperser 3 groupes de 5 étoiles, niveau 21 à 40",
+          "description_en": "Scatter 3 packs of 5 stars, level 21 to 40",
+          "min_mob_level": 21,
+          "max_mob_level": 40
+        }
+      ],
+      "rewards": {
+        "xp": 1030,
+        "gold": 515
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_chasse_c_41",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 37,
+      "contract_rank": "C",
+      "contract_band": [
+        41,
+        60
+      ],
+      "title_fr": "Chasse 41-60 (rang C)",
+      "title_en": "Hunt 41-60 (rank C)",
+      "summary_fr": "Varn paye à la tête. Abats 10 créatures dans les approches de la Tour, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 10 creatures in the approaches to the Tower, he doesn't ask which.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "count": 10,
+          "description_fr": "Abattre 10 créatures de niveau 41 à 60",
+          "description_en": "Bring down 10 creatures of level 41 to 60",
+          "min_mob_level": 41,
+          "max_mob_level": 60
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "gold": 450
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_endurance_c_41",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 37,
+      "contract_rank": "C",
+      "contract_band": [
+        41,
+        60
+      ],
+      "title_fr": "Endurance 41-60 (rang C)",
+      "title_en": "Endurance 41-60 (rank C)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 3 combats dans les approches de la Tour.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 3 fights in the approaches to the Tower.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "win_combats",
+          "count": 3,
+          "description_fr": "Remporter 3 combats contre du niveau 41 à 60",
+          "description_en": "Win 3 fights against level 41 to 60",
+          "min_mob_level": 41,
+          "max_mob_level": 60
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "gold": 450
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_meute_c_41",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 37,
+      "contract_rank": "C",
+      "contract_band": [
+        41,
+        60
+      ],
+      "title_fr": "Meute 41-60 (rang C)",
+      "title_en": "Pack 41-60 (rank C)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 2 dans les approches de la Tour.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 2 of them in the approaches to the Tower.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 2,
+          "stars": 2,
+          "description_fr": "Disperser 2 groupes de 2 étoiles, niveau 41 à 60",
+          "description_en": "Scatter 2 packs of 2 stars, level 41 to 60",
+          "min_mob_level": 41,
+          "max_mob_level": 60
+        }
+      ],
+      "rewards": {
+        "xp": 900,
+        "gold": 450
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_chasse_b_41",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 37,
+      "contract_rank": "B",
+      "contract_band": [
+        41,
+        60
+      ],
+      "title_fr": "Chasse 41-60 (rang B)",
+      "title_en": "Hunt 41-60 (rank B)",
+      "summary_fr": "Varn paye à la tête. Abats 15 créatures dans les approches de la Tour, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 15 creatures in the approaches to the Tower, he doesn't ask which.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "count": 15,
+          "description_fr": "Abattre 15 créatures de niveau 41 à 60",
+          "description_en": "Bring down 15 creatures of level 41 to 60",
+          "min_mob_level": 41,
+          "max_mob_level": 60
+        }
+      ],
+      "rewards": {
+        "xp": 1500,
+        "gold": 750
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_endurance_b_41",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 37,
+      "contract_rank": "B",
+      "contract_band": [
+        41,
+        60
+      ],
+      "title_fr": "Endurance 41-60 (rang B)",
+      "title_en": "Endurance 41-60 (rank B)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 5 combats dans les approches de la Tour.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 5 fights in the approaches to the Tower.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "win_combats",
+          "count": 5,
+          "description_fr": "Remporter 5 combats contre du niveau 41 à 60",
+          "description_en": "Win 5 fights against level 41 to 60",
+          "min_mob_level": 41,
+          "max_mob_level": 60
+        }
+      ],
+      "rewards": {
+        "xp": 1500,
+        "gold": 750
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_meute_b_41",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 37,
+      "contract_rank": "B",
+      "contract_band": [
+        41,
+        60
+      ],
+      "title_fr": "Meute 41-60 (rang B)",
+      "title_en": "Pack 41-60 (rank B)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 2 dans les approches de la Tour.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 2 of them in the approaches to the Tower.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 2,
+          "stars": 3,
+          "description_fr": "Disperser 2 groupes de 3 étoiles, niveau 41 à 60",
+          "description_en": "Scatter 2 packs of 3 stars, level 41 to 60",
+          "min_mob_level": 41,
+          "max_mob_level": 60
+        }
+      ],
+      "rewards": {
+        "xp": 1500,
+        "gold": 750
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_chasse_a_41",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 37,
+      "contract_rank": "A",
+      "contract_band": [
+        41,
+        60
+      ],
+      "title_fr": "Chasse 41-60 (rang A)",
+      "title_en": "Hunt 41-60 (rank A)",
+      "summary_fr": "Varn paye à la tête. Abats 20 créatures dans les approches de la Tour, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 20 creatures in the approaches to the Tower, he doesn't ask which.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "count": 20,
+          "description_fr": "Abattre 20 créatures de niveau 41 à 60",
+          "description_en": "Bring down 20 creatures of level 41 to 60",
+          "min_mob_level": 41,
+          "max_mob_level": 60
+        }
+      ],
+      "rewards": {
+        "xp": 2100,
+        "gold": 1050
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_endurance_a_41",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 37,
+      "contract_rank": "A",
+      "contract_band": [
+        41,
+        60
+      ],
+      "title_fr": "Endurance 41-60 (rang A)",
+      "title_en": "Endurance 41-60 (rank A)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 8 combats dans les approches de la Tour.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 8 fights in the approaches to the Tower.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "win_combats",
+          "count": 8,
+          "description_fr": "Remporter 8 combats contre du niveau 41 à 60",
+          "description_en": "Win 8 fights against level 41 to 60",
+          "min_mob_level": 41,
+          "max_mob_level": 60
+        }
+      ],
+      "rewards": {
+        "xp": 2100,
+        "gold": 1050
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_meute_a_41",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 37,
+      "contract_rank": "A",
+      "contract_band": [
+        41,
+        60
+      ],
+      "title_fr": "Meute 41-60 (rang A)",
+      "title_en": "Pack 41-60 (rank A)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 3 dans les approches de la Tour.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 3 of them in the approaches to the Tower.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 3,
+          "stars": 4,
+          "description_fr": "Disperser 3 groupes de 4 étoiles, niveau 41 à 60",
+          "description_en": "Scatter 3 packs of 4 stars, level 41 to 60",
+          "min_mob_level": 41,
+          "max_mob_level": 60
+        }
+      ],
+      "rewards": {
+        "xp": 2100,
+        "gold": 1050
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_chasse_s_41",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 37,
+      "contract_rank": "S",
+      "contract_band": [
+        41,
+        60
+      ],
+      "title_fr": "Chasse 41-60 (rang S)",
+      "title_en": "Hunt 41-60 (rank S)",
+      "summary_fr": "Varn paye à la tête. Abats 25 créatures dans les approches de la Tour, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 25 creatures in the approaches to the Tower, he doesn't ask which.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "count": 25,
+          "description_fr": "Abattre 25 créatures de niveau 41 à 60",
+          "description_en": "Bring down 25 creatures of level 41 to 60",
+          "min_mob_level": 41,
+          "max_mob_level": 60
+        }
+      ],
+      "rewards": {
+        "xp": 3000,
+        "gold": 1500
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_endurance_s_41",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 37,
+      "contract_rank": "S",
+      "contract_band": [
+        41,
+        60
+      ],
+      "title_fr": "Endurance 41-60 (rang S)",
+      "title_en": "Endurance 41-60 (rank S)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 12 combats dans les approches de la Tour.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 12 fights in the approaches to the Tower.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "win_combats",
+          "count": 12,
+          "description_fr": "Remporter 12 combats contre du niveau 41 à 60",
+          "description_en": "Win 12 fights against level 41 to 60",
+          "min_mob_level": 41,
+          "max_mob_level": 60
+        }
+      ],
+      "rewards": {
+        "xp": 3000,
+        "gold": 1500
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_meute_s_41",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 37,
+      "contract_rank": "S",
+      "contract_band": [
+        41,
+        60
+      ],
+      "title_fr": "Meute 41-60 (rang S)",
+      "title_en": "Pack 41-60 (rank S)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 3 dans les approches de la Tour.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 3 of them in the approaches to the Tower.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 3,
+          "stars": 5,
+          "description_fr": "Disperser 3 groupes de 5 étoiles, niveau 41 à 60",
+          "description_en": "Scatter 3 packs of 5 stars, level 41 to 60",
+          "min_mob_level": 41,
+          "max_mob_level": 60
+        }
+      ],
+      "rewards": {
+        "xp": 3000,
+        "gold": 1500
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte."
+    },
+    {
+      "id": "q_contract_chasse_c_61",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 57,
+      "contract_rank": "C",
+      "contract_band": [
+        61,
+        80
+      ],
+      "title_fr": "Chasse 61-80 (rang C)",
+      "title_en": "Hunt 61-80 (rank C)",
+      "summary_fr": "Varn paye à la tête. Abats 10 créatures dans les terres brisees, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 10 creatures in the broken lands, he doesn't ask which.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "count": 10,
+          "description_fr": "Abattre 10 créatures de niveau 61 à 80",
+          "description_en": "Bring down 10 creatures of level 61 to 80",
+          "min_mob_level": 61,
+          "max_mob_level": 80
+        }
+      ],
+      "rewards": {
+        "xp": 2735,
+        "gold": 1370
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_endurance_c_61",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 57,
+      "contract_rank": "C",
+      "contract_band": [
+        61,
+        80
+      ],
+      "title_fr": "Endurance 61-80 (rang C)",
+      "title_en": "Endurance 61-80 (rank C)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 3 combats dans les terres brisees.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 3 fights in the broken lands.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "win_combats",
+          "count": 3,
+          "description_fr": "Remporter 3 combats contre du niveau 61 à 80",
+          "description_en": "Win 3 fights against level 61 to 80",
+          "min_mob_level": 61,
+          "max_mob_level": 80
+        }
+      ],
+      "rewards": {
+        "xp": 2735,
+        "gold": 1370
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_meute_c_61",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 57,
+      "contract_rank": "C",
+      "contract_band": [
+        61,
+        80
+      ],
+      "title_fr": "Meute 61-80 (rang C)",
+      "title_en": "Pack 61-80 (rank C)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 2 dans les terres brisees.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 2 of them in the broken lands.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 2,
+          "stars": 2,
+          "description_fr": "Disperser 2 groupes de 2 étoiles, niveau 61 à 80",
+          "description_en": "Scatter 2 packs of 2 stars, level 61 to 80",
+          "min_mob_level": 61,
+          "max_mob_level": 80
+        }
+      ],
+      "rewards": {
+        "xp": 2735,
+        "gold": 1370
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_chasse_b_61",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 57,
+      "contract_rank": "B",
+      "contract_band": [
+        61,
+        80
+      ],
+      "title_fr": "Chasse 61-80 (rang B)",
+      "title_en": "Hunt 61-80 (rank B)",
+      "summary_fr": "Varn paye à la tête. Abats 15 créatures dans les terres brisees, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 15 creatures in the broken lands, he doesn't ask which.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "count": 15,
+          "description_fr": "Abattre 15 créatures de niveau 61 à 80",
+          "description_en": "Bring down 15 creatures of level 61 to 80",
+          "min_mob_level": 61,
+          "max_mob_level": 80
+        }
+      ],
+      "rewards": {
+        "xp": 4560,
+        "gold": 2280
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_endurance_b_61",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 57,
+      "contract_rank": "B",
+      "contract_band": [
+        61,
+        80
+      ],
+      "title_fr": "Endurance 61-80 (rang B)",
+      "title_en": "Endurance 61-80 (rank B)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 5 combats dans les terres brisees.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 5 fights in the broken lands.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "win_combats",
+          "count": 5,
+          "description_fr": "Remporter 5 combats contre du niveau 61 à 80",
+          "description_en": "Win 5 fights against level 61 to 80",
+          "min_mob_level": 61,
+          "max_mob_level": 80
+        }
+      ],
+      "rewards": {
+        "xp": 4560,
+        "gold": 2280
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_meute_b_61",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 57,
+      "contract_rank": "B",
+      "contract_band": [
+        61,
+        80
+      ],
+      "title_fr": "Meute 61-80 (rang B)",
+      "title_en": "Pack 61-80 (rank B)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 2 dans les terres brisees.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 2 of them in the broken lands.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 2,
+          "stars": 3,
+          "description_fr": "Disperser 2 groupes de 3 étoiles, niveau 61 à 80",
+          "description_en": "Scatter 2 packs of 3 stars, level 61 to 80",
+          "min_mob_level": 61,
+          "max_mob_level": 80
+        }
+      ],
+      "rewards": {
+        "xp": 4560,
+        "gold": 2280
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_chasse_a_61",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 57,
+      "contract_rank": "A",
+      "contract_band": [
+        61,
+        80
+      ],
+      "title_fr": "Chasse 61-80 (rang A)",
+      "title_en": "Hunt 61-80 (rank A)",
+      "summary_fr": "Varn paye à la tête. Abats 20 créatures dans les terres brisees, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 20 creatures in the broken lands, he doesn't ask which.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "count": 20,
+          "description_fr": "Abattre 20 créatures de niveau 61 à 80",
+          "description_en": "Bring down 20 creatures of level 61 to 80",
+          "min_mob_level": 61,
+          "max_mob_level": 80
+        }
+      ],
+      "rewards": {
+        "xp": 6385,
+        "gold": 3190
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_endurance_a_61",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 57,
+      "contract_rank": "A",
+      "contract_band": [
+        61,
+        80
+      ],
+      "title_fr": "Endurance 61-80 (rang A)",
+      "title_en": "Endurance 61-80 (rank A)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 8 combats dans les terres brisees.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 8 fights in the broken lands.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "win_combats",
+          "count": 8,
+          "description_fr": "Remporter 8 combats contre du niveau 61 à 80",
+          "description_en": "Win 8 fights against level 61 to 80",
+          "min_mob_level": 61,
+          "max_mob_level": 80
+        }
+      ],
+      "rewards": {
+        "xp": 6385,
+        "gold": 3190
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_meute_a_61",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 57,
+      "contract_rank": "A",
+      "contract_band": [
+        61,
+        80
+      ],
+      "title_fr": "Meute 61-80 (rang A)",
+      "title_en": "Pack 61-80 (rank A)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 3 dans les terres brisees.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 3 of them in the broken lands.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 3,
+          "stars": 4,
+          "description_fr": "Disperser 3 groupes de 4 étoiles, niveau 61 à 80",
+          "description_en": "Scatter 3 packs of 4 stars, level 61 to 80",
+          "min_mob_level": 61,
+          "max_mob_level": 80
+        }
+      ],
+      "rewards": {
+        "xp": 6385,
+        "gold": 3190
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_chasse_s_61",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 57,
+      "contract_rank": "S",
+      "contract_band": [
+        61,
+        80
+      ],
+      "title_fr": "Chasse 61-80 (rang S)",
+      "title_en": "Hunt 61-80 (rank S)",
+      "summary_fr": "Varn paye à la tête. Abats 25 créatures dans les terres brisees, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 25 creatures in the broken lands, he doesn't ask which.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "count": 25,
+          "description_fr": "Abattre 25 créatures de niveau 61 à 80",
+          "description_en": "Bring down 25 creatures of level 61 to 80",
+          "min_mob_level": 61,
+          "max_mob_level": 80
+        }
+      ],
+      "rewards": {
+        "xp": 9120,
+        "gold": 4560
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_endurance_s_61",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 57,
+      "contract_rank": "S",
+      "contract_band": [
+        61,
+        80
+      ],
+      "title_fr": "Endurance 61-80 (rang S)",
+      "title_en": "Endurance 61-80 (rank S)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 12 combats dans les terres brisees.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 12 fights in the broken lands.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "win_combats",
+          "count": 12,
+          "description_fr": "Remporter 12 combats contre du niveau 61 à 80",
+          "description_en": "Win 12 fights against level 61 to 80",
+          "min_mob_level": 61,
+          "max_mob_level": 80
+        }
+      ],
+      "rewards": {
+        "xp": 9120,
+        "gold": 4560
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_meute_s_61",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 57,
+      "contract_rank": "S",
+      "contract_band": [
+        61,
+        80
+      ],
+      "title_fr": "Meute 61-80 (rang S)",
+      "title_en": "Pack 61-80 (rank S)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 3 dans les terres brisees.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 3 of them in the broken lands.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 3,
+          "stars": 5,
+          "description_fr": "Disperser 3 groupes de 5 étoiles, niveau 61 à 80",
+          "description_en": "Scatter 3 packs of 5 stars, level 61 to 80",
+          "min_mob_level": 61,
+          "max_mob_level": 80
+        }
+      ],
+      "rewards": {
+        "xp": 9120,
+        "gold": 4560
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_chasse_c_81",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 77,
+      "contract_rank": "C",
+      "contract_band": [
+        81,
+        100
+      ],
+      "title_fr": "Chasse 81-100 (rang C)",
+      "title_en": "Hunt 81-100 (rank C)",
+      "summary_fr": "Varn paye à la tête. Abats 10 créatures dans le coeur des Fissures, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 10 creatures in the heart of the Fissures, he doesn't ask which.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "count": 10,
+          "description_fr": "Abattre 10 créatures de niveau 81 à 100",
+          "description_en": "Bring down 10 creatures of level 81 to 100",
+          "min_mob_level": 81,
+          "max_mob_level": 100
+        }
+      ],
+      "rewards": {
+        "xp": 9630,
+        "gold": 4815
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_endurance_c_81",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 77,
+      "contract_rank": "C",
+      "contract_band": [
+        81,
+        100
+      ],
+      "title_fr": "Endurance 81-100 (rang C)",
+      "title_en": "Endurance 81-100 (rank C)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 3 combats dans le coeur des Fissures.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 3 fights in the heart of the Fissures.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "win_combats",
+          "count": 3,
+          "description_fr": "Remporter 3 combats contre du niveau 81 à 100",
+          "description_en": "Win 3 fights against level 81 to 100",
+          "min_mob_level": 81,
+          "max_mob_level": 100
+        }
+      ],
+      "rewards": {
+        "xp": 9630,
+        "gold": 4815
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_meute_c_81",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 77,
+      "contract_rank": "C",
+      "contract_band": [
+        81,
+        100
+      ],
+      "title_fr": "Meute 81-100 (rang C)",
+      "title_en": "Pack 81-100 (rank C)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 2 dans le coeur des Fissures.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 2 of them in the heart of the Fissures.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 2,
+          "stars": 2,
+          "description_fr": "Disperser 2 groupes de 2 étoiles, niveau 81 à 100",
+          "description_en": "Scatter 2 packs of 2 stars, level 81 to 100",
+          "min_mob_level": 81,
+          "max_mob_level": 100
+        }
+      ],
+      "rewards": {
+        "xp": 9630,
+        "gold": 4815
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_chasse_b_81",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 77,
+      "contract_rank": "B",
+      "contract_band": [
+        81,
+        100
+      ],
+      "title_fr": "Chasse 81-100 (rang B)",
+      "title_en": "Hunt 81-100 (rank B)",
+      "summary_fr": "Varn paye à la tête. Abats 15 créatures dans le coeur des Fissures, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 15 creatures in the heart of the Fissures, he doesn't ask which.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "count": 15,
+          "description_fr": "Abattre 15 créatures de niveau 81 à 100",
+          "description_en": "Bring down 15 creatures of level 81 to 100",
+          "min_mob_level": 81,
+          "max_mob_level": 100
+        }
+      ],
+      "rewards": {
+        "xp": 16050,
+        "gold": 8025
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_endurance_b_81",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 77,
+      "contract_rank": "B",
+      "contract_band": [
+        81,
+        100
+      ],
+      "title_fr": "Endurance 81-100 (rang B)",
+      "title_en": "Endurance 81-100 (rank B)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 5 combats dans le coeur des Fissures.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 5 fights in the heart of the Fissures.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "win_combats",
+          "count": 5,
+          "description_fr": "Remporter 5 combats contre du niveau 81 à 100",
+          "description_en": "Win 5 fights against level 81 to 100",
+          "min_mob_level": 81,
+          "max_mob_level": 100
+        }
+      ],
+      "rewards": {
+        "xp": 16050,
+        "gold": 8025
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_meute_b_81",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 77,
+      "contract_rank": "B",
+      "contract_band": [
+        81,
+        100
+      ],
+      "title_fr": "Meute 81-100 (rang B)",
+      "title_en": "Pack 81-100 (rank B)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 2 dans le coeur des Fissures.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 2 of them in the heart of the Fissures.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 2,
+          "stars": 3,
+          "description_fr": "Disperser 2 groupes de 3 étoiles, niveau 81 à 100",
+          "description_en": "Scatter 2 packs of 3 stars, level 81 to 100",
+          "min_mob_level": 81,
+          "max_mob_level": 100
+        }
+      ],
+      "rewards": {
+        "xp": 16050,
+        "gold": 8025
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_chasse_a_81",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 77,
+      "contract_rank": "A",
+      "contract_band": [
+        81,
+        100
+      ],
+      "title_fr": "Chasse 81-100 (rang A)",
+      "title_en": "Hunt 81-100 (rank A)",
+      "summary_fr": "Varn paye à la tête. Abats 20 créatures dans le coeur des Fissures, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 20 creatures in the heart of the Fissures, he doesn't ask which.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "count": 20,
+          "description_fr": "Abattre 20 créatures de niveau 81 à 100",
+          "description_en": "Bring down 20 creatures of level 81 to 100",
+          "min_mob_level": 81,
+          "max_mob_level": 100
+        }
+      ],
+      "rewards": {
+        "xp": 22470,
+        "gold": 11235
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_endurance_a_81",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 77,
+      "contract_rank": "A",
+      "contract_band": [
+        81,
+        100
+      ],
+      "title_fr": "Endurance 81-100 (rang A)",
+      "title_en": "Endurance 81-100 (rank A)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 8 combats dans le coeur des Fissures.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 8 fights in the heart of the Fissures.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "win_combats",
+          "count": 8,
+          "description_fr": "Remporter 8 combats contre du niveau 81 à 100",
+          "description_en": "Win 8 fights against level 81 to 100",
+          "min_mob_level": 81,
+          "max_mob_level": 100
+        }
+      ],
+      "rewards": {
+        "xp": 22470,
+        "gold": 11235
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_meute_a_81",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 77,
+      "contract_rank": "A",
+      "contract_band": [
+        81,
+        100
+      ],
+      "title_fr": "Meute 81-100 (rang A)",
+      "title_en": "Pack 81-100 (rank A)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 3 dans le coeur des Fissures.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 3 of them in the heart of the Fissures.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 3,
+          "stars": 4,
+          "description_fr": "Disperser 3 groupes de 4 étoiles, niveau 81 à 100",
+          "description_en": "Scatter 3 packs of 4 stars, level 81 to 100",
+          "min_mob_level": 81,
+          "max_mob_level": 100
+        }
+      ],
+      "rewards": {
+        "xp": 22470,
+        "gold": 11235
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_chasse_s_81",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 77,
+      "contract_rank": "S",
+      "contract_band": [
+        81,
+        100
+      ],
+      "title_fr": "Chasse 81-100 (rang S)",
+      "title_en": "Hunt 81-100 (rank S)",
+      "summary_fr": "Varn paye à la tête. Abats 25 créatures dans le coeur des Fissures, il ne demande pas lesquelles.",
+      "summary_en": "Varn pays by the head. Bring down 25 creatures in the heart of the Fissures, he doesn't ask which.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "count": 25,
+          "description_fr": "Abattre 25 créatures de niveau 81 à 100",
+          "description_en": "Bring down 25 creatures of level 81 to 100",
+          "min_mob_level": 81,
+          "max_mob_level": 100
+        }
+      ],
+      "rewards": {
+        "xp": 32100,
+        "gold": 16050
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_endurance_s_81",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 77,
+      "contract_rank": "S",
+      "contract_band": [
+        81,
+        100
+      ],
+      "title_fr": "Endurance 81-100 (rang S)",
+      "title_en": "Endurance 81-100 (rank S)",
+      "summary_fr": "Varn veut savoir si tu tiens la distance, pas si tu frappes fort. Remporte 12 combats dans le coeur des Fissures.",
+      "summary_en": "Varn wants to know if you last, not if you hit hard. Win 12 fights in the heart of the Fissures.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "win_combats",
+          "count": 12,
+          "description_fr": "Remporter 12 combats contre du niveau 81 à 100",
+          "description_en": "Win 12 fights against level 81 to 100",
+          "min_mob_level": 81,
+          "max_mob_level": 100
+        }
+      ],
+      "rewards": {
+        "xp": 32100,
+        "gold": 16050
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
+    },
+    {
+      "id": "q_contract_meute_s_81",
+      "type": "repeatable",
+      "zone": "village",
+      "min_level": 77,
+      "contract_rank": "S",
+      "contract_band": [
+        81,
+        100
+      ],
+      "title_fr": "Meute 81-100 (rang S)",
+      "title_en": "Pack 81-100 (rank S)",
+      "summary_fr": "Les groupes que la Fissure tient le plus fort sont les mieux payés, et ils ne se prennent pas seul. Disperse-en 3 dans le coeur des Fissures.",
+      "summary_en": "The packs the Fissure holds hardest pay best, and they aren't taken alone. Scatter 3 of them in the heart of the Fissures.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "repeatable": true,
+      "objectives": [
+        {
+          "template": "clear_star_packs",
+          "count": 3,
+          "stars": 5,
+          "description_fr": "Disperser 3 groupes de 5 étoiles, niveau 81 à 100",
+          "description_en": "Scatter 3 packs of 5 stars, level 81 to 100",
+          "min_mob_level": 81,
+          "max_mob_level": 100
+        }
+      ],
+      "rewards": {
+        "xp": 32100,
+        "gold": 16050
+      },
+      "_note": "Panneau de contrats de Varn. DEUX AXES INDEPENDANTS, decide avec Charleston le 2026-08-28 : le RANG (C/B/A/S) porte la quantite et la dangerosite, la BANDE de niveau porte l'acces. La bande vit sur le CONTRAT et non sur le joueur, precisement parce que les contrats sont faits pour etre partages : un plancher relatif au joueur empecherait un niveau 30 de recevoir du credit en groupant avec un niveau 15, ce qui pousserait a ne grouper qu'entre egaux. Ici tout le groupe travaille sur la meme bande et recoit la meme chose.\ncontract_rank et le couple min_mob_level/max_mob_level sont lus par le CLIENT pour le panneau. min_mob_level/max_mob_level doivent aussi etre lus par le SERVEUR pour filtrer le credit : DEMANDE BACK EN COURS, le niveau des monstres tues n'est pas encore transmis (combat.fbs StoreCombatResultsRequest ne porte que killed_mob_ids, pas les niveaux). Tant que ce n'est pas livre, la bande est PUREMENT INDICATIVE et n'importe quel monstre compte.",
+      "_note_bande_vide": "⚠️ BANDE SANS PROIES AUJOURD'HUI. Mesure du 2026-08-28 sur world/zones.json : aucune spawn_area ne fait apparaitre de monstre entre 61 et 80, ni entre 90 et 99. Ces contrats sont donc INFRANCHISSABLES tant que le roster de haut niveau n'est pas spawne, et c'est assume : ils sont ecrits maintenant pour que le panneau soit complet le jour ou les zones existent. Ne pas les proposer au joueur avant."
     },
     {
       "id": "q_verena_guilde",
