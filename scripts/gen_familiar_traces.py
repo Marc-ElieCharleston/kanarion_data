@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Deterministic generator for familiar trace items (Capture MVP).
 
-Produces 29 families x 5 rarities = 145 trace items and merges them into
+Produces 39 families x 5 rarities = 195 trace items and merges them into
 items/consumables.json under the top-level array key "familiar_traces"
 (idempotent: the array is fully replaced if it already exists).
 
@@ -22,27 +22,36 @@ Run from anywhere:
 import json
 import os
 
-# 29 MVP families -> (FR label, EN label). The 3 sprite-less families
+# 39 MVP families -> (FR label, EN label). The 3 sprite-less families
 # (chien_sauvage, scarabee_sables, serpent) are intentionally EXCLUDED.
 FAMILIES = [
     ("belier", "Belier", "Ram"),
+    ("bouc", "Bouc", "Billy Goat"),
+    ("brebis", "Brebis", "Ewe"),
     ("cerf_cauchemar", "Cerf Cauchemar", "Nightmare Stag"),
     ("cerf_obscur", "Cerf Obscur", "Dark Stag"),
     ("chargeur_abyssal", "Chargeur Abyssal", "Abyssal Charger"),
     ("cheval_cauchemar", "Cheval Cauchemar", "Nightmare Horse"),
     ("cheval_sauvage", "Cheval Sauvage", "Wild Horse"),
+    ("chevre", "Chevre", "Goat"),
     ("chien_braise", "Chien de Braise", "Ember Hound"),
     ("chien_vide", "Chien du Vide", "Void Hound"),
+    ("cochon", "Cochon", "Pig"),
     ("corbeau", "Corbeau", "Crow"),
+    ("crapaud_cracheur", "Crapaud Cracheur", "Spitter Toad"),
     ("demon_mineur", "Demon Mineur", "Lesser Demon"),
     ("gardien_cloche", "Gardien Cloche", "Bell Guardian"),
     ("golem", "Golem", "Golem"),
     ("golem_runique", "Golem Runique", "Runic Golem"),
+    ("grenouille", "Grenouille", "Frog"),
+    ("grenouille_cornue", "Grenouille Cornue", "Horned Frog"),
+    ("grenouille_soigneuse", "Grenouille Soigneuse", "Healer Frog"),
     ("hybride_sanglier_loup", "Hybride Sanglier-Loup", "Boar-Wolf Hybrid"),
     ("hyene", "Hyene", "Hyena"),
     ("loup", "Loup", "Wolf"),
     ("loup_cristal", "Loup de Cristal", "Crystal Wolf"),
     ("loup_spectral", "Loup Spectral", "Spectral Wolf"),
+    ("loutre", "Loutre Geante", "Giant Otter"),
     ("rat", "Rat", "Rat"),
     ("renard_brumeux", "Renard Brumeux", "Misty Fox"),
     ("sanglier", "Sanglier", "Boar"),
@@ -54,6 +63,7 @@ FAMILIES = [
     ("taureau", "Taureau", "Bull"),
     ("tortue_pierre", "Tortue de Pierre", "Stone Turtle"),
     ("traqueur_faille", "Traqueur de Faille", "Rift Stalker"),
+    ("vache", "Vache", "Cow"),
 ]
 
 # rarity_id -> (FR label, EN label, sell_price)
@@ -107,7 +117,7 @@ def main():
         data = json.load(fh)
 
     traces = build_traces()
-    assert len(traces) == len(FAMILIES) * len(RARITIES) == 145, len(traces)
+    assert len(traces) == len(FAMILIES) * len(RARITIES) == 195, len(traces)
 
     # Idempotent: replace the array if present, else append as last key.
     data["familiar_traces"] = traces
