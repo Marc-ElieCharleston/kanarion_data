@@ -218,7 +218,7 @@
       "bonus_per_extra_player": 0.055,
       "cap": 1.5,
       "_correction": "CORRIGE le 2026-08-14 apres contre-lecture du backend. La v1.0 de ce fichier decrivait '1 + N * 0.05, max 10 joueurs' : c'etait la table de items/loot_tables.json, qui est MORTE. Le moteur applique 1 + (N-1) * 0.055 plafonne a 1.5 (loot_roller.cpp calc_group_mult), depuis des defauts de struct qu'AUCUN fichier ne charge. Le 0.05f ecrit par content_loader.cpp:1527 va dans group_size_bonus_per_player, un champ sans aucun lecteur. Ecart reel a 4 joueurs : live 1.165 contre 1.20 annonce. C'est le meme piege que le reste du chantier, avec une couche de plus : ici la donnee morte avait un chargeur, ce qui la faisait passer pour vivante.",
-      "_engine_anchor": "Ces deux valeurs sont aujourd'hui des CONSTANTES C++, pas de la donnee. L'etape 2 doit les faire lire d'ici. Tant que ce n'est pas fait, l'etape 8 de la CI les compare aux constantes du moteur : les changer dans ce fichier seul ne changerait rien au jeu."
+      "_engine_anchor": "Etape 2 FAITE pour cette famille (audit XP 2026-08-29 F5) : le moteur lit bonus_per_extra_player + cap DEPUIS ce fichier (content_loader.cpp:1465-1471). Changer ces valeurs change le jeu. loot_types.hpp:212-213 = valeurs de repli si absent. (Lancien texte >constantes C++, etape 2 a faire< etait perime.)"
     },
     "events": {
       "description": "Evenements temporaires actives par l'exploitation. Le contexte passe l'evenement actif, ou aucun.",

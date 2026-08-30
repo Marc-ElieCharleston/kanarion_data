@@ -119,7 +119,11 @@
       "mid_6_12": "4-5 combats par level",
       "late_13_20": "5-6 combats par level",
       "group_incentive": "Trio = sweet spot (120% XP/min vs solo + 20% drop bonus)"
-    }
+    },
+    "divisor_base": 2.0,
+    "divisor_ramp": 3.5,
+    "divisor_cap_level": 20,
+    "_divisor_note": "Diviseur qui convertit XP-dun-niveau en XP-dun-monstre : base_xp_for_level = xp_to_next(niv+1) / (divisor_base + min(niv,divisor_cap_level)/divisor_cap_level * divisor_ramp). Rapatrie ici (valeurs ACTUELLES = no-op) depuis les 3 constantes C++ loot_types.hpp:220-222. PR-B: LootRoller lit dici au lieu des constantes. ⚠️ calibre pour 1v1, JAMAIS retune pour les packs -> un combat moyen vaut 0.77 niveau (audit XP F2). Le retune (5.5 -> ~19) = PR-C, pas ici."
   },
   "class_tiers": {
     "tier_1": {
@@ -166,38 +170,5 @@
     "common_passives_note": "Pas de limite sur le nombre de communs selectionnes (18 disponibles, max 10 lvl chacun). Le budget global de points fait la limite.",
     "subclass_passives_max_selected": null,
     "subclass_passives_note": "Pas de limite sur les passifs subclass (3 par subclass au total, max 10 lvl chacun)."
-  },
-  "party_xp_scaling": {
-    "enabled": true,
-    "reference_level": "highest_mob_level",
-    "reduction_per_level": 8.0,
-    "xp_division": true,
-    "xp_division_note": "XP par joueur = (base_xp / nb_joueurs) * (1 + group_bonus). Standard MMO.",
-    "tier_bonuses": {
-      "tier_1": {
-        "gap": "0-10",
-        "bonus_reduction": 0
-      },
-      "tier_2": {
-        "gap": "11-20",
-        "bonus_reduction": 5
-      },
-      "tier_3": {
-        "gap": "21-35",
-        "bonus_reduction": 15
-      },
-      "tier_4": {
-        "gap": "36+",
-        "bonus_reduction": 30
-      }
-    },
-    "minimum_xp_percent": 5,
-    "group_bonus_per_member": 0.4,
-    "max_group_bonus": 1.0,
-    "group_drop_bonus_per_member": 0.1,
-    "group_drop_bonus_per_member_note": "+10% drop chance per additional party member",
-    "max_group_drop_bonus": 0.5,
-    "max_group_drop_bonus_note": "Cap +50% drop chance bonus (reached at 6 members)",
-    "_group_bonus_deprecated": "ATTENTION doc FAUSSE: group_bonus_per_member=0.4 / max_group_bonus=1.0 ne sont lus par PERSONNE et contredisent le moteur. Le vrai bonus de groupe est HARDCODE en C++ (loot_roller.cpp calc_group_mult): 1 + (N-1) * 0.055 plafonne a 1.5, documente dans config/rewards.json multiplier_families.group_size. Ne pas utiliser 0.4/1.0 pour du tuning ni de laffichage. A realigner (0.055/1.5) ou supprimer une fois lowner tranche. Idem group_drop_bonus a revalider."
   }
 }
