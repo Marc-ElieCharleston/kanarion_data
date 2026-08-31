@@ -289,6 +289,13 @@
     ],
     "_migrated_from": "items/loot_tables.json multipliers.level_difference"
   },
+  "base_gold": {
+    "_comment": "Or de base d un monstre, par niveau. PROPRIETAIRE UNIQUE de cette valeur. Lue par server-combat/src/content/content_loader.cpp (load_reward_multipliers). La formule complete est le champ `formula.gold` plus haut : or = or_base_par_niveau(niveau) x variance x PRODUIT(familles.gold) x (1 - penalite_ecart).",
+    "_why_here": "Elle vivait dans items/loot_tables.json base_drops.gold, alors que CE fichier se declare proprietaire unique des recompenses et ne la nommait que dans une formule, sans dire ou la trouver. Qui la cherchait tombait sur le defaut du membre C++ (2.0f) et le prenait pour la reponse : dix fois la vraie valeur, sans aucune erreur. Un chiffrage complet d economie s est trompe ainsi le 2026-08-31.",
+    "_ordre_de_chargement": "load_reward_multipliers() s execute APRES load_loot_tables(), donc ce fichier gagne sur tout reste eventuel. Une cle absente fait journaliser une ERREUR par le loader, jamais un repli silencieux, et le defaut C++ a ete aligne sur 0.2 pour qu un mauvais deploiement reste bruyant sans devenir dix fois trop genereux.",
+    "per_monster_level": 0.2,
+    "variance": 0.2
+  },
   "global_cap": {
     "max_total_multiplier": 50.0,
     "applies_to": "Le produit des familles, separement pour xp, gold et drop_chance.",
