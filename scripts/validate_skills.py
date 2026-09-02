@@ -339,6 +339,12 @@ def validate_skill_fields(skill, file_path, errors, warnings):
     all_allowed = ALLOWED_STANDARD_FIELDS | ALLOWED_METADATA_FIELDS | LEGACY_FIELDS_BLOCKED
 
     for field in skill.keys():
+        # Cles de documentation : meme regle que pour les categories et les ids
+        # d effets plus haut. Un sort doit pouvoir porter la raison d une valeur a
+        # cote de la valeur ; sans ca les chiffres deviennent orphelins et personne
+        # ne sait plus pourquoi ils sont la. Aucun champ mecanique ne commence par _.
+        if field.startswith("_"):
+            continue
         if field in ALLOWED_STANDARD_FIELDS:
             continue
         if field in ALLOWED_METADATA_FIELDS:
