@@ -182,6 +182,13 @@
           "unit": "percent",
           "max_stacks": 5,
           "total_max": "-25%"
+        },
+        "slow": {
+          "value_per_stack": 0.3,
+          "unit": "seconds_added_to_gcd",
+          "max_stacks": 3,
+          "total_max": "+0.9s de GCD (2.0s -> 2.9s, soit un tiers d actions en moins)",
+          "_note": "Seul effet de la grille dont l unite est une duree et non un pourcentage. Le GCD est le seul axe de tempo partage a l identique par les six classes : c est le seul endroit ou un ralentissement frappe tout le monde pareil. Une valeur en pourcentage ne toucherait que le Mage, les classes physiques n ayant aucun temps d incantation."
         }
       },
       "soin": {
@@ -1481,26 +1488,25 @@
         "polarity": "debuff",
         "stacking": "stackable",
         "impl": "done",
-        "formula": "-[skill_value] points de hate par charge (hate de base 100, donc value 20 = -20% de vitesse). Defaut 10 si le skill ne fournit pas de value.",
-        "tooltip_fr": "Réduit la vitesse d'attaque et d'incantation.",
-        "tooltip_en": "Reduces attack speed and cast speed.",
-        "description_fr": "Réduit la vitesse d'attaque et d'incantation. Se cumule jusqu'à 3 charges.",
-        "description_en": "Reduces attack speed and cast speed. Stacks up to 3.",
+        "formula": "+0.3s de GCD par charge (GCD de base 2.0s, donc 3 charges = 2.9s). La puissance vient UNIQUEMENT du nombre de charges : les skills declarent stacks_to_apply, jamais value.",
+        "tooltip_fr": "Allonge le délai entre deux actions.",
+        "tooltip_en": "Lengthens the delay between actions.",
+        "description_fr": "La cible agit moins souvent : +0,3s de délai entre ses actions par charge. Se cumule jusqu'à 3 charges, soit +0,9s.",
+        "description_en": "The target acts less often: +0.3s of delay between its actions per stack. Stacks up to 3, for +0.9s.",
         "sources": [
           "Mage Cardmaster",
           "Boss",
           "monstres"
         ],
         "runtime": {
-          "stat_mods": {
-            "haste_flat": "-value"
-          },
+          "gcd_penalty_seconds_per_stack": 0.3,
           "vfx_type": "slow_chains",
           "cc_type": "slow",
           "blocks_movement": false,
           "blocks_skills": false
         },
         "max_stacks": 3,
+        "_decision_2026_09_02": "REBRANCHE SUR LE GCD. Le stat_mod haste_flat visait attack_speed / haste, stat sans aucun lecteur runtime depuis le retrait de la boucle d auto-attaque : slow etait donc inerte pour la deuxieme fois. Le deplacement a ete ecarte comme cible (le combat est quasi statique sur la grille, ralentir un deplacement ne vaut rien) et le temps d incantation aussi (les classes physiques n en ont pas, ce serait un debuff mono-Mage). Reste le GCD, seul axe partage a l identique. GCDComponent porte deja un gcd_duration PAR ENTITE (components.hpp), l ajout de ticks est un modificateur de statut ordinaire. 0.3s par charge et non 0.5 : slow est pose par 11 sources dont 5 sorts de monstres et une mecanique de boss, a 0.5s un pack colle -43% d actions en permanence, ce qui violerait la regle d uptime de balance_model. Ticket backend ouvert.",
         "_audit_note": "2026-08-06: l'effet etait INERTE. StatusType::SLOW tombait dans le default du switch de update_status_flags, aucun champ slowed n'existe dans StatusFlagsComponent, et l'absence de stat_mods laissait stat_mod_type a NONE. Trois skills de base monstre (tank_slam, controller_jinx, archer_crippling_shot) plus controller_slow posaient donc une icone sans aucun ralentissement. Le loader mappe desormais cc_type slow sur StatModType::HASTE, et le flip de signe des debuffs couvre StatusType::SLOW pour que le value du skill se retranche. max_stacks ramene de 10 a 3: a 10 charges x 20 points, la hate tapait son plancher et le stun devenait strictement inferieur au slow."
       },
       "taunt_redirect": {
