@@ -270,7 +270,7 @@
         },
         "chill": {
           "max_stacks": 3,
-          "tick": "MAG*0.1 + 10% slow per stack"
+          "tick": "MAG*0.1 per stack"
         },
         "poison": {
           "max_stacks": 5,
@@ -508,21 +508,19 @@
         "impl": "done",
         "damage_type": "magical",
         "true_damage": false,
-        "formula": "MAG * 0.1 per tick per stack + 10% slow",
+        "_decision_2026_09_02": "Rider de ralentissement RETIRE. Il etait branche sur attack_speed, stat sans lecteur runtime depuis le retrait de la boucle d'auto-attaque : le ralentissement n'a jamais mordu. chill etait DEJA un DoT magique, il le reste tel quel. Aucun sort ne perd d'effet, le kit du Frostcaller est intact.",
+        "formula": "MAG * 0.1 per tick per stack",
         "tick_interval": 1.0,
-        "tooltip_fr": "Ralentit et inflige de légers dégâts magiques.\nSe cumule.",
-        "tooltip_en": "Slows and deals light magical damage.\nStacks.",
-        "description_fr": "Ralentit la cible de 10% par charge et inflige de légers dégâts magiques par seconde. Max 3 charges.",
-        "description_en": "Slows the target by 10% per stack and deals light magical damage per second. Max 3 stacks.",
+        "tooltip_fr": "Inflige de légers dégâts magiques dans la durée.\nSe cumule.",
+        "tooltip_en": "Deals light magical damage over time.\nStacks.",
+        "description_fr": "Le froid s'installe et ronge la cible : dégâts magiques légers chaque seconde. Max 3 charges.",
+        "description_en": "The cold settles in and gnaws at the target: light magical damage every second. Stacks up to 3.",
         "sources": [
           "Mage (Elementalist)"
         ],
         "runtime": {
           "tick_damage": "value",
           "tick_rate": 1.0,
-          "stat_modifier": {
-            "attack_speed": "-value/100"
-          },
           "vfx_type": "frost_aura"
         }
       },
@@ -1315,12 +1313,11 @@
         "formula": "max 3s",
         "tooltip_fr": "Empêche toute action.",
         "tooltip_en": "Prevents all actions.",
-        "description_fr": "Impossible d'agir (auto, compétences, se déplacer, objets). Contrôle le plus fort.",
-        "description_en": "Cannot act (auto, skills, move, items). Strongest CC.",
+        "description_fr": "Impossible d'agir : attaque de base, compétences, déplacement, objets. Contrôle le plus fort.",
+        "description_en": "Cannot act at all: basic attack, skills, movement, items. Strongest CC.",
         "runtime": {
           "blocks_movement": true,
           "blocks_skills": true,
-          "blocks_auto_attack": true,
           "cc_type": "stun",
           "is_hard_cc": true,
           "interrupts_cast": true,
@@ -1336,8 +1333,8 @@
         "formula": "max 5s",
         "tooltip_fr": "Empêche l'utilisation des compétences.",
         "tooltip_en": "Prevents the use of skills.",
-        "description_fr": "Impossible de lancer des sorts/compétences. Peut auto-attaquer, bouger, utiliser des objets. Efficace contre les lanceurs de sorts.",
-        "description_en": "Cannot cast spells/skills. Can auto-attack, move, use items. Counters casters.",
+        "description_fr": "Impossible de lancer des sorts ou compétences. Peut utiliser l'attaque de base, bouger, utiliser des objets. Efficace contre les lanceurs de sorts.",
+        "description_en": "Cannot cast spells or skills. Can use the basic attack, move, use items. Counters casters.",
         "runtime": {
           "blocks_skills": true,
           "cc_type": "silence",
@@ -1353,13 +1350,13 @@
         "stacking": "refresh",
         "impl": "done",
         "formula": "max 4s",
-        "blocks_auto_attack": true,
-        "tooltip_fr": "Empêche les attaques automatiques.",
-        "tooltip_en": "Prevents auto-attacks.",
-        "description_fr": "Impossible d'utiliser l'auto-attaque. Peut lancer des compétences, bouger, utiliser des objets. Efficace contre les DPS physiques.",
-        "description_en": "Cannot use auto-attack. Can cast skills, move, use items. Counters physical DPS.",
+        "_decision_2026_09_02": "TRANCHE : disarm devient le miroir anti-physique du silence. silence ne bloque QUE les sorts magiques (room.cpp, les physiques passent) ; disarm bloquera les competences PHYSIQUES, plus l'attaque de base. Cote monstre cela coupe aussi leur repli d'IA, donc l'effet mord des deux cotes. En attente du correctif moteur.",
+        "_audit_2026_09_02": "EFFET INERTE JUSQU'AU CORRECTIF. flags.disarmed n'a jamais eu qu'un seul lecteur, can_auto_attack(), dans la boucle d'auto-attaque eteinte le 2026-07-30. submit_action ne teste que stunned et silenced : un joueur desarme peut donc utiliser son attaque de base sans aucune penalite. Le texte ci-dessous decrit l'INTENTION, pas le comportement actuel. A trancher : recabler cote moteur sur ActionType::BASIC_ATTACK, ou retirer l'effet du jeu.",
+        "tooltip_fr": "Empêche l'attaque de base.",
+        "tooltip_en": "Prevents the basic attack.",
+        "description_fr": "Impossible d'utiliser l'attaque de base. Peut lancer des compétences, bouger, utiliser des objets. Efficace contre les DPS physiques.",
+        "description_en": "Cannot use the basic attack. Can cast skills, move, use items. Counters physical DPS.",
         "runtime": {
-          "blocks_auto_attack": true,
           "stat_mods": {
             "disarmed": 1
           },
@@ -1387,8 +1384,7 @@
           ],
           "vfx_type": "fear_icon",
           "blocks_movement": true,
-          "blocks_skills": true,
-          "blocks_auto_attack": true
+          "blocks_skills": true
         }
       },
       "confusion": {
@@ -1398,10 +1394,11 @@
         "stacking": "refresh",
         "impl": "done",
         "formula": "max 4s",
-        "tooltip_fr": "Les attaques automatiques frappent une cible aléatoire, alliée ou ennemie.",
-        "tooltip_en": "Auto-attacks hit a random target, ally or enemy.",
-        "description_fr": "Les auto-attaques de la cible frappent aléatoirement alliés comme ennemis. Les compétences ne sont pas affectées.",
-        "description_en": "The target's auto-attacks randomly hit allies or enemies. Skills are not affected.",
+        "_audit_2026_09_02": "La description annoncait l'inverse du moteur. Le seul hook joueur vivait dans la boucle d'auto-attaque, eteinte le 2026-07-30 : sur un JOUEUR la confusion ne fait donc plus rien. Sur un MONSTRE elle est vivante (monster_ai.cpp) et redirige ses COMPETENCES vers une cible au hasard, allies compris. Texte aligne sur le comportement monstre ; le trou cote joueur reste a combler cote moteur.",
+        "tooltip_fr": "Les attaques partent sur une cible aléatoire, alliée ou ennemie.",
+        "tooltip_en": "Attacks go to a random target, ally or enemy.",
+        "description_fr": "La cible ne choisit plus qui elle frappe : ses attaques partent aléatoirement sur des alliés comme sur des ennemis.",
+        "description_en": "The target no longer chooses whom it strikes: its attacks land at random on allies as well as enemies.",
         "runtime": {
           "stat_mods": {
             "confused": 1
@@ -1454,7 +1451,6 @@
         "runtime": {
           "blocks_movement": true,
           "blocks_skills": true,
-          "blocks_auto_attack": true,
           "cc_type": "stun",
           "is_hard_cc": true,
           "interrupts_cast": true,
@@ -1470,8 +1466,8 @@
         "formula": "max 4s",
         "tooltip_fr": "Empeche tout deplacement.",
         "tooltip_en": "Prevents all movement.",
-        "description_fr": "Impossible de se deplacer. Peut toujours auto-attaquer, lancer des competences et utiliser des objets. Contre les classes qui vivent de leur mobilite.",
-        "description_en": "Cannot move. Can still auto-attack, cast skills and use items. Counters classes that rely on mobility.",
+        "description_fr": "Impossible de se deplacer. Peut toujours utiliser l'attaque de base, lancer des competences et utiliser des objets. Contre les classes qui vivent de leur mobilite.",
+        "description_en": "Cannot move. Can still use the basic attack, cast skills and use items. Counters classes that rely on mobility.",
         "runtime": {
           "blocks_movement": true,
           "cc_type": "root",
@@ -2066,8 +2062,9 @@
         "formula": "heals [skill_value]% of damage dealt per stack",
         "tooltip_fr": "Une partie des dégâts infligés soigne le porteur.",
         "tooltip_en": "A portion of damage dealt heals the bearer.",
-        "description_fr": "Soigne un % des dégâts physiques infligés par charge. S'applique aux auto-attaques et compétences physiques.",
-        "description_en": "Heals % of physical damage dealt per stack. Applies to auto-attacks and physical skills.",
+        "_audit_2026_09_02": "Le taux reduit de moitie ne s'applique qu'a l'attaque de base, inatteignable pour un joueur (voir double_attack_chance). En pratique un joueur est toujours a pleine efficacite ; seuls les monstres subissent le 0.5x.",
+        "description_fr": "Soigne un % des dégâts physiques infligés par charge. Pleine efficacité sur les compétences physiques, moitié sur l'attaque de base.",
+        "description_en": "Heals % of physical damage dealt per stack. Full effect on physical skills, half on the basic attack.",
         "runtime": {
           "stat_mods": {
             "lifesteal_percent": "value/100"
@@ -2173,11 +2170,12 @@
         "polarity": "buff",
         "stacking": "refresh",
         "impl": "done",
-        "formula": "Auto-attack only. Pipeline: roll triple→if fail roll double→else single. Each hit independent (crit/proc/status).",
+        "_audit_2026_09_02": "PORTEE REELLE 2026-09-02 : l'attaque de base n'est atteignable que par les MONSTRES (repli de leur IA). Le client n'expose aucun moyen de la lancer : le helper build_basic_attack_request du protocole n'a aucun appelant. Pour un joueur, tout ce qui est conditionne a l'attaque de base est donc sans effet aujourd'hui. Concretement double_attack_chance ne sert aujourd'hui qu'aux monstres.",
+        "formula": "Basic attack only. Pipeline: roll triple, if it fails roll double, else single. Each hit independent (crit/proc/status), each at 100% damage.",
         "tooltip_fr": "Chance d'effectuer une attaque supplémentaire.",
         "tooltip_en": "Chance to perform an additional attack.",
-        "description_fr": "Chance de deux auto-attaques au lieu d'une. Mutuellement exclusif avec triple_attack_chance (triple roll first, double fallback). Cap 50%.",
-        "description_en": "Chance to fire two auto-attacks instead of one. Mutually exclusive with triple_attack_chance (triple rolls first, double falls back). Cap 50%.",
+        "description_fr": "Chance de deux attaques de base au lieu d'une. Mutuellement exclusif avec triple_attack_chance (le triple est tiré en premier, le double sert de repli). Cap 50%.",
+        "description_en": "Chance to land two basic attacks instead of one. Mutually exclusive with triple_attack_chance (triple rolls first, double falls back). Cap 50%.",
         "sources": [
           "Archer Gunslinger"
         ],
@@ -2270,12 +2268,13 @@
         "stacking": "stackable",
         "max_stacks": 4,
         "impl": "done",
-        "formula": "+5% damage taken per stack. Applied every 4 auto-attacks on the same target. Duration 8s, refreshes on new stack. Scalable: +0.5% per stack per Hunter's Focus level.",
+        "formula": "+5% damage taken per stack. Applied every 2 skills cast on an enemy (any target). Duration 8s, refreshes on new stack. Scalable: +0.5% per stack per Hunter's Focus level.",
         "duration": 8.0,
         "tooltip_fr": "Marque une cible et augmente les dégâts qu'elle subit.",
         "tooltip_en": "Marks a target and increases the damage it takes.",
-        "description_fr": "La proie est marquée par le Souffle du chasseur. +5% dégâts reçus par charge (max 4). Posée toutes les 4 auto-attaques sur la même cible.",
-        "description_en": "The prey is marked by the hunter's Breath. +5% damage taken per stack (max 4). Applied every 4 auto-attacks on the same target.",
+        "_audit_2026_09_02": "Condition de pose recablee le 2026-07-30 avec le retrait des auto-attaques : le passif inne p_arch_predator_mark est passe sur on_skill_cast + skill_target_is_enemy, count_required 2. La fidelite `meme cible` est perdue (pas de same_target_skill_cast cote moteur). Les trois textes decrivaient encore l'ancienne condition.",
+        "description_fr": "La proie est marquée par le Souffle du chasseur. +5% dégâts reçus par charge (max 4). Posée toutes les 2 compétences lancées sur un ennemi.",
+        "description_en": "The prey is marked by the hunter's Breath. +5% damage taken per stack (max 4). Applied every 2 skills cast on an enemy.",
         "sources": [
           "Archer (class passive)"
         ],
@@ -2505,11 +2504,12 @@
         "polarity": "buff",
         "stacking": "unique",
         "impl": "done",
-        "formula": "Auto-attack only. Rolls before double_attack_chance (priority); on success fires 3 hits. Cap 30%.",
-        "tooltip_fr": "Chance de tirer trois auto-attaques.",
-        "tooltip_en": "Chance to fire three auto-attacks.",
-        "description_fr": "Chance de trois auto-attaques au lieu d'une. Roll prioritaire sur double_attack_chance. Cap 30%. Auto-attaques uniquement (jamais sur skills).",
-        "description_en": "Chance to fire three auto-attacks instead of one. Rolls before double_attack_chance. Cap 30%. Auto-attacks only (never on skills).",
+        "_audit_2026_09_02": "PORTEE REELLE 2026-09-02 : l'attaque de base n'est atteignable que par les MONSTRES (repli de leur IA). Le client n'expose aucun moyen de la lancer : le helper build_basic_attack_request du protocole n'a aucun appelant. Pour un joueur, tout ce qui est conditionne a l'attaque de base est donc sans effet aujourd'hui. Concretement triple_attack_chance ne sert aujourd'hui qu'aux monstres.",
+        "formula": "Basic attack only. Rolls before double_attack_chance (priority); on success fires 3 hits. Cap 30%.",
+        "tooltip_fr": "Chance de porter trois attaques de base.",
+        "tooltip_en": "Chance to land three basic attacks.",
+        "description_fr": "Chance de trois attaques de base au lieu d'une. Roll prioritaire sur double_attack_chance. Cap 30%. Attaque de base uniquement, jamais sur une compétence.",
+        "description_en": "Chance to land three basic attacks instead of one. Rolls before double_attack_chance. Cap 30%. Basic attack only, never on a skill.",
         "sources": [
           "Archer Gunslinger (future tier3)"
         ],

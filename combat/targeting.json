@@ -24,12 +24,13 @@
     "_comment": "Aucune grille n'est decrite ici : le board 10x6 est le seul format, et ses dimensions viennent de config/game.json combat_grids. Une entree ne se justifie que pour ecrire A LA MAIN des rows_names ou un slot_mapping particuliers ; sans entree, ils sont generes. Les 2x5, 3x5 et 4x5 ont ete retires le 2026-08-14 avec le format legacy."
   },
   "line_of_sight": {
+    "_audit_2026_09_02": "Bloc DOCUMENTAIRE : le moteur ne parse que la cle `patterns` de ce fichier. La ligne de vue reelle se decide skill par skill (targeting.requires_line_of_sight) ou via le needs_los du pattern. Le sous-bloc s'appelait `auto_attack` ; la boucle automatique etant eteinte depuis le 2026-07-30, il decrit desormais l'attaque de base lancee a la main.",
     "description": "Systeme de ligne de vue",
     "core_rule": "Une cible est bloquee si elle a une unite DEVANT ELLE dans sa propre grille",
     "rules": {
-      "auto_attack": {
+      "basic_attack": {
         "needs_los": true,
-        "description": "Auto-attacks bloquees si la cible a quelqu'un devant dans sa colonne"
+        "description": "Attaque de base bloquee si la cible a quelqu'un devant dans sa colonne. Vient de son pattern `single` (needs_los true), pas de ce bloc."
       },
       "spells": {
         "default": false,

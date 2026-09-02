@@ -7,7 +7,6 @@
 
   "settings": {
     "_comment": "Constantes utilisees par combat_system.gd",
-    "base_attack_interval": 2.0,
     "min_damage_percent": 0.1,
     "armor_effectiveness": 100,
     "default_crit_chance": 5,
@@ -43,8 +42,10 @@
     },
 
     "double_hit": {
+      "_portee_reelle_2026_09_02": "PORTEE REELLE 2026-09-02 : l'attaque de base n'est atteignable que par les MONSTRES (repli de leur IA). Le client n'expose aucun moyen de la lancer : le helper build_basic_attack_request du protocole n'a aucun appelant. Pour un joueur, tout ce qui est conditionne a l'attaque de base est donc sans effet aujourd'hui.",
+      "_audit_2026_09_02": "damage_mult valait 0.75 et decrivait un moteur qui n'a jamais fait cela : chaque frappe supplementaire compte pour 100%. Valeur alignee sur le runtime. Le proc ne se declenche QUE sur l'attaque de base, jamais sur une competence.",
       "default_chance": 0,
-      "damage_mult": 0.75,
+      "damage_mult": 1.0,
       "cap": 50
     },
 
@@ -53,10 +54,11 @@
       "default_spell_vamp": 0,
       "lifesteal_cap": 30,
       "spell_vamp_aoe_effectiveness": 0.33,
+      "_audit_2026_09_02": "lifesteal_cap, lifesteal_auto_rate et lifesteal_skill_rate ne sont lus par AUCUN code : les taux 0.5 et 1.0 sont en dur dans damage_calculator.cpp et le cap n'est pas applique. Conserves a titre documentaire ; les modifier ici n'a aucun effet en jeu.",
       "lifesteal_auto_rate": 0.5,
-      "lifesteal_auto_rate_note": "Auto-attacks apply lifesteal at 50% effectiveness (prevents AFK sustain)",
+      "lifesteal_auto_rate_note": "Attaque de base : vol de vie a 50% d'efficacite (evite le sustain passif)",
       "lifesteal_skill_rate": 1.0,
-      "lifesteal_skill_rate_note": "Skills apply lifesteal at 100% effectiveness (rewards active play)"
+      "lifesteal_skill_rate_note": "Competences : vol de vie a 100% (recompense le jeu actif)"
     },
 
 
@@ -137,7 +139,7 @@
 
     "physical_damage": {
       "order_of_operations": [
-        "1. raw_damage = base_power (ou atk pour auto-attack)",
+        "1. raw_damage = base_power (ou atk pour l attaque de base)",
         "2. Si crit: raw_damage *= (crit_dmg / 100)",
         "3. raw_damage *= (1 + damage_percent / 100)",
         "4. effective_armor = target.armor * (1 - clamp(attacker.armor_pen, 0, 70) / 100)",
@@ -171,9 +173,9 @@
 
     "double_hit": {
       "formula": "if randf() * 100 < double_hit_chance: trigger second hit",
-      "second_hit_damage": 0.75,
+      "second_hit_damage": 1.0,
       "can_crit": true,
-      "applies_to": ["auto_attack", "single_target_physical_skills"]
+      "applies_to": ["basic_attack"]
     },
 
     "effect_application": {
