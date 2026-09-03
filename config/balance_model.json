@@ -231,6 +231,129 @@
       "_verification": "Relancer ces deux controles apres toute passe de cooldown : ils ne se voient pas a la lecture, seulement au comptage."
     }
   },
+  "souffle": {
+    "_comment": "Modele du cout en Souffle. Il n'existait pas : ce fichier cadrait la puissance, l'incantation, le cooldown, la portee et la surface, et laissait le cout sans regle. C'est pour cela que les mp_cost_guidelines de config/combat.json sont hors norme sur 83% des fillers et 76% des advanced : elles n'ont jamais eu de modele derriere elles. Ecrit le 2026-09-03, apres la livraison de BE-S1 (les passifs mp_regen etaient appliques x10, toute mesure anterieure est fausse).",
+    "_intention_produit": "On ne doit pas pouvoir enchainer ses sorts, SAUF si on paie pour : build de regeneration, equipement, ou un soutien qui rend du Souffle (Artisan). Manquer de Souffle doit empecher d'agir, c'est le but, comme toute gestion de ressource. La punition reste bornee : avec 1 Souffle/s et un filler a 2, on est arrete quelques secondes, pas verrouille. C'est du tempo, pas un mur.",
+    "_unite": "1 Souffle = 1 seconde de regeneration au niveau 1. La regen de base vaut 1.0/s et elle est IDENTIQUE aux six classes (stats/class_base_stats.json). Cette equivalence rend tous les couts lisibles sans calcul.",
+    "autonomie_d_un_sort": {
+      "_comment": "Mesure unique du cout, l'equivalent de la densite pour la puissance. Elle repond a une seule question : lance en boucle, ce sort se paie-t-il tout seul ?",
+      "formule": "autonomie = mana_cost / (cooldown x mp_regen)",
+      "lecture": {
+        "moins_de_1": "le sort se finance sur son propre cooldown, on peut le relancer indefiniment sans jamais manquer",
+        "egal_1": "a l'equilibre, il consomme exactement ce que son cooldown rend",
+        "plus_de_1": "il creuse, et il faut que le reste du kit soit plus leger pour le porter"
+      },
+      "mesure_2026_09_03": {
+        "_note": "Au niveau de sort 1, regen 1.0/s.",
+        "part_auto_suffisante": "81% des 390 sorts de classe",
+        "medianes_par_tier": {
+          "filler": 0.67,
+          "basic": 1.0,
+          "standard": 0.83,
+          "advanced": 0.61,
+          "strong": 0.78,
+          "signature": 0.64
+        }
+      },
+      "_le_probleme": "La courbe est INVERSEE. Le filler est a 0.67, la signature a 0.64 : le sort qui decide d'un combat se finance mieux que celui qu'on lance entre deux cooldowns. Un tier eleve doit couter DAVANTAGE que ce que son cooldown rend, sinon son cooldown est sa seule contrainte et le Souffle ne decide de rien."
+    },
+    "grille_cible": {
+      "_comment": "Autonomie visee par tier. La regle tient en une phrase : l'autonomie doit CROITRE avec le tier. C'est un outil de tri, pas un gabarit a appliquer sort par sort.",
+      "filler": {
+        "cible": 0.6,
+        "_pourquoi": "il doit se financer seul : c'est l'action de repli quand tout est en cooldown ou que la barre est basse. Sans lui, manquer de Souffle ne serait plus du tempo mais un tour perdu."
+      },
+      "basic": {
+        "cible": 1.0,
+        "_pourquoi": "a l'equilibre, ni gratuit ni couteux"
+      },
+      "standard": {
+        "cible": 1.2
+      },
+      "advanced": {
+        "cible": 1.4
+      },
+      "strong": {
+        "cible": 1.6
+      },
+      "signature": {
+        "cible": 2.0,
+        "_pourquoi": "une signature doit se payer deux fois : au cooldown ET au Souffle. C'est ce qui fait qu'on choisit QUAND la lancer au lieu de la lancer des qu'elle est prete."
+      },
+      "_ecart_actuel": "Tous les tiers au-dessus de basic sont sous leur cible, advanced le plus loin (0.61 mesure contre 1.4 vise)."
+    },
+    "cout_par_niveau_de_sort": {
+      "_comment": "mana_cost_per_level est VIVANT (room.cpp effective_mana_cost : cout = mana_cost + mana_cost_per_level x (niveau - 1)). Monter un sort le rend plus cher, ce qui est le bon reflexe : specialiser coute.",
+      "regle": "Tout sort au-dessus du tier filler porte un mana_cost_per_level, dimensionne pour qu'un sort au niveau 10 coute environ 1.7x son cout au niveau 1.",
+      "couverture_2026_09_03": {
+        "filler": "6/12",
+        "basic": "11/33",
+        "standard": "11/53",
+        "advanced": "192/192",
+        "strong": "3/28",
+        "signature": "50/72"
+      },
+      "_le_probleme": "La couverture n'est pas un choix, c'est une derive : 100% des advanced le portent, 11% des strong. Deux sorts du meme kit et du meme poids evoluent donc differemment sans qu'aucune intention ne l'ait decide."
+    },
+    "charge_d_un_kit": {
+      "_comment": "Deuxieme mesure, au niveau du kit. Elle dit si une rotation complete est tenable.",
+      "formule": "charge = somme sur le kit de (mana_cost / cooldown) / mp_regen",
+      "plafond_du_GCD": "Le GCD de 2.0s borne a 0.5 lancer par seconde. Une charge de kit tres superieure a 1 ne veut donc PAS dire que le joueur brule tout : elle veut dire qu'il doit CHOISIR, parce qu'il ne peut pas tout lancer.",
+      "mesure_2026_09_03": {
+        "mediane_des_40_kits": 12.6,
+        "au_niveau_de_sort_10": 23.3,
+        "plus_leger": "artisan/chef/battle_cook 9.5",
+        "plus_lourd": "healer/lifewarden/druidic_healer 17.8"
+      },
+      "_lecture": "Enchainer un sort seul est gratuit (81% des sorts s'auto-financent), jouer la rotation complete ne l'est pas. C'est la forme qu'on veut : il y a toujours quelque chose a faire, mais pas toujours ce qu'on voudrait faire."
+    },
+    "la_derive_de_niveau": {
+      "_comment": "Le trou structurel, et la raison pour laquelle le Souffle cessait d'etre une contrainte en montant.",
+      "mesure": {
+        "regen": "x5.0 du niveau 1 au niveau 100 (1.00 -> 4.96, growth mp_regen 0.04/niveau, identique aux six classes)",
+        "piscine": "x3.0 (rogue) a x4.8 (healer)",
+        "cout": "x1.7 au mieux, via mana_cost_per_level"
+      },
+      "_consequence": "La regeneration pousse trois fois plus vite que le cout. A niveau egal de jeu, un personnage niveau 100 est trois fois moins contraint qu'un niveau 1. La ressource se dilue toute seule.",
+      "regle": "La PISCINE grandit avec le niveau, la REGENERATION non. La piscine est le budget de burst : elle doit suivre des sorts qui coutent plus cher. La regeneration est le sustain : elle doit s'ACHETER, par l'equipement, un passif ou un soutien, jamais s'obtenir en montant de niveau.",
+      "application": "Ramener le growth mp_regen de 0.04 vers 0 dans stats/class_growth.json. Le growth mp (piscine) reste."
+    },
+    "differenciation_par_classe": {
+      "_comment": "Aujourd'hui mp_regen vaut 1.00 et son growth 0.04 pour warrior, mage, healer, archer, rogue et artisan. Strictement identiques.",
+      "_le_probleme": "Le Souffle ne porte AUCUNE identite de classe. Un Warrior a exactement la meme economie qu'un Mage, alors que leurs piscines vont du simple au double (45 contre 85). C'est un axe d'identite entier qui n'est pas utilise.",
+      "piste": "Differencier la regen par role plutot que la piscine seule : un lanceur regenere lentement mais porte une grande reserve, un combattant l'inverse. A arbitrer, pas encore tranche."
+    },
+    "sources_de_souffle": {
+      "_comment": "Tout ce qui rend du Souffle en combat. Verifie dans le code le 2026-09-02.",
+      "vivant": [
+        "mana_steal : vole un % du MP de la cible (room.cpp)",
+        "mana_restore : rend du MP en zone alliee (room.cpp)",
+        "statut mana_regen : 2% du MP max par proc et par charge, via le chemin HOT",
+        "keystones restore_souffle et convert_hp_to_souffle (proc_processor.cpp)",
+        "bonus mp_regen de l'equipement (room.cpp, correctement divise par le tick rate)",
+        "remboursement integral si une incantation est interrompue"
+      ],
+      "mort_ou_absent": [
+        "les 5 nourritures wbuff_food_mp_regen : StatModType::MANA_REGEN n'est jamais assigne par le loader, elles ne font RIEN (ticket BE-S2)",
+        "lifesteal et spell_vamp ne rendent pas de Souffle, ils sont HP uniquement",
+        "aucune potion utilisable en combat, la barre de consommables est hors combat"
+      ],
+      "_a_surveiller": "skill_artisan_resource_share coute 1 Souffle, cooldown 20s, et rend du Souffle a une zone 3x3 alliee. C'est le levier de soutien le plus fort du jeu sur cet axe et il n'a jamais ete chiffre."
+    },
+    "pression_adverse": {
+      "_comment": "La contrainte ne doit pas venir que du budget du joueur. Un adversaire doit pouvoir l'attaquer.",
+      "outils_existants": "mana_drain (-3% du MP max par seconde et par charge) et mana_lock (coupe entierement la regeneration) sont implementes et fonctionnels.",
+      "_le_probleme": "Ils ne sont utilises que par le Mage et quelques familiers. Un axe de contre-jeu entier dort.",
+      "regle": "mana_drain sur les monstres communs du role controller, mana_lock reserve aux elites et aux boss. C'est ce qui rend le stuff de regeneration et le soutien Artisan interessants : ils repondent a une menace, au lieu d'etre un simple confort."
+    },
+    "anti_patterns": [
+      "Multiplier les couts par 2 ou 4 pour rendre le Souffle punitif. Mesure faite le 2026-09-02 : le joueur SANS build regen passe de 45% a 78% de GCD contraints, celui AVEC reste a 0%. On ne ferme pas l'ecart, on le triple, et le build regen devient un impot au lieu d'un choix. Le levier est du cote de la regeneration, pas du cout.",
+      "Ecrire un cout sans regarder le cooldown. Le couple compte, pas le chiffre seul : 20 Souffle sur 10s et 40 sur 20s ont la meme autonomie.",
+      "Rendre le filler gratuit. Il doit se financer, pas etre a zero : un filler a cout nul retire toute valeur a la gestion de la barre.",
+      "Ajouter une source de regeneration sans la mesurer en fraction de la regen de base. Une ceinture rang C a +1.0 double la regeneration d'un personnage niveau 1. Toujours exprimer un bonus de regen en pourcentage de la base, jamais en valeur absolue ressentie.",
+      "Tuner le Souffle en supposant que les nourritures marchent. Elles sont inertes tant que BE-S2 n'est pas livre."
+    ]
+  },
   "portee": {
     "_comment": "Plateau 10x6 unifie. Distance MANHATTAN sur les coordonnees reelles : 1 case = 1, DIAGONALE = 2 (grid_distance.hpp). Les deux equipes partagent un seul espace absolu, joueurs en bas, ennemis en haut.",
     "_regle_fondamentale": "La portee est portee par le PERSONNAGE (config/roles.json base_range), pas par le sort. Cote serveur : skill.range < 0 -> heritage du base_range du lanceur. C'est le defaut de tout sort qui ne declare rien. Un `range` explicite est une DEROGATION, volontairement rare.",
