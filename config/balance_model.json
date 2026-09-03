@@ -354,6 +354,19 @@
       "Tuner le Souffle en supposant que les nourritures marchent. Elles sont inertes tant que BE-S2 n'est pas livre."
     ]
   },
+  "scaling_par_niveau_de_sort": {
+    "_statut": "CHANTIER OUVERT, mis de cote le 2026-09-03. Mesure faite, correctif pas commence.",
+    "_comment": "Ce qu un point de competence achete reellement. Le modele cadrait la puissance de base d un sort, jamais sa progression. Resultat : la progression existe sur ce qui fait des degats et nulle part ailleurs.",
+    "mesure_2026_09_03": {
+      "degats": "percent_per_level, 405 occurrences. Les sorts offensifs progressent.",
+      "durees_d_effets": "duration_per_level, 227 occurrences. Les buffs et debuffs durent plus longtemps.",
+      "soins": "ZERO. Aucun heal_scaling_per_level ni power_per_level sur les 51 sorts de soin.",
+      "boucliers": "ZERO. Aucun champ par niveau sur les 66 sorts a bouclier."
+    },
+    "_consequence": "Monter une competence de soin ou de bouclier n achete RIEN au-dela de son deblocage. Un Healer ou un Guardian qui investit ses points dans son metier ne gagne rien, alors qu un DPS gagne a chaque point. C est un desequilibre de progression, pas de puissance instantanee : il ne se voit pas dans une comparaison de sorts au niveau 1.",
+    "_a_faire": "Definir la progression par niveau pour le soin et le bouclier, au meme titre que percent_per_level pour les degats. Verifier D ABORD qu un champ lu par le moteur existe : percent_per_level et duration_per_level sont vivants, un heal_scaling_per_level n existe peut-etre pas cote back. Sinon c est un ticket backend avant d etre un chantier data.",
+    "_ne_pas_confondre": "Les effets de la grille canonique n ont volontairement PAS de valeur par niveau (contrat Option A, la puissance vient du nombre de charges). Leur duree, elle, progresse. Ce chantier ne concerne que le soin et le bouclier."
+  },
   "portee": {
     "_comment": "Plateau 10x6 unifie. Distance MANHATTAN sur les coordonnees reelles : 1 case = 1, DIAGONALE = 2 (grid_distance.hpp). Les deux equipes partagent un seul espace absolu, joueurs en bas, ennemis en haut.",
     "_regle_fondamentale": "La portee est portee par le PERSONNAGE (config/roles.json base_range), pas par le sort. Cote serveur : skill.range < 0 -> heritage du base_range du lanceur. C'est le defaut de tout sort qui ne declare rien. Un `range` explicite est une DEROGATION, volontairement rare.",
