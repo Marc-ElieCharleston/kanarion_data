@@ -44,7 +44,7 @@ Validation happens at three levels:
 
 - **`_meta/`** — Version info (`version.json`), roadmap (`ROADMAP.md`), ideas backlog, 15 design suggestions in `suggestions/`
 - **`classes/`** — 6 base classes (warrior, mage, healer, archer, rogue, artisan), each with `skills.json` and `passives.json`. Also `common_passives.json` (10 universal passives) and `_classes_index.json` (6 classes x 4 subclasses x 2 tier3 = 48 tier3 specs)
-- **`combat/`** — Targeting system (`targeting.json`: 4x4 grid), LoS mechanics, ability ideas
+- **`combat/`** — Targeting system (`targeting.json` : patterns de zone. Seule la clé `patterns` est lue par le moteur, le reste du fichier est documentaire), LoS mechanics, ability ideas
 - **`config/`** — Combat formulas (`combat.json`), game constants (`game.json`), monster AI (`monster_ai.json`), skill system (`skill_system.json`), skill templates (`skill_templates.json`), role tags (`roles.json`), monster archetypes, monster skill scaling, **monster scaling model (`monster_scaling_model.json`: derived-stats architecture — see Monster Structure)**, **récompenses (`rewards.json`: propriétaire unique XP/or/drop — voir « Récompenses »)**, threat tiers (`monster_tiers.json`: ⚠️ déprécié, son `xp_multiplier` a migré vers `rewards.json`, son `aggro` n'a jamais eu de lecteur)
 - **`entities/`** — Monsters (`monsters.json`), NPCs, boss mechanics, summons (`summons.json`: max 6/team), monster archetypes/variants, healer/support monsters
 - **`items/`** — Equipment (10 slots, 5 rarities, T1-T5 scaling), consumables, materials, affixes, panoplies (25 sets with intentional Hebrew names), loot tables, currencies, substat crafting system
@@ -129,6 +129,60 @@ Players choose a faction at level 60. Subclass lore must NOT lock players into a
 - **Required fields:** `id`, `name_fr`, `name_en`, `tier`, `target`, `pattern`, `damage_type`, `scaling_stat`, `base_power`, `scaling_percent`, `mana_cost`, `cooldown`, `description_fr`, `description_en`, `tags`
 - **Optional fields:** `effect`, `effect_duration`, `buff`, `debuff`, `heal_power`, `shield_value`, `vfx_type`
 - Skill `effect`/`buff`/`debuff` values must reference valid IDs in `stats/status_effects.json` (CI validates this)
+
+### Portée d'un sort
+
+La portée est portée par le **PERSONNAGE**, pas par le sort : `config/roles.json` `base_range`, en
+distance Manhattan sur le plateau 10x6 (diagonale = 2). Un sort sans champ `range` hérite du
+`base_range` de son lanceur. Un `range` explicite est une **dérogation, volontairement rare** :
+remplir `range` partout figerait chaque sort et casserait l'héritage.
+
+Échelle en vigueur (revue 2026-09-02, depuis le rang 5 qui est la position par défaut car les
+joueurs remplissent les slots front-to-back) :
+
+| portée | qui | cases ennemies atteintes sur 30 |
+|---|---|---|
+| 2 | warrior et ses 4 sous-classes, rogue et ses 4, martyr, blacksmith | 4 |
+| 3 | spellblade, artisan, alchemist, chef, musician | 9 |
+| 4 | mage, elementalist, occultist, cardmaster, healer, lifewarden, lightbringer, cantor | 15 |
+| 5 | archer, ranger, falconer, ballmaster, gunslinger | 21 |
+
+Au-delà de 5 la portée cesse de décider quoi que ce soit : 6 couvre 26 cases sur 30, soit 87 % du
+plateau ennemi, et le placement ne se joue plus.
+
+**Deux règles du moteur à connaître avant d'écrire un chiffre :**
+
+1. **Plancher AOE.** Une zone SANS `range` explicite est placée à `max(base_range, 5)`
+   (`room.cpp`). Une classe sous 5 ne verra donc sa réduction s'appliquer qu'à ses sorts
+   mono-cible. Conservé sur décision produit, mais c'est lui qui décide de l'ampleur réelle d'un
+   changement de `base_range`, pas le chiffre écrit.
+2. **Sorts bénéfiques sur allié.** Ils sautent entièrement le test de portée (`room.cpp`), donc
+   soins, boucliers, buffs et auras ne sont pas concernés par `base_range` aujourd'hui.
+   Ticket BE-S10 ouvert pour changer ça.
+
+#### Nova centrée sur le lanceur : c'est `target` qui tranche, jamais la description
+
+Un sort de zone dont le texte dit « autour de lui », « tourbillon », « rayonne » doit porter
+`range: 0`, sinon le plancher AOE le rend posable à 5 cases (un Berserker à portée 2 projetait
+son tourbillon d'acier à 5 cases). Le moteur prévoit ce cas.
+
+Mais **ne jamais se fier au texte seul** pour décider :
+
+- `target: self_and_enemies`, ou un texte qui dit « autour d'**elle** » en parlant du lanceur
+  → centré sur le lanceur → `range: 0`
+- `target: allies` ou `ally` avec une **cible désignée** (« l'allié visé », « la cible et les
+  alliés autour d'elle ») → centré sur la CIBLE → la portée reste **héritée**
+
+Poser `range: 0` sur le second cas casse le sort : le soigneur ne peut plus bénir que lui-même.
+Erreur commise puis rattrapée le 2026-09-02, trois sorts sur neuf étaient des faux positifs.
+
+#### Dérogations en vigueur
+
+Sept sorts portent un `range` explicite parce que l'ARME du sort n'est pas celle de la classe :
+`skill_artisan_grapple` (7, treuil), et la ligne Corsair/Gunslasher du Rogue (4 à 5, armes à feu
+greffées sur une classe de contact). Ces tirs **ignorent volontairement la ligne de vue** : c'est
+le seul outil du Rogue contre ce qu'il ne peut pas atteindre, la LoS les viderait de leur intérêt
+(décision 2026-09-03). Six autres sorts portent `range: 0` au titre de la règle nova ci-dessus.
 
 ### Passive Structure
 - **Per character:** 10 class-specific + 10 common = 20 passives, max level 20 each

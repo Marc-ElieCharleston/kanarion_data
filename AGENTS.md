@@ -112,6 +112,25 @@ Players choose a faction at level 60. Subclass lore must NOT lock players into a
 - **Optional fields:** `effect`, `effect_duration`, `buff`, `debuff`, `heal_power`, `shield_value`, `vfx_type`
 - Skill `effect`/`buff`/`debuff` values must reference valid IDs in `stats/status_effects.json` (CI validates this)
 
+### Portée d un sort
+
+La portée est portée par le PERSONNAGE, pas par le sort : `config/roles.json` `base_range`, en
+distance Manhattan sur le plateau 10x6 (diagonale = 2). Un sort sans champ `range` hérite du
+`base_range` de son lanceur. Un `range` explicite est une dérogation, volontairement rare.
+
+Échelle : 2 (warrior et rogue et leurs sous-classes, martyr, blacksmith) | 3 (spellblade, artisan,
+alchemist, chef, musician) | 4 (mage et healer et leurs sous-classes hors martyr) | 5 (archer et
+ses sous-classes). Depuis le rang 5, cela couvre respectivement 4, 9, 15 et 21 des 30 cases
+ennemies.
+
+Deux règles du moteur : une zone SANS `range` explicite est placée à `max(base_range, 5)`
+(plancher AOE), et les sorts bénéfiques sur allié sautent entièrement le test de portée.
+
+Nova centrée sur le lanceur : `target: self_and_enemies` (ou un texte disant « autour d elle » en
+parlant du lanceur) doit porter `range: 0`. En revanche `target: allies` avec une cible désignée
+(« l allié visé ») est centré sur la CIBLE et garde sa portée héritée. Ne jamais trancher sur la
+description seule : trois sorts sur neuf étaient des faux positifs le 2026-09-02.
+
 ### Passive Structure
 - **Per character:** 10 class-specific + 10 common = 20 passives, max level 20 each
 - **Effect ops:** `add_percent`, `add_flat`
