@@ -692,6 +692,46 @@ def validate_mercenary_balance_slots(db: Path) -> list:
     return errors
 
 
+def validate_skill_patterns(db: Path) -> list:
+    """Etape 10 : tout pattern reference par un sort doit exister dans targeting.json.
+
+    Sans ce controle, un pattern renomme ou mal orthographie passe en silence, et les deux
+    bouts du jeu divergent : le serveur ne resout pas l'id, retombe en CIBLE UNIQUE, pendant
+    que le client resout son alias et dessine la zone entiere. L'apercu promet une rangee,
+    le sort touche une case. Constate le 2026-09-04 sur 3 sorts, apres le renommage
+    front_row -> row (d3ceb20) : `row` n'existe pas dans targeting.json.
+    """
+    errors = []
+    targeting = load_json(db / 'combat' / 'targeting.json')
+    canonical = {k for k, v in (targeting.get('patterns') or {}).items() if isinstance(v, dict)}
+    if not canonical:
+        return ["combat/targeting.json: aucun pattern canonique lu, le controle ne peut pas tourner"]
+
+    def walk(node, path):
+        if isinstance(node, dict):
+            sid = node.get('id')
+            if isinstance(sid, str) and sid.startswith('skill_'):
+                refs = [('pattern', node.get('pattern'))]
+                tgt = node.get('targeting')
+                if isinstance(tgt, dict):
+                    refs.append(('targeting.aoe_pattern_id', tgt.get('aoe_pattern_id')))
+                for field, val in refs:
+                    if val and val not in canonical:
+                        errors.append(
+                            f"{path}: skill '{sid}' {field}='{val}' n'existe pas dans "
+                            f"combat/targeting.json patterns")
+            for v in node.values():
+                walk(v, path)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v, path)
+
+    files = sorted((db / 'classes').glob('*/skills.json')) + sorted((db / 'skills').glob('*.json'))
+    for f in files:
+        walk(load_json(f), f.relative_to(db).as_posix())
+    return errors
+
+
 def main():
     # Find database root
     db_root = os.environ.get("DB_ROOT", "")
@@ -721,50 +761,55 @@ def main():
     # Run all validations
     all_errors = []
 
-    print("\n[1/9] Validating affix stat names...")
+    print("\n[1/10] Validating affix stat names...")
     errs = validate_affixes(db, valid_stats)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[2/9] Validating equipment_stats stat names...")
+    print("[2/10] Validating equipment_stats stat names...")
     errs = validate_equipment_stats(db, valid_stats)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[3/9] Validating class_tags...")
+    print("[3/10] Validating class_tags...")
     errs = validate_class_tags(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[4/9] Validating loot table item references...")
+    print("[4/10] Validating loot table item references...")
     all_item_ids = collect_all_item_ids(db)
     print(f"  Collected {len(all_item_ids)} item IDs from database")
     errs = validate_loot_table_refs(db, all_item_ids)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[5/9] Validating set_id references...")
+    print("[5/10] Validating set_id references...")
     errs = validate_set_ids(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[6/9] Validating recipe output_item references...")
+    print("[6/10] Validating recipe output_item references...")
     errs = validate_recipe_outputs(db, all_item_ids)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[7/9] Validating item rank bands (C->SS) across their 3 copies...")
+    print("[7/10] Validating item rank bands (C->SS) across their 3 copies...")
     errs = validate_item_ranks(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[8/9] Validating rewards contract (config/rewards.json)...")
+    print("[8/10] Validating rewards contract (config/rewards.json)...")
     errs = validate_rewards(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[9/9] Validating mercenary balance profile slots (PvE vs PvP)...")
+    print("[9/10] Validating mercenary balance profile slots (PvE vs PvP)...")
     errs = validate_mercenary_balance_slots(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[10/10] Validating skill AoE patterns exist in targeting.json...")
+    errs = validate_skill_patterns(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
     # Report
