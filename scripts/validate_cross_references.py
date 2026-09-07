@@ -14,6 +14,8 @@ Checks:
   6. All output_item in recipes.json exist in item database files
   7. The 5 item-rank bands (C->SS) agree across their 3 copies
   8. config/rewards.json is coherent and matches the blocks it replaces
+  11. Item display contract: every rollable stat has declared bounds, every
+      affix is nameable and described, no socket without gem data
 
 Exit code 0 = pass, 1 = failures found.
 """
@@ -732,6 +734,167 @@ def validate_skill_patterns(db: Path) -> list:
     return errors
 
 
+
+def validate_item_display_contract(db: Path, valid_stats: set) -> list:
+    """Etape 11 : la data doit pouvoir REMPLIR la fiche d objet unifiee.
+
+    Le client affiche desormais une seule carte d objet (nom, rarete, stats de
+    base, tirage principal, substats AVEC leurs bornes, affixes nommes et
+    decrits, sockets, comparaison, description). Il ne recalcule rien : chaque
+    ligne doit exister quelque part, ici ou dans le payload serveur.
+
+    Ce controle attrape les trous qui rendent une SECTION MUETTE sans jamais
+    lever d erreur :
+      - une stat tirable sans bornes declarees -> le moteur retombe sur son
+        fallback {1,5} en dur, la valeur ignore rarete et multiplicateur substat,
+        et la fiche n a aucune plage a montrer (9 cas trouves le 2026-09-07) ;
+      - un affixe sans nom ou sans description localisee -> une ligne d affixe
+        vide, ou pire, un identifiant interne montre au joueur ;
+      - des bornes inversees (min > max) ou une echelle de rarete qui recule.
+    """
+    errors = []
+
+    # --- 11a. affixes.json : nommable, decrit, tirable ---------------------
+    affixes_path = db / "items" / "affixes.json"
+    if affixes_path.exists():
+        data = load_json(affixes_path)
+        vus = {}
+        for section in ("prefixes", "suffixes"):
+            for affix in data.get(section, []) or []:
+                aid = affix.get("id", "")
+                if not aid:
+                    errors.append("[affixes.json] %s: entree sans id" % section)
+                    continue
+                if aid in vus:
+                    errors.append("[affixes.json] id duplique %s (%s et %s)" % (aid, vus[aid], section))
+                vus[aid] = section
+                for champ in ("name_fr", "name_en", "description_fr", "description_en"):
+                    if not str(affix.get(champ, "")).strip():
+                        errors.append("[affixes.json] affixe %s: %s manquant "
+                                      "(la fiche d objet le lit pour nommer/decrire l affixe)"
+                                      % (aid, champ))
+                if not affix.get("allowed_slots"):
+                    errors.append("[affixes.json] affixe %s: allowed_slots vide — "
+                                  "il ne peut tomber sur aucun objet" % aid)
+                if int(affix.get("weight", 0)) <= 0:
+                    errors.append("[affixes.json] affixe %s: weight <= 0" % aid)
+                lr = affix.get("level_range", [])
+                if not (isinstance(lr, list) and len(lr) == 2 and lr[0] <= lr[1]):
+                    errors.append("[affixes.json] affixe %s: level_range invalide %s" % (aid, lr))
+                rolls = affix.get("rolls", [])
+                if not rolls:
+                    errors.append("[affixes.json] affixe %s: aucun roll — affixe inerte" % aid)
+                for roll in rolls:
+                    stat = roll.get("stat", roll.get("stat_id", ""))
+                    if "min" not in roll or "max" not in roll:
+                        errors.append("[affixes.json] affixe %s stat %s: bornes min/max manquantes"
+                                      % (aid, stat))
+                    elif roll["min"] > roll["max"]:
+                        errors.append("[affixes.json] affixe %s stat %s: min %s > max %s"
+                                      % (aid, stat, roll["min"], roll["max"]))
+
+    # --- 11b. equipment_stats.json : toute stat tirable a ses bornes -------
+    eq_path = db / "items" / "equipment_stats.json"
+    if eq_path.exists():
+        data = load_json(eq_path)
+        ranges = data.get("stat_ranges_by_rarity", {}).get("main_stats", {})
+        declarees = set(k for k in ranges if not k.startswith("_"))
+        raretes = [r for r in data.get("rarity_tiers", {}) if not r.startswith("_")]
+
+        # `hybrid` n est pas une stat : c est le marqueur d essence d equilibre,
+        # que le roller eclate en atk/mag. Il n a donc pas de bornes propres.
+        tirables = set()
+        for cat_name, cat in (data.get("equipment_categories") or {}).items():
+            for entry in cat.get("substat_pool", []) or []:
+                tirables.add(entry.get("stat", ""))
+            for opts in (cat.get("main_stat_options") or {}).values():
+                tirables.update(opts.get("options", []))
+            for opts in (cat.get("main_stat_by_armor_type") or {}).values():
+                tirables.update(opts.get("options", []))
+            for essence in (cat.get("main_stat_types") or {}).values():
+                if essence.get("main_stat"):
+                    tirables.add(essence["main_stat"])
+        tirables.discard("")
+        tirables.discard("hybrid")
+
+        for stat in sorted(tirables - declarees):
+            errors.append("[equipment_stats.json] stat tirable %s sans bornes dans "
+                          "stat_ranges_by_rarity.main_stats — le moteur retombe sur son "
+                          "fallback {1,5} (sans rarete ni x0.5 substat) et la fiche d objet "
+                          "n a aucune plage a afficher" % stat)
+
+        for stat in sorted(declarees):
+            if stat not in valid_stats:
+                errors.append("[equipment_stats.json] bornes declarees pour une stat inconnue %s"
+                              % stat)
+            precedent = None
+            for rarete in raretes:
+                bornes = ranges[stat].get(rarete)
+                if bornes is None:
+                    errors.append("[equipment_stats.json] %s: rarete %s sans bornes"
+                                  % (stat, rarete))
+                    continue
+                if not (isinstance(bornes, list) and len(bornes) == 2):
+                    errors.append("[equipment_stats.json] %s / %s: bornes malformees %s"
+                                  % (stat, rarete, bornes))
+                    continue
+                if bornes[0] > bornes[1]:
+                    errors.append("[equipment_stats.json] %s / %s: roll_min %s > roll_max %s"
+                                  % (stat, rarete, bornes[0], bornes[1]))
+                if precedent is not None and bornes[0] < precedent[0]:
+                    errors.append("[equipment_stats.json] %s: l echelle de rarete recule a %s "
+                                  "(%s apres %s)" % (stat, rarete, bornes, precedent))
+                precedent = bornes
+
+    # --- 11c. equipment.json : identite et stats de base lisibles ----------
+    equip_path = db / "items" / "equipment.json"
+    if equip_path.exists():
+        data = load_json(equip_path)
+        ids_vus = set()
+        for famille, groupes in (data.get("base_items") or {}).items():
+            for groupe, items in (groupes or {}).items():
+                for item in items or []:
+                    iid = item.get("id", "")
+                    ou = "base_items.%s.%s" % (famille, groupe)
+                    if not iid:
+                        errors.append("[equipment.json] %s: objet sans id" % ou)
+                        continue
+                    if iid in ids_vus:
+                        errors.append("[equipment.json] id duplique %s" % iid)
+                    ids_vus.add(iid)
+                    for champ in ("name_fr", "name_en"):
+                        if not str(item.get(champ, "")).strip():
+                            errors.append("[equipment.json] %s: %s manquant" % (iid, champ))
+                    if int(item.get("level_req", 0)) < 0:
+                        errors.append("[equipment.json] %s: level_req negatif" % iid)
+                    base = item.get("base_stats") or {}
+                    if not base:
+                        errors.append("[equipment.json] %s: base_stats vide — la fiche n aurait "
+                                      "aucune stat de base a montrer" % iid)
+                    for stat in base:
+                        if stat not in valid_stats:
+                            errors.append("[equipment.json] %s: base_stats reference une stat "
+                                          "inconnue %s" % (iid, stat))
+
+    # --- 11d. sockets : rien ne doit referencer une gemme inexistante -----
+    # Le systeme de sertissage n existe pas encore (aucune gemme, aucune regle
+    # de deblocage, aucun effet serveur). Le controle est donc vide par
+    # construction — mais il se declenchera au premier objet qui declare des
+    # sockets sans que la data de gemmes suive.
+    for fichier in ("equipment.json", "panoplies.json", "uniques.json"):
+        chemin = db / "items" / fichier
+        if not chemin.exists():
+            continue
+        brut = chemin.read_text(encoding="utf-8")
+        if chr(34) + "sockets" + chr(34) in brut or chr(34) + "socket_slots" + chr(34) in brut:
+            if not (db / "items" / "gems.json").exists():
+                errors.append("[%s] declare des sockets alors qu aucune data de gemme n existe "
+                              "(items/gems.json absent) : la fiche afficherait des emplacements "
+                              "que rien ne peut remplir" % fichier)
+
+    return errors
+
+
 def main():
     # Find database root
     db_root = os.environ.get("DB_ROOT", "")
@@ -808,8 +971,13 @@ def main():
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[10/10] Validating skill AoE patterns exist in targeting.json...")
+    print("[10/11] Validating skill AoE patterns exist in targeting.json...")
     errs = validate_skill_patterns(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[11/11] Validating the item display contract (rolls, affixes, sockets)...")
+    errs = validate_item_display_contract(db, valid_stats)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
     # Report
