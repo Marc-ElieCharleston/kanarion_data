@@ -2307,6 +2307,144 @@
       "_note": "AUTO-ACCEPT AU NIVEAU 20 (demande produit). Le champ auto_accept_on_level N'EXISTE PAS ENCORE cote back : seul auto_accept_on_zone_enter est indexe, et il ne filtre pas sur le niveau. Le service quete est DEJA abonne a kanarion.events.character.CharacterLeveledUp, donc c'est un index de plus et un branchement dans le handler de level-up. Sans lui, un joueur qui ne clique jamais une quete n'apprend jamais ou debloquer sa sous-classe. Le champ est pose des maintenant pour que le branchement n'ait rien a chercher. Niveau verifie contre config/skill_system.json : skill_categories.subclass.unlock_at_player_level = 20."
     },
     {
+      "id": "q_tournoi_subclass",
+      "type": "main",
+      "zone": "village",
+      "min_level": 1,
+      "auto_accept_on_tournament": true,
+      "flags": [
+        "tournament"
+      ],
+      "title_fr": "Choisis ta voie",
+      "title_en": "Choose Your Path",
+      "summary_fr": "Ton personnage de tournoi commence au niveau vingt. Le Greffier du Tournoi, à droite du point d'apparition, peut fixer ta sous-classe et t'ouvrir cinq compétences de plus.",
+      "summary_en": "Your tournament fighter starts at level twenty. The Tournament Registrar, to the right of the spawn point, can set your subclass and open five more skills.",
+      "npc_giver": "npc_tournament_registrar",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_tournament_registrar",
+          "count": 1,
+          "description_fr": "Choisir ta sous-classe auprès du Greffier",
+          "description_en": "Choose your subclass with the Registrar",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tournoi_subclass_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_tournament_registrar",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir le Greffier",
+                  "label_en": "Go see the Registrar"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_tournoi_subclass_howto",
+            "type": "modal",
+            "priority": 95,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Ta sous-classe",
+              "title_en": "Your subclass",
+              "content_fr": "Un personnage de tournoi commence au niveau vingt, prêt à se battre. Tu peux choisir une sous-classe tout de suite : elle débloque cinq compétences que ta classe de base n'a pas, et elle oriente ta façon de jouer.\n\nLe choix ne se défait pas. Velith peut te rendre tes points de statistiques et de compétences, mais pas ta voie.\n\nLe Greffier du Tournoi se tient à droite du point d'apparition, près de Dargo.",
+              "content_en": "A tournament fighter starts at level twenty, ready to fight. You can choose a subclass right away: it unlocks five skills your base class doesn't have, and it shapes how you play.\n\nThe choice can't be undone. Velith can give back your stat and skill points, but not your path.\n\nThe Tournament Registrar stands to the right of the spawn point, near Dargo."
+            }
+          }
+        ]
+      },
+      "rewards": {
+        "gold": 200
+      },
+      "_note": "TOURNOI UNIQUEMENT. auto_accept_on_tournament:true = a auto-accepter a la CREATION d'un perso is_tournament (comme tournament_level=20 est deja pose cote character service). Le champ N'EXISTE PAS ENCORE cote back : c'est un index a ajouter dans quest_service (cf q_soren_sous_classe / auto_accept_on_level pour le modele). Cible le Greffier (npc_tournament_registrar), DEJA enregistre client-side dans MAITRES_DES_VOIES (main.gd:3913) donc il declenche le meme flux de choix de sous-classe que Soren. NE PAS greffer sur la chaine q_tut_* (supprimee)."
+    },
+    {
+      "id": "q_tournoi_stats_skills",
+      "type": "main",
+      "zone": "village",
+      "min_level": 1,
+      "auto_accept_on_tournament": true,
+      "flags": [
+        "tournament"
+      ],
+      "title_fr": "Connais tes forces",
+      "title_en": "Know Your Strengths",
+      "summary_fr": "Un personnage de niveau vingt a des points de statistiques et de compétences à placer. Investis-les avant d'entrer en arène.",
+      "summary_en": "A level-twenty fighter has stat and skill points to spend. Invest them before you step into the arena.",
+      "objective_mode": "parallel",
+      "objectives": [
+        {
+          "template": "spend_stat_points",
+          "count": 3,
+          "description_fr": "Investir 3 points de stats",
+          "description_en": "Allocate 3 stat points",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tournoi_stats_skills_obj0_stats",
+                "type": "arrow",
+                "target": "ui_stats_button",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Ouvre tes statistiques",
+                  "label_en": "Open your stats"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "spend_skill_point",
+          "count": 1,
+          "description_fr": "Améliorer une compétence active",
+          "description_en": "Improve an active skill",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tournoi_stats_skills_obj1_skills",
+                "type": "arrow",
+                "target": "ui_skills_button",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Ouvre tes compétences",
+                  "label_en": "Open your skills"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_tournoi_stats_skills_howto",
+            "type": "modal",
+            "priority": 94,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Répartir tes points",
+              "title_en": "Spending your points",
+              "content_fr": "Ouvre tes statistiques et clique sur le + à côté d'une caractéristique pour y placer un point.\n\nHP augmente ta vie, Souffle ta réserve pour lancer des compétences, Attaque tes dégâts physiques, Magie tes dégâts magiques, et Défense ce que tu encaisses.\n\nRien n'est enregistré tant que tu n'as pas cliqué sur Appliquer.\n\nFais ensuite la même chose dans l'écran des compétences pour en monter une d'un rang.",
+              "content_en": "Open your stats and click the + next to a stat to put a point into it.\n\nHP raises your health, Breath your pool for casting skills, Attack your physical damage, Magic your magic damage, and Defense how much you soak up.\n\nNothing is saved until you click Apply.\n\nThen do the same in the skills screen to raise one skill by a rank."
+            }
+          }
+        ]
+      },
+      "rewards": {
+        "gold": 150
+      },
+      "_note": "TOURNOI UNIQUEMENT. auto_accept_on_tournament:true = auto-accept a la creation d'un perso is_tournament. Deux objectifs paralleles (spend_stat_points x3, spend_skill_point x1), fleches vers ui_stats_button / ui_skills_button (deja au registre client UITargetRegistry). Pas d'objectif 'retour PNJ' (contrairement au tuto q_tut_intro_04) : la quete se termine quand les points sont depenses. NE PAS greffer sur la chaine q_tut_* (supprimee)."
+    },
+    {
       "id": "q_keystone_premiere",
       "type": "main",
       "zone": "village",
