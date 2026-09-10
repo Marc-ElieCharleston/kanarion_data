@@ -1,14 +1,15 @@
 {
   "_meta": {
-    "version": "3.3",
-    "last_updated": "2026-03-16",
-    "description": "Systeme de progression - niveaux, XP, tiers de classe"
+    "version": "4.0",
+    "last_updated": "2026-09-10",
+    "description": "Systeme de progression - niveaux, XP, tiers de classe, budgets de points",
+    "_audit": "Passe de verification 2026-09-10 : chaque champ a ete confronte au code serveur et client. Les champs que personne ne lisait ont ete retires, ceux dont un AUTRE fichier est proprietaire portent un `_owner`. Avant de retuner une valeur ici, lire son `_owner` : plusieurs champs sont des MIROIRS et ne pilotent rien."
   },
   "leveling": {
     "max_level": 100,
-    "mvp_cap": 20,
+    "_max_level_owner": "MIROIR. Le serveur ne lit pas ce champ : le cap reel vient de la plus grande cle de `xp_table` (shared/gameplay/level_calc.cpp) et d'un garde-fou en dur `lvl > 100` dans server-combat/src/domain/combat_profile_builder.cpp. Le client lit config/game.json `game_constants.max_level`. Les trois valent 100 aujourd'hui.",
     "xp_source": "lookup_table",
-    "xp_source_note": "La lookup table est la source de verite. La formule polynomiale sert d'interpolation pour les niveaux non definis.",
+    "xp_source_note": "La lookup table est la source de verite, cote serveur ET client (level_calc.cpp la charge, BalanceConfig la relit). La formule polynomiale sert d'interpolation pour les niveaux non definis. mvp_cap (20) a ete retire le 2026-09-10 : aucun code ne le lisait.",
     "xp_formula_fallback": "xp_base * level^xp_exponent",
     "xp_base": 27,
     "xp_exponent": 1.45,
@@ -114,6 +115,7 @@
       "100": 277500
     },
     "pacing_notes": {
+      "_status": "CIBLE DESIGN, NON MESUREE, et contredite par la mesure. Ces chiffres datent du calibrage 1v1. Depuis le passage aux packs de monstres, l'audit XP F2 mesure un combat moyen a 0.77 niveau, soit environ 1.3 combat par level et non 2 a 6. A retuner via le divisor ci-dessous, pas en editant ces notes.",
       "target": "~4-6h solo pour level 20, plus rapide en groupe",
       "early_1_5": "2-3 combats par level (hook rapide, decouverte classe)",
       "mid_6_12": "4-5 combats par level",
@@ -123,9 +125,10 @@
     "divisor_base": 2.0,
     "divisor_ramp": 3.5,
     "divisor_cap_level": 20,
-    "_divisor_note": "Diviseur qui convertit XP-dun-niveau en XP-dun-monstre : base_xp_for_level = xp_to_next(niv+1) / (divisor_base + min(niv,divisor_cap_level)/divisor_cap_level * divisor_ramp). Rapatrie ici (valeurs ACTUELLES = no-op) depuis les 3 constantes C++ loot_types.hpp:220-222. PR-B: LootRoller lit dici au lieu des constantes. ⚠️ calibre pour 1v1, JAMAIS retune pour les packs -> un combat moyen vaut 0.77 niveau (audit XP F2). Le retune (5.5 -> ~19) = PR-C, pas ici."
+    "_divisor_note": "PROPRIETAIRE REEL : ce bloc pilote vraiment le jeu. Diviseur qui convertit XP-dun-niveau en XP-dun-monstre : base_xp_for_level = xp_to_next(niv+1) / (divisor_base + min(niv,divisor_cap_level)/divisor_cap_level * divisor_ramp). PR-B livree : server-combat/src/loot/loot_roller.cpp et services/quest/src/db/quest_queries.cpp lisent ces trois champs, les constantes C++ ne servent plus que de repli. ⚠️ calibre pour 1v1, JAMAIS retune pour les packs -> un combat moyen vaut 0.77 niveau (audit XP F2). Le retune (5.5 -> ~19) reste a faire."
   },
   "class_tiers": {
+    "_owner": "Bloc LU par le client (kanarion_front BalanceConfig.tier_unlock_level, qui interdit tout 20 ou 60 en dur). Cote serveur la porte est ouverte par config/skill_system.json `skill_categories.<base|subclass|tier3>.unlock_at_player_level` (services/character/src/character/character_manager.cpp load_skill_unlock_levels). Les deux fichiers concordent aujourd'hui : 1 / 20 / 60. Si l'un bouge, bouger l'autre dans le meme commit.",
     "tier_1": {
       "level": 1,
       "description_fr": "Classe de base",
@@ -145,6 +148,9 @@
   "stat_allocation": {
     "points_per_level": 3,
     "skill_points_per_level": 1,
+    "passive_points_per_level": 1,
+    "starting_skill_points": 1,
+    "_grants_owner": "MIROIRS : ces quatre champs ne pilotent rien. Les grants de level-up sont EN DUR a trois endroits du serveur (services/economy/src/rewards/reward_processor.cpp, services/quest/src/db/quest_queries.cpp, services/character/src/character/character_manager.cpp : levels_gained * 3 stat / * 1 skill / * 1 passif). Le client lit config/game.json `game_constants.stat_points_per_level` et config/skill_system.json `skill_points`. passive_points_per_level est AJOUTE ici le 2026-09-10 : le serveur le donnait depuis toujours mais aucun fichier data ne le documentait.",
     "allocatable_stats": [
       "hp",
       "mp",
@@ -152,23 +158,39 @@
       "mag",
       "def"
     ],
-    "stat_multipliers": {
-      "hp": 3,
-      "mp": 3,
+    "_allocatable_stats_owner": "MIROIR d'une liste en dur cote serveur (services/economy/src/economy_service.cpp handle_stat_allocate, set `valid_stats`). Les cinq concordent aujourd'hui. Ajouter une stat ici sans toucher le C++ donnerait un bouton client rejete par le serveur.",
+    "point_values": {
+      "hp": 5,
+      "mp": 5,
       "atk": 1,
       "mag": 1,
       "def": 1
     },
-    "stat_multipliers_note": "1 point depense = stat_multiplier gain. Ex: 1 pt HP → +3 HP. 1 pt DEF → +1 armor ET +1 magic_resist. Cout fixe: 1 point alloue = 1 point depense.",
-    "max_points_per_stat": 200
+    "_point_values_owner": "config/game.json `stats_definition.<stat>.point_value` est la SEULE source lue (server-combat/src/combat/combat_host.cpp remplit stat_point_values_, applique dans combat_profile_builder.cpp). Recopie ici pour lecture seule. CORRIGE 2026-09-10 : ce bloc s'appelait `stat_multipliers` et annoncait hp=3 et mp=3 alors que le jeu applique 5 et 5. Ne pas retuner ici, retuner dans game.json.",
+    "point_values_note": "Formule appliquee : total = base_classe + floor(growth * (niveau - 1)) + points_alloues * point_value. 1 pt HP -> +5 HP max. 1 pt ATK -> +1 atk. 1 pt DEF -> +1 armor UNIQUEMENT. Cout fixe : 1 point alloue = 1 point depense.",
+    "magic_resist_note": "La DEF ne donne PLUS de magic_resist, contrairement a ce qu'annoncait la version 3.3. Depuis le modele defensif CTO 2026-07-22 : magic_resist = base_classe + growth + 0.2 * mag_total. Un point de MAG rapporte donc +1 mag ET +0.2 magic_resist, un point de DEF ne touche que l'armure.",
+    "total_stat_points_at_max_level": 297,
+    "_total_points_note": "3 x (100 - 1). Aucun point de stat n'est donne a la creation, contrairement au point de skill.",
+    "max_points_per_stat": null,
+    "_max_points_per_stat_note": "AUCUN cap par stat n'existe en jeu. L'ancienne valeur 200 n'etait lue par personne : handle_stat_allocate ne verifie que `stat_points >= cost`, et le builder de profil ne verifie rien par stat. Le seul garde-fou est un log d'avertissement quand la somme des allocations depasse 100 (combat_profile_builder.cpp), et il n'ecrete RIEN malgre son message 'clamping'. Un lv100 peut donc verser ses 297 points dans une seule stat : a prendre en compte dans toute matrice de degats."
   },
   "passive_allocation": {
+    "inventory": {
+      "innate_per_class": 1,
+      "class_passives_per_class": 5,
+      "subclass_passives_per_subclass": 0,
+      "common_passives": 18
+    },
+    "_inventory_note": "Compte reel dans la data au 2026-09-10 : classes/<classe>/passives.json contient 1 `innate_passive` non levelable + 5 `class_passives`, et classes/common_passives.json en contient 18. Le bloc `subclass_passives` est VIDE dans les six fichiers de classe : les 3 passifs de sous-classe annonces par la version 3.3 n'existent pas encore.",
     "class_passives_max_selected": 2,
-    "class_passives_max_per_passive": 10,
-    "description": "Le joueur peut allouer des points dans 2 class_passives maximum sur les 5 disponibles. Les 3 autres restent verrouilles a 0 niveau. Cela force des choix thematiques et favorise la diversite de builds intra-classe.",
+    "_class_passives_max_selected_status": "INTENTION DESIGN, NON APPLIQUEE PAR LE SERVEUR. services/economy/src/economy_service.cpp handle_passive_upgrade ne verifie que les points disponibles et le niveau max ; rien ne compte combien de passifs de classe distincts sont ouverts. Un joueur peut aujourd'hui monter les cinq. A implementer ou a abandonner, mais ne pas presenter comme une regle en vigueur.",
+    "description": "Intention : le joueur alloue des points dans 2 class_passives maximum sur les 5 disponibles, les 3 autres restant a 0. Cela force des choix thematiques et favorise la diversite de builds intra-classe.",
+    "max_level_per_passive": 10,
+    "_max_level_per_passive_drift": "DIVERGENCE ACTIVE data / serveur. Les 5 class_passives et les 18 communs declarent `max_level: 10` dans la data, mais le serveur ne refuse qu'au-dela de 20 (economy_service.cpp handle_passive_upgrade, test `new_level > 20`) et il ne lit pas ce champ. Le serveur est donc deux fois plus permissif que la data. A trancher : soit le serveur lit la data, soit la data assume 20.",
+    "levelable_passives_total": 20,
+    "_levelable_total_note": "18 communs + les 2 class_passives autorises par l'intention design + 0 subclass. Tout maxer a 10 couterait 200 points pour 99 disponibles a lv100 : deficit -101, meme logique de choix force que les 100 points de skill pour 150 necessaires.",
+    "passive_points_at_max_level": 99,
     "common_passives_max_selected": null,
-    "common_passives_note": "Pas de limite sur le nombre de communs selectionnes (18 disponibles, max 10 lvl chacun). Le budget global de points fait la limite.",
-    "subclass_passives_max_selected": null,
-    "subclass_passives_note": "Pas de limite sur les passifs subclass (3 par subclass au total, max 10 lvl chacun)."
+    "common_passives_note": "Pas de limite sur le nombre de communs selectionnes. Le budget global de points fait la limite."
   }
 }
