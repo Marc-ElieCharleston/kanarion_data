@@ -27,7 +27,7 @@ ALLOWED_STANDARD_FIELDS = {
     "target", "pattern", "range",
     # Damage/scaling
     "damage_type", "scaling_stat", "base_power", "scaling_percent",
-    "percent_per_level", "power_per_level",
+    "percent_per_level", "power_per_level", "effect_power_per_level", "rank_scaling_enabled",
     # Cost
     "mana_cost", "mana_cost_per_level",
     # Timing
@@ -63,7 +63,7 @@ ALLOWED_METADATA_FIELDS = {
     "bonus_damage_vs_challenged", "damage_mult_if_challenged",
     "damage_mult_if_challenged_and_exposed",
     # Chain/bounce
-    "chain_bounces", "damage_per_bounce", "can_bounce_same_target",
+    "chain_bounces", "damage_per_bounce", "damage_percent_per_bounce", "can_bounce_same_target",
     "bounce_if_adjacent", "bounce_returns",
     # Charges/momentum
     "generates_charges", "consumes_charges", "max_charges_consumed",
@@ -113,7 +113,7 @@ ALLOWED_METADATA_FIELDS = {
     "mark_ignore_los", "mark_refresh_on_hit", "mark_spread_on_kill",
     "marked_bonus_percent",
     # DoT sub-fields (Martyr/special)
-    "dot_type", "dot_percent", "dot_duration",
+    "dot_type", "dot_percent", "dot_duration", "dot_duration_per_level", "can_target_dead",
     # Detonate (Alchemist)
     "detonates_toxin", "detonate_consumes_stacks",
     "detonate_damage_base", "detonate_damage_per_stack",
