@@ -34,10 +34,10 @@
     "unlock_at_level": 1,
     "movement": {
       "type": "swap",
-      "range": 5
+      "range": 3
     },
-    "description_fr": "Accorde un Bouclier de 120 pendant 8s. Le soigneur echange sa position avec un allie et l'entoure d'un bouclier, prenant sa place dangereuse.",
-    "description_en": "Grants a Shield of 120 for 8s. The healer swaps places with an ally and shields them, taking their dangerous spot.",
+    "description_fr": "Échange sa position avec un allié à 3 cases maximum et lui accorde un bouclier de 10% des PV max du lanceur pendant 6s.",
+    "description_en": "Swaps positions with an ally within 3 tiles and grants them a shield for 10% of the caster’s max HP for 6s.",
     "tags": [
       "movement",
       "protect",
@@ -48,12 +48,26 @@
       {
         "type": "buff",
         "stat": "shield_max_hp",
-        "value": 120,
-        "duration": 8.0,
-        "target": "ally"
+        "value": 0,
+        "pct": 10,
+        "duration": 6,
+        "duration_per_level": 0,
+        "pct_per_level": 0
       }
     ],
-    "source_scope": "BASE"
+    "source_scope": "BASE",
+    "base_heal": 0,
+    "power_per_level": 0,
+    "effect_power_per_level": 0,
+    "percent_per_level": 0,
+    "range": 3,
+    "targeting": {
+      "selection_mode": "entity",
+      "valid_target_team": "ally",
+      "requires_entity_on_target_tile": true,
+      "requires_line_of_sight": false,
+      "bypasses_los": false
+    }
   },
   "base_skills": [
     {
@@ -66,17 +80,17 @@
       "damage_type": "magical",
       "scaling_stat": "mag",
       "base_power": 0,
-      "scaling_percent": 70,
-      "percent_per_level": 3.1,
+      "scaling_percent": 40,
+      "percent_per_level": 1.2,
       "mana_cost": 7,
-      "mana_cost_per_level": 1,
+      "mana_cost_per_level": 0,
       "cooldown": 3.0,
       "vfx_type": "falling",
       "vfx_x_offset": 2,
       "vfx_y_offset": 23,
       "vfx_sprite_scale": 1.3,
-      "description_fr": "Inflige 70% MAG (+3.1%/niv). Réduit la résistance magique de 10% pendant 4s, 1 charge de Lumière Purificatrice (max 1). Le Soigneur frappe d'un éclat de lumière sacrée.",
-      "description_en": "Deals 70% MAG (+3.1%/lvl). Reduces magic resistance by 10% for 4s, 1 stack of Holy Fire (max 1). The Healer strikes with a burst of sacred light.",
+      "description_fr": "Inflige 40% MAG (+1,2 point par rang) et réduit la RM de 5% pendant 3s. Portée 3, ligne de vue requise.",
+      "description_en": "Deals 40% MAG (+1.2 percentage points per rank) and reduces MR by 5% for 3s. Range 3, requires line of sight.",
       "tags": [
         "damage",
         "holy",
@@ -89,14 +103,9 @@
         {
           "type": "debuff",
           "stat": "magic_resist_down",
-          "stacks_to_apply": 2,
-          "duration": 4.0
-        },
-        {
-          "type": "debuff",
-          "stat": "holy_dot",
-          "value": 1,
-          "duration": 6.0
+          "stacks_to_apply": 1,
+          "duration": 3,
+          "duration_per_level": 0
         }
       ],
       "base_class_id": "healer",
@@ -110,7 +119,12 @@
         "bypasses_los": false,
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "single"
-      }
+      },
+      "base_heal": 0,
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "range": 3,
+      "rank_scaling_enabled": true
     },
     {
       "id": "skill_healer_heal",
@@ -121,13 +135,13 @@
       "pattern": "single",
       "damage_type": "none",
       "heal_scaling_stat": "mag",
-      "heal_scaling_percent": 180,
+      "heal_scaling_percent": 110,
       "mana_cost": 27,
-      "mana_cost_per_level": 2,
+      "mana_cost_per_level": 0,
       "cooldown": 8.0,
       "vfx_type": "heal",
-      "description_fr": "Soigne 180% MAG. Applique Régénération pendant 4s. Le Soigneur insuffle son Souffle dans les blessures d'un allié. Le soin laisse une Régénération qui prolonge la guérison.",
-      "description_en": "Heals 180% MAG. Applies Regeneration for 4s. The Healer breathes their power into an ally's wounds. The care leaves a Regeneration that prolongs the healing.",
+      "description_fr": "Soigne un allié à 3 cases maximum de 110% MAG (+5 points par rang), puis de 5% MAG par tick pendant 4s.",
+      "description_en": "Heals an ally within 3 tiles for 110% MAG (+5 percentage points per rank), then 5% MAG per tick for 4s.",
       "tags": [
         "heal",
         "hot",
@@ -136,11 +150,12 @@
       "effects": [
         {
           "type": "buff",
-          "stat": "heal_over_time_max_hp",
+          "stat": "heal_over_time_mag",
           "value": 0,
-          "pct": 2,
-          "duration": 4.0,
-          "duration_per_level": 0.1
+          "pct": 5,
+          "duration": 4,
+          "duration_per_level": 0,
+          "pct_per_level": 0
         }
       ],
       "base_class_id": "healer",
@@ -155,7 +170,13 @@
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "single"
       },
-      "percent_per_level": 10.0
+      "percent_per_level": 5,
+      "base_power": 0,
+      "base_heal": 0,
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "range": 3,
+      "rank_scaling_enabled": true
     },
     {
       "id": "skill_healer_holy_shield",
@@ -166,11 +187,11 @@
       "pattern": "single",
       "damage_type": "none",
       "mana_cost": 39,
-      "mana_cost_per_level": 3,
+      "mana_cost_per_level": 0,
       "cooldown": 36.0,
       "vfx_type": "shield",
-      "description_fr": "Accorde un Bouclier de 100% des PV max pendant 16s, accorde un Bouclier de 65% des PV max pendant 16s. Le Soigneur tisse un voile de lumière autour d'un allié : un bouclier absorbe les coups qui le visent, et une part protège aussi le lanceur.",
-      "description_en": "Grants a Shield of 100% of max HP for 16s, grants a Shield of 65% of max HP for 16s. The Healer weaves a veil of light around an ally: a shield absorbs the blows aimed at them, and part of it also protects the caster.",
+      "description_fr": "Protège un allié à 3 cases maximum avec un bouclier de 70% MAG (+3 points par rang), et le lanceur avec 35% MAG, pendant 8s.",
+      "description_en": "Shields an ally within 3 tiles for 70% MAG (+3 percentage points per rank), and the caster for 35% MAG, for 8s.",
       "tags": [
         "shield",
         "defense",
@@ -181,19 +202,20 @@
           "type": "buff",
           "stat": "shield_mag",
           "value": 0,
-          "pct": 100,
-          "duration": 16.0,
-          "duration_per_level": 0.45,
+          "pct": 70,
+          "duration": 8,
+          "duration_per_level": 0,
           "pct_per_level": 3
         },
         {
           "type": "buff",
           "stat": "shield_mag",
           "value": 0,
-          "pct": 65,
-          "target": "self",
-          "duration": 16.0,
-          "pct_per_level": 2
+          "pct": 35,
+          "duration": 8,
+          "duration_per_level": 0,
+          "pct_per_level": 0,
+          "target": "self"
         }
       ],
       "base_class_id": "healer",
@@ -207,24 +229,30 @@
         "bypasses_los": false,
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "single"
-      }
+      },
+      "base_power": 0,
+      "base_heal": 0,
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "percent_per_level": 0,
+      "range": 3
     },
     {
       "id": "skill_healer_purify",
       "name_en": "Purify",
       "name_fr": "Purification",
       "tier": "standard",
-      "target": "ally",
+      "target": "allies",
       "pattern": "chain_2",
       "damage_type": "none",
       "heal_scaling_stat": "mag",
-      "heal_scaling_percent": 60,
+      "heal_scaling_percent": 45,
       "mana_cost": 30,
-      "mana_cost_per_level": 3,
+      "mana_cost_per_level": 0,
       "cooldown": 12.0,
       "vfx_type": "heal",
-      "description_fr": "Soigne 60% MAG. Applique cleanse. Le Souffle du Soigneur saute d'un allié à l'autre, dissipant les altérations et adoucissant les blessures sur son passage.",
-      "description_en": "Heals 60% MAG. Applies cleanse. The Healer's Breath leaps from ally to ally, cleansing afflictions and soothing wounds along the way.",
+      "description_fr": "Soigne de 45% MAG (+2 points par rang) et dissipe deux affaiblissements par allié touché. Portée de départ 3 ; rebond seulement vers un allié adjacent.",
+      "description_en": "Heals for 45% MAG (+2 percentage points per rank) and cleanses two debuffs per affected ally. Initial range 3; only bounces to an adjacent ally.",
       "tags": [
         "dispel",
         "cleanse",
@@ -235,7 +263,9 @@
         {
           "type": "utility",
           "stat": "cleanse",
-          "value": 2
+          "value": 2,
+          "target": "allies",
+          "duration_per_level": 0
         }
       ],
       "base_class_id": "healer",
@@ -250,8 +280,14 @@
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "chain_2"
       },
-      "percent_per_level": 3.3,
-      "bounce_if_adjacent": true
+      "percent_per_level": 2,
+      "bounce_if_adjacent": true,
+      "base_power": 0,
+      "base_heal": 0,
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "range": 3,
+      "rank_scaling_enabled": true
     },
     {
       "id": "skill_healer_light_pulse",
@@ -262,14 +298,14 @@
       "pattern": "ring_1_center",
       "damage_type": "none",
       "heal_scaling_stat": "mag",
-      "heal_scaling_percent": 100,
+      "heal_scaling_percent": 65,
       "mana_cost": 33,
-      "mana_cost_per_level": 3,
+      "mana_cost_per_level": 0,
       "cooldown": 10.0,
       "cast_time": 1.5,
       "vfx_type": "heal",
-      "description_fr": "Soigne 100% MAG. Le Soigneur libère une onde de lumière qui referme les blessures de tous les alliés proches. Demande un instant de recueillement avant de jaillir.",
-      "description_en": "Heals 100% MAG. The Healer releases a wave of light that closes the wounds of all nearby allies. It requires a brief moment of focus before it bursts free.",
+      "description_fr": "Après 1,5s, soigne les alliés autour du lanceur de 65% MAG (+3 points par rang).",
+      "description_en": "After 1.5s, heals allies around the caster for 65% MAG (+3 percentage points per rank).",
       "tags": [
         "heal",
         "aoe"
@@ -286,7 +322,13 @@
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "ring_1_center"
       },
-      "percent_per_level": 5.6
+      "percent_per_level": 3,
+      "base_power": 0,
+      "base_heal": 0,
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "range": 0,
+      "rank_scaling_enabled": true
     }
   ],
   "subclass_skills": {
@@ -302,18 +344,18 @@
           "target": "ally",
           "pattern": "single",
           "damage_type": "none",
-          "base_heal": 35,
+          "base_heal": 0,
           "heal_scaling_stat": "mag",
-          "heal_scaling_percent": 70,
+          "heal_scaling_percent": 90,
           "conditional_bonus": {
             "condition": "target_has_hot",
-            "heal_bonus_percent": 40
+            "heal_bonus_percent": 20
           },
           "mana_cost": 24,
           "cooldown": 8.0,
           "vfx_type": "heal",
-          "description_fr": "Soigne 70% MAG. Le Lifewarden fait couler son Souffle dans la blessure d'un allié et la referme. Le soin est plus fort si une guérison agit déjà sur la cible.",
-          "description_en": "Heals 70% MAG. The Lifewarden channels their Breath into an ally's wound and closes it. The heal is stronger if a regeneration is already at work on the target.",
+          "description_fr": "Soigne un allié à 3 cases maximum de 90% MAG (+4 points par rang), avec +20% de soin si un soin périodique agit déjà sur lui.",
+          "description_en": "Heals an ally within 3 tiles for 90% MAG (+4 percentage points per rank), with 20% more healing if they already have healing over time.",
           "tags": [
             "heal",
             "nature",
@@ -326,12 +368,18 @@
           "targeting": {
             "selection_mode": "entity",
             "valid_target_team": "ally",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
           },
-          "percent_per_level": 3.9
+          "percent_per_level": 4,
+          "base_power": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 3,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_healer_lifewarden_regrowth",
@@ -345,8 +393,8 @@
           "cooldown": 14.0,
           "cast_time": 1.5,
           "vfx_type": "regeneration",
-          "description_fr": "Applique Régénération pendant 8s, applique cleanse. Le Lifewarden sème son Souffle sur les alliés : il applique Régénération et dissipe leurs altérations.",
-          "description_en": "Applies Regeneration for 8s, applies cleanse. The Lifewarden sows their Breath over the allies: it applies Regeneration and cleanses their afflictions.",
+          "description_fr": "Après 1,5s, applique aux alliés de la ligne un soin de 8% MAG par tick pendant 6s (+0,2s par rang) et dissipe un affaiblissement chacun. Portée de placement 3.",
+          "description_en": "After 1.5s, heals allies in the line for 8% MAG per tick for 6s (+0.2s per rank) and cleanses one debuff each. Placement range 3.",
           "tags": [
             "heal",
             "hot",
@@ -357,16 +405,19 @@
           "effects": [
             {
               "type": "buff",
-              "stat": "heal_over_time_max_hp",
+              "stat": "heal_over_time_mag",
               "value": 0,
-              "pct": 3,
-              "duration": 8.0,
-              "pct_per_level": 0.2
+              "pct": 8,
+              "duration": 6,
+              "duration_per_level": 0.2,
+              "pct_per_level": 0
             },
             {
               "type": "utility",
               "stat": "cleanse",
-              "value": 1
+              "value": 1,
+              "target": "allies",
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "healer",
@@ -380,7 +431,14 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_2"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 3
         },
         {
           "id": "skill_healer_lifewarden_vine_shield",
@@ -390,12 +448,11 @@
           "target": "ally",
           "pattern": "single",
           "damage_type": "none",
-          "thorn_reflect_percent": 20,
           "mana_cost": 33,
           "cooldown": 32.0,
           "vfx_type": "shield",
-          "description_fr": "Accorde un Bouclier de 70% des PV max pendant 20s. Le Lifewarden invoque des vignes anciennes qui enlacent un allié et lui accordent un bouclier.",
-          "description_en": "Grants a Shield of 70% of max HP for 20s. The Lifewarden summons ancient vines that wrap an ally and grant them a shield.",
+          "description_fr": "Accorde à un allié à 3 cases maximum un bouclier de 60% MAG (+3 points par rang) pendant 8s.",
+          "description_en": "Grants an ally within 3 tiles a shield for 60% MAG (+3 percentage points per rank) for 8s.",
           "tags": [
             "shield",
             "nature",
@@ -406,10 +463,10 @@
               "type": "buff",
               "stat": "shield_mag",
               "value": 0,
-              "pct": 70,
-              "duration": 20.0,
-              "base_value": 35,
-              "value_per_level": 1
+              "pct": 60,
+              "duration": 8,
+              "duration_per_level": 0,
+              "pct_per_level": 3
             }
           ],
           "base_class_id": "healer",
@@ -419,11 +476,18 @@
           "targeting": {
             "selection_mode": "entity",
             "valid_target_team": "ally",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 3
         },
         {
           "id": "skill_healer_lifewarden_regeneration",
@@ -437,8 +501,8 @@
           "cooldown": 36.0,
           "cast_time": 2.0,
           "vfx_type": "regeneration",
-          "description_fr": "Augmente la réduction de dégâts de 15% pendant 12s, applique Régénération pendant 12s. Le Lifewarden ancre son Souffle dans la terre : il applique Régénération aux alliés et réduit les dégâts qu'ils subissent.",
-          "description_en": "Increases damage reduction by 15% for 12s, applies Regeneration for 12s. The Lifewarden roots their Breath in the earth: it applies Regeneration to the allies and reduces the damage they take.",
+          "description_fr": "Après 2s, accorde +10% de réduction de dégâts et un soin de 8% MAG par tick aux alliés de la colonne pendant 8s (+0,2s par rang). Portée de placement 3.",
+          "description_en": "After 2s, grants allies in the column 10% damage reduction and 8% MAG healing per tick for 8s (+0.2s per rank). Placement range 3.",
           "tags": [
             "heal",
             "hot",
@@ -450,17 +514,18 @@
             {
               "type": "buff",
               "stat": "damage_reduction_up",
-              "stacks_to_apply": 3,
-              "duration": 12.0,
-              "duration_per_level": 0.35
+              "stacks_to_apply": 2,
+              "duration": 8,
+              "duration_per_level": 0.2
             },
             {
               "type": "buff",
-              "stat": "heal_over_time_max_hp",
+              "stat": "heal_over_time_mag",
               "value": 0,
-              "pct": 3,
-              "duration": 12.0,
-              "duration_per_level": 0.35
+              "pct": 8,
+              "duration": 8,
+              "duration_per_level": 0.2,
+              "pct_per_level": 0
             }
           ],
           "base_class_id": "healer",
@@ -474,7 +539,14 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "col_2"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 3
         },
         {
           "id": "skill_healer_lifewarden_natures_blessing",
@@ -484,16 +556,16 @@
           "target": "allies",
           "pattern": "rect_2x3",
           "damage_type": "none",
-          "base_heal": 50,
+          "base_heal": 0,
           "heal_scaling_stat": "mag",
-          "heal_scaling_percent": 100,
+          "heal_scaling_percent": 70,
           "mana_cost": 75,
           "cooldown": 28.0,
           "cast_time": 2.0,
           "vfx_type": "heal",
           "is_signature": true,
-          "description_fr": "Soigne 100% MAG. Applique Régénération pendant 8s. Le Lifewarden libère tout son Souffle en une floraison : il soigne toute l'équipe, applique Régénération et renforce les guérisons déjà en cours.",
-          "description_en": "Heals 100% MAG. Applies Regeneration for 8s. The Lifewarden unleashes all their Breath in a bloom: it heals the whole team, applies Regeneration and strengthens the regenerations already at work.",
+          "description_fr": "Après 2s, soigne les alliés de la zone de 70% MAG (+3 points par rang), puis de 6% MAG par tick pendant 6s. Portée de placement 3.",
+          "description_en": "After 2s, heals allies in the area for 70% MAG (+3 percentage points per rank), then 6% MAG per tick for 6s. Placement range 3.",
           "tags": [
             "heal",
             "hot",
@@ -504,10 +576,12 @@
           "effects": [
             {
               "type": "buff",
-              "stat": "heal_over_time_max_hp",
+              "stat": "heal_over_time_mag",
               "value": 0,
-              "pct": 3,
-              "duration": 8.0
+              "pct": 6,
+              "duration": 6,
+              "duration_per_level": 0,
+              "pct_per_level": 0
             }
           ],
           "base_class_id": "healer",
@@ -522,7 +596,13 @@
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "rect_2x3"
           },
-          "percent_per_level": 7.8
+          "percent_per_level": 3,
+          "base_power": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 3,
+          "rank_scaling_enabled": true
         }
       ],
       "tier3": {
@@ -1039,14 +1119,14 @@
           "target": "ally",
           "pattern": "single",
           "damage_type": "none",
-          "base_heal": 45,
+          "base_heal": 0,
           "heal_scaling_stat": "mag",
-          "heal_scaling_percent": 90,
+          "heal_scaling_percent": 120,
           "mana_cost": 45,
           "cooldown": 14.0,
           "vfx_type": "heal",
-          "description_fr": "Soigne 90% MAG. Le Lightbringer concentre son Souffle en un éclat de lumière qui referme aussitôt les blessures d'un allié.",
-          "description_en": "Heals 90% MAG. The Lightbringer focuses their Breath into a burst of light that instantly closes an ally's wounds.",
+          "description_fr": "Soigne un allié à 3 cases maximum de 120% MAG (+6 points par rang).",
+          "description_en": "Heals an ally within 3 tiles for 120% MAG (+6 percentage points per rank).",
           "tags": [
             "heal",
             "holy",
@@ -1060,12 +1140,18 @@
           "targeting": {
             "selection_mode": "entity",
             "valid_target_team": "ally",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
           },
-          "percent_per_level": 7.0
+          "percent_per_level": 6,
+          "base_power": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 3,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_healer_lightbringer_sanctuary",
@@ -1079,8 +1165,8 @@
           "cooldown": 36.0,
           "cast_time": 1.5,
           "vfx_type": "sanctuary",
-          "description_fr": "Augmente la réduction de dégâts de 15% pendant 10s, applique Régénération pendant 10s. Le Lightbringer sanctifie le sol : les alliés dans la zone reçoivent Régénération et réduisent les dégâts qu'ils subissent.",
-          "description_en": "Increases damage reduction by 15% for 10s, applies Regeneration for 10s. The Lightbringer sanctifies the ground: allies in the area receive Regeneration and reduce the damage they take.",
+          "description_fr": "Après 1,5s, accorde aux alliés de la zone +10% de réduction de dégâts et un soin de 8% MAG par tick pendant 8s (+0,2s par rang). Portée de placement 3.",
+          "description_en": "After 1.5s, grants allies in the area 10% damage reduction and 8% MAG healing per tick for 8s (+0.2s per rank). Placement range 3.",
           "tags": [
             "heal",
             "defense",
@@ -1092,16 +1178,18 @@
             {
               "type": "buff",
               "stat": "damage_reduction_up",
-              "stacks_to_apply": 3,
-              "duration": 10.0
+              "stacks_to_apply": 2,
+              "duration": 8,
+              "duration_per_level": 0.2
             },
             {
               "type": "buff",
-              "stat": "heal_over_time_max_hp",
+              "stat": "heal_over_time_mag",
               "value": 0,
-              "pct": 1,
-              "duration": 10.0,
-              "pct_per_level": 0.2
+              "pct": 8,
+              "duration": 8,
+              "duration_per_level": 0.2,
+              "pct_per_level": 0
             }
           ],
           "base_class_id": "healer",
@@ -1115,7 +1203,14 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "rect_2x2"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 3
         },
         {
           "id": "skill_healer_lightbringer_bless",
@@ -1128,8 +1223,8 @@
           "mana_cost": 27,
           "cooldown": 28.0,
           "vfx_type": "buff_aura",
-          "description_fr": "Augmente la réduction de dégâts de 15% pendant 10s. La bénédiction rayonne depuis un point et touche l'allié visé ainsi que les quatre autour de lui.",
-          "description_en": "Increases damage reduction by 15% for 10s. The blessing radiates from a point, touching the targeted ally and the four around them.",
+          "description_fr": "Accorde +10% de réduction de dégâts aux alliés de la zone pendant 6s (+0,2s par rang). Portée de placement 3.",
+          "description_en": "Grants allies in the area 10% damage reduction for 6s (+0.2s per rank). Placement range 3.",
           "tags": [
             "buff",
             "defense",
@@ -1139,9 +1234,9 @@
             {
               "type": "buff",
               "stat": "damage_reduction_up",
-              "stacks_to_apply": 3,
-              "duration": 10.0,
-              "duration_per_level": 0.3
+              "stacks_to_apply": 2,
+              "duration": 6,
+              "duration_per_level": 0.2
             }
           ],
           "base_class_id": "healer",
@@ -1155,7 +1250,14 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "circle1"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 3
         },
         {
           "id": "skill_healer_lightbringer_cleanse_wave",
@@ -1165,14 +1267,14 @@
           "target": "allies",
           "pattern": "row_3",
           "damage_type": "none",
-          "base_heal": 20,
+          "base_heal": 0,
           "heal_scaling_stat": "mag",
-          "heal_scaling_percent": 30,
+          "heal_scaling_percent": 40,
           "mana_cost": 33,
           "cooldown": 12.0,
           "vfx_type": "heal",
-          "description_fr": "Soigne 30% MAG. Applique cleanse. Le Lightbringer projette une vague de lumière qui soigne les alliés et dissipe leurs altérations.",
-          "description_en": "Heals 30% MAG. Applies cleanse. The Lightbringer casts a wave of light that heals the allies and cleanses their afflictions.",
+          "description_fr": "Soigne les alliés de la ligne de 40% MAG (+2 points par rang) et dissipe deux affaiblissements chacun. Portée de placement 3.",
+          "description_en": "Heals allies in the line for 40% MAG (+2 percentage points per rank) and cleanses two debuffs each. Placement range 3.",
           "tags": [
             "dispel",
             "heal",
@@ -1183,7 +1285,9 @@
             {
               "type": "utility",
               "stat": "cleanse",
-              "value": 2
+              "value": 2,
+              "target": "allies",
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "healer",
@@ -1198,7 +1302,13 @@
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_3"
           },
-          "percent_per_level": 1.7
+          "percent_per_level": 2,
+          "base_power": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 3,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_healer_lightbringer_absolution",
@@ -1208,9 +1318,9 @@
           "target": "allies",
           "pattern": "ring_1_center",
           "damage_type": "none",
-          "base_heal": 55,
+          "base_heal": 0,
           "heal_scaling_stat": "mag",
-          "heal_scaling_percent": 100,
+          "heal_scaling_percent": 90,
           "mana_cost": 75,
           "cooldown": 52.0,
           "range": 0,
@@ -1218,8 +1328,8 @@
           "cast_time": 2.0,
           "vfx_type": "heal",
           "is_signature": true,
-          "description_fr": "Soigne 100% MAG. Applique Immunité CC pendant 6s. Le Lightbringer libère une supernova de lumière sacrée : elle soigne toute l'équipe et la rend insensible aux altérations de contrôle.",
-          "description_en": "Heals 100% MAG. Applies CC Immunity for 6s. The Lightbringer unleashes a supernova of sacred light: it heals the whole team and makes them immune to control effects.",
+          "description_fr": "Après 2s, soigne les alliés autour du lanceur de 90% MAG et leur accorde une immunité aux contrôles pendant 2s (+0,1s par rang).",
+          "description_en": "After 2s, heals allies around the caster for 90% MAG and grants control immunity for 2s (+0.1s per rank).",
           "tags": [
             "heal",
             "aoe",
@@ -1231,8 +1341,8 @@
             {
               "type": "buff",
               "stat": "cc_immune",
-              "duration": 6.0,
-              "duration_per_level": 0.15
+              "duration": 2,
+              "duration_per_level": 0.1
             }
           ],
           "base_class_id": "healer",
@@ -1247,7 +1357,12 @@
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "ring_1_center"
           },
-          "percent_per_level": 7.8
+          "percent_per_level": 0,
+          "base_power": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "rank_scaling_enabled": false
         }
       ],
       "tier3": {
@@ -1755,8 +1870,8 @@
           "mana_cost": 22,
           "cooldown": 20.0,
           "vfx_type": "buff_aura",
-          "description_fr": "Applique Régen Souffle pendant 8s. Le Chantre entonne un hymne qui recharge le Souffle de ses alliés au rythme du chant.",
-          "description_en": "Applies Breath Regen for 8s. The Cantor intones a hymn that restores their allies' Breath to the rhythm of the song.",
+          "description_fr": "Accorde une charge de régénération de Souffle aux alliés de la zone pendant 6s (+0,2s par rang). Portée de placement 3.",
+          "description_en": "Grants allies in the area one Breath regeneration stack for 6s (+0.2s per rank). Placement range 3.",
           "tags": [
             "buff",
             "mana_regen",
@@ -1768,7 +1883,7 @@
               "type": "buff",
               "stat": "mana_regen",
               "stacks_to_apply": 1,
-              "duration": 8.0,
+              "duration": 6,
               "duration_per_level": 0.2
             }
           ],
@@ -1783,7 +1898,14 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_2"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 3
         },
         {
           "id": "skill_healer_cantor_war_anthem",
@@ -1797,8 +1919,8 @@
           "cooldown": 36.0,
           "cast_time": 1.5,
           "vfx_type": "buff_aura",
-          "description_fr": "Augmente les dégâts infligés de 20% pendant 10s. Le Chantre entonne un chant de bataille qui embrasse toute la formation : ses alliés infligent plus de dégâts.",
-          "description_en": "Increases damage dealt by 20% for 10s. The Cantor raises a battle song that embraces the whole formation: allies deal more damage.",
+          "description_fr": "Accorde +10% de dégâts infligés aux alliés de la zone pendant 6s (+0,2s par rang). Portée de placement 3.",
+          "description_en": "Grants allies in the area 10% increased damage dealt for 6s (+0.2s per rank). Placement range 3.",
           "tags": [
             "buff",
             "damage",
@@ -1809,9 +1931,9 @@
             {
               "type": "buff",
               "stat": "damage_percent_up",
-              "stacks_to_apply": 4,
-              "duration": 10.0,
-              "duration_per_level": 0.3
+              "stacks_to_apply": 2,
+              "duration": 6,
+              "duration_per_level": 0.2
             }
           ],
           "base_class_id": "healer",
@@ -1825,7 +1947,14 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "rect_2x3"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 3
         },
         {
           "id": "skill_healer_cantor_hymn_of_haste",
@@ -1839,8 +1968,8 @@
           "cooldown": 32.0,
           "cast_time": 1.5,
           "vfx_type": "buff_aura",
-          "description_fr": "Accélère les incantations de 15% pendant 12s. Le Chantre accélère la mesure : ses alliés incantent plus vite.",
-          "description_en": "Speeds up casting by 15% for 12s. The Cantor quickens the measure: allies cast faster.",
+          "description_fr": "Accorde +10% de vitesse d’incantation aux alliés de la zone pendant 6s (+0,2s par rang). Portée de placement 3.",
+          "description_en": "Grants allies in the area 10% increased casting speed for 6s (+0.2s per rank). Placement range 3.",
           "tags": [
             "buff",
             "attack_speed",
@@ -1851,9 +1980,9 @@
             {
               "type": "buff",
               "stat": "cast_speed_up",
-              "stacks_to_apply": 3,
-              "duration": 12.0,
-              "duration_per_level": 0.35
+              "stacks_to_apply": 2,
+              "duration": 6,
+              "duration_per_level": 0.2
             }
           ],
           "base_class_id": "healer",
@@ -1867,7 +1996,14 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_3"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 3
         },
         {
           "id": "skill_healer_cantor_sacred_ward",
@@ -1880,8 +2016,8 @@
           "mana_cost": 42,
           "cooldown": 38.0,
           "vfx_type": "shield",
-          "description_fr": "Applique Immunité CC pendant 6s, accorde un Bouclier de 50% des PV max pendant 12s, applique cleanse. Le Chantre murmure une parole de protection sur un allié : elle dissipe ses altérations, lui accorde un bouclier et le rend insensible aux altérations de contrôle.",
-          "description_en": "Applies CC Immunity for 6s, grants a Shield of 50% of max HP for 12s, applies cleanse. The Cantor whispers a word of protection over an ally: it cleanses their afflictions, grants them a shield and makes them immune to control effects.",
+          "description_fr": "Dissipe deux affaiblissements d’un allié à 3 cases maximum, lui accorde 45% MAG de bouclier pendant 6s et une immunité aux contrôles pendant 2s. Les deux durées gagnent 0,1s par rang.",
+          "description_en": "Cleanses two debuffs from an ally within 3 tiles, grants a 45% MAG shield for 6s and control immunity for 2s. Both durations gain 0.1s per rank.",
           "tags": [
             "shield",
             "cc_immune",
@@ -1893,21 +2029,24 @@
             {
               "type": "buff",
               "stat": "cc_immune",
-              "duration": 6.0,
-              "duration_per_level": 0.15
+              "duration": 2,
+              "duration_per_level": 0.1
             },
             {
               "type": "buff",
               "stat": "shield_mag",
               "value": 0,
-              "pct": 50,
-              "duration": 12.0,
-              "base_value": 25
+              "pct": 45,
+              "duration": 6,
+              "duration_per_level": 0.1,
+              "pct_per_level": 0
             },
             {
               "type": "utility",
               "stat": "cleanse",
-              "value": 2
+              "value": 2,
+              "target": "allies",
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "healer",
@@ -1917,11 +2056,18 @@
           "targeting": {
             "selection_mode": "entity",
             "valid_target_team": "ally",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 3
         },
         {
           "id": "skill_healer_cantor_requiem",
@@ -1939,8 +2085,8 @@
           "cooldown": 90.0,
           "vfx_type": "heal",
           "is_signature": true,
-          "description_fr": "Incantation 6s. Le Chantre entonne le Requiem et rappelle un allié tombé du seuil de la mort, le ramenant au combat.",
-          "description_en": "Cast time 6s. The Cantor intones the Requiem and calls a fallen ally back from the threshold of death, returning them to the fight.",
+          "description_fr": "Après 6s d’incantation interruptible, ressuscite un allié mort à 3 cases maximum avec 40% de ses PV max (+2 points par rang).",
+          "description_en": "After a 6s interruptible cast, resurrects a dead ally within 3 tiles with 40% of their max HP (+2 percentage points per rank).",
           "tags": [
             "resurrect",
             "holy",
@@ -1954,12 +2100,28 @@
           "targeting": {
             "selection_mode": "entity",
             "valid_target_team": "ally",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
           },
-          "mana_cost_per_level": 0
+          "mana_cost_per_level": 0,
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "percent_per_level": 0,
+          "range": 3,
+          "can_target_dead": true,
+          "effects": [
+            {
+              "type": "utility",
+              "stat": "resurrect",
+              "value": 40,
+              "value_per_level": 2,
+              "duration_per_level": 0
+            }
+          ]
         }
       ],
       "tier3": {
@@ -2506,19 +2668,19 @@
           "pattern": "single",
           "damage_type": "magical",
           "scaling_stat": "max_hp",
-          "base_power": 1,
-          "scaling_percent": 21,
-          "percent_per_level": 1.2,
+          "base_power": 0,
+          "scaling_percent": 6,
+          "percent_per_level": 0.2,
           "conditional_bonus": {
             "condition": "caster_below_hp",
             "hp_threshold": 50,
-            "lifesteal_bonus_percent": 30
+            "lifesteal_bonus_percent": 20
           },
           "mana_cost": 18,
           "cooldown": 24.0,
           "vfx_type": "life_steal",
-          "description_fr": "Inflige 21% PV max (+1.2%/niv). Vole 5% des dégâts en vie. Le Martyr frappe l'ennemi et se soigne d'une part des dégâts infligés, d'autant plus qu'il est déjà blessé.",
-          "description_en": "Deals 21% max HP (+1.2%/lvl). Steals 5% of damage as health. The Martyr strikes the enemy and heals for part of the damage dealt, all the more when already wounded.",
+          "description_fr": "Inflige 6% des PV max du lanceur (+0,2 point par rang) et récupère 30% des dégâts en soin, augmenté de 20% sous 50% PV. Portée 2, LoS requise.",
+          "description_en": "Deals 6% of the caster’s max HP (+0.2 percentage points per rank) and heals for 30% of damage, increased by 20% below 50% HP. Range 2, requires LoS.",
           "tags": [
             "damage",
             "heal",
@@ -2530,8 +2692,8 @@
               "type": "utility",
               "stat": "lifesteal",
               "target": "self",
-              "value_per_level": 4,
-              "value": 25
+              "value": 30,
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "healer",
@@ -2545,7 +2707,13 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 2,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_healer_martyr_intercession",
@@ -2556,15 +2724,15 @@
           "pattern": "adjacent_random_1",
           "damage_type": "none",
           "dot_type": "hp_dot",
-          "dot_percent": 3,
-          "dot_duration": 6.0,
+          "dot_percent": 1,
+          "dot_duration": 4,
           "dot_heals_lowest_ally": true,
-          "dot_heal_percent": 0.5,
+          "dot_heal_percent": 50,
           "mana_cost": 30,
           "cooldown": 10.0,
           "vfx_type": "debuff_aura",
-          "description_fr": "Le Martyr marque l'ennemi d'un stigmate qui le ronge et se propage à un voisin, tandis qu'une part de la douleur infligée relève l'allié le plus affaibli.",
-          "description_en": "The Martyr brands the enemy with a stigma that gnaws at them and spreads to a neighbor, while part of the pain dealt heals the most wounded ally.",
+          "description_fr": "Applique un DoT de 1% des PV max du lanceur par tick pendant 4s (+0,2s par rang), avec propagation adjacente. Rend 50% des dégâts subis à l’allié blessé le plus bas en PV à 2 cases maximum du lanceur. LoS requise, portée 2.",
+          "description_en": "Applies a DoT for 1% of the caster’s max HP per tick for 4s (+0.2s per rank), with adjacent spread. Heals the lowest injured ally within 2 tiles of the caster for 50% of damage taken. Requires LoS, range 2.",
           "tags": [
             "damage",
             "dot",
@@ -2580,11 +2748,19 @@
           "targeting": {
             "selection_mode": "tile",
             "valid_target_team": "enemy",
-            "requires_line_of_sight": false,
+            "requires_line_of_sight": true,
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "adjacent_random_1"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 2,
+          "dot_duration_per_level": 0.2
         },
         {
           "id": "skill_healer_martyr_sacred_pact",
@@ -2594,17 +2770,17 @@
           "target": "ally",
           "pattern": "single",
           "damage_type": "none",
-          "sacrifice_hp_percent": 15,
+          "sacrifice_hp_percent": 8,
           "conditional_bonus": {
             "condition": "caster_below_hp_after",
             "hp_threshold": 30,
-            "shield_bonus_percent": 50
+            "shield_bonus_percent": 25
           },
           "mana_cost": 27,
           "cooldown": 28.0,
           "vfx_type": "shield",
-          "description_fr": "Accorde un Bouclier de 25% des PV max pendant 12s. Le Martyr donne une part de son propre Souffle à un allié sous forme de bouclier : plus le sacrifice est grand, plus la protection est forte.",
-          "description_en": "Grants a Shield of 25% of max HP for 12s. The Martyr gives part of their own Breath to an ally as a shield: the greater the sacrifice, the stronger the protection.",
+          "description_fr": "Sacrifie 8% de ses PV max sans mourir et protège un allié à 3 cases maximum avec 18% des PV max du lanceur (+1 point par rang) pendant 8s. Bouclier augmenté de 25% si le lanceur tombe sous 30% PV après le sacrifice.",
+          "description_en": "Sacrifices 8% of max HP without dying and shields an ally within 3 tiles for 18% of the caster’s max HP (+1 percentage point per rank) for 8s. Shield increased by 25% if the caster falls below 30% HP after the sacrifice.",
           "tags": [
             "shield",
             "sacrifice",
@@ -2615,9 +2791,10 @@
               "type": "buff",
               "stat": "shield_max_hp",
               "value": 0,
-              "pct": 25,
-              "duration": 12.0,
-              "value_per_level": 1
+              "pct": 18,
+              "duration": 8,
+              "duration_per_level": 0,
+              "pct_per_level": 1
             }
           ],
           "base_class_id": "healer",
@@ -2627,11 +2804,18 @@
           "targeting": {
             "selection_mode": "entity",
             "valid_target_team": "ally",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 3
         },
         {
           "id": "skill_healer_martyr_zealous_strike",
@@ -2642,16 +2826,16 @@
           "pattern": "rect_2x3",
           "damage_type": "magical",
           "scaling_stat": "max_hp",
-          "base_power": 1,
-          "scaling_percent": 30,
-          "percent_per_level": 2.3,
-          "damage_per_missing_hp_percent": 2,
-          "max_missing_hp_bonus": 100,
+          "base_power": 0,
+          "scaling_percent": 3,
+          "percent_per_level": 0.1,
+          "damage_per_missing_hp_percent": 0.25,
+          "max_missing_hp_bonus": 20,
           "mana_cost": 42,
           "cooldown": 34.0,
           "vfx_type": "life_steal",
-          "description_fr": "Inflige 30% PV max (+2.3%/niv). Réduit les soins reçus de 30% pendant 12s. Le Martyr concentre sa douleur en une frappe ardente, d'autant plus dévastatrice qu'il souffre, et réduit les soins que l'ennemi peut recevoir.",
-          "description_en": "Deals 30% max HP (+2.3%/lvl). Reduces healing received by 30% for 12s. The Martyr focuses their pain into a burning strike, all the more devastating the more they suffer, and reduces the healing the enemy can receive.",
+          "description_fr": "Inflige 3% des PV max du lanceur (+0,1 point par rang), avec jusqu’à +20% dégâts selon ses PV manquants. Applique une charge d’anti-soin pendant 4s. Ignore la LoS, portée de placement 2.",
+          "description_en": "Deals 3% of the caster’s max HP (+0.1 percentage points per rank), with up to 20% more damage from missing HP. Applies one healing reduction stack for 4s. Ignores LoS, placement range 2.",
           "tags": [
             "damage",
             "aoe",
@@ -2664,8 +2848,9 @@
             {
               "type": "debuff",
               "stat": "heal_reduction",
-              "stacks_to_apply": 2,
-              "duration": 12.0
+              "stacks_to_apply": 1,
+              "duration": 4,
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "healer",
@@ -2676,10 +2861,16 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "rect_2x3"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 2,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_healer_martyr_redemptive_wave",
@@ -2690,18 +2881,18 @@
           "pattern": "rect_4x4",
           "damage_type": "magical",
           "scaling_stat": "max_hp",
-          "base_power": 1,
-          "scaling_percent": 35,
-          "percent_per_level": 2.7,
+          "base_power": 0,
+          "scaling_percent": 2.5,
+          "percent_per_level": 0.1,
           "drain_to_all_allies": true,
-          "drain_heal_percent": 50,
+          "drain_heal_percent": 35,
           "mana_cost": 82,
           "cooldown": 30.0,
           "cast_time": 2.0,
           "vfx_type": "life_steal",
           "is_signature": true,
-          "description_fr": "Inflige 35% PV max (+2.7%/niv). Le Martyr libère une vague de rédemption : chaque ennemi frappé soigne les alliés de sa propre souffrance.",
-          "description_en": "Deals 35% max HP (+2.7%/lvl). The Martyr releases a wave of redemption: each enemy struck heals the allies with their own suffering.",
+          "description_fr": "Après 2s, inflige 2,5% des PV max du lanceur (+0,1 point par rang). Répartit 35% des dégâts en soin entre les alliés vivants à 2 cases maximum. Ignore la LoS, portée de placement 2.",
+          "description_en": "After 2s, deals 2.5% of the caster’s max HP (+0.1 percentage points per rank). Splits 35% of damage as healing among living allies within 2 tiles. Ignores LoS, placement range 2.",
           "tags": [
             "damage",
             "heal",
@@ -2717,10 +2908,16 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "rect_4x4"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 2,
+          "rank_scaling_enabled": true
         }
       ],
       "tier3": {

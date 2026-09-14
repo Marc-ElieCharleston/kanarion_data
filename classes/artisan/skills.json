@@ -73,17 +73,16 @@
       "damage_type": "physical",
       "scaling_stat": "atk",
       "base_power": 0,
-      "scaling_percent": 65,
-      "percent_per_level": 2.9,
+      "scaling_percent": 45,
+      "percent_per_level": 1.3,
       "mana_cost": 6,
-      "mana_cost_per_level": 1,
+      "mana_cost_per_level": 0,
       "cooldown": 3.0,
-      "damage_per_adjacent_ally": 10,
-      "damage_per_adjacent_ally_per_level": 0.5,
-      "max_adjacent_bonus": 40,
+      "damage_per_adjacent_ally": 3,
+      "damage_per_adjacent_ally_per_level": 0,
       "vfx_type": "melee_slash",
-      "description_fr": "Inflige 65% ATQ (+2.9%/niv). L'Artisan frappe avec ses outils de métier. La présence d'alliés proches renforce chaque coup.",
-      "description_en": "Deals 65% ATK (+2.9%/lvl). The Artisan strikes with their craftsman's tools. The presence of nearby allies strengthens every blow.",
+      "description_fr": "Inflige 45% ATQ (+1,3 point par rang), avec +3% dégâts par allié adjacent orthogonalement (au plus quatre). Nécessite une ligne de vue.",
+      "description_en": "Deals 45% ATK (+1.3 percentage points per rank), with +3% damage per orthogonally adjacent ally (at most four). Requires line of sight.",
       "tags": [
         "damage",
         "melee",
@@ -100,26 +99,30 @@
         "bypasses_los": false,
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "single"
-      }
+      },
+      "base_heal": 0,
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "range": 3,
+      "rank_scaling_enabled": true
     },
     {
       "id": "skill_artisan_quick_patch",
       "name_en": "Quick Patch",
       "name_fr": "Réparation Rapide",
       "tier": "standard",
-      "target": "ally",
+      "target": "allies",
       "pattern": "cross",
       "damage_type": "none",
       "heal_scaling_stat": "mag",
-      "heal_scaling_percent": 100,
-      "shield_on_cross": true,
+      "heal_scaling_percent": 40,
       "mana_cost": 30,
-      "mana_cost_per_level": 3,
+      "mana_cost_per_level": 0,
       "cooldown": 24.0,
       "cast_time": 1.0,
       "vfx_type": "heal",
-      "description_fr": "Soigne 100% MAG. Accorde un Bouclier de 50% des PV max pendant 12s, applique cleanse. L'Artisan répare à la hâte les alliés voisins : un bouclier de fortune se forge autour d'eux et leurs altérations sont dissipées.",
-      "description_en": "Heals 100% MAG. Grants a Shield of 50% of max HP for 12s, applies cleanse. The Artisan hastily patches up nearby allies: a makeshift shield forms around them and their afflictions are cleansed.",
+      "description_fr": "Après 1s, soigne les alliés de la croix de 40% MAG et leur accorde un bouclier de 20% MAG pendant 6s (+0,2s par rang). Dissipe un affaiblissement sur le premier allié touché.",
+      "description_en": "After 1s, heals allies in the cross for 40% MAG and grants a 20% MAG shield for 6s (+0.2s per rank). Cleanses one debuff from the first ally hit.",
       "tags": [
         "heal",
         "shield",
@@ -131,16 +134,16 @@
         {
           "type": "buff",
           "stat": "shield_mag",
+          "duration": 6,
           "value": 0,
-          "pct": 50,
-          "duration": 12.0,
-          "duration_per_level": 0.35,
-          "pct_per_level": 2
+          "pct": 20,
+          "duration_per_level": 0.2
         },
         {
           "type": "utility",
           "stat": "cleanse",
-          "value": 1
+          "value": 1,
+          "duration_per_level": 0
         }
       ],
       "base_class_id": "artisan",
@@ -155,7 +158,12 @@
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "cross"
       },
-      "percent_per_level": 5.6
+      "percent_per_level": 0,
+      "base_power": 0,
+      "base_heal": 0,
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "range": 3
     },
     {
       "id": "skill_artisan_work_rhythm",
@@ -166,11 +174,11 @@
       "pattern": "row_3",
       "damage_type": "none",
       "mana_cost": 24,
-      "mana_cost_per_level": 3,
+      "mana_cost_per_level": 0,
       "cooldown": 26.0,
       "vfx_type": "buff_aura",
-      "description_fr": "Augmente les dégâts infligés de 20% pendant 16s. L'Artisan impose le tempo de l'atelier à la ligne alliée.",
-      "description_en": "Increases damage dealt by 20% for 16s. The Artisan sets the workshop's tempo across the allied line.",
+      "description_fr": "Augmente les dégâts infligés des alliés de la zone de 10% pendant 8s (+0,2s par rang).",
+      "description_en": "Increases allies’ damage dealt in the area by 10% for 8s (+0.2s per rank).",
       "tags": [
         "buff",
         "atk_speed",
@@ -181,9 +189,9 @@
         {
           "type": "buff",
           "stat": "damage_percent_up",
-          "stacks_to_apply": 4,
-          "duration": 16.0,
-          "duration_per_level": 0.45
+          "stacks_to_apply": 2,
+          "duration": 8,
+          "duration_per_level": 0.2
         }
       ],
       "base_class_id": "artisan",
@@ -197,7 +205,13 @@
         "bypasses_los": false,
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "row_3"
-      }
+      },
+      "base_power": 0,
+      "base_heal": 0,
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "percent_per_level": 0,
+      "range": 3
     },
     {
       "id": "skill_artisan_expose_flaw",
@@ -208,13 +222,11 @@
       "pattern": "single",
       "damage_type": "none",
       "mana_cost": 21,
-      "mana_cost_per_level": 3,
+      "mana_cost_per_level": 0,
       "cooldown": 28.0,
-      "team_damage_amp": 10,
-      "team_damage_amp_per_level": 0.5,
       "vfx_type": "debuff_aura",
-      "description_fr": "Augmente les dégâts subis de 20% pendant 16s. L'œil exercé de l'Artisan lit la cible comme une pièce mal forgée et désigne son point de rupture.",
-      "description_en": "Increases damage taken by 20% for 16s. The Artisan's trained eye reads the target like a poorly forged piece and marks its breaking point.",
+      "description_fr": "Applique une charge de Vulnérabilité pendant 6s (+0,2s par rang). Nécessite une ligne de vue.",
+      "description_en": "Applies one Vulnerable stack for 6s (+0.2s per rank). Requires line of sight.",
       "tags": [
         "debuff",
         "armor_break",
@@ -224,9 +236,9 @@
         {
           "type": "debuff",
           "stat": "vulnerable",
-          "stacks_to_apply": 4,
-          "duration": 16.0,
-          "duration_per_level": 0.45
+          "stacks_to_apply": 1,
+          "duration": 6,
+          "duration_per_level": 0.2
         }
       ],
       "base_class_id": "artisan",
@@ -240,7 +252,13 @@
         "bypasses_los": false,
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "single"
-      }
+      },
+      "base_power": 0,
+      "base_heal": 0,
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "percent_per_level": 0,
+      "range": 3
     },
     {
       "id": "skill_artisan_resource_share",
@@ -251,13 +269,13 @@
       "pattern": "rect_3x3",
       "exclude_caster": true,
       "damage_type": "none",
-      "mana_cost": 2,
+      "mana_cost": 18,
       "mana_cost_per_level": 0,
       "cooldown": 20.0,
       "cast_time": 1.0,
       "vfx_type": "buff_aura",
-      "description_fr": "Applique Restauration de Souffle. L'Artisan laisse son propre Souffle s'écouler vers les compagnons qui l'entourent, restaurant leur Souffle.",
-      "description_en": "Applies Breath Restore. The Artisan lets their own Breath flow to the companions around them, restoring their Breath.",
+      "description_fr": "Après 1s, rend aux autres alliés de la zone 4% du Souffle maximum du lanceur (+1 point par rang), sans dépasser leur maximum. Exclut le lanceur.",
+      "description_en": "After 1s, restores 4% of the caster’s maximum Breath (+1 percentage point per rank) to other allies in the area, capped at their maximum. Excludes the caster.",
       "tags": [
         "support",
         "breath",
@@ -268,9 +286,10 @@
         {
           "type": "utility",
           "stat": "mana_restore",
-          "value": 6,
+          "value": 4,
+          "scaling": "caster_max_mp",
           "value_per_level": 1,
-          "scaling": "caster_max_mp"
+          "duration_per_level": 0
         }
       ],
       "base_class_id": "artisan",
@@ -284,7 +303,13 @@
         "bypasses_los": false,
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "rect_3x3"
-      }
+      },
+      "base_power": 0,
+      "base_heal": 0,
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "percent_per_level": 0,
+      "range": 3
     }
   ],
   "subclass_skills": {
@@ -302,14 +327,14 @@
           "damage_type": "physical",
           "scaling_stat": "armor",
           "base_power": 0,
-          "scaling_percent": 238,
-          "percent_per_level": 13.2,
+          "scaling_percent": 100,
+          "percent_per_level": 3,
           "mana_cost": 18,
           "cooldown": 11.0,
-          "bonus_if_armor_broken": 25,
+          "bonus_if_armor_broken": 15,
           "vfx_type": "melee_slash",
-          "description_fr": "Inflige 238% armure (+13.2%/niv). Le Forgeron abat sa masse : le coup frappe d'autant plus fort que l'armure adverse est solide et que la cible est déjà blessée.",
-          "description_en": "Deals 238% armour (+13.2%/lvl). The Blacksmith brings his hammer down: the blow hits harder the sturdier the enemy's armor and the more the target is already wounded.",
+          "description_fr": "Inflige 100% Armure du lanceur (+3 points par rang), avec +15% dégâts si la cible a le maximum de charges de réduction d’armure. Nécessite une ligne de vue.",
+          "description_en": "Deals 100% of the caster’s Armor (+3 percentage points per rank), with +15% damage if the target has maximum armor-reduction stacks. Requires line of sight.",
           "tags": [
             "damage",
             "melee",
@@ -327,7 +352,13 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 2,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_artisan_blacksmith_armor_dent",
@@ -339,13 +370,13 @@
           "damage_type": "physical",
           "scaling_stat": "armor",
           "base_power": 0,
-          "scaling_percent": 168,
-          "percent_per_level": 9.3,
+          "scaling_percent": 65,
+          "percent_per_level": 2,
           "mana_cost": 24,
           "cooldown": 20.0,
           "vfx_type": "melee_slash",
-          "description_fr": "Inflige 168% armure (+9.3%/niv). Réduit l'armure de 25% pendant 20s. Le Forgeron trouve la faille de l'armure ennemie et la réduit.",
-          "description_en": "Deals 168% armour (+9.3%/lvl). Reduces armour by 25% for 20s. The Blacksmith finds the flaw in the enemy's armor and reduces it.",
+          "description_fr": "Inflige 65% Armure du lanceur (+2 points par rang) et réduit l’armure de la cible de 10% pendant 6s. Nécessite une ligne de vue.",
+          "description_en": "Deals 65% of the caster’s Armor (+2 percentage points per rank) and reduces target armor by 10% for 6s. Requires line of sight.",
           "tags": [
             "damage",
             "debuff",
@@ -357,8 +388,9 @@
             {
               "type": "debuff",
               "stat": "armor_down",
-              "stacks_to_apply": 5,
-              "duration": 20.0
+              "stacks_to_apply": 2,
+              "duration": 6,
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "artisan",
@@ -372,7 +404,13 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 2,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_artisan_blacksmith_forged_retaliation",
@@ -384,14 +422,14 @@
           "damage_type": "physical",
           "scaling_stat": "armor",
           "base_power": 0,
-          "scaling_percent": 161,
-          "percent_per_level": 8.9,
+          "scaling_percent": 40,
+          "percent_per_level": 0,
           "mana_cost": 30,
           "cooldown": 24.0,
           "cast_time": 1.0,
           "vfx_type": "shield",
-          "description_fr": "Inflige 161% armure (+8.9%/niv). Accorde un Bouclier de 70% des PV max pendant 16s. Le Forgeron se martèle une plaque de fortune et s'entoure d'un bouclier, prêt à rendre les coups de près.",
-          "description_en": "Deals 161% armour (+8.9%/lvl). Grants a Shield of 70% of max HP for 16s. The Blacksmith hammers out a makeshift plate and wraps himself in a shield, ready to return blows up close.",
+          "description_fr": "Après 1s, inflige 40% Armure aux ennemis autour du lanceur, sans LoS. Accorde au lanceur un bouclier de 12% de ses PV max (+1 point par rang), pendant 8s.",
+          "description_en": "After 1s, deals 40% Armor to enemies around the caster, ignoring LoS. Grants the caster a shield for 12% of their max HP (+1 percentage point per rank), lasting 8s.",
           "tags": [
             "damage",
             "defense",
@@ -403,11 +441,13 @@
           "effects": [
             {
               "type": "buff",
-              "stat": "shield_def",
+              "stat": "shield_max_hp",
+              "duration": 8,
               "value": 0,
-              "pct": 70,
+              "pct": 12,
               "target": "self",
-              "duration": 16.0
+              "pct_per_level": 1,
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "artisan",
@@ -418,10 +458,15 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "ring_1_center"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 0
         },
         {
           "id": "skill_artisan_blacksmith_metalguard",
@@ -435,8 +480,8 @@
           "cooldown": 28.0,
           "cast_time": 1.0,
           "vfx_type": "shield",
-          "description_fr": "Augmente la DEF de 15 pendant 16s, accorde un Bouclier de 80% des PV max pendant 16s, accorde un Bouclier de 40% des PV max pendant 16s. Le Forgeron déploie une cape d'acier : il renforce sa défense et accorde un bouclier à lui-même et aux alliés proches.",
-          "description_en": "Increases DEF by 15 for 16s, grants a Shield of 80% of max HP for 16s, grants a Shield of 40% of max HP for 16s. The Blacksmith unfurls a cloak of steel: he boosts his defense and grants a shield to himself and nearby allies.",
+          "description_fr": "Après 1s, augmente l’armure des alliés touchés de 10% et leur accorde un bouclier de 10% des PV max du lanceur pendant 8s (+0,2s par rang).",
+          "description_en": "After 1s, increases affected allies’ armor by 10% and grants a shield for 10% of the caster’s max HP for 8s (+0.2s per rank).",
           "tags": [
             "shield",
             "buff",
@@ -448,26 +493,18 @@
           "effects": [
             {
               "type": "buff",
-              "stat": "def_up",
-              "stacks_to_apply": 3,
-              "duration": 16.0
+              "stat": "armor_up",
+              "duration": 8,
+              "stacks_to_apply": 2,
+              "duration_per_level": 0.2
             },
             {
               "type": "buff",
-              "stat": "shield_def",
+              "stat": "shield_max_hp",
+              "duration": 8,
               "value": 0,
-              "pct": 80,
-              "duration": 16.0,
-              "value_per_level": 1
-            },
-            {
-              "type": "buff",
-              "stat": "shield_def",
-              "value": 0,
-              "pct": 40,
-              "target": "ally",
-              "duration": 16.0,
-              "value_per_level": 1
+              "pct": 10,
+              "duration_per_level": 0.2
             }
           ],
           "base_class_id": "artisan",
@@ -481,7 +518,14 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single_plus_adjacent_2"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 3
         },
         {
           "id": "skill_artisan_blacksmith_anvil_crash",
@@ -493,16 +537,15 @@
           "damage_type": "physical",
           "scaling_stat": "armor",
           "base_power": 0,
-          "scaling_percent": 308,
-          "percent_per_level": 24.0,
+          "scaling_percent": 45,
+          "percent_per_level": 1.3,
           "mana_cost": 57,
           "cooldown": 50.0,
           "cast_time": 2.5,
-          "double_damage_if_armor_broken": true,
           "is_signature": true,
           "vfx_type": "falling",
-          "description_fr": "Inflige 308% armure (+24%/niv). Applique Étourdissement pendant 6s. Le Forgeron fait tomber une enclume de Souffle sur le champ : elle étourdit les ennemis touchés et brise net ceux qui étaient déjà fendus.",
-          "description_en": "Deals 308% armour (+24%/lvl). Applies Stun for 6s. The Blacksmith drops an anvil of Breath onto the field: it stuns the struck enemies and shatters those already cracked.",
+          "description_fr": "Après 2,5s, inflige 45% Armure du lanceur (+1,3 point par rang), avec +15% dégâts contre une armure brisée. Étourdit 1s avant résistances. Ignore la LoS.",
+          "description_en": "After 2.5s, deals 45% of the caster’s Armor (+1.3 percentage points per rank), with +15% against broken armor. Stuns for 1s before resistance. Ignores LoS.",
           "tags": [
             "damage",
             "aoe",
@@ -516,7 +559,8 @@
               "type": "debuff",
               "stat": "stun",
               "value": 1,
-              "duration": 6.0
+              "duration": 1,
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "artisan",
@@ -527,10 +571,17 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "rect_2x2"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 3,
+          "rank_scaling_enabled": true,
+          "bonus_if_armor_broken": 15
         }
       ],
       "tier3": {
@@ -1056,14 +1107,13 @@
           "damage_type": "magical",
           "scaling_stat": "mag",
           "base_power": 0,
-          "scaling_percent": 88,
-          "percent_per_level": 4.9,
+          "scaling_percent": 25,
+          "percent_per_level": 0.75,
           "mana_cost": 15,
           "cooldown": 20.0,
-          "dot_type": "toxin",
           "vfx_type": "projectile",
-          "description_fr": "Inflige 88% MAG (+4.9%/niv). 2 charges de Toxine (max 5). L'Alchimiste lance une fiole qui éclate sur une ligne ennemie et y dépose des charges de Toxine.",
-          "description_en": "Deals 88% MAG (+4.9%/lvl). 2 stacks of Toxin (max 5). The Alchemist hurls a flask that shatters over an enemy line and lays down stacks of Toxin.",
+          "description_fr": "Inflige 25% MAG (+0,75 point par rang), applique une Toxine pendant 3s. Ignore la LoS.",
+          "description_en": "Deals 25% MAG (+0.75 percentage points per rank), applies one Toxin stack for 3s. Ignores LoS.",
           "tags": [
             "damage",
             "toxin",
@@ -1074,8 +1124,9 @@
             {
               "type": "debuff",
               "stat": "toxin",
-              "stacks_to_apply": 2,
-              "duration": 10.0
+              "stacks_to_apply": 1,
+              "duration": 3,
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "artisan",
@@ -1086,10 +1137,16 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_2"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 3,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_artisan_alchemist_corrosive_cloud",
@@ -1101,15 +1158,14 @@
           "damage_type": "magical",
           "scaling_stat": "mag",
           "base_power": 0,
-          "scaling_percent": 112,
-          "percent_per_level": 6.2,
+          "scaling_percent": 30,
+          "percent_per_level": 1,
           "mana_cost": 27,
           "cooldown": 30.0,
           "cast_time": 1.0,
-          "dot_type": "toxin",
           "vfx_type": "aoe_pulse",
-          "description_fr": "Inflige 112% MAG (+6.2%/niv). Réduit l'armure de 15% pendant 20s, 1 charge de Toxine (max 5). L'Alchimiste libère un nuage acide qui ronge l'armure de la cible et y ajoute une charge de Toxine.",
-          "description_en": "Deals 112% MAG (+6.2%/lvl). Reduces armour by 15% for 20s, 1 stack of Toxin (max 5). The Alchemist releases an acid cloud that eats away the target's armor and adds a stack of Toxin.",
+          "description_fr": "Inflige 30% MAG (+1 point par rang), applique une Toxine pendant 3s et une charge de réduction d’armure pendant 5s. Ignore la LoS.",
+          "description_en": "Deals 30% MAG (+1 percentage points per rank), applies one Toxin stack for 3s and one armor reduction stack for 5s. Ignores LoS.",
           "tags": [
             "damage",
             "toxin",
@@ -1122,14 +1178,16 @@
             {
               "type": "debuff",
               "stat": "armor_down",
-              "stacks_to_apply": 3,
-              "duration": 20.0
+              "stacks_to_apply": 1,
+              "duration": 5,
+              "duration_per_level": 0
             },
             {
               "type": "debuff",
               "stat": "toxin",
               "stacks_to_apply": 1,
-              "duration": 10.0
+              "duration": 3,
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "artisan",
@@ -1140,10 +1198,16 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "rect_2x2"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 3,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_artisan_alchemist_weakening_fumes",
@@ -1155,15 +1219,14 @@
           "damage_type": "magical",
           "scaling_stat": "mag",
           "base_power": 0,
-          "scaling_percent": 92,
-          "percent_per_level": 5.1,
+          "scaling_percent": 25,
+          "percent_per_level": 0.75,
           "mana_cost": 24,
           "cooldown": 24.0,
           "cast_time": 1.0,
-          "dot_type": "toxin",
           "vfx_type": "aoe_pulse",
-          "description_fr": "Inflige 92% MAG (+5.1%/niv). Réduit l'ATQ de 20% pendant 16s, 1 charge de Toxine (max 5). L'Alchimiste pousse une fumée lourde sur une ligne ennemie : elle réduit leur attaque et dépose une charge de Toxine.",
-          "description_en": "Deals 92% MAG (+5.1%/lvl). Reduces ATK by 20% for 16s, 1 stack of Toxin (max 5). The Alchemist pushes a heavy fume over an enemy line: it reduces their attack and lays down a stack of Toxin.",
+          "description_fr": "Inflige 25% MAG (+0,75 point par rang), applique une Toxine pendant 3s et une charge de réduction d’ATQ pendant 5s. Ignore la LoS.",
+          "description_en": "Deals 25% MAG (+0.75 percentage points per rank), applies one Toxin stack for 3s and one ATK reduction stack for 5s. Ignores LoS.",
           "tags": [
             "damage",
             "toxin",
@@ -1175,14 +1238,16 @@
             {
               "type": "debuff",
               "stat": "atk_down",
-              "stacks_to_apply": 4,
-              "duration": 16.0
+              "stacks_to_apply": 1,
+              "duration": 5,
+              "duration_per_level": 0
             },
             {
               "type": "debuff",
               "stat": "toxin",
               "stacks_to_apply": 1,
-              "duration": 10.0
+              "duration": 3,
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "artisan",
@@ -1193,10 +1258,16 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_3"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 3,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_artisan_alchemist_toxic_burst",
@@ -1208,14 +1279,13 @@
           "damage_type": "magical",
           "scaling_stat": "mag",
           "base_power": 0,
-          "scaling_percent": 112,
-          "percent_per_level": 6.2,
+          "scaling_percent": 30,
+          "percent_per_level": 1,
           "mana_cost": 27,
           "cooldown": 22.0,
-          "dot_type": "toxin",
           "vfx_type": "aoe_pulse",
-          "description_fr": "Inflige 112% MAG (+6.2%/niv). 2 charges de Toxine (max 5). L'Alchimiste fait éclater une fiole instable en étoile, projetant la Toxine sur les cibles alignées dans quatre directions.",
-          "description_en": "Deals 112% MAG (+6.2%/lvl). 2 stacks of Toxin (max 5). The Alchemist bursts an unstable flask in a star, spraying Toxin onto the targets aligned in four directions.",
+          "description_fr": "Inflige 30% MAG (+1 point par rang), applique une Toxine pendant 3s. Ignore la LoS.",
+          "description_en": "Deals 30% MAG (+1 percentage points per rank), applies one Toxin stack for 3s. Ignores LoS.",
           "tags": [
             "damage",
             "toxin",
@@ -1226,8 +1296,9 @@
             {
               "type": "debuff",
               "stat": "toxin",
-              "stacks_to_apply": 2,
-              "duration": 10.0
+              "stacks_to_apply": 1,
+              "duration": 3,
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "artisan",
@@ -1238,10 +1309,16 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "cross"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 3,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_artisan_alchemist_catalyze",
@@ -1253,19 +1330,19 @@
           "damage_type": "magical",
           "scaling_stat": "mag",
           "base_power": 0,
-          "scaling_percent": 126,
-          "percent_per_level": 9.8,
+          "scaling_percent": 35,
+          "percent_per_level": 1,
           "mana_cost": 57,
           "cooldown": 26.0,
           "cast_time": 2.5,
           "detonates_toxin": true,
-          "detonate_damage_base": 15,
-          "detonate_damage_per_stack": 30,
+          "detonate_damage_base": 0,
+          "detonate_damage_per_stack": 5,
           "detonate_consumes_stacks": true,
           "is_signature": true,
           "vfx_type": "aoe_pulse",
-          "description_fr": "Inflige 126% MAG (+9.8%/niv). L'Alchimiste lance le catalyseur : il fait détoner d'un coup toutes les charges de Toxine déjà posées, d'autant plus fort que les cibles en étaient saturées. Les charges consommées disparaissent.",
-          "description_en": "Deals 126% MAG (+9.8%/lvl). The Alchemist throws the catalyst: it detonates all the Toxin stacks already applied at once, all the harder the more saturated the targets were. The consumed stacks vanish.",
+          "description_fr": "Après 2,5s, inflige 35% MAG (+1 point par rang) dans la zone, puis consomme les Toxines pour 5% MAG supplémentaires par charge. Les deux impacts sont réduits par la RM et les boucliers. Ignore la LoS.",
+          "description_en": "After 2.5s, deals 35% MAG (+1 percentage point per rank) in the area, then consumes Toxin for an additional 5% MAG per stack. Both impacts are reduced by MR and shields. Ignores LoS.",
           "tags": [
             "damage",
             "detonate",
@@ -1281,10 +1358,16 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "rect_2x3"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 3,
+          "rank_scaling_enabled": true
         }
       ],
       "tier3": {
@@ -1803,13 +1886,13 @@
           "damage_type": "magical",
           "scaling_stat": "mag",
           "base_power": 0,
-          "scaling_percent": 100,
-          "percent_per_level": 5.6,
+          "scaling_percent": 25,
+          "percent_per_level": 0.75,
           "mana_cost": 18,
           "cooldown": 16.0,
           "vfx_type": "melee_slash",
-          "description_fr": "Inflige 100% MAG (+5.6%/niv). 1 charge de Brûlure (max 3). Le Chef passe la lame sur la flamme et frappe : chaque entaille applique Brûlure.",
-          "description_en": "Deals 100% MAG (+5.6%/lvl). 1 stack of Burn (max 3). The Chef runs the blade over the flame and strikes: each cut applies Burn.",
+          "description_fr": "Inflige 25% MAG (+0,75 point par rang) et applique une Brûlure pendant 3s. Ignore la LoS.",
+          "description_en": "Deals 25% MAG (+0.75 percentage points per rank) and applies one Burn stack for 3s. Ignores LoS.",
           "tags": [
             "damage",
             "burn",
@@ -1821,7 +1904,8 @@
               "type": "debuff",
               "stat": "burn",
               "stacks_to_apply": 1,
-              "duration": 6.0
+              "duration": 3,
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "artisan",
@@ -1832,10 +1916,16 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_2"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 3,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_artisan_chef_blazing_aroma",
@@ -1847,14 +1937,14 @@
           "damage_type": "magical",
           "scaling_stat": "mag",
           "base_power": 0,
-          "scaling_percent": 140,
-          "percent_per_level": 7.8,
+          "scaling_percent": 30,
+          "percent_per_level": 1,
           "mana_cost": 30,
           "cooldown": 30.0,
           "cast_time": 1.0,
           "vfx_type": "aoe_pulse",
-          "description_fr": "Inflige 140% MAG (+7.8%/niv). Réduit la réduction de dégâts de 15% pendant 12s, 2 charges de Brûlure (max 3). Le Chef libère une vague d'arômes ardents sur une ligne ennemie : elle applique Brûlure et augmente les dégâts qu'ils subissent.",
-          "description_en": "Deals 140% MAG (+7.8%/lvl). Reduces damage reduction by 15% for 12s, 2 stacks of Burn (max 3). The Chef releases a wave of scorching aromas over an enemy line: it applies Burn and increases the damage they take.",
+          "description_fr": "Inflige 30% MAG (+1 point par rang) et applique une Brûlure pendant 3s et une charge de réduction de protection pendant 5s. Ignore la LoS.",
+          "description_en": "Deals 30% MAG (+1 percentage points per rank) and applies one Burn stack for 3s and one protection reduction stack for 5s. Ignores LoS.",
           "tags": [
             "damage",
             "burn",
@@ -1866,14 +1956,16 @@
             {
               "type": "debuff",
               "stat": "damage_reduction_down",
-              "stacks_to_apply": 3,
-              "duration": 12.0
+              "stacks_to_apply": 1,
+              "duration": 5,
+              "duration_per_level": 0
             },
             {
               "type": "debuff",
               "stat": "burn",
-              "stacks_to_apply": 2,
-              "duration": 6.0
+              "stacks_to_apply": 1,
+              "duration": 3,
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "artisan",
@@ -1884,10 +1976,16 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_3"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 3,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_artisan_chef_energy_snack",
@@ -1900,8 +1998,8 @@
           "mana_cost": 30,
           "cooldown": 24.0,
           "vfx_type": "buff_aura",
-          "description_fr": "Augmente l'ATQ de 15% pendant 20s, augmente les dégâts infligés de 15% pendant 20s. Le Chef tend un en-cas chaud à ses alliés : ils gagnent en attaque et en dégâts infligés.",
-          "description_en": "Increases ATK by 15% for 20s, increases damage dealt by 15% for 20s. The Chef hands a warm snack to their allies: they gain attack and damage dealt.",
+          "description_fr": "Accorde aux alliés touchés +10% ATQ et +5% dégâts infligés pendant 8s (+0,2s par rang).",
+          "description_en": "Grants affected allies +10% ATK and +5% damage dealt for 8s (+0.2s per rank).",
           "tags": [
             "buff",
             "atk",
@@ -1913,16 +2011,16 @@
             {
               "type": "buff",
               "stat": "atk_up",
-              "stacks_to_apply": 3,
-              "duration": 20.0,
-              "duration_per_level": 0.55
+              "stacks_to_apply": 2,
+              "duration": 8,
+              "duration_per_level": 0.2
             },
             {
               "type": "buff",
               "stat": "damage_percent_up",
-              "stacks_to_apply": 3,
-              "duration": 20.0,
-              "duration_per_level": 0.55
+              "stacks_to_apply": 1,
+              "duration": 8,
+              "duration_per_level": 0.2
             }
           ],
           "base_class_id": "artisan",
@@ -1936,7 +2034,14 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_2"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 3
         },
         {
           "id": "skill_artisan_chef_warming_broth",
@@ -1950,8 +2055,8 @@
           "cooldown": 28.0,
           "cast_time": 1.0,
           "vfx_type": "regeneration",
-          "description_fr": "Augmente la réduction de dégâts de 15% pendant 20s, applique Régénération pendant 20s. Le Chef sert un bouillon réconfortant : il applique Régénération aux alliés et réduit les dégâts qu'ils subissent.",
-          "description_en": "Increases damage reduction by 15% for 20s, applies Regeneration for 20s. The Chef serves a comforting broth: it applies Regeneration to the allies and reduces the damage they take.",
+          "description_fr": "Après 1s, accorde deux charges de réduction de dégâts et un soin périodique de 6% MAG par tick aux alliés touchés pendant 8s (+0,2s par rang).",
+          "description_en": "After 1s, grants two damage-reduction stacks and periodic healing for 6% MAG per tick to affected allies for 8s (+0.2s per rank).",
           "tags": [
             "hot",
             "regen",
@@ -1964,16 +2069,17 @@
             {
               "type": "buff",
               "stat": "damage_reduction_up",
-              "stacks_to_apply": 3,
-              "duration": 20.0
+              "duration": 8,
+              "stacks_to_apply": 2,
+              "duration_per_level": 0.2
             },
             {
               "type": "buff",
               "stat": "heal_over_time_mag",
-              "value": 8,
-              "pct": 20,
-              "duration": 20.0,
-              "pct_per_level": 0.2
+              "duration": 8,
+              "value": 0,
+              "pct": 6,
+              "duration_per_level": 0.2
             }
           ],
           "base_class_id": "artisan",
@@ -1987,7 +2093,14 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_3"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 3
         },
         {
           "id": "skill_artisan_chef_inferno_feast",
@@ -1999,16 +2112,16 @@
           "damage_type": "magical",
           "scaling_stat": "mag",
           "base_power": 0,
-          "scaling_percent": 280,
-          "percent_per_level": 21.8,
+          "scaling_percent": 25,
+          "percent_per_level": 0,
           "mana_cost": 63,
           "cooldown": 56.0,
           "cast_time": 2.5,
           "dual_effect": true,
           "is_signature": true,
           "vfx_type": "aoe_pulse",
-          "description_fr": "Inflige 280% MAG (+21.8%/niv). 3 charges de Brûlure (max 3), applique Régénération pendant 16s, augmente les dégâts infligés de 20% pendant 20s. Le Chef dresse un festin à deux faces : les ennemis y mordent comme dans des braises et subissent Brûlure, tandis que les alliés s'y restaurent (Régénération) et infligent plus de dégâts.",
-          "description_en": "Deals 280% MAG (+21.8%/lvl). 3 stacks of Burn (max 3), applies Regeneration for 16s, increases damage dealt by 20% for 20s. The Chef lays out a two-faced feast: the enemies bite into embers and suffer Burn, while the allies restore themselves (Regeneration) and deal more damage.",
+          "description_fr": "Après 2,5s, inflige 25% MAG aux ennemis de la zone et une Brûlure de 3s. Les alliés reçoivent 5% MAG de soin par tick et +5% dégâts pendant 6s (+0,2s par rang). Ignore la LoS.",
+          "description_en": "After 2.5s, deals 25% MAG to enemies in the area and applies Burn for 3s. Allies receive healing for 5% MAG per tick and +5% damage for 6s (+0.2s per rank). Ignores LoS.",
           "tags": [
             "damage",
             "burn",
@@ -2022,23 +2135,27 @@
             {
               "type": "debuff",
               "stat": "burn",
-              "stacks_to_apply": 3,
-              "duration": 6.0
+              "stacks_to_apply": 1,
+              "duration": 3,
+              "target": "enemies",
+              "duration_per_level": 0
             },
             {
               "type": "buff",
               "stat": "heal_over_time_mag",
               "target": "allies",
-              "value": 10,
-              "pct": 25,
-              "duration": 16.0
+              "value": 0,
+              "pct": 5,
+              "duration": 6,
+              "duration_per_level": 0.2
             },
             {
               "type": "buff",
               "stat": "damage_percent_up",
-              "stacks_to_apply": 4,
-              "duration": 20.0,
-              "target": "allies"
+              "stacks_to_apply": 1,
+              "duration": 6,
+              "target": "allies",
+              "duration_per_level": 0.2
             }
           ],
           "base_class_id": "artisan",
@@ -2049,10 +2166,15 @@
             "selection_mode": "tile",
             "valid_target_team": "any",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "rect_2x3"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 3
         }
       ],
       "tier3": {
@@ -2557,14 +2679,14 @@
           "damage_type": "magical",
           "scaling_stat": "mag",
           "base_power": 0,
-          "scaling_percent": 112,
-          "percent_per_level": 5.0,
+          "scaling_percent": 45,
+          "percent_per_level": 1.3,
           "mana_cost": 10,
-          "mana_cost_per_level": 1,
+          "mana_cost_per_level": 0,
           "cooldown": 3.5,
           "vfx_type": "debuff_aura",
-          "description_fr": "Inflige 112% MAG (+5%/niv). Réduit les dégâts infligés de 10% pendant 4s. Le Musicien lance un riff à contretemps qui casse le rythme de l'ennemi et ralentit ses attaques.",
-          "description_en": "Deals 112% MAG (+5%/lvl). Reduces damage dealt by 10% for 4s. The Musician throws down an off-beat riff that breaks the enemy's rhythm and slows their attacks.",
+          "description_fr": "Inflige 45% MAG (+1,3 point par rang) et réduit les dégâts infligés de la cible de 5% pendant 3s. Nécessite une LoS.",
+          "description_en": "Deals 45% MAG (+1.3 percentage points per rank) and reduces target damage dealt by 5% for 3s. Requires LoS.",
           "tags": [
             "damage",
             "debuff",
@@ -2575,9 +2697,9 @@
             {
               "type": "debuff",
               "stat": "damage_percent_down",
-              "stacks_to_apply": 2,
-              "duration": 4.0,
-              "duration_per_level": 0.1
+              "stacks_to_apply": 1,
+              "duration": 3,
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "artisan",
@@ -2591,7 +2713,12 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "range": 3,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_artisan_musician_dissonant_chord",
@@ -2603,13 +2730,13 @@
           "damage_type": "magical",
           "scaling_stat": "mag",
           "base_power": 0,
-          "scaling_percent": 273,
-          "percent_per_level": 15.2,
+          "scaling_percent": 25,
+          "percent_per_level": 0,
           "mana_cost": 27,
           "cooldown": 20.0,
           "vfx_type": "debuff_aura",
-          "description_fr": "Inflige 273% MAG (+15.2%/niv). Réduit la précision de 20% pendant 12s, réduit les dégâts infligés de 15% pendant 12s, applique purge. Le Musicien pousse une dissonance dans le rang ennemi : elle réduit leur précision, ralentit leurs attaques et dissipe les buffs posés sur eux. Le son traverse les obstacles.",
-          "description_en": "Deals 273% MAG (+15.2%/lvl). Reduces accuracy by 20% for 12s, reduces damage dealt by 15% for 12s, applies purge. The Musician drives a dissonance into the enemy rank: it reduces their accuracy, slows their attacks and strips the buffs placed on them. The sound passes through obstacles.",
+          "description_fr": "Inflige 25% MAG dans la zone, applique une charge de réduction de précision et de dégâts pendant 3s (+0,1s par rang), puis dissipe un buff par ennemi touché. Ignore la LoS.",
+          "description_en": "Deals 25% MAG in the area, applies one accuracy and damage reduction stack for 3s (+0.1s per rank), then purges one buff per enemy hit. Ignores LoS.",
           "tags": [
             "damage",
             "debuff",
@@ -2622,21 +2749,23 @@
             {
               "type": "debuff",
               "stat": "accuracy_down",
-              "stacks_to_apply": 4,
-              "duration": 12.0,
-              "duration_per_level": 0.35
+              "stacks_to_apply": 1,
+              "duration": 3,
+              "duration_per_level": 0.1
             },
             {
               "type": "debuff",
               "stat": "damage_percent_down",
-              "stacks_to_apply": 3,
-              "duration": 12.0,
-              "duration_per_level": 0.35
+              "stacks_to_apply": 1,
+              "duration": 3,
+              "duration_per_level": 0.1
             },
             {
               "type": "utility",
               "stat": "purge",
-              "value": 1
+              "value": 1,
+              "target": "enemies",
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "artisan",
@@ -2647,10 +2776,15 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_3"
-          }
+          },
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 3
         },
         {
           "id": "skill_artisan_musician_rallying_melody",
@@ -2664,8 +2798,8 @@
           "cooldown": 24.0,
           "dual_effect": true,
           "vfx_type": "buff_aura",
-          "description_fr": "Réduit les soins reçus de 15% pendant 16s, applique Régénération pendant 16s. Le Musicien tient une mélodie à deux faces : elle applique Régénération aux alliés et réduit les soins que les ennemis reçoivent. Le son traverse les obstacles.",
-          "description_en": "Reduces healing received by 15% for 16s, applies Regeneration for 16s. The Musician holds a two-faced melody: it applies Regeneration to the allies and reduces the healing the enemies receive. The sound passes through obstacles.",
+          "description_fr": "Dans la zone, applique une charge d’anti-soin aux ennemis et soigne les alliés de 5% MAG par tick pendant 6s (+0,2s par rang). Ignore la LoS.",
+          "description_en": "In the area, applies one healing-reduction stack to enemies and heals allies for 5% MAG per tick for 6s (+0.2s per rank). Ignores LoS.",
           "tags": [
             "hot",
             "regen",
@@ -2680,18 +2814,18 @@
               "type": "debuff",
               "stat": "heal_reduction",
               "stacks_to_apply": 1,
-              "duration": 16.0,
+              "duration": 6,
               "target": "enemies",
-              "duration_per_level": 0.45
+              "duration_per_level": 0.2
             },
             {
               "type": "buff",
               "stat": "heal_over_time_mag",
-              "value": 8,
-              "pct": 20,
-              "duration": 16.0,
+              "value": 0,
+              "pct": 5,
+              "duration": 6,
               "target": "allies",
-              "duration_per_level": 0.45
+              "duration_per_level": 0.2
             }
           ],
           "base_class_id": "artisan",
@@ -2705,7 +2839,14 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_3"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 3
         },
         {
           "id": "skill_artisan_musician_tempo_shift",
@@ -2720,8 +2861,8 @@
           "cast_time": 1.5,
           "dual_effect": true,
           "vfx_type": "buff_aura",
-          "description_fr": "Augmente les dégâts infligés de 20% pendant 16s, réduit les dégâts infligés de 15% pendant 16s. Le Musicien impose sa mesure au combat : les alliés gagnent en dégâts infligés, les ennemis la perdent. Le son traverse les obstacles.",
-          "description_en": "Increases damage dealt by 20% for 16s, reduces damage dealt by 15% for 16s. The Musician imposes their tempo on the fight: allies deal more damage, enemies lose it. The sound passes through obstacles.",
+          "description_fr": "Après 1,5s, augmente les dégâts alliés de 5% et réduit les dégâts ennemis de 5% pendant 4s (+0,1s par rang), sur tout le plateau.",
+          "description_en": "After 1.5s, increases allied damage by 5% and reduces enemy damage by 5% for 4s (+0.1s per rank), across the board.",
           "tags": [
             "buff",
             "debuff",
@@ -2735,18 +2876,18 @@
             {
               "type": "buff",
               "stat": "damage_percent_up",
-              "stacks_to_apply": 4,
-              "duration": 16.0,
+              "stacks_to_apply": 1,
+              "duration": 4,
               "target": "allies",
-              "duration_per_level": 0.45
+              "duration_per_level": 0.1
             },
             {
               "type": "debuff",
               "stat": "damage_percent_down",
-              "stacks_to_apply": 3,
-              "duration": 16.0,
+              "stacks_to_apply": 1,
+              "duration": 4,
               "target": "enemies",
-              "duration_per_level": 0.45
+              "duration_per_level": 0.1
             }
           ],
           "base_class_id": "artisan",
@@ -2760,7 +2901,14 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "all"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 0
         },
         {
           "id": "skill_artisan_musician_grand_performance",
@@ -2776,8 +2924,8 @@
           "dual_effect": true,
           "is_signature": true,
           "vfx_type": "buff_aura",
-          "description_fr": "Applique Toutes Stats pendant 16s, applique Toutes Stats Réduites pendant 16s. Le Musicien déploie un orchestre invisible sur tout le champ : il améliore toutes les stats des alliés et diminue toutes celles des ennemis. Le son traverse les obstacles.",
-          "description_en": "Applies All Stats for 16s, applies All Stats Down for 16s. The Musician unfolds an invisible orchestra across the whole field: it raises all the allies' stats and lowers all the enemies' stats. The sound passes through obstacles.",
+          "description_fr": "Après 2s, augmente ATQ, MAG, armure et RM des alliés de 8% et réduit celles des ennemis de 5% pendant 6s (+0,2s par rang), sur tout le plateau.",
+          "description_en": "After 2s, increases allies’ ATK, MAG, armor and MR by 8% and reduces enemies’ by 5% for 6s (+0.2s per rank), across the board.",
           "tags": [
             "buff",
             "debuff",
@@ -2790,18 +2938,18 @@
             {
               "type": "buff",
               "stat": "all_stats",
-              "value": 15,
-              "duration": 16.0,
+              "value": 8,
+              "duration": 6,
               "target": "allies",
-              "duration_per_level": 0.45
+              "duration_per_level": 0.2
             },
             {
               "type": "debuff",
               "stat": "all_stats_down",
-              "value": 15,
-              "duration": 16.0,
+              "value": 5,
+              "duration": 6,
               "target": "enemies",
-              "duration_per_level": 0.45
+              "duration_per_level": 0.2
             }
           ],
           "base_class_id": "artisan",
@@ -2815,7 +2963,14 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "all"
-          }
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 0
         }
       ],
       "tier3": {

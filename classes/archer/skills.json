@@ -65,15 +65,15 @@
       "damage_type": "physical",
       "scaling_stat": "atk",
       "base_power": 0,
-      "scaling_percent": 70,
-      "percent_per_level": 3.1,
+      "scaling_percent": 60,
+      "percent_per_level": 1.8,
       "mana_cost": 7,
-      "mana_cost_per_level": 1,
+      "mana_cost_per_level": 0,
       "cooldown": 5.0,
-      "marked_bonus_percent": 50,
+      "marked_bonus_percent": 15,
       "vfx_type": "projectile",
-      "description_fr": "Inflige 70% ATQ (+3.1%/niv). Réduit l'armure de 5% pendant 6s. L'Archer décoche une flèche qui trouve les failles de l'armure.",
-      "description_en": "Deals 70% ATK (+3.1%/lvl). Reduces armour by 5% for 6s. The Archer looses an arrow that finds the gaps in the armor.",
+      "description_fr": "Inflige 60% ATQ (+1,8 point par rang), avec +15% dégâts sur une cible marquée. Réduit l’armure de 5% pendant 6s. Nécessite une ligne de vue.",
+      "description_en": "Deals 60% ATK (+1.8 percentage points per rank), with +15% damage against a marked target. Reduces armor by 5% for 6s. Requires line of sight.",
       "tags": [
         "damage",
         "filler",
@@ -100,7 +100,11 @@
         "bypasses_los": false,
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "single"
-      }
+      },
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "range": 5,
+      "rank_scaling_enabled": true
     },
     {
       "id": "skill_archer_volley",
@@ -112,15 +116,15 @@
       "damage_type": "physical",
       "scaling_stat": "atk",
       "base_power": 0,
-      "scaling_percent": 80,
-      "percent_per_level": 4.4,
+      "scaling_percent": 35,
+      "percent_per_level": 1,
       "mana_cost": 30,
-      "mana_cost_per_level": 3,
+      "mana_cost_per_level": 0,
       "cooldown": 20.0,
       "cast_time": 1.0,
       "vfx_type": "projectile",
-      "description_fr": "Inflige 80% ATQ (+4.4%/niv). Réduit les dégâts infligés de 10% pendant 6s, 1 charge de Saignement (max 3). L'Archer libère une volée de flèches sur une colonne ennemie.",
-      "description_en": "Deals 80% ATK (+4.4%/lvl). Reduces damage dealt by 10% for 6s, 1 stack of Bleed (max 3). The Archer looses a volley of arrows over an enemy column.",
+      "description_fr": "Inflige 35% ATQ (+1 point par rang) dans la zone, applique un Saignement et réduit les dégâts infligés de 5% pendant 3s. Ignore la ligne de vue.",
+      "description_en": "Deals 35% ATK (+1 percentage point per rank) in the area, applies one Bleed stack and reduces damage dealt by 5% for 3s. Ignores line of sight.",
       "tags": [
         "damage",
         "aoe",
@@ -132,14 +136,14 @@
         {
           "type": "debuff",
           "stat": "damage_percent_down",
-          "stacks_to_apply": 2,
-          "duration": 6.0
+          "stacks_to_apply": 1,
+          "duration": 3
         },
         {
           "type": "debuff",
           "stat": "bleed",
           "stacks_to_apply": 1,
-          "duration": 5.0
+          "duration": 3
         }
       ],
       "base_class_id": "archer",
@@ -150,10 +154,14 @@
         "selection_mode": "tile",
         "valid_target_team": "enemy",
         "requires_line_of_sight": false,
-        "bypasses_los": false,
+        "bypasses_los": true,
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "col_3"
-      }
+      },
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "range": 4,
+      "rank_scaling_enabled": true
     },
     {
       "id": "skill_archer_crippling_arrow",
@@ -165,15 +173,15 @@
       "damage_type": "physical",
       "scaling_stat": "atk",
       "base_power": 0,
-      "scaling_percent": 55,
-      "percent_per_level": 3.1,
+      "scaling_percent": 25,
+      "percent_per_level": 0,
       "mana_cost": 30,
-      "mana_cost_per_level": 3,
+      "mana_cost_per_level": 0,
       "cooldown": 32.0,
       "cast_time": 1.5,
       "vfx_type": "projectile",
-      "description_fr": "Désarme les cibles touchées et ralentit leurs attaques. Inflige 55% ATQ (+3.1%/niv). Réduit les dégâts infligés de 20% pendant 10s, applique Désarmement pendant 4s. L'Archer vise les mains et les articulations de la ligne de front, en contournant les obstacles.",
-      "description_en": "Disarms the struck targets and slows their attacks. Deals 55% ATK (+3.1%/lvl). Reduces damage dealt by 20% for 10s, applies Disarm for 4s. The Archer aims for the hands and joints of the front line, ignoring obstacles.",
+      "description_fr": "Inflige 25% ATQ dans la zone. Réduit les dégâts infligés de 10% pendant 4s (+0,1s par rang) et désarme pendant 1s. Ignore la ligne de vue.",
+      "description_en": "Deals 25% ATK in the area. Reduces damage dealt by 10% for 4s (+0.1s per rank) and disarms for 1s. Ignores line of sight.",
       "tags": [
         "damage",
         "debuff",
@@ -185,15 +193,15 @@
         {
           "type": "debuff",
           "stat": "damage_percent_down",
-          "stacks_to_apply": 4,
-          "duration": 10.0
+          "stacks_to_apply": 2,
+          "duration": 4,
+          "duration_per_level": 0.1
         },
         {
           "type": "debuff",
           "stat": "disarm",
           "value": 1,
-          "duration": 4.0,
-          "duration_per_level": 0.05
+          "duration": 1
         }
       ],
       "base_class_id": "archer",
@@ -204,10 +212,13 @@
         "selection_mode": "tile",
         "valid_target_team": "enemy",
         "requires_line_of_sight": false,
-        "bypasses_los": false,
+        "bypasses_los": true,
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "row_3"
-      }
+      },
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "range": 4
     },
     {
       "id": "skill_archer_eagle_eye",
@@ -218,11 +229,11 @@
       "pattern": "single",
       "damage_type": "none",
       "mana_cost": 27,
-      "mana_cost_per_level": 3,
+      "mana_cost_per_level": 0,
       "cooldown": 24.0,
       "vfx_type": "buff_aura",
-      "description_fr": "Augmente les chances critiques de 15% pendant 12s, augmente la précision de 15% pendant 12s. L'Archer canalise son Souffle dans ses yeux : le monde ralentit.",
-      "description_en": "Increases crit chance by 15% for 12s, increases accuracy by 15% for 12s. The Archer channels their Breath into their eyes as the world slows.",
+      "description_fr": "Accorde 2 charges de chance critique et de précision pendant 10s (+0,3s par rang).",
+      "description_en": "Grants 2 critical-chance and accuracy stacks for 10s (+0.3s per rank).",
       "tags": [
         "buff",
         "crit",
@@ -233,16 +244,16 @@
         {
           "type": "buff",
           "stat": "crit_chance_up",
-          "stacks_to_apply": 3,
-          "duration": 12.0,
-          "duration_per_level": 0.35
+          "stacks_to_apply": 2,
+          "duration": 10,
+          "duration_per_level": 0.3
         },
         {
           "type": "buff",
           "stat": "accuracy_up",
-          "stacks_to_apply": 3,
-          "duration": 12.0,
-          "duration_per_level": 0.35
+          "stacks_to_apply": 2,
+          "duration": 10,
+          "duration_per_level": 0.3
         }
       ],
       "base_class_id": "archer",
@@ -256,7 +267,12 @@
         "bypasses_los": false,
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "single"
-      }
+      },
+      "base_power": 0,
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "percent_per_level": 0,
+      "range": 0
     },
     {
       "id": "skill_archer_hunter_mark",
@@ -267,31 +283,29 @@
       "pattern": "single",
       "damage_type": "none",
       "mana_cost": 24,
-      "mana_cost_per_level": 2,
+      "mana_cost_per_level": 0,
       "cooldown": 34.0,
-      "mark_refresh_on_hit": true,
-      "mark_spread_on_kill": true,
       "vfx_type": "debuff_aura",
-      "description_fr": "Si elle tombe, la marque se propage à une autre. Applique Marque du Chasseur pendant 16s, applique Révélé pendant 16s. L'Archer appose la Marque du Chasseur : la cible est révélée et ses faiblesses exposées à toute l'équipe.",
-      "description_en": "If they fall, the mark spreads to another. Applies Hunter's Mark for 16s, applies Revealed for 16s. The Archer places the Hunter's Mark: the target is revealed and their weaknesses exposed to the whole team.",
+      "description_fr": "Marque et révèle une cible pendant 8s (+0,3s par rang). La cible subit +15% dégâts de toutes sources. Nécessite une ligne de vue ; seuls les nouveaux lancements renouvellent la marque.",
+      "description_en": "Marks and reveals a target for 8s (+0.3s per rank). The target takes +15% damage from all sources. Requires line of sight; only recasting refreshes the mark.",
       "tags": [
         "debuff",
         "mark",
         "utility",
-        "spread"
+        "revealed"
       ],
       "effects": [
         {
           "type": "debuff",
           "stat": "hunter_mark",
-          "duration": 16.0,
-          "duration_per_level": 0.45
+          "duration": 8,
+          "duration_per_level": 0.3
         },
         {
           "type": "debuff",
           "stat": "revealed",
-          "duration": 16.0,
-          "duration_per_level": 0.45
+          "duration": 8,
+          "duration_per_level": 0.3
         }
       ],
       "base_class_id": "archer",
@@ -301,11 +315,16 @@
       "targeting": {
         "selection_mode": "entity",
         "valid_target_team": "enemy",
-        "requires_line_of_sight": false,
-        "bypasses_los": true,
+        "requires_line_of_sight": true,
+        "bypasses_los": false,
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "single"
-      }
+      },
+      "base_power": 0,
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "percent_per_level": 0,
+      "range": 5
     }
   ],
   "subclass_skills": {
@@ -323,14 +342,13 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 182,
-          "percent_per_level": 10.1,
+          "scaling_percent": 85,
+          "percent_per_level": 2.5,
           "mana_cost": 24,
           "cooldown": 12.0,
-          "crit_damage_bonus": 30,
           "vfx_type": "projectile",
-          "description_fr": "Inflige 182% ATQ (+10.1%/niv). Réduit la résistance aux critiques de 15% pendant 12s. Le Ranger patiente puis lâche un tir chirurgical qui trouve la faille de l'armure et rend la cible plus vulnérable aux coups critiques.",
-          "description_en": "Deals 182% ATK (+10.1%/lvl). Reduces crit resistance by 15% for 12s. The Ranger waits, then looses a surgical shot that finds the flaw in the armor and makes the target more vulnerable to critical hits.",
+          "description_fr": "Inflige 85% ATQ (+2,5 points par rang) et réduit la résistance critique de 5 points pendant 8s. Nécessite une ligne de vue.",
+          "description_en": "Deals 85% ATK (+2.5 percentage points per rank) and reduces critical resistance by 5 points for 8s. Requires line of sight.",
           "tags": [
             "damage",
             "single",
@@ -341,8 +359,8 @@
             {
               "type": "debuff",
               "stat": "crit_resistance_down",
-              "stacks_to_apply": 3,
-              "duration": 12.0
+              "stacks_to_apply": 1,
+              "duration": 8
             }
           ],
           "base_class_id": "archer",
@@ -356,7 +374,12 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 6,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_archer_ranger_steady_aim",
@@ -369,8 +392,8 @@
           "mana_cost": 33,
           "cooldown": 32.0,
           "vfx_type": "buff_aura",
-          "description_fr": "Applique Visée Stable pendant 10s. Le Ranger canalise son Souffle dans un calme absolu et active Visée Stable, qui amplifie ses coups critiques.",
-          "description_en": "Applies Steady Aim for 10s. The Ranger channels their Breath into absolute calm and activates Steady Aim, which amplifies their critical hits.",
+          "description_fr": "Augmente le multiplicateur critique de 20 points pendant 8s (+0,3s par rang).",
+          "description_en": "Increases the critical damage multiplier by 20 percentage points for 8s (+0.3s per rank).",
           "tags": [
             "buff",
             "crit",
@@ -380,8 +403,9 @@
           "effects": [
             {
               "type": "buff",
-              "stat": "steady_aim_amplifier",
-              "duration": 10.0,
+              "stat": "crit_damage_up",
+              "stacks_to_apply": 2,
+              "duration": 8,
               "duration_per_level": 0.3
             }
           ],
@@ -392,31 +416,36 @@
           "targeting": {
             "selection_mode": "self",
             "valid_target_team": "self",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "base_power": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 0
         },
         {
           "id": "skill_archer_ranger_piercing_arrow",
           "name_en": "Piercing Arrow",
           "name_fr": "Flèche Perçante",
           "tier": "standard",
-          "target": "enemy",
+          "target": "enemies",
           "pattern": "col_3",
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 161,
-          "percent_per_level": 8.9,
+          "scaling_percent": 65,
+          "percent_per_level": 2,
           "mana_cost": 30,
           "cooldown": 20.0,
-          "armor_pen": 30,
-          "ignore_shields": true,
+          "armor_pen": 15,
           "vfx_type": "projectile",
-          "description_fr": "Inflige 161% ATQ (+8.9%/niv). Réduit les soins reçus de 30% pendant 12s. L'archer bande son arc au maximum : la flèche traverse tout ce qui se trouve dans son axe.",
-          "description_en": "Deals 161% ATK (+8.9%/lvl). Reduces healing received by 30% for 12s. The archer draws to full: the arrow pierces through everything in its line.",
+          "description_fr": "Inflige 65% ATQ (+2 points par rang) aux ennemis visibles de la ligne, avec 15 points de pénétration d’armure. Ignore les boucliers et applique une charge d’anti-soin pendant 6s. La ligne de vue reste obligatoire.",
+          "description_en": "Deals 65% ATK (+2 percentage points per rank) to visible enemies in the line, with 15 armor penetration. Bypasses shields and applies one healing-reduction stack for 6s. Still requires line of sight.",
           "tags": [
             "damage",
             "single",
@@ -428,8 +457,8 @@
             {
               "type": "debuff",
               "stat": "heal_reduction",
-              "stacks_to_apply": 2,
-              "duration": 12.0
+              "stacks_to_apply": 1,
+              "duration": 6
             }
           ],
           "base_class_id": "archer",
@@ -437,13 +466,19 @@
           "tier3_id": "",
           "source_scope": "SUBCLASS",
           "targeting": {
-            "selection_mode": "entity",
+            "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": true,
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "col_3"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 5,
+          "rank_scaling_enabled": true,
+          "shield_break": true
         },
         {
           "id": "skill_archer_ranger_kill_shot",
@@ -455,16 +490,16 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 196,
-          "percent_per_level": 15.2,
+          "scaling_percent": 100,
+          "percent_per_level": 3,
           "mana_cost": 36,
           "cooldown": 28.0,
           "cast_time": 2.0,
           "execute_threshold": 30,
-          "execute_bonus_percent": 100,
+          "execute_bonus_percent": 25,
           "vfx_type": "projectile",
-          "description_fr": "Inflige 196% ATQ (+15.2%/niv). Applique Blocage Soin pendant 4s. Le Ranger libère un tir de grâce, redoublé contre une cible déjà affaiblie, et empêche tout soin de la rattraper.",
-          "description_en": "Deals 196% ATK (+15.2%/lvl). Applies Heal Block for 4s. The Ranger releases a killing shot, redoubled against an already weakened target, and blocks any healing from saving them.",
+          "description_fr": "Après 2s d’incantation, inflige 100% ATQ (+3 points par rang), avec +25% dégâts sous 30% PV. Applique une charge d’anti-soin pendant 4s. Nécessite une ligne de vue.",
+          "description_en": "After a 2s cast, deals 100% ATK (+3 percentage points per rank), with +25% damage below 30% HP. Applies one healing-reduction stack for 4s. Requires line of sight.",
           "tags": [
             "damage",
             "single",
@@ -475,9 +510,9 @@
           "effects": [
             {
               "type": "debuff",
-              "stat": "heal_block",
-              "duration": 4.0,
-              "condition": "target_below_30_percent"
+              "stat": "heal_reduction",
+              "stacks_to_apply": 1,
+              "duration": 4
             }
           ],
           "base_class_id": "archer",
@@ -491,7 +526,12 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 6,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_archer_ranger_headshot",
@@ -503,8 +543,8 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 280,
-          "percent_per_level": 21.8,
+          "scaling_percent": 90,
+          "percent_per_level": 3,
           "mana_cost": 52,
           "cooldown": 44.0,
           "cast_time": 2.5,
@@ -512,8 +552,8 @@
           "cd_reset_on_kill": true,
           "is_signature": true,
           "vfx_type": "projectile",
-          "description_fr": "Si elle meurt, la compétence est aussitôt de nouveau utilisable. Inflige 280% ATQ (+21.8%/niv). Applique Étourdissement pendant 4s. Le Ranger place un tir en pleine tête : un coup critique garanti qui étourdit la cible.",
-          "description_en": "If they die, the skill is instantly usable again. Deals 280% ATK (+21.8%/lvl). Applies Stun for 4s. The Ranger lands a shot to the head: a guaranteed critical hit that stuns the target.",
+          "description_fr": "Après 2,5s d’incantation, inflige 90% ATQ (+3 points par rang) avec critique garanti, avant résistance critique. Étourdit pendant 1s. Recharge réinitialisée si le tir tue. Nécessite une ligne de vue.",
+          "description_en": "After a 2.5s cast, deals 90% ATK (+3 percentage points per rank) with a guaranteed critical attempt, before critical resistance. Stuns for 1s. Resets its cooldown on a kill. Requires line of sight.",
           "tags": [
             "damage",
             "single",
@@ -527,7 +567,7 @@
               "type": "debuff",
               "stat": "stun",
               "value": 1,
-              "duration": 4.0
+              "duration": 1
             }
           ],
           "base_class_id": "archer",
@@ -541,7 +581,12 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 6,
+          "rank_scaling_enabled": true
         }
       ],
       "tier3": {
@@ -1058,13 +1103,13 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 76,
-          "percent_per_level": 4.2,
+          "scaling_percent": 35,
+          "percent_per_level": 1,
           "mana_cost": 21,
           "cooldown": 16.0,
           "vfx_type": "falcon",
-          "description_fr": "Inflige 76% ATQ (+4.2%/niv). 1 charge de Saignement (max 3). Le Fauconnier lance son rapace, qui plonge en ignorant les obstacles et laisse une entaille : applique Saignement.",
-          "description_en": "Deals 76% ATK (+4.2%/lvl). 1 stack of Bleed (max 3). The Falconer sends their raptor diving through any obstacle to leave a gash: applies Bleed.",
+          "description_fr": "Inflige 35% ATQ (+1 point par rang) et applique un Saignement pendant 3s. Ignore la ligne de vue.",
+          "description_en": "Deals 35% ATK (+1 percentage point per rank) and applies one Bleed stack for 3s. Ignores line of sight.",
           "tags": [
             "damage",
             "pet",
@@ -1076,7 +1121,7 @@
               "type": "debuff",
               "stat": "bleed",
               "stacks_to_apply": 1,
-              "duration": 5.0
+              "duration": 3
             }
           ],
           "base_class_id": "archer",
@@ -1086,11 +1131,16 @@
           "targeting": {
             "selection_mode": "entity",
             "valid_target_team": "enemy",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 4,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_archer_falconer_talon_rend",
@@ -1102,14 +1152,14 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 68,
-          "percent_per_level": 3.8,
+          "scaling_percent": 30,
+          "percent_per_level": 1,
           "mana_cost": 27,
           "cooldown": 32.0,
-          "damage_per_bleed_stack": 10,
+          "damage_per_bleed_stack": 3,
           "vfx_type": "falcon",
-          "description_fr": "Inflige 68% ATQ (+3.8%/niv). Réduit l'armure de 10% pendant 12s, 2 charges de Saignement (max 3). Les serres du faucon lacèrent la cible, en ignorant les obstacles : applique Saignement et réduit son armure.",
-          "description_en": "Deals 68% ATK (+3.8%/lvl). Reduces armour by 10% for 12s, 2 stacks of Bleed (max 3). The falcon's talons rake the target, ignoring obstacles: applies Bleed and reduces their armor.",
+          "description_fr": "Inflige 30% ATQ (+1 point par rang), avec +3% dégâts par Saignement déjà présent. Réduit l’armure de 5% pendant 6s et applique un Saignement pendant 3s. Ignore la ligne de vue.",
+          "description_en": "Deals 30% ATK (+1 percentage point per rank), with +3% damage per existing Bleed stack. Reduces armor by 5% for 6s and applies one Bleed stack for 3s. Ignores line of sight.",
           "tags": [
             "damage",
             "pet",
@@ -1122,14 +1172,14 @@
             {
               "type": "debuff",
               "stat": "armor_down",
-              "stacks_to_apply": 2,
-              "duration": 12.0
+              "stacks_to_apply": 1,
+              "duration": 6
             },
             {
               "type": "debuff",
               "stat": "bleed",
-              "stacks_to_apply": 2,
-              "duration": 6.0
+              "stacks_to_apply": 1,
+              "duration": 3
             }
           ],
           "base_class_id": "archer",
@@ -1139,11 +1189,16 @@
           "targeting": {
             "selection_mode": "entity",
             "valid_target_team": "enemy",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 4,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_archer_falconer_falcon_sweep",
@@ -1155,13 +1210,13 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 98,
-          "percent_per_level": 5.4,
+          "scaling_percent": 35,
+          "percent_per_level": 1,
           "mana_cost": 33,
           "cooldown": 24.0,
           "vfx_type": "falcon",
-          "description_fr": "Inflige 98% ATQ (+5.4%/niv). Réduit la précision de 20% pendant 10s. Le faucon balaie une diagonale ennemie de ses ailes et réduit la précision des cibles touchées.",
-          "description_en": "Deals 98% ATK (+5.4%/lvl). Reduces accuracy by 20% for 10s. The falcon sweeps an enemy diagonal with its wings and reduces the struck targets' accuracy.",
+          "description_fr": "Inflige 35% ATQ (+1 point par rang) dans la zone et réduit la précision de 10% pendant 4s. Ignore la ligne de vue.",
+          "description_en": "Deals 35% ATK (+1 percentage point per rank) in the area and reduces accuracy by 10% for 4s. Ignores line of sight.",
           "tags": [
             "damage",
             "pet",
@@ -1173,8 +1228,8 @@
             {
               "type": "debuff",
               "stat": "accuracy_down",
-              "stacks_to_apply": 4,
-              "duration": 10.0
+              "stacks_to_apply": 2,
+              "duration": 4
             }
           ],
           "base_class_id": "archer",
@@ -1185,10 +1240,15 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "diagonal_up"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 4,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_archer_falconer_wing_guard",
@@ -1199,10 +1259,10 @@
           "pattern": "single",
           "damage_type": "none",
           "mana_cost": 33,
-          "cooldown": 12.0,
+          "cooldown": 24,
           "vfx_type": "buff_aura",
-          "description_fr": "Augmente l'esquive de 15% pendant 10s. Le faucon se poste au-dessus d'un allié et dévie les coups : il augmente son esquive.",
-          "description_en": "Increases evasion by 15% for 10s. The falcon perches above an ally and deflects blows: it increases their evasion.",
+          "description_fr": "Accorde 3 charges d’esquive à un allié pendant 8s (+0,3s par rang).",
+          "description_en": "Grants an ally 3 evasion stacks for 8s (+0.3s per rank).",
           "tags": [
             "buff",
             "pet",
@@ -1213,8 +1273,8 @@
             {
               "type": "buff",
               "stat": "evasion_up",
-              "stacks_to_apply": 5,
-              "duration": 10.0,
+              "stacks_to_apply": 3,
+              "duration": 8,
               "duration_per_level": 0.3
             }
           ],
@@ -1229,7 +1289,13 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "base_power": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 4
         },
         {
           "id": "skill_archer_falconer_falcon_fury",
@@ -1241,16 +1307,16 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 128,
-          "percent_per_level": 10.0,
+          "scaling_percent": 40,
+          "percent_per_level": 1.2,
           "mana_cost": 60,
           "cooldown": 48.0,
           "cast_time": 2.5,
-          "damage_per_bleed_stack": 15,
+          "damage_per_bleed_stack": 3,
           "is_signature": true,
           "vfx_type": "falcon",
-          "description_fr": "Inflige 128% ATQ (+10%/niv). Réduit l'armure de 20% pendant 12s, 3 charges de Saignement (max 3). Le faucon entre en furie et déchiquette une large bande d'ennemis, en ignorant les obstacles : applique Saignement et réduit leur armure.",
-          "description_en": "Deals 128% ATK (+10%/lvl). Reduces armour by 20% for 12s, 3 stacks of Bleed (max 3). The falcon flies into a fury and shreds a wide band of enemies, ignoring obstacles: applies Bleed and reduces their armor.",
+          "description_fr": "Après 2,5s d’incantation, inflige 40% ATQ (+1,2 point par rang) dans la zone, avec +3% dégâts par Saignement présent. Réduit l’armure de 10% pendant 6s et applique un Saignement pendant 4s. Ignore la ligne de vue.",
+          "description_en": "After a 2.5s cast, deals 40% ATK (+1.2 percentage points per rank) in the area, with +3% damage per existing Bleed stack. Reduces armor by 10% for 6s and applies one Bleed stack for 4s. Ignores line of sight.",
           "tags": [
             "damage",
             "pet",
@@ -1264,14 +1330,14 @@
             {
               "type": "debuff",
               "stat": "armor_down",
-              "stacks_to_apply": 4,
-              "duration": 12.0
+              "stacks_to_apply": 2,
+              "duration": 6
             },
             {
               "type": "debuff",
               "stat": "bleed",
-              "stacks_to_apply": 3,
-              "duration": 6.0
+              "stacks_to_apply": 1,
+              "duration": 4
             }
           ],
           "base_class_id": "archer",
@@ -1282,10 +1348,15 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "rect_2x3"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 4,
+          "rank_scaling_enabled": true
         }
       ],
       "tier3": {
@@ -1817,15 +1888,15 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 60,
-          "percent_per_level": 3.3,
+          "scaling_percent": 16,
+          "percent_per_level": 0.5,
           "mana_cost": 21,
           "cooldown": 12.0,
           "chain_bounces": 4,
           "can_bounce_same_target": true,
           "vfx_type": "ricochet",
-          "description_fr": "Inflige 60% ATQ (+3.3%/niv). 1 charge de Saignement (max 3). Le Ballmaster décoche un tir qui ricoche d'ennemi en ennemi et applique Saignement à chaque impact.",
-          "description_en": "Deals 60% ATK (+3.3%/lvl). 1 stack of Bleed (max 3). The Ballmaster looses a shot that ricochets from enemy to enemy, applying Bleed on each impact.",
+          "description_fr": "Inflige 16% ATQ (+0,5 point par rang) par impact, jusqu’à 4 rebonds entre ennemis adjacents. Applique un Saignement pendant 2s. Peut revenir sur une cible. Ignore la ligne de vue.",
+          "description_en": "Deals 16% ATK (+0.5 percentage points per rank) per hit, with up to 4 bounces between adjacent enemies. Applies one Bleed stack for 2s. Can revisit a target. Ignores line of sight.",
           "tags": [
             "damage",
             "bounce",
@@ -1838,7 +1909,7 @@
               "type": "debuff",
               "stat": "bleed",
               "stacks_to_apply": 1,
-              "duration": 5.0
+              "duration": 2
             }
           ],
           "base_class_id": "archer",
@@ -1848,12 +1919,17 @@
           "targeting": {
             "selection_mode": "tile",
             "valid_target_team": "enemy",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "chain_4"
           },
-          "bounce_if_adjacent": true
+          "bounce_if_adjacent": true,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 4,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_archer_ballmaster_pinball",
@@ -1865,16 +1941,15 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 84,
-          "percent_per_level": 4.7,
+          "scaling_percent": 12,
+          "percent_per_level": 0.35,
           "mana_cost": 18,
           "cooldown": 14.0,
           "chain_bounces": 6,
           "can_bounce_same_target": true,
-          "damage_per_bounce": 5,
           "vfx_type": "ricochet",
-          "description_fr": "Inflige 84% ATQ (+4.7%/niv). Applique Confusion pendant 3s. La flèche du Ballmaster fuse entre les ennemis comme une bille de flipper, gagnant en force à chaque rebond, et applique Confusion aux cibles.",
-          "description_en": "Deals 84% ATK (+4.7%/lvl). Applies Confusion for 3s. The Ballmaster's arrow bounces between enemies like a pinball, gaining force with each rebound, and applies Confusion to the targets.",
+          "description_fr": "Inflige 12% ATQ (+0,35 point par rang) par impact, jusqu’à 6 rebonds entre ennemis adjacents. Chaque rebond ajoute 2% des dégâts du premier impact. Confusion pendant 1s. Ignore la ligne de vue.",
+          "description_en": "Deals 12% ATK (+0.35 percentage points per rank) per hit, with up to 6 bounces between adjacent enemies. Each bounce adds 2% of the first hit’s damage. Confuses for 1s. Ignores line of sight.",
           "tags": [
             "damage",
             "bounce",
@@ -1887,7 +1962,7 @@
               "type": "debuff",
               "stat": "confusion",
               "value": 1,
-              "duration": 3.0
+              "duration": 1
             }
           ],
           "base_class_id": "archer",
@@ -1897,12 +1972,18 @@
           "targeting": {
             "selection_mode": "tile",
             "valid_target_team": "enemy",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "bounce_2"
           },
-          "bounce_if_adjacent": true
+          "bounce_if_adjacent": true,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 4,
+          "rank_scaling_enabled": true,
+          "damage_percent_per_bounce": 2
         },
         {
           "id": "skill_archer_ballmaster_ricochet",
@@ -1914,16 +1995,15 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 161,
-          "percent_per_level": 8.9,
+          "scaling_percent": 25,
+          "percent_per_level": 0.75,
           "mana_cost": 27,
           "cooldown": 10.0,
           "bounce_if_adjacent": true,
           "bounce_returns": true,
-          "interrupts_on_double_hit": true,
           "vfx_type": "ricochet",
-          "description_fr": "Inflige 161% ATQ (+8.9%/niv). Le Ballmaster place un tir calculé au degré près : s'il ricoche sur un ennemi voisin et frappe deux fois la cible, le double impact interrompt son incantation.",
-          "description_en": "Deals 161% ATK (+8.9%/lvl). The Ballmaster places a shot calculated to the degree: if it ricochets off a nearby enemy and strikes the target twice, the double impact interrupts their cast.",
+          "description_fr": "Inflige 25% ATQ (+0,75 point par rang). Si un autre ennemi est adjacent à la cible, le projectile le frappe puis revient sur la cible initiale et interrompt son incantation. Ignore la ligne de vue.",
+          "description_en": "Deals 25% ATK (+0.75 percentage points per rank). If another enemy is adjacent to the target, the projectile hits it then returns to the original target and interrupts its cast. Ignores line of sight.",
           "tags": [
             "damage",
             "bounce",
@@ -1938,11 +2018,24 @@
           "targeting": {
             "selection_mode": "entity",
             "valid_target_team": "enemy",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 4,
+          "rank_scaling_enabled": true,
+          "effects": [
+            {
+              "type": "utility",
+              "stat": "interrupt",
+              "value": 1,
+              "target": "repeated_target"
+            }
+          ]
         },
         {
           "id": "skill_archer_ballmaster_focused_barrage",
@@ -1954,17 +2047,17 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 133,
-          "percent_per_level": 10.3,
+          "scaling_percent": 22,
+          "percent_per_level": 0.65,
           "mana_cost": 33,
           "cooldown": 40.0,
           "chain_bounces": 3,
           "can_bounce_same_target": true,
-          "few_targets_bonus": 30,
+          "few_targets_bonus": 10,
           "few_targets_threshold": 2,
           "vfx_type": "ricochet",
-          "description_fr": "Inflige 133% ATQ (+10.3%/niv). Réduit l'armure de 15% pendant 10s. Le Ballmaster concentre ses rebonds sur peu d'ennemis : les impacts répétés martèlent les mêmes cibles et réduisent leur armure.",
-          "description_en": "Deals 133% ATK (+10.3%/lvl). Reduces armour by 15% for 10s. The Ballmaster concentrates their rebounds on few enemies: the repeated impacts hammer the same targets and reduce their armor.",
+          "description_fr": "Inflige 22% ATQ (+0,65 point par rang) par impact, jusqu’à 3 rebonds entre ennemis adjacents. +10% dégâts si au plus 2 ennemis sont touchés. Réduit l’armure de 5% pendant 4s. Ignore la ligne de vue.",
+          "description_en": "Deals 22% ATK (+0.65 percentage points per rank) per hit, with up to 3 bounces between adjacent enemies. +10% damage when at most 2 enemies are hit. Reduces armor by 5% for 4s. Ignores line of sight.",
           "tags": [
             "damage",
             "bounce",
@@ -1976,8 +2069,8 @@
             {
               "type": "debuff",
               "stat": "armor_down",
-              "stacks_to_apply": 3,
-              "duration": 10.0
+              "stacks_to_apply": 1,
+              "duration": 4
             }
           ],
           "base_class_id": "archer",
@@ -1987,12 +2080,17 @@
           "targeting": {
             "selection_mode": "tile",
             "valid_target_team": "enemy",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "chain_3"
           },
-          "bounce_if_adjacent": true
+          "bounce_if_adjacent": true,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 4,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_archer_ballmaster_endless_volley",
@@ -2004,18 +2102,17 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 119,
-          "percent_per_level": 9.3,
+          "scaling_percent": 8,
+          "percent_per_level": 0.25,
           "mana_cost": 63,
           "cooldown": 26.0,
           "cast_time": 2.5,
           "chain_bounces": 10,
           "can_bounce_same_target": true,
-          "damage_per_bounce": 8,
           "is_signature": true,
           "vfx_type": "ricochet",
-          "description_fr": "Inflige 119% ATQ (+9.3%/niv). Réduit les dégâts infligés de 15% pendant 8s. Le Ballmaster libère un chaos de flèches qui rebondissent et s'entrechoquent : plus la danse dure, plus elle blesse, et elle réduit les dégâts des ennemis.",
-          "description_en": "Deals 119% ATK (+9.3%/lvl). Reduces damage dealt by 15% for 8s. The Ballmaster unleashes a chaos of bouncing, colliding arrows: the longer the dance lasts, the more it wounds, and it reduces the enemies' damage.",
+          "description_fr": "Après 2,5s d’incantation, inflige 8% ATQ (+0,25 point par rang) par impact, jusqu’à 10 rebonds entre ennemis adjacents. Chaque rebond ajoute 1% des dégâts du premier impact. Réduit les dégâts infligés de 5% pendant 3s. Ignore la ligne de vue.",
+          "description_en": "After a 2.5s cast, deals 8% ATK (+0.25 percentage points per rank) per hit, with up to 10 bounces between adjacent enemies. Each bounce adds 1% of the first hit’s damage. Reduces damage dealt by 5% for 3s. Ignores line of sight.",
           "tags": [
             "damage",
             "bounce",
@@ -2028,8 +2125,8 @@
             {
               "type": "debuff",
               "stat": "damage_percent_down",
-              "stacks_to_apply": 3,
-              "duration": 8.0
+              "stacks_to_apply": 1,
+              "duration": 3
             }
           ],
           "base_class_id": "archer",
@@ -2039,12 +2136,18 @@
           "targeting": {
             "selection_mode": "tile",
             "valid_target_team": "enemy",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "bounce_all"
           },
-          "bounce_if_adjacent": true
+          "bounce_if_adjacent": true,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 4,
+          "rank_scaling_enabled": true,
+          "damage_percent_per_bounce": 1
         }
       ],
       "tier3": {
@@ -2542,14 +2645,14 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 98,
-          "percent_per_level": 4.4,
+          "scaling_percent": 55,
+          "percent_per_level": 1.5,
           "mana_cost": 9,
-          "mana_cost_per_level": 1,
-          "cooldown": 3.0,
+          "mana_cost_per_level": 0,
+          "cooldown": 4,
           "vfx_type": "projectile",
-          "description_fr": "Inflige 98% ATQ (+4.4%/niv). Applique Interruption. Le Gunslinger tire au rythme de son Souffle : chaque flèche coupe net l'incantation ennemie avant qu'elle n'éclose.",
-          "description_en": "Deals 98% ATK (+4.4%/lvl). Applies Interrupt. The Gunslinger fires to the rhythm of their Breath: each shot cuts the enemy's cast short before it forms.",
+          "description_fr": "Inflige 55% ATQ (+1,5 point par rang) et interrompt l’incantation de la cible. Nécessite une ligne de vue.",
+          "description_en": "Deals 55% ATK (+1.5 percentage points per rank) and interrupts the target’s cast. Requires line of sight.",
           "tags": [
             "damage",
             "fast",
@@ -2574,7 +2677,11 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "range": 5,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_archer_gunslinger_double_tap",
@@ -2586,15 +2693,15 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 72,
-          "percent_per_level": 4.0,
+          "scaling_percent": 30,
+          "percent_per_level": 1,
           "mana_cost": 21,
           "cooldown": 12.0,
           "hit_count": 2,
           "each_hit_can_crit": true,
           "vfx_type": "projectile",
-          "description_fr": "Inflige 72% ATQ (+4%/niv), 2 fois. 1 charge de Saignement (max 3). Le Gunslinger place deux tirs explosifs dans le même Souffle : chacun ouvre une plaie distincte et applique Saignement.",
-          "description_en": "Deals 72% ATK (+4%/lvl), 2 times. 1 stack of Bleed (max 3). The Gunslinger lands two explosive shots in the same Breath: each opens a distinct wound and applies Bleed.",
+          "description_fr": "Deux frappes de 30% ATQ chacune (+1 point par rang), avec critiques indépendants. Applique un Saignement pendant 3s. Nécessite une ligne de vue.",
+          "description_en": "Two hits of 30% ATK each (+1 percentage point per rank), each able to crit independently. Applies one Bleed stack for 3s. Requires line of sight.",
           "tags": [
             "damage",
             "multi_hit",
@@ -2607,7 +2714,7 @@
               "type": "debuff",
               "stat": "bleed",
               "stacks_to_apply": 1,
-              "duration": 5.0
+              "duration": 3
             }
           ],
           "base_class_id": "archer",
@@ -2621,7 +2728,12 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 5,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_archer_gunslinger_rapid_fire",
@@ -2634,35 +2746,27 @@
           "mana_cost": 30,
           "cooldown": 32.0,
           "vfx_type": "buff_aura",
-          "description_fr": "Augmente les dégâts infligés de 25% pendant 10s, augmente les chances critiques de 15% pendant 10s, applique Tir Double pendant 10s. Le Gunslinger accélère son Souffle jusqu'à la frénésie : il gagne en dégâts infligés, en chance de critique, et peut tirer deux flèches d'affilée.",
-          "description_en": "Increases damage dealt by 25% for 10s, increases crit chance by 15% for 10s, applies Double Shot for 10s. The Gunslinger quickens their Breath to a frenzy: they gain damage dealt, critical chance, and can fire two shots in a row.",
+          "description_fr": "Accorde +10% dégâts infligés et 2 charges de chance critique pendant 8s (+0,3s par rang).",
+          "description_en": "Grants +10% damage dealt and 2 critical-chance stacks for 8s (+0.3s per rank).",
           "tags": [
             "buff",
             "self",
-            "atk_speed",
-            "crit",
-            "double_attack"
+            "damage",
+            "crit"
           ],
           "effects": [
             {
               "type": "buff",
               "stat": "damage_percent_up",
-              "stacks_to_apply": 5,
-              "duration": 10.0,
+              "stacks_to_apply": 2,
+              "duration": 8,
               "duration_per_level": 0.3
             },
             {
               "type": "buff",
               "stat": "crit_chance_up",
-              "stacks_to_apply": 3,
-              "duration": 10.0,
-              "duration_per_level": 0.3
-            },
-            {
-              "type": "buff",
-              "stat": "double_attack_chance",
-              "value": 10,
-              "duration": 10.0,
+              "stacks_to_apply": 2,
+              "duration": 8,
               "duration_per_level": 0.3
             }
           ],
@@ -2673,11 +2777,17 @@
           "targeting": {
             "selection_mode": "self",
             "valid_target_team": "self",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "base_power": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "range": 0
         },
         {
           "id": "skill_archer_gunslinger_suppressing_fire",
@@ -2689,14 +2799,14 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 91,
-          "percent_per_level": 5.1,
+          "scaling_percent": 30,
+          "percent_per_level": 0,
           "mana_cost": 30,
           "cooldown": 20.0,
           "cast_time": 1.5,
           "vfx_type": "projectile",
-          "description_fr": "Inflige 91% ATQ (+5.1%/niv). Réduit l'ATQ de 25% pendant 12s, ralentit les incantations de 20% pendant 12s, applique purge. Le Gunslinger cloue une ligne ennemie sous un barrage : il réduit leur attaque, ralentit leurs incantations et dissipe leurs buffs.",
-          "description_en": "Deals 91% ATK (+5.1%/lvl). Reduces ATK by 25% for 12s, slows casting by 20% for 12s, applies purge. The Gunslinger pins an enemy line under a barrage: it reduces their attack, slows their casting and strips their buffs.",
+          "description_fr": "Inflige 30% ATQ dans la zone, réduit l’ATQ de 10% et applique une charge de ralentissement d’incantation pendant 4s (+0,1s par rang). Dissipe un buff sur la première cible touchée. Ignore la ligne de vue.",
+          "description_en": "Deals 30% ATK in the area, reduces ATK by 10% and applies one cast-speed reduction stack for 4s (+0.1s per rank). Dispels one buff from the first target hit. Ignores line of sight.",
           "tags": [
             "damage",
             "aoe",
@@ -2709,14 +2819,16 @@
             {
               "type": "debuff",
               "stat": "atk_down",
-              "stacks_to_apply": 5,
-              "duration": 12.0
+              "stacks_to_apply": 2,
+              "duration": 4,
+              "duration_per_level": 0.1
             },
             {
               "type": "debuff",
               "stat": "cast_speed_down",
-              "stacks_to_apply": 4,
-              "duration": 12.0
+              "stacks_to_apply": 1,
+              "duration": 4,
+              "duration_per_level": 0.1
             },
             {
               "type": "utility",
@@ -2732,10 +2844,14 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_3"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 4
         },
         {
           "id": "skill_archer_gunslinger_pin_down",
@@ -2747,15 +2863,15 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 182,
-          "percent_per_level": 14.2,
+          "scaling_percent": 45,
+          "percent_per_level": 1.5,
           "mana_cost": 54,
           "cooldown": 40.0,
           "cast_time": 2.5,
           "is_signature": true,
           "vfx_type": "projectile",
-          "description_fr": "Inflige 182% ATQ (+14.2%/niv). Applique Étourdissement pendant 4s, applique Désarmement pendant 4s. Le Gunslinger vide son Souffle en une rafale finale : chaque flèche cloue un ennemi de la ligne, l'étourdit et le désarme.",
-          "description_en": "Deals 182% ATK (+14.2%/lvl). Applies Stun for 4s, applies Disarm for 4s. The Gunslinger empties their Breath in a final burst: each shot pins an enemy of the line, stuns and disarms them.",
+          "description_fr": "Après 2,5s d’incantation, inflige 45% ATQ (+1,5 point par rang) dans la zone. Étourdit et désarme pendant 1,2s avant ténacité. Ignore la ligne de vue.",
+          "description_en": "After a 2.5s cast, deals 45% ATK (+1.5 percentage points per rank) in the area. Stuns and disarms for 1.2s before tenacity. Ignores line of sight.",
           "tags": [
             "damage",
             "aoe",
@@ -2769,13 +2885,13 @@
               "type": "debuff",
               "stat": "stun",
               "value": 1,
-              "duration": 4.0
+              "duration": 1.2
             },
             {
               "type": "debuff",
               "stat": "disarm",
               "value": 1,
-              "duration": 4.0
+              "duration": 1.2
             }
           ],
           "base_class_id": "archer",
@@ -2786,10 +2902,15 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_4"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "range": 4,
+          "rank_scaling_enabled": true
         }
       ],
       "tier3": {

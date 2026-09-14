@@ -71,14 +71,14 @@
       "damage_type": "physical",
       "scaling_stat": "atk",
       "base_power": 0,
-      "scaling_percent": 60,
-      "percent_per_level": 2.7,
+      "scaling_percent": 55,
+      "percent_per_level": 1.6,
       "mana_cost": 6,
-      "mana_cost_per_level": 1,
+      "mana_cost_per_level": 0,
       "cooldown": 4.5,
       "vfx_type": "melee_slash",
-      "description_fr": "Inflige 60% ATQ (+2.7%/niv). Réduit l'esquive de 6% pendant 3s. Le Rogue frappe d'instinct, avant même que l'ennemi ne réagisse.",
-      "description_en": "Deals 60% ATK (+2.7%/lvl). Reduces evasion by 6% for 3s. The Rogue strikes on instinct, before the enemy can react.",
+      "description_fr": "Inflige 55% ATQ (+1,6 point par rang) et applique une charge de réduction d’esquive pendant 3s. Nécessite une ligne de vue.",
+      "description_en": "Deals 55% ATK (+1.6 percentage points per rank) and one evasion reduction stack for 3s. Requires line of sight.",
       "tags": [
         "damage",
         "filler",
@@ -90,8 +90,9 @@
         {
           "type": "debuff",
           "stat": "evasion_down",
-          "stacks_to_apply": 2,
-          "duration": 3.0
+          "stacks_to_apply": 1,
+          "duration": 3,
+          "duration_per_level": 0
         }
       ],
       "base_class_id": "rogue",
@@ -105,7 +106,12 @@
         "bypasses_los": false,
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "single"
-      }
+      },
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "cooldown_per_level": 0,
+      "range": 2,
+      "rank_scaling_enabled": true
     },
     {
       "id": "skill_rogue_throw_dagger",
@@ -117,14 +123,14 @@
       "damage_type": "physical",
       "scaling_stat": "atk",
       "base_power": 0,
-      "scaling_percent": 70,
-      "percent_per_level": 3.9,
+      "scaling_percent": 55,
+      "percent_per_level": 1.6,
       "mana_cost": 18,
-      "mana_cost_per_level": 2,
+      "mana_cost_per_level": 0,
       "cooldown": 8.0,
       "vfx_type": "projectile",
-      "description_fr": "Inflige 70% ATQ (+3.9%/niv). 1 charge de Saignement (max 3). Le Rogue lance sa dague : l'arme porte bien au-delà de sa portée habituelle.",
-      "description_en": "Deals 70% ATK (+3.9%/lvl). 1 stack of Bleed (max 3). The Rogue throws their dagger: the blade carries far beyond their usual reach.",
+      "description_fr": "Inflige 55% ATQ (+1,6 point par rang) et applique un Saignement pendant 3s. Nécessite une ligne de vue.",
+      "description_en": "Deals 55% ATK (+1.6 percentage points per rank) and one Bleed stack for 3s. Requires line of sight.",
       "tags": [
         "damage",
         "ranged",
@@ -135,7 +141,8 @@
           "type": "debuff",
           "stat": "bleed",
           "stacks_to_apply": 1,
-          "duration": 5.0
+          "duration": 3,
+          "duration_per_level": 0
         }
       ],
       "base_class_id": "rogue",
@@ -150,7 +157,11 @@
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "single"
       },
-      "range": 5
+      "range": 5,
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "cooldown_per_level": 0,
+      "rank_scaling_enabled": true
     },
     {
       "id": "skill_rogue_smoke_bomb",
@@ -162,15 +173,15 @@
       "damage_type": "physical",
       "scaling_stat": "atk",
       "base_power": 0,
-      "scaling_percent": 60,
-      "percent_per_level": 3.3,
+      "scaling_percent": 20,
+      "percent_per_level": 0,
       "mana_cost": 27,
-      "mana_cost_per_level": 3,
+      "mana_cost_per_level": 0,
       "cooldown": 24.0,
       "cast_time": 1.0,
       "vfx_type": "debuff_aura",
-      "description_fr": "Aveugle les ennemis pris dedans. Inflige 60% ATQ (+3.3%/niv). Applique Aveuglement pendant 8s. Le Rogue libère une brume épaisse qui dévore la vision.",
-      "description_en": "Blinds the enemies caught in it. Deals 60% ATK (+3.3%/lvl). Applies Blind for 8s. The Rogue releases a thick mist that devours sight.",
+      "description_fr": "Inflige 20% ATQ dans la zone et réduit la précision de 20% pendant 3s (+0,1s par rang). Ignore la ligne de vue.",
+      "description_en": "Deals 20% ATK in the area and reduces accuracy by 20% for 3s (+0.1s per rank). Ignores line of sight.",
       "tags": [
         "damage",
         "debuff",
@@ -181,9 +192,9 @@
         {
           "type": "debuff",
           "stat": "blind",
-          "value": 30,
-          "duration": 8.0,
-          "duration_per_level": 0.133
+          "value": 20,
+          "duration": 3,
+          "duration_per_level": 0.1
         }
       ],
       "base_class_id": "rogue",
@@ -194,11 +205,14 @@
         "selection_mode": "tile",
         "valid_target_team": "enemy",
         "requires_line_of_sight": false,
-        "bypasses_los": false,
+        "bypasses_los": true,
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "rect_2x2"
       },
-      "range": 4
+      "range": 3,
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "cooldown_per_level": 0
     },
     {
       "id": "skill_rogue_mark_target",
@@ -210,13 +224,12 @@
       "damage_type": "none",
       "base_power": 0,
       "mana_cost": 27,
-      "mana_cost_per_level": 3,
+      "mana_cost_per_level": 0,
       "cooldown": 32.0,
-      "cooldown_per_level": -0.5,
-      "mark_ignore_los": true,
+      "cooldown_per_level": 0,
       "vfx_type": "debuff_aura",
-      "description_fr": "Augmente les dégâts subis de 10% pendant 8s, augmente les dégâts subis de 10% pendant 8s. Le Souffle du Rogue désigne la proie : elle est Marquée et Exposée, plus vulnérable à chaque attaque de l'équipe.",
-      "description_en": "Increases damage taken by 10% for 8s, increases damage taken by 10% for 8s. The Rogue's Breath marks the prey: it is Marked and Exposed, more vulnerable to every attack from the team.",
+      "description_fr": "Applique une Marque et une charge d’Exposition pendant 6s (+0,2s par rang). Nécessite une ligne de vue ; la marque ne permet pas de la contourner.",
+      "description_en": "Applies one Mark and one Exposed stack for 6s (+0.2s per rank). Requires line of sight; the mark does not bypass it.",
       "tags": [
         "debuff",
         "mark",
@@ -228,62 +241,15 @@
           "type": "debuff",
           "stat": "marked",
           "stacks_to_apply": 1,
-          "duration": 8.0,
+          "duration": 6,
           "duration_per_level": 0.2
         },
         {
           "type": "debuff",
           "stat": "exposed",
           "stacks_to_apply": 1,
-          "duration": 8.0
-        }
-      ],
-      "base_class_id": "rogue",
-      "subclass_id": "",
-      "tier3_id": "",
-      "source_scope": "BASE",
-      "targeting": {
-        "selection_mode": "entity",
-        "valid_target_team": "enemy",
-        "requires_line_of_sight": false,
-        "bypasses_los": true,
-        "requires_entity_on_target_tile": false,
-        "aoe_pattern_id": "single"
-      }
-    },
-    {
-      "id": "skill_rogue_lacerate",
-      "name_en": "Lacerate",
-      "name_fr": "Lacération",
-      "tier": "standard",
-      "target": "enemy",
-      "pattern": "single",
-      "damage_type": "physical",
-      "scaling_stat": "atk",
-      "base_power": 0,
-      "scaling_percent": 100,
-      "percent_per_level": 5.6,
-      "mana_cost": 24,
-      "mana_cost_per_level": 3,
-      "cooldown": 16.0,
-      "bonus_damage_per_debuff": 8,
-      "max_debuff_bonus": 40,
-      "apply_debuff_before_damage": true,
-      "vfx_type": "melee_slash",
-      "description_fr": "Inflige 100% ATQ (+5.6%/niv). Réduit la DEF de 10 pendant 10s. La lame du Rogue lacère les défenses avant de s'enfoncer.",
-      "description_en": "Deals 100% ATK (+5.6%/lvl). Reduces DEF by 10 for 10s. The Rogue's blade shreds defenses before sinking in.",
-      "tags": [
-        "damage",
-        "melee",
-        "exploit_weakness",
-        "def_down"
-      ],
-      "effects": [
-        {
-          "type": "debuff",
-          "stat": "def_down",
-          "stacks_to_apply": 2,
-          "duration": 10.0
+          "duration": 6,
+          "duration_per_level": 0.2
         }
       ],
       "base_class_id": "rogue",
@@ -297,7 +263,64 @@
         "bypasses_los": false,
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "single"
-      }
+      },
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "percent_per_level": 0,
+      "range": 2
+    },
+    {
+      "id": "skill_rogue_lacerate",
+      "name_en": "Lacerate",
+      "name_fr": "Lacération",
+      "tier": "standard",
+      "target": "enemy",
+      "pattern": "single",
+      "damage_type": "physical",
+      "scaling_stat": "atk",
+      "base_power": 0,
+      "scaling_percent": 75,
+      "percent_per_level": 2.2,
+      "mana_cost": 24,
+      "mana_cost_per_level": 0,
+      "cooldown": 16.0,
+      "bonus_damage_per_debuff": 3,
+      "max_debuff_bonus": 15,
+      "vfx_type": "melee_slash",
+      "description_fr": "Inflige 75% ATQ (+2,2 points par rang), avec +3% par affaiblissement de type debuff déjà présent, maximum +15%. Réduit ensuite l’armure de 5% pendant 6s. Nécessite une ligne de vue.",
+      "description_en": "Deals 75% ATK (+2.2 percentage points per rank), with +3% per existing debuff-type effect, up to +15%. Then reduces armor by 5% for 6s. Requires line of sight.",
+      "tags": [
+        "damage",
+        "melee",
+        "exploit_weakness",
+        "def_down"
+      ],
+      "effects": [
+        {
+          "type": "debuff",
+          "stat": "armor_down",
+          "stacks_to_apply": 1,
+          "duration": 6,
+          "duration_per_level": 0
+        }
+      ],
+      "base_class_id": "rogue",
+      "subclass_id": "",
+      "tier3_id": "",
+      "source_scope": "BASE",
+      "targeting": {
+        "selection_mode": "entity",
+        "valid_target_team": "enemy",
+        "requires_line_of_sight": true,
+        "bypasses_los": false,
+        "requires_entity_on_target_tile": false,
+        "aoe_pattern_id": "single"
+      },
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "cooldown_per_level": 0,
+      "range": 2,
+      "rank_scaling_enabled": true
     }
   ],
   "subclass_skills": {
@@ -315,14 +338,14 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 175,
-          "percent_per_level": 9.7,
+          "scaling_percent": 85,
+          "percent_per_level": 2.5,
           "mana_cost": 30,
           "cooldown": 15.0,
-          "stealth_bonus_damage": 100,
+          "stealth_bonus_damage": 25,
           "vfx_type": "melee_slash",
-          "description_fr": "Inflige 175% ATQ (+9.7%/niv). Le Shadowblade contourne les lignes et plante sa lame dans le dos : le coup est bien plus fort s'il frappe depuis l'Invisibilité.",
-          "description_en": "Deals 175% ATK (+9.7%/lvl). The Shadowblade slips past the lines and buries the blade in the back: the blow is far stronger when struck from Invisibility.",
+          "description_fr": "Inflige 85% ATQ (+2,5 points par rang), avec +25% dégâts si le lanceur est invisible à l’impact. Nécessite une ligne de vue.",
+          "description_en": "Deals 85% ATK (+2.5 percentage points per rank), with +25% damage if the caster is invisible on impact. Requires line of sight.",
           "tags": [
             "damage",
             "melee",
@@ -340,7 +363,13 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 2,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_rogue_shadowblade_vanish",
@@ -353,10 +382,9 @@
           "base_power": 0,
           "mana_cost": 42,
           "cooldown": 36.0,
-          "buff_untargetable": true,
           "vfx_type": "dash_trail",
-          "description_fr": "Applique Invisibilité pendant 8s. Le Shadowblade s'efface totalement : il devient Invisible, et sa prochaine frappe depuis l'Invisibilité tombe deux fois plus fort.",
-          "description_en": "Applies Invisibility for 8s. The Shadowblade fades completely: they become Invisible, and their next strike from Invisibility lands twice as hard.",
+          "description_fr": "Rend invisible pendant 4s (+0,1s par rang), empêchant le ciblage mono-cible. Les zones peuvent toujours toucher ; Révélation annule l’invisibilité.",
+          "description_en": "Grants invisibility for 4s (+0.1s per rank), preventing single-target selection. Areas can still hit; Revealed cancels invisibility.",
           "tags": [
             "invisible",
             "buff",
@@ -366,8 +394,8 @@
             {
               "type": "buff",
               "stat": "invisible",
-              "duration": 8.0,
-              "duration_per_level": 0.2
+              "duration": 4,
+              "duration_per_level": 0.1
             }
           ],
           "base_class_id": "rogue",
@@ -377,11 +405,17 @@
           "targeting": {
             "selection_mode": "self",
             "valid_target_team": "self",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 0
         },
         {
           "id": "skill_rogue_shadowblade_assassinate",
@@ -393,15 +427,15 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 196,
-          "percent_per_level": 15.2,
+          "scaling_percent": 100,
+          "percent_per_level": 3,
           "mana_cost": 42,
           "cooldown": 21.0,
           "execute_threshold": 30,
-          "execute_bonus_percent": 50,
+          "execute_bonus_percent": 25,
           "vfx_type": "melee_slash",
-          "description_fr": "Inflige 196% ATQ (+15.2%/niv). Le Shadowblade achève une proie affaiblie : la lame frappe bien plus fort une cible à faible vie.",
-          "description_en": "Deals 196% ATK (+15.2%/lvl). The Shadowblade finishes a weakened prey: the blade hits a low-health target far harder.",
+          "description_fr": "Inflige 100% ATQ (+3 points par rang), avec +25% dégâts sous 30% PV. Nécessite une ligne de vue.",
+          "description_en": "Deals 100% ATK (+3 percentage points per rank), with +25% damage below 30% HP. Requires line of sight.",
           "tags": [
             "damage",
             "execute",
@@ -418,7 +452,13 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 2,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_rogue_shadowblade_shadow_strike",
@@ -430,14 +470,14 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 147,
-          "percent_per_level": 8.2,
+          "scaling_percent": 70,
+          "percent_per_level": 2,
           "mana_cost": 27,
           "cooldown": 12.0,
-          "armor_pen": 40,
+          "armor_pen": 15,
           "vfx_type": "melee_slash",
-          "description_fr": "Inflige 147% ATQ (+8.2%/niv). La lame du Shadowblade traverse l'armure comme si elle n'existait pas et ignore la protection de la cible.",
-          "description_en": "Deals 147% ATK (+8.2%/lvl). The Shadowblade's blade passes through armor as if it weren't there, ignoring the target's protection.",
+          "description_fr": "Inflige 70% ATQ (+2 points par rang) avec 15 points de pénétration d’armure. Nécessite une ligne de vue.",
+          "description_en": "Deals 70% ATK (+2 percentage points per rank) with 15 armor penetration. Requires line of sight.",
           "tags": [
             "damage",
             "armor_pierce",
@@ -454,7 +494,13 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 2,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_rogue_shadowblade_death_blossom",
@@ -466,16 +512,16 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 231,
-          "percent_per_level": 18.0,
+          "scaling_percent": 45,
+          "percent_per_level": 1.35,
           "mana_cost": 60,
           "cooldown": 26.0,
           "range": 0,
           "_range_note": "Centre sur le lanceur. Sans range explicite, le plancher AOE (max(base_range, 5), room.cpp) laisserait poser la zone a 5 cases, ce que la description contredit. Le moteur prevoit ce cas : un tourbillon centre sur soi pose range 0-1.",
           "cast_time": 2.0,
           "vfx_type": "whirlwind",
-          "description_fr": "Inflige 231% ATQ (+18%/niv). Le Shadowblade libère un tourbillon de lames qui fauche tous les ennemis autour de lui.",
-          "description_en": "Deals 231% ATK (+18%/lvl). The Shadowblade unleashes a whirlwind of blades that cuts down every enemy around them.",
+          "description_fr": "Après 2s d’incantation, inflige 45% ATQ (+1,35 point par rang) aux ennemis autour du lanceur. Ignore la ligne de vue.",
+          "description_en": "After a 2s cast, deals 45% ATK (+1.35 percentage points per rank) to enemies around the caster. Ignores line of sight.",
           "is_signature": true,
           "tags": [
             "damage",
@@ -492,10 +538,15 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "ring_1_center"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "cooldown_per_level": 0,
+          "rank_scaling_enabled": true
         }
       ],
       "tier3": {
@@ -1005,13 +1056,13 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 56,
-          "percent_per_level": 3.1,
+          "scaling_percent": 25,
+          "percent_per_level": 0,
           "mana_cost": 27,
           "cooldown": 12.0,
           "vfx_type": "debuff_aura",
-          "description_fr": "Inflige 56% ATQ (+3.1%/niv). Applique Confusion pendant 4s. Le Trickster brouille l'esprit de l'ennemi : il applique Confusion, et l'ami devient cible.",
-          "description_en": "Deals 56% ATK (+3.1%/lvl). Applies Confusion for 4s. The Trickster scrambles the enemy's mind: it applies Confusion, and friend becomes target.",
+          "description_fr": "Inflige 25% ATQ et applique Confusion pendant 1,5s (+0,05s par rang), avant ténacité. Nécessite une ligne de vue.",
+          "description_en": "Deals 25% ATK and applies Confusion for 1.5s (+0.05s per rank), before tenacity. Requires line of sight.",
           "tags": [
             "damage",
             "debuff",
@@ -1023,7 +1074,7 @@
               "type": "debuff",
               "stat": "confusion",
               "value": 1,
-              "duration": 4.0,
+              "duration": 1.5,
               "duration_per_level": 0.05
             }
           ],
@@ -1038,7 +1089,12 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 2
         },
         {
           "id": "skill_rogue_trickster_mislead",
@@ -1050,14 +1106,14 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 77,
-          "percent_per_level": 4.3,
+          "scaling_percent": 20,
+          "percent_per_level": 0,
           "mana_cost": 30,
           "cooldown": 20.0,
           "cast_time": 1.0,
           "vfx_type": "debuff_aura",
-          "description_fr": "Inflige 77% ATQ (+4.3%/niv). Applique Aveuglement pendant 8s. Le Trickster trompe l'ennemi et l'aveugle : ses coups tombent à côté, dans le vide.",
-          "description_en": "Deals 77% ATK (+4.3%/lvl). Applies Blind for 8s. The Trickster misleads the enemy and blinds them: their blows fall wide, into empty air.",
+          "description_fr": "Inflige 20% ATQ dans la zone et réduit la précision de 20% pendant 3s (+0,1s par rang). Ignore la ligne de vue.",
+          "description_en": "Deals 20% ATK in the area and reduces accuracy by 20% for 3s (+0.1s per rank). Ignores line of sight.",
           "tags": [
             "damage",
             "debuff",
@@ -1069,9 +1125,9 @@
             {
               "type": "debuff",
               "stat": "blind",
-              "value": 25,
-              "duration": 8.0,
-              "duration_per_level": 0.133
+              "value": 20,
+              "duration": 3,
+              "duration_per_level": 0.1
             }
           ],
           "base_class_id": "rogue",
@@ -1082,10 +1138,15 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "row_3"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 3
         },
         {
           "id": "skill_rogue_trickster_disarm",
@@ -1097,13 +1158,13 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 35,
-          "percent_per_level": 2.7,
+          "scaling_percent": 20,
+          "percent_per_level": 0,
           "mana_cost": 33,
           "cooldown": 34.0,
           "vfx_type": "debuff_aura",
-          "description_fr": "Inflige 35% ATQ (+2.7%/niv). Applique Désarmement pendant 5s. Le Trickster sépare l'ennemi de son arme : la cible est Désarmée, mains nues face au combat.",
-          "description_en": "Deals 35% ATK (+2.7%/lvl). Applies Disarm for 5s. The Trickster parts the enemy from their weapon: the target is Disarmed, bare-handed in the fight.",
+          "description_fr": "Inflige 20% ATQ et désarme pendant 1,5s (+0,05s par rang), avant ténacité. Nécessite une ligne de vue.",
+          "description_en": "Deals 20% ATK and disarms for 1.5s (+0.05s per rank), before tenacity. Requires line of sight.",
           "tags": [
             "damage",
             "cc",
@@ -1116,8 +1177,8 @@
               "type": "debuff",
               "stat": "disarm",
               "value": 1,
-              "duration": 5.0,
-              "duration_per_level": 0.083
+              "duration": 1.5,
+              "duration_per_level": 0.05
             }
           ],
           "base_class_id": "rogue",
@@ -1131,7 +1192,12 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 2
         },
         {
           "id": "skill_rogue_trickster_misdirection",
@@ -1145,10 +1211,9 @@
           "mana_cost": 38,
           "cooldown": 32.0,
           "cast_time": 1.0,
-          "redirect_to": "random_enemy",
           "vfx_type": "debuff_aura",
-          "description_fr": "Applique Redirection pendant 8s. Le Trickster retourne l'ennemi contre les siens : la cible frappe ses propres alliés.",
-          "description_en": "Applies Taunt Redirect for 8s. The Trickster turns the enemy against their own: the target strikes their own allies.",
+          "description_fr": "Après 1s d’incantation, détourne les attaques mono-cible de la cible vers le lanceur pendant 2s (+0,1s par rang), avant ténacité. La cible redirigée doit rester valide, à portée et visible.",
+          "description_en": "After a 1s cast, redirects the target’s single-target attacks toward the caster for 2s (+0.1s per rank), before tenacity. The redirected target must remain valid, in range and visible.",
           "tags": [
             "debuff",
             "cc",
@@ -1160,8 +1225,8 @@
               "type": "debuff",
               "stat": "taunt_redirect",
               "value": 1,
-              "duration": 8.0,
-              "duration_per_level": 0.15
+              "duration": 2,
+              "duration_per_level": 0.1
             }
           ],
           "base_class_id": "rogue",
@@ -1175,7 +1240,13 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 2
         },
         {
           "id": "skill_rogue_trickster_grand_swindle",
@@ -1190,8 +1261,8 @@
           "cooldown": 40.0,
           "cast_time": 2.0,
           "vfx_type": "debuff_aura",
-          "description_fr": "Applique Vol de Buff pendant 10s. Le Trickster monte une arnaque parfaite et vole les buffs des ennemis : ce qui les protégeait sert maintenant à les briser.",
-          "description_en": "Applies Buff Steal for 10s. The Trickster pulls off a perfect swindle and steals the enemies' buffs: what protected them now serves to break them.",
+          "description_fr": "Après 2s d’incantation, vole au plus un buff volable à chaque ennemi visible de la zone. Durée reçue plafonnée à 6s (+0,2s par rang) et à la durée restante. Nécessite une ligne de vue.",
+          "description_en": "After a 2s cast, steals up to one stealable buff from each visible enemy in the area. Received duration is capped at 6s (+0.2s per rank) and the remaining duration. Requires line of sight.",
           "is_signature": true,
           "tags": [
             "debuff",
@@ -1204,8 +1275,10 @@
             {
               "type": "utility",
               "stat": "steal_buff",
-              "value": 2,
-              "duration": 10.0
+              "value": 1,
+              "target": "enemies",
+              "duration": 6,
+              "duration_per_level": 0.2
             }
           ],
           "base_class_id": "rogue",
@@ -1215,12 +1288,17 @@
           "targeting": {
             "selection_mode": "tile",
             "valid_target_team": "enemy",
-            "requires_line_of_sight": false,
+            "requires_line_of_sight": true,
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "rect_3x3"
           },
-          "mana_cost_per_level": 0
+          "mana_cost_per_level": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "percent_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 3
         }
       ],
       "tier3": {
@@ -1744,16 +1822,13 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 72,
-          "percent_per_level": 4.0,
+          "scaling_percent": 50,
+          "percent_per_level": 1.5,
           "mana_cost": 21,
           "cooldown": 8.0,
-          "disarm_chance": 15,
-          "disarm_chance_per_level": 1,
-          "disarm_duration": 1.5,
           "vfx_type": "melee_slash",
-          "description_fr": "Inflige 72% ATQ (+4%/niv). 1 charge de Saignement (max 3). Le Corsaire porte un coup de coutelas brut qui ouvre la chair (Saignement) et peut faire tomber l'arme adverse.",
-          "description_en": "Deals 72% ATK (+4%/lvl). 1 stack of Bleed (max 3). The Corsair lands a rough cutlass blow that opens the flesh (Bleed) and may knock the enemy's weapon loose.",
+          "description_fr": "Inflige 50% ATQ (+1,5 point par rang), applique un Saignement pendant 3s et désarme pendant 1s avant résistances. Nécessite une ligne de vue.",
+          "description_en": "Deals 50% ATK (+1.5 percentage points per rank), applies one Bleed stack for 3s and disarms for 1s before resistance. Requires line of sight.",
           "tags": [
             "damage",
             "bleed",
@@ -1765,7 +1840,15 @@
               "type": "debuff",
               "stat": "bleed",
               "stacks_to_apply": 1,
-              "duration": 5.0
+              "duration": 3,
+              "duration_per_level": 0
+            },
+            {
+              "type": "debuff",
+              "stat": "disarm",
+              "value": 1,
+              "duration": 1,
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "rogue",
@@ -1779,7 +1862,13 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 2,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_rogue_corsair_pistol_shot",
@@ -1791,16 +1880,13 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 133,
-          "percent_per_level": 7.4,
+          "scaling_percent": 35,
+          "percent_per_level": 1,
           "mana_cost": 24,
           "cooldown": 12.0,
-          "stun_chance": 25,
-          "stun_chance_per_level": 1.5,
-          "stun_duration": 1.5,
           "vfx_type": "projectile",
-          "description_fr": "Inflige 133% ATQ (+7.4%/niv). Le Corsaire tire une balle qui ignore boucliers et lignes de tireurs, et peut laisser la cible étourdie.",
-          "description_en": "Deals 133% ATK (+7.4%/lvl). The Corsair fires a bullet that ignores shields and lines of shooters, and may leave the target stunned.",
+          "description_fr": "Inflige 35% ATQ (+1 point par rang) et étourdit pendant 0,5s avant résistances. Ignore la ligne de vue.",
+          "description_en": "Deals 35% ATK (+1 percentage point per rank) and stuns for 0.5s before resistance. Ignores line of sight.",
           "tags": [
             "damage",
             "ranged",
@@ -1819,7 +1905,21 @@
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
           },
-          "range": 5
+          "range": 5,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "cooldown_per_level": 0,
+          "rank_scaling_enabled": true,
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "stun",
+              "value": 1,
+              "duration": 0.5,
+              "duration_per_level": 0
+            }
+          ]
         },
         {
           "id": "skill_rogue_corsair_dirty_trick",
@@ -1831,13 +1931,13 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 70,
-          "percent_per_level": 3.9,
+          "scaling_percent": 35,
+          "percent_per_level": 0,
           "mana_cost": 18,
           "cooldown": 16.0,
           "vfx_type": "debuff_aura",
-          "description_fr": "Inflige 70% ATQ (+3.9%/niv). Applique Aveuglement pendant 6s. Le Corsaire jette du sable dans les yeux de l'ennemi et l'aveugle.",
-          "description_en": "Deals 70% ATK (+3.9%/lvl). Applies Blind for 6s. The Corsair throws sand in the enemy's eyes and blinds them.",
+          "description_fr": "Inflige 35% ATQ et réduit la précision de 20% pendant 3s (+0,1s par rang). Nécessite une ligne de vue.",
+          "description_en": "Deals 35% ATK and reduces accuracy by 20% for 3s (+0.1s per rank). Requires line of sight.",
           "tags": [
             "damage",
             "debuff",
@@ -1848,8 +1948,9 @@
             {
               "type": "debuff",
               "stat": "blind",
-              "value": 25,
-              "duration": 6.0
+              "value": 20,
+              "duration": 3,
+              "duration_per_level": 0.1
             }
           ],
           "base_class_id": "rogue",
@@ -1863,7 +1964,12 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 2
         },
         {
           "id": "skill_rogue_corsair_plunder",
@@ -1875,13 +1981,13 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 84,
-          "percent_per_level": 4.7,
+          "scaling_percent": 50,
+          "percent_per_level": 1.5,
           "mana_cost": 30,
           "cooldown": 18.0,
           "vfx_type": "life_steal",
-          "description_fr": "Inflige 84% ATQ (+4.7%/niv). Applique Vol de Souffle, applique Vol de Buff pendant 30s. Le Corsaire pille l'ennemi : il lui vole son Souffle, et parfois un de ses buffs au passage.",
-          "description_en": "Deals 84% ATK (+4.7%/lvl). Applies Breath Steal, applies Buff Steal for 30s. The Corsair plunders the enemy: it steals their Breath, and sometimes one of their buffs along the way.",
+          "description_fr": "Inflige 50% ATQ (+1,5 point par rang), vole 8% du Souffle actuel et au plus un buff volable pour 6s maximum, sans prolonger sa durée restante. Nécessite une ligne de vue.",
+          "description_en": "Deals 50% ATK (+1.5 percentage points per rank), steals 8% of current Breath and up to one stealable buff for at most 6s, without extending its remaining duration. Requires line of sight.",
           "tags": [
             "damage",
             "mana_steal",
@@ -1892,13 +1998,15 @@
             {
               "type": "utility",
               "stat": "mana_steal",
-              "value": 15
+              "value": 8,
+              "duration_per_level": 0
             },
             {
               "type": "utility",
               "stat": "steal_buff",
               "value": 1,
-              "duration": 30
+              "duration": 6,
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "rogue",
@@ -1912,7 +2020,13 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 2,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_rogue_corsair_raid",
@@ -1924,14 +2038,14 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 182,
-          "percent_per_level": 14.2,
+          "scaling_percent": 35,
+          "percent_per_level": 1,
           "mana_cost": 57,
           "cooldown": 36.0,
           "cast_time": 2.0,
           "vfx_type": "aoe_pulse",
-          "description_fr": "Inflige 182% ATQ (+14.2%/niv). Applique Aveuglement pendant 6s, applique Vol de Souffle, applique Vol de Buff. Le Corsaire lance un assaut total : il vole le Souffle et les buffs des ennemis et laisse le groupe aveuglé.",
-          "description_en": "Deals 182% ATK (+14.2%/lvl). Applies Blind for 6s, applies Breath Steal, applies Buff Steal. The Corsair launches an all-out raid: it steals the enemies' Breath and buffs and leaves the group blinded.",
+          "description_fr": "Après 2s d’incantation, inflige 35% ATQ (+1 point par rang), réduit la précision de 20% pendant 2s et vole au plus un buff par ennemi touché, pour 4s maximum. Vole 5% du Souffle actuel de la première cible touchée. Ignore la ligne de vue.",
+          "description_en": "After a 2s cast, deals 35% ATK (+1 percentage point per rank), reduces accuracy by 20% for 2s and steals up to one buff per enemy hit for at most 4s. Steals 5% of the first target’s current Breath. Ignores line of sight.",
           "is_signature": true,
           "tags": [
             "damage",
@@ -1946,18 +2060,23 @@
             {
               "type": "debuff",
               "stat": "blind",
-              "value": 75,
-              "duration": 6.0
+              "value": 20,
+              "duration": 2,
+              "duration_per_level": 0
             },
             {
               "type": "utility",
               "stat": "mana_steal",
-              "value": 10
+              "value": 5,
+              "duration_per_level": 0
             },
             {
               "type": "utility",
               "stat": "steal_buff",
-              "value": 99
+              "value": 1,
+              "target": "enemies",
+              "duration": 4,
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "rogue",
@@ -1968,10 +2087,16 @@
             "selection_mode": "tile",
             "valid_target_team": "enemy",
             "requires_line_of_sight": false,
-            "bypasses_los": false,
+            "bypasses_los": true,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "rect_3x3"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 3,
+          "rank_scaling_enabled": true
         }
       ],
       "tier3": {
@@ -2464,14 +2589,14 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 112,
-          "percent_per_level": 6.2,
+          "scaling_percent": 65,
+          "percent_per_level": 2,
           "mana_cost": 18,
           "cooldown": 10.0,
-          "bonus_damage_vs_challenged": 20,
+          "bonus_damage_vs_challenged": 10,
           "vfx_type": "melee_slash",
-          "description_fr": "Inflige 112% ATQ (+6.2%/niv). Applique Provoque pendant 10s. Le Duelist avance et Défie la cible : à partir de cet instant, elle n'a plus que lui en face d'elle.",
-          "description_en": "Deals 112% ATK (+6.2%/lvl). Applies Challenged for 10s. The Duelist steps in and Challenges the target: from this moment, they face no one but him.",
+          "description_fr": "Inflige 65% ATQ (+2 points par rang), avec +10% dégâts si la cible porte déjà votre Défi. Applique ensuite Défi pendant 2s avant ténacité. Nécessite une ligne de vue.",
+          "description_en": "Deals 65% ATK (+2 percentage points per rank), with +10% damage if the target already carries your Challenge. Then applies Challenge for 2s before tenacity. Requires line of sight.",
           "tags": [
             "damage",
             "melee",
@@ -2482,7 +2607,8 @@
             {
               "type": "debuff",
               "stat": "challenged",
-              "duration": 10.0
+              "duration": 2,
+              "duration_per_level": 0
             }
           ],
           "base_class_id": "rogue",
@@ -2496,7 +2622,13 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 2,
+          "rank_scaling_enabled": true
         },
         {
           "id": "skill_rogue_duelist_en_garde",
@@ -2509,11 +2641,9 @@
           "base_power": 0,
           "mana_cost": 27,
           "cooldown": 28.0,
-          "counter_chance": 30,
-          "counter_chance_vs_challenged": 50,
           "vfx_type": "buff_aura",
-          "description_fr": "Applique En Garde pendant 12s. Le Duelist adopte la posture En Garde : chaque coup reçu déclenche une riposte, et les cibles Défiées la paient double.",
-          "description_en": "Applies En Garde Stance for 12s. The Duelist takes the En Garde stance: every blow taken triggers a riposte, and Challenged targets pay double for it.",
+          "description_fr": "Accorde 15 points de parade pendant 6s (+0,2s par rang). Chaque parade déclenche un contre physique de 50% ATQ, sans critique ni esquive, réduit par l’armure et les boucliers.",
+          "description_en": "Grants 15 parry points for 6s (+0.2s per rank). Each parry triggers a physical counter for 50% ATK, without crit or evasion, reduced by armor and shields.",
           "tags": [
             "buff",
             "stance",
@@ -2524,8 +2654,9 @@
             {
               "type": "buff",
               "stat": "en_garde_stance",
-              "duration": 12.0,
-              "duration_per_level": 0.35
+              "duration": 6,
+              "value": 15,
+              "duration_per_level": 0.2
             }
           ],
           "base_class_id": "rogue",
@@ -2535,11 +2666,17 @@
           "targeting": {
             "selection_mode": "self",
             "valid_target_team": "self",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 0
         },
         {
           "id": "skill_rogue_duelist_riposte",
@@ -2552,12 +2689,9 @@
           "base_power": 0,
           "mana_cost": 33,
           "cooldown": 32.0,
-          "reflects_damage": 100,
-          "reflects_debuffs": true,
-          "reflect_bonus_vs_challenged": 50,
           "vfx_type": "shield",
-          "description_fr": "Applique Riposte pendant 6s. Le Duelist suspend son Souffle : pendant un temps, tout ce qui le frappe lui revient, dégâts comme malédictions, surtout venant d'une cible Défiée.",
-          "description_en": "Applies Riposte Active for 6s. The Duelist holds their Breath: for a time, everything that strikes them is returned, damage and curses alike, especially from a Challenged target.",
+          "description_fr": "Pendant 3s (+0,1s par rang), renvoie 50% des dégâts effectivement reçus du prochain impact qui blesse, puis se consomme. Ne renvoie pas les affaiblissements.",
+          "description_en": "For 3s (+0.1s per rank), reflects 50% of actual damage received from the next damaging hit, then expires. Does not reflect debuffs.",
           "tags": [
             "buff",
             "reflect",
@@ -2568,8 +2702,9 @@
             {
               "type": "buff",
               "stat": "riposte_active",
-              "duration": 6.0,
-              "duration_per_level": 0.15
+              "duration": 3,
+              "value": 50,
+              "duration_per_level": 0.1
             }
           ],
           "base_class_id": "rogue",
@@ -2579,11 +2714,17 @@
           "targeting": {
             "selection_mode": "self",
             "valid_target_team": "self",
-            "requires_line_of_sight": true,
+            "requires_line_of_sight": false,
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "percent_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 0
         },
         {
           "id": "skill_rogue_duelist_expose_weakness",
@@ -2595,13 +2736,13 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 70,
-          "percent_per_level": 3.9,
+          "scaling_percent": 40,
+          "percent_per_level": 0,
           "mana_cost": 24,
           "cooldown": 20.0,
           "vfx_type": "debuff_aura",
-          "description_fr": "Inflige 70% ATQ (+3.9%/niv). Augmente les dégâts subis de 30% pendant 12s, réduit la DEF de 25 pendant 12s. Le Duelist lit les failles de la garde adverse : la cible devient Exposée et voit sa défense réduite.",
-          "description_en": "Deals 70% ATK (+3.9%/lvl). Increases damage taken by 30% for 12s, reduces DEF by 25 for 12s. The Duelist reads the flaws in the enemy's guard: the target becomes Exposed and their defense is reduced.",
+          "description_fr": "Inflige 40% ATQ, applique une charge d’Exposition et réduit l’armure de 10% pendant 6s (+0,2s par rang). Nécessite une ligne de vue.",
+          "description_en": "Deals 40% ATK, applies one Exposed stack and reduces armor by 10% for 6s (+0.2s per rank). Requires line of sight.",
           "tags": [
             "damage",
             "debuff",
@@ -2612,15 +2753,16 @@
             {
               "type": "debuff",
               "stat": "exposed",
-              "stacks_to_apply": 3,
-              "duration": 12.0,
-              "duration_per_level": 0.35
+              "stacks_to_apply": 1,
+              "duration": 6,
+              "duration_per_level": 0.2
             },
             {
               "type": "debuff",
-              "stat": "def_down",
-              "stacks_to_apply": 5,
-              "duration": 12.0
+              "stat": "armor_down",
+              "stacks_to_apply": 2,
+              "duration": 6,
+              "duration_per_level": 0.2
             }
           ],
           "base_class_id": "rogue",
@@ -2634,7 +2776,12 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 2
         },
         {
           "id": "skill_rogue_duelist_coup_de_grace",
@@ -2646,16 +2793,16 @@
           "damage_type": "physical",
           "scaling_stat": "atk",
           "base_power": 0,
-          "scaling_percent": 224,
-          "percent_per_level": 17.4,
+          "scaling_percent": 95,
+          "percent_per_level": 2.8,
           "mana_cost": 54,
           "cooldown": 27.0,
           "cast_time": 1.5,
-          "damage_mult_if_challenged": 1.5,
-          "damage_mult_if_challenged_and_exposed": 2.0,
+          "damage_mult_if_challenged": 1.15,
+          "damage_mult_if_challenged_and_exposed": 1.3,
           "vfx_type": "melee_slash",
-          "description_fr": "Inflige 224% ATQ (+17.4%/niv). Le Duelist porte une frappe parfaite : elle tombe plus lourd sur une cible Défiée, et devient sans appel sur une cible Défiée et Exposée.",
-          "description_en": "Deals 224% ATK (+17.4%/lvl). The Duelist lands a perfect strike: it falls harder on a Challenged target, and becomes final on one both Challenged and Exposed.",
+          "description_fr": "Après 1,5s d’incantation, inflige 95% ATQ (+2,8 points par rang). Bonus +15% contre votre Défi, porté à +30% si la cible est aussi Exposée ; les deux bonus ne se cumulent pas. Nécessite une ligne de vue.",
+          "description_en": "After a 1.5s cast, deals 95% ATK (+2.8 percentage points per rank). +15% against your Challenge, increased to +30% if also Exposed; these bonuses do not stack. Requires line of sight.",
           "is_signature": true,
           "tags": [
             "damage",
@@ -2674,7 +2821,13 @@
             "bypasses_los": false,
             "requires_entity_on_target_tile": false,
             "aoe_pattern_id": "single"
-          }
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "mana_cost_per_level": 0,
+          "cooldown_per_level": 0,
+          "range": 2,
+          "rank_scaling_enabled": true
         }
       ],
       "tier3": {
