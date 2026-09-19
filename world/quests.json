@@ -2311,7 +2311,7 @@
       "type": "main",
       "zone": "village",
       "min_level": 1,
-      "auto_accept_on_tournament": true,
+      "auto_accept_on_tournament": false,
       "flags": [
         "tournament"
       ],
@@ -2363,7 +2363,7 @@
       "rewards": {
         "gold": 200
       },
-      "_note": "TOURNOI UNIQUEMENT. auto_accept_on_tournament:true = a auto-accepter a la CREATION d'un perso is_tournament (comme tournament_level=20 est deja pose cote character service). Le champ N'EXISTE PAS ENCORE cote back : c'est un index a ajouter dans quest_service (cf q_soren_sous_classe / auto_accept_on_level pour le modele). Cible le Greffier (npc_tournament_registrar), DEJA enregistre client-side dans MAITRES_DES_VOIES (main.gd:3913) donc il declenche le meme flux de choix de sous-classe que Soren. NE PAS greffer sur la chaine q_tut_* (supprimee)."
+      "_note": "TOURNOI UNIQUEMENT, ET PLUS DISTRIBUEE. Le drapeau est passe a false le 2026-09-19. Elle etait devenue une consigne sans acte : son objectif vise le Greffier (npc_tournament_registrar), que le client transforme en raccourci de choix de sous-classe et que handle_class_path_chosen referme aussitot. Restaient une fleche au-dessus d'un PNJ et une modale pour une etape deja franchie. quest_service.cpp portait un filtre EN DUR pour la meme raison, pose la veille du tournoi pour eviter un bump de pin ; la data redevient la source de verite. Le champ auto_accept_on_tournament EXISTE et fonctionne cote back (quest_service.cpp, index construit au chargement) -- l'ancienne note disait le contraire et m'a coute une heure."
     },
     {
       "id": "q_tournoi_stats_skills",
@@ -2442,7 +2442,7 @@
       "rewards": {
         "gold": 150
       },
-      "_note": "TOURNOI UNIQUEMENT. auto_accept_on_tournament:true = auto-accept a la creation d'un perso is_tournament. Deux objectifs paralleles (spend_stat_points x3, spend_skill_point x1), fleches vers ui_stats_button / ui_skills_button (deja au registre client UITargetRegistry). Pas d'objectif 'retour PNJ' (contrairement au tuto q_tut_intro_04) : la quete se termine quand les points sont depenses. NE PAS greffer sur la chaine q_tut_* (supprimee)."
+      "_note": "TOURNOI UNIQUEMENT. SEULE quete d'onboarding de tournoi reellement distribuee. auto_accept_on_tournament EXISTE et fonctionne cote back (quest_service.cpp, index construit au chargement) : elle est auto-acceptee au premier zone_changed d'un perso is_tournament. Deux objectifs paralleles (spend_stat_points x3, spend_skill_point x1), fleches vers ui_stats_button / ui_skills_button (deja au registre client UITargetRegistry). Pas d'objectif 'retour PNJ' : la quete se termine quand les points sont depenses. NE PAS greffer sur la chaine q_tut_* (supprimee)."
     },
     {
       "id": "q_keystone_premiere",
