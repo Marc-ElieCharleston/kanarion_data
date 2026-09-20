@@ -173,9 +173,19 @@ def build_single_embed(patch: dict, lang: str) -> dict:
     date = format_date(patch.get("date", ""), lang)
     groups = group_entries(patch.get("entries", []), lang)
 
+    lead = (patch.get("lead_fr") or patch.get("lead_en") or "") if lang == "fr" \
+        else (patch.get("lead_en") or patch.get("lead_fr") or "")
+
     lines: list[str] = []
     if title:
         lines.append(f"*{title}*")
+        lines.append("")
+    # Chapeau optionnel : une ou deux phrases pour les versions dont le
+    # changement principal merite d'etre explique avant la liste. Absent de la
+    # quasi-totalite des versions, et c'est voulu : une liste a puces se lit
+    # mieux qu'un paragraphe quand il n'y a rien de marquant a dire.
+    if lead:
+        lines.append(lead)
         lines.append("")
     for section in order:
         items = groups.get(section)
