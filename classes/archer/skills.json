@@ -40,19 +40,26 @@
     "movement": {
       "type": "self_move",
       "mode": "free",
-      "range": 3
+      "range": 2
     },
-    "_note_movement": "2026-09-06 : mode `flee` -> `free`, portee 2 -> 3. En `flee` le SERVEUR calculait la case d'arrivee et ignorait target_x/y : le client ne pouvait afficher aucun apercu sans mentir, et le sort partait au clic sans que le joueur choisisse. En `free` le serveur lit target_x/y (room.cpp SELF_MOVE, branche FREE), donc le picker de cases deja utilise par les autres deplacements s'arme tout seul cote client -- premier clic : cases allumees, second : saut. Aucune ligne de code changee des deux cotes, les deux chemins existaient.",
     "vfx_type": "dash_trail",
-    "description_fr": "L'archer bondit en arriere jusqu'a trois cases, vers l'endroit de son choix, pour retablir la distance.",
-    "description_en": "The archer leaps back up to three cells, to a spot of their choosing, to restore distance.",
+    "description_fr": "Se déplace sur une case libre à 2 cases maximum, sans ligne de vue.",
+    "description_en": "Moves to a free tile within 2 tiles, ignoring line of sight.",
     "tags": [
       "movement",
       "kite",
       "signature"
     ],
     "max_level": 1,
-    "source_scope": "BASE"
+    "source_scope": "BASE",
+    "range": 2,
+    "targeting": {
+      "selection_mode": "tile",
+      "valid_target_team": "self",
+      "requires_entity_on_target_tile": false,
+      "requires_line_of_sight": false,
+      "bypasses_los": true
+    }
   },
   "base_skills": [
     {
