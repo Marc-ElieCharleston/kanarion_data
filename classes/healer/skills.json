@@ -1112,6 +1112,61 @@
             }
           ]
         }
+      },
+      "signature_movement": {
+        "id": "skill_healer_lifewarden_maneuver",
+        "name_fr": "Pas de renouveau",
+        "name_en": "Renewing Step",
+        "tier": "signature",
+        "target": "self",
+        "pattern": "single",
+        "damage_type": "none",
+        "base_power": 0,
+        "scaling_percent": 0,
+        "mana_cost": 0,
+        "mana_cost_per_level": 0,
+        "cooldown": 25.0,
+        "cast_time": 0,
+        "consumes_gcd": false,
+        "unlock_at_level": 20,
+        "max_level": 1,
+        "range": 1,
+        "movement": {
+          "type": "self_move",
+          "range": 1,
+          "mode": "free",
+          "arrival_radius": 1,
+          "arrival_targets": "allies"
+        },
+        "description_fr": "Déplace-toi d’une case sans ligne de vue. À l’arrivée, toi et les alliés adjacents récupérez 5% de ta MAG par tick pendant 4s.",
+        "description_en": "Move one tile ignoring line of sight. On arrival, you and adjacent allies recover 5% of your MAG per tick for 4s.",
+        "tags": [
+          "movement",
+          "maneuver",
+          "signature"
+        ],
+        "effects": [
+          {
+            "type": "buff",
+            "stat": "heal_over_time_mag",
+            "value": 0,
+            "pct": 5,
+            "duration": 4,
+            "target": "allies"
+          }
+        ],
+        "base_class_id": "healer",
+        "subclass_id": "lifewarden",
+        "source_scope": "SUBCLASS",
+        "icon_skill_id": "skill_healer_heal",
+        "vfx_type": "buff_aura",
+        "targeting": {
+          "selection_mode": "tile",
+          "valid_target_team": "self",
+          "requires_line_of_sight": false,
+          "bypasses_los": true,
+          "requires_entity_on_target_tile": false
+        }
       }
     },
     "lightbringer": {
@@ -1860,6 +1915,57 @@
             }
           ]
         }
+      },
+      "signature_movement": {
+        "id": "skill_healer_lightbringer_maneuver",
+        "name_fr": "Relève lumineuse",
+        "name_en": "Radiant Exchange",
+        "tier": "signature",
+        "target": "ally",
+        "pattern": "single",
+        "damage_type": "none",
+        "base_power": 0,
+        "scaling_percent": 0,
+        "mana_cost": 0,
+        "mana_cost_per_level": 0,
+        "cooldown": 25.0,
+        "cast_time": 0,
+        "consumes_gcd": false,
+        "unlock_at_level": 20,
+        "max_level": 1,
+        "range": 2,
+        "movement": {
+          "type": "swap",
+          "range": 2
+        },
+        "description_fr": "Échange ta position avec un allié à 2 cases maximum, sans ligne de vue, et dissipe un de ses effets négatifs.",
+        "description_en": "Swap positions with an ally within 2 tiles, ignoring line of sight, and cleanse one of their debuffs.",
+        "tags": [
+          "movement",
+          "maneuver",
+          "signature"
+        ],
+        "effects": [
+          {
+            "type": "utility",
+            "stat": "cleanse",
+            "value": 1,
+            "target": "allies"
+          }
+        ],
+        "base_class_id": "healer",
+        "subclass_id": "lightbringer",
+        "source_scope": "SUBCLASS",
+        "icon_skill_id": "skill_healer_purify",
+        "vfx_type": "buff_aura",
+        "targeting": {
+          "selection_mode": "entity",
+          "valid_target_team": "ally",
+          "requires_line_of_sight": false,
+          "bypasses_los": true,
+          "requires_entity_on_target_tile": true
+        },
+        "exclude_caster": true
       }
     },
     "cantor": {
@@ -1989,7 +2095,8 @@
               "stat": "cast_speed_up",
               "stacks_to_apply": 2,
               "duration": 6,
-              "duration_per_level": 0.2
+              "duration_per_level": 0.2,
+              "strongest_only": true
             }
           ],
           "base_class_id": "healer",
@@ -2659,6 +2766,61 @@
               "percent_per_level": 19.4
             }
           ]
+        }
+      },
+      "signature_movement": {
+        "id": "skill_healer_cantor_maneuver",
+        "name_fr": "Pas cadencé",
+        "name_en": "Rhythmic Step",
+        "tier": "signature",
+        "target": "self",
+        "pattern": "single",
+        "damage_type": "none",
+        "base_power": 0,
+        "scaling_percent": 0,
+        "mana_cost": 0,
+        "mana_cost_per_level": 0,
+        "cooldown": 25.0,
+        "cast_time": 0,
+        "consumes_gcd": false,
+        "unlock_at_level": 20,
+        "max_level": 1,
+        "range": 1,
+        "movement": {
+          "type": "self_move",
+          "range": 1,
+          "mode": "free",
+          "arrival_radius": 1,
+          "arrival_targets": "allies"
+        },
+        "description_fr": "Déplace-toi d’une case sans ligne de vue. Toi et les alliés adjacents gagnez 10% de vitesse d’incantation pendant 4s. Ne se cumule pas avec Hymne de Hâte.",
+        "description_en": "Move one tile ignoring line of sight. You and adjacent allies gain 10% casting speed for 4s. Does not stack with Hymn of Haste.",
+        "tags": [
+          "movement",
+          "maneuver",
+          "signature"
+        ],
+        "effects": [
+          {
+            "type": "buff",
+            "stat": "cast_speed_up",
+            "stacks_to_apply": 2,
+            "duration": 4,
+            "target": "allies",
+            "strongest_only": true
+          }
+        ],
+        "base_class_id": "healer",
+        "subclass_id": "cantor",
+        "source_scope": "SUBCLASS",
+        "icon_skill_id": "skill_healer_cantor_hymn_of_haste",
+        "vfx_type": "buff_aura",
+        "targeting": {
+          "selection_mode": "tile",
+          "valid_target_team": "self",
+          "requires_line_of_sight": false,
+          "bypasses_los": true,
+          "requires_entity_on_target_tile": false
         }
       }
     },
@@ -3453,6 +3615,59 @@
               "percent_per_level": 15.6
             }
           ]
+        }
+      },
+      "signature_movement": {
+        "id": "skill_healer_martyr_maneuver",
+        "name_fr": "Ancrage",
+        "name_en": "Anchoring Step",
+        "tier": "signature",
+        "target": "self",
+        "pattern": "single",
+        "damage_type": "none",
+        "base_power": 0,
+        "scaling_percent": 0,
+        "mana_cost": 0,
+        "mana_cost_per_level": 0,
+        "cooldown": 25.0,
+        "cast_time": 0,
+        "consumes_gcd": false,
+        "unlock_at_level": 20,
+        "max_level": 1,
+        "range": 1,
+        "movement": {
+          "type": "self_move",
+          "range": 1,
+          "mode": "free",
+          "arrival_radius": 1,
+          "arrival_targets": "enemies"
+        },
+        "description_fr": "Déplace-toi d’une case avec ligne de vue. À l’arrivée, enracine les ennemis adjacents pendant 1s.",
+        "description_en": "Move one tile with line of sight. On arrival, root adjacent enemies for 1s.",
+        "tags": [
+          "movement",
+          "maneuver",
+          "signature"
+        ],
+        "effects": [
+          {
+            "type": "debuff",
+            "stat": "root",
+            "duration": 1,
+            "target": "enemies"
+          }
+        ],
+        "base_class_id": "healer",
+        "subclass_id": "martyr",
+        "source_scope": "SUBCLASS",
+        "icon_skill_id": "skill_healer_martyr_sacred_pact",
+        "vfx_type": "buff_aura",
+        "targeting": {
+          "selection_mode": "tile",
+          "valid_target_team": "self",
+          "requires_line_of_sight": true,
+          "bypasses_los": false,
+          "requires_entity_on_target_tile": false
         }
       }
     }
