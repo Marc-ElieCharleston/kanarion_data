@@ -168,6 +168,12 @@
           "unit": "flat",
           "max_stacks": 5,
           "total_max": "-25 flat"
+        },
+        "parry_up": {
+          "value_per_stack": 5,
+          "unit": "percent",
+          "max_stacks": 3,
+          "total_max": "+15%"
         }
       },
       "tempo": {
@@ -229,6 +235,12 @@
           "max_stacks": 10,
           "total_max": "+20% maxMP/s",
           "_note": "scaling=max_mp, tick=1.0s — symetrique de heal_over_time pour le Souffle (familier invigorating_presence). Max_stacks aligne avec definition existante."
+        },
+        "heal_received_up": {
+          "value_per_stack": 10,
+          "unit": "percent",
+          "max_stacks": 3,
+          "total_max": "+30%"
         }
       },
       "special": {
@@ -1264,6 +1276,40 @@
         },
         "value_per_stack": 10,
         "_audit_note": "2026-08-06: l'effet se contredisait sur trois points. max_stacks valait 5 dans la definition contre 3 dans la grille canonique, et stat_mods valait 0.05 contre value_per_stack 10 et grille 10. Le loader lit stat_mods en dernier, donc le runtime appliquait 5%/stack la ou l'UI affichait 10%/stack depuis la grille. Aligne sur la grille (10%/stack, max 3), ce que les descriptions de skills annoncent deja (Expose Weakness 3 charges = +30%)."
+      },
+      "parry_up": {
+        "name_fr": "Parade +",
+        "name_en": "Parry Up",
+        "polarity": "buff",
+        "stacking": "stackable",
+        "impl": "done",
+        "max_stacks": 3,
+        "value_per_stack": 5,
+        "description_fr": "Parade + : +5% par charge.",
+        "description_en": "Parry Up: +5% per stack.",
+        "stat_mods": {
+          "parry_percent": 0.05
+        },
+        "runtime": {
+          "vfx_type": "stance_glow"
+        }
+      },
+      "heal_received_up": {
+        "name_fr": "Soins reçus +",
+        "name_en": "Healing Received Up",
+        "polarity": "buff",
+        "stacking": "stackable",
+        "impl": "done",
+        "max_stacks": 3,
+        "value_per_stack": 10,
+        "description_fr": "Soins reçus + : +10% par charge.",
+        "description_en": "Healing Received Up: +10% per stack.",
+        "stat_mods": {
+          "heal_received_percent": 0.1
+        },
+        "runtime": {
+          "vfx_type": "heal_aura"
+        }
       }
     },
     "tempo": {
