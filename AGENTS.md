@@ -37,7 +37,7 @@ Validation happens at three levels:
 
 - **`_meta/`** — Version info (`version.json`), roadmap (`ROADMAP.md`), ideas backlog, 15 design suggestions in `suggestions/`
 - **`classes/`** — 6 base classes (warrior, mage, healer, archer, rogue, artisan), each with `skills.json` and `passives.json`. Also `common_passives.json` (10 universal passives) and `_classes_index.json` (6 classes x 4 subclasses x 2 tier3 = 48 tier3 specs)
-- **`combat/`** — Targeting system (`targeting.json`: 4x4 grid), LoS mechanics, ability ideas
+- **`combat/`** — Targeting system (`targeting.json`), LoS mechanics, ability ideas. Le plateau courant est un **10x6** ; les grilles nommees de `targeting.json` sont ecrites a la main et toute grille absente retombe sur les dimensions de `config/game.json`
 - **`config/`** — Combat formulas (`combat.json`), game constants (`game.json`), monster AI (`monster_ai.json`), skill system (`skill_system.json`), skill templates (`skill_templates.json`), role tags (`roles.json`), monster archetypes, monster skill scaling, **monster scaling model (`monster_scaling_model.json`: derived-stats architecture — see Monster Structure)**, threat tiers (`monster_tiers.json`: xp/aggro)
 - **`entities/`** — Monsters (`monsters.json`), NPCs, boss mechanics, summons (`summons.json`: max 6/team), monster archetypes/variants, healer/support monsters
 - **`items/`** — Equipment (10 slots, 5 rarities, T1-T5 scaling), consumables, materials, affixes, panoplies (25 sets with intentional Hebrew names), loot tables, currencies, substat crafting system
@@ -155,7 +155,21 @@ Bots IA hires par les joueurs, jouent les classes du jeu en combat (1 par charac
 - **Class IDs valides :** warrior / mage / healer / archer / rogue / artisan
 - **Skill loadout :** 3-5 skills basiques par classe (filler / basic / advanced). Le serveur les pre-resout au ROOM_SETUP (pas de DataDB lookup en combat). Cross-ref valide par CI : chaque skill_id doit exister dans `classes/<class>/skills.json`
 - **Balance profile :** doit exister dans `config/mercenary_balance.json` (ex: `solo_helper_v1`)
-- **AI profile :** mappe sur PlayerAI cote combat. Valeurs : warrior / mage / healer / archer / rogue / artisan
+- **AI profile = un ROLE, jamais un nom de classe ni un nom invente.** La valeur doit etre
+  une cle de `config/monster_ai.json` `ai_roles` : `artillery`, `assassin`, `berserker`,
+  `bruiser`, `brute`, `caster`, `controller`, `healer`, `support`, `tactician`, `tank`.
+  Meme table que les monstres et les familiers, il n'y en a pas d'autre.
+
+  ⚠️ **Cette ligne disait le contraire jusqu'au 2026-09-22** (« Valeurs : warrior / mage /
+  healer / archer / rogue / artisan »), et la data avait suivi : **29 archetypes sur 30**
+  portaient un nom de classe ou un `bot_ai_*_v1` invente. Aucun n'existe dans la table, donc
+  `get_role` rendait nul et TOUS les mercenaires du jeu — arene comprise — se battaient en
+  `brute` par defaut. Rien ne le signalait : un mercenaire agit, simplement pas comme sa
+  fiche l'annonce. Les 134 familiers, eux, avaient toujours utilise les vrais roles.
+
+  Le service combat **refuse maintenant de demarrer** si un archetype nomme un role inconnu
+  (garde de demarrage `combat_host`, meme famille que la validation des loadouts). Un role
+  faux est desormais une panne au lancement, plus un comportement discretement faux.
 
 **Cost design rule (CTO 2026-05-05) :** Les 6 archetypes de base ont `cost_gold=0` (anti-frustration nouveaux joueurs sans tuto). Augmenter uniquement sur tiers avances post-MVP (ex: `merc_ranger_elite`, `merc_occultist`).
 
@@ -190,28 +204,30 @@ Potions dediees au merc (le joueur les boit, l'effet va sur son merc) :
 
 Drops dans `items/loot_tables.json` `common_consumables.drops` chance 5%.
 
-### Familiar Structure (`entities/pets.json`)
-Compagnons de combat persistants attaches au joueur. Remplacent le slot mercenaire cote joueur (les mercenaires deviennent un systeme purement serveur pour bots PvP/PvE matchmaking). Voir `world/lore.json` section `les_familiers` pour la fondation narrative (Le Lien, les Ames, le Maitre des Liens). Memoire de design : `project_familiar_system_v1.md`.
+### Familiar Structure (`entities/familiars.json`)
 
-- **Required archetype fields :** `id`, `archetype_id`, `name_fr`, `name_en`, `species`, `role`, `stat_template`, `skill_pool[]`, `ai_profile`, `balance_profile`, `icon`, `description_fr`, `description_en`
-- **ID convention :** `pet_<species>_<role>` (ex: `pet_rat_tank`)
-- **Roles V1 :** attack / tank / heal / utility (4 roles, 1 espece rat V1)
-- **Skill pool :** 6 skills par role dans `skills/pet_skills.json` (24 total). Au loot/invocation, le serveur tire aleatoirement N skills du pool selon le slot count (no duplicates). Cross-ref CI : chaque `skill_id` du `skill_pool` doit exister dans `skills/pet_skills.json`.
-- **Stat template :** doit exister dans `config/pet_balance.json` `stat_templates` (4 templates V1 : `pet_attack_v1`, `pet_tank_v1`, `pet_heal_v1`, `pet_utility_v1`)
-- **Balance profile :** doit exister dans `config/pet_balance.json` `profiles` (V1 : `pet_companion_v1`)
-- **AI profile :** mappe sur PetAI cote combat. Valeurs V1 : `pet_attack_v1` / `pet_tank_v1` / `pet_heal_v1` / `pet_utility_v1`
+Compagnons de combat persistants attaches au compte. ⚠️ **Le familier ne remplace PAS le mercenaire** (decision produit 2026-08-16) : le mercenaire reste recrutable par les joueurs (potions dediees, slot actif), son usage comme bot de remplissage PvP/PvE est supplementaire. Les deux coexistent cote joueur. Ne pas supprimer la ligne merc en se fiant a une ancienne doc « remplace » : c'est ce qui a orphelin 79 sacs en aout 2026. Fondation narrative : `world/lore.json` section `les_familiers` (Le Lien, les Ames, Colette).
 
-**Slot progression (level-based) :** 2 slots lv1 → 3 lv20 → 4 lv50 → 5 lv100. Configuration dans `config/pet_balance.json` `slot_progression.by_level`.
+**Runtime : 100% PostgreSQL.** Service `services/familiar/`, tables `familiars` + `character_familiar_loadouts` (migrations 050 a 067). Pas de Redis, pas de TTL, `instance_id` = UUID brut de la cle primaire. Combat lit via NATS request/reply (`FamiliarCombatGetRequest` / `Response`). Cap de niveau combat = niveau du proprietaire.
 
-**Rarete = stat multiplier seul (V1) :** commun ×1.00 / rare ×1.03 / epique ×1.06 / legendaire ×1.10. Configuration dans `config/pet_balance.json` `rarity_multipliers`. Pas de bonus loot, pas de slot bonus, pas de passif rarete-dependant.
+**Boucle :** drop de trace en combat -> depot chez Colette -> incubation PG minutee -> claim -> familier lv1 account-bound.
 
-### Familiar Skills (`skills/pet_skills.json`)
-Pool de 24 skills (6 par role). Phase 3 Option A canonical (`stacks_to_apply` sur effets de `canonical_grid`, `value`/`duration` uniquement sur effets non-canonical comme stun/taunt/cleanse).
+**Contenu mesure dans la data (2026-09-21) :** `entities/familiars.json` contient **134 archetypes** couvrant **65 especes**.
 
-- **ID convention :** `skill_pet_<role>_<name>` (ex: `skill_pet_attack_pounce`)
-- **Required fields :** identiques a un skill classe (id, name_fr/en, tier, target, pattern, damage_type, scaling_stat, base_power, scaling_percent, mana_cost, cooldown, description_fr/en, tags, targeting)
-- **Specifiques pet :** `source_scope: "PET"`, `pet_role: <role>` (attack/tank/heal/utility)
+- **Champs d'un archetype :** `id`, `archetype_id`, `class_id`, `name_fr`, `name_en`, `description_fr`, `description_en`, `species`, `role`, `base_stats`, `growth`, `skill_loadout`, `signature_template`, `ai_profile`, `balance_profile`, `icon`
+- **Convention d'ID :** `familiar_<espece>_<role>` (ex. `familiar_rat_attaque`, `familiar_belier_tank`)
+- **Roles :** `attaque` / `tank` / `heal` / `utilitaire`
+- **Skills :** `classes/familiar/skills.json` `base_skills` (**133 skills**). Le loadout d'une instance est tire au claim ; voir la memoire de design pour le modele de roll.
+- **Balance profile :** doit exister dans `config/familiar_balance.json` `profiles` (`familiar_v1`)
+- **AI profile :** meme regle que le mercenaire ci-dessus — une cle de `config/monster_ai.json`
+  `ai_roles`. Les 134 archetypes sont conformes ; la garde de demarrage les verifie aussi.
 
+**Slot progression (level-based) :** 2 slots lv1 -> 3 lv20 -> 4 lv50 -> 5 lv100, dans `config/familiar_balance.json` `slot_progression.by_level`.
+
+**Rarete = multiplicateur de stats + poids de roll a la capture**, dans `config/familiar_balance.json` `rarity_multipliers` : common ×1.00 (poids 60) / uncommon ×1.06 (25) / rare ×1.12 (10) / epic ×1.20 (4) / legendary ×1.30 (1). Pas de bonus loot, pas de slot bonus, pas de passif dependant de la rarete.
+
+### Familiar Skills (`classes/familiar/skills.json`)
+133 skills dans `base_skills`. Phase 3 Option A canonical (`stacks_to_apply` sur effets de `canonical_grid`, `value`/`duration` uniquement sur effets non-canonical comme stun/taunt/cleanse).
 ### Familiar Souls (`pets/pet_souls.json`)
 Items tradeable a l'HDV qui contiennent le potentiel d'un familier (rarete + role) sans son experience. Une Ame ne devient un familier qu'apres invocation chez le Maitre des Liens. Une fois invoquee, le familier est lie au compte du buyer et ne peut plus etre cede.
 
@@ -245,7 +261,7 @@ Deux modes coexistent V1 :
 ## Game Systems Knowledge
 
 ### Combat System
-- **Grid:** 4x4 (16 slots, max 10 players per team)
+- **Grid:** 10x6 — 10 rangs de 6 colonnes, soit 5 rangs et 30 cases par equipe. rows/cols sont serveur-autoritaires et envoyes au ROOM_JOINED ; `config/game.json` `combat_grids` ne sert qu'a amorcer le client
 - **Rows:** front, mid_front, mid_back, back (positioning matters for tanks/healers)
 - **Type:** Real-time with 2.0s Global Cooldown (GCD), drag-and-drop targeting
 - **Line of Sight (LoS):** Auto-attacks blocked if target has units in front (same column on target's grid)
