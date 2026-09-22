@@ -301,6 +301,137 @@
     "applies_to": "Le produit des familles, separement pour xp, gold et drop_chance.",
     "note": "Hard cap on all stacked multipliers to prevent guaranteed legendary drops"
   },
+  "tournament_payout": {
+    "_comment": "Bareme des tournois evenementiels. Le rang appartient a l'EQUIPE ; cette dotation est celle d'UN membre humain. En 4v4 un rang coute donc quatre fois ce qui est ecrit ici, et c'est voulu : une equipe de quatre a joue quatre fois plus de monde. Une recrue n'a pas de compte, donc jamais de part.",
+    "_why_volume_not_power": "Le rang achete du VOLUME, jamais de la puissance par objet : tous les paliers donnent des pierres de MEME rang, le vainqueur en recoit simplement davantage. Lier la rarete au classement installerait la boucle 'le fort gagne mieux donc devient plus fort', qui vide un classement par le bas et ne se defait pas. Regle deja tranchee pour les jetons d'arene, appliquee ici a l'identique.",
+    "_why_stones": "Les pierres d'amelioration sont la meilleure recompense disponible a ce palier : wpn_*_b1 est niveau 1, wpn_*_b2 est niveau 21, et il n'existe RIEN entre les deux. L'amelioration (+3%/niveau) est donc la seule progression d'arme de tout le palier. L'or, lui, ne trouve presque aucun puits avant 20 — il est present mais secondaire, et ne doit pas etre lu comme le coeur de la dotation.",
+    "_why_minimum_three": "Aucun palier ne donne moins de TROIS pierres. Une amelioration reussit a 85% et detruit la pierre en cas d'echec : une pierre seule n'est pas une recompense, c'est un tirage. Le paquet est l'unite utile.",
+    "_why_spread": "Chaque palier repartit ses pierres sur les quatre familles plutot que de tout verser sur la lame. Concentrer sur une famille reviendrait a designer le build recompense, alors que le tournoi existe pour montrer la profondeur des builds.",
+    "_open_decision": "Le modele produit retenu paie en JETONS D'ARENE credites au COMPTE, pas en objets sur un personnage. Ce portefeuille n'existe pas encore (aucune devise 'jeton' dans items/currencies.json, aucune table). Ce bareme paie donc dans ce qui existe, et la bascule vers les jetons se fera ici, sans toucher au code : le service lit cette liste telle quelle.",
+    "stone_rank": "rank_1",
+    "_why_stone_rank": "rank_1 couvre +1 a +4, ce qui correspond au palier du personnage de tournoi (20). Faire suivre le rang de la pierre au NIVEAU DU PERSONNAGE QUI RECOIT est l'affinement naturel, et il se fera ici : la cle existe pour etre lue, pas devinee.",
+    "tiers": [
+      {
+        "rank_from": 1,
+        "rank_to": 1,
+        "label_fr": "1re place",
+        "label_en": "1st place",
+        "gold": 1200,
+        "items": [
+          {
+            "id": "even_cherev_rank_1",
+            "qty": 4
+          },
+          {
+            "id": "even_magen_rank_1",
+            "qty": 3
+          },
+          {
+            "id": "even_koach_rank_1",
+            "qty": 3
+          },
+          {
+            "id": "even_neshama_rank_1",
+            "qty": 2
+          }
+        ]
+      },
+      {
+        "rank_from": 2,
+        "rank_to": 2,
+        "label_fr": "2e place",
+        "label_en": "2nd place",
+        "gold": 800,
+        "items": [
+          {
+            "id": "even_cherev_rank_1",
+            "qty": 3
+          },
+          {
+            "id": "even_magen_rank_1",
+            "qty": 2
+          },
+          {
+            "id": "even_koach_rank_1",
+            "qty": 2
+          },
+          {
+            "id": "even_neshama_rank_1",
+            "qty": 1
+          }
+        ]
+      },
+      {
+        "rank_from": 3,
+        "rank_to": 4,
+        "label_fr": "3e et 4e places",
+        "label_en": "3rd and 4th places",
+        "gold": 500,
+        "items": [
+          {
+            "id": "even_cherev_rank_1",
+            "qty": 2
+          },
+          {
+            "id": "even_magen_rank_1",
+            "qty": 2
+          },
+          {
+            "id": "even_koach_rank_1",
+            "qty": 1
+          },
+          {
+            "id": "even_neshama_rank_1",
+            "qty": 1
+          }
+        ]
+      },
+      {
+        "rank_from": 5,
+        "rank_to": 8,
+        "label_fr": "5e a 8e places",
+        "label_en": "5th to 8th places",
+        "gold": 300,
+        "items": [
+          {
+            "id": "even_cherev_rank_1",
+            "qty": 2
+          },
+          {
+            "id": "even_magen_rank_1",
+            "qty": 1
+          },
+          {
+            "id": "even_koach_rank_1",
+            "qty": 1
+          }
+        ]
+      },
+      {
+        "rank_from": 9,
+        "rank_to": 0,
+        "label_fr": "Participation",
+        "label_en": "Participation",
+        "gold": 150,
+        "items": [
+          {
+            "id": "even_cherev_rank_1",
+            "qty": 1
+          },
+          {
+            "id": "even_magen_rank_1",
+            "qty": 1
+          },
+          {
+            "id": "even_koach_rank_1",
+            "qty": 1
+          }
+        ]
+      }
+    ],
+    "_rank_to_zero_means_open": "rank_to = 0 signifie 'et au-dela' : c'est le palier de participation, qui couvre tout le reste du tableau quelle que soit sa taille. Sans lui, un tableau de 32 laisserait 24 equipes sans rien, et une soiree ou l'on repart les mains vides ne se rejoue pas le lendemain.",
+    "_no_tier_means_no_payout": "Un rang qui ne tombe dans AUCUN palier ne recoit rien, et le service le journalise. On n'invente pas un palier par defaut : une dotation silencieuse serait impossible a auditer."
+  },
   "extension_procedure": {
     "_comment": "Les donjons, les contrats du Maitre Combat et les Failles apporteront leurs propres multiplicateurs. Ils s'ajoutent ICI, comme familles, sans toucher au moteur.",
     "steps": [
