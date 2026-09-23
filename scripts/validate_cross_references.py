@@ -317,6 +317,48 @@ def validate_recipe_outputs(db: Path, all_item_ids: set) -> list:
                 check_recipes(item, f"{context}[{i}]")
 
     check_recipes(data, "root")
+
+    # Meme regles que le serveur (services/economy/src/inventory/recipe_registry.cpp),
+    # qui REJETTE une recette mal ecrite au demarrage. Les verifier ici arrete la
+    # recette avant le push, au lieu de la voir disparaitre en jeu. Un champ absent
+    # n'a PAS de valeur par defaut : un `qty` ecrit `quantity` rendait la recette
+    # moins chere, un materiau sans `id` la rendait gratuite.
+    def is_int(v, minimum):
+        return isinstance(v, int) and not isinstance(v, bool) and v >= minimum
+
+    seen = set()
+    for i, recipe in enumerate(data.get("recipes", [])):
+        if not isinstance(recipe, dict):
+            errors.append(f"[recipes.json] entree {i} n'est pas un objet")
+            continue
+        rid = recipe.get("id")
+        if not isinstance(rid, str) or not rid:
+            errors.append(f"[recipes.json] entree {i} sans id")
+            continue
+        if rid in seen:
+            errors.append(f"[recipes.json] id en double : '{rid}' (le serveur garde la premiere)")
+        seen.add(rid)
+        for key, minimum in (("output_qty", 1), ("level_req", 1), ("gold_cost", 0)):
+            if not is_int(recipe.get(key), minimum):
+                errors.append(f"[recipes.json] '{rid}' : '{key}' absent ou invalide "
+                              f"(entier >= {minimum} attendu, trouve {recipe.get(key)!r})")
+        mats = recipe.get("materials")
+        if not isinstance(mats, list):
+            errors.append(f"[recipes.json] '{rid}' : 'materials' absent (liste attendue)")
+            continue
+        for m in mats:
+            mid = m.get("id") if isinstance(m, dict) else None
+            if not isinstance(mid, str) or not mid:
+                errors.append(f"[recipes.json] '{rid}' : materiau sans 'id' ({m!r})")
+                continue
+            if mid not in all_item_ids:
+                errors.append(f"[recipes.json] '{rid}' : materiau inconnu '{mid}'")
+            if not is_int(m.get("qty"), 1):
+                errors.append(f"[recipes.json] '{rid}' : 'qty' de '{mid}' absent ou invalide ({m.get('qty')!r})")
+            if mid == recipe.get("output_item"):
+                errors.append(f"[recipes.json] '{rid}' consomme son propre produit '{mid}'")
+        if not mats and recipe.get("gold_cost") == 0:
+            errors.append(f"[recipes.json] '{rid}' ne coute rien (ni materiau ni or)")
     return errors
 
 
