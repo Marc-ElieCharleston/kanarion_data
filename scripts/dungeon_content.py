@@ -71,6 +71,9 @@ def validate(root, dungeon, front=None):
         errors.append(f'{did}: groups_needed_to_advance must be 1 (one victory clears a floor)')
     if dungeon.get('exit_zone') not in zones:
         errors.append(f'{did}: exit_zone {dungeon.get("exit_zone")!r} is not a zone')
+    ex = dungeon.get('exit_position')
+    if not (isinstance(ex, list) and len(ex) == 2 and all(isinstance(c, (int, float)) for c in ex)):
+        errors.append(f'{did}: exit_position [x, y] in exit_zone required (arrival after exit or boss)')
     if not dungeon.get('difficulties'):
         errors.append(f'{did}: no difficulty declared')
 
