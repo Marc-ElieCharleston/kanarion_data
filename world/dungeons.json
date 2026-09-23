@@ -2222,10 +2222,10 @@
       ],
       "structure": {
         "floor_count": 5,
-        "groups_per_floor": 3,
         "groups_needed_to_advance": 1,
         "boss_floor_index": 4,
-        "_comment": "5 etages ouverts. Modele roam: les packs sont spawnes par presence via les spawn_areas des zones dungeon_rat_den_f1/f2/f3 (zones.json), pas via DUNGEON_SELECT_GROUP. Les monster_groups ci-dessous restent necessaires: c'est ce que lit boss_floor_index_for cote service, sinon le boss_idx retombe sur son fallback code en dur a 7."
+        "spawn_model": "fixed_groups",
+        "_comment": "SOURCE CANONIQUE des monstres du donjon = floors[].monster_groups. Presence spawne UN pack par groupe declare, a sa position, au niveau mob_level_range de l etage, et le reclone a l identique quand il reapparait. Les zones d etage (zones.json) ne declarent PAS de spawn_areas : scripts/dungeon_content.py le refuse. Le leader du pack = members[0]. Une victoire contre un groupe valide l etage ; au dernier etage il faut tuer boss.id (verifie serveur dans killed_mob_ids)."
       },
       "difficulties": {
         "fissure_1": {
@@ -2249,6 +2249,10 @@
             {
               "id": "f1_3star_portee",
               "stars": 3,
+              "position": [
+                -40,
+                110
+              ],
               "members": [
                 "mob_rat_jeune",
                 "mob_rat_jeune",
@@ -2258,6 +2262,10 @@
             {
               "id": "f1_4star_fouisseurs",
               "stars": 4,
+              "position": [
+                130,
+                50
+              ],
               "members": [
                 "mob_rat_jeune",
                 "mob_rat_jeune",
@@ -2267,6 +2275,10 @@
             {
               "id": "f1_5star_meute",
               "stars": 5,
+              "position": [
+                60,
+                10
+              ],
               "members": [
                 "mob_rat_jeune",
                 "mob_rat_jeune",
@@ -2274,6 +2286,10 @@
                 "mob_rat"
               ]
             }
+          ],
+          "entry_position": [
+            -170,
+            12
           ]
         },
         {
@@ -2288,6 +2304,10 @@
             {
               "id": "f2_3star_couvee",
               "stars": 3,
+              "position": [
+                -40,
+                110
+              ],
               "members": [
                 "mob_rat_jeune",
                 "mob_rat_jeune",
@@ -2297,8 +2317,12 @@
             {
               "id": "f2_4star_carapaces",
               "stars": 4,
+              "position": [
+                130,
+                50
+              ],
               "members": [
-                "mob_rat_jeune",
+                "mob_rat",
                 "mob_rat_jeune",
                 "mob_rat"
               ]
@@ -2306,13 +2330,21 @@
             {
               "id": "f2_5star_horde",
               "stars": 5,
+              "position": [
+                60,
+                10
+              ],
               "members": [
+                "mob_rat",
                 "mob_rat_jeune",
                 "mob_rat_jeune",
-                "mob_rat_jeune",
-                "mob_rat"
+                "mob_rat_mage"
               ]
             }
+          ],
+          "entry_position": [
+            -32,
+            -29
           ]
         },
         {
@@ -2327,6 +2359,10 @@
             {
               "id": "f3_3star_fouisseurs",
               "stars": 3,
+              "position": [
+                -110,
+                50
+              ],
               "members": [
                 "mob_rat",
                 "mob_rat",
@@ -2336,22 +2372,34 @@
             {
               "id": "f3_4star_carapaces",
               "stars": 4,
+              "position": [
+                120,
+                40
+              ],
               "members": [
+                "mob_rat_alpha",
                 "mob_rat",
-                "mob_rat",
-                "mob_rat_alpha"
+                "mob_rat_mage"
               ]
             },
             {
               "id": "f3_5star_meute",
               "stars": 5,
+              "position": [
+                10,
+                110
+              ],
               "members": [
+                "mob_rat_alpha",
                 "mob_rat",
                 "mob_rat",
-                "mob_rat",
-                "mob_rat_alpha"
+                "mob_rat_mage"
               ]
             }
+          ],
+          "entry_position": [
+            97,
+            -61
           ]
         },
         {
@@ -2366,31 +2414,47 @@
             {
               "id": "f4_3star_gardiens",
               "stars": 3,
+              "position": [
+                -110,
+                50
+              ],
               "members": [
+                "mob_rat_alpha",
                 "mob_rat",
-                "mob_rat",
-                "mob_rat_alpha"
+                "mob_rat"
               ]
             },
             {
               "id": "f4_4star_carapaces",
               "stars": 4,
+              "position": [
+                120,
+                40
+              ],
               "members": [
+                "mob_rat_alpha",
                 "mob_rat",
-                "mob_rat",
-                "mob_rat_alpha"
+                "mob_rat_soigneur"
               ]
             },
             {
               "id": "f4_5star_alpha",
               "stars": 5,
+              "position": [
+                10,
+                110
+              ],
               "members": [
+                "mob_rat_alpha",
                 "mob_rat",
                 "mob_rat",
-                "mob_rat",
-                "mob_rat_alpha"
+                "mob_rat_soigneur"
               ]
             }
+          ],
+          "entry_position": [
+            0,
+            -40
           ]
         },
         {
@@ -2406,12 +2470,26 @@
             {
               "id": "f5_boss_rongeur",
               "stars": 5,
-              "forced": true,
               "is_boss": true,
+              "position": [
+                20,
+                60
+              ],
               "members": [
-                "mob_rat_rongeur"
+                "mob_rat_rongeur",
+                "mob_rat_soigneur",
+                "mob_rat_soigneur",
+                "mob_rat_mage",
+                "mob_rat_mage",
+                "mob_rat_jeune",
+                "mob_rat_jeune",
+                "mob_rat_jeune"
               ]
             }
+          ],
+          "entry_position": [
+            0,
+            -40
           ]
         }
       ],
@@ -2421,25 +2499,10 @@
         "name_en": "The Gnawer",
         "capturable": true,
         "capture_profile": "beast_boss_v1",
-        "_comment_capture": "Capture preparee V2 familier, ignoree backend V1",
-        "adds": [
-          {
-            "id": "mob_rat_soigneur",
-            "count": 2,
-            "level_offset": 0
-          },
-          {
-            "id": "mob_rat_mage",
-            "count": 2,
-            "level_offset": 0
-          },
-          {
-            "id": "mob_rat_jeune",
-            "count": 3,
-            "level_offset": 0
-          }
-        ]
-      }
+        "_comment_capture": "Capture preparee V2 familier, ignoree backend V1"
+      },
+      "exit_zone": "village",
+      "_comment_run_rules": "Regles validees par Charleston le 2026-09-23 : victoire = teleportation automatique a l etage suivant de TOUS les participants de l equipe gagnante (morts compris) ; defaite = retour au village et reprise a l etage 1 ; deconnexion = progression conservee ; sortie volontaire (quitter l etage vers une zone hors donjon) = reprise a l etage 1. Cles d entree lootees sur les monstres : prevues, non cablees."
     }
   ],
   "dungeon_systems": {

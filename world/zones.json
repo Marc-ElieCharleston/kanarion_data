@@ -1239,12 +1239,12 @@
     {
       "id": "dungeon_rat_den_f1_fissure_1",
       "map_path": "res://scenes/world/donjons/rat_den/dungeon_rat_den_f1.tscn",
-      "_comment_level_range": "DEUX level_range distincts. Celui de l OBJET ZONE est lu par la warp-gate serveur comme min_level JOUEUR (borne [0]) : il doit rester a 1, sinon un bas niveau se fait ejecter en plein run. Celui de chaque spawn_areas[] est la bande de niveau des MONSTRES.",
+      "_comment_level_range": "level_range de l OBJET ZONE = porte joueur (borne [0] lue comme min_level par presence). Reste a 1 : entree libre du donjon (min_level 1, decision Charleston 2026-08-28). Les niveaux des MONSTRES viennent de dungeons.json floors[].mob_level_range.",
       "respawn_zone": "village",
       "name_fr": "Egouts de Havreden - Galeries Grignotees",
       "name_en": "Havreden Sewers - Gnawed Tunnels",
       "level_range": [
-        8,
+        1,
         9
       ],
       "type": "dungeon_open",
@@ -1252,92 +1252,36 @@
       "floor": 1,
       "_comment": "Etage 1 du Repaire des Rats. Donjon-zone OUVERT instancie : les packs sont spawnes par presence via spawn_areas, comme en overworld. Le sol jouable est un LOSANGE isometrique, pas le rectangle de la map : les bounds tiennent dedans, sinon les monstres spawnent dans les murs.",
       "loot_table": "lt_havreden_lisiere",
-      "spawn_config": {
-        "max_active_monsters": 40,
-        "max_packs": 10,
-        "respawn_delay_ms": 20000,
-        "spawn_interval_ms": 3000
-      },
-      "spawn_areas": [
-        {
-          "id": "rat_den_f1_ouest",
-          "name_fr": "Galeries Ouest",
-          "name_en": "West Galleries",
-          "level_range": [
-            8,
-            9
-          ],
-          "count": 6,
-          "max_stars": 4,
-          "bounds": {
-            "x_min": -140,
-            "x_max": -25,
-            "y_min": 0,
-            "y_max": 120
-          },
-          "mobs": [
-            {
-              "id": "mob_rat_jeune",
-              "weight": 16
-            },
-            {
-              "id": "mob_rat",
-              "weight": 10
-            }
-          ],
-          "pack_composition": {
-            "pack_size": [
-              5,
-              10
-            ],
-            "fill": 4
-          }
-        },
-        {
-          "id": "rat_den_f1_est",
-          "name_fr": "Galeries Est",
-          "name_en": "East Galleries",
-          "level_range": [
-            8,
-            9
-          ],
-          "count": 6,
-          "max_stars": 4,
-          "bounds": {
-            "x_min": 25,
-            "x_max": 140,
-            "y_min": 0,
-            "y_max": 120
-          },
-          "mobs": [
-            {
-              "id": "mob_rat_jeune",
-              "weight": 16
-            },
-            {
-              "id": "mob_rat",
-              "weight": 10
-            }
-          ],
-          "pack_composition": {
-            "pack_size": [
-              5,
-              10
-            ],
-            "fill": 4
-          }
-        }
-      ]
+      "area_limit": [
+        [
+          -302,
+          56
+        ],
+        [
+          -6,
+          -82
+        ],
+        [
+          306,
+          56
+        ],
+        [
+          -6,
+          201
+        ]
+      ],
+      "combat_backdrop": "rat_den_sewer",
+      "_comment_spawns": "Pas de spawn_areas : les groupes viennent de dungeons.json (dungeon_rat_den floors[].monster_groups, spawn_model fixed_groups). area_limit = contour RoomBounds du .tscn."
     },
     {
       "id": "dungeon_rat_den_f2_fissure_1",
       "map_path": "res://scenes/world/donjons/rat_den/dungeon_rat_den_f2.tscn",
-      "_comment_level_range": "DEUX level_range distincts. Celui de l OBJET ZONE est lu par la warp-gate serveur comme min_level JOUEUR (borne [0]) : il doit rester a 1, sinon un bas niveau se fait ejecter en plein run. Celui de chaque spawn_areas[] est la bande de niveau des MONSTRES.",
+      "_comment_level_range": "level_range de l OBJET ZONE = porte joueur (borne [0] lue comme min_level par presence). Reste a 1 : entree libre du donjon (min_level 1, decision Charleston 2026-08-28). Les niveaux des MONSTRES viennent de dungeons.json floors[].mob_level_range.",
       "respawn_zone": "village",
       "name_fr": "Egouts de Havreden - Nid Profond",
       "name_en": "Havreden Sewers - Deep Nest",
       "level_range": [
-        9,
+        1,
         10
       ],
       "type": "dungeon_open",
@@ -1345,100 +1289,36 @@
       "floor": 2,
       "_comment": "Etage 2 du Repaire des Rats. Donjon-zone OUVERT instancie : les packs sont spawnes par presence via spawn_areas, comme en overworld. Le sol jouable est un LOSANGE isometrique, pas le rectangle de la map : les bounds tiennent dedans, sinon les monstres spawnent dans les murs.",
       "loot_table": "lt_havreden_lisiere",
-      "spawn_config": {
-        "max_active_monsters": 40,
-        "max_packs": 10,
-        "respawn_delay_ms": 20000,
-        "spawn_interval_ms": 3000
-      },
-      "spawn_areas": [
-        {
-          "id": "rat_den_f2_ouest",
-          "name_fr": "Nid Ouest",
-          "name_en": "West Nest",
-          "level_range": [
-            9,
-            10
-          ],
-          "count": 7,
-          "max_stars": 4,
-          "bounds": {
-            "x_min": -140,
-            "x_max": -25,
-            "y_min": 0,
-            "y_max": 120
-          },
-          "mobs": [
-            {
-              "id": "mob_rat",
-              "weight": 14
-            },
-            {
-              "id": "mob_rat_jeune",
-              "weight": 10
-            },
-            {
-              "id": "mob_rat_mage",
-              "weight": 3
-            }
-          ],
-          "pack_composition": {
-            "pack_size": [
-              5,
-              10
-            ],
-            "fill": 4
-          }
-        },
-        {
-          "id": "rat_den_f2_est",
-          "name_fr": "Nid Est",
-          "name_en": "East Nest",
-          "level_range": [
-            9,
-            10
-          ],
-          "count": 7,
-          "max_stars": 4,
-          "bounds": {
-            "x_min": 25,
-            "x_max": 140,
-            "y_min": 0,
-            "y_max": 120
-          },
-          "mobs": [
-            {
-              "id": "mob_rat",
-              "weight": 14
-            },
-            {
-              "id": "mob_rat_jeune",
-              "weight": 10
-            },
-            {
-              "id": "mob_rat_mage",
-              "weight": 3
-            }
-          ],
-          "pack_composition": {
-            "pack_size": [
-              5,
-              10
-            ],
-            "fill": 4
-          }
-        }
-      ]
+      "area_limit": [
+        [
+          -302,
+          56
+        ],
+        [
+          -6,
+          -82
+        ],
+        [
+          306,
+          56
+        ],
+        [
+          -6,
+          201
+        ]
+      ],
+      "combat_backdrop": "rat_den_sewer",
+      "_comment_spawns": "Pas de spawn_areas : les groupes viennent de dungeons.json (dungeon_rat_den floors[].monster_groups, spawn_model fixed_groups). area_limit = contour RoomBounds du .tscn."
     },
     {
       "id": "dungeon_rat_den_f3_fissure_1",
       "map_path": "res://scenes/world/donjons/rat_den/dungeon_rat_den_f3.tscn",
-      "_comment_level_range": "DEUX level_range distincts. Celui de l OBJET ZONE est lu par la warp-gate serveur comme min_level JOUEUR (borne [0]) : il doit rester a 1, sinon un bas niveau se fait ejecter en plein run. Celui de chaque spawn_areas[] est la bande de niveau des MONSTRES.",
+      "_comment_level_range": "level_range de l OBJET ZONE = porte joueur (borne [0] lue comme min_level par presence). Reste a 1 : entree libre du donjon (min_level 1, decision Charleston 2026-08-28). Les niveaux des MONSTRES viennent de dungeons.json floors[].mob_level_range.",
       "respawn_zone": "village",
       "name_fr": "Egouts de Havreden - Galeries Noyees",
       "name_en": "Havreden Sewers - Flooded Tunnels",
       "level_range": [
-        10,
+        1,
         11
       ],
       "type": "dungeon_open",
@@ -1446,100 +1326,36 @@
       "floor": 3,
       "_comment": "Etage 3 du Repaire des Rats. Donjon-zone OUVERT instancie : les packs sont spawnes par presence via spawn_areas, comme en overworld. Le sol jouable est un LOSANGE isometrique, pas le rectangle de la map : les bounds tiennent dedans, sinon les monstres spawnent dans les murs.",
       "loot_table": "lt_havreden_lisiere",
-      "spawn_config": {
-        "max_active_monsters": 40,
-        "max_packs": 10,
-        "respawn_delay_ms": 20000,
-        "spawn_interval_ms": 3000
-      },
-      "spawn_areas": [
-        {
-          "id": "rat_den_f3_ouest",
-          "name_fr": "Galeries Ouest",
-          "name_en": "West Galleries",
-          "level_range": [
-            10,
-            11
-          ],
-          "count": 7,
-          "max_stars": 5,
-          "bounds": {
-            "x_min": -140,
-            "x_max": -25,
-            "y_min": -40,
-            "y_max": 90
-          },
-          "mobs": [
-            {
-              "id": "mob_rat",
-              "weight": 12
-            },
-            {
-              "id": "mob_rat_alpha",
-              "weight": 5
-            },
-            {
-              "id": "mob_rat_mage",
-              "weight": 5
-            }
-          ],
-          "pack_composition": {
-            "pack_size": [
-              5,
-              10
-            ],
-            "fill": 4
-          }
-        },
-        {
-          "id": "rat_den_f3_est",
-          "name_fr": "Galeries Est",
-          "name_en": "East Galleries",
-          "level_range": [
-            10,
-            11
-          ],
-          "count": 7,
-          "max_stars": 5,
-          "bounds": {
-            "x_min": 25,
-            "x_max": 140,
-            "y_min": -40,
-            "y_max": 90
-          },
-          "mobs": [
-            {
-              "id": "mob_rat",
-              "weight": 12
-            },
-            {
-              "id": "mob_rat_alpha",
-              "weight": 5
-            },
-            {
-              "id": "mob_rat_mage",
-              "weight": 5
-            }
-          ],
-          "pack_composition": {
-            "pack_size": [
-              5,
-              10
-            ],
-            "fill": 4
-          }
-        }
-      ]
+      "area_limit": [
+        [
+          -291,
+          11
+        ],
+        [
+          -3,
+          -128
+        ],
+        [
+          285,
+          11
+        ],
+        [
+          -3,
+          177
+        ]
+      ],
+      "combat_backdrop": "rat_den_sewer",
+      "_comment_spawns": "Pas de spawn_areas : les groupes viennent de dungeons.json (dungeon_rat_den floors[].monster_groups, spawn_model fixed_groups). area_limit = contour RoomBounds du .tscn."
     },
     {
       "id": "dungeon_rat_den_f4_fissure_1",
       "map_path": "res://scenes/world/donjons/rat_den/dungeon_rat_den_f4.tscn",
-      "_comment_level_range": "DEUX level_range distincts. Celui de l OBJET ZONE est lu par la warp-gate serveur comme min_level JOUEUR (borne [0]) : il doit rester a 1, sinon un bas niveau se fait ejecter en plein run. Celui de chaque spawn_areas[] est la bande de niveau des MONSTRES.",
+      "_comment_level_range": "level_range de l OBJET ZONE = porte joueur (borne [0] lue comme min_level par presence). Reste a 1 : entree libre du donjon (min_level 1, decision Charleston 2026-08-28). Les niveaux des MONSTRES viennent de dungeons.json floors[].mob_level_range.",
       "respawn_zone": "village",
       "name_fr": "Egouts de Havreden - Antichambre du Rongeur",
       "name_en": "Havreden Sewers - Gnawer's Antechamber",
       "level_range": [
-        11,
+        1,
         12
       ],
       "type": "dungeon_open",
@@ -1547,106 +1363,36 @@
       "floor": 4,
       "_comment": "Etage 4 du Repaire des Rats. Donjon-zone OUVERT instancie : les packs sont spawnes par presence via spawn_areas, comme en overworld. Le sol jouable est un LOSANGE isometrique, pas le rectangle de la map : les bounds tiennent dedans, sinon les monstres spawnent dans les murs.",
       "loot_table": "lt_havreden_lisiere",
-      "spawn_config": {
-        "max_active_monsters": 40,
-        "max_packs": 10,
-        "respawn_delay_ms": 20000,
-        "spawn_interval_ms": 3000
-      },
-      "spawn_areas": [
-        {
-          "id": "rat_den_f4_ouest",
-          "name_fr": "Antichambre Ouest",
-          "name_en": "West Antechamber",
-          "level_range": [
-            11,
-            12
-          ],
-          "count": 7,
-          "max_stars": 5,
-          "bounds": {
-            "x_min": -140,
-            "x_max": -25,
-            "y_min": -40,
-            "y_max": 90
-          },
-          "mobs": [
-            {
-              "id": "mob_rat",
-              "weight": 14
-            },
-            {
-              "id": "mob_rat_alpha",
-              "weight": 7
-            },
-            {
-              "id": "mob_rat_soigneur",
-              "weight": 3
-            }
-          ],
-          "pack_composition": {
-            "pack_size": [
-              5,
-              10
-            ],
-            "fill": 4,
-            "guaranteed_roles": {
-              "healer": 1
-            }
-          }
-        },
-        {
-          "id": "rat_den_f4_est",
-          "name_fr": "Antichambre Est",
-          "name_en": "East Antechamber",
-          "level_range": [
-            11,
-            12
-          ],
-          "count": 7,
-          "max_stars": 5,
-          "bounds": {
-            "x_min": 25,
-            "x_max": 140,
-            "y_min": -40,
-            "y_max": 90
-          },
-          "mobs": [
-            {
-              "id": "mob_rat",
-              "weight": 14
-            },
-            {
-              "id": "mob_rat_alpha",
-              "weight": 7
-            },
-            {
-              "id": "mob_rat_soigneur",
-              "weight": 3
-            }
-          ],
-          "pack_composition": {
-            "pack_size": [
-              5,
-              10
-            ],
-            "fill": 4,
-            "guaranteed_roles": {
-              "healer": 1
-            }
-          }
-        }
-      ]
+      "area_limit": [
+        [
+          -291,
+          11
+        ],
+        [
+          -3,
+          -128
+        ],
+        [
+          285,
+          11
+        ],
+        [
+          -3,
+          177
+        ]
+      ],
+      "combat_backdrop": "rat_den_sewer",
+      "_comment_spawns": "Pas de spawn_areas : les groupes viennent de dungeons.json (dungeon_rat_den floors[].monster_groups, spawn_model fixed_groups). area_limit = contour RoomBounds du .tscn."
     },
     {
       "id": "dungeon_rat_den_f5_fissure_1",
       "map_path": "res://scenes/world/donjons/rat_den/dungeon_rat_den_f5.tscn",
-      "_comment_level_range": "DEUX level_range distincts. Celui de l OBJET ZONE est lu par la warp-gate serveur comme min_level JOUEUR (borne [0]) : il doit rester a 1, sinon un bas niveau se fait ejecter en plein run. Celui de chaque spawn_areas[] est la bande de niveau des MONSTRES.",
+      "_comment_level_range": "level_range de l OBJET ZONE = porte joueur (borne [0] lue comme min_level par presence). Reste a 1 : entree libre du donjon (min_level 1, decision Charleston 2026-08-28). Les niveaux des MONSTRES viennent de dungeons.json floors[].mob_level_range.",
       "respawn_zone": "village",
       "name_fr": "Egouts de Havreden - Terrier du Rongeur",
       "name_en": "Havreden Sewers - Gnawer's Burrow",
       "level_range": [
-        13,
+        1,
         14
       ],
       "type": "dungeon_open",
@@ -1654,59 +1400,26 @@
       "floor": 5,
       "_comment": "Etage 5 du Repaire des Rats. Donjon-zone OUVERT instancie : les packs sont spawnes par presence via spawn_areas, comme en overworld. Le sol jouable est un LOSANGE isometrique, pas le rectangle de la map : les bounds tiennent dedans, sinon les monstres spawnent dans les murs.",
       "loot_table": "lt_havreden_lisiere",
-      "spawn_config": {
-        "max_active_monsters": 40,
-        "max_packs": 10,
-        "respawn_delay_ms": 20000,
-        "spawn_interval_ms": 3000
-      },
-      "spawn_areas": [
-        {
-          "id": "rat_den_f5_terrier",
-          "name_fr": "Terrier",
-          "name_en": "Burrow",
-          "level_range": [
-            13,
-            14
-          ],
-          "count": 6,
-          "max_stars": 5,
-          "bounds": {
-            "x_min": -140,
-            "x_max": 140,
-            "y_min": -40,
-            "y_max": 90
-          },
-          "mobs": [
-            {
-              "id": "mob_rat_jeune",
-              "weight": 12
-            },
-            {
-              "id": "mob_rat",
-              "weight": 10
-            },
-            {
-              "id": "mob_rat_soigneur",
-              "weight": 5
-            },
-            {
-              "id": "mob_rat_mage",
-              "weight": 5
-            }
-          ],
-          "pack_composition": {
-            "pack_size": [
-              5,
-              10
-            ],
-            "fill": 4,
-            "guaranteed_roles": {
-              "healer": 1
-            }
-          }
-        }
-      ]
+      "area_limit": [
+        [
+          -291,
+          11
+        ],
+        [
+          -3,
+          -128
+        ],
+        [
+          285,
+          11
+        ],
+        [
+          -3,
+          177
+        ]
+      ],
+      "combat_backdrop": "rat_den_sewer",
+      "_comment_spawns": "Pas de spawn_areas : les groupes viennent de dungeons.json (dungeon_rat_den floors[].monster_groups, spawn_model fixed_groups). area_limit = contour RoomBounds du .tscn."
     }
   ],
   "loot_tables": [
