@@ -270,6 +270,38 @@ def validate_set_ids(db: Path) -> list:
     return errors
 
 
+def validate_enhancement_rates(db: Path) -> list:
+    """stone_ranks.*.success_rates : un taux par niveau de la tranche.
+
+    Le serveur (enhancement_rules.cpp) REFUSE tout le fichier si une tranche n'a
+    pas exactement un taux par niveau : la forge entiere serait coupee. On
+    l'arrete donc ici, avant le push.
+    """
+    errors = []
+    path = db / "systems" / "enhancement_system.json"
+    if not path.exists():
+        return ["[enhancement_system.json] fichier absent"]
+    data = load_json(path)
+    for rid, rank in data.get("stone_ranks", {}).items():
+        band = rank.get("enhancement_range", [])
+        rates = rank.get("success_rates")
+        if "success_rate" in rank:
+            errors.append(f"[enhancement_system.json] {rid} : 'success_rate' (un seul taux) n'est plus lu, "
+                          f"utiliser 'success_rates' (un taux par niveau)")
+        if not isinstance(band, list) or len(band) < 2:
+            errors.append(f"[enhancement_system.json] {rid} : enhancement_range invalide")
+            continue
+        size = band[1] - band[0] + 1
+        if not isinstance(rates, list) or len(rates) != size:
+            errors.append(f"[enhancement_system.json] {rid} : success_rates doit avoir {size} valeurs "
+                          f"(+{band[0]} a +{band[1]}), trouve {rates!r}")
+            continue
+        for i, v in enumerate(rates):
+            if not isinstance(v, (int, float)) or isinstance(v, bool) or not (0 < v <= 100):
+                errors.append(f"[enhancement_system.json] {rid} +{band[0] + i} : taux {v!r} hors de ]0, 100]")
+    return errors
+
+
 def validate_recipe_outputs(db: Path, all_item_ids: set) -> list:
     """Check all recipe output_item references exist in the item database.
 
@@ -995,6 +1027,11 @@ def main():
 
     print("[6/10] Validating recipe output_item references...")
     errs = validate_recipe_outputs(db, all_item_ids)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[6b/10] Validating enhancement success rates (one per level)...")
+    errs = validate_enhancement_rates(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
