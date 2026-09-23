@@ -2210,7 +2210,7 @@
           "count": 1,
           "description_fr": "Rejoindre une guilde ou en fonder une",
           "description_en": "Join a guild or found one",
-          "_note": "TEMPLATE A CREER cote back. Le service guilde ne publie AUCUN evenement aujourd'hui (verifie : aucun kanarion.guild.event.* dans le code), donc rien n'est comptable. Il faut publier a la creation ET a l'adhesion, puis souscrire cote quete. Tant que ce n'est pas fait, CETTE QUETE EST INFRANCHISSABLE.",
+          "_note": "Template join_guild BRANCHE (2026-09-06) : le service guilde publie kanarion.guild.event.member_joined apres le commit PG d'une creation ou d'une adhesion, et le service quete l'ecoute (SUPPORTED_TEMPLATES). L'ancienne note « template a creer, quete infranchissable » est perimee.",
           "hints": {
             "on_active": [
               {
@@ -3716,23 +3716,155 @@
       "description_en": "The Tower collapses. You feel something inside you. Not victory. Something else. Return to Havreden. Everything has changed."
     },
     {
-      "id": "q_havreden_arrivee",
+      "id": "q_onb_arene",
       "type": "main",
       "zone": "village",
       "min_level": 1,
       "auto_accept_on_zone_enter": "village",
-      "title_fr": "L'arrivée à Havreden",
-      "title_en": "Arriving in Havreden",
-      "summary_fr": "Aldric t'a dit de demander Tobin en arrivant. Il connaît le village mieux que personne, et il sait qui cherche des bras en ce moment.",
-      "summary_en": "Aldric told you to ask for Tobin when you got here. He knows the village better than anyone, and he knows who's looking for hands right now.",
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "La leçon de Dargo",
+      "title_en": "Dargo's Lesson",
+      "summary_fr": "Tous les volontaires passent d'abord par l'arène de Dargo, et aujourd'hui c'est ton tour. Suis sa leçon, ou passe-la si tu sais déjà te battre.",
+      "summary_en": "Every volunteer goes through Dargo's arena first, and today it's your turn. Follow his lesson, or skip it if you already know how to fight.",
+      "objectives": [
+        {
+          "template": "tutorial_combat_complete",
+          "scenario_id": "arena_onboarding",
+          "count": 1,
+          "description_fr": "Suivre la leçon d'arène de Dargo",
+          "description_en": "Take Dargo's arena lesson",
+          "_note": "Onboarding V2 (2026-09-23). Cible arena_onboarding = la lecon d'arene (room_arena_lesson.cpp, table character_arena_onboarding). DEMANDE BACK B4 : compter l'objectif quand la lecon est TERMINEE (status 2) OU PASSEE (status 3), via un evenement dedie publie apres finish(), et le reconcilier a l'acceptation (status IN (2,3) => complet), sinon un joueur qui finit la lecon avant l'auto-accept reste bloque."
+        }
+      ],
+      "rewards": {
+        "xp": 250
+      },
+      "chain_next": "q_onb_forces",
+      "_note": "Onboarding V2 (spec 2026-09-23). Premiere quete d'un perso d'aventure neuf : la lecon d'arene demarre juste apres la cinematique, AVANT que le joueur voie le village, puis il reapparait devant l'arene de Dargo. Drapeau tutorial + pas de npc_giver = rendu automatique. 250 XP = niveau 3. ATTENTION BACK : auto_accept_on_zone_enter 'village' touche TOUT perso qui entre au village, y compris les anciens persos et les persos de tournoi. Sans garde (ligne character_arena_onboarding presente, perso non tournoi), un ancien perso recoit une quete qu'il ne peut pas finir. A trancher cote quest_service avant deploiement de cette data."
+    },
+    {
+      "id": "q_onb_forces",
+      "type": "main",
+      "zone": "village",
+      "min_level": 1,
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "Tes premières armes",
+      "title_en": "Your First Weapons",
+      "summary_fr": "Avant d'aller trouver Tobin sur la place, équipe ton arme et place tes premiers points de statistiques et de compétence.",
+      "summary_en": "Before you go and find Tobin on the square, equip your weapon and spend your first stat and skill points.",
+      "objective_mode": "parallel",
+      "objectives": [
+        {
+          "template": "equip_item",
+          "count": 1,
+          "description_fr": "Équiper ton arme",
+          "description_en": "Equip your weapon",
+          "_note": "L'arme de depart est donnee a la creation (starter_weapon.hpp). DEMANDE BACK B7 : reconcilier a l'acceptation si une arme est deja equipee.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_onb_forces_obj0_inv",
+                "type": "arrow",
+                "target": "ui_inventory_button",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Ouvre ton inventaire",
+                  "label_en": "Open your inventory"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "spend_stat_points",
+          "count": 3,
+          "description_fr": "Investir 3 points de stats",
+          "description_en": "Allocate 3 stat points",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_onb_forces_obj1_stats",
+                "type": "arrow",
+                "target": "ui_stats_button",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Ouvre tes statistiques",
+                  "label_en": "Open your stats"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "spend_skill_point",
+          "count": 1,
+          "description_fr": "Améliorer une compétence active",
+          "description_en": "Improve an active skill",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_onb_forces_obj2_skills",
+                "type": "arrow",
+                "target": "ui_skills_button",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Ouvre tes compétences",
+                  "label_en": "Open your skills"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_onb_forces_howto",
+            "type": "modal",
+            "priority": 94,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Tes premières armes",
+              "title_en": "Your first weapons",
+              "content_fr": "Ouvre ton inventaire et équipe ton arme.\n\nOuvre ensuite tes statistiques et clique sur le + à côté d'une caractéristique pour y placer un point. HP augmente ta vie, Souffle ta réserve pour lancer des compétences, Attaque tes dégâts physiques, Magie tes dégâts magiques, et Défense ce que tu encaisses. Rien n'est enregistré tant que tu n'as pas cliqué sur Appliquer.\n\nFais enfin la même chose dans l'écran des compétences pour en monter une d'un rang.",
+              "content_en": "Open your inventory and equip your weapon.\n\nThen open your stats and click the + next to a stat to put a point into it. HP raises your health, Breath your pool for casting skills, Attack your physical damage, Magic your magic damage, and Defense how much you soak up. Nothing is saved until you click Apply.\n\nFinally, do the same in the skills screen to raise one skill by a rank."
+            }
+          }
+        ]
+      },
+      "rewards": {
+        "xp": 218
+      },
+      "chain_next": "q_havreden_arrivee",
+      "_note": "Onboarding V2 (spec 2026-09-23). Reprend les objectifs de l'ancienne etape stats et competence de la chaine d'Aldric (supprimee) plus l'equipement de l'arme. 250 + 218 = 468 XP cumules = niveau 4. Objectifs paralleles, rendu automatique (tutorial, pas de npc_giver). Le perso de tournoi a son equivalent q_tournoi_stats_skills : si le back distribue aussi les q_onb_* aux persos de tournoi, retirer l'une des deux."
+    },
+    {
+      "id": "q_havreden_arrivee",
+      "type": "main",
+      "zone": "village",
+      "min_level": 1,
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "Ton tour est venu",
+      "title_en": "Your Turn Has Come",
+      "summary_fr": "Tobin t'attend sur la place. Il sait qui cherche des bras en ce moment, et il a de quoi t'occuper.",
+      "summary_en": "Tobin is waiting for you on the square. He knows who's looking for hands right now, and he has something to keep you busy.",
       "npc_giver": "npc_hub_guide_tobin",
       "objectives": [
         {
           "template": "talk_to_npc",
           "npc_id": "npc_hub_guide_tobin",
           "count": 1,
-          "description_fr": "Trouver Tobin, le guide du village",
-          "description_en": "Find Tobin, the village guide",
+          "description_fr": "Trouver Tobin sur la place",
+          "description_en": "Find Tobin on the square",
           "hints": {
             "on_active": [
               {
@@ -3751,30 +3883,41 @@
         }
       ],
       "rewards": {
-        "xp": 40,
-        "gold": 40
+        "xp": 100,
+        "gold": 20
       },
-      "chain_next": "q_havreden_tour_01",
-      "_note": "Remplace quest_playtest_talk, que le client acceptait EN DUR a l'entree dans village (main.gd _check_auto_accept_quests) et dont l'objectif etait 'Rejoindre le desert' sur zone_id=village : elle se validait donc toute seule au premier pas dans Havreden. Ici c'est le mecanisme serveur auto_accept_on_zone_enter qui prend le relais, le meme que le tutoriel utilise sur tutorial_tavern. Elle comble le trou de fin de tutoriel : q_tut_intro_08 n'avait aucun chain_next, donc rien ne conduisait le joueur a Tobin alors qu'Aldric le lui dit. 2026-09-05 : le tour de Havreden n'a PLUS de palier de niveau (min_level 1 sur les quatre etapes). C'est la ligne principale d'entree de jeu, enchainee d'un bout a l'autre, et atteignable qu'on ait fait le tutoriel ou non -- auto_accept_on_zone_enter sur 'village' l'accepte dans les deux cas. Les trois modals qui annoncaient le palier suivant (« Reviens le voir au niveau 5 / 7 / 9 ») ont ete retires : ils annoncaient une attente qui n'existe plus."
+      "_note": "Onboarding V2 (2026-09-23) : acceptee par chainage depuis q_onb_forces, plus par auto_accept_on_zone_enter (c'est q_onb_arene qui porte l'entree au village). PLUS de chain_next : Tobin propose ensuite DEUX quetes independantes, la chaine d'Aldric (q_tut_intro_01) et le tour de Havreden (q_havreden_tour_01), toutes deux avec prerequisites [q_havreden_arrivee], a faire dans l'ordre que le joueur veut. Drapeau tutorial ajoute : rendu automatique apres le dialogue (q_havreden_arrivee_obj_0 chez Tobin) et les repliques contextuelles de Dargo/Tobin sont lues par main.gd, qui ne les cherche que sur les quetes tutorial."
     },
     {
       "id": "q_havreden_tour_01",
       "type": "main",
       "zone": "village",
       "min_level": 1,
-      "title_fr": "Se préparer pour l'expédition",
-      "title_en": "Getting Ready for the Expedition",
-      "summary_fr": "Tobin veut te présenter ceux qui te garderont en vie. Milo, Gorik et Naya ont chacun quelque chose à te dire avant que tu sortes.",
-      "summary_en": "Tobin wants to introduce you to the people who will keep you alive. Milo, Gorik and Naya each have something to tell you before you head out.",
+      "prerequisites": [
+        "q_havreden_arrivee"
+      ],
+      "title_fr": "Se préparer",
+      "title_en": "Getting Ready",
+      "summary_fr": "Tobin veut que tu sortes équipé. Achète une potion chez Milo, fais améliorer ton arme chez Gorik avec les pierres qu'il t'a données, et reçois la bénédiction de Naya.",
+      "summary_en": "Tobin wants you to head out properly equipped. Buy a potion from Milo, have Gorik enhance your weapon with the stones he gave you, and receive Naya's blessing.",
       "npc_giver": "npc_hub_guide_tobin",
       "objective_mode": "parallel",
+      "rewards_on_accept": {
+        "_note": "Pierres donnees a l'acceptation pour que l'objectif enhance_item soit faisable tout de suite. Pierre de Lame rang I : +1 a +4 sur une arme de rang I.",
+        "items": [
+          {
+            "id": "even_cherev_rank_1",
+            "qty": 3
+          }
+        ]
+      },
       "objectives": [
         {
-          "template": "talk_to_npc",
-          "npc_id": "npc_vendor_milo",
+          "template": "buy_item",
           "count": 1,
-          "description_fr": "Parler à Milo, le marchand",
-          "description_en": "Talk to Milo, the merchant",
+          "description_fr": "Acheter une potion chez Milo",
+          "description_en": "Buy a potion from Milo",
+          "_note": "Pas de filtre item_id : n'importe quel achat compte, pour qu'une potion de Souffle compte autant qu'une potion de vie.",
           "hints": {
             "on_active": [
               {
@@ -3792,11 +3935,11 @@
           }
         },
         {
-          "template": "talk_to_npc",
-          "npc_id": "npc_blacksmith_gorik",
+          "template": "enhance_item",
           "count": 1,
-          "description_fr": "Parler à Gorik, le forgeron",
-          "description_en": "Talk to Gorik, the blacksmith",
+          "description_fr": "Tenter d'améliorer ton arme chez Gorik",
+          "description_en": "Try to enhance your weapon at Gorik's",
+          "_note": "NOUVEAU TEMPLATE, DEMANDE BACK B6 : economy handle_enhance_item publie un evenement a chaque tentative traitee (succes OU echec). Pas de cible = n'importe quel objet. Tant que le template n'est pas dans SUPPORTED_TEMPLATES, le service quete REJETTE cette quete au chargement : ne pas deployer cette data avant le back.",
           "hints": {
             "on_active": [
               {
@@ -3817,9 +3960,8 @@
           "template": "receive_blessing",
           "buff_id": "wbuff_naya_blessing",
           "count": 1,
-          "description_fr": "Te faire soigner par Naya",
-          "description_en": "Get healed by Naya",
-          "_note": "Livre 2026-08-22 : le back publie BlessingReceived depuis economy handle_tavern_rest (parametre par npc_id) et le template receive_blessing existe ; le client rebranche l'action sur le role soigneuse via npc_tavern, qui envoie deja le npc_id du PNJ clique. Le buff wbuff_naya_blessing vit dans stats/world_buffs.json.",
+          "description_fr": "Recevoir la bénédiction de Naya",
+          "description_en": "Receive Naya's blessing",
           "hints": {
             "on_active": [
               {
@@ -3838,11 +3980,11 @@
         }
       ],
       "rewards": {
-        "xp": 120,
-        "gold": 80
+        "xp": 700,
+        "gold": 50
       },
       "chain_next": "q_havreden_tour_02",
-      "_note": "Vague 1 du tour de Havreden. Remplace q_hub_tour_01/02/03. objective_mode parallel : la tournee se fait dans l'ordre que le joueur veut. Les vraies actions sont dans les satellites donnes par Milo et Gorik."
+      "_note": "Tour de Havreden, etape 1 (onboarding V2, 2026-09-23). Des ACTIONS, plus des visites : acheter, ameliorer, recevoir une benediction. objective_mode parallel. prerequisites [q_havreden_arrivee] : q_havreden_arrivee n'enchaine plus vers cette quete, Tobin la propose a cote de la chaine d'Aldric. Repliques par PNJ : cle q_havreden_tour_01_default chez Milo, Gorik et Naya (le client ne les lit aujourd'hui que pour les quetes tutorial)."
     },
     {
       "id": "q_milo_ravitaillement",
@@ -3910,17 +4052,17 @@
       "min_level": 1,
       "title_fr": "Ne pars pas seul",
       "title_en": "Don't Go Out Alone",
-      "summary_fr": "Personne ne tient longtemps seul dehors. Colette élève les familiers, Hestia loue des bras solides, et Verena tient le registre des guildes. Va les voir avant de repartir.",
-      "summary_en": "Nobody lasts long alone out there. Colette raises the familiars, Hestia hires out steady hands, and Verena keeps the guild register. Go and see them before you head back out.",
+      "summary_fr": "Personne ne tient longtemps seul dehors. Prends un compagnon chez Colette, engage un mercenaire chez Hestia, et passe voir Verena au registre des guildes.",
+      "summary_en": "Nobody lasts long alone out there. Get a companion from Colette, hire a mercenary from Hestia, and stop by Verena at the guild register.",
       "npc_giver": "npc_hub_guide_tobin",
       "objective_mode": "parallel",
       "objectives": [
         {
-          "template": "talk_to_npc",
-          "npc_id": "npc_familiar_breeder_colette",
+          "template": "choose_familiar",
           "count": 1,
-          "description_fr": "Parler à Colette, l'éleveuse de familiers",
-          "description_en": "Talk to Colette, the familiar breeder",
+          "description_fr": "Choisir ton compagnon avec Colette",
+          "description_en": "Choose your companion with Colette",
+          "_note": "Colette du village ouvre l'ecran de choix si le joueur n'a aucun familier (main.gd npc_familiar_choose). DEMANDE BACK B7 : reconcilier a l'acceptation si le perso a deja un familier (table familiars), sinon un joueur qui a fait la chaine d'Aldric avant ne peut plus valider.",
           "hints": {
             "on_active": [
               {
@@ -3938,11 +4080,10 @@
           }
         },
         {
-          "template": "talk_to_npc",
-          "npc_id": "npc_dungeon_keeper_hestia",
+          "template": "recruit_mercenary",
           "count": 1,
-          "description_fr": "Parler à Hestia, la recruteuse",
-          "description_en": "Talk to Hestia, the recruiter",
+          "description_fr": "Engager un mercenaire chez Hestia",
+          "description_en": "Hire a mercenary from Hestia",
           "hints": {
             "on_active": [
               {
@@ -3983,11 +4124,11 @@
         }
       ],
       "rewards": {
-        "xp": 165,
-        "gold": 120
+        "xp": 800,
+        "gold": 50
       },
       "chain_next": "q_havreden_tour_03",
-      "_note": "Vague 2 du tour de Havreden. Verena reste une etape de service : aucun evenement de guilde n'est publie par le service guilde, donc rien n'est comptable cote quete."
+      "_note": "Tour de Havreden, etape 2 (onboarding V2, 2026-09-23). Choisir un compagnon et engager un mercenaire sont des actions ; Verena reste une visite (rejoindre une guilde demande une invitation, on ne l'impose pas ici, q_verena_guilde s'en charge). Repliques : cle q_havreden_tour_02_default chez Colette, Hestia et Verena."
     },
     {
       "id": "q_colette_incubation",
@@ -4076,17 +4217,22 @@
       "min_level": 1,
       "title_fr": "Où aller maintenant",
       "title_en": "Where To Go Now",
-      "summary_fr": "Tu sais te battre et tu as de quoi tenir. Reste à savoir où trouver du travail. Varn paye pour les têtes, Dargo prête son arène pour s'entraîner, et Soren s'occupe des voies quand tu seras assez haut.",
-      "summary_en": "You can fight and you have what it takes to hold out. What's left is knowing where to find work. Varn pays for heads, Dargo lends his arena for training, and Soren handles the paths once you're high enough.",
+      "summary_fr": "Reste à savoir où trouver du travail. Varn a un premier contrat pour toi : trois rats du terrier, juste au sud de la place. Passe ensuite voir Dargo et Soren.",
+      "summary_en": "What's left is knowing where to find work. Varn has a first contract for you: three rats from the warren, just south of the square. Then go and see Dargo and Soren.",
       "npc_giver": "npc_hub_guide_tobin",
       "objective_mode": "parallel",
       "objectives": [
         {
-          "template": "talk_to_npc",
-          "npc_id": "npc_bounty_hunter_varn",
-          "count": 1,
-          "description_fr": "Parler à Varn, le chasseur de primes",
-          "description_en": "Talk to Varn, the bounty hunter",
+          "template": "kill_mobs",
+          "mobs": [
+            "mob_rat",
+            "mob_rat_jeune",
+            "mob_rat_alpha"
+          ],
+          "count": 3,
+          "description_fr": "Contrat de Varn : abattre 3 rats du terrier",
+          "description_en": "Varn's contract: bring down 3 warren rats",
+          "_note": "Les trois especes de la spawn_area mz_rats_1_8 (« Terrier des Rats », niveau 1-8) de la zone village dans world/zones.json : bounds x -59..5018, y 1687..3252, c'est-a-dire tout le flanc sud du village, le point d'apparition d'aventure (4084,1818) est dans ces bornes. Les positions dans le polygone du village sont rejetees par presence, donc les rats sont juste autour de la place.",
           "hints": {
             "on_active": [
               {
@@ -4096,8 +4242,8 @@
                 "priority": 90,
                 "show_once": true,
                 "payload": {
-                  "label_fr": "Va voir Varn",
-                  "label_en": "Go see Varn"
+                  "label_fr": "Varn a un contrat pour toi",
+                  "label_en": "Varn has a contract for you"
                 }
               }
             ]
@@ -4149,10 +4295,16 @@
         }
       ],
       "rewards": {
-        "xp": 225,
-        "gold": 150
+        "xp": 1100,
+        "gold": 80,
+        "items": [
+          {
+            "id": "even_cherev_rank_1",
+            "qty": 5
+          }
+        ]
       },
-      "_note": "Vague 3 du tour de Havreden."
+      "_note": "Tour de Havreden, etape 3 (onboarding V2, 2026-09-23). Premier contrat de Varn (3 rats du terrier, sans bande de niveau), puis Dargo et Soren. Repliques : cle q_havreden_tour_03_default chez Varn, Dargo et Soren."
     },
     {
       "id": "q_varn_egouts",
@@ -4382,14 +4534,17 @@
       "zone": "tutorial_tavern",
       "min_level": 1,
       "auto_accept_on_zone_enter": "tutorial_tavern",
+      "prerequisites": [
+        "q_havreden_arrivee"
+      ],
       "flags": [
         "tutorial"
       ],
       "title_fr": "Premier contact",
       "title_en": "First Contact",
-      "summary_fr": "Aldric t'attend dans la taverne. Va lui parler pour commencer ta formation.",
-      "summary_en": "Aldric is waiting for you in the tavern. Go talk to him to begin your training.",
-      "npc_giver": "npc_tutorial_instructor_aldric",
+      "summary_fr": "Aldric forme les volontaires dans l'arrière-salle de la taverne de Rona. Passe la porte et va lui parler.",
+      "summary_en": "Aldric trains the volunteers in the back room of Rona's tavern. Go through the door and talk to him.",
+      "npc_giver": "npc_hub_guide_tobin",
       "objective_mode": "sequential",
       "objectives": [
         {
@@ -4416,9 +4571,10 @@
         }
       ],
       "rewards": {
-        "xp": 30
+        "xp": 100
       },
-      "chain_next": "q_tut_intro_02"
+      "chain_next": "q_tut_intro_02",
+      "_note": "Onboarding V2 (2026-09-23) : donnee par Tobin (npc_giver), independante du tour de Havreden. Garde le drapeau tutorial, donc rendu automatique au dialogue avec Aldric. auto_accept_on_zone_enter conserve : un joueur qui passe la porte de l'arriere-salle sans l'avoir prise chez Tobin la recoit quand meme, a condition d'avoir fini q_havreden_arrivee (prerequisites, verifie aussi par try_auto_accept_quest)."
     },
     {
       "id": "q_tut_intro_02",
@@ -4428,29 +4584,30 @@
       "flags": [
         "tutorial"
       ],
-      "title_fr": "Équipe ton arme",
-      "title_en": "Equip Your Weapon",
-      "summary_fr": "Ouvre ton inventaire et équipe l'arme de départ, puis retourne voir Aldric.",
-      "summary_en": "Open your inventory and equip the starter weapon, then return to Aldric.",
+      "title_fr": "Tes passifs",
+      "title_en": "Your Passives",
+      "summary_fr": "Ouvre tes compétences, onglet Passif, et monte un passif d'un rang, puis retourne voir Aldric.",
+      "summary_en": "Open your skills, Passive tab, and raise a passive by one rank, then return to Aldric.",
       "npc_giver": "npc_tutorial_instructor_aldric",
       "objective_mode": "sequential",
       "objectives": [
         {
-          "template": "equip_item",
+          "template": "upgrade_passive",
           "count": 1,
-          "description_fr": "Équiper une arme",
-          "description_en": "Equip a weapon",
+          "description_fr": "Monter un passif d'un rang",
+          "description_en": "Raise a passive by one rank",
+          "_note": "NOUVEAU TEMPLATE, DEMANDE BACK B5 : economy handle_passive_upgrade publie un evenement au succes (modele SkillPointSpent), writer quete, ajout a SUPPORTED_TEMPLATES, reconciliation a l'acceptation (somme des passifs alloues > 0). Tant que ce n'est pas livre, le service quete REJETTE cette quete au chargement et la chaine d'Aldric s'arrete apres q_tut_intro_01 : ne pas deployer cette data avant le back.",
           "hints": {
             "on_active": [
               {
-                "id": "q_tut_intro_02_obj0_inv",
+                "id": "q_tut_intro_02_obj0_skills",
                 "type": "arrow",
-                "target": "ui_inventory_button",
+                "target": "ui_skills_button",
                 "priority": 90,
                 "show_once": true,
                 "payload": {
-                  "label_fr": "Ouvre ton inventaire",
-                  "label_en": "Open your inventory"
+                  "label_fr": "Ouvre tes compétences, onglet Passif",
+                  "label_en": "Open your skills, Passive tab"
                 }
               }
             ]
@@ -4480,114 +4637,9 @@
         }
       ],
       "rewards": {
-        "xp": 40
+        "xp": 200
       },
       "chain_next": "q_tut_intro_03"
-    },
-    {
-      "id": "q_tut_intro_04",
-      "type": "main",
-      "zone": "tutorial_tavern",
-      "min_level": 1,
-      "flags": [
-        "tutorial"
-      ],
-      "title_fr": "Connais tes forces",
-      "title_en": "Know Your Strengths",
-      "summary_fr": "Investis tes points de stats et améliore une compétence active, puis retourne voir Aldric.",
-      "summary_en": "Allocate your stat points and improve an active skill, then return to Aldric.",
-      "npc_giver": "npc_tutorial_instructor_aldric",
-      "objective_mode": "parallel",
-      "objectives": [
-        {
-          "template": "spend_stat_points",
-          "count": 3,
-          "description_fr": "Investir 3 points de stats",
-          "description_en": "Allocate 3 stat points",
-          "hints": {
-            "on_active": [
-              {
-                "id": "q_tut_intro_04_obj0_stats",
-                "type": "arrow",
-                "target": "ui_stats_button",
-                "priority": 90,
-                "show_once": true,
-                "payload": {
-                  "label_fr": "Ouvre tes statistiques",
-                  "label_en": "Open your stats"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "template": "spend_skill_point",
-          "count": 1,
-          "description_fr": "Améliorer une compétence active",
-          "description_en": "Improve an active skill",
-          "hints": {
-            "on_active": [
-              {
-                "id": "q_tut_intro_04_obj1_skills",
-                "type": "arrow",
-                "target": "ui_skills_button",
-                "priority": 90,
-                "show_once": true,
-                "payload": {
-                  "label_fr": "Ouvre tes compétences",
-                  "label_en": "Open your skills"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "template": "talk_to_npc",
-          "npc_id": "npc_tutorial_instructor_aldric",
-          "count": 1,
-          "description_fr": "Retourner voir Aldric",
-          "description_en": "Return to Aldric",
-          "gated_by_objectives": [
-            0,
-            1
-          ],
-          "hints": {
-            "on_active": [
-              {
-                "id": "q_tut_intro_04_obj2_arrow",
-                "type": "arrow",
-                "target": "npc_tutorial_instructor_aldric",
-                "priority": 85,
-                "show_once": true,
-                "payload": {
-                  "label_fr": "Retourne voir Aldric",
-                  "label_en": "Return to Aldric"
-                }
-              }
-            ]
-          }
-        }
-      ],
-      "rewards": {
-        "xp": 50
-      },
-      "chain_next": "q_tut_intro_05",
-      "quest_hints": {
-        "on_accept": [
-          {
-            "id": "q_tut_intro_04_howto",
-            "type": "modal",
-            "priority": 95,
-            "show_once": true,
-            "payload": {
-              "title_fr": "Répartir tes points",
-              "title_en": "Spending your points",
-              "content_fr": "Ouvre tes statistiques et clique sur le + à côté d'une caractéristique pour y placer un point.\n\nHP augmente ta vie, Souffle ta réserve pour lancer des compétences, Attaque tes dégâts physiques, Magie tes dégâts magiques, et Défense ce que tu encaisses.\n\nRien n'est enregistré tant que tu n'as pas cliqué sur Appliquer.\n\nEnsuite, fais la même chose dans l'écran des compétences pour en monter une d'un rang.",
-              "content_en": "Open your stats and click the + next to a stat to put a point into it.\n\nHP raises your health, Breath your pool for casting skills, Attack your physical damage, Magic your magic damage, and Defense how much you soak up.\n\nNothing is saved until you click Apply.\n\nThen do the same in the skills screen to raise one skill by a rank."
-            }
-          }
-        ]
-      }
     },
     {
       "id": "q_tut_intro_03",
@@ -4664,9 +4716,9 @@
         }
       ],
       "rewards": {
-        "xp": 130
+        "xp": 300
       },
-      "chain_next": "q_tut_intro_04",
+      "chain_next": "q_tut_intro_05",
       "quest_hints": {
         "on_complete": [
           {
@@ -4753,7 +4805,7 @@
         }
       ],
       "rewards": {
-        "xp": 50
+        "xp": 300
       },
       "chain_next": "q_tut_intro_05b"
     },
@@ -4818,7 +4870,7 @@
         }
       ],
       "rewards": {
-        "xp": 50
+        "xp": 300
       },
       "chain_next": "q_tut_intro_06",
       "quest_hints": {
@@ -4853,7 +4905,7 @@
       "npc_giver": "npc_tutorial_instructor_aldric",
       "objective_mode": "sequential",
       "rewards_on_accept": {
-        "_note": "Items donnés à l'acceptation (auto-chain depuis q_tut_intro_05). Le dialogue intro d'Aldric (obj_0) cite ces potions narrativement, mais elles arrivent dès l'acceptation pour que le joueur puisse les placer dès le premier dialogue terminé.",
+        "_note": "Items donnés à l'acceptation (auto-chain depuis q_tut_intro_05b). Le dialogue intro d'Aldric (obj_0) cite ces potions narrativement, mais elles arrivent dès l'acceptation pour que le joueur puisse les placer dès le premier dialogue terminé.",
         "items": [
           {
             "id": "cons_hp_potion_t1",
@@ -4946,7 +4998,7 @@
         }
       ],
       "rewards": {
-        "xp": 50
+        "xp": 250
       },
       "chain_next": "q_tut_intro_07"
     },
@@ -4997,8 +5049,14 @@
         }
       ],
       "rewards": {
-        "xp": 250,
-        "gold": 100
+        "xp": 800,
+        "gold": 50,
+        "items": [
+          {
+            "id": "even_cherev_rank_1",
+            "qty": 3
+          }
+        ]
       },
       "chain_next": "q_tut_intro_08"
     },
@@ -5010,19 +5068,19 @@
       "flags": [
         "tutorial"
       ],
-      "title_fr": "Vers le village",
-      "title_en": "To the Village",
-      "summary_fr": "Le portail est ouvert. Franchis-le pour rejoindre Havreden et retrouver Tobin.",
-      "summary_en": "The portal is open. Cross it to reach Havreden and find Tobin.",
+      "title_fr": "Retour au village",
+      "title_en": "Back to the Village",
+      "summary_fr": "Ta formation est terminée. Repasse la porte de l'arrière-salle pour retrouver la place de Havreden.",
+      "summary_en": "Your training is over. Go back through the back-room door to return to Havreden's square.",
       "npc_giver": "npc_tutorial_instructor_aldric",
       "objectives": [
         {
           "template": "enter_zone",
           "zone_id": "village",
           "count": 1,
-          "description_fr": "Franchir le portail vers Havreden",
-          "description_en": "Cross the portal to Havreden",
-          "_note": "Sortie tuto vers Havreden (village). Point de spawn exact a placer (sortie de la taverne) - update 2026-08-20.",
+          "description_fr": "Retourner sur la place du village",
+          "description_en": "Return to the village square",
+          "_note": "Sortie de l'arriere-salle de la taverne de Rona vers la place (village). Plus de portail : c'est une porte, et elle ne demande plus q_tut_intro_08 (tutorial_house.tscn, cote client).",
           "hints": {
             "on_active": [
               {
@@ -5032,8 +5090,8 @@
                 "priority": 90,
                 "show_once": true,
                 "payload": {
-                  "label_fr": "Utilise le portail",
-                  "label_en": "Use the portal"
+                  "label_fr": "Passe la porte",
+                  "label_en": "Go through the door"
                 }
               }
             ]
@@ -5050,18 +5108,16 @@
             "payload": {
               "title_fr": "Ton apprentissage est terminé",
               "title_en": "Your Training is Complete",
-              "content_fr": "Tu peux maintenant rejoindre Havreden.\n\nTobin t'y attend. Il te montrera où prendre des missions, où acheter ton équipement, et où trouver de quoi renforcer ton familier.\n\nEt si tu veux parler de ce que tu trouves dehors, Aldric reste à la taverne.",
-              "content_en": "You can now head to Havreden.\n\nTobin is waiting for you there. He'll show you where to pick up missions, where to buy your gear, and where to find what your familiar needs.\n\nAnd if you want to talk about what you find out there, Aldric stays at the tavern."
+              "content_fr": "Tu peux retourner sur la place de Havreden.\n\nSi Tobin ne t'a pas encore fait faire le tour du village, c'est lui qu'il faut aller voir : il sait qui cherche des bras en ce moment.\n\nEt si tu veux parler de ce que tu trouves dehors, Aldric reste ici, dans l'arrière-salle de la taverne.",
+              "content_en": "You can head back to Havreden's square.\n\nIf Tobin hasn't shown you around the village yet, he's the one to see: he knows who's looking for hands right now.\n\nAnd if you want to talk about what you find out there, Aldric stays right here, in the tavern's back room."
             }
           }
         ]
       },
       "rewards": {
-        "xp": 240,
-        "gold": 100
+        "xp": 150
       },
-      "_note_hub_tour": "2026-08-24 : cette quete a DESORMAIS un chain_next, vers q_havreden_arrivee. L'ancienne note disait le contraire et s'appuyait sur deux choses qui n'existent plus : q_hub_tour_01 (supprimee avec toute la chaine q_hub_tour_*) et la zone desert_playtest (retiree). q_havreden_arrivee est elle-meme auto-acceptee sur la zone village, ce qui couvre les joueurs qui sautent le tutoriel, et le chainage couvre les autres. Le double-accept redoute par l'ancienne note ne se produit pas : le service quete ignore une auto-acceptation sur une quete deja active ou terminee.",
-      "chain_next": "q_havreden_arrivee"
+      "_note": "Onboarding V2 (2026-09-23) : PLUS de chain_next. La chaine d'Aldric et le tour de Tobin sont independants depuis q_havreden_arrivee, le joueur ne doit pas etre renvoye vers une quete qu'il a peut-etre deja faite."
     },
     {
       "id": "q_milo_premier_cristal",
