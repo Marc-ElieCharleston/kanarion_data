@@ -3190,6 +3190,87 @@
         },
         "range": 6
       }
+    },
+    "boss_rongeur": {
+      "_comment": "Kit propre au Rongeur (boss des Egouts de Havreden). L'invocation passe par le bloc `summon` (Room::summon_monsters) ; la Deferlante est un telegraphe de rangee entiere.",
+      "pool": [
+        {
+          "id": "skill_mob_rongeur_summon_assassins",
+          "name_fr": "Appel de la Meute",
+          "name_en": "Call of the Pack",
+          "tier": "advanced",
+          "target": "self",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 20,
+          "cooldown": 25.0,
+          "cast_time": 1.5,
+          "vfx_type": "buff",
+          "description_fr": "Le Rongeur siffle : un Rat Assassin surgit et bondit sur un combattant au fond de votre ligne.",
+          "description_en": "The Gnawer whistles: a Rat Assassin bursts out and leaps onto a fighter at the back of your line.",
+          "tags": [
+            "summon",
+            "boss"
+          ],
+          "effects": [],
+          "summon": {
+            "monster_id": "mob_rat_assassin",
+            "count": 1,
+            "level_offset": -2
+          },
+          "targeting": {
+            "selection_mode": "self",
+            "valid_target_team": "self",
+            "requires_line_of_sight": false,
+            "bypasses_los": true,
+            "requires_entity_on_target_tile": false
+          },
+          "range": 0
+        },
+        {
+          "id": "skill_mob_rongeur_deferlante",
+          "name_fr": "Déferlante",
+          "name_en": "Sewer Surge",
+          "tier": "advanced",
+          "target": "enemy",
+          "pattern": "row_all",
+          "damage_type": "magical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 160,
+          "mana_cost": 25,
+          "cooldown": 20.0,
+          "cast_time": 4.0,
+          "vfx_type": "wave",
+          "description_fr": "Le Rongeur ouvre une vanne : l'eau des égouts balaie une rangée entière. Inflige 160% ATK dégâts magiques et ralentit (3s). Les cases touchées sont annoncées : sortez de la rangée.",
+          "description_en": "The Gnawer opens a sluice: sewer water sweeps a whole row. Deals 160% ATK magic damage and slows (3s). The cells are announced in advance: leave the row.",
+          "tags": [
+            "damage",
+            "aoe",
+            "telegraph",
+            "boss"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "slow",
+              "duration": 3.0,
+              "stacks_to_apply": 1
+            }
+          ],
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": false,
+            "bypasses_los": true,
+            "requires_entity_on_target_tile": true,
+            "aoe_pattern_id": "row_all"
+          },
+          "range": 12
+        }
+      ]
     }
   }
 }
