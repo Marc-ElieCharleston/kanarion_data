@@ -97,7 +97,7 @@ Toute nouvelle règle (durée de conservation après déconnexion, clés d'entr�
 4. **Template SQL** : `python scripts/dungeon_content.py --dungeon dungeon_xxx --sql out.sql`, puis copier la sortie dans une **nouvelle** migration de `kanarion_back/tools/db-migrate/` (lister le dossier avant de choisir le numéro). Ne jamais réécrire une migration déjà appliquée. Le test `test_templates_ship_with_the_migrations` vérifie la correspondance avec `--check-sql`.
 5. **Client** (`kanarion_front`) :
    - une scène par étage, avec un `RoomBounds` qui correspond à `area_limit` et le nœud `Player` placé sur `entry_position` ;
-   - l'image du décor de combat déclarée dans `scripts/combat/visuals/combat_backdrop.gd` (`PATHS`), importée en compression avec perte comme les autres décors peints ;
+   - l'image du décor de combat déclarée dans `scripts/combat/visuals/combat_backdrop.gd` (`PATHS`), importée en compression avec perte comme les autres décors peints. Partir de `kanarion_front/tools/combat_backdrops/compose_rat_den_sewer.py` : il calcule le décor depuis le cadrage réel du combat (dalles alignées sur les cases, trottoir fin, espace avant le bord). Les générations IA ne respectent pas cette géométrie ;
    - un point d'entrée dans le monde (un interactable avec `metadata/dungeon_id`).
 6. **Pins** : pousser `kanarion_database`, puis aligner `kanarion-meta` dans `kanarion_back` et `kanarion_front`.
 7. **Tests** : adapter les constantes de `kanarion_back/tests/integration/test_dungeon_open_run.py` (ou dupliquer le fichier) et lancer la campagne services démarrés (`GATEWAY_TEST_MODE=1`) : `python -m pytest -m dungeon`.
