@@ -113,8 +113,21 @@ def validate(root, dungeon, front=None):
             for m in members:
                 if m not in monsters:
                     errors.append(f'{where} {gid}: unknown monster {m}')
-            if not isinstance(g.get('stars'), int) or not 0 <= g['stars'] <= 5:
-                errors.append(f'{where} {gid}: stars must be an integer 0..5')
+            # Star: fixed ("stars") or rolled by presence at every (re)spawn from
+            # star_weights (the group's, else structure.star_weights). Keys are stars 0..5.
+            if 'stars' in g:
+                if not isinstance(g['stars'], int) or not 0 <= g['stars'] <= 5:
+                    errors.append(f'{where} {gid}: stars must be an integer 0..5')
+            else:
+                weights = g.get('star_weights', dungeon.get('structure', {}).get('star_weights'))
+                if not isinstance(weights, dict) or not weights:
+                    errors.append(f'{where} {gid}: no stars and no star_weights (group or structure)')
+                else:
+                    for k, v in weights.items():
+                        if not (str(k).isdigit() and 0 <= int(k) <= 5) or not isinstance(v, (int, float)) or v < 0:
+                            errors.append(f'{where} {gid}: star_weights {k}:{v} invalid (star 0..5, weight >= 0)')
+                    if sum(v for v in weights.values() if isinstance(v, (int, float))) <= 0:
+                        errors.append(f'{where} {gid}: star_weights sum to 0')
             if not (isinstance(g.get('position'), list) and len(g['position']) == 2):
                 errors.append(f'{where} {gid}: position [x, y] required')
 

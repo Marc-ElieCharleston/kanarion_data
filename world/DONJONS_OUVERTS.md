@@ -6,7 +6,9 @@ Premier donjon livré sur ce modèle : **Égouts de Havreden** (`dungeon_rat_den
 
 Chaque difficulté (`fissure_1`, `fissure_2`, ...) est un palier distinct, avec ses propres zones d'étage et son propre jeu de monstres. Aucun multiplicateur d'instance ne s'applique. Pour les Égouts, `fissure_1` est la **version facile**, celle que propose Varn (contenu 10-14). Les paliers plus durs viendront avec leurs zones. Le jeu est volontairement exigeant : ne pas affaiblir un palier pour le rendre « faisable ».
 
-Un camp compte au plus **10 entités**, mercenaires et invocations compris. Un groupe de monstres en compte donc au plus 10, et le validateur le vérifie.
+Un camp compte au plus **10 entités**, mercenaires et invocations compris. Un groupe de monstres en compte donc au plus 10, et le validateur le vérifie. Les invocations d'un boss respectent ce plafond (`Room::summon_monsters`).
+
+**Groupes (Charleston, 2026-09-24).** 8 monstres par groupe, 3 à 5 groupes par salle. L'étoile d'un groupe n'est pas écrite : presence la tire à chaque apparition et réapparition selon `structure.star_weights` (Égouts : 30 % 3★, 40 % 4★, 30 % 5★). Un groupe qui écrit `stars` (le boss, 5★) n'est pas tiré ; un groupe peut aussi porter ses propres `star_weights`.
 
 ## Le modèle en une phrase
 
@@ -45,7 +47,8 @@ Toute nouvelle règle (durée de conservation après déconnexion, clés d'entr�
     "floor_count": 5,
     "groups_needed_to_advance": 1,
     "boss_floor_index": 4,             // = floor_count - 1
-    "spawn_model": "fixed_groups"      // active le contrat décrit ici
+    "spawn_model": "fixed_groups",     // active le contrat décrit ici
+    "star_weights": {"3": 30, "4": 40, "5": 30}  // tirage de l'étoile de chaque groupe
   },
   "difficulties": { "fissure_1": { "key_required": null } },
   "floors": [
@@ -54,7 +57,7 @@ Toute nouvelle règle (durée de conservation après déconnexion, clés d'entr�
       "mob_level_range": [8, 9],       // niveau des monstres de l'étage
       "entry_position": [x, y],        // point d'arrivée dans la salle
       "monster_groups": [
-        { "id": "f1_...", "stars": 3, "position": [x, y],
+        { "id": "f1_...", "position": [x, y],        // étoile tirée (structure.star_weights)
           "members": ["mob_leader", "mob_b", "mob_c"] }   // members[0] = chef du pack
       ]
     },
