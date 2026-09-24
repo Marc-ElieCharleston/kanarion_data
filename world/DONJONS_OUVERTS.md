@@ -2,6 +2,12 @@
 
 Premier donjon livré sur ce modèle : **Égouts de Havreden** (`dungeon_rat_den`, difficulté `fissure_1`, 5 étages), le 2026-09-23.
 
+## Paliers de difficulté
+
+Chaque difficulté (`fissure_1`, `fissure_2`, ...) est un palier distinct, avec ses propres zones d'étage et son propre jeu de monstres. Aucun multiplicateur d'instance ne s'applique. Pour les Égouts, `fissure_1` est la **version facile**, celle que propose Varn (contenu 10-14). Les paliers plus durs viendront avec leurs zones. Le jeu est volontairement exigeant : ne pas affaiblir un palier pour le rendre « faisable ».
+
+Un camp compte au plus **10 entités**, mercenaires et invocations compris. Un groupe de monstres en compte donc au plus 10, et le validateur le vérifie.
+
 ## Le modèle en une phrase
 
 Un donjon ouvert est une suite de zones d'étage **partagées** (plusieurs joueurs s'y croisent). La progression, elle, est **individuelle** : le serveur la tient en base (`character_dungeon_progress`) et décide de tout. Le client affiche le résultat et se rend là où le serveur l'envoie.
