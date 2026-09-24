@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": "1.0",
-    "last_updated": "2026-07-21",
+    "last_updated": "2026-09-24",
     "description": "Compositions des combats du tutoriel (option B combat forgiving + sparring trinite, decision 2026-07-21). Source de verite data pour le spawn serveur A1-phase2.",
     "consumed_by": "server-combat combat_host.cpp handle_tutorial_combat_start (A1-phase2). Etat actuel : le serveur whiteliste rat_solo et group_contaminated en dur et spawn mob_id/mob_count depuis la requete client. Cible : le serveur resout le scenario_id dans CE fichier et ignore mob_id/mob_count client (anti-spoof + zero decision client).",
     "spawn_contract": {
@@ -11,9 +11,73 @@
       "level_rule": "Les levels ci-dessous sont EXPLICITES (le champ level_offset des profils de balance est ignore pour les spawns tuto).",
       "grid_hint": "Indication de placement sur la grille 4x5 : front = 1re ligne, back = 4e ligne. Le serveur choisit la colonne."
     },
-    "scenario_id_note": "sparring_trinity est un NOUVEAU scenario a whitelister cote serveur (A1-phase2). group_contaminated (3x mob_rat identiques) reste fonctionnel le temps de la transition puis sera retire quand le lot B re-sequencera les quetes."
+    "scenario_id_note": "Onboarding V2 lot 2 (2026-09-23) : la chaine d'Aldric utilise rat_solo (q_tut_intro_03), duo_rats (q_tut_intro_05c), essai_grimoire (q_tut_intro_05b, lot 3) et meute_sortie (q_tut_intro_07). Lot 3 (2026-09-24) : UNE seule empreinte garantie dans toute la chaine, celle de rat_solo (mob_rat_tutorial, table rat_tutorial) ; duo_rats et essai_grimoire utilisent mob_rat (butin normal, empreinte a 5 %). sparring_trinity n'est plus reference par aucune quete, garde en data. Le champ level de chaque entree ennemie est le niveau IMPOSE du monstre (DEMANDE BACK S1 : l'appliquer et accepter un base_level != 1 pour les scenarios de la data, plafond 5 monstres conserve)."
   },
   "scenarios": {
+    "duo_rats": {
+      "zone": "tutorial_tavern",
+      "description": "Premier combat a deux : le joueur et son familier (spawne au JOIN_ROOM depuis la table familiars) contre deux rats du terrier. Lecon : le familier agit seul, sa barre de vie, ses competences en bas de l'ecran.",
+      "allies": [],
+      "enemies": [
+        {
+          "kind": "monster",
+          "monster_id": "mob_rat",
+          "level": 2,
+          "count": 2,
+          "grid_hint": "back"
+        }
+      ],
+      "rewards_note": "Lot 3 : mob_rat au lieu de mob_rat_tutorial, plus de butin garanti (la seule empreinte garantie de la chaine est celle de rat_solo). XP reelle : mob_rat est fodder (x0.6), base_xp_for_level(2) = round(150 / 2.35) = 64, soit 38 par rat et 76 pour le combat tant que le joueur n'a pas plus de 5 niveaux d'ecart (niveau 7 ou moins). Niveau 2 plutot que 1 pour que le joueur de niveau 6-7 ne tombe pas dans la penalite d'ecart.",
+      "accept_criteria": [
+        "Le joueur lv6-7 et un familier lv1 gagnent sans potion.",
+        "Le familier est bien present dans la salle (max_entities = 1 + 2 + 0 + 2)."
+      ]
+    },
+    "essai_grimoire": {
+      "zone": "tutorial_tavern",
+      "description": "Combat d'essai apres le grimoire (q_tut_intro_05b) : le joueur et son familier contre deux rats du terrier, assez longtemps pour que le familier lance la competence qu'il vient d'apprendre (book_starter_heal = un petit soin, lance quand l'un des deux est blesse).",
+      "allies": [],
+      "enemies": [
+        {
+          "kind": "monster",
+          "monster_id": "mob_rat",
+          "level": 2,
+          "count": 2,
+          "grid_hint": "back"
+        }
+      ],
+      "rewards_note": "Meme calcul que duo_rats : 2 x 38 = 76 XP a un joueur de niveau 7 ou moins, butin normal de mob_rat (empreinte a 5 %, non garantie).",
+      "accept_criteria": [
+        "Le familier lance sa nouvelle competence au moins une fois pendant le combat.",
+        "Le joueur lv7-8 et son familier gagnent sans potion."
+      ]
+    },
+    "meute_sortie": {
+      "zone": "tutorial_tavern",
+      "description": "Premiere vraie sortie : le joueur et son familier contre une meute de vrais monstres de niveau 5, XP et butin reels. Deux loups (assassin) et un sanglier enrage (brute) : le joueur voit une composition, et le placement selon le role compte.",
+      "allies": [],
+      "enemies": [
+        {
+          "kind": "monster",
+          "monster_id": "mob_wolf",
+          "level": 5,
+          "count": 2,
+          "grid_hint": "front"
+        },
+        {
+          "kind": "monster",
+          "monster_id": "mob_enraged_boar",
+          "level": 5,
+          "count": 1,
+          "grid_hint": "front"
+        }
+      ],
+      "rewards_note": "Tier standard (xp x1.0), base_xp_for_level(5) = round(315 / 2.875) = 110, soit 330 XP a un joueur de niveau 10 ou moins (au-dela, penalite rewards.json level_difference : -20 % par niveau au-dela de 5 d'ecart). Les deux especes ont base_level 5 et un _frames.tres de combat exact (wolf_frames, enraged_boar_frames) : si le level est ignore, la meute reste celle-ci.",
+      "accept_criteria": [
+        "Un joueur lv8-9 avec son familier gagne en consommant au plus une potion.",
+        "La salle compte 3 monstres, aucun bot."
+      ]
+    },
     "rat_solo": {
       "zone": "tutorial_tavern",
       "description": "Premier combat du jeu. Un seul rat docile : le joueur a le temps de lire les overlays PREGAME et d'experimenter le ciblage sans pression.",
@@ -33,6 +97,7 @@
       ]
     },
     "sparring_trinity": {
+      "_status": "Plus reference par aucune quete depuis le lot 2 de l'onboarding V2 (2026-09-23), q_tut_intro_07 utilise meute_sortie. Garde en data.",
       "zone": "tutorial_tavern",
       "description": "Combat de sparring qui montre l'USP tactique : compos a roles des deux cotes. La lecon est 'tue le soigneur d'abord' : ignorer le soigneur ennemi fait trainer le combat, le focus le fait tomber et debloque la victoire. Compo alliee (2026-07-21) = 2 mercs (tank warrior + healer) + le FAMILIER du joueur (auto-spawn au JOIN_ROOM, actif depuis q_tut_intro_05) + le joueur = 4 vs 3 mercs ennemis. Le familier + le joueur portent le DPS, les 2 mercs tiennent tank+heal. Passe de 3 mercs allies a 2 pour integrer le familier au coeur de l'apprentissage groupe (vision familier-coeur).",
       "allies": [

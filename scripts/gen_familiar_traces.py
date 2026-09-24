@@ -36,7 +36,9 @@ Trois regles en decoulent, et elles sont le coeur de ce fichier :
 Usage
 -----
     python scripts/gen_familiar_traces.py            # ajoute ce qui manque
-    python scripts/gen_familiar_traces.py --check    # ne touche rien, sort 1 si ecart
+    python scripts/gen_familiar_traces.py --check    # ne touche rien, sort 1 si une
+                                                     # empreinte manque ou si le contenu
+                                                     # d'une empreinte presente differe
     python scripts/gen_familiar_traces.py --prune    # retire aussi les orphelines
 """
 import json
@@ -49,8 +51,8 @@ RARITIES = [
     ("common", "Commun", "Common", 40),
     ("uncommon", "Peu Commun", "Uncommon", 70),
     ("rare", "Rare", "Rare", 120),
-    ("epic", "Epique", "Epic", 400),
-    ("legendary", "Legendaire", "Legendary", 1200),
+    ("epic", "Épique", "Epic", 400),
+    ("legendary", "Légendaire", "Legendary", 1200),
 ]
 
 # role de familier -> (libelle FR, libelle EN)
@@ -59,6 +61,15 @@ ROLES = {
     "tank": ("Tank", "Tank"),
     "heal": ("Soin", "Healer"),
     "utilitaire": ("Utilitaire", "Utility"),
+}
+
+# Empreintes vendues par Colette (entities/npcs.json, shop "familiar_traces") :
+# seules a porter un prix d'achat. Le reste s'obtient uniquement par capture.
+SHOP_BUY_PRICES = {
+    "empreinte_souffle_scarabee_attaque_common": 200,
+    "empreinte_souffle_sanglier_tank_common": 200,
+    "empreinte_souffle_rat_heal_common": 200,
+    "empreinte_souffle_loup_utilitaire_common": 200,
 }
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -133,12 +144,13 @@ def libelles_existants(traces):
 
 def empreinte(fam, ffr, fen, role, rar_id, rar_fr, rar_en, prix):
     rfr, ren = ROLES[role]
-    return {
-        "id": f"empreinte_souffle_{fam}_{role}_{rar_id}",
+    tid = f"empreinte_souffle_{fam}_{role}_{rar_id}"
+    t = {
+        "id": tid,
         "name_fr": f"Empreinte de Souffle - {ffr} {rfr} ({rar_fr})",
         "name_en": f"Breath Imprint - {fen} {ren} ({rar_en})",
-        "description_fr": (f"Une empreinte de Souffle (voie {rfr}) capturee sur une creature "
-                           f"de type {ffr}. Apportez-la a Colette pour la faire incuber en familier."),
+        "description_fr": (f"Une empreinte de Souffle (voie {rfr}) capturée sur une créature "
+                           f"de type {ffr}. Apportez-la à Colette pour la faire incuber en familier."),
         "description_en": (f"A Breath imprint ({ren} path) captured from a {fen} creature. "
                            f"Bring it to Colette to incubate it into a familiar."),
         "rarity": rar_id,
@@ -155,6 +167,9 @@ def empreinte(fam, ffr, fen, role, rar_id, rar_fr, rar_en, prix):
         "stack_max": 99,
         "sell_price": prix,
     }
+    if tid in SHOP_BUY_PRICES:
+        t["buy_price"] = SHOP_BUY_PRICES[tid]
+    return t
 
 
 def main():
@@ -183,6 +198,10 @@ def main():
                 voulues[t["id"]] = t
 
     a_ajouter = [t for i, t in voulues.items() if i not in par_id]
+    # Entrees presentes dont le contenu differe de ce que le script produirait.
+    # Signalees seulement (regle 3 : le script ne reecrit pas une entree vivante),
+    # mais elles font echouer --check : un ecart = la data ou le script a derive.
+    derivees = [i for i, t in voulues.items() if i in par_id and par_id[i] != t]
     orphelines = [t for i, t in par_id.items() if i not in voulues]
 
     if nouvelles_familles:
@@ -201,8 +220,15 @@ def main():
         fams = sorted({t.get("family", "?") for t in orphelines})
         print("  orphelines (CONSERVEES, --prune pour les retirer) :", ", ".join(fams))
 
+    if derivees:
+        print(f"  {len(derivees)} empreinte(s) dont le contenu differe du script :")
+        for i in derivees[:20]:
+            cles = sorted(k for k in set(par_id[i]) | set(voulues[i])
+                          if par_id[i].get(k) != voulues[i].get(k))
+            print(f"    {i} : {', '.join(cles)}")
+
     if check:
-        ecart = len(a_ajouter) + (len(orphelines) if prune else 0)
+        ecart = len(a_ajouter) + len(derivees) + (len(orphelines) if prune else 0)
         if ecart:
             print("--check : le fichier n'est pas a jour")
             return 1
