@@ -52,6 +52,7 @@ Validation happens at three levels:
 - **`systems/`** — Economy, guilds, achievements, PvP, leaderboards, enhancement, keystones (max 1 active, radical gameplay modifiers), Koro cards (cross-class skills, C/B/A/S/SS ranks), encounter stars (0-5 difficulty), boutique/battle pass, daily rewards, social, progression
 - **`ui/`** — Icon definitions (`icons.json`: 496 icons with priority/status/category/hint)
 - **`world/`** — Zones, quests, dungeons, lore, whispers (found-text), world map
+  - **Donjons ouverts** (`dungeons.json` `spawn_model: fixed_groups`) : procédure, règles de parcours et pièges dans `world/DONJONS_OUVERTS.md` ; validateur `scripts/dungeon_content.py` (lancé par la CI).
 
 ## JSON Conventions
 
