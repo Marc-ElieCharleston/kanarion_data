@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": "1.0",
-    "last_updated": "2026-09-23",
+    "last_updated": "2026-09-24",
     "description": "Compositions des combats du tutoriel (option B combat forgiving + sparring trinite, decision 2026-07-21). Source de verite data pour le spawn serveur A1-phase2.",
     "consumed_by": "server-combat combat_host.cpp handle_tutorial_combat_start (A1-phase2). Etat actuel : le serveur whiteliste rat_solo et group_contaminated en dur et spawn mob_id/mob_count depuis la requete client. Cible : le serveur resout le scenario_id dans CE fichier et ignore mob_id/mob_count client (anti-spoof + zero decision client).",
     "spawn_contract": {
@@ -11,26 +11,45 @@
       "level_rule": "Les levels ci-dessous sont EXPLICITES (le champ level_offset des profils de balance est ignore pour les spawns tuto).",
       "grid_hint": "Indication de placement sur la grille 4x5 : front = 1re ligne, back = 4e ligne. Le serveur choisit la colonne."
     },
-    "scenario_id_note": "Onboarding V2 lot 2 (2026-09-23) : la chaine d'Aldric utilise rat_solo (q_tut_intro_03), duo_rats (q_tut_intro_05c) et meute_sortie (q_tut_intro_07). sparring_trinity n'est plus reference par aucune quete, garde en data. Le champ level de chaque entree ennemie est le niveau IMPOSE du monstre (DEMANDE BACK S1 : l'appliquer et accepter un base_level != 1 pour les scenarios de la data, plafond 5 monstres conserve)."
+    "scenario_id_note": "Onboarding V2 lot 2 (2026-09-23) : la chaine d'Aldric utilise rat_solo (q_tut_intro_03), duo_rats (q_tut_intro_05c), essai_grimoire (q_tut_intro_05b, lot 3) et meute_sortie (q_tut_intro_07). Lot 3 (2026-09-24) : UNE seule empreinte garantie dans toute la chaine, celle de rat_solo (mob_rat_tutorial, table rat_tutorial) ; duo_rats et essai_grimoire utilisent mob_rat (butin normal, empreinte a 5 %). sparring_trinity n'est plus reference par aucune quete, garde en data. Le champ level de chaque entree ennemie est le niveau IMPOSE du monstre (DEMANDE BACK S1 : l'appliquer et accepter un base_level != 1 pour les scenarios de la data, plafond 5 monstres conserve)."
   },
   "scenarios": {
     "duo_rats": {
       "zone": "tutorial_tavern",
-      "description": "Premier combat a deux : le joueur et son familier (spawne au JOIN_ROOM depuis la table familiars) contre deux rats dociles. Lecon : le familier agit seul, sa barre de vie, ses competences en bas de l'ecran.",
+      "description": "Premier combat a deux : le joueur et son familier (spawne au JOIN_ROOM depuis la table familiars) contre deux rats du terrier. Lecon : le familier agit seul, sa barre de vie, ses competences en bas de l'ecran.",
       "allies": [],
       "enemies": [
         {
           "kind": "monster",
-          "monster_id": "mob_rat_tutorial",
-          "level": 1,
+          "monster_id": "mob_rat",
+          "level": 2,
           "count": 2,
           "grid_hint": "back"
         }
       ],
-      "rewards_note": "XP reelle : 2 x 46 (base_xp_for_level(1) = round(100 / 2.175) = 46, xp_multiplier 1.0). Loot : la table rat_tutorial donne 100 % empreinte rat + book_starter_heal par rat.",
+      "rewards_note": "Lot 3 : mob_rat au lieu de mob_rat_tutorial, plus de butin garanti (la seule empreinte garantie de la chaine est celle de rat_solo). XP reelle : mob_rat est fodder (x0.6), base_xp_for_level(2) = round(150 / 2.35) = 64, soit 38 par rat et 76 pour le combat tant que le joueur n'a pas plus de 5 niveaux d'ecart (niveau 7 ou moins). Niveau 2 plutot que 1 pour que le joueur de niveau 6-7 ne tombe pas dans la penalite d'ecart.",
       "accept_criteria": [
         "Le joueur lv6-7 et un familier lv1 gagnent sans potion.",
         "Le familier est bien present dans la salle (max_entities = 1 + 2 + 0 + 2)."
+      ]
+    },
+    "essai_grimoire": {
+      "zone": "tutorial_tavern",
+      "description": "Combat d'essai apres le grimoire (q_tut_intro_05b) : le joueur et son familier contre deux rats du terrier, assez longtemps pour que le familier lance la competence qu'il vient d'apprendre (book_starter_heal = un petit soin, lance quand l'un des deux est blesse).",
+      "allies": [],
+      "enemies": [
+        {
+          "kind": "monster",
+          "monster_id": "mob_rat",
+          "level": 2,
+          "count": 2,
+          "grid_hint": "back"
+        }
+      ],
+      "rewards_note": "Meme calcul que duo_rats : 2 x 38 = 76 XP a un joueur de niveau 7 ou moins, butin normal de mob_rat (empreinte a 5 %, non garantie).",
+      "accept_criteria": [
+        "Le familier lance sa nouvelle competence au moins une fois pendant le combat.",
+        "Le joueur lv7-8 et son familier gagnent sans potion."
       ]
     },
     "meute_sortie": {

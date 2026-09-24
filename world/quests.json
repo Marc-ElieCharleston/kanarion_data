@@ -4091,17 +4091,18 @@
       "min_level": 1,
       "title_fr": "Ne pars pas seul",
       "title_en": "Don't Go Out Alone",
-      "summary_fr": "Personne ne tient longtemps seul dehors. Prends un compagnon chez Colette, engage un mercenaire chez Hestia, et passe voir Verena au registre des guildes.",
-      "summary_en": "Nobody lasts long alone out there. Get a companion from Colette, hire a mercenary from Hestia, and stop by Verena at the guild register.",
+      "summary_fr": "Personne ne tient longtemps seul dehors. Colette t'offre un compagnon de plus : choisis-le et active-le. Engage ensuite un mercenaire chez Hestia, et passe voir Verena au registre des guildes.",
+      "summary_en": "Nobody lasts long alone out there. Colette offers you one more companion: choose it and set it active. Then hire a mercenary from Hestia, and stop by Verena at the guild register.",
       "npc_giver": "npc_hub_guide_tobin",
       "objective_mode": "parallel",
       "objectives": [
         {
-          "template": "choose_familiar",
+          "template": "claim_familiar_gift",
+          "offer_id": "colette_village",
           "count": 1,
-          "description_fr": "Choisir ton compagnon avec Colette",
-          "description_en": "Choose your companion with Colette",
-          "_note": "Colette du village ouvre l'ecran de choix si le joueur n'a aucun familier (main.gd npc_familiar_choose). DEMANDE BACK B7 : reconcilier a l'acceptation si le perso a deja un familier (table familiars), sinon un joueur qui a fait la chaine d'Aldric avant ne peut plus valider.",
+          "description_fr": "Choisir le compagnon que Colette t'offre",
+          "description_en": "Choose the companion Colette offers you",
+          "_note": "Lot 3 (2026-09-24). Remplace choose_familiar. Cible = offer_id (config/familiar_balance.json gift_offers.colette_village : loup attaque, sanglier tank, rat heal, scarabee utilitaire). Writer : kanarion.familiar.event.gift_claimed + reconciliation a l'acceptation depuis familiar_gifts. Le familier offert va dans un emplacement porte libre (sinon au stock), jamais actif : d'ou l'objectif suivant.",
           "hints": {
             "on_active": [
               {
@@ -4115,8 +4116,29 @@
                   "label_en": "Go see Colette"
                 }
               }
+            ],
+            "on_complete": [
+              {
+                "id": "q_havreden_tour_02_familiar_rules_modal",
+                "type": "modal",
+                "priority": 89,
+                "show_once": true,
+                "payload": {
+                  "title_fr": "Porter et activer un familier",
+                  "title_en": "Carrying and activating a familiar",
+                  "content_fr": "Tu peux porter quatre familiers à la fois, dans tes quatre emplacements. Les autres attendent au stock.\n\nUn seul d'entre eux est actif : c'est lui qui entre en combat avec toi, et lui seul gagne de l'expérience. Ceux que tu portes sans les activer, comme ceux du stock, ne gagnent rien.\n\nPour faire combattre ton nouveau compagnon, ouvre Mes familiers : Équiper le place dans un emplacement, Activer le fait combattre. Le bouton « Changer », sur le panneau de ton familier, fait la même chose plus vite.\n\nTu ne changes de familier actif qu'hors combat : ni pendant un combat, ni pendant le compte à rebours qui le précède.",
+                  "content_en": "You can carry four familiars at once, in your four slots. The others wait in storage.\n\nOnly one of them is active: it's the one that goes into battle with you, and the only one that gains experience. The ones you carry without setting them active, like those in storage, gain nothing.\n\nTo make your new companion fight, open My Familiars: Equip puts it in a slot, Set active makes it fight. The Swap button on your familiar's panel does the same thing faster.\n\nYou can only change your active familiar outside combat: not during a fight, nor during the countdown before it."
+                }
+              }
             ]
           }
+        },
+        {
+          "template": "activate_familiar",
+          "count": 1,
+          "description_fr": "Active ton nouveau familier",
+          "description_en": "Set your new familiar active",
+          "_note": "Lot 3 (2026-09-24). Sans archetype_id : n'importe quel passage en actif (set_active, ou event.chosen avec is_active). Le mode parallel permet en theorie de le valider AVANT le cadeau en reactivant un ancien familier : si le back cible le familier du cadeau (alternative du contrat), rien a changer ici. Replique de Colette : q_havreden_tour_02_obj_1. Modale des regles : on_complete de l'objectif cadeau."
         },
         {
           "template": "recruit_mercenary",
@@ -4179,11 +4201,11 @@
         ]
       },
       "rewards": {
-        "xp": 800,
+        "xp": 850,
         "gold": 50
       },
       "chain_next": "q_havreden_tour_03",
-      "_note": "Tour de Havreden, etape 2 (onboarding V2, 2026-09-23). Choisir un compagnon et engager un mercenaire sont des actions ; Verena reste une visite (rejoindre une guilde demande une invitation, on ne l'impose pas ici, q_verena_guilde s'en charge). Repliques : cle q_havreden_tour_02_default chez Colette, Hestia et Verena."
+      "_note": "Tour de Havreden, etape 2 (onboarding V2, 2026-09-23). Choisir un compagnon et engager un mercenaire sont des actions ; Verena reste une visite (rejoindre une guilde demande une invitation, on ne l'impose pas ici, q_verena_guilde s'en charge). Repliques : cle q_havreden_tour_02_default chez Colette, Hestia et Verena. Lot 3 (2026-09-24) : choose_familiar remplace par claim_familiar_gift (colette_village) + activate_familiar, replique q_havreden_tour_02_obj_1 de Colette pour l'activation, 4 objectifs, XP 800 -> 850."
     },
     {
       "id": "q_colette_incubation",
@@ -4529,21 +4551,29 @@
       "min_level": 12,
       "title_fr": "Un compagnon de la lisière",
       "title_en": "A Companion from the Verge",
-      "summary_fr": "Les bois autour de Havreden grouillent de créatures qui n'attendent qu'un lien. Capture-en une et confie-la à Colette pour lui donner sa voie.",
-      "summary_en": "The woods around Havreden teem with creatures waiting for a bond. Capture one and bring it to Colette to set its path.",
+      "summary_fr": "Les bois autour de Havreden grouillent de créatures qui n'attendent qu'un lien. Rapporte à Colette l'empreinte de l'une d'elles, fais-la éclore, puis emmène ce nouveau compagnon au combat.",
+      "summary_en": "The woods around Havreden teem with creatures waiting for a bond. Bring Colette the imprint of one of them, hatch it, then take your new companion into battle.",
       "npc_giver": "npc_familiar_breeder_colette",
+      "objective_mode": "sequential",
       "objectives": [
         {
-          "template": "choose_familiar",
+          "template": "capture_familiar",
           "count": 1,
-          "description_fr": "Lier un compagnon capturé",
-          "description_en": "Bind a captured companion"
+          "description_fr": "Faire éclore une empreinte de Souffle chez Colette",
+          "description_en": "Hatch a Breath imprint at Colette's"
+        },
+        {
+          "template": "activate_familiar",
+          "count": 1,
+          "description_fr": "Activer un familier",
+          "description_en": "Set a familiar active"
         }
       ],
       "rewards": {
         "xp": 135,
         "gold": 100
-      }
+      },
+      "_note": "Lot 3 (2026-09-24). Etait choose_familiar : ce template n'avance plus que sur le choix tutoriel du rat d'Aldric, unique par personnage (faille P1 fermee cote serveur), donc la quete etait infaisable, ou validee d'office par la reconciliation B7. Devient capture_familiar (evenement trace_deposited) puis activate_familiar sans cible."
     },
     {
       "id": "q_varn_tetes_de_bande",
@@ -4942,7 +4972,7 @@
           "count": 1,
           "description_fr": "Affronter deux rats avec ton familier",
           "description_en": "Fight two rats with your familiar",
-          "_note": "Scenario duo_rats (config/tutorial_encounters.json) : 2x mob_rat_tutorial niveau 1 ; le familier actif du joueur est spawne au JOIN_ROOM. DEMANDE FRONT C1 : lancer le combat apres le dialogue q_tut_intro_05c_obj_0 d'Aldric, en lisant scenario_id sur cet objectif. ATTENTION loot : la table rat_tutorial donne a 100 % une empreinte rat et un book_starter_heal par rat, donc 2 empreintes + 2 grimoires de plus ; c'est ce qui garantit l'empreinte de q_tut_intro_08 meme si le joueur a deja depose la premiere.",
+          "_note": "Scenario duo_rats (config/tutorial_encounters.json) : lot 3, 2x mob_rat niveau 2 (plus mob_rat_tutorial) ; le familier actif du joueur est spawne au JOIN_ROOM. Le combat part apres le dialogue q_tut_intro_05c_obj_0 d'Aldric. Plus de butin garanti : l'empreinte de q_tut_intro_08 vient du premier rat (rat_solo, table rat_tutorial, garantie), et le rayon empreintes de Colette au village sert de filet.",
           "hints": {
             "on_active": [
               {
@@ -5014,8 +5044,8 @@
       ],
       "title_fr": "Le grimoire",
       "title_en": "The Tome",
-      "summary_fr": "Le rat t'a laissé un grimoire. Colette t'expliquera comment ton compagnon peut l'apprendre.",
-      "summary_en": "The rat left you a tome. Colette will explain how your companion can learn it.",
+      "summary_fr": "Le rat t'a laissé un grimoire. Colette t'expliquera comment ton compagnon peut l'apprendre, puis tu le regarderas s'en servir en combat.",
+      "summary_en": "The rat left you a tome. Colette will explain how your companion can learn it, then you'll watch it use it in a fight.",
       "npc_giver": "npc_tutorial_familiar_colette",
       "objective_mode": "sequential",
       "objectives": [
@@ -5042,6 +5072,29 @@
           "_note": "Template a creer cote backend. Incremente quand le familier apprend effectivement la competence du livre. ATTENTION : le flux n'est PAS USE_ITEM mais l'opcode dedie 0x0F1A (le serveur refuse USE_ITEM sur un grimoire). PREREQUIS LOOT : un livre de rang C doit tomber sur le rat du combat tutoriel q_tut_intro_03, sinon la quete n'est pas franchissable."
         },
         {
+          "template": "tutorial_combat_complete",
+          "scenario_id": "essai_grimoire",
+          "count": 1,
+          "description_fr": "Regarder ton familier utiliser sa nouvelle compétence",
+          "description_en": "Watch your familiar use its new skill",
+          "_note": "Lot 3 (2026-09-24). Scenario essai_grimoire (config/tutorial_encounters.json) : 2x mob_rat niveau 2. Le combat part apres la replique q_tut_intro_05b_obj_1 de Colette (giver de la quete), comme duo/meute avec Aldric.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_05b_obj1_arrow",
+                "type": "arrow",
+                "target": "npc_tutorial_familiar_colette",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Parle à Colette pour commencer",
+                  "label_en": "Talk to Colette to begin"
+                }
+              }
+            ]
+          }
+        },
+        {
           "template": "talk_to_npc",
           "npc_id": "npc_tutorial_familiar_colette",
           "count": 1,
@@ -5065,7 +5118,7 @@
         }
       ],
       "rewards": {
-        "xp": 250
+        "xp": 200
       },
       "chain_next": "q_tut_intro_06",
       "quest_hints": {
@@ -5211,10 +5264,18 @@
       ],
       "title_fr": "Sortie avec ton familier",
       "title_en": "Heading Out With Your Familiar",
-      "summary_fr": "Une meute rôde près du terrier : deux loups et un sanglier enragé. Affronte-la avec ton familier, puis reviens voir Aldric.",
-      "summary_en": "A pack is prowling near the warren: two wolves and an enraged boar. Face it with your familiar, then come back to Aldric.",
+      "summary_fr": "Une meute rôde près du terrier : deux loups et un sanglier enragé. Affronte-la avec ton familier, soigne-le, puis reviens voir Aldric.",
+      "summary_en": "A pack is prowling near the warren: two wolves and an enraged boar. Face it with your familiar, heal it, then come back to Aldric.",
       "npc_giver": "npc_tutorial_instructor_aldric",
       "objective_mode": "sequential",
+      "rewards_on_accept": {
+        "items": [
+          {
+            "id": "cons_hp_potion_pet_t1",
+            "qty": 1
+          }
+        ]
+      },
       "objectives": [
         {
           "template": "tutorial_combat_complete",
@@ -5222,7 +5283,7 @@
           "count": 1,
           "description_fr": "Vaincre la meute avec ton familier",
           "description_en": "Defeat the pack with your familiar",
-          "_note": "Lot 2 : remplace sparring_trinity. Scenario meute_sortie (config/tutorial_encounters.json) : 2x mob_wolf niveau 5 + 1x mob_enraged_boar niveau 5, vrais monstres (tier standard, sprites de combat wolf_frames/enraged_boar_frames), XP et butin reels. DEMANDE BACK S1 : appliquer le champ level de chaque entree (les deux especes ont base_level 5, le combat reste juste si le level est ignore) et lever le refus base_level != 1 pour les scenarios de la data. DEMANDE FRONT C1 : lancer le combat apres le dialogue q_tut_intro_07_obj_0.",
+          "_note": "Lot 2 : remplace sparring_trinity. Scenario meute_sortie (config/tutorial_encounters.json) : 2x mob_wolf niveau 5 + 1x mob_enraged_boar niveau 5, vrais monstres (tier standard, sprites de combat wolf_frames/enraged_boar_frames), XP et butin reels. DEMANDE BACK S1 : appliquer le champ level de chaque entree (les deux especes ont base_level 5, le combat reste juste si le level est ignore) et lever le refus base_level != 1 pour les scenarios de la data. DEMANDE FRONT C1 : lancer le combat apres le dialogue q_tut_intro_07_obj_0. Lot 3 : Aldric a une variante par role du familier actif (q_tut_intro_07_obj_0_attaque / _tank / _heal / _utilitaire), la cle generique q_tut_intro_07_obj_0 reste le repli.",
           "hints": {
             "on_active": [
               {
@@ -5234,6 +5295,29 @@
                 "payload": {
                   "label_fr": "Parle à Aldric pour partir",
                   "label_en": "Talk to Aldric to head out"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "use_item",
+          "item_id": "cons_hp_potion_pet_t1",
+          "count": 1,
+          "description_fr": "Soigner ton familier avec une potion",
+          "description_en": "Heal your familiar with a potion",
+          "_note": "Lot 3 (2026-09-24). use_item filtre sur item_id (objective_target_id), avance sur kanarion.events.character.ItemUsed. La potion agit sur le familier ACTIF (heal_pet_hp_flat, economy -> FamiliarPotionEvent). q_tut_intro_06 en donne 3 et rewards_on_accept en donne 1 de plus ici, Milo en vend au village.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_07_obj1_inv",
+                "type": "arrow",
+                "target": "ui_inventory_button",
+                "priority": 88,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Ouvre ton inventaire",
+                  "label_en": "Open your inventory"
                 }
               }
             ]
@@ -5334,7 +5418,7 @@
           "count": 1,
           "description_fr": "Confier une empreinte de Souffle à Colette",
           "description_en": "Hand a Breath imprint to Colette",
-          "_note": "Lot 2, manque 3 : boucle de capture. Template deja branche (quest_service SUPPORTED_TEMPLATES, kanarion.familiar.event.trace_deposited publie par economy quand une empreinte est consommee via l'incubation de Colette). Pas de filtre family. Le joueur a au moins une empreinte : le combat du rat (q_tut_intro_03) en donne une garantie, le duo (q_tut_intro_05c) deux de plus.",
+          "_note": "Lot 2, manque 3 : boucle de capture. Template deja branche (quest_service SUPPORTED_TEMPLATES, kanarion.familiar.event.trace_deposited publie par economy quand une empreinte est consommee via l'incubation de Colette). Pas de filtre family. Le joueur a au moins une empreinte : le combat du rat (q_tut_intro_03) en donne une garantie, la seule de la chaine depuis le lot 3 (duo et essai sur mob_rat, empreinte a 5 %). Filet : le rayon empreintes de Colette au village (200 or).",
           "hints": {
             "on_active": [
               {
