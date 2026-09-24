@@ -24,7 +24,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_GROUPS_PER_FLOOR = 6
-MAX_MEMBERS_PER_GROUP = 12  # a room holds 32 entities, players + familiars included
+MAX_MEMBERS_PER_GROUP = 10  # 10 entities per side (Charleston, 2026-09-24): the monster side is capped at 10
 
 
 def load(root, rel):
