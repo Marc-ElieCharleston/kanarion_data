@@ -150,9 +150,8 @@ def empreinte(fam, ffr, fen, role, rar_id, rar_fr, rar_en, prix):
         "name_fr": f"Empreinte de Souffle - {ffr} {rfr} ({rar_fr})",
         "name_en": f"Breath Imprint - {fen} {ren} ({rar_en})",
         "description_fr": (f"Une empreinte de Souffle (voie {rfr}) capturée sur une créature "
-                           f"de type {ffr}. Apportez-la à Colette pour la faire incuber en familier."),
-        "description_en": (f"A Breath imprint ({ren} path) captured from a {fen} creature. "
-                           f"Bring it to Colette to incubate it into a familiar."),
+                           f"de type {ffr}."),
+        "description_en": (f"A Breath imprint ({ren} path) captured from a {fen} creature."),
         "rarity": rar_id,
         "item_type": "familiar_trace",
         "family": fam,
