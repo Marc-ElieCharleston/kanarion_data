@@ -346,10 +346,10 @@
         "type": "combat_proc",
         "effects": [
           {
-            "trigger": "first_skill_cast",
-            "modifier": "damage_bonus",
+            "trigger": "combat_start",
+            "type": "next_skill_damage",
             "value": 50,
-            "one_time": true,
+            "duration": 600.0,
             "scalable": true
           },
           {
@@ -1000,8 +1000,8 @@
             "trigger": "on_kill",
             "effects": [
               {
-                "stat": "hp_restore_percent_max_hp",
-                "value": 8,
+                "heal_percent_max_hp": 8,
+                "target_rule": "self",
                 "scalable": true
               },
               {
@@ -1037,7 +1037,7 @@
         }
       },
       "rank_scaling_map": {
-        "/triggers/0/effects/0/value": "heal_percent",
+        "/triggers/0/effects/0/heal_percent_max_hp": "heal_percent",
         "/triggers/0/effects/1/value": "atk_buff"
       },
       "source": {
@@ -1184,15 +1184,14 @@
             "cooldown": 60.0,
             "effects": [
               {
-                "stat": "shield_percent_max_hp",
-                "value": 15,
+                "apply_shield_percent_max_hp": 15,
                 "duration": 8.0,
+                "target_rule": "self",
                 "scalable": true
               },
               {
-                "effect": "heal_lowest_ally",
-                "scaling_stat": "mag",
-                "scaling_percent": 100,
+                "type": "heal_lowest_ally",
+                "heal_percent_mag": 100,
                 "scalable": true
               }
             ]
@@ -1222,8 +1221,8 @@
         }
       },
       "rank_scaling_map": {
-        "/triggers/0/effects/0/value": "shield_percent",
-        "/triggers/0/effects/1/scaling_percent": "heal_mag_percent"
+        "/triggers/0/effects/0/apply_shield_percent_max_hp": "shield_percent",
+        "/triggers/0/effects/1/heal_percent_mag": "heal_mag_percent"
       },
       "source": {
         "type": "quest_reward",
@@ -1500,8 +1499,8 @@
             "trigger": "on_kill",
             "effect": [
               {
-                "stat": "heal_percent_max_hp",
-                "value": 6,
+                "heal_percent_max_hp": 6,
+                "target_rule": "self",
                 "scalable": true
               }
             ]
@@ -1532,7 +1531,7 @@
       },
       "rank_scaling_map": {
         "/effects/0/value": "lifesteal",
-        "/effects/1/effect/0/value": "heal_on_kill"
+        "/effects/1/effect/0/heal_percent_max_hp": "heal_on_kill"
       },
       "source": {
         "type": "monster_drop",
