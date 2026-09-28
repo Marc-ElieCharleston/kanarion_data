@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "version": "5.1",
-    "last_updated": "2026-07-20",
+    "version": "6.0",
+    "last_updated": "2026-09-28",
     "description": "Keystones — Stigma-style triggers actifs. 4 slots (lv 30/50/70/100). Rangs C→SS. 3 variantes par keystone. v5.2 (2026-07-29) : passe de 5 a 4 slots, premier keystone apres la subclass (lv10 juge trop tot)."
   },
   "rules": {
@@ -27,77 +27,21 @@
       "utility"
     ],
     "design_notes": [
-      "Chaque keystone a un trigger (condition d'activation)",
-      "3 variantes par keystone — meme trigger, effet different",
-      "Le rang change les valeurs (puissance, seuil, CD, duree) — PAS la nature de l'effet",
-      "Tous les effets utilisent des mecaniques existantes (shield, DR, buff stats, heal, thorns, CDR, CC, debuff)",
-      "Pool commun (toutes classes) + pool par classe (a designer plus tard)",
-      "Les keystones se drop, se craft, se trade (comme les Koros)"
+      "Objet équipé et retirable, jamais appris ou consommé.",
+      "Quatre emplacements ; une variante par famille.",
+      "Rangs C à SS : nature identique, valeurs dans runtime/runtime_scaling.",
+      "Rôles de matrice : tank, DPS mêlée, DPS physique distance, DPS magique, healer, support buffer, support debuff/entrave."
     ],
     "runtime_contract": {
-      "_note": "Keystone runtime V1 (2026-07-20). Une variante est EQUIPABLE si et seulement si elle porte un bloc 'runtime'. Une variante sans bloc runtime est RESERVEE : le character service refuse son allocation, elle n'apparait pas comme choix valide. Le bloc 'runtime' utilise le MEME schema que le bloc 'effect' de items/uniques.json (type combat_proc + triggers[] imbriques), consomme cote server-combat par UniqueItemRegistry + ProcProcessor. Aucun moteur d'effet nouveau : uniquement les appliers existants (stat_buff temporaire, apply_status canonical Option A avec stacks_to_apply, apply_shield_percent_max_hp, heal_percent_max_hp).",
       "engine": "proc_processor",
-      "allocation_model_v1": "Les keystones V1 sont ALLOUEES a des slots (choix de progression, table character_keystones), pas des items lootes. Le drop/craft/trade et les rangs B/A/S/SS sont reserves pour une version future. Toutes les valeurs runtime V1 = rang C.",
-      "triggers_v1": [
-        "combat_start",
-        "on_kill",
-        "on_hit",
-        "on_block",
-        "on_dodge",
-        "on_hp_threshold",
-        "on_damage_taken",
-        "on_damage_threshold",
-        "on_buff_applied",
-        "on_heal_cast",
-        "first_skill_cast",
-        "on_critical_hit",
-        "ally_hp_below_pct",
-        "ally_reaches_zero_hp"
-      ],
-      "runtime_extensions_required": [
-        "stacks_to_apply lu par parse_effect_object et passe a StatusManager::apply_effect (statuts canoniques multi-stack)",
-        "heal_percent_max_hp : heal instantane en % des HP max (reutilise apply_heal)",
-        "trigger on_critical_hit : hook dans la resolution de degats quand is_crit",
-        "target_rule 'self' respecte par status_proc (forcer le statut sur le porteur, pas la cible du trigger)"
-      ],
-      "hp_threshold_note": "on_hp_threshold ne se re-arme pas dans un meme combat (ProcStateComponent.hp_threshold_triggered). Le cooldown ne s'applique donc qu'entre combats en V1.",
-      "prevent_death_v1": {
-        "_comment": "Livre par le back (aab81a0). Ce n'est PAS un proc reactif mais un hook pre-mort, place avant les 6 emplace<DeadComponent> de room.cpp — un proc qui reagit apres la resolution des degats ne pourrait pas empecher la mort.",
-        "champs": {
-          "revive_percent": "% des PV max de l'allie sauve. > 0 OBLIGATOIRE : c'est lui qui infere le type 'prevent_death' (unique_item_registry.cpp:67).",
-          "uses_per_combat": "OBLIGATOIRE > 0. proc_processor.cpp:738 saute l'effet sinon — un revive sans plafond n'est jamais autorise.",
-          "revive_atk_bonus": "optionnel, % ATK pose sur l'allie releve",
-          "revive_buff_duration": "optionnel, duree du buff ci-dessus (defaut 6.0s)",
-          "revive_self_damage_percent": "optionnel, % des PV max DU PORTEUR qu'il perd a la place"
-        },
-        "piege_a_ne_pas_reproduire": "heal_percent_max_hp est teste AVANT revive_percent dans la chaine d'inference de type. Mettre les deux dans le meme effet donnerait le type 'heal_percent_max_hp' et le revive ne partirait jamais. Un effet = un role.",
-        "trigger_documentaire": "Le hook scanne tous les effets de l'objet equipe et ne filtre que sur le type (proc_processor.cpp:737) : la chaine de trigger n'a aucune incidence sur le declenchement. ATTENTION cote moteur : 'ally_reaches_zero_hp' n'est PAS dans la table de triggers (unique_item_registry.cpp:408). Un trigger inconnu loggue un warning et retombe sur ProcTrigger::PASSIVE_MODIFIER. Sans consequence pour prevent_death, mais a mapper pour eviter le bruit au demarrage."
-      },
-      "noms_de_trigger_design_vs_moteur": {
-        "_comment": "Le champ `trigger` d'une keystone est un nom de DESIGN. Le champ `trigger` d'un bloc runtime est un nom MOTEUR, et les deux different parfois. Confondre les deux faisait croire que des triggers manquaient alors qu'ils existaient.",
-        "equivalences": {
-          "hp_below_pct": "on_hp_threshold + threshold",
-          "on_block_while_hp_above_pct": "on_block + threshold",
-          "on_buff_cast": "on_buff_applied"
-        },
-        "target_rule_disponibles": "self et nearest_ally UNIQUEMENT (proc_processor.cpp:702 et 712). Pas d'allies au pluriel, pas d'ennemi, pas de cible-du-buff. Verifier avant d'ecrire une variante dont le texte promet autre chose."
-      },
-      "souffle_v1": {
-        "_comment": "Livre par le back (67f20aa). 3 appliers sur 4 ; next_skill_free_souffle attend un hook au check de cout-mana.",
-        "champs": {
-          "restore_souffle_pct": "+% du Souffle max du beneficiaire, route par target_rule (self / nearest_ally)",
-          "drain_souffle_pct": "-% du Souffle max de l'ennemi. Vise l'entite tierce du proc, donc no-op sur un trigger qui passe null (combat_start, on_buff_applied).",
-          "convert_hp_to_souffle": "le porteur paie X% de ses PV max et gagne autant de Souffle. Clampe : ni suicide, ni surremplissage."
-        },
-        "inference_de_type": "Comme revive_percent, ces 3 champs INFERENT le type et sont testes APRES heal_percent_max_hp et consorts (unique_item_registry.cpp:73-78). Un effet portant a la fois un soin et un restore_souffle resoudrait vers le soin et perdrait le Souffle en silence. ATTENTION : le throw pose pour revive_percent ne couvre PAS encore ces 3 champs.",
-        "pourquoi_1_variante_sur_5": "Un applier ne suffit pas : il faut aussi que le trigger existe ET que le ciblage dise la verite du texte. C'est la lecon de anchor_protector — une variante qui parse mais ne fait pas ce que son texte promet est pire qu'une variante absente.",
-        "en_attente": {
-          "ks_support_life_link_energize": "Son texte dit 'la cible du soin'. nearest_ally n'est PAS la cible du soin : on soigne qui est blesse, pas qui est proche. Attend target_rule 'trigger_target'. Peu couteux cote moteur : ON_HEAL_CAST passe DEJA heal_target en entite tierce (proc_processor.cpp:255), seule la regle de routage manque.",
-          "ks_util_mastery_drain": "attend le trigger on_cc_applied",
-          "ks_util_breath_burst + ks_util_breath_sacrifice": "attendent le trigger souffle_below_pct. Aucun equivalent moteur, contrairement a hp_below_pct qui EST on_hp_threshold — verifie dans la table de triggers."
-        }
-      }
-    }
+      "equipment": "Owned removable instance; one family per character; changes apply on next combat spawn.",
+      "rank_values": "runtime is C. runtime_scaling JSON-pointer endpoints interpolate C/B/A/S/SS; integer fields round to nearest integer.",
+      "hp_threshold": "Repeatable after cooldown; no per-combat one-shot except prevent_death uses_per_combat.",
+      "snapshot": "Economy owns instance equipment; all mutations return full slots and owned items.",
+      "offensive_procs": "Direct damage only; periodic damage cannot trigger offensive hit or critical procs."
+    },
+    "one_per_family": true,
+    "build_role_notes": "Discovery and coverage only; never a class or equipment restriction."
   },
   "common_keystones": [
     {
@@ -135,25 +79,95 @@
             "triggers": [
               {
                 "trigger": "on_hp_threshold",
-                "threshold": 0.25,
                 "cooldown": 90,
                 "effects": [
                   {
                     "apply_status": "atk_up",
+                    "target_rule": "self",
                     "stacks_to_apply": 4,
-                    "duration": 6.0,
-                    "target_rule": "self"
+                    "duration": 6.0
                   },
                   {
                     "apply_status": "mag_up",
+                    "target_rule": "self",
                     "stacks_to_apply": 4,
-                    "duration": 6.0,
-                    "target_rule": "self"
+                    "duration": 6.0
                   }
-                ]
+                ],
+                "threshold": 0.25
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              90,
+              45
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              4,
+              5
+            ],
+            "/triggers/0/effects/0/duration": [
+              6.0,
+              10.0
+            ],
+            "/triggers/0/effects/1/stacks_to_apply": [
+              4,
+              5
+            ],
+            "/triggers/0/effects/1/duration": [
+              6.0,
+              10.0
+            ],
+            "/triggers/0/threshold": [
+              0.25,
+              0.35
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "ATK + — charges",
+              "label_en": "ATK Up — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/1/stacks_to_apply",
+              "label_fr": "MAG + — charges",
+              "label_en": "MAG Up — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/1/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_dps_fury_crit",
@@ -181,7 +195,6 @@
             "triggers": [
               {
                 "trigger": "on_hp_threshold",
-                "threshold": 0.25,
                 "cooldown": 90,
                 "effects": [
                   {
@@ -189,10 +202,59 @@
                     "value": 15,
                     "duration": 6.0
                   }
-                ]
+                ],
+                "threshold": 0.25
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              90,
+              45
+            ],
+            "/triggers/0/effects/0/value": [
+              15,
+              35
+            ],
+            "/triggers/0/effects/0/duration": [
+              6.0,
+              10.0
+            ],
+            "/triggers/0/threshold": [
+              0.25,
+              0.35
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Chance critique",
+              "label_en": "Critical chance",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_dps_fury_lifesteal",
@@ -220,21 +282,70 @@
             "triggers": [
               {
                 "trigger": "on_hp_threshold",
-                "threshold": 0.25,
                 "cooldown": 90,
                 "effects": [
                   {
                     "apply_status": "lifesteal",
+                    "target_rule": "self",
                     "stacks_to_apply": 2,
-                    "duration": 6.0,
-                    "target_rule": "self"
+                    "duration": 6.0
                   }
-                ]
+                ],
+                "threshold": 0.25
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              90,
+              45
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              2,
+              5
+            ],
+            "/triggers/0/effects/0/duration": [
+              6.0,
+              10.0
+            ],
+            "/triggers/0/threshold": [
+              0.25,
+              0.35
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Vol de vie — charges",
+              "label_en": "Lifesteal — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         }
-      ]
+      ],
+      "build_role": "melee"
     },
     {
       "id": "ks_dps_executioner",
@@ -249,8 +360,8 @@
           "id": "ks_dps_executioner_damage",
           "name_fr": "Bourreau",
           "name_en": "Slayer",
-          "description_fr": "Bonus de dégâts contre les cibles affaiblies",
-          "description_en": "Bonus damage against weakened targets",
+          "description_fr": "Frapper une cible affaiblie augmente temporairement vos dégâts.",
+          "description_en": "Hitting a weakened target temporarily increases your damage.",
           "effect_type": "damage_bonus_pct",
           "scaling": {
             "C": {
@@ -265,14 +376,80 @@
               "duration": 0,
               "cooldown": 8
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "target_hp_below_pct",
+                "cooldown": 15,
+                "effects": [
+                  {
+                    "apply_status": "damage_percent_up",
+                    "target_rule": "self",
+                    "stacks_to_apply": 4,
+                    "duration": 6.0
+                  }
+                ],
+                "threshold": 0.2
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              15,
+              8
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              4,
+              5
+            ],
+            "/triggers/0/effects/0/duration": [
+              6.0,
+              6.0
+            ],
+            "/triggers/0/threshold": [
+              0.2,
+              0.3
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Dégâts % + — charges",
+              "label_en": "Damage Up — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_dps_executioner_pen",
           "name_fr": "Perceur",
           "name_en": "Piercer",
-          "description_fr": "Bonus de pénétration d'armure contre les cibles affaiblies",
-          "description_en": "Armor penetration bonus against weakened targets",
+          "description_fr": "Frapper une cible affaiblie augmente temporairement votre pénétration d’armure.",
+          "description_en": "Hitting a weakened target temporarily increases your armor penetration.",
           "effect_type": "buff_armor_pen_pct",
           "scaling": {
             "C": {
@@ -287,14 +464,79 @@
               "duration": 0,
               "cooldown": 8
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "target_hp_below_pct",
+                "cooldown": 15,
+                "effects": [
+                  {
+                    "stat": "armor_pen",
+                    "value": 10,
+                    "duration": 6.0
+                  }
+                ],
+                "threshold": 0.2
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              15,
+              8
+            ],
+            "/triggers/0/effects/0/value": [
+              10,
+              30
+            ],
+            "/triggers/0/effects/0/duration": [
+              6.0,
+              6.0
+            ],
+            "/triggers/0/threshold": [
+              0.2,
+              0.3
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Pénétration d’armure",
+              "label_en": "Armor penetration",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_dps_executioner_heal",
           "name_fr": "Faucheur",
           "name_en": "Reaper",
-          "description_fr": "Tuer une cible affaiblie vous soigne",
-          "description_en": "Killing a weakened target heals you",
+          "description_fr": "Tuer un ennemi vous rend une partie de vos PV max.",
+          "description_en": "Killing an enemy restores part of your maximum HP.",
           "effect_type": "heal_on_kill_pct_hp",
           "scaling": {
             "C": {
@@ -309,9 +551,53 @@
               "duration": 0,
               "cooldown": 10
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_kill",
+                "cooldown": 20,
+                "effects": [
+                  {
+                    "heal_percent_max_hp": 8,
+                    "target_rule": "self"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              20,
+              10
+            ],
+            "/triggers/0/effects/0/heal_percent_max_hp": [
+              8,
+              20
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/heal_percent_max_hp",
+              "label_fr": "Soin / PV max du porteur",
+              "label_en": "Heal / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            }
+          ],
+          "trigger_description_fr": "À l’élimination d’un ennemi.",
+          "trigger_description_en": "When you defeat an enemy."
         }
-      ]
+      ],
+      "build_role": "melee"
     },
     {
       "id": "ks_dps_ignition",
@@ -350,13 +636,51 @@
                 "effects": [
                   {
                     "apply_status": "burn",
+                    "target_rule": "enemy",
                     "stacks_to_apply": 1,
                     "duration": 4.0
                   }
                 ]
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              15,
+              8
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              2
+            ],
+            "/triggers/0/effects/0/duration": [
+              4.0,
+              6.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Brûlure — charges",
+              "label_en": "Burn — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_dps_ignition_shred",
@@ -386,20 +710,58 @@
                 "effects": [
                   {
                     "apply_status": "def_down",
+                    "target_rule": "enemy",
                     "stacks_to_apply": 2,
                     "duration": 4.0
                   }
                 ]
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              15,
+              8
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              2,
+              5
+            ],
+            "/triggers/0/effects/0/duration": [
+              4.0,
+              6.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "DEF - — charges",
+              "label_en": "DEF - — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_dps_ignition_burst",
           "name_fr": "Detonation",
           "name_en": "Detonation",
-          "description_fr": "Un coup critique inflige des dégâts magiques bonus",
-          "description_en": "A critical hit deals bonus magic damage",
+          "description_fr": "Un coup critique renforce temporairement votre MAG.",
+          "description_en": "A critical hit temporarily increases your MAG.",
           "effect_type": "bonus_magic_damage_pct_mag",
           "scaling": {
             "C": {
@@ -422,16 +784,54 @@
                 "effects": [
                   {
                     "apply_status": "mag_up",
+                    "target_rule": "self",
                     "stacks_to_apply": 3,
-                    "duration": 6.0,
-                    "target_rule": "self"
+                    "duration": 6.0
                   }
                 ]
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12,
+              6
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              3,
+              5
+            ],
+            "/triggers/0/effects/0/duration": [
+              6.0,
+              6.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "MAG + — charges",
+              "label_en": "MAG Up — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
         }
-      ]
+      ],
+      "build_role": "ranged_magic"
     },
     {
       "id": "ks_dps_frenzy",
@@ -476,7 +876,46 @@
                 ]
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              8,
+              4
+            ],
+            "/triggers/0/effects/0/value": [
+              10,
+              25
+            ],
+            "/triggers/0/effects/0/duration": [
+              8.0,
+              12.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "ATK",
+              "label_en": "ATK",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ],
+          "trigger_description_fr": "À l’élimination d’un ennemi.",
+          "trigger_description_en": "When you defeat an enemy."
         },
         {
           "id": "ks_dps_frenzy_cdr",
@@ -496,7 +935,62 @@
               "duration": 12,
               "cooldown": 0
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_kill",
+                "cooldown": 0,
+                "effects": [
+                  {
+                    "stat": "cooldown_reduction",
+                    "value": 10,
+                    "duration": 8.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              0,
+              0
+            ],
+            "/triggers/0/effects/0/value": [
+              10,
+              25
+            ],
+            "/triggers/0/effects/0/duration": [
+              8.0,
+              12.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Réduction des recharges",
+              "label_en": "Cooldown reduction",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ],
+          "trigger_description_fr": "À l’élimination d’un ennemi.",
+          "trigger_description_en": "When you defeat an enemy."
         },
         {
           "id": "ks_dps_frenzy_free",
@@ -516,9 +1010,53 @@
               "duration": 10,
               "cooldown": 12
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_kill",
+                "cooldown": 25,
+                "effects": [
+                  {
+                    "type": "next_skill_free",
+                    "duration": 6.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              25,
+              12
+            ],
+            "/triggers/0/effects/0/duration": [
+              6.0,
+              10.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ],
+          "trigger_description_fr": "À l’élimination d’un ennemi.",
+          "trigger_description_en": "When you defeat an enemy."
         }
-      ]
+      ],
+      "build_role": "melee"
     },
     {
       "id": "ks_dps_predator",
@@ -533,8 +1071,8 @@
           "id": "ks_dps_predator_ambush",
           "name_fr": "Embuscade",
           "name_en": "Ambush",
-          "description_fr": "Vos premiers sorts infligent des dégâts bonus",
-          "description_en": "Your first skills deal bonus damage",
+          "description_fr": "Votre prochain sort inflige des dégâts supplémentaires dans les premières secondes du combat.",
+          "description_en": "Your next skill deals extra damage early in combat.",
           "effect_type": "damage_bonus_pct",
           "scaling": {
             "C": {
@@ -556,22 +1094,58 @@
                 "cooldown": 0,
                 "effects": [
                   {
-                    "apply_status": "damage_percent_up",
-                    "stacks_to_apply": 3,
-                    "duration": 8.0,
-                    "target_rule": "self"
+                    "type": "next_skill_damage",
+                    "value": 15,
+                    "duration": 30.0
                   }
                 ]
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              0,
+              0
+            ],
+            "/triggers/0/effects/0/value": [
+              15,
+              50
+            ],
+            "/triggers/0/effects/0/duration": [
+              30.0,
+              30.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Dégâts du prochain sort",
+              "label_en": "Next skill damage",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_dps_predator_crit",
           "name_fr": "Frappe Decisive",
           "name_en": "Decisive Strike",
-          "description_fr": "Vos premiers sorts ont un bonus de dégâts critiques",
-          "description_en": "Your first skills have bonus critical damage",
+          "description_fr": "Votre puissance critique augmente temporairement au début du combat.",
+          "description_en": "Your critical power temporarily increases at combat start.",
           "effect_type": "buff_crit_damage_pct",
           "scaling": {
             "C": {
@@ -594,21 +1168,58 @@
                 "effects": [
                   {
                     "apply_status": "crit_damage_up",
+                    "target_rule": "self",
                     "stacks_to_apply": 2,
-                    "duration": 8.0,
-                    "target_rule": "self"
+                    "duration": 8.0
                   }
                 ]
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              0,
+              0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              2,
+              3
+            ],
+            "/triggers/0/effects/0/duration": [
+              8.0,
+              10.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Dégâts Critiques + — charges",
+              "label_en": "Crit Damage Up — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_dps_predator_expose",
           "name_fr": "Mise a Nu",
           "name_en": "Expose",
-          "description_fr": "Vos premiers sorts réduisent la DEF et MR de la cible",
-          "description_en": "Your first skills reduce target's DEF and MR",
+          "description_fr": "Votre premier sort offensif fragilise la défense et la résistance magique de sa cible.",
+          "description_en": "Your first offensive skill weakens its target's defense and magic resistance.",
           "effect_type": "debuff_def_mr_pct",
           "scaling": {
             "C": {
@@ -621,9 +1232,94 @@
               "duration": 8,
               "cooldown": 0
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "first_skill_cast",
+                "cooldown": 0,
+                "effects": [
+                  {
+                    "apply_status": "def_down",
+                    "target_rule": "enemy",
+                    "stacks_to_apply": 2,
+                    "duration": 4.0
+                  },
+                  {
+                    "apply_status": "magic_resist_down",
+                    "target_rule": "enemy",
+                    "stacks_to_apply": 2,
+                    "duration": 4.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              0,
+              0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              2,
+              4
+            ],
+            "/triggers/0/effects/0/duration": [
+              4.0,
+              8.0
+            ],
+            "/triggers/0/effects/1/stacks_to_apply": [
+              2,
+              4
+            ],
+            "/triggers/0/effects/1/duration": [
+              4.0,
+              8.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "DEF - — charges",
+              "label_en": "DEF - — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/1/stacks_to_apply",
+              "label_fr": "Résist Mag - — charges",
+              "label_en": "Magic Resist Down — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/1/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ],
+          "trigger_description_fr": "Au premier sort visant un ennemi.",
+          "trigger_description_en": "On your first skill targeting an enemy."
         }
-      ]
+      ],
+      "build_role": "ranged_physical"
     },
     {
       "id": "ks_tank_bastion",
@@ -660,16 +1356,66 @@
             "triggers": [
               {
                 "trigger": "on_hp_threshold",
-                "threshold": 0.25,
                 "cooldown": 90,
                 "effects": [
                   {
-                    "apply_shield_percent_max_hp": 20
+                    "apply_shield_percent_max_hp": 20,
+                    "duration": 6.0,
+                    "target_rule": "self"
                   }
-                ]
+                ],
+                "threshold": 0.25
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              90,
+              45
+            ],
+            "/triggers/0/effects/0/apply_shield_percent_max_hp": [
+              20,
+              50
+            ],
+            "/triggers/0/effects/0/duration": [
+              6.0,
+              10.0
+            ],
+            "/triggers/0/threshold": [
+              0.25,
+              0.35
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/apply_shield_percent_max_hp",
+              "label_fr": "Bouclier / PV max du porteur",
+              "label_en": "Shield / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_tank_bastion_thorns",
@@ -693,7 +1439,99 @@
               "duration": 10,
               "cooldown": 45
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hp_threshold",
+                "cooldown": 90,
+                "effects": [
+                  {
+                    "apply_shield_percent_max_hp": 12,
+                    "duration": 6.0,
+                    "target_rule": "self"
+                  },
+                  {
+                    "stat": "reflect_percent",
+                    "value": 8,
+                    "duration": 6.0
+                  }
+                ],
+                "threshold": 0.25
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              90,
+              45
+            ],
+            "/triggers/0/effects/0/apply_shield_percent_max_hp": [
+              12,
+              30
+            ],
+            "/triggers/0/effects/0/duration": [
+              6.0,
+              10.0
+            ],
+            "/triggers/0/effects/1/value": [
+              8,
+              20
+            ],
+            "/triggers/0/effects/1/duration": [
+              6.0,
+              10.0
+            ],
+            "/triggers/0/threshold": [
+              0.25,
+              0.35
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/apply_shield_percent_max_hp",
+              "label_fr": "Bouclier / PV max du porteur",
+              "label_en": "Shield / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/1/value",
+              "label_fr": "Renvoi de dégâts",
+              "label_en": "Damage reflection",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/1/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_tank_bastion_regen",
@@ -717,9 +1555,103 @@
               "duration": 10,
               "cooldown": 45
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hp_threshold",
+                "cooldown": 90,
+                "effects": [
+                  {
+                    "apply_shield_percent_max_hp": 10,
+                    "duration": 6.0,
+                    "target_rule": "self"
+                  },
+                  {
+                    "type": "delayed_heal",
+                    "heal_percent_max_hp": 8,
+                    "duration": 6.0,
+                    "target_rule": "self"
+                  }
+                ],
+                "threshold": 0.25
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              90,
+              45
+            ],
+            "/triggers/0/effects/0/apply_shield_percent_max_hp": [
+              10,
+              25
+            ],
+            "/triggers/0/effects/0/duration": [
+              6.0,
+              10.0
+            ],
+            "/triggers/0/effects/1/heal_percent_max_hp": [
+              8,
+              20
+            ],
+            "/triggers/0/effects/1/duration": [
+              6.0,
+              10.0
+            ],
+            "/triggers/0/threshold": [
+              0.25,
+              0.35
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/apply_shield_percent_max_hp",
+              "label_fr": "Bouclier / PV max du porteur",
+              "label_en": "Shield / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/1/heal_percent_max_hp",
+              "label_fr": "Soin / PV max du porteur",
+              "label_en": "Heal / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/1/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         }
-      ]
+      ],
+      "build_role": "tank"
     },
     {
       "id": "ks_tank_iron_will",
@@ -746,7 +1678,49 @@
               "value": 50,
               "cooldown": 15
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_cc_received",
+                "cooldown": 30,
+                "effects": [
+                  {
+                    "type": "cc_duration_percent",
+                    "value": -25,
+                    "target_rule": "self"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              30,
+              15
+            ],
+            "/triggers/0/effects/0/value": [
+              -25,
+              -50
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Durée des entraves",
+              "label_en": "Control duration",
+              "unit": "percent",
+              "integer": true
+            }
+          ]
         },
         {
           "id": "ks_tank_iron_will_counter",
@@ -766,7 +1740,61 @@
               "duration": 8,
               "cooldown": 15
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_cc_received",
+                "cooldown": 30,
+                "effects": [
+                  {
+                    "apply_status": "atk_up",
+                    "target_rule": "self",
+                    "stacks_to_apply": 3,
+                    "duration": 5.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              30,
+              15
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              3,
+              5
+            ],
+            "/triggers/0/effects/0/duration": [
+              5.0,
+              8.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "ATK + — charges",
+              "label_en": "ATK Up — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_tank_iron_will_absorb",
@@ -784,9 +1812,51 @@
               "value": 15,
               "cooldown": 15
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_cc_received",
+                "cooldown": 30,
+                "effects": [
+                  {
+                    "heal_percent_max_hp": 6,
+                    "target_rule": "self"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              30,
+              15
+            ],
+            "/triggers/0/effects/0/heal_percent_max_hp": [
+              6,
+              15
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/heal_percent_max_hp",
+              "label_fr": "Soin / PV max du porteur",
+              "label_en": "Heal / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            }
+          ]
         }
-      ]
+      ],
+      "build_role": "tank"
     },
     {
       "id": "ks_tank_fortress",
@@ -820,26 +1890,63 @@
             "type": "combat_proc",
             "triggers": [
               {
-                "trigger": "on_block",
+                "trigger": "on_block_or_parry",
                 "cooldown": 12,
                 "effects": [
                   {
                     "apply_status": "damage_reduction_up",
+                    "target_rule": "self",
                     "stacks_to_apply": 2,
-                    "duration": 4.0,
-                    "target_rule": "self"
+                    "duration": 4.0
                   }
                 ]
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12,
+              6
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              2,
+              3
+            ],
+            "/triggers/0/effects/0/duration": [
+              4.0,
+              6.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Réduction Dégâts + — charges",
+              "label_en": "Damage Reduction Up — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_tank_fortress_reflect",
           "name_fr": "Renvoi",
           "name_en": "Reflect",
-          "description_fr": "Bloquer/parer renvoie une partie des dégâts a l'attaquant",
-          "description_en": "Blocking/parrying reflects some damage back to attacker",
+          "description_fr": "Après un blocage ou une parade, renvoie temporairement une partie des dégâts reçus.",
+          "description_en": "After a block or parry, temporarily reflects part of incoming damage.",
           "effect_type": "reflect_damage_pct",
           "scaling": {
             "C": {
@@ -850,7 +1957,60 @@
               "value": 30,
               "cooldown": 6
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_block_or_parry",
+                "cooldown": 12,
+                "effects": [
+                  {
+                    "stat": "reflect_percent",
+                    "value": 10,
+                    "duration": 6.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12,
+              6
+            ],
+            "/triggers/0/effects/0/value": [
+              10,
+              30
+            ],
+            "/triggers/0/effects/0/duration": [
+              6.0,
+              6.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Renvoi de dégâts",
+              "label_en": "Damage reflection",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_tank_fortress_regen",
@@ -873,18 +2033,46 @@
             "type": "combat_proc",
             "triggers": [
               {
-                "trigger": "on_block",
+                "trigger": "on_block_or_parry",
                 "cooldown": 10,
                 "effects": [
                   {
-                    "heal_percent_max_hp": 3
+                    "heal_percent_max_hp": 3,
+                    "target_rule": "self"
                   }
                 ]
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              10,
+              5
+            ],
+            "/triggers/0/effects/0/heal_percent_max_hp": [
+              3,
+              8
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/heal_percent_max_hp",
+              "label_fr": "Soin / PV max du porteur",
+              "label_en": "Heal / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            }
+          ]
         }
-      ]
+      ],
+      "build_role": "tank"
     },
     {
       "id": "ks_tank_anchor",
@@ -925,22 +2113,70 @@
                 "effects": [
                   {
                     "apply_status": "damage_reduction_up",
+                    "target_rule": "self",
                     "stacks_to_apply": 1,
-                    "duration": 4.0,
-                    "target_rule": "self"
+                    "duration": 4.0
                   }
                 ],
                 "threshold": 0.7
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              15,
+              8
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              2
+            ],
+            "/triggers/0/effects/0/duration": [
+              4.0,
+              6.0
+            ],
+            "/triggers/0/threshold": [
+              0.7,
+              0.5
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Réduction Dégâts + — charges",
+              "label_en": "Damage Reduction Up — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_tank_anchor_aggro",
           "name_fr": "Provocateur",
           "name_en": "Provoker",
-          "description_fr": "Bloquer un coup augmente votre aggro et votre DEF temporairement",
-          "description_en": "Blocking a hit boosts your aggro and DEF temporarily",
+          "description_fr": "Bloquer avec suffisamment de PV renforce votre défense et provoque l’attaquant.",
+          "description_en": "Blocking while healthy strengthens your defense and taunts the attacker.",
           "effect_type": "buff_aggro_def",
           "scaling": {
             "C": {
@@ -957,14 +2193,96 @@
               "duration": 8,
               "cooldown": 8
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_block",
+                "cooldown": 15,
+                "effects": [
+                  {
+                    "apply_status": "def_up",
+                    "target_rule": "self",
+                    "stacks_to_apply": 1,
+                    "duration": 5.0
+                  },
+                  {
+                    "apply_status": "taunt",
+                    "duration": 5.0,
+                    "target_rule": "enemy"
+                  }
+                ],
+                "threshold": 0.7
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              15,
+              8
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              3
+            ],
+            "/triggers/0/effects/0/duration": [
+              5.0,
+              8.0
+            ],
+            "/triggers/0/effects/1/duration": [
+              5.0,
+              8.0
+            ],
+            "/triggers/0/threshold": [
+              0.7,
+              0.5
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "DEF + — charges",
+              "label_en": "DEF + — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/1/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_tank_anchor_protector",
           "name_fr": "Protecteur",
           "name_en": "Protector",
-          "description_fr": "Bloquer un coup protege l'allie le plus proche : il gagne 5% de reduction de degats pendant 4s",
-          "description_en": "Blocking a blow protects your nearest ally: they gain 5% damage reduction for 4s",
+          "description_fr": "Bloquer avec suffisamment de PV protège temporairement l’allié le plus proche.",
+          "description_en": "Blocking while healthy temporarily protects the nearest ally.",
           "effect_type": "buff_allies_dr_pct",
           "scaling": {
             "C": {
@@ -985,21 +2303,70 @@
             "triggers": [
               {
                 "trigger": "on_block",
-                "threshold": 0.7,
                 "cooldown": 15,
                 "effects": [
                   {
                     "apply_status": "damage_reduction_up",
+                    "target_rule": "nearest_ally",
                     "stacks_to_apply": 1,
-                    "duration": 4.0,
-                    "target_rule": "nearest_ally"
+                    "duration": 4.0
                   }
-                ]
+                ],
+                "threshold": 0.7
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              15,
+              8
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              2
+            ],
+            "/triggers/0/effects/0/duration": [
+              4.0,
+              6.0
+            ],
+            "/triggers/0/threshold": [
+              0.7,
+              0.5
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Réduction Dégâts + — charges",
+              "label_en": "Damage Reduction Up — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         }
-      ]
+      ],
+      "build_role": "tank"
     },
     {
       "id": "ks_tank_sacrifice",
@@ -1036,17 +2403,66 @@
             "triggers": [
               {
                 "trigger": "ally_hp_below_pct",
-                "threshold": 0.25,
                 "cooldown": 45,
                 "effects": [
                   {
                     "apply_shield_percent_max_hp": 10,
-                    "duration": 5.0
+                    "duration": 5.0,
+                    "target_rule": "ally"
                   }
-                ]
+                ],
+                "threshold": 0.25
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              45,
+              20
+            ],
+            "/triggers/0/effects/0/apply_shield_percent_max_hp": [
+              10,
+              25
+            ],
+            "/triggers/0/effects/0/duration": [
+              5.0,
+              8.0
+            ],
+            "/triggers/0/threshold": [
+              0.25,
+              0.35
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/apply_shield_percent_max_hp",
+              "label_fr": "Bouclier / PV max du porteur",
+              "label_en": "Shield / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_tank_sacrifice_redirect",
@@ -1068,7 +2484,73 @@
               "duration": 8,
               "cooldown": 20
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "ally_hp_below_pct",
+                "cooldown": 45,
+                "effects": [
+                  {
+                    "apply_status": "damage_transfer",
+                    "value": 15,
+                    "duration": 5.0,
+                    "target_rule": "ally"
+                  }
+                ],
+                "threshold": 0.25
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              45,
+              20
+            ],
+            "/triggers/0/effects/0/value": [
+              15,
+              35
+            ],
+            "/triggers/0/effects/0/duration": [
+              5.0,
+              8.0
+            ],
+            "/triggers/0/threshold": [
+              0.25,
+              0.35
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Valeur",
+              "label_en": "Value",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_tank_sacrifice_inspire",
@@ -1096,20 +2578,70 @@
             "triggers": [
               {
                 "trigger": "ally_hp_below_pct",
-                "threshold": 0.25,
                 "cooldown": 45,
                 "effects": [
                   {
                     "apply_status": "damage_reduction_up",
+                    "target_rule": "ally",
                     "stacks_to_apply": 3,
                     "duration": 5.0
                   }
-                ]
+                ],
+                "threshold": 0.25
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              45,
+              20
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              3,
+              3
+            ],
+            "/triggers/0/effects/0/duration": [
+              5.0,
+              8.0
+            ],
+            "/triggers/0/threshold": [
+              0.25,
+              0.35
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Réduction Dégâts + — charges",
+              "label_en": "Damage Reduction Up — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         }
-      ]
+      ],
+      "build_role": "tank"
     },
     {
       "id": "ks_support_life_link",
@@ -1136,7 +2668,48 @@
               "value": 35,
               "cooldown": 5
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_heal_cast",
+                "cooldown": 12,
+                "effects": [
+                  {
+                    "type": "spread_heal",
+                    "value": 15
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12,
+              5
+            ],
+            "/triggers/0/effects/0/value": [
+              15,
+              35
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Soin transmis",
+              "label_en": "Healing shared",
+              "unit": "percent",
+              "integer": true
+            }
+          ]
         },
         {
           "id": "ks_support_life_link_fortify",
@@ -1166,13 +2739,51 @@
                 "effects": [
                   {
                     "apply_status": "def_up",
+                    "target_rule": "ally",
                     "stacks_to_apply": 2,
                     "duration": 5.0
                   }
                 ]
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12,
+              5
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              2,
+              5
+            ],
+            "/triggers/0/effects/0/duration": [
+              5.0,
+              8.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "DEF + — charges",
+              "label_en": "DEF + — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_support_life_link_energize",
@@ -1190,9 +2801,51 @@
               "value": 15,
               "cooldown": 5
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_heal_cast",
+                "cooldown": 12,
+                "effects": [
+                  {
+                    "restore_souffle_pct": 5,
+                    "target_rule": "ally"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12,
+              5
+            ],
+            "/triggers/0/effects/0/restore_souffle_pct": [
+              5,
+              15
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/restore_souffle_pct",
+              "label_fr": "Souffle restauré",
+              "label_en": "Breath restored",
+              "unit": "percent",
+              "integer": true
+            }
+          ]
         }
-      ]
+      ],
+      "build_role": "healer"
     },
     {
       "id": "ks_support_rescue",
@@ -1227,16 +2880,54 @@
             "triggers": [
               {
                 "trigger": "ally_hp_below_pct",
-                "threshold": 0.25,
                 "cooldown": 30,
                 "effects": [
                   {
-                    "heal_percent_max_hp": 8
+                    "heal_percent_max_hp": 8,
+                    "target_rule": "ally"
                   }
-                ]
+                ],
+                "threshold": 0.25
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              30,
+              15
+            ],
+            "/triggers/0/effects/0/heal_percent_max_hp": [
+              8,
+              20
+            ],
+            "/triggers/0/threshold": [
+              0.25,
+              0.35
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/heal_percent_max_hp",
+              "label_fr": "Soin / PV max du porteur",
+              "label_en": "Heal / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_support_rescue_shield",
@@ -1264,17 +2955,66 @@
             "triggers": [
               {
                 "trigger": "ally_hp_below_pct",
-                "threshold": 0.25,
                 "cooldown": 30,
                 "effects": [
                   {
                     "apply_shield_percent_max_hp": 10,
-                    "duration": 5.0
+                    "duration": 5.0,
+                    "target_rule": "ally"
                   }
-                ]
+                ],
+                "threshold": 0.25
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              30,
+              15
+            ],
+            "/triggers/0/effects/0/apply_shield_percent_max_hp": [
+              10,
+              25
+            ],
+            "/triggers/0/effects/0/duration": [
+              5.0,
+              8.0
+            ],
+            "/triggers/0/threshold": [
+              0.25,
+              0.35
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/apply_shield_percent_max_hp",
+              "label_fr": "Bouclier / PV max du porteur",
+              "label_en": "Shield / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_support_rescue_cleanse",
@@ -1294,9 +3034,68 @@
               "heal": 12,
               "cooldown": 15
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "ally_hp_below_pct",
+                "cooldown": 30,
+                "effects": [
+                  {
+                    "type": "cleanse",
+                    "value": 1,
+                    "target_rule": "ally"
+                  },
+                  {
+                    "heal_percent_max_hp": 5,
+                    "target_rule": "ally"
+                  }
+                ],
+                "threshold": 0.25
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              30,
+              15
+            ],
+            "/triggers/0/effects/1/heal_percent_max_hp": [
+              5,
+              12
+            ],
+            "/triggers/0/threshold": [
+              0.25,
+              0.35
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/1/heal_percent_max_hp",
+              "label_fr": "Soin / PV max du porteur",
+              "label_en": "Heal / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         }
-      ]
+      ],
+      "build_role": "healer"
     },
     {
       "id": "ks_support_blessing",
@@ -1323,7 +3122,49 @@
               "value": 50,
               "cooldown": 0
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_buff_applied",
+                "cooldown": 0,
+                "effects": [
+                  {
+                    "type": "buff_duration_percent",
+                    "value": 20,
+                    "target_rule": "ally"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              0,
+              0
+            ],
+            "/triggers/0/effects/0/value": [
+              20,
+              50
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Durée des améliorations",
+              "label_en": "Buff duration",
+              "unit": "percent",
+              "integer": true
+            }
+          ]
         },
         {
           "id": "ks_support_blessing_spread",
@@ -1341,7 +3182,36 @@
               "value": 1,
               "cooldown": 8
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_buff_applied",
+                "cooldown": 20,
+                "effects": [
+                  {
+                    "type": "spread_buff"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              20,
+              8
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            }
+          ]
         },
         {
           "id": "ks_support_blessing_shield",
@@ -1361,9 +3231,63 @@
               "duration": 10,
               "cooldown": 6
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_buff_applied",
+                "cooldown": 15,
+                "effects": [
+                  {
+                    "apply_shield_percent_max_hp": 5,
+                    "duration": 6.0,
+                    "target_rule": "ally"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              15,
+              6
+            ],
+            "/triggers/0/effects/0/apply_shield_percent_max_hp": [
+              5,
+              15
+            ],
+            "/triggers/0/effects/0/duration": [
+              6.0,
+              10.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/apply_shield_percent_max_hp",
+              "label_fr": "Bouclier / PV max du porteur",
+              "label_en": "Shield / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
         }
-      ]
+      ],
+      "build_role": "support_buff"
     },
     {
       "id": "ks_support_last_breath",
@@ -1407,7 +3331,33 @@
                 ]
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              120,
+              60
+            ],
+            "/triggers/0/effects/0/revive_percent": [
+              5,
+              20
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/revive_percent",
+              "label_fr": "PV de l’allié sauvé",
+              "label_en": "Saved ally HP",
+              "unit": "percent",
+              "integer": true
+            }
+          ]
         },
         {
           "id": "ks_support_last_breath_martyr",
@@ -1439,13 +3389,50 @@
                 "effects": [
                   {
                     "revive_percent": 5,
-                    "revive_self_damage_percent": 15,
-                    "uses_per_combat": 1
+                    "uses_per_combat": 1,
+                    "revive_self_damage_percent": 15
                   }
                 ]
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              120,
+              60
+            ],
+            "/triggers/0/effects/0/revive_percent": [
+              5,
+              18
+            ],
+            "/triggers/0/effects/0/revive_self_damage_percent": [
+              15,
+              12
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/revive_percent",
+              "label_fr": "PV de l’allié sauvé",
+              "label_en": "Saved ally HP",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/revive_self_damage_percent",
+              "label_fr": "Coût en PV du porteur",
+              "label_en": "Owner HP cost",
+              "unit": "percent",
+              "integer": true
+            }
+          ]
         },
         {
           "id": "ks_support_last_breath_vengeance",
@@ -1479,16 +3466,65 @@
                 "effects": [
                   {
                     "revive_percent": 5,
+                    "uses_per_combat": 1,
                     "revive_atk_bonus": 15,
-                    "revive_buff_duration": 6.0,
-                    "uses_per_combat": 1
+                    "revive_buff_duration": 6
                   }
                 ]
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              120,
+              60
+            ],
+            "/triggers/0/effects/0/revive_percent": [
+              5,
+              15
+            ],
+            "/triggers/0/effects/0/revive_atk_bonus": [
+              15,
+              35
+            ],
+            "/triggers/0/effects/0/revive_buff_duration": [
+              6,
+              10
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/revive_percent",
+              "label_fr": "PV de l’allié sauvé",
+              "label_en": "Saved ally HP",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/revive_atk_bonus",
+              "label_fr": "ATK de l’allié sauvé",
+              "label_en": "Saved ally ATK",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/revive_buff_duration",
+              "label_fr": "Durée du bonus",
+              "label_en": "Bonus duration",
+              "unit": "seconds",
+              "integer": true
+            }
+          ]
         }
-      ]
+      ],
+      "build_role": "healer"
     },
     {
       "id": "ks_support_harmony",
@@ -1515,7 +3551,60 @@
               "every_n": 3,
               "value": 10
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "every_n_skills",
+                "cooldown": 0,
+                "effects": [
+                  {
+                    "heal_percent_max_hp": 4,
+                    "target_rule": "all_allies"
+                  }
+                ],
+                "skill_count": 5
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              0,
+              0
+            ],
+            "/triggers/0/effects/0/heal_percent_max_hp": [
+              4,
+              10
+            ],
+            "/triggers/0/skill_count": [
+              5,
+              3
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/heal_percent_max_hp",
+              "label_fr": "Soin / PV max du porteur",
+              "label_en": "Heal / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/skill_count",
+              "label_fr": "Sorts",
+              "label_en": "Skills",
+              "unit": "",
+              "integer": true
+            }
+          ]
         },
         {
           "id": "ks_support_harmony_shield",
@@ -1535,7 +3624,72 @@
               "value": 12,
               "duration": 8
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "every_n_skills",
+                "cooldown": 0,
+                "effects": [
+                  {
+                    "apply_shield_percent_max_hp": 5,
+                    "duration": 5.0,
+                    "target_rule": "all_allies"
+                  }
+                ],
+                "skill_count": 5
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              0,
+              0
+            ],
+            "/triggers/0/effects/0/apply_shield_percent_max_hp": [
+              5,
+              12
+            ],
+            "/triggers/0/effects/0/duration": [
+              5.0,
+              8.0
+            ],
+            "/triggers/0/skill_count": [
+              5,
+              3
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/apply_shield_percent_max_hp",
+              "label_fr": "Bouclier / PV max du porteur",
+              "label_en": "Shield / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/skill_count",
+              "label_fr": "Sorts",
+              "label_en": "Skills",
+              "unit": "",
+              "integer": true
+            }
+          ]
         },
         {
           "id": "ks_support_harmony_vigor",
@@ -1555,9 +3709,104 @@
               "value": 20,
               "duration": 10
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "every_n_skills",
+                "cooldown": 0,
+                "effects": [
+                  {
+                    "apply_status": "atk_up",
+                    "target_rule": "all_allies",
+                    "stacks_to_apply": 2,
+                    "duration": 6.0
+                  },
+                  {
+                    "apply_status": "mag_up",
+                    "target_rule": "all_allies",
+                    "stacks_to_apply": 2,
+                    "duration": 6.0
+                  }
+                ],
+                "skill_count": 5
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              0,
+              0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              2,
+              4
+            ],
+            "/triggers/0/effects/0/duration": [
+              6.0,
+              10.0
+            ],
+            "/triggers/0/effects/1/stacks_to_apply": [
+              2,
+              4
+            ],
+            "/triggers/0/effects/1/duration": [
+              6.0,
+              10.0
+            ],
+            "/triggers/0/skill_count": [
+              5,
+              3
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "ATK + — charges",
+              "label_en": "ATK Up — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/1/stacks_to_apply",
+              "label_fr": "MAG + — charges",
+              "label_en": "MAG Up — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/1/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/skill_count",
+              "label_fr": "Sorts",
+              "label_en": "Skills",
+              "unit": "",
+              "integer": true
+            }
+          ]
         }
-      ]
+      ],
+      "build_role": "support_buff"
     },
     {
       "id": "ks_util_mastery",
@@ -1584,7 +3833,49 @@
               "value": 40,
               "cooldown": 0
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_cc_applied",
+                "cooldown": 0,
+                "effects": [
+                  {
+                    "type": "cc_duration_percent",
+                    "value": 15,
+                    "target_rule": "enemy"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              0,
+              0
+            ],
+            "/triggers/0/effects/0/value": [
+              15,
+              40
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Durée des entraves",
+              "label_en": "Control duration",
+              "unit": "percent",
+              "integer": true
+            }
+          ]
         },
         {
           "id": "ks_util_mastery_drain",
@@ -1602,7 +3893,47 @@
               "value": 15,
               "cooldown": 6
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_cc_applied",
+                "cooldown": 15,
+                "effects": [
+                  {
+                    "drain_souffle_pct": 5
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              15,
+              6
+            ],
+            "/triggers/0/effects/0/drain_souffle_pct": [
+              5,
+              15
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/drain_souffle_pct",
+              "label_fr": "Souffle drainé",
+              "label_en": "Breath drained",
+              "unit": "percent",
+              "integer": true
+            }
+          ]
         },
         {
           "id": "ks_util_mastery_expose",
@@ -1622,9 +3953,64 @@
               "duration": 8,
               "cooldown": 6
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_cc_applied",
+                "cooldown": 15,
+                "effects": [
+                  {
+                    "apply_status": "def_down",
+                    "target_rule": "enemy",
+                    "stacks_to_apply": 2,
+                    "duration": 4.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              15,
+              6
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              2,
+              4
+            ],
+            "/triggers/0/effects/0/duration": [
+              4.0,
+              8.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "DEF - — charges",
+              "label_en": "DEF - — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
         }
-      ]
+      ],
+      "build_role": "support_debuff"
     },
     {
       "id": "ks_util_second_wind",
@@ -1660,12 +4046,41 @@
                 "cooldown": 20,
                 "effects": [
                   {
-                    "heal_percent_max_hp": 6
+                    "heal_percent_max_hp": 6,
+                    "target_rule": "self"
                   }
                 ]
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              20,
+              8
+            ],
+            "/triggers/0/effects/0/heal_percent_max_hp": [
+              6,
+              15
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/heal_percent_max_hp",
+              "label_fr": "Soin / PV max du porteur",
+              "label_en": "Heal / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            }
+          ],
+          "trigger_description_fr": "À l’élimination d’un ennemi.",
+          "trigger_description_en": "When you defeat an enemy."
         },
         {
           "id": "ks_util_second_wind_souffle",
@@ -1698,7 +4113,35 @@
                 ]
               }
             ]
-          }
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              20,
+              8
+            ],
+            "/triggers/0/effects/0/restore_souffle_pct": [
+              8,
+              20
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/restore_souffle_pct",
+              "label_fr": "Souffle restauré",
+              "label_en": "Breath restored",
+              "unit": "percent",
+              "integer": true
+            }
+          ],
+          "trigger_description_fr": "À l’élimination d’un ennemi.",
+          "trigger_description_en": "When you defeat an enemy."
         },
         {
           "id": "ks_util_second_wind_cdr",
@@ -1718,9 +4161,65 @@
               "duration": 10,
               "cooldown": 8
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_kill",
+                "cooldown": 20,
+                "effects": [
+                  {
+                    "stat": "cooldown_reduction",
+                    "value": 10,
+                    "duration": 6.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              20,
+              8
+            ],
+            "/triggers/0/effects/0/value": [
+              10,
+              25
+            ],
+            "/triggers/0/effects/0/duration": [
+              6.0,
+              10.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Réduction des recharges",
+              "label_en": "Cooldown reduction",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ],
+          "trigger_description_fr": "À l’élimination d’un ennemi.",
+          "trigger_description_en": "When you defeat an enemy."
         }
-      ]
+      ],
+      "build_role": "ranged_physical"
     },
     {
       "id": "ks_util_tactical",
@@ -1749,7 +4248,60 @@
               "duration": 12,
               "cooldown": 30
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_ultimate_use",
+                "cooldown": 60,
+                "effects": [
+                  {
+                    "stat": "cooldown_reduction",
+                    "value": 15,
+                    "duration": 8.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              60,
+              30
+            ],
+            "/triggers/0/effects/0/value": [
+              15,
+              35
+            ],
+            "/triggers/0/effects/0/duration": [
+              8.0,
+              12.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Réduction des recharges",
+              "label_en": "Cooldown reduction",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_util_tactical_power",
@@ -1769,7 +4321,89 @@
               "duration": 12,
               "cooldown": 30
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_ultimate_use",
+                "cooldown": 60,
+                "effects": [
+                  {
+                    "apply_status": "atk_up",
+                    "target_rule": "self",
+                    "stacks_to_apply": 3,
+                    "duration": 8.0
+                  },
+                  {
+                    "apply_status": "mag_up",
+                    "target_rule": "self",
+                    "stacks_to_apply": 3,
+                    "duration": 8.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              60,
+              30
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              3,
+              5
+            ],
+            "/triggers/0/effects/0/duration": [
+              8.0,
+              12.0
+            ],
+            "/triggers/0/effects/1/stacks_to_apply": [
+              3,
+              5
+            ],
+            "/triggers/0/effects/1/duration": [
+              8.0,
+              12.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "ATK + — charges",
+              "label_en": "ATK Up — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/1/stacks_to_apply",
+              "label_fr": "MAG + — charges",
+              "label_en": "MAG Up — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/1/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_util_tactical_shield",
@@ -1789,9 +4423,63 @@
               "duration": 10,
               "cooldown": 30
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_ultimate_use",
+                "cooldown": 60,
+                "effects": [
+                  {
+                    "apply_shield_percent_max_hp": 12,
+                    "duration": 6.0,
+                    "target_rule": "self"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              60,
+              30
+            ],
+            "/triggers/0/effects/0/apply_shield_percent_max_hp": [
+              12,
+              30
+            ],
+            "/triggers/0/effects/0/duration": [
+              6.0,
+              10.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/apply_shield_percent_max_hp",
+              "label_fr": "Bouclier / PV max du porteur",
+              "label_en": "Shield / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
         }
-      ]
+      ],
+      "build_role": "ranged_physical"
     },
     {
       "id": "ks_util_adaptation",
@@ -1818,7 +4506,50 @@
               "value": 40,
               "cooldown": 10
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_debuff_received",
+                "cooldown": 25,
+                "effects": [
+                  {
+                    "type": "cleanse",
+                    "value": 1,
+                    "chance": 0.15,
+                    "target_rule": "self"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              25,
+              10
+            ],
+            "/triggers/0/effects/0/chance": [
+              0.15,
+              0.4
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/chance",
+              "label_fr": "Chance",
+              "label_en": "Chance",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_util_adaptation_dr",
@@ -1838,7 +4569,61 @@
               "duration": 6,
               "cooldown": 8
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_debuff_received",
+                "cooldown": 20,
+                "effects": [
+                  {
+                    "apply_status": "damage_reduction_up",
+                    "target_rule": "self",
+                    "stacks_to_apply": 2,
+                    "duration": 4.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              20,
+              8
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              2,
+              3
+            ],
+            "/triggers/0/effects/0/duration": [
+              4.0,
+              6.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Réduction Dégâts + — charges",
+              "label_en": "Damage Reduction Up — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_util_adaptation_heal",
@@ -1856,9 +4641,51 @@
               "value": 12,
               "cooldown": 8
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_debuff_received",
+                "cooldown": 20,
+                "effects": [
+                  {
+                    "heal_percent_max_hp": 4,
+                    "target_rule": "self"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              20,
+              8
+            ],
+            "/triggers/0/effects/0/heal_percent_max_hp": [
+              4,
+              12
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/heal_percent_max_hp",
+              "label_fr": "Soin / PV max du porteur",
+              "label_en": "Heal / owner's max HP",
+              "unit": "percent",
+              "integer": true
+            }
+          ]
         }
-      ]
+      ],
+      "build_role": "support_debuff"
     },
     {
       "id": "ks_util_synergy",
@@ -1887,7 +4714,72 @@
               "value": 60,
               "cooldown": 6
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "skill_combo",
+                "cooldown": 15,
+                "effects": [
+                  {
+                    "type": "next_skill_damage",
+                    "value": 25,
+                    "duration": 10.0
+                  }
+                ],
+                "skill_count": 3
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              15,
+              6
+            ],
+            "/triggers/0/effects/0/value": [
+              25,
+              60
+            ],
+            "/triggers/0/effects/0/duration": [
+              10.0,
+              10.0
+            ],
+            "/triggers/0/skill_count": [
+              3,
+              3
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Dégâts du prochain sort",
+              "label_en": "Next skill damage",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/skill_count",
+              "label_fr": "Sorts",
+              "label_en": "Skills",
+              "unit": "",
+              "integer": true
+            }
+          ]
         },
         {
           "id": "ks_util_synergy_free",
@@ -1907,7 +4799,60 @@
               "value": 1,
               "cooldown": 10
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "skill_combo",
+                "cooldown": 20,
+                "effects": [
+                  {
+                    "type": "next_skill_free",
+                    "duration": 10.0
+                  }
+                ],
+                "skill_count": 4
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              20,
+              10
+            ],
+            "/triggers/0/effects/0/duration": [
+              10.0,
+              10.0
+            ],
+            "/triggers/0/skill_count": [
+              4,
+              3
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/skill_count",
+              "label_fr": "Sorts",
+              "label_en": "Skills",
+              "unit": "",
+              "integer": true
+            }
+          ]
         },
         {
           "id": "ks_util_synergy_crit",
@@ -1927,9 +4872,63 @@
               "value": 1,
               "cooldown": 10
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "skill_combo",
+                "cooldown": 20,
+                "effects": [
+                  {
+                    "type": "next_skill_crit",
+                    "duration": 10.0
+                  }
+                ],
+                "skill_count": 4
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              20,
+              10
+            ],
+            "/triggers/0/effects/0/duration": [
+              10.0,
+              10.0
+            ],
+            "/triggers/0/skill_count": [
+              4,
+              3
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/skill_count",
+              "label_fr": "Sorts",
+              "label_en": "Skills",
+              "unit": "",
+              "integer": true
+            }
+          ]
         }
-      ]
+      ],
+      "build_role": "ranged_magic"
     },
     {
       "id": "ks_util_breath",
@@ -1958,7 +4957,60 @@
               "value": 35,
               "cooldown": 30
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "souffle_below_pct",
+                "cooldown": 60,
+                "effects": [
+                  {
+                    "restore_souffle_pct": 15,
+                    "target_rule": "self"
+                  }
+                ],
+                "threshold": 0.2
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              60,
+              30
+            ],
+            "/triggers/0/effects/0/restore_souffle_pct": [
+              15,
+              35
+            ],
+            "/triggers/0/threshold": [
+              0.2,
+              0.3
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/restore_souffle_pct",
+              "label_fr": "Souffle restauré",
+              "label_en": "Breath restored",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_util_breath_flow",
@@ -1982,7 +5034,100 @@
               "duration": 12,
               "cooldown": 30
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "souffle_below_pct",
+                "cooldown": 60,
+                "effects": [
+                  {
+                    "apply_status": "mana_regen",
+                    "target_rule": "self",
+                    "stacks_to_apply": 1,
+                    "duration": 8.0
+                  },
+                  {
+                    "stat": "cooldown_reduction",
+                    "value": 10,
+                    "duration": 8.0
+                  }
+                ],
+                "threshold": 0.2
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              60,
+              30
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              2
+            ],
+            "/triggers/0/effects/0/duration": [
+              8.0,
+              12.0
+            ],
+            "/triggers/0/effects/1/value": [
+              10,
+              25
+            ],
+            "/triggers/0/effects/1/duration": [
+              8.0,
+              12.0
+            ],
+            "/triggers/0/threshold": [
+              0.2,
+              0.3
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Régen Souffle — charges",
+              "label_en": "Breath Regen — stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/1/value",
+              "label_fr": "Réduction des recharges",
+              "label_en": "Cooldown reduction",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/1/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
         },
         {
           "id": "ks_util_breath_sacrifice",
@@ -2004,7 +5149,1872 @@
               "souffle_gain": 30,
               "cooldown": 30
             }
-          }
+          },
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "souffle_below_pct",
+                "cooldown": 60,
+                "effects": [
+                  {
+                    "convert_hp_to_souffle": 12,
+                    "percent": 15
+                  }
+                ],
+                "threshold": 0.2
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              60,
+              30
+            ],
+            "/triggers/0/effects/0/convert_hp_to_souffle": [
+              12,
+              10
+            ],
+            "/triggers/0/effects/0/percent": [
+              15,
+              30
+            ],
+            "/triggers/0/threshold": [
+              0.2,
+              0.3
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/convert_hp_to_souffle",
+              "label_fr": "Coût en PV max",
+              "label_en": "Max HP cost",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/percent",
+              "label_fr": "Gain de Souffle max",
+              "label_en": "Maximum Breath gain",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/threshold",
+              "label_fr": "Seuil",
+              "label_en": "Threshold",
+              "unit": "ratio",
+              "integer": false
+            }
+          ]
+        }
+      ],
+      "build_role": "ranged_magic"
+    },
+    {
+      "id": "ks_dps_embers",
+      "name_fr": "Braise",
+      "name_en": "Embers",
+      "category": "dps",
+      "build_role": "ranged_magic",
+      "trigger": "conditional",
+      "trigger_description_fr": "Déclenchement selon la variante.",
+      "trigger_description_en": "Trigger depends on the variant.",
+      "variants": [
+        {
+          "name_fr": "Étincelle",
+          "name_en": "Spark",
+          "description_fr": "Votre premier sort visant un ennemi applique Brûlure.",
+          "description_en": "Your first skill targeting an enemy applies Burn.",
+          "id": "ks_dps_embers_kindle",
+          "design_axis": "autonomy",
+          "trigger_description_fr": "Votre premier sort visant un ennemi applique Brûlure.",
+          "trigger_description_en": "Your first skill targeting an enemy applies Burn.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "first_skill_cast",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_status": "burn",
+                    "target_rule": "enemy",
+                    "stacks_to_apply": 1,
+                    "duration": 3.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              1
+            ],
+            "/triggers/0/effects/0/duration": [
+              3.0,
+              4.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Brûlure : charges",
+              "label_en": "Burn stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Combustible",
+          "name_en": "Fuel",
+          "description_fr": "Frapper une cible brûlée prépare un bonus aux dégâts du prochain sort offensif.",
+          "description_en": "Hitting a burning target empowers your next damaging skill.",
+          "id": "ks_dps_embers_fuel",
+          "design_axis": "exploitation",
+          "trigger_description_fr": "Frapper une cible brûlée prépare un bonus aux dégâts du prochain sort offensif.",
+          "trigger_description_en": "Hitting a burning target empowers your next damaging skill.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hit",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "type": "next_skill_damage",
+                    "value": 10,
+                    "duration": 5.0,
+                    "target_rule": "self",
+                    "required_target_status": "burn"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/value": [
+              10,
+              15
+            ],
+            "/triggers/0/effects/0/duration": [
+              5.0,
+              6.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Bonus",
+              "label_en": "Bonus",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Feu de signal",
+          "name_en": "Signal Fire",
+          "description_fr": "Frapper une cible brûlée renforce brièvement l’ATK et la MAG de votre allié le plus proche.",
+          "description_en": "Hitting a burning target briefly boosts your nearest ally’s ATK and MAG.",
+          "id": "ks_dps_embers_signal",
+          "design_axis": "cooperation",
+          "trigger_description_fr": "Frapper une cible brûlée renforce brièvement l’ATK et la MAG de votre allié le plus proche.",
+          "trigger_description_en": "Hitting a burning target briefly boosts your nearest ally’s ATK and MAG.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hit",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_status": "atk_up",
+                    "target_rule": "nearest_ally",
+                    "stacks_to_apply": 1,
+                    "duration": 3.0,
+                    "required_target_status": "burn"
+                  },
+                  {
+                    "apply_status": "mag_up",
+                    "target_rule": "nearest_ally",
+                    "stacks_to_apply": 1,
+                    "duration": 3.0,
+                    "required_target_status": "burn"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              2
+            ],
+            "/triggers/0/effects/0/duration": [
+              3.0,
+              4.0
+            ],
+            "/triggers/0/effects/1/stacks_to_apply": [
+              1,
+              2
+            ],
+            "/triggers/0/effects/1/duration": [
+              3.0,
+              4.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "ATK + : charges",
+              "label_en": "ATK Up stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/1/stacks_to_apply",
+              "label_fr": "MAG + : charges",
+              "label_en": "MAG Up stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/1/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ks_dps_wounds",
+      "name_fr": "Plaies",
+      "name_en": "Wounds",
+      "category": "dps",
+      "build_role": "melee",
+      "trigger": "conditional",
+      "trigger_description_fr": "Déclenchement selon la variante.",
+      "trigger_description_en": "Trigger depends on the variant.",
+      "variants": [
+        {
+          "name_fr": "Entaille",
+          "name_en": "Cut",
+          "description_fr": "Un critique direct applique Saignement.",
+          "description_en": "A direct critical hit applies Bleed.",
+          "id": "ks_dps_wounds_open",
+          "design_axis": "autonomy",
+          "trigger_description_fr": "Un critique direct applique Saignement.",
+          "trigger_description_en": "A direct critical hit applies Bleed.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_critical_hit",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_status": "bleed",
+                    "target_rule": "enemy",
+                    "stacks_to_apply": 1,
+                    "duration": 3.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              1
+            ],
+            "/triggers/0/effects/0/duration": [
+              3.0,
+              4.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Saignement : charges",
+              "label_en": "Bleed stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Poursuite",
+          "name_en": "Pursuit",
+          "description_fr": "Frapper une cible qui saigne restaure du Souffle.",
+          "description_en": "Hitting a bleeding target restores Breath.",
+          "id": "ks_dps_wounds_pursue",
+          "design_axis": "exploitation",
+          "trigger_description_fr": "Frapper une cible qui saigne restaure du Souffle.",
+          "trigger_description_en": "Hitting a bleeding target restores Breath.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hit",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "restore_souffle_pct": 3.0,
+                    "target_rule": "self",
+                    "required_target_status": "bleed"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/restore_souffle_pct": [
+              3.0,
+              5.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/restore_souffle_pct",
+              "label_fr": "Souffle restauré",
+              "label_en": "Breath restored",
+              "unit": "percent",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Plaie ouverte",
+          "name_en": "Open Wound",
+          "description_fr": "Frapper une cible qui saigne applique Vulnérable pour les attaques du groupe.",
+          "description_en": "Hitting a bleeding target applies Vulnerable for your party’s attacks.",
+          "id": "ks_dps_wounds_expose",
+          "design_axis": "cooperation",
+          "trigger_description_fr": "Frapper une cible qui saigne applique Vulnérable pour les attaques du groupe.",
+          "trigger_description_en": "Hitting a bleeding target applies Vulnerable for your party’s attacks.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hit",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_status": "vulnerable",
+                    "target_rule": "enemy",
+                    "stacks_to_apply": 1,
+                    "duration": 3.0,
+                    "required_target_status": "bleed"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              1
+            ],
+            "/triggers/0/effects/0/duration": [
+              3.0,
+              4.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Vulnérable : charges",
+              "label_en": "Vulnerable stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ks_dps_hunt",
+      "name_fr": "Traque",
+      "name_en": "Hunt",
+      "category": "dps",
+      "build_role": "ranged_physical",
+      "trigger": "conditional",
+      "trigger_description_fr": "Déclenchement selon la variante.",
+      "trigger_description_en": "Trigger depends on the variant.",
+      "variants": [
+        {
+          "name_fr": "Tir gênant",
+          "name_en": "Hindering Shot",
+          "description_fr": "Un critique direct ralentit la cible.",
+          "description_en": "A direct critical hit slows the target.",
+          "id": "ks_dps_hunt_snare",
+          "design_axis": "autonomy",
+          "trigger_description_fr": "Un critique direct ralentit la cible.",
+          "trigger_description_en": "A direct critical hit slows the target.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_critical_hit",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_status": "slow",
+                    "target_rule": "enemy",
+                    "stacks_to_apply": 1,
+                    "duration": 1.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              1
+            ],
+            "/triggers/0/effects/0/duration": [
+              1.0,
+              1.5
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Ralentissement : charges",
+              "label_en": "Slow stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Visée patiente",
+          "name_en": "Patient Aim",
+          "description_fr": "Frapper une cible ralentie prépare des dégâts supplémentaires au prochain sort offensif.",
+          "description_en": "Hitting a slowed target empowers your next damaging skill.",
+          "id": "ks_dps_hunt_aim",
+          "design_axis": "exploitation",
+          "trigger_description_fr": "Frapper une cible ralentie prépare des dégâts supplémentaires au prochain sort offensif.",
+          "trigger_description_en": "Hitting a slowed target empowers your next damaging skill.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hit",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "type": "next_skill_damage",
+                    "value": 12,
+                    "duration": 5.0,
+                    "target_rule": "self",
+                    "required_target_status": "slow"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/value": [
+              12,
+              18
+            ],
+            "/triggers/0/effects/0/duration": [
+              5.0,
+              6.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Bonus",
+              "label_en": "Bonus",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Désignation",
+          "name_en": "Designation",
+          "description_fr": "Frapper une cible ralentie applique Marqué pour votre groupe.",
+          "description_en": "Hitting a slowed target applies Marked for your party.",
+          "id": "ks_dps_hunt_mark",
+          "design_axis": "cooperation",
+          "trigger_description_fr": "Frapper une cible ralentie applique Marqué pour votre groupe.",
+          "trigger_description_en": "Hitting a slowed target applies Marked for your party.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hit",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_status": "marked",
+                    "target_rule": "enemy",
+                    "stacks_to_apply": 1,
+                    "duration": 3.0,
+                    "required_target_status": "slow"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              1
+            ],
+            "/triggers/0/effects/0/duration": [
+              3.0,
+              4.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Marqué : charges",
+              "label_en": "Marked stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ks_support_relay",
+      "name_fr": "Relais",
+      "name_en": "Relay",
+      "category": "support",
+      "build_role": "healer",
+      "trigger": "conditional",
+      "trigger_description_fr": "Déclenchement selon la variante.",
+      "trigger_description_en": "Trigger depends on the variant.",
+      "variants": [
+        {
+          "name_fr": "Réserve",
+          "name_en": "Reserve",
+          "description_fr": "Un soin effectif restaure une part de votre Souffle.",
+          "description_en": "Effective healing restores some of your Breath.",
+          "id": "ks_support_relay_reserve",
+          "design_axis": "autonomy",
+          "trigger_description_fr": "Un soin effectif restaure une part de votre Souffle.",
+          "trigger_description_en": "Effective healing restores some of your Breath.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_heal_cast",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "restore_souffle_pct": 3.0,
+                    "target_rule": "self",
+                    "require_effective_heal": true
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/restore_souffle_pct": [
+              3.0,
+              5.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/restore_souffle_pct",
+              "label_fr": "Souffle restauré",
+              "label_en": "Breath restored",
+              "unit": "percent",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Abri",
+          "name_en": "Shelter",
+          "description_fr": "Un soin effectif protège son bénéficiaire avec un bouclier.",
+          "description_en": "Effective healing shields its recipient.",
+          "id": "ks_support_relay_shelter",
+          "design_axis": "exploitation",
+          "trigger_description_fr": "Un soin effectif protège son bénéficiaire avec un bouclier.",
+          "trigger_description_en": "Effective healing shields its recipient.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_heal_cast",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_shield_percent_max_hp": 3.0,
+                    "duration": 4.0,
+                    "target_rule": "ally",
+                    "require_effective_heal": true
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/apply_shield_percent_max_hp": [
+              3.0,
+              5.0
+            ],
+            "/triggers/0/effects/0/duration": [
+              4.0,
+              5.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/apply_shield_percent_max_hp",
+              "label_fr": "Bouclier / PV max du porteur",
+              "label_en": "Shield / owner maximum HP",
+              "unit": "percent",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Ralliement",
+          "name_en": "Rally",
+          "description_fr": "Un soin effectif renforce temporairement la défense de son bénéficiaire.",
+          "description_en": "Effective healing temporarily increases its recipient’s defense.",
+          "id": "ks_support_relay_rally",
+          "design_axis": "cooperation",
+          "trigger_description_fr": "Un soin effectif renforce temporairement la défense de son bénéficiaire.",
+          "trigger_description_en": "Effective healing temporarily increases its recipient’s defense.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_heal_cast",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_status": "def_up",
+                    "target_rule": "ally",
+                    "stacks_to_apply": 1,
+                    "duration": 3.0,
+                    "require_effective_heal": true
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              2
+            ],
+            "/triggers/0/effects/0/duration": [
+              3.0,
+              4.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "DEF + : charges",
+              "label_en": "DEF + stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ks_support_accord",
+      "name_fr": "Accord",
+      "name_en": "Accord",
+      "category": "support",
+      "build_role": "support_buff",
+      "trigger": "conditional",
+      "trigger_description_fr": "Déclenchement selon la variante.",
+      "trigger_description_en": "Trigger depends on the variant.",
+      "variants": [
+        {
+          "name_fr": "Mesure",
+          "name_en": "Measure",
+          "description_fr": "Renforcer un allié restaure une part de votre Souffle.",
+          "description_en": "Buffing an ally restores some of your Breath.",
+          "id": "ks_support_accord_reserve",
+          "design_axis": "autonomy",
+          "trigger_description_fr": "Renforcer un allié restaure une part de votre Souffle.",
+          "trigger_description_en": "Buffing an ally restores some of your Breath.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_buff_applied",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "restore_souffle_pct": 3.0,
+                    "target_rule": "self"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/restore_souffle_pct": [
+              3.0,
+              5.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/restore_souffle_pct",
+              "label_fr": "Souffle restauré",
+              "label_en": "Breath restored",
+              "unit": "percent",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Temps fort",
+          "name_en": "Strong Beat",
+          "description_fr": "Renforcer un allié prépare des dégâts supplémentaires à son prochain sort offensif.",
+          "description_en": "Buffing an ally empowers their next damaging skill.",
+          "id": "ks_support_accord_strike",
+          "design_axis": "exploitation",
+          "trigger_description_fr": "Renforcer un allié prépare des dégâts supplémentaires à son prochain sort offensif.",
+          "trigger_description_en": "Buffing an ally empowers their next damaging skill.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_buff_applied",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "type": "next_skill_damage",
+                    "value": 8,
+                    "duration": 5.0,
+                    "target_rule": "ally"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/value": [
+              8,
+              12
+            ],
+            "/triggers/0/effects/0/duration": [
+              5.0,
+              6.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Bonus",
+              "label_en": "Bonus",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Inspiration",
+          "name_en": "Inspiration",
+          "description_fr": "Renforcer un allié lui restaure du Souffle.",
+          "description_en": "Buffing an ally restores their Breath.",
+          "id": "ks_support_accord_breath",
+          "design_axis": "cooperation",
+          "trigger_description_fr": "Renforcer un allié lui restaure du Souffle.",
+          "trigger_description_en": "Buffing an ally restores their Breath.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_buff_applied",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "restore_souffle_pct": 3.0,
+                    "target_rule": "ally"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/restore_souffle_pct": [
+              3.0,
+              5.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/restore_souffle_pct",
+              "label_fr": "Souffle restauré",
+              "label_en": "Breath restored",
+              "unit": "percent",
+              "integer": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ks_support_echo",
+      "name_fr": "Écho",
+      "name_en": "Echo",
+      "category": "support",
+      "build_role": "support_buff",
+      "trigger": "conditional",
+      "trigger_description_fr": "Déclenchement selon la variante.",
+      "trigger_description_en": "Trigger depends on the variant.",
+      "variants": [
+        {
+          "name_fr": "Résonance",
+          "name_en": "Resonance",
+          "description_fr": "Renforcer un allié vous protège brièvement.",
+          "description_en": "Buffing an ally briefly shields you.",
+          "id": "ks_support_echo_guard",
+          "design_axis": "autonomy",
+          "trigger_description_fr": "Renforcer un allié vous protège brièvement.",
+          "trigger_description_en": "Buffing an ally briefly shields you.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_buff_applied",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_shield_percent_max_hp": 3.0,
+                    "duration": 4.0,
+                    "target_rule": "self"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/apply_shield_percent_max_hp": [
+              3.0,
+              5.0
+            ],
+            "/triggers/0/effects/0/duration": [
+              4.0,
+              5.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/apply_shield_percent_max_hp",
+              "label_fr": "Bouclier / PV max du porteur",
+              "label_en": "Shield / owner maximum HP",
+              "unit": "percent",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Harmonisation",
+          "name_en": "Harmonization",
+          "description_fr": "Renforcer un allié sous ATK augmentée lui accorde aussi de la MAG.",
+          "description_en": "Buffing an ally with ATK Up also grants them MAG.",
+          "id": "ks_support_echo_extend",
+          "design_axis": "exploitation",
+          "trigger_description_fr": "Renforcer un allié sous ATK augmentée lui accorde aussi de la MAG.",
+          "trigger_description_en": "Buffing an ally with ATK Up also grants them MAG.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_buff_applied",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_status": "mag_up",
+                    "target_rule": "ally",
+                    "stacks_to_apply": 1,
+                    "duration": 3.0,
+                    "required_target_status": "atk_up"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              2
+            ],
+            "/triggers/0/effects/0/duration": [
+              3.0,
+              4.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "MAG + : charges",
+              "label_en": "MAG Up stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Contrechant",
+          "name_en": "Countermelody",
+          "description_fr": "Renforcer un allié lui accorde brièvement de la résistance magique.",
+          "description_en": "Buffing an ally briefly grants them magic resistance.",
+          "id": "ks_support_echo_ward",
+          "design_axis": "cooperation",
+          "trigger_description_fr": "Renforcer un allié lui accorde brièvement de la résistance magique.",
+          "trigger_description_en": "Buffing an ally briefly grants them magic resistance.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_buff_applied",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_status": "magic_resist_up",
+                    "target_rule": "ally",
+                    "stacks_to_apply": 1,
+                    "duration": 3.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              2
+            ],
+            "/triggers/0/effects/0/duration": [
+              3.0,
+              4.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Résist Mag + : charges",
+              "label_en": "Magic Resist Up stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ks_util_venom",
+      "name_fr": "Venin",
+      "name_en": "Venom",
+      "category": "utility",
+      "build_role": "support_debuff",
+      "trigger": "conditional",
+      "trigger_description_fr": "Déclenchement selon la variante.",
+      "trigger_description_en": "Trigger depends on the variant.",
+      "variants": [
+        {
+          "name_fr": "Piqûre",
+          "name_en": "Sting",
+          "description_fr": "Un critique direct applique Poison.",
+          "description_en": "A direct critical hit applies Poison.",
+          "id": "ks_util_venom_sting",
+          "design_axis": "autonomy",
+          "trigger_description_fr": "Un critique direct applique Poison.",
+          "trigger_description_en": "A direct critical hit applies Poison.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_critical_hit",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_status": "poison",
+                    "target_rule": "enemy",
+                    "stacks_to_apply": 1,
+                    "duration": 3.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              1
+            ],
+            "/triggers/0/effects/0/duration": [
+              3.0,
+              4.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Poison : charges",
+              "label_en": "Poison stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Extraction",
+          "name_en": "Extraction",
+          "description_fr": "Frapper une cible empoisonnée restaure votre Souffle.",
+          "description_en": "Hitting a poisoned target restores your Breath.",
+          "id": "ks_util_venom_leech",
+          "design_axis": "exploitation",
+          "trigger_description_fr": "Frapper une cible empoisonnée restaure votre Souffle.",
+          "trigger_description_en": "Hitting a poisoned target restores your Breath.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hit",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "restore_souffle_pct": 3.0,
+                    "target_rule": "self",
+                    "required_target_status": "poison"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/restore_souffle_pct": [
+              3.0,
+              5.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/restore_souffle_pct",
+              "label_fr": "Souffle restauré",
+              "label_en": "Breath restored",
+              "unit": "percent",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Affaiblissement",
+          "name_en": "Weakening",
+          "description_fr": "Frapper une cible empoisonnée réduit temporairement son ATK.",
+          "description_en": "Hitting a poisoned target temporarily reduces its ATK.",
+          "id": "ks_util_venom_weaken",
+          "design_axis": "cooperation",
+          "trigger_description_fr": "Frapper une cible empoisonnée réduit temporairement son ATK.",
+          "trigger_description_en": "Hitting a poisoned target temporarily reduces its ATK.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hit",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_status": "atk_down",
+                    "target_rule": "enemy",
+                    "stacks_to_apply": 1,
+                    "duration": 3.0,
+                    "required_target_status": "poison"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              2
+            ],
+            "/triggers/0/effects/0/duration": [
+              3.0,
+              4.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "ATK - : charges",
+              "label_en": "ATK Down stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ks_util_breach",
+      "name_fr": "Brèche",
+      "name_en": "Breach",
+      "category": "utility",
+      "build_role": "support_debuff",
+      "trigger": "conditional",
+      "trigger_description_fr": "Déclenchement selon la variante.",
+      "trigger_description_en": "Trigger depends on the variant.",
+      "variants": [
+        {
+          "name_fr": "Fracture",
+          "name_en": "Fracture",
+          "description_fr": "Bloquer ou parer réduit brièvement la défense de l’attaquant.",
+          "description_en": "Blocking or parrying briefly reduces the attacker’s defense.",
+          "id": "ks_util_breach_fracture",
+          "design_axis": "autonomy",
+          "trigger_description_fr": "Bloquer ou parer réduit brièvement la défense de l’attaquant.",
+          "trigger_description_en": "Blocking or parrying briefly reduces the attacker’s defense.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_block_or_parry",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_status": "def_down",
+                    "target_rule": "enemy",
+                    "stacks_to_apply": 1,
+                    "duration": 3.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              2
+            ],
+            "/triggers/0/effects/0/duration": [
+              3.0,
+              4.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "DEF - : charges",
+              "label_en": "DEF - stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Exploitation",
+          "name_en": "Exploit",
+          "description_fr": "Frapper une cible sous Défense réduite prépare un bonus au prochain sort offensif.",
+          "description_en": "Hitting a target with Defense Down empowers your next damaging skill.",
+          "id": "ks_util_breach_exploit",
+          "design_axis": "exploitation",
+          "trigger_description_fr": "Frapper une cible sous Défense réduite prépare un bonus au prochain sort offensif.",
+          "trigger_description_en": "Hitting a target with Defense Down empowers your next damaging skill.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hit",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "type": "next_skill_damage",
+                    "value": 10,
+                    "duration": 5.0,
+                    "target_rule": "self",
+                    "required_target_status": "def_down"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/value": [
+              10,
+              15
+            ],
+            "/triggers/0/effects/0/duration": [
+              5.0,
+              6.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/value",
+              "label_fr": "Bonus",
+              "label_en": "Bonus",
+              "unit": "percent",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Faille arcanique",
+          "name_en": "Arcane Breach",
+          "description_fr": "Frapper une cible sous Défense réduite diminue aussi sa résistance magique.",
+          "description_en": "Hitting a target with Defense Down also reduces its magic resistance.",
+          "id": "ks_util_breach_arcane",
+          "design_axis": "cooperation",
+          "trigger_description_fr": "Frapper une cible sous Défense réduite diminue aussi sa résistance magique.",
+          "trigger_description_en": "Hitting a target with Defense Down also reduces its magic resistance.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hit",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_status": "magic_resist_down",
+                    "target_rule": "enemy",
+                    "stacks_to_apply": 1,
+                    "duration": 3.0,
+                    "required_target_status": "def_down"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              2
+            ],
+            "/triggers/0/effects/0/duration": [
+              3.0,
+              4.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "Résist Mag - : charges",
+              "label_en": "Magic Resist Down stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ks_util_interference",
+      "name_fr": "Interférence",
+      "name_en": "Interference",
+      "category": "utility",
+      "build_role": "support_debuff",
+      "trigger": "conditional",
+      "trigger_description_fr": "Déclenchement selon la variante.",
+      "trigger_description_en": "Trigger depends on the variant.",
+      "variants": [
+        {
+          "name_fr": "Perturbation",
+          "name_en": "Disruption",
+          "description_fr": "Réussir une entrave réduit brièvement la MAG de la cible.",
+          "description_en": "Successfully applying control briefly reduces the target’s MAG.",
+          "id": "ks_util_interference_hinder",
+          "design_axis": "autonomy",
+          "trigger_description_fr": "Réussir une entrave réduit brièvement la MAG de la cible.",
+          "trigger_description_en": "Successfully applying control briefly reduces the target’s MAG.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_cc_applied",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_status": "mag_down",
+                    "target_rule": "enemy",
+                    "stacks_to_apply": 1,
+                    "duration": 3.0
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/stacks_to_apply": [
+              1,
+              2
+            ],
+            "/triggers/0/effects/0/duration": [
+              3.0,
+              4.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/stacks_to_apply",
+              "label_fr": "MAG - : charges",
+              "label_en": "MAG Down stacks",
+              "unit": "",
+              "integer": true
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Reprise",
+          "name_en": "Recovery",
+          "description_fr": "Frapper une cible sous MAG réduite restaure votre Souffle.",
+          "description_en": "Hitting a target with MAG Down restores your Breath.",
+          "id": "ks_util_interference_recover",
+          "design_axis": "exploitation",
+          "trigger_description_fr": "Frapper une cible sous MAG réduite restaure votre Souffle.",
+          "trigger_description_en": "Hitting a target with MAG Down restores your Breath.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hit",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "restore_souffle_pct": 3.0,
+                    "target_rule": "self",
+                    "required_target_status": "mag_down"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/restore_souffle_pct": [
+              3.0,
+              5.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/restore_souffle_pct",
+              "label_fr": "Souffle restauré",
+              "label_en": "Breath restored",
+              "unit": "percent",
+              "integer": false
+            }
+          ]
+        },
+        {
+          "name_fr": "Couverture",
+          "name_en": "Cover",
+          "description_fr": "Frapper une cible sous MAG réduite protège votre allié le plus proche.",
+          "description_en": "Hitting a target with MAG Down shields your nearest ally.",
+          "id": "ks_util_interference_cover",
+          "design_axis": "cooperation",
+          "trigger_description_fr": "Frapper une cible sous MAG réduite protège votre allié le plus proche.",
+          "trigger_description_en": "Hitting a target with MAG Down shields your nearest ally.",
+          "runtime": {
+            "type": "combat_proc",
+            "triggers": [
+              {
+                "trigger": "on_hit",
+                "cooldown": 12.0,
+                "effects": [
+                  {
+                    "apply_shield_percent_max_hp": 3.0,
+                    "duration": 4.0,
+                    "target_rule": "nearest_ally",
+                    "required_target_status": "mag_down"
+                  }
+                ]
+              }
+            ]
+          },
+          "runtime_scaling": {
+            "/triggers/0/cooldown": [
+              12.0,
+              9.0
+            ],
+            "/triggers/0/effects/0/apply_shield_percent_max_hp": [
+              3.0,
+              5.0
+            ],
+            "/triggers/0/effects/0/duration": [
+              4.0,
+              5.0
+            ]
+          },
+          "runtime_ui": [
+            {
+              "path": "/triggers/0/cooldown",
+              "label_fr": "Recharge",
+              "label_en": "Cooldown",
+              "unit": "seconds",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/apply_shield_percent_max_hp",
+              "label_fr": "Bouclier / PV max du porteur",
+              "label_en": "Shield / owner maximum HP",
+              "unit": "percent",
+              "integer": false
+            },
+            {
+              "path": "/triggers/0/effects/0/duration",
+              "label_fr": "Durée",
+              "label_en": "Duration",
+              "unit": "seconds",
+              "integer": false
+            }
+          ]
         }
       ]
     }
