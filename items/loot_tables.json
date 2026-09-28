@@ -3,11 +3,11 @@
   "_meta": {
     "version": "2.0",
     "last_updated": "2026-03-04",
-    "description": "Système de loot global avec multiplicateurs. Inclut drops de matériaux, équipements, panoplies et uniques.",
+    "description": "SystÃ¨me de loot global avec multiplicateurs. Inclut drops de matÃ©riaux, Ã©quipements, panoplies et uniques.",
     "formula_overview": "PAR MONSTRE : chance = base_chance x PRODUIT(familles drop_chance de config/rewards.json : monster_state, encounter_stars, dungeon_difficulty, group_size, events), plafond 0.95. PAR COMBAT : chance = base_chance_per_fight x config/rewards.json fight_loot (etoiles x presence elite/boss) x dungeon_difficulty x group_size x events, plafond 0.95. Aucune penalite d ecart de niveau sur le loot."
   },
   "drop_chances_by_rarity": {
-    "_comment": "Chances de base par rareté de matériau (utilisé si l'item n'a pas de chance explicite)",
+    "_comment": "Chances de base par raretÃ© de matÃ©riau (utilisÃ© si l'item n'a pas de chance explicite)",
     "common": {
       "base_chance": 0.25,
       "min_quantity": 1,
@@ -72,7 +72,7 @@
     ]
   },
   "monster_loot_tables": {
-    "_comment": "Tables de loot spécifiques par type de monstre",
+    "_comment": "Tables de loot spÃ©cifiques par type de monstre",
     "wolf": [
       {
         "item_id": "mat_wolf_pelt",
@@ -3080,7 +3080,7 @@
     ]
   },
   "rarity_system": {
-    "description": "Système d'étoiles pour la rareté des drops",
+    "description": "SystÃ¨me d'Ã©toiles pour la raretÃ© des drops",
     "tiers": {
       "1_star": {
         "name": "Commun",
@@ -3101,13 +3101,13 @@
         "base_weight": 100
       },
       "4_star": {
-        "name": "Épique",
+        "name": "Ã‰pique",
         "name_en": "Epic",
         "color": "#a335ee",
         "base_weight": 20
       },
       "5_star": {
-        "name": "Légendaire",
+        "name": "LÃ©gendaire",
         "name_en": "Legendary",
         "color": "#ff8000",
         "base_weight": 2
@@ -3124,18 +3124,18 @@
     }
   },
   "base_drops": {
-    "description": "Drops de base garantis ou très fréquents",
-    "_gold_owner": "config/rewards.json `base_gold` depuis le 2026-08-31. Le bloc ci-dessous est un MIROIR de transition, pas une source : le loader neuf lit rewards.json APRES ce fichier, donc rewards.json gagne. Il n existe que pour qu un binaire ANCIEN, qui ne connait pas encore rewards.json.base_gold, trouve encore la valeur ici au lieu de retomber sur son defaut C++ de 2.0f — soit DIX FOIS trop d or, en silence, si la data partait avant le binaire. A SUPPRIMER une fois le binaire deploye ; c est l etape 2 de ce deplacement.",
+    "description": "Drops de base garantis ou trÃ¨s frÃ©quents",
+    "_gold_owner": "config/rewards.json `base_gold` depuis le 2026-08-31. Le bloc ci-dessous est un MIROIR de transition, pas une source : le loader neuf lit rewards.json APRES ce fichier, donc rewards.json gagne. Il n existe que pour qu un binaire ANCIEN, qui ne connait pas encore rewards.json.base_gold, trouve encore la valeur ici au lieu de retomber sur son defaut C++ de 2.0f â€” soit DIX FOIS trop d or, en silence, si la data partait avant le binaire. A SUPPRIMER une fois le binaire deploye ; c est l etape 2 de ce deplacement.",
     "gold": {
       "_miroir": "Doit rester IDENTIQUE a rewards.json base_gold. Si les deux divergent, c est rewards.json qui fait foi.",
       "base_per_monster_level": 0.2,
       "variance": 0.2,
-      "formula": "gold = monster_level × base × gold_weight × (1 + random(-variance, +variance)) × all_multipliers"
+      "formula": "gold = monster_level Ã— base Ã— gold_weight Ã— (1 + random(-variance, +variance)) Ã— all_multipliers"
     },
     "xp": {
       "base_per_monster_level": 10,
       "variance": 0.1,
-      "formula": "xp = monster_level × base × (1 + random(-variance, +variance)) × state_mult × dungeon_mult"
+      "formula": "xp = monster_level Ã— base Ã— (1 + random(-variance, +variance)) Ã— state_mult Ã— dungeon_mult"
     },
     "common_consumables": {
       "description": "Potions et items de base qui peuvent drop sur tous les mobs",
@@ -3239,22 +3239,22 @@
       ]
     },
     "enhancement_stones": {
-      "description_fr": "Pierres d'amélioration pour renforcer l'équipement (+1 à +20)",
+      "description_fr": "Pierres d'amÃ©lioration pour renforcer l'Ã©quipement (+1 Ã  +20)",
       "description_en": "Enhancement stones for upgrading equipment (+1 to +20)",
       "notes": [
-        "Les 4 types (Cherev/Magen/Koach/Neshama) ont les mêmes taux, roll séparé pour le type",
+        "Les 4 types (Cherev/Magen/Koach/Neshama) ont les mÃªmes taux, roll sÃ©parÃ© pour le type",
         "Rangs 1-2 : un tirage PAR MONSTRE tue, taux multiplies par les familles drop_chance de config/rewards.json. Rangs 3+ (per_fight: true) : un tirage PAR COMBAT et par joueur, niveau = monstre le plus haut du combat, taux x fight_loot (2026-09-28)",
-        "Les rangs supérieurs deviennent disponibles en fin de jeu"
+        "Les rangs supÃ©rieurs deviennent disponibles en fin de jeu"
       ],
       "type_roll": {
-        "description": "Quand une pierre drop, roll pour déterminer le type",
+        "description": "Quand une pierre drop, roll pour dÃ©terminer le type",
         "even_cherev": {
           "weight": 40,
-          "note": "Weapon - item DPS primaire, le plus demandé"
+          "note": "Weapon - item DPS primaire, le plus demandÃ©"
         },
         "even_magen": {
           "weight": 35,
-          "note": "Armor - plus d'équipements à up"
+          "note": "Armor - plus d'Ã©quipements Ã  up"
         },
         "even_koach": {
           "weight": 25,
@@ -3282,7 +3282,7 @@
             "act_5",
             "endgame"
           ],
-          "note": "2.5% de base, très commun - pierre de leveling"
+          "note": "2.5% de base, trÃ¨s commun - pierre de leveling"
         },
         "rank_2": {
           "name_fr": "Pierre Standard",
@@ -3303,7 +3303,7 @@
           "note": "0.8% de base, commun mais moins farmable"
         },
         "rank_3": {
-          "name_fr": "Pierre Supérieure",
+          "name_fr": "Pierre SupÃ©rieure",
           "name_en": "Superior Stone",
           "base_chance": 0.005,
           "per_fight": true,
@@ -3351,7 +3351,7 @@
           "note": "Par combat (niveau de combat >= 40). act_availability / act_multiplier : jamais lus."
         },
         "rank_5": {
-          "name_fr": "Pierre Suprême",
+          "name_fr": "Pierre SuprÃªme",
           "name_en": "Supreme Stone",
           "base_chance": 0.0005,
           "per_fight": true,
@@ -3375,7 +3375,7 @@
   },
   "multipliers": {
     "monster_state": {
-      "description": "Multiplicateur selon le type de monstre (s'applique individuellement à chaque mob)",
+      "description": "Multiplicateur selon le type de monstre (s'applique individuellement Ã  chaque mob)",
       "normal": {
         "gold": 1.0,
         "xp": 1.0,
@@ -3408,7 +3408,7 @@
       }
     },
     "encounter_stars": {
-      "description": "Multiplicateur selon les étoiles de la rencontre (s'applique au groupe entier)",
+      "description": "Multiplicateur selon les Ã©toiles de la rencontre (s'applique au groupe entier)",
       "reference": "systems/encounter_stars.json",
       "0": {
         "gold": 1.0,
@@ -3449,7 +3449,7 @@
       }
     },
     "dungeon_difficulty": {
-      "description": "Multiplicateur selon la difficulté du donjon",
+      "description": "Multiplicateur selon la difficultÃ© du donjon",
       "open_world": {
         "gold": 1.0,
         "xp": 1.0,
@@ -3516,7 +3516,7 @@
     },
     "group_size": {
       "description": "Bonus de loot simple: +5% par joueur",
-      "formula": "group_mult = 1 + (group_size × 0.05)",
+      "formula": "group_mult = 1 + (group_size Ã— 0.05)",
       "max_players": 10,
       "max_bonus_percent": 50,
       "values": {
@@ -3561,53 +3561,53 @@
           "bonus": "+50%"
         }
       },
-      "notes": "Simple et prévisible. Chaque joueur ajoute +5% de loot pour tout le groupe."
+      "notes": "Simple et prÃ©visible. Chaque joueur ajoute +5% de loot pour tout le groupe."
     },
     "global_cap": {
       "max_total_multiplier": 50.0,
       "note": "Hard cap on all stacked multipliers to prevent guaranteed legendary drops"
     },
     "level_difference": {
-      "description": "Pénalité XP/gold si le joueur est trop haut niveau par rapport au mob. Le loot (items, équipement, matériaux) n'est PAS affecté — un mob drop ce qu'il drop quel que soit le niveau du joueur.",
+      "description": "PÃ©nalitÃ© XP/gold si le joueur est trop haut niveau par rapport au mob. Le loot (items, Ã©quipement, matÃ©riaux) n'est PAS affectÃ© â€” un mob drop ce qu'il drop quel que soit le niveau du joueur.",
       "no_penalty_range": 5,
       "penalty_per_level": 0.2,
       "max_penalty": 0.95,
       "min_drop_rate": 0.05,
-      "formula": "Si (player_level - mob_level) > no_penalty_range: penalty = min(max_penalty, (diff - no_penalty_range) × penalty_per_level)",
+      "formula": "Si (player_level - mob_level) > no_penalty_range: penalty = min(max_penalty, (diff - no_penalty_range) Ã— penalty_per_level)",
       "examples": [
         {
           "player": 5,
           "mob": 1,
           "penalty": 0.2,
-          "note": "4 niveaux d'écart, -20% (1 au-delà de la range)"
+          "note": "4 niveaux d'Ã©cart, -20% (1 au-delÃ  de la range)"
         },
         {
           "player": 7,
           "mob": 1,
           "penalty": 0.6,
-          "note": "6 niveaux, diff-3=3 × 0.2 = -60%"
+          "note": "6 niveaux, diff-3=3 Ã— 0.2 = -60%"
         },
         {
           "player": 9,
           "mob": 1,
           "penalty": 0.95,
-          "note": "8+ niveaux, pénalité max -95% (quasi rien)"
+          "note": "8+ niveaux, pÃ©nalitÃ© max -95% (quasi rien)"
         },
         {
           "player": 20,
           "mob": 15,
           "penalty": 0.4,
-          "note": "5 niveaux, diff-3=2 × 0.2 = -40%"
+          "note": "5 niveaux, diff-3=2 Ã— 0.2 = -40%"
         }
       ]
     },
-    "_deprecated_moved_to": "config/rewards.json — toutes les familles de multiplicateurs (monster_state, encounter_stars, dungeon_difficulty, act_progression, group_size, level_difference, global_cap). Ce fichier garde ce qui DROP (tables, raretes, chances de base) ; rewards.json porte COMBIEN. Suppression de ce bloc a l'etape 2."
+    "_deprecated_moved_to": "config/rewards.json â€” toutes les familles de multiplicateurs (monster_state, encounter_stars, dungeon_difficulty, act_progression, group_size, level_difference, global_cap). Ce fichier garde ce qui DROP (tables, raretes, chances de base) ; rewards.json porte COMBIEN. Suppression de ce bloc a l'etape 2."
   },
   "events": {
-    "description": "Événements spéciaux avec bonus de loot",
+    "description": "Ã‰vÃ©nements spÃ©ciaux avec bonus de loot",
     "event_types": {
       "weekend_bonus": {
-        "name_fr": "Week-end doré",
+        "name_fr": "Week-end dorÃ©",
         "name_en": "Golden Weekend",
         "schedule": "Saturday 00:00 - Sunday 23:59",
         "bonuses": {
@@ -3619,7 +3619,7 @@
       "double_drop": {
         "name_fr": "Pluie de butin",
         "name_en": "Loot Rain",
-        "schedule": "Event spécial",
+        "schedule": "Event spÃ©cial",
         "bonuses": {
           "gold": 1.0,
           "xp": 1.0,
@@ -3627,9 +3627,9 @@
         }
       },
       "double_xp": {
-        "name_fr": "Fièvre d'expérience",
+        "name_fr": "FiÃ¨vre d'expÃ©rience",
         "name_en": "XP Fever",
-        "schedule": "Event spécial",
+        "schedule": "Event spÃ©cial",
         "bonuses": {
           "gold": 1.0,
           "xp": 2.0,
@@ -3637,9 +3637,9 @@
         }
       },
       "treasure_hunt": {
-        "name_fr": "Chasse au trésor",
+        "name_fr": "Chasse au trÃ©sor",
         "name_en": "Treasure Hunt",
-        "schedule": "Event spécial",
+        "schedule": "Event spÃ©cial",
         "bonuses": {
           "gold": 3.0,
           "xp": 1.0,
@@ -3667,7 +3667,7 @@
   "final_calculation": {
     "description": "Formule finale pour calculer un drop",
     "steps": [
-      "1. Récupérer base_chance de l'item",
+      "1. RÃ©cupÃ©rer base_chance de l'item",
       "2. Appliquer monster_state.drop_chance",
       "3. Appliquer dungeon_difficulty.drop_chance",
       "4. Appliquer group_size multiplier",
@@ -3675,13 +3675,13 @@
       "7. Appliquer level_difference penalty",
       "8. Roll random [0, 1] et comparer"
     ],
-    "formula": "final_chance = base_chance × state_mult × dungeon_mult × group_mult × event_mult × (1 - level_penalty)",
+    "formula": "final_chance = base_chance Ã— state_mult Ã— dungeon_mult Ã— group_mult Ã— event_mult Ã— (1 - level_penalty)",
     "rarity_roll": {
-      "description": "Pour les items avec rareté variable",
+      "description": "Pour les items avec raretÃ© variable",
       "steps": [
         "1. Calculer rarity_boost total (state + dungeon + event)",
-        "2. Ajuster les weights: weight[tier] = base_weight × (tier <= boosted_tier ? boost_factor : 1)",
-        "3. Roll weighted random pour déterminer la rareté"
+        "2. Ajuster les weights: weight[tier] = base_weight Ã— (tier <= boosted_tier ? boost_factor : 1)",
+        "3. Roll weighted random pour dÃ©terminer la raretÃ©"
       ]
     },
     "example": {
@@ -3693,9 +3693,9 @@
       "luck_mult": "1 + (0.10 + 0.25) = 1.35",
       "event_mult": 1.0,
       "level_penalty": 0,
-      "final_chance": "0.10 × 2.0 × 2.5 × 1.20 × 1.35 × 1.0 × 1.0 = 0.81 (81%)"
+      "final_chance": "0.10 Ã— 2.0 Ã— 2.5 Ã— 1.20 Ã— 1.35 Ã— 1.0 Ã— 1.0 = 0.81 (81%)"
     },
-    "_superseded_by": "config/rewards.json formula. La formule ecrite ici avait perdu son etape 5 (les etoiles) que le code applique pourtant — c'est exactement le genre de derive que le proprietaire unique supprime."
+    "_superseded_by": "config/rewards.json formula. La formule ecrite ici avait perdu son etape 5 (les etoiles) que le code applique pourtant â€” c'est exactement le genre de derive que le proprietaire unique supprime."
   },
   "equipment_drops": {
     "_comment": "Equipement de base (armure, accessoires, armes). UN tirage PAR COMBAT et par joueur depuis le 2026-09-28 (avant : un tirage par monstre, avec l etat du monstre compte deux fois : chance de base par etat PUIS multiplicateur d etat). Chance = base_chance_per_fight x config/rewards.json fight_loot, plafond 0.95. Niveau de la piece = monstre le plus haut du combat ; rarete tiree sur le danger le plus haut du combat.",
@@ -3746,7 +3746,7 @@
       }
     },
     "slot_weights": {
-      "_comment": "Poids pour déterminer quel slot l'équipement occupe",
+      "_comment": "Poids pour dÃ©terminer quel slot l'Ã©quipement occupe",
       "weapon": 12,
       "helmet": 12,
       "chest": 12,
@@ -3828,16 +3828,16 @@
     ]
   },
   "_notes": {
-    "balance": "Ces valeurs sont des bases, à ajuster selon les tests",
+    "balance": "Ces valeurs sont des bases, Ã  ajuster selon les tests",
     "caps": {
-      "drop_chance": "Max 95% pour éviter le 100% garanti sauf items spécifiques",
-      "gold_mult": "Pas de cap mais attention à l'inflation",
-      "rarity_boost": "Max +3 tiers (un mob normal ne peut pas drop légendaire facilement)"
+      "drop_chance": "Max 95% pour Ã©viter le 100% garanti sauf items spÃ©cifiques",
+      "gold_mult": "Pas de cap mais attention Ã  l'inflation",
+      "rarity_boost": "Max +3 tiers (un mob normal ne peut pas drop lÃ©gendaire facilement)"
     },
     "anti_exploit": [
-      "Level penalty empêche le farm de mobs bas niveau",
+      "Level penalty empÃªche le farm de mobs bas niveau",
       "Les events ne stack pas",
-      "Certains drops sont limités par jour/semaine"
+      "Certains drops sont limitÃ©s par jour/semaine"
     ]
   },
   "pet_book_drops": {
@@ -3874,16 +3874,8 @@
     "note": "Le book precis est tire uniformement parmi tous les pet_books du rang choisi. Pas de pity V1."
   },
   "keystone_drops": {
-    "_comment": "Stigmates de keystone (items/keystone_items.json). UN tirage PAR COMBAT et par joueur depuis le 2026-09-28 (avant : 0.3% par monstre x palier, sans plafond par combat malgre max_per_combat). Chance = base_chance_per_fight x config/rewards.json fight_loot, plafond 0.95. Le RANG suit la bande de niveau du monstre le plus haut du combat (level_req coherent, toujours utilisable) ; la FAMILLE est tiree uniformement parmi families.",
+    "_comment": "Un tirage par combat et par joueur. Le plus haut niveau des monstres selectionne la distribution des rangs C/B/A/S/SS, jamais un rang garanti. Famille uniforme parmi les 30 familles. Les niveaux requis pour equiper restent ceux des objets.",
     "base_chance_per_fight": 0.004,
-    "rank_by_level_band": {
-      "_comment": "Le rang droppe = la bande de niveau du combat, pour que le level_req de l'item colle (pas de S-rank req61 sur un mob lv10).",
-      "1-20": "C",
-      "21-40": "B",
-      "41-60": "A",
-      "61-80": "S",
-      "81-100": "SS"
-    },
     "rank_to_suffix": {
       "_comment": "Construction de l'item id : ks_<family>_<suffix>. Suffixe positionnel = axe icone.",
       "C": "a",
@@ -3924,7 +3916,45 @@
       "ks_util_breach",
       "ks_util_interference"
     ],
-    "formula": "chance = base_chance_per_fight x fight_loot (config/rewards.json) ; si drop -> rank = rank_by_level_band[niveau du combat], family = uniform(families), item_id = <family>_<rank_to_suffix[rank]>",
-    "_removed_2026_09_28": "tier_chance_multiplier (remplace par le bonus de presence elite/boss de fight_loot), star_multiplier et max_per_combat (jamais lus ; le tirage par combat donne 1 max)."
+    "formula": "chance = base_chance_per_fight x fight_loot (config/rewards.json); si drop: rank = weighted_random(rank_weights_by_level_band[niveau maximal des monstres]); famille uniforme",
+    "_removed_2026_09_28": "tier_chance_multiplier (remplace par le bonus de presence elite/boss de fight_loot), star_multiplier et max_per_combat (jamais lus ; le tirage par combat donne 1 max).",
+    "rank_weights_by_level_band": {
+      "_comment": "Integer relative weights, each row totals 1000. Conditional on a keystone drop, not on a kill. Initial balancing proposal; higher monster levels improve rare-rank odds without guaranteeing them.",
+      "1-20": {
+        "C": 740,
+        "B": 190,
+        "A": 40,
+        "S": 20,
+        "SS": 10
+      },
+      "21-40": {
+        "C": 540,
+        "B": 280,
+        "A": 110,
+        "S": 50,
+        "SS": 20
+      },
+      "41-60": {
+        "C": 350,
+        "B": 320,
+        "A": 210,
+        "S": 90,
+        "SS": 30
+      },
+      "61-80": {
+        "C": 150,
+        "B": 280,
+        "A": 350,
+        "S": 180,
+        "SS": 40
+      },
+      "81-100": {
+        "C": 50,
+        "B": 150,
+        "A": 400,
+        "S": 350,
+        "SS": 50
+      }
+    }
   }
 }
