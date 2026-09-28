@@ -2222,10 +2222,16 @@
       ],
       "structure": {
         "floor_count": 5,
-        "groups_per_floor": 3,
         "groups_needed_to_advance": 1,
         "boss_floor_index": 4,
-        "_comment": "5 etages ouverts. Modele roam: les packs sont spawnes par presence via les spawn_areas des zones dungeon_rat_den_f1/f2/f3 (zones.json), pas via DUNGEON_SELECT_GROUP. Les monster_groups ci-dessous restent necessaires: c'est ce que lit boss_floor_index_for cote service, sinon le boss_idx retombe sur son fallback code en dur a 7."
+        "spawn_model": "fixed_groups",
+        "_comment": "SOURCE CANONIQUE des monstres du donjon = floors[].monster_groups. Presence spawne UN pack par groupe declare, a sa position, au niveau mob_level_range de l etage, et le reclone a l identique quand il reapparait. Les zones d etage (zones.json) ne declarent PAS de spawn_areas : scripts/dungeon_content.py le refuse. Le leader du pack = members[0]. Une victoire contre un groupe valide l etage ; au dernier etage il faut tuer boss.id (verifie serveur dans killed_mob_ids).",
+        "star_weights": {
+          "3": 30,
+          "4": 40,
+          "5": 30
+        },
+        "_comment_stars": "Etoile de chaque groupe tiree par presence a chaque apparition et reapparition (Charleston 2026-09-24 : 30 % 3 etoiles, 40 % 4, 30 % 5). Un groupe qui fixe `stars` (le boss) n'est pas tire."
       },
       "difficulties": {
         "fissure_1": {
@@ -2247,33 +2253,60 @@
           ],
           "monster_groups": [
             {
-              "id": "f1_3star_portee",
-              "stars": 3,
+              "id": "f1_portee",
+              "position": [
+                -80,
+                90
+              ],
               "members": [
+                "mob_rat",
+                "mob_rat",
                 "mob_rat_jeune",
                 "mob_rat_jeune",
-                "mob_rat"
+                "mob_rat_jeune",
+                "mob_rat_jeune",
+                "mob_rat_jeune",
+                "mob_rat_jeune"
               ]
             },
             {
-              "id": "f1_4star_fouisseurs",
-              "stars": 4,
+              "id": "f1_fouisseurs",
+              "position": [
+                110,
+                80
+              ],
               "members": [
+                "mob_rat",
+                "mob_rat",
+                "mob_rat",
                 "mob_rat_jeune",
                 "mob_rat_jeune",
-                "mob_rat"
+                "mob_rat_jeune",
+                "mob_rat_jeune",
+                "mob_rat_jeune"
               ]
             },
             {
-              "id": "f1_5star_meute",
-              "stars": 5,
+              "id": "f1_meute",
+              "position": [
+                20,
+                30
+              ],
               "members": [
+                "mob_rat",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat",
                 "mob_rat_jeune",
                 "mob_rat_jeune",
                 "mob_rat_jeune",
-                "mob_rat"
+                "mob_rat_jeune"
               ]
             }
+          ],
+          "entry_position": [
+            -62,
+            -36
           ]
         },
         {
@@ -2286,33 +2319,77 @@
           ],
           "monster_groups": [
             {
-              "id": "f2_3star_couvee",
-              "stars": 3,
+              "id": "f2_couvee",
+              "position": [
+                -80,
+                90
+              ],
               "members": [
+                "mob_rat_mage",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat",
                 "mob_rat_jeune",
                 "mob_rat_jeune",
-                "mob_rat"
+                "mob_rat_jeune",
+                "mob_rat_jeune"
               ]
             },
             {
-              "id": "f2_4star_carapaces",
-              "stars": 4,
+              "id": "f2_carapaces",
+              "position": [
+                110,
+                80
+              ],
               "members": [
+                "mob_rat_mage",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat",
                 "mob_rat_jeune",
                 "mob_rat_jeune",
-                "mob_rat"
+                "mob_rat_jeune"
               ]
             },
             {
-              "id": "f2_5star_horde",
-              "stars": 5,
+              "id": "f2_horde",
+              "position": [
+                20,
+                30
+              ],
               "members": [
+                "mob_rat_mage",
+                "mob_rat_mage",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat_jeune",
+                "mob_rat_jeune"
+              ]
+            },
+            {
+              "id": "f2_rodeurs",
+              "position": [
+                -160,
+                50
+              ],
+              "members": [
+                "mob_rat",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat",
                 "mob_rat_jeune",
                 "mob_rat_jeune",
-                "mob_rat_jeune",
-                "mob_rat"
+                "mob_rat_jeune"
               ]
             }
+          ],
+          "entry_position": [
+            117,
+            -15
           ]
         },
         {
@@ -2325,33 +2402,77 @@
           ],
           "monster_groups": [
             {
-              "id": "f3_3star_fouisseurs",
-              "stars": 3,
+              "id": "f3_fouisseurs",
+              "position": [
+                -80,
+                90
+              ],
               "members": [
+                "mob_rat_alpha",
+                "mob_rat_mage",
                 "mob_rat",
                 "mob_rat",
-                "mob_rat_alpha"
+                "mob_rat",
+                "mob_rat",
+                "mob_rat_jeune",
+                "mob_rat_jeune"
               ]
             },
             {
-              "id": "f3_4star_carapaces",
-              "stars": 4,
+              "id": "f3_carapaces",
+              "position": [
+                110,
+                80
+              ],
               "members": [
+                "mob_rat_alpha",
+                "mob_rat_mage",
+                "mob_rat_mage",
                 "mob_rat",
                 "mob_rat",
-                "mob_rat_alpha"
+                "mob_rat",
+                "mob_rat_jeune",
+                "mob_rat_jeune"
               ]
             },
             {
-              "id": "f3_5star_meute",
-              "stars": 5,
+              "id": "f3_meute",
+              "position": [
+                20,
+                30
+              ],
               "members": [
+                "mob_rat_alpha",
+                "mob_rat_alpha",
+                "mob_rat_mage",
+                "mob_rat_mage",
                 "mob_rat",
                 "mob_rat",
                 "mob_rat",
-                "mob_rat_alpha"
+                "mob_rat_jeune"
+              ]
+            },
+            {
+              "id": "f3_garde",
+              "position": [
+                -160,
+                50
+              ],
+              "members": [
+                "mob_rat_alpha",
+                "mob_rat_mage",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat_jeune"
               ]
             }
+          ],
+          "entry_position": [
+            -73,
+            -21
           ]
         },
         {
@@ -2364,33 +2485,94 @@
           ],
           "monster_groups": [
             {
-              "id": "f4_3star_gardiens",
-              "stars": 3,
+              "id": "f4_gardiens",
+              "position": [
+                -80,
+                90
+              ],
               "members": [
+                "mob_rat_alpha",
+                "mob_rat_soigneur",
                 "mob_rat",
                 "mob_rat",
-                "mob_rat_alpha"
+                "mob_rat",
+                "mob_rat",
+                "mob_rat_jeune",
+                "mob_rat_jeune"
               ]
             },
             {
-              "id": "f4_4star_carapaces",
-              "stars": 4,
+              "id": "f4_carapaces",
+              "position": [
+                110,
+                80
+              ],
               "members": [
+                "mob_rat_alpha",
+                "mob_rat_soigneur",
+                "mob_rat_mage",
+                "mob_rat_mage",
                 "mob_rat",
                 "mob_rat",
-                "mob_rat_alpha"
+                "mob_rat",
+                "mob_rat_jeune"
               ]
             },
             {
-              "id": "f4_5star_alpha",
-              "stars": 5,
+              "id": "f4_alpha",
+              "position": [
+                20,
+                30
+              ],
               "members": [
+                "mob_rat_alpha",
+                "mob_rat_alpha",
+                "mob_rat_soigneur",
+                "mob_rat_soigneur",
+                "mob_rat_mage",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat"
+              ]
+            },
+            {
+              "id": "f4_ronde",
+              "position": [
+                -160,
+                50
+              ],
+              "members": [
+                "mob_rat_alpha",
+                "mob_rat_mage",
+                "mob_rat_mage",
                 "mob_rat",
                 "mob_rat",
                 "mob_rat",
-                "mob_rat_alpha"
+                "mob_rat",
+                "mob_rat_jeune"
+              ]
+            },
+            {
+              "id": "f4_nid",
+              "position": [
+                180,
+                50
+              ],
+              "members": [
+                "mob_rat_soigneur",
+                "mob_rat_alpha",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat",
+                "mob_rat_jeune",
+                "mob_rat_jeune"
               ]
             }
+          ],
+          "entry_position": [
+            101,
+            -18
           ]
         },
         {
@@ -2406,12 +2588,26 @@
             {
               "id": "f5_boss_rongeur",
               "stars": 5,
-              "forced": true,
               "is_boss": true,
+              "position": [
+                60,
+                50
+              ],
               "members": [
-                "mob_rat_rongeur"
+                "mob_rat_rongeur",
+                "mob_rat_cuirasse",
+                "mob_rat_cuirasse",
+                "mob_rat_cuirasse",
+                "mob_rat_soigneur",
+                "mob_rat_soigneur",
+                "mob_rat_mage",
+                "mob_rat_mage"
               ]
             }
+          ],
+          "entry_position": [
+            -152,
+            6
           ]
         }
       ],
@@ -2421,25 +2617,16 @@
         "name_en": "The Gnawer",
         "capturable": true,
         "capture_profile": "beast_boss_v1",
-        "_comment_capture": "Capture preparee V2 familier, ignoree backend V1",
-        "adds": [
-          {
-            "id": "mob_rat_soigneur",
-            "count": 2,
-            "level_offset": 0
-          },
-          {
-            "id": "mob_rat_mage",
-            "count": 2,
-            "level_offset": 0
-          },
-          {
-            "id": "mob_rat_jeune",
-            "count": 3,
-            "level_offset": 0
-          }
-        ]
-      }
+        "_comment_capture": "Capture preparee V2 familier, ignoree backend V1"
+      },
+      "exit_zone": "village",
+      "exit_position": [
+        3024,
+        1960
+      ],
+      "_comment_exit_position": "Point d arrivee dans exit_zone (village) a la sortie du donjon et apres le boss : juste sous la grille d egout sewer_grate_closed_001_30_95 (havreden_map.tscn, 3024,1918).",
+      "_comment_run_rules": "Regles validees par Charleston le 2026-09-23 : victoire = teleportation automatique a l etage suivant de TOUS les participants de l equipe gagnante (morts compris) ; defaite = retour au village et reprise a l etage 1 ; deconnexion = progression conservee ; sortie volontaire (quitter l etage vers une zone hors donjon) = reprise a l etage 1. Cles d entree lootees sur les monstres : prevues, non cablees.",
+      "_comment_layout": "Salles v2 (2026-09-24) : les 5 etages partagent la meme emprise (contour area_limit identique). On descend par le fond et on arrive par le fond, dans le coin ou l'etage precedent sortait : f1 echelle fond gauche -> sortie fond droit ; f2 arrivee fond droit -> sortie fond gauche ; f3 fond gauche -> fond droit ; f4 fond droit -> fond gauche ; f5 arrivee fond gauche, echelle vers la surface fond droit. entry_position = pied de l'escalier d'arrivee."
     }
   ],
   "dungeon_systems": {

@@ -1,6 +1,6 @@
 {
   "set_signatures": {
-    "_comment": "Mecanique signature debloquee au top breakpoint (6p/8p) d'un gros set. Format proc reutilise celui des uniques (voir items/uniques.json). Valeurs scalable:true scalent par rang du set (stat_multiplier flat / percent_bonus_multiplier %). Les chances, durees, once_per_combat sont fixes. [R] dans les desc = valeur scalee affichee.",
+    "_comment": "Mecanique signature debloquee au top breakpoint (6p/8p) d'un gros set. Format proc reutilise celui des uniques (voir items/uniques.json). AUCUN lecteur runtime aujourd hui (ni combat ni economy). Quand ce sera branche : valeurs scalable:true = multiplicateur de la BANDE du set (courbe plate 1/1.5/2/2.8/4, courbe douce 1/1.25/1.5/1.75/2 pour les %), plus de stat_multiplier dans rank_system. Les chances, durees, once_per_combat sont fixes. [R] dans les desc = valeur scalee affichee.",
     "shomer": {
       "breakpoint": 8,
       "name_fr": "Dernier Rempart",
@@ -249,37 +249,15 @@
   "_meta": {
     "version": "3.0",
     "last_updated": "2026-03-04",
-    "description": "Panoplies (sets d'équipement) - Système de rangs universel. Chaque set existe à tous les niveaux, le rang monte tous les 20 niveaux.",
+    "description": "Panoplies (sets d'équipement). Modèle par bande (2026-09-28) : chaque set vit dans une seule bande de niveau (champ band), avec des bonus fixes.",
     "total_sets": 38,
     "rank_system": {
-      "_comment": "Aligne sur le tier_system equipement (lv1-100, 5 rangs = C->SS). Bonus listes = valeurs Rang 1 (base x1.0). Stats de piece + bonus FLAT x stat_multiplier. Bonus POURCENT (voir percent_bonus_stats) x percent_bonus_multiplier (plus doux).",
-      "percent_bonus_stats": [
-        "lifesteal",
-        "spell_vamp",
-        "crit",
-        "crit_dmg",
-        "cooldown_reduction",
-        "evasion",
-        "block_chance",
-        "parry_chance",
-        "armor_pen",
-        "magic_pen",
-        "damage_percent",
-        "damage_reduction",
-        "heal_power",
-        "effect_chance",
-        "effect_resist",
-        "double_hit_chance",
-        "attack_speed",
-        "cast_speed"
-      ],
+      "_comment": "Bandes de niveau C->SS (lv1-20 ... 81-100), alignees sur equipment_scaling tier_system et uniques.json. MODELE PAR BANDE (2026-09-28) : chaque set porte un champ `band` ; ses pieces ne tombent que dans les combats de cette bande et portent le rang de la bande (level_req = debut de bande) ; ses bonus sont des valeurs FIXES, deja calculees (base x multiplicateur de la bande, courbe douce 1/1.25/1.5/1.75/2 pour toute stat en pourcentage, courbe 1/1.5/2/2.8/4 pour les stats plates). Plus aucune mise a l'echelle au niveau du joueur : stat_multiplier, percent_bonus_multiplier et percent_bonus_stats ont ete retires (plus de lecteur).",
       "rang_1": {
         "level_range": [
           1,
           20
         ],
-        "stat_multiplier": 1.0,
-        "percent_bonus_multiplier": 1.0,
         "rank_label": "C",
         "name_fr": "Rang 1 — Apprenti",
         "name_en": "Rank 1 — Apprentice"
@@ -289,8 +267,6 @@
           21,
           40
         ],
-        "stat_multiplier": 1.5,
-        "percent_bonus_multiplier": 1.25,
         "rank_label": "B",
         "name_fr": "Rang 2 — Confirmé",
         "name_en": "Rank 2 — Adept"
@@ -300,8 +276,6 @@
           41,
           60
         ],
-        "stat_multiplier": 2.0,
-        "percent_bonus_multiplier": 1.5,
         "rank_label": "A",
         "name_fr": "Rang 3 — Expert",
         "name_en": "Rank 3 — Expert"
@@ -311,8 +285,6 @@
           61,
           80
         ],
-        "stat_multiplier": 2.8,
-        "percent_bonus_multiplier": 1.75,
         "rank_label": "S",
         "name_fr": "Rang 4 — Maître",
         "name_en": "Rank 4 — Master"
@@ -322,8 +294,6 @@
           81,
           100
         ],
-        "stat_multiplier": 4.0,
-        "percent_bonus_multiplier": 2.0,
         "rank_label": "SS",
         "name_fr": "Rang 5 — Grand Maître",
         "name_en": "Rank 5 — Grandmaster"
@@ -599,6 +569,7 @@
       "name_en": "Kesher",
       "meaning": "Lien/Nœud",
       "pieces_count": 2,
+      "band": "B",
       "identity": "lifesteal_link",
       "armor_type": "medium",
       "description_fr": "Deux anneaux liés par une magie ancienne. Ceux qui les portent tissent un lien entre leur vie et celle de leurs ennemis.",
@@ -617,12 +588,12 @@
       },
       "bonuses": {
         "2": {
-          "lifesteal": 5,
+          "lifesteal": 6,
           "spell_vamp": 3
         }
       },
       "total_at_max": {
-        "lifesteal": 5,
+        "lifesteal": 6,
         "spell_vamp": 3
       }
     },
@@ -632,6 +603,7 @@
       "name_en": "Ot",
       "meaning": "Signe/Marque",
       "pieces_count": 2,
+      "band": "C",
       "identity": "crit_marker",
       "armor_type": "medium",
       "description_fr": "Un signe gravé dans le métal, transmis par les premiers chasseurs. Frappe juste, frappe une fois.",
@@ -665,6 +637,7 @@
       "name_en": "Chayim",
       "meaning": "Vie",
       "pieces_count": 2,
+      "band": "S",
       "identity": "hp_regen",
       "armor_type": "light",
       "description_fr": "Bénis par le souffle de vie, ces ornements maintiennent le corps en harmonie avec la création.",
@@ -683,13 +656,13 @@
       },
       "bonuses": {
         "2": {
-          "hp_regen": 3,
-          "hp": 50
+          "hp_regen": 8,
+          "hp": 140
         }
       },
       "total_at_max": {
-        "hp_regen": 3,
-        "hp": 50
+        "hp_regen": 8,
+        "hp": 140
       }
     },
     "binah": {
@@ -698,6 +671,7 @@
       "name_en": "Binah",
       "meaning": "Intelligence/Compréhension",
       "pieces_count": 2,
+      "band": "C",
       "identity": "mana_wisdom",
       "armor_type": "light",
       "description_fr": "La sagesse des anciens coule à travers ces reliques. L'esprit s'éveille, la magie répond.",
@@ -731,6 +705,7 @@
       "name_en": "Oz",
       "meaning": "Force/Puissance",
       "pieces_count": 2,
+      "band": "C",
       "identity": "raw_power",
       "armor_type": "heavy",
       "description_fr": "Forgés dans la montagne primordiale, ces ornements confèrent une force brute inégalée.",
@@ -764,6 +739,7 @@
       "name_en": "Sela",
       "meaning": "Rocher/Refuge",
       "pieces_count": 2,
+      "band": "C",
       "identity": "defense_anchor",
       "armor_type": "heavy",
       "description_fr": "Solides comme le roc, ces anneaux sont le refuge de ceux qui protègent.",
@@ -797,6 +773,7 @@
       "name_en": "Nefesh",
       "meaning": "Âme/Souffle vital",
       "pieces_count": 2,
+      "band": "C",
       "identity": "mana_sustain",
       "armor_type": "light",
       "description_fr": "Le souffle vital qui anime toute magie. Ces reliques nourrissent l'esprit et restaurent la source intérieure.",
@@ -831,6 +808,7 @@
       "name_en": "Ruach",
       "meaning": "Vent/Esprit",
       "pieces_count": 4,
+      "band": "A",
       "identity": "speed_evasion",
       "armor_type": "medium",
       "description_fr": "Léger comme le vent qui traverse les plaines. Ceux qui portent Ruach dansent entre les coups, insaisissables.",
@@ -859,17 +837,17 @@
       },
       "bonuses": {
         "2": {
-          "attack_speed": 6
+          "cooldown_reduction": 7
         },
         "4": {
-          "flee": 10,
-          "cast_speed": 5
+          "flee": 15,
+          "cast_speed": 7
         }
       },
       "total_at_max": {
-        "attack_speed": 6,
-        "flee": 10,
-        "cast_speed": 5
+        "cooldown_reduction": 7,
+        "flee": 15,
+        "cast_speed": 7
       }
     },
     "kavod": {
@@ -878,6 +856,7 @@
       "name_en": "Kavod",
       "meaning": "Gloire/Honneur",
       "pieces_count": 4,
+      "band": "A",
       "identity": "buff_support",
       "armor_type": "light",
       "description_fr": "La gloire du Créateur rayonne à travers ces vêtements sacrés. Ceux qui les portent élèvent leurs alliés.",
@@ -906,16 +885,16 @@
       },
       "bonuses": {
         "2": {
-          "buff_duration": 12
+          "buff_duration": 24
         },
         "4": {
-          "buff_duration": 10,
-          "heal_power": 5
+          "buff_duration": 20,
+          "heal_power": 7
         }
       },
       "total_at_max": {
-        "buff_duration": 22,
-        "heal_power": 5
+        "buff_duration": 44,
+        "heal_power": 7
       }
     },
     "anan": {
@@ -924,6 +903,7 @@
       "name_en": "Anan",
       "meaning": "Nuage",
       "pieces_count": 4,
+      "band": "A",
       "identity": "control_slow",
       "armor_type": "light",
       "description_fr": "Comme un nuage qui obscurcit le ciel, cette tenue ralentit et entrave les ennemis.",
@@ -952,17 +932,17 @@
       },
       "bonuses": {
         "2": {
-          "effect_chance": 10
+          "effect_chance": 15
         },
         "4": {
-          "debuff_duration": 15,
-          "mag_percent": 5
+          "debuff_duration": 30,
+          "mag_percent": 7
         }
       },
       "total_at_max": {
-        "effect_chance": 10,
-        "debuff_duration": 15,
-        "mag_percent": 5
+        "effect_chance": 15,
+        "debuff_duration": 30,
+        "mag_percent": 7
       }
     },
     "barzel": {
@@ -971,6 +951,7 @@
       "name_en": "Barzel",
       "meaning": "Fer",
       "pieces_count": 4,
+      "band": "A",
       "identity": "armor_break",
       "armor_type": "heavy",
       "weapon_template": "melee_physical",
@@ -1000,17 +981,17 @@
       },
       "bonuses": {
         "2": {
-          "armor_pen": 8
+          "armor_pen": 12
         },
         "4": {
-          "atk_percent": 8,
-          "atk": 25
+          "atk_percent": 12,
+          "atk": 50
         }
       },
       "total_at_max": {
-        "armor_pen": 8,
-        "atk_percent": 8,
-        "atk": 25
+        "armor_pen": 12,
+        "atk_percent": 12,
+        "atk": 50
       }
     },
     "refuah": {
@@ -1019,6 +1000,7 @@
       "name_en": "Refuah",
       "meaning": "Guérison",
       "pieces_count": 4,
+      "band": "B",
       "identity": "hot_healer",
       "armor_type": "light",
       "weapon_template": "magic_support",
@@ -1048,16 +1030,16 @@
       },
       "bonuses": {
         "2": {
-          "heal_power": 8
+          "heal_power": 10
         },
         "4": {
-          "heal_power": 10,
-          "mp_regen": 2
+          "heal_power": 12,
+          "mp_regen": 3
         }
       },
       "total_at_max": {
-        "heal_power": 18,
-        "mp_regen": 2
+        "heal_power": 22,
+        "mp_regen": 3
       }
     },
     "even": {
@@ -1066,6 +1048,7 @@
       "name_en": "Even",
       "meaning": "Pierre",
       "pieces_count": 4,
+      "band": "B",
       "identity": "hp_tank",
       "armor_type": "heavy",
       "description_fr": "Taillé dans la pierre des montagnes anciennes. Immobile, inébranlable, éternel.",
@@ -1094,17 +1077,17 @@
       },
       "bonuses": {
         "2": {
-          "hp": 80
+          "hp": 120
         },
         "4": {
-          "hp": 70,
-          "def_percent": 8,
+          "hp": 105,
+          "def_percent": 10,
           "hp_regen": 1
         }
       },
       "total_at_max": {
-        "hp": 150,
-        "def_percent": 8,
+        "hp": 225,
+        "def_percent": 10,
         "hp_regen": 1
       }
     },
@@ -1114,6 +1097,7 @@
       "name_en": "Koach",
       "meaning": "Puissance/Force magique",
       "pieces_count": 4,
+      "band": "B",
       "identity": "mage_dps",
       "armor_type": "light",
       "weapon_template": "magic_offensive",
@@ -1143,17 +1127,17 @@
       },
       "bonuses": {
         "2": {
-          "mag_percent": 6
+          "mag_percent": 7
         },
         "4": {
-          "magic_pen": 8,
-          "damage_percent": 6
+          "magic_pen": 10,
+          "damage_percent": 7
         }
       },
       "total_at_max": {
-        "mag_percent": 6,
-        "magic_pen": 8,
-        "damage_percent": 6
+        "mag_percent": 7,
+        "magic_pen": 10,
+        "damage_percent": 7
       }
     },
     "gevurah": {
@@ -1162,6 +1146,7 @@
       "name_en": "Gevurah",
       "meaning": "Puissance/Vaillance",
       "pieces_count": 4,
+      "band": "B",
       "identity": "physical_dps",
       "armor_type": "medium",
       "weapon_template": "melee_physical",
@@ -1191,17 +1176,17 @@
       },
       "bonuses": {
         "2": {
-          "atk_percent": 6
+          "atk_percent": 7
         },
         "4": {
-          "armor_pen": 8,
-          "crit": 6
+          "armor_pen": 10,
+          "crit": 7
         }
       },
       "total_at_max": {
-        "atk_percent": 6,
-        "armor_pen": 8,
-        "crit": 6
+        "atk_percent": 7,
+        "armor_pen": 10,
+        "crit": 7
       }
     },
     "_comment_6p": "========== SETS LARGES (6 PIÈCES) ==========",
@@ -1211,6 +1196,7 @@
       "name_en": "Tzel",
       "meaning": "Ombre",
       "pieces_count": 6,
+      "band": "S",
       "identity": "rogue_assassin",
       "armor_type": "medium",
       "weapon_template": "rogue",
@@ -1250,23 +1236,22 @@
       },
       "bonuses": {
         "2": {
-          "flee": 6
+          "flee": 10
         },
         "4": {
-          "crit": 8,
-          "attack_speed": 6
+          "crit": 14,
+          "armor_pen": 10
         },
         "6": {
-          "crit_dmg": 18,
-          "armor_pen": 12
+          "crit_dmg": 31,
+          "armor_pen": 21
         }
       },
       "total_at_max": {
-        "flee": 6,
-        "crit": 8,
-        "attack_speed": 6,
-        "crit_dmg": 18,
-        "armor_pen": 12
+        "flee": 10,
+        "crit": 14,
+        "armor_pen": 31,
+        "crit_dmg": 31
       }
     },
     "orim": {
@@ -1275,6 +1260,7 @@
       "name_en": "Orim",
       "meaning": "Lumières",
       "pieces_count": 6,
+      "band": "A",
       "identity": "healer_holy",
       "armor_type": "light",
       "weapon_template": "magic_support",
@@ -1314,24 +1300,24 @@
       },
       "bonuses": {
         "2": {
-          "heal_power": 6
+          "heal_power": 9
         },
         "4": {
-          "shield_power": 8,
-          "cooldown_reduction": 5
+          "shield_power": 16,
+          "cooldown_reduction": 7
         },
         "6": {
-          "heal_power": 10,
-          "buff_duration": 15,
-          "mp": 60
+          "heal_power": 15,
+          "buff_duration": 30,
+          "mp": 120
         }
       },
       "total_at_max": {
-        "heal_power": 16,
-        "shield_power": 8,
-        "cooldown_reduction": 5,
-        "buff_duration": 15,
-        "mp": 60
+        "heal_power": 24,
+        "shield_power": 16,
+        "cooldown_reduction": 7,
+        "buff_duration": 30,
+        "mp": 120
       }
     },
     "eshal": {
@@ -1340,6 +1326,7 @@
       "name_en": "Esh'al",
       "meaning": "Feu de Dieu",
       "pieces_count": 6,
+      "band": "S",
       "identity": "fire_mage_dot",
       "armor_type": "light",
       "weapon_template": "magic_offensive",
@@ -1379,23 +1366,23 @@
       },
       "bonuses": {
         "2": {
-          "mag_percent": 5
+          "mag_percent": 8
         },
         "4": {
-          "damage_percent": 10,
-          "debuff_duration": 15
+          "damage_percent": 17,
+          "debuff_duration": 42
         },
         "6": {
-          "mag_percent": 10,
-          "damage_percent": 8,
-          "magic_pen": 8
+          "mag_percent": 17,
+          "damage_percent": 14,
+          "magic_pen": 14
         }
       },
       "total_at_max": {
-        "mag_percent": 15,
-        "damage_percent": 18,
-        "debuff_duration": 15,
-        "magic_pen": 8
+        "mag_percent": 25,
+        "damage_percent": 31,
+        "debuff_duration": 42,
+        "magic_pen": 14
       }
     },
     "mayim": {
@@ -1404,6 +1391,7 @@
       "name_en": "Mayim",
       "meaning": "Eaux",
       "pieces_count": 6,
+      "band": "SS",
       "identity": "ice_mage_control",
       "armor_type": "light",
       "weapon_template": "magic_offensive",
@@ -1443,23 +1431,23 @@
       },
       "bonuses": {
         "2": {
-          "mag_percent": 5
+          "mag_percent": 10
         },
         "4": {
-          "effect_chance": 12,
-          "debuff_duration": 18
+          "effect_chance": 24,
+          "debuff_duration": 72
         },
         "6": {
-          "mag_percent": 10,
-          "effect_chance": 8,
-          "magic_pen": 10
+          "mag_percent": 20,
+          "effect_chance": 16,
+          "magic_pen": 20
         }
       },
       "total_at_max": {
-        "mag_percent": 15,
-        "effect_chance": 20,
-        "debuff_duration": 18,
-        "magic_pen": 10
+        "mag_percent": 30,
+        "effect_chance": 40,
+        "debuff_duration": 72,
+        "magic_pen": 20
       }
     },
     "magen": {
@@ -1468,6 +1456,7 @@
       "name_en": "Magen",
       "meaning": "Bouclier",
       "pieces_count": 6,
+      "band": "A",
       "identity": "shield_tank",
       "armor_type": "heavy",
       "weapon_template": "melee_tank",
@@ -1507,25 +1496,25 @@
       },
       "bonuses": {
         "2": {
-          "shield_power": 10
+          "shield_power": 20
         },
         "4": {
-          "block_chance": 8,
-          "armor": 50
+          "block_chance": 12,
+          "armor": 100
         },
         "6": {
-          "healing_received": 15,
-          "def": 25,
-          "hp": 80
+          "healing_received": 30,
+          "def": 50,
+          "hp": 160
         }
       },
       "total_at_max": {
-        "shield_power": 10,
-        "block_chance": 8,
-        "armor": 50,
-        "healing_received": 15,
-        "def": 25,
-        "hp": 80
+        "shield_power": 20,
+        "block_chance": 12,
+        "armor": 100,
+        "healing_received": 30,
+        "def": 50,
+        "hp": 160
       }
     },
     "davar": {
@@ -1534,6 +1523,7 @@
       "name_en": "Davar",
       "meaning": "Parole/Verbe",
       "pieces_count": 6,
+      "band": "S",
       "identity": "balanced_utility",
       "armor_type": "mixed",
       "description_fr": "Par la Parole, le monde fut créé. Davar équilibre toutes choses, parfait pour ceux qui marchent entre les voies.",
@@ -1572,28 +1562,28 @@
       },
       "bonuses": {
         "2": {
-          "atk_percent": 3,
-          "mag_percent": 3,
-          "def_percent": 3
+          "atk_percent": 5,
+          "mag_percent": 5,
+          "def_percent": 5
         },
         "4": {
-          "hp": 40,
-          "mp": 30
+          "hp": 112,
+          "mp": 84
         },
         "6": {
-          "cooldown_reduction": 5,
-          "atk_percent": 3,
-          "mag_percent": 3,
-          "def_percent": 3
+          "cooldown_reduction": 8,
+          "atk_percent": 5,
+          "mag_percent": 5,
+          "def_percent": 5
         }
       },
       "total_at_max": {
-        "atk_percent": 6,
-        "mag_percent": 6,
-        "def_percent": 6,
-        "hp": 40,
-        "mp": 30,
-        "cooldown_reduction": 5
+        "atk_percent": 10,
+        "mag_percent": 10,
+        "def_percent": 10,
+        "hp": 112,
+        "mp": 84,
+        "cooldown_reduction": 8
       }
     },
     "_comment_8p": "========== SETS COMPLETS (8 PIÈCES) ==========",
@@ -1603,6 +1593,7 @@
       "name_en": "Shomer",
       "meaning": "Gardien",
       "pieces_count": 8,
+      "band": "S",
       "identity": "main_tank",
       "armor_type": "heavy",
       "weapon_template": "melee_tank",
@@ -1652,31 +1643,31 @@
       },
       "bonuses": {
         "2": {
-          "def_percent": 6
+          "def_percent": 10
         },
         "4": {
-          "armor": 60,
-          "hp": 80
+          "armor": 168,
+          "hp": 224
         },
         "6": {
-          "def": 25,
-          "hp": 60
+          "def": 70,
+          "hp": 168
         },
         "8": {
-          "def_percent": 12,
-          "hp": 60,
-          "block_chance": 10,
-          "thorns": 15,
-          "def": 25
+          "def_percent": 21,
+          "hp": 168,
+          "block_chance": 17,
+          "thorns": 42,
+          "def": 70
         }
       },
       "total_at_max": {
-        "def_percent": 18,
-        "armor": 60,
-        "hp": 200,
-        "def": 50,
-        "block_chance": 10,
-        "thorns": 15
+        "def_percent": 31,
+        "armor": 168,
+        "hp": 560,
+        "def": 140,
+        "block_chance": 17,
+        "thorns": 42
       }
     },
     "tzayad": {
@@ -1685,6 +1676,7 @@
       "name_en": "Tzayad",
       "meaning": "Chasseur",
       "pieces_count": 8,
+      "band": "SS",
       "identity": "physical_dps_crit",
       "armor_type": "medium",
       "weapon_template": "ranged_physical",
@@ -1734,30 +1726,28 @@
       },
       "bonuses": {
         "2": {
-          "atk_percent": 5
+          "atk_percent": 10
         },
         "4": {
-          "crit": 8,
-          "attack_speed": 5
+          "crit": 16,
+          "crit_dmg": 20
         },
         "6": {
-          "crit_dmg": 15,
-          "armor_pen": 5
+          "crit_dmg": 30,
+          "armor_pen": 10
         },
         "8": {
-          "atk_percent": 12,
-          "crit": 8,
-          "crit_dmg": 20,
-          "hit": 10
+          "atk_percent": 24,
+          "crit": 16,
+          "crit_dmg": 40,
+          "armor_pen": 10
         }
       },
       "total_at_max": {
-        "atk_percent": 17,
-        "crit": 16,
-        "attack_speed": 5,
-        "crit_dmg": 35,
-        "armor_pen": 5,
-        "hit": 10
+        "atk_percent": 34,
+        "crit": 32,
+        "crit_dmg": 90,
+        "armor_pen": 20
       }
     },
     "neshamah": {
@@ -1766,6 +1756,7 @@
       "name_en": "Neshamah",
       "meaning": "Souffle/Âme",
       "pieces_count": 8,
+      "band": "SS",
       "identity": "sustain_regen",
       "armor_type": "mixed",
       "weapon_template": "magic_support",
@@ -1815,32 +1806,32 @@
       },
       "bonuses": {
         "2": {
-          "hp_regen": 2
+          "hp_regen": 8
         },
         "4": {
-          "mp_regen": 2,
-          "hp": 50
+          "mp_regen": 8,
+          "hp": 200
         },
         "6": {
-          "healing_received": 12,
-          "mp": 40
+          "healing_received": 48,
+          "mp": 160
         },
         "8": {
-          "hp_regen": 4,
-          "mp_regen": 3,
-          "hp": 80,
-          "lifesteal": 5,
-          "spell_vamp": 5
+          "hp_regen": 16,
+          "mp_regen": 12,
+          "hp": 320,
+          "lifesteal": 10,
+          "spell_vamp": 10
         }
       },
       "total_at_max": {
-        "hp_regen": 6,
-        "mp_regen": 5,
-        "hp": 130,
-        "mp": 40,
-        "healing_received": 12,
-        "lifesteal": 5,
-        "spell_vamp": 5
+        "hp_regen": 24,
+        "mp_regen": 20,
+        "hp": 520,
+        "healing_received": 48,
+        "mp": 160,
+        "lifesteal": 10,
+        "spell_vamp": 10
       }
     },
     "adamah": {
@@ -1849,6 +1840,7 @@
       "name_en": "Adamah",
       "meaning": "Terre/Sol",
       "pieces_count": 8,
+      "band": "SS",
       "identity": "bruiser_hp_atk",
       "armor_type": "heavy",
       "weapon_template": "bruiser",
@@ -1898,31 +1890,31 @@
       },
       "bonuses": {
         "2": {
-          "hp": 60
+          "hp": 240
         },
         "4": {
-          "atk_percent": 6,
-          "armor": 40
+          "atk_percent": 12,
+          "armor": 160
         },
         "6": {
-          "hp": 80,
-          "def": 15,
-          "def_percent": 6
+          "hp": 320,
+          "def": 60,
+          "def_percent": 12
         },
         "8": {
-          "atk_percent": 12,
-          "hp": 100,
-          "lifesteal": 6,
-          "armor": 50
+          "atk_percent": 24,
+          "hp": 400,
+          "lifesteal": 12,
+          "armor": 200
         }
       },
       "total_at_max": {
-        "hp": 240,
-        "atk_percent": 18,
-        "armor": 90,
-        "def": 15,
-        "def_percent": 6,
-        "lifesteal": 6
+        "hp": 960,
+        "atk_percent": 36,
+        "armor": 360,
+        "def": 60,
+        "def_percent": 12,
+        "lifesteal": 12
       }
     },
     "set_tournoi_role_tank": {
@@ -1930,6 +1922,7 @@
       "name_fr": "Panoplie du Rempart",
       "name_en": "Bulwark Tournament Set",
       "pieces_count": 6,
+      "band": "C",
       "identity": "tournament_tank",
       "armor_type": "light",
       "tournament": true,
@@ -1994,6 +1987,7 @@
       "name_fr": "Panoplie de l’Assaut",
       "name_en": "Assault Tournament Set",
       "pieces_count": 6,
+      "band": "C",
       "identity": "tournament_melee",
       "armor_type": "light",
       "tournament": true,
@@ -2058,6 +2052,7 @@
       "name_fr": "Panoplie du Tireur",
       "name_en": "Marksman Tournament Set",
       "pieces_count": 6,
+      "band": "C",
       "identity": "tournament_ranged_physical",
       "armor_type": "light",
       "tournament": true,
@@ -2120,6 +2115,7 @@
       "name_fr": "Panoplie des Arcanes",
       "name_en": "Arcane Tournament Set",
       "pieces_count": 6,
+      "band": "C",
       "identity": "tournament_ranged_magic",
       "armor_type": "light",
       "tournament": true,
@@ -2182,6 +2178,7 @@
       "name_fr": "Panoplie du Secours",
       "name_en": "Restoration Tournament Set",
       "pieces_count": 6,
+      "band": "C",
       "identity": "tournament_healer",
       "armor_type": "light",
       "tournament": true,
@@ -2244,6 +2241,7 @@
       "name_fr": "Panoplie du Soutien",
       "name_en": "Support Tournament Set",
       "pieces_count": 6,
+      "band": "C",
       "identity": "tournament_support",
       "armor_type": "light",
       "tournament": true,

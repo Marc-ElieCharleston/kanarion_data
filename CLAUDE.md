@@ -52,6 +52,7 @@ Validation happens at three levels:
 - **`systems/`** — Economy, guilds, achievements, PvP, leaderboards, enhancement, keystones (max 1 active, radical gameplay modifiers), Koro cards (cross-class skills, C/B/A/S/SS ranks), encounter stars (0-5 difficulty), boutique/battle pass, daily rewards, social, progression
 - **`ui/`** — Icon definitions (`icons.json`: 496 icons with priority/status/category/hint)
 - **`world/`** — Zones, quests, dungeons, lore, whispers (found-text), world map
+  - **Donjons ouverts** (`dungeons.json` `spawn_model: fixed_groups`) : procédure, règles de parcours et pièges dans `world/DONJONS_OUVERTS.md` ; validateur `scripts/dungeon_content.py` (lancé par la CI).
 
 ## JSON Conventions
 
@@ -327,6 +328,8 @@ Le critère de rangement est le **verbe** :
 | ce que la rencontre **rapporte** | `config/rewards.json` | tous les multiplicateurs xp / or / drop |
 | ce que la rencontre **est** | `entities/monster_variants.json` `star_system` | stats, IA, crit/ténacité, composition, nombre de mobs, poids de tirage |
 | ce qui **drop** | `items/loot_tables.json` | tables, raretés, chances de base |
+
+**Granularité du butin (2026-09-28).** Le commun (matériaux, consommables, pierres rang 1-2, `bonus_roll`, empreintes) tombe **par monstre tué**, multiplié par les familles de `multiplier_families`. Le rare (équipement, pièce de panoplie, unique, grimoire, keystone, pierre rang 3+) tombe **une fois par combat et par joueur** : chance de base `base_chance_per_fight` (ou `per_fight: true` pour les pierres) dans `loot_tables.json`, multiplicateurs dans le bloc `fight_loot` de `rewards.json` (étoiles + bonus de présence élite/boss borné), qui n'est **pas** une famille de `multiplier_families` : voir `formula.fight_drop_chance`. Les uniques tombent d'un pool global (`unique_drops.pool_exclusions` pour en retirer un). Niveau et rang de ce qui tombe = monstre le plus haut du combat, jamais le joueur.
 
 **Ajouter une famille** (donjons, contrats du Maître Combat, Failles) : une entrée dans `multiplier_families`, son nom dans `formula.families_order`, et c'est tout — le moteur itère l'ordre, il n'a pas de ligne par famille. Procédure complète dans `extension_procedure` du fichier.
 
