@@ -74,16 +74,17 @@
       "description_fr": "Le premier sang versé ouvre la voie. Cet anneau taillé dans un croc de loup confère une précision meurtrière à celui qui frappe le premier.",
       "description_en": "The first blood spilled opens the way. This ring carved from a wolf fang grants deadly precision to the one who strikes first.",
       "effect": {
-        "description_fr": "Pendant les 6 premières secondes du combat : +[R]6 % de chance critique et +[R]5 % de dégâts, mais vous subissez 10 % de dégâts en plus.",
-        "description_en": "For the first 6 seconds of combat: +[R]6% crit chance and +[R]5% damage, but you take 10% more damage.",
+        "description_fr": "Pendant les 6 premières secondes du combat : +[R]5 % de chance critique et +[R]5 % de dégâts, mais vous subissez 10 % de dégâts en plus.",
+        "description_en": "For the first 6 seconds of combat: +[R]5% crit chance and +[R]5% damage, but you take 10% more damage.",
         "type": "combat_proc",
         "triggers": [
           {
             "trigger": "combat_start",
             "effects": [
               {
-                "stat": "crit",
-                "value": 6,
+                "apply_status": "crit_chance_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
                 "duration": 6.0,
                 "scalable": true
               },
@@ -106,34 +107,29 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "opener_crit": 5,
-          "dmg_charges": 1,
-          "dmg_shown": 5
+          "opener_charges": 1,
+          "opener_shown": 5
         },
         "rang_2": {
-          "opener_crit": 6,
-          "dmg_charges": 1,
-          "dmg_shown": 5
+          "opener_charges": 1,
+          "opener_shown": 5
         },
         "rang_3": {
-          "opener_crit": 8,
-          "dmg_charges": 2,
-          "dmg_shown": 10
+          "opener_charges": 2,
+          "opener_shown": 10
         },
         "rang_4": {
-          "opener_crit": 9,
-          "dmg_charges": 2,
-          "dmg_shown": 10
+          "opener_charges": 2,
+          "opener_shown": 10
         },
         "rang_5": {
-          "opener_crit": 10,
-          "dmg_charges": 3,
-          "dmg_shown": 15
+          "opener_charges": 3,
+          "opener_shown": 15
         }
       },
       "rank_scaling_map": {
-        "/triggers/0/effects/0/value": "opener_crit",
-        "/triggers/0/effects/1/stacks_to_apply": "dmg_charges"
+        "/triggers/0/effects/0/stacks_to_apply": "opener_charges",
+        "/triggers/0/effects/1/stacks_to_apply": "opener_charges"
       },
       "source": {
         "type": "monster_drop",

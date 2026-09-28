@@ -88,7 +88,7 @@ def make_formula(eid, spec):
 
     label = LABELS.get(eid, eid)
 
-    if unit == "percent":
+    if unit in ("percent", "percent_points"):
         return f"{sign}{vps}% {label} per stack"
     if unit == "flat":
         return f"{sign}{vps} {label} flat per stack"
