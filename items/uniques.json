@@ -3,14 +3,14 @@
     "version": "1.0",
     "last_updated": "2026-09-28",
     "description": "Objets uniques avec effets spéciaux fixes. Nommés en hébreu. Chaque unique a un effet fixe qui scale avec le rang + des substats aléatoires comme tout équipement.",
-    "total_uniques": 42,
-    "droppable_uniques": 38,
+    "total_uniques": 47,
+    "droppable_uniques": 43,
     "legacy_uniques": 4,
     "naming_convention": "Hébreu — cohérent avec les panoplies et l'univers de Kanarion",
     "rank_system": {
       "_comment": "Le rang (1-5 = C->SS) est determine par le niveau du mob qui drop l unique (voir level_range de chaque rang). rank_scaling.rang_N donne les STATS DIRECTES du rang (pas des multiplicateurs). L item reste unique (1 skin), affichage joueur = label C->SS ou chiffre romain I-V.",
       "_rank_scaling_map": "Chaque unique porte rank_scaling_map : pointeur JSON dans son bloc effect -> cle de rank_scaling.rang_N. Le serveur (combat ET economy) remplace la valeur pointee par rank_scaling.rang_N[cle] pour un objet de rang N : ce tableau est la SEULE source des valeurs par rang, le tooltip lit le meme. rang_2 doit egaler la valeur ecrite dans effect (verifie au boot).",
-      "_rank_curve": "Phase C (2026-09-28), courbe LINEAIRE : valeur numerique C x1 / B x1.25 / A x1.5 / S x1.75 / SS x2 (SS = 2 x C), arrondi a l entier le plus proche (0.5 vers le haut ; pas de 0.5 pour les secondes). Charges de statut 1/1/2/2/3. Durees et recharges fixes a tous les rangs. Verifie par test (server-combat RoomUniqueEngineTest.C3_RankTablesFollowTheLinearCurve). Hors courbe : Keter Barzel et Etzem HaTzayad (lot moteur suivant) et les 4 uniques legacy.",
+      "_rank_curve": "Phase C (2026-09-28), courbe LINEAIRE : valeur numerique C x1 / B x1.25 / A x1.5 / S x1.75 / SS x2 (SS = 2 x C), arrondi a l entier le plus proche (0.5 vers le haut ; pas de 0.5 pour les secondes). Charges de statut 1/1/2/2/3. Durees et recharges fixes a tous les rangs. Verifie par test (server-combat RoomUniqueEngineTest.C3_RankTablesFollowTheLinearCurve). Hors courbe : les 4 uniques legacy (Keter Barzel et Etzem HaTzayad y sont passes avec le lot moteur N1-N5 du 2026-09-28).",
       "_charges_and_shown": "Une cle <x>_charges est mappee sur stacks_to_apply (nombre de charges du statut canonique posees). La cle <x>_shown n est PAS mappee : c est la valeur affichee au joueur = charges x value_per_stack du statut (stats/status_effects.json _meta.canonical_grid), lue par le tooltip via le jeton [R]. Les deux sont verifiees ensemble par test. Dans un meme unique, deux cles n ont jamais la meme valeur au rang B : le tooltip identifie la cle d un jeton [R] par cette valeur.",
       "_max_equipped": "3 uniques equipes au maximum par personnage (legacy compris) : economy refuse le 4e a l equipement (ErrorCode UNIQUE_LIMIT_REACHED 0x021A). Remplacer un unique dans son propre emplacement reste permis.",
       "_fields": "band = bande du niveau requis (C 1-20, B 21-40, A 41-60, S 61-80, SS 81-100). payoff_family = famille de keystone dont l unique paie l etat (systems/keystones.json), ou generic_<theme>. legacy = true : fusionne ou coupe, retire du pool (items/loot_tables.json unique_drops.pool_exclusions) mais garde pour les exemplaires deja possedes. pve_only (effet) = sans effet dans les salles PvP (duel, arene, tournoi).",
@@ -282,41 +282,44 @@
       "meaning": "Os du Chasseur / Hunter's Bone",
       "slot": "ring",
       "role": "offensive",
+      "band": "S",
+      "payoff_family": "ks_dps_hunt",
       "description_fr": "Un os poli par des années de chasse, transformé en anneau. Chaque frappe successive trouve une faiblesse nouvelle.",
       "description_en": "A bone polished by years of hunting, turned into a ring. Each successive strike finds a new weakness.",
       "effect": {
-        "description_fr": "Les skills multi-hit gagnent +[R]8% de dégâts par touche (max +[R]40%).",
-        "description_en": "Multi-hit skills gain +[R]8% damage per hit (max +[R]40%).",
+        "description_fr": "Contre une cible Ralentie, chaque touche d'un même sort après la première inflige +[R]5 % de dégâts de plus que la précédente (jusqu'à +[R]20 %). Le bonus repart de zéro à chaque sort.",
+        "description_en": "Against a Slowed target, each hit of the same spell after the first deals +[R]5% more damage than the one before (up to +[R]20%). The bonus resets with every spell.",
         "type": "passive_modifier",
         "effects": [
           {
             "modifier": "multi_hit_damage_escalation",
-            "value_per_hit": 8,
-            "max_bonus": 40,
+            "value_per_hit": 5,
+            "max_bonus": 20,
+            "required_target_status": "slow",
             "scalable": true
           }
         ]
       },
       "rank_scaling": {
         "rang_1": {
-          "per_hit": 5,
-          "max": 28
+          "per_hit": 4,
+          "max": 16
         },
         "rang_2": {
-          "per_hit": 8,
-          "max": 40
+          "per_hit": 5,
+          "max": 20
         },
         "rang_3": {
-          "per_hit": 10,
-          "max": 52
+          "per_hit": 6,
+          "max": 24
         },
         "rang_4": {
-          "per_hit": 12,
-          "max": 64
+          "per_hit": 7,
+          "max": 28
         },
         "rang_5": {
-          "per_hit": 14,
-          "max": 76
+          "per_hit": 8,
+          "max": 32
         }
       },
       "rank_scaling_map": {
@@ -332,7 +335,7 @@
         "description_fr": "Drop par les hyènes",
         "description_en": "Dropped by hyenas"
       },
-      "level_req": 7
+      "level_req": 70
     },
     {
       "id": "unique_krav_shachar",
@@ -644,46 +647,42 @@
       "meaning": "Couronne de Fer / Iron Crown",
       "slot": "helmet",
       "role": "defensive",
+      "band": "S",
+      "payoff_family": "ks_tank_anchor",
       "description_fr": "La couronne de celui qui tient la ligne. Plus les ennemis se concentrent sur toi, plus tu deviens inébranlable.",
       "description_en": "The crown of the one who holds the line. The more enemies focus on you, the more unshakeable you become.",
       "effect": {
-        "description_fr": "+[R]3% réduction de dégâts par ennemi qui te cible (max [R]15%).",
-        "description_en": "+[R]3% damage reduction per enemy targeting you (max [R]15%).",
+        "description_fr": "+[R]4 % de réduction des dégâts subis par ennemi qui vous cible ou que vous avez provoqué (3 ennemis au plus).",
+        "description_en": "+[R]4% damage reduction per enemy targeting you or taunted by you (3 enemies at most).",
         "type": "passive_modifier",
         "effects": [
           {
             "modifier": "dr_per_targeting_enemy",
-            "value": 3,
-            "max_bonus": 15,
+            "value": 4,
+            "max_targets": 3,
             "scalable": true
           }
         ]
       },
       "rank_scaling": {
         "rang_1": {
-          "dr_per_enemy": 2,
-          "dr_max": 10
+          "dr_per_enemy": 3
         },
         "rang_2": {
-          "dr_per_enemy": 3,
-          "dr_max": 15
+          "dr_per_enemy": 4
         },
         "rang_3": {
-          "dr_per_enemy": 3,
-          "dr_max": 19
+          "dr_per_enemy": 5
         },
         "rang_4": {
-          "dr_per_enemy": 4,
-          "dr_max": 24
+          "dr_per_enemy": 5
         },
         "rang_5": {
-          "dr_per_enemy": 5,
-          "dr_max": 29
+          "dr_per_enemy": 6
         }
       },
       "rank_scaling_map": {
-        "/effects/0/value": "dr_per_enemy",
-        "/effects/0/max_bonus": "dr_max"
+        "/effects/0/value": "dr_per_enemy"
       },
       "source": {
         "type": "monster_drop",
@@ -693,7 +692,7 @@
         "description_fr": "Drop par le Seigneur de Guerre Tribal",
         "description_en": "Dropped by Tribal Warlord"
       },
-      "level_req": 36
+      "level_req": 65
     },
     {
       "id": "unique_seter_halayla",
@@ -2858,10 +2857,349 @@
         "description_en": "Global unique pool: any fight whose level reaches the required level."
       },
       "level_req": 90
+    },
+    {
+      "id": "unique_dam_zorem",
+      "name_fr": "Dam Zorem",
+      "name_en": "Dam Zorem",
+      "meaning": "Sang qui coule / Flowing Blood",
+      "slot": "legs",
+      "role": "offensive",
+      "band": "S",
+      "payoff_family": "ks_dps_wounds",
+      "description_fr": "Des jambières de cuir rouge sombre, raides de sang séché. Elles se réveillent quand une plaie s'ouvre.",
+      "description_en": "Dark red leather greaves, stiff with dried blood. They wake when a wound opens.",
+      "effect": {
+        "description_fr": "Vos Saignements infligent +[R]19 % de dégâts. Toucher une cible qui saigne : +[R]5 % de chance critique pendant 4 s. Recharge 10 s.",
+        "description_en": "Your Bleeds deal +[R]19% damage. Hitting a Bleeding target: +[R]5% crit chance for 4 s. 10 s cooldown.",
+        "type": "combat_proc",
+        "effects": [
+          {
+            "modifier": "dot_damage_bonus",
+            "status_id": "bleed",
+            "value": 19,
+            "scalable": true
+          }
+        ],
+        "triggers": [
+          {
+            "trigger": "on_hit",
+            "cooldown": 10.0,
+            "effects": [
+              {
+                "apply_status": "crit_chance_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 4.0,
+                "required_target_status": "bleed",
+                "scalable": true
+              }
+            ]
+          }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": {
+          "bleed_bonus": 15,
+          "crit_charges": 1,
+          "crit_shown": 5
+        },
+        "rang_2": {
+          "bleed_bonus": 19,
+          "crit_charges": 1,
+          "crit_shown": 5
+        },
+        "rang_3": {
+          "bleed_bonus": 23,
+          "crit_charges": 2,
+          "crit_shown": 10
+        },
+        "rang_4": {
+          "bleed_bonus": 26,
+          "crit_charges": 2,
+          "crit_shown": 10
+        },
+        "rang_5": {
+          "bleed_bonus": 30,
+          "crit_charges": 3,
+          "crit_shown": 15
+        }
+      },
+      "rank_scaling_map": {
+        "/effects/0/value": "bleed_bonus",
+        "/triggers/0/effects/0/stacks_to_apply": "crit_charges"
+      },
+      "source": {
+        "type": "global_pool",
+        "description_fr": "Pool global des uniques : tout combat dont le niveau atteint le niveau requis.",
+        "description_en": "Global unique pool: any fight whose level reaches the required level."
+      },
+      "level_req": 65
+    },
+    {
+      "id": "unique_eres",
+      "name_fr": "Eres",
+      "name_en": "Eres",
+      "meaning": "Venin / Venom",
+      "slot": "belt",
+      "role": "utility",
+      "band": "S",
+      "payoff_family": "ks_util_venom",
+      "description_fr": "Une ceinture en peau de serpent dont la boucle suinte encore. Ce qu'elle touche guérit mal.",
+      "description_en": "A snakeskin belt whose buckle still oozes. What it touches heals poorly.",
+      "effect": {
+        "description_fr": "Vos Poisons infligent +[R]13 % de dégâts. Toucher une cible empoisonnée : elle reçoit 15 % de soins en moins pendant 3 s. Recharge 12 s.",
+        "description_en": "Your Poisons deal +[R]13% damage. Hitting a Poisoned target: it receives 15% less healing for 3 s. 12 s cooldown.",
+        "type": "combat_proc",
+        "effects": [
+          {
+            "modifier": "dot_damage_bonus",
+            "status_id": "poison",
+            "value": 13,
+            "scalable": true
+          }
+        ],
+        "triggers": [
+          {
+            "trigger": "on_hit",
+            "cooldown": 12.0,
+            "effects": [
+              {
+                "apply_status": "heal_reduction",
+                "target_rule": "enemy",
+                "stacks_to_apply": 1,
+                "duration": 3.0,
+                "required_target_status": "poison"
+              }
+            ]
+          }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": {
+          "poison_bonus": 10
+        },
+        "rang_2": {
+          "poison_bonus": 13
+        },
+        "rang_3": {
+          "poison_bonus": 15
+        },
+        "rang_4": {
+          "poison_bonus": 18
+        },
+        "rang_5": {
+          "poison_bonus": 20
+        }
+      },
+      "rank_scaling_map": {
+        "/effects/0/value": "poison_bonus"
+      },
+      "source": {
+        "type": "global_pool",
+        "description_fr": "Pool global des uniques : tout combat dont le niveau atteint le niveau requis.",
+        "description_en": "Global unique pool: any fight whose level reaches the required level."
+      },
+      "level_req": 65
+    },
+    {
+      "id": "unique_tehiya",
+      "name_fr": "Tehiya",
+      "name_en": "Tehiya",
+      "meaning": "Résurrection / Revival",
+      "slot": "chest",
+      "role": "support",
+      "band": "SS",
+      "payoff_family": "ks_support_last_breath",
+      "description_fr": "Un plastron blanc marqué d'une main ouverte. Il ne protège pas celui qui le porte, il protège ceux qu'il relève.",
+      "description_en": "A white breastplate marked with an open hand. It does not guard its wearer, it guards those the wearer raises.",
+      "effect": {
+        "description_fr": "Quand votre keystone Dernier Souffle sauve un allié de la mort : il reçoit un bouclier de [R]15 % de vos PV max pendant 6 s et vous regagnez [R]13 % de votre Souffle max.",
+        "description_en": "When your Last Breath keystone saves an ally from death: they get a shield worth [R]15% of your max HP for 6 s and you regain [R]13% of your max Breath.",
+        "type": "combat_proc",
+        "triggers": [
+          {
+            "trigger": "on_ally_saved",
+            "effects": [
+              {
+                "apply_shield_percent_max_hp": 15,
+                "target_rule": "ally",
+                "duration": 6.0,
+                "scalable": true
+              },
+              {
+                "restore_souffle_pct": 13,
+                "target_rule": "self",
+                "scalable": true
+              }
+            ]
+          }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": {
+          "shield_pct": 12,
+          "souffle_pct": 10
+        },
+        "rang_2": {
+          "shield_pct": 15,
+          "souffle_pct": 13
+        },
+        "rang_3": {
+          "shield_pct": 18,
+          "souffle_pct": 15
+        },
+        "rang_4": {
+          "shield_pct": 21,
+          "souffle_pct": 18
+        },
+        "rang_5": {
+          "shield_pct": 24,
+          "souffle_pct": 20
+        }
+      },
+      "rank_scaling_map": {
+        "/triggers/0/effects/0/apply_shield_percent_max_hp": "shield_pct",
+        "/triggers/0/effects/1/restore_souffle_pct": "souffle_pct"
+      },
+      "source": {
+        "type": "global_pool",
+        "description_fr": "Pool global des uniques : tout combat dont le niveau atteint le niveau requis.",
+        "description_en": "Global unique pool: any fight whose level reaches the required level."
+      },
+      "level_req": 90
+    },
+    {
+      "id": "unique_chaver_neeman",
+      "name_fr": "Chaver Ne'eman",
+      "name_en": "Chaver Ne'eman",
+      "meaning": "Ami fidèle / Faithful Friend",
+      "slot": "helmet",
+      "role": "support",
+      "band": "C",
+      "payoff_family": "generic_familiar",
+      "description_fr": "Un casque cabossé que votre familier a pris l'habitude de mordiller. Il le reconnaît de loin.",
+      "description_en": "A dented helmet your familiar has taken to chewing on. It knows it from afar.",
+      "effect": {
+        "description_fr": "Au début du combat : votre familier gagne +[R]5 % d'ATK et de MAG pendant 10 s.",
+        "description_en": "At the start of combat: your familiar gains +[R]5% ATK and MAG for 10 s.",
+        "type": "combat_proc",
+        "triggers": [
+          {
+            "trigger": "combat_start",
+            "effects": [
+              {
+                "apply_status": "atk_up",
+                "target_rule": "own_familiar",
+                "stacks_to_apply": 1,
+                "duration": 10.0,
+                "scalable": true
+              },
+              {
+                "apply_status": "mag_up",
+                "target_rule": "own_familiar",
+                "stacks_to_apply": 1,
+                "duration": 10.0,
+                "scalable": true
+              }
+            ]
+          }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": {
+          "familiar_buff_charges": 1,
+          "familiar_buff_shown": 5
+        },
+        "rang_2": {
+          "familiar_buff_charges": 1,
+          "familiar_buff_shown": 5
+        },
+        "rang_3": {
+          "familiar_buff_charges": 2,
+          "familiar_buff_shown": 10
+        },
+        "rang_4": {
+          "familiar_buff_charges": 2,
+          "familiar_buff_shown": 10
+        },
+        "rang_5": {
+          "familiar_buff_charges": 3,
+          "familiar_buff_shown": 15
+        }
+      },
+      "rank_scaling_map": {
+        "/triggers/0/effects/0/stacks_to_apply": "familiar_buff_charges",
+        "/triggers/0/effects/1/stacks_to_apply": "familiar_buff_charges"
+      },
+      "source": {
+        "type": "global_pool",
+        "description_fr": "Pool global des uniques : tout combat dont le niveau atteint le niveau requis.",
+        "description_en": "Global unique pool: any fight whose level reaches the required level."
+      },
+      "level_req": 15
+    },
+    {
+      "id": "unique_kesher_nefesh",
+      "name_fr": "Kesher Nefesh",
+      "name_en": "Kesher Nefesh",
+      "meaning": "Lien d'âme / Soul Bond",
+      "slot": "legs",
+      "role": "defensive",
+      "band": "S",
+      "payoff_family": "generic_familiar",
+      "description_fr": "Des jambières tissées avec un poil de votre compagnon. Quand il faiblit, vous le sentez.",
+      "description_en": "Greaves woven with a strand of your companion's fur. When it falters, you feel it.",
+      "effect": {
+        "description_fr": "Quand votre familier passe sous 30 % de PV : il reçoit un bouclier de [R]10 % de vos PV max pendant 5 s. Recharge 30 s.",
+        "description_en": "When your familiar drops below 30% HP: it gets a shield worth [R]10% of your max HP for 5 s. 30 s cooldown.",
+        "type": "combat_proc",
+        "triggers": [
+          {
+            "trigger": "ally_hp_below_pct",
+            "threshold": 0.3,
+            "cooldown": 30.0,
+            "effects": [
+              {
+                "apply_shield_percent_max_hp": 10,
+                "target_rule": "own_familiar",
+                "duration": 5.0,
+                "scalable": true
+              }
+            ]
+          }
+        ]
+      },
+      "rank_scaling": {
+        "rang_1": {
+          "shield_pct": 8
+        },
+        "rang_2": {
+          "shield_pct": 10
+        },
+        "rang_3": {
+          "shield_pct": 12
+        },
+        "rang_4": {
+          "shield_pct": 14
+        },
+        "rang_5": {
+          "shield_pct": 16
+        }
+      },
+      "rank_scaling_map": {
+        "/triggers/0/effects/0/apply_shield_percent_max_hp": "shield_pct"
+      },
+      "source": {
+        "type": "global_pool",
+        "description_fr": "Pool global des uniques : tout combat dont le niveau atteint le niveau requis.",
+        "description_en": "Global unique pool: any fight whose level reaches the required level."
+      },
+      "level_req": 75
     }
   ],
   "_summary": {
-    "_comment": "Genere depuis la liste des uniques (Phase C lot 1, 2026-09-28). Ne pas editer a la main sans mettre la liste a jour.",
+    "_comment": "Genere depuis la liste des uniques (Phase C lot 1 + lot moteur N1-N5, 2026-09-28). Ne pas editer a la main sans mettre la liste a jour.",
     "by_role": {
       "offensive": [
         "unique_dam_rishon",
@@ -2874,7 +3212,8 @@
         "unique_tachbulot",
         "unique_gachelet",
         "unique_shalshelet",
-        "unique_beer"
+        "unique_beer",
+        "unique_dam_zorem"
       ],
       "defensive": [
         "unique_shoresh_oz",
@@ -2887,7 +3226,8 @@
         "unique_chosen",
         "unique_shiryon_or",
         "unique_omed",
-        "unique_chevel_hatzala"
+        "unique_chevel_hatzala",
+        "unique_kesher_nefesh"
       ],
       "support": [
         "unique_seter_halayla",
@@ -2899,7 +3239,9 @@
         "unique_brit",
         "unique_hed",
         "unique_maayan",
-        "unique_avir"
+        "unique_avir",
+        "unique_tehiya",
+        "unique_chaver_neeman"
       ],
       "utility": [
         "unique_tzel_hamidbar",
@@ -2907,7 +3249,8 @@
         "unique_kvalim",
         "unique_hafraa",
         "unique_kova_hazman",
-        "unique_mehirut"
+        "unique_mehirut",
+        "unique_eres"
       ]
     },
     "by_slot": {
@@ -2932,14 +3275,16 @@
         "unique_shoresh_oz",
         "unique_korban_acharon",
         "unique_ometz_lev",
-        "unique_chevel_hatzala"
+        "unique_chevel_hatzala",
+        "unique_eres"
       ],
       "helmet": [
         "unique_magen_hasela",
         "unique_keter_barzel",
         "unique_tachbulot",
         "unique_kvalim",
-        "unique_kova_hazman"
+        "unique_kova_hazman",
+        "unique_chaver_neeman"
       ],
       "cape": [
         "unique_or_hashomer",
@@ -2952,7 +3297,9 @@
         "unique_ruach_harefuah",
         "unique_shalshelet",
         "unique_maayan",
-        "unique_mehirut"
+        "unique_mehirut",
+        "unique_dam_zorem",
+        "unique_kesher_nefesh"
       ],
       "boots": [
         "unique_tzel_hamidbar",
@@ -2965,14 +3312,15 @@
         "unique_lev_anak",
         "unique_makhela",
         "unique_chosen",
-        "unique_shiryon_or"
+        "unique_shiryon_or",
+        "unique_tehiya"
       ]
     },
     "by_band": {
       "C": [
-        "unique_etzem_hatzayad",
         "unique_tzel_hamidbar",
-        "unique_shiryon_or"
+        "unique_shiryon_or",
+        "unique_chaver_neeman"
       ],
       "B": [
         "unique_dam_rishon",
@@ -2981,7 +3329,6 @@
         "unique_shoresh_oz",
         "unique_magen_hasela",
         "unique_or_hashomer",
-        "unique_keter_barzel",
         "unique_seter_halayla",
         "unique_neshimat_chayim",
         "unique_ruach_harefuah",
@@ -3001,12 +3348,17 @@
         "unique_maayan"
       ],
       "S": [
+        "unique_etzem_hatzayad",
+        "unique_keter_barzel",
         "unique_gachelet",
         "unique_brit",
         "unique_chosen",
         "unique_hafraa",
         "unique_omed",
-        "unique_kova_hazman"
+        "unique_kova_hazman",
+        "unique_dam_zorem",
+        "unique_eres",
+        "unique_kesher_nefesh"
       ],
       "SS": [
         "unique_ometz_lev",
@@ -3015,7 +3367,8 @@
         "unique_hed",
         "unique_mehirut",
         "unique_avir",
-        "unique_chevel_hatzala"
+        "unique_chevel_hatzala",
+        "unique_tehiya"
       ]
     },
     "by_payoff_family": {
@@ -3028,9 +3381,8 @@
       "ks_dps_ignition": [
         "unique_esh_kadma"
       ],
-      "phase_b_pending": [
-        "unique_etzem_hatzayad",
-        "unique_keter_barzel"
+      "ks_dps_hunt": [
+        "unique_etzem_hatzayad"
       ],
       "generic_survival": [
         "unique_shoresh_oz",
@@ -3044,6 +3396,9 @@
       ],
       "ks_tank_sacrifice": [
         "unique_or_hashomer"
+      ],
+      "ks_tank_anchor": [
+        "unique_keter_barzel"
       ],
       "ks_support_blessing": [
         "unique_neshimat_chayim"
@@ -3116,6 +3471,19 @@
       ],
       "generic_anti_cc": [
         "unique_omed"
+      ],
+      "ks_dps_wounds": [
+        "unique_dam_zorem"
+      ],
+      "ks_util_venom": [
+        "unique_eres"
+      ],
+      "ks_support_last_breath": [
+        "unique_tehiya"
+      ],
+      "generic_familiar": [
+        "unique_chaver_neeman",
+        "unique_kesher_nefesh"
       ]
     },
     "legacy": [
@@ -3123,16 +3491,6 @@
       "unique_lahav_kesem",
       "unique_maarav",
       "unique_tzaad_ruach"
-    ],
-    "engine_pending": {
-      "_comment": "Payoffs prevus qui attendent un crochet moteur (lot suivant). Les deux uniques existants gardent leur comportement de la Phase B.",
-      "unique_keter_barzel": "N3 : compter aussi les ennemis provoques par le porteur (taunt/challenged) ; en PvP le compteur reste a 0.",
-      "unique_etzem_hatzayad": "N2 : escalade par touche remise a zero a chaque sort, conditionnee a slow.",
-      "unique_dam_zorem (a ecrire)": "N1 : dot_damage_bonus par statut (bleed).",
-      "unique_eres (a ecrire)": "N1 : dot_damage_bonus par statut (poison).",
-      "unique_tehiya (a ecrire)": "N4 : declencheur on_ally_saved emis par try_prevent_death.",
-      "unique_chaver_neeman (a ecrire)": "N5 : target_rule own_familiar.",
-      "unique_kesher_nefesh (a ecrire)": "N5 : filtre allie = mon familier sur ally_hp_below_pct."
-    }
+    ]
   }
 }
