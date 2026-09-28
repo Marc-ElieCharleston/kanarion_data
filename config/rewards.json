@@ -15,6 +15,7 @@
     "rarity_boost": "SOMME(familles.rarity_boost)",
     "product_cap": "Le produit des familles est plafonne a global_cap AVANT l'arrondi final, separement pour xp, gold et drop_chance.",
     "rounding": "Aucun arrondi intermediaire. Un seul arrondi final, sauf base_xp_pour_niveau qui arrondit sa propre sortie.",
+    "fight_drop_chance": "BUTIN PAR COMBAT (equipement, panoplie, unique, grimoire, keystone, pierre rang 3+) : min(0.95, chance_de_base_par_combat(items/loot_tables.json) x fight_loot.stars[etoiles].(drop_chance|unique_chance) x presence x dungeon_difficulty.drop_chance x group_size x events.drop_chance), produit des multiplicateurs plafonne a global_cap. monster_state et encounter_stars NE S APPLIQUENT PAS au butin par combat (remplaces par fight_loot) ; ils restent pour le butin par monstre, l or et l XP.",
     "families_order": [
       "monster_threat_tier",
       "monster_state",
@@ -300,6 +301,47 @@
     "max_total_multiplier": 50.0,
     "applies_to": "Le produit des familles, separement pour xp, gold et drop_chance.",
     "note": "Hard cap on all stacked multipliers to prevent guaranteed legendary drops"
+  },
+  "fight_loot": {
+    "_comment": "Multiplicateurs du butin PAR COMBAT (un tirage par combat et par joueur, 2026-09-28). Les chances de base vivent dans items/loot_tables.json (base_chance_per_fight de chaque categorie, per_fight des pierres rang 3+). La formule est formula.fight_drop_chance. Ce n est PAS une famille de multiplier_families : elle ne s applique ni a l XP, ni a l or, ni au butin par monstre.",
+    "_why": "Modele Dofus-like : le commun tombe par monstre, le rare par combat. La chance du rare depend de la difficulte du combat (etoiles, elites/boss presents), pas du nombre de monstres : un pack de 9 ne donne plus 9 tirages d equipement. Cibles jour validees (Casual 1h solo 0-2*, Regular 2h groupe de 3 2-4*, Hardcore 4h groupe de 6 4-5*) : equipement ~3/10/25, panoplie ~1/4/10, grimoires ~1/3/8, unique ~1 par mois / 1 par semaine / 1 tous les 2 jours.",
+    "stars": {
+      "_comment": "Par etoile du combat. drop_chance : equipement, panoplie, grimoire, keystone, pierres rang 3+. unique_chance : uniques, courbe plus raide (0.05% a 0* ; 0.3% a 5* avant presence et groupe).",
+      "0": {
+        "drop_chance": 1.0,
+        "unique_chance": 1.0
+      },
+      "1": {
+        "drop_chance": 1.15,
+        "unique_chance": 1.6
+      },
+      "2": {
+        "drop_chance": 1.4,
+        "unique_chance": 2.4
+      },
+      "3": {
+        "drop_chance": 1.7,
+        "unique_chance": 3.6
+      },
+      "4": {
+        "drop_chance": 2.0,
+        "unique_chance": 4.8
+      },
+      "5": {
+        "drop_chance": 2.4,
+        "unique_chance": 6.0
+      }
+    },
+    "presence": {
+      "_comment": "Bonus BORNE selon les monstres presents au combat : presence = min(cap, 1 + SOMME(per_state[etat] de chaque monstre tue)). Remplace le multiplicateur d etat par monstre, qui comptait deux fois l equipement et la panoplie.",
+      "per_state": {
+      "elite": 0.1,
+      "mini_boss": 0.2,
+      "boss": 0.3,
+      "world_boss": 0.5
+      },
+      "cap": 1.5
+    }
   },
   "tournament_payout": {
     "_comment": "Bareme des tournois evenementiels. Le rang appartient a l'EQUIPE ; cette dotation est celle d'UN membre humain. En 4v4 un rang coute donc quatre fois ce qui est ecrit ici, et c'est voulu : une equipe de quatre a joue quatre fois plus de monde. Une recrue n'a pas de compte, donc jamais de part.",
