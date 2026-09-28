@@ -339,6 +339,26 @@ Le critère de rangement est le **verbe** :
 
 **Migration en cours (étape 1/2, 2026-08-14) :** les blocs d'origine sont encore là, marqués `_deprecated_moved_to`, avec des valeurs identiques, le temps que le backend bascule ses lecteurs. L'étape 8 de `validate_cross_references.py` vérifie l'égalité tant que les deux coexistent. Étape 2 = suppression des blocs, et la garde devient anti-retour.
 
+### Budget de puissance des objets (2026-09-28) : modèle Dofus horizontal
+
+Trois familles, trois rôles : le **classique** à gros jet est la référence ; une **pièce de panoplie** seule vaut un peu moins (sa force vient du set complet) ; un **unique** a des stats modestes et un effet qui fait un build (fort seulement dans ce build). Tous les boutons sont dans la data, avec un défaut serveur = ancien comportement si la clé manque.
+
+| Bouton | Fichier / clé | Valeur |
+|---|---|---|
+| Part de légendaire du classique | `items/loot_tables.json` `equipment_drops.rarity_weights_by_danger` | 2 % (danger 1) → 10 % (danger 6), monotone ; danger 7-10 = dernière ligne |
+| Qualité fixe des pièces de panoplie | `panoplie_drops.piece_rarity` / `piece_stat_scale` | `legendary` × 0.85 (stat principale, substats, affixes et bornes affichées ; base du modèle intacte). `danger` ou absent = ancien tirage |
+| Chance de panoplie par combat | `panoplie_drops.base_chance_per_fight` | 0.015 (un set de 6 pièces de sa bande en ~100 / 32 / 14 jours Casual / Regular / Hardcore) |
+| Stats des uniques | `unique_drops.stat_rarity` / `stat_scale` | `legendary` × 0.80 ; l'unique reste affiché légendaire |
+| Poids d'armure d'un set | `items/panoplies.json` `armor_type`, `pieces.<slot>.weight` (sets `mixed`), `pieces.weapon.weapon_type` | le serveur tire le modèle de base sur ce poids / ce groupe d'arme |
+| Poids d'armure d'un unique | `items/uniques.json` `armor_weight` (emplacements d'armure) | tank / défensif → heavy ; physique, esquive, saignement, poison → medium ; magie, soin, soutien, Souffle → light |
+| Substats pondérées par rôle | `items/equipment_stats.json` `<catégorie>.substat_weight_multipliers` | clé = poids d'armure ou essence de l'arme ; hors rôle × 0.25 (plus rare, jamais interdit) ; absent = poids du pool |
+
+**Bonus de set** (valeurs figées dans `panoplies.json`, `_meta.notes.power_budget`) : facteur k par set dans [0.8, 1.7], visé = set complet 1.05-1.15 × le classique légendaire p90 des mêmes emplacements dans le rôle du set (sets de soin / soutien : métrique soin + boucliers + durée des buffs). **Aucun set n'atteint seul un plafond du jeu** : total par stat ≤ ~la moitié du plafond runtime (crit 40, CDR 20, durées de buff / debuff 25, blocage 30, soins reçus 50, esquive 30, pénétrations 35, réduction des dégâts 37, chance d'effet 42, épines 50, vitesse d'incantation 25, vol de sort / vol de vie 25, résistance aux effets 42, dégâts 50). Garde : `FightLootTest.PowerBudget_NoSetReachesAGameCapAlone`. Sets de tournoi hors budget.
+
+**Uniques** : un effet paie l'état que sa famille de keystone crée (`payoff_family`), passe par les statuts canoniques partagés (`damage_percent_up`, `atk_up`, `mag_up`, `crit_chance_up`… : un seul seau, plafond de charges commun), charges 1/1/2/2/3, courbe linéaire C → SS = 2 × C, `rank_scaling_map` et jetons `[R]` cohérents (tests `C3_RankTablesFollowTheLinearCurve`).
+
+**Stats mortes interdites dans la data lootable** : `def` plat (aucune mitigation depuis le modèle de défense B, remplacé par `armor`) et `hit` (sans effet au-dessus de 100 de précision). Gardes : `FightLootTest.NoDeadStatInLootableItemData`, `NoDeadStatInAnySetBonus`, economy `StatKeyInvariant.NoDeadDefOrHitInLootableData`.
+
 ### Combat System
 - **Grid:** 4×5 per team (20 slots per team), max 10 players per team — single active format since the Arena Hub pivot (2026-05-01). Source: `config/game.json` `combat_grids`. Each room supports up to 32 entities total (backend `combat.json` `max_entities_per_room`).
 - **Rows:** front, mid_front, mid_back, back (positioning matters for tanks/healers)
