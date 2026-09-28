@@ -363,7 +363,7 @@
       "bonuses_cumulative": "Les bonus 2p/4p/6p/8p s'additionnent",
       "armor_types": "armor_type du set = poids d armure REEL des pieces qui tombent (light/medium/heavy, lu par le serveur depuis le 2026-09-28). Sets mixed : pieces.<slot>.weight donne le poids de chaque piece (sans lui, poids aleatoire). L arme d un set porte pieces.weapon.weapon_type (groupe d arme de equipment.json).",
       "reloot": "Chaque rang doit etre farm separement. Le joueur garde l'ancien stuff en attendant de completer le rang suivant.",
-      "power_budget": "BUDGET DE PUISSANCE (2026-09-28, modele Dofus) : une piece seule tire en legendaire x0.85 (loot_tables.json panoplie_drops.piece_rarity / piece_stat_scale), un peu en dessous d un classique legendaire ; la force du set vient du set COMPLET. Bonus multiplies par 3.5 (sets 4-8 pieces) et par 5 (mini-sets 2 pieces) sur les valeurs figees de la bande, arrondis a l entier. Plafonds runtime respectes sur le total du set : crit 100, armor_pen / magic_pen 70, cooldown_reduction 40, cast_speed 50, buff_duration / debuff_duration 50, healing_received 100, effect_chance 85 (la resistance cible plafonne a 85), thorns 100 (au-dela, damage_calculator le lit comme des degats PLATS), block_chance 75 ; un total au-dessus est ramene au plafond au prorata des paliers. def plat (sans consommateur de mitigation depuis le modele de defense B) remplace par armor a valeur egale avant multiplication. Sets de tournoi (set_tournoi_*) inchanges."
+      "power_budget": "BUDGET DE PUISSANCE (2026-09-28, modele Dofus) : une piece seule tire en legendaire x0.85 (loot_tables.json panoplie_drops.piece_rarity / piece_stat_scale), un peu en dessous d un classique legendaire ; la force du set vient du set COMPLET. Passe 1 : bonus x3.5 (4-8 pieces) / x5 (mini-sets) sur les valeurs figees de la bande. Passe 2 : facteur k PAR SET, borne [0.8, 1.7] sur la passe 1, vise set complet = 1.05-1.15 x le classique legendaire p90 des memes emplacements dans le role du set (DPS / tank : points equivalent ATK ; Refuah, Kavod, Orim, Neshamah : metrique soin/soutien = soins x puissance de soin + boucliers + duree des buffs d alliés). Aucun set n atteint seul un plafond du jeu : total du set par stat <= ~la moitie du plafond runtime (crit 40, cooldown_reduction 20, buff/debuff_duration 25, block_chance 30, healing_received 50, flee 30, armor_pen / magic_pen 35, damage_reduction 37, effect_chance 42, thorns 50, cast_speed 25, spell_vamp 25, lifesteal 25, effect_resist 42, damage_percent 50), le surplus retire au prorata des paliers ; garde par test (server-combat FightLootTest.PowerBudget_NoSetReachesAGameCapAlone). def plat remplace par armor. Sets de tournoi (set_tournoi_*) inchanges."
     }
   },
   "piece_base_stats": {
@@ -580,13 +580,13 @@
       },
       "bonuses": {
         "2": {
-          "lifesteal": 30,
-          "spell_vamp": 15
+          "lifesteal": 25,
+          "spell_vamp": 25
         }
       },
       "total_at_max": {
-        "lifesteal": 30,
-        "spell_vamp": 15
+        "lifesteal": 25,
+        "spell_vamp": 25
       }
     },
     "ot": {
@@ -615,12 +615,12 @@
       "bonuses": {
         "2": {
           "crit": 40,
-          "crit_dmg": 50
+          "crit_dmg": 61
         }
       },
       "total_at_max": {
         "crit": 40,
-        "crit_dmg": 50
+        "crit_dmg": 61
       }
     },
     "chayim": {
@@ -648,13 +648,13 @@
       },
       "bonuses": {
         "2": {
-          "hp_regen": 40,
-          "hp": 700
+          "hp_regen": 68,
+          "hp": 1190
         }
       },
       "total_at_max": {
-        "hp_regen": 40,
-        "hp": 700
+        "hp_regen": 68,
+        "hp": 1190
       }
     },
     "binah": {
@@ -682,13 +682,13 @@
       },
       "bonuses": {
         "2": {
-          "mp": 200,
-          "cooldown_reduction": 40
+          "mp": 340,
+          "cooldown_reduction": 20
         }
       },
       "total_at_max": {
-        "mp": 200,
-        "cooldown_reduction": 40
+        "mp": 340,
+        "cooldown_reduction": 20
       }
     },
     "oz": {
@@ -716,13 +716,13 @@
       },
       "bonuses": {
         "2": {
-          "atk_percent": 40,
-          "damage_percent": 25
+          "atk_percent": 32,
+          "damage_percent": 20
         }
       },
       "total_at_max": {
-        "atk_percent": 40,
-        "damage_percent": 25
+        "atk_percent": 32,
+        "damage_percent": 20
       }
     },
     "sela": {
@@ -750,13 +750,13 @@
       },
       "bonuses": {
         "2": {
-          "def_percent": 40,
-          "armor": 60
+          "def_percent": 46,
+          "armor": 68
         }
       },
       "total_at_max": {
-        "def_percent": 40,
-        "armor": 60
+        "def_percent": 46,
+        "armor": 68
       }
     },
     "nefesh": {
@@ -784,13 +784,13 @@
       },
       "bonuses": {
         "2": {
-          "mp_regen": 15,
-          "mp": 250
+          "mp_regen": 26,
+          "mp": 425
         }
       },
       "total_at_max": {
-        "mp_regen": 15,
-        "mp": 250
+        "mp_regen": 26,
+        "mp": 425
       }
     },
     "_comment_4p": "========== SETS MOYENS (4 PIÈCES) ==========",
@@ -829,16 +829,16 @@
       },
       "bonuses": {
         "2": {
-          "cooldown_reduction": 25
+          "cooldown_reduction": 20
         },
         "4": {
-          "flee": 53,
+          "flee": 30,
           "cast_speed": 25
         }
       },
       "total_at_max": {
-        "cooldown_reduction": 25,
-        "flee": 53,
+        "cooldown_reduction": 20,
+        "flee": 30,
         "cast_speed": 25
       }
     },
@@ -877,16 +877,16 @@
       },
       "bonuses": {
         "2": {
-          "buff_duration": 27
+          "buff_duration": 14
         },
         "4": {
-          "buff_duration": 23,
-          "heal_power": 25
+          "buff_duration": 11,
+          "heal_power": 43
         }
       },
       "total_at_max": {
-        "buff_duration": 50,
-        "heal_power": 25
+        "buff_duration": 25,
+        "heal_power": 43
       }
     },
     "anan": {
@@ -924,17 +924,17 @@
       },
       "bonuses": {
         "2": {
-          "effect_chance": 53
+          "effect_chance": 42
         },
         "4": {
-          "debuff_duration": 50,
-          "mag_percent": 25
+          "debuff_duration": 25,
+          "mag_percent": 43
         }
       },
       "total_at_max": {
-        "effect_chance": 53,
-        "debuff_duration": 50,
-        "mag_percent": 25
+        "effect_chance": 42,
+        "debuff_duration": 25,
+        "mag_percent": 43
       }
     },
     "barzel": {
@@ -974,17 +974,17 @@
       },
       "bonuses": {
         "2": {
-          "armor_pen": 42
+          "armor_pen": 35
         },
         "4": {
-          "atk_percent": 42,
-          "atk": 175
+          "atk_percent": 35,
+          "atk": 145
         }
       },
       "total_at_max": {
-        "armor_pen": 42,
-        "atk_percent": 42,
-        "atk": 175
+        "armor_pen": 35,
+        "atk_percent": 35,
+        "atk": 145
       }
     },
     "refuah": {
@@ -1024,16 +1024,16 @@
       },
       "bonuses": {
         "2": {
-          "heal_power": 35
+          "heal_power": 49
         },
         "4": {
-          "heal_power": 42,
-          "mp_regen": 11
+          "heal_power": 58,
+          "mp_regen": 15
         }
       },
       "total_at_max": {
-        "heal_power": 77,
-        "mp_regen": 11
+        "heal_power": 107,
+        "mp_regen": 15
       }
     },
     "even": {
@@ -1071,18 +1071,18 @@
       },
       "bonuses": {
         "2": {
-          "hp": 420
+          "hp": 479
         },
         "4": {
-          "hp": 368,
-          "def_percent": 35,
-          "hp_regen": 4
+          "hp": 420,
+          "def_percent": 40,
+          "hp_regen": 5
         }
       },
       "total_at_max": {
-        "hp": 788,
-        "def_percent": 35,
-        "hp_regen": 4
+        "hp": 899,
+        "def_percent": 40,
+        "hp_regen": 5
       }
     },
     "koach": {
@@ -1122,17 +1122,17 @@
       },
       "bonuses": {
         "2": {
-          "mag_percent": 25
+          "mag_percent": 36
         },
         "4": {
           "magic_pen": 35,
-          "damage_percent": 25
+          "damage_percent": 36
         }
       },
       "total_at_max": {
-        "mag_percent": 25,
+        "mag_percent": 36,
         "magic_pen": 35,
-        "damage_percent": 25
+        "damage_percent": 36
       }
     },
     "gevurah": {
@@ -1172,17 +1172,17 @@
       },
       "bonuses": {
         "2": {
-          "atk_percent": 25
+          "atk_percent": 40
         },
         "4": {
           "armor_pen": 35,
-          "crit": 25
+          "crit": 40
         }
       },
       "total_at_max": {
-        "atk_percent": 25,
+        "atk_percent": 40,
         "armor_pen": 35,
-        "crit": 25
+        "crit": 40
       }
     },
     "_comment_6p": "========== SETS LARGES (6 PIÈCES) ==========",
@@ -1233,22 +1233,22 @@
       },
       "bonuses": {
         "2": {
-          "flee": 35
+          "flee": 30
         },
         "4": {
-          "crit": 49,
-          "armor_pen": 22
+          "crit": 40,
+          "armor_pen": 11
         },
         "6": {
-          "crit_dmg": 109,
-          "armor_pen": 48
+          "crit_dmg": 185,
+          "armor_pen": 24
         }
       },
       "total_at_max": {
-        "flee": 35,
-        "crit": 49,
-        "armor_pen": 70,
-        "crit_dmg": 109
+        "flee": 30,
+        "crit": 40,
+        "armor_pen": 35,
+        "crit_dmg": 185
       }
     },
     "orim": {
@@ -1298,24 +1298,24 @@
       },
       "bonuses": {
         "2": {
-          "heal_power": 32
+          "heal_power": 44
         },
         "4": {
-          "shield_power": 56,
-          "cooldown_reduction": 25
+          "shield_power": 77,
+          "cooldown_reduction": 20
         },
         "6": {
-          "heal_power": 53,
-          "buff_duration": 50,
-          "mp": 420
+          "heal_power": 73,
+          "buff_duration": 25,
+          "mp": 575
         }
       },
       "total_at_max": {
-        "heal_power": 85,
-        "shield_power": 56,
-        "cooldown_reduction": 25,
-        "buff_duration": 50,
-        "mp": 420
+        "heal_power": 117,
+        "shield_power": 77,
+        "cooldown_reduction": 20,
+        "buff_duration": 25,
+        "mp": 575
       }
     },
     "eshal": {
@@ -1365,23 +1365,23 @@
       },
       "bonuses": {
         "2": {
-          "mag_percent": 28
+          "mag_percent": 43
         },
         "4": {
-          "damage_percent": 60,
-          "debuff_duration": 50
+          "damage_percent": 28,
+          "debuff_duration": 25
         },
         "6": {
-          "mag_percent": 60,
-          "damage_percent": 49,
-          "magic_pen": 49
+          "mag_percent": 91,
+          "damage_percent": 22,
+          "magic_pen": 35
         }
       },
       "total_at_max": {
-        "mag_percent": 88,
-        "damage_percent": 109,
-        "debuff_duration": 50,
-        "magic_pen": 49
+        "mag_percent": 134,
+        "damage_percent": 50,
+        "debuff_duration": 25,
+        "magic_pen": 35
       }
     },
     "mayim": {
@@ -1431,23 +1431,23 @@
       },
       "bonuses": {
         "2": {
-          "mag_percent": 35
+          "mag_percent": 60
         },
         "4": {
-          "effect_chance": 51,
-          "debuff_duration": 50
+          "effect_chance": 25,
+          "debuff_duration": 25
         },
         "6": {
-          "mag_percent": 70,
-          "effect_chance": 34,
-          "magic_pen": 70
+          "mag_percent": 119,
+          "effect_chance": 17,
+          "magic_pen": 35
         }
       },
       "total_at_max": {
-        "mag_percent": 105,
-        "effect_chance": 85,
-        "debuff_duration": 50,
-        "magic_pen": 70
+        "mag_percent": 179,
+        "effect_chance": 42,
+        "debuff_duration": 25,
+        "magic_pen": 35
       }
     },
     "magen": {
@@ -1497,24 +1497,24 @@
       },
       "bonuses": {
         "2": {
-          "shield_power": 70
+          "shield_power": 72
         },
         "4": {
-          "block_chance": 42,
-          "armor": 350
+          "block_chance": 30,
+          "armor": 361
         },
         "6": {
-          "healing_received": 100,
-          "armor": 175,
-          "hp": 560
+          "healing_received": 50,
+          "armor": 180,
+          "hp": 577
         }
       },
       "total_at_max": {
-        "shield_power": 70,
-        "block_chance": 42,
-        "armor": 525,
-        "healing_received": 100,
-        "hp": 560
+        "shield_power": 72,
+        "block_chance": 30,
+        "armor": 541,
+        "healing_received": 50,
+        "hp": 577
       }
     },
     "davar": {
@@ -1566,28 +1566,28 @@
       },
       "bonuses": {
         "2": {
-          "atk_percent": 18,
-          "mag_percent": 18,
-          "def_percent": 18
+          "atk_percent": 31,
+          "mag_percent": 31,
+          "def_percent": 31
         },
         "4": {
-          "hp": 392,
-          "mp": 294
+          "hp": 666,
+          "mp": 500
         },
         "6": {
-          "cooldown_reduction": 28,
-          "atk_percent": 18,
-          "mag_percent": 18,
-          "def_percent": 18
+          "cooldown_reduction": 20,
+          "atk_percent": 31,
+          "mag_percent": 31,
+          "def_percent": 31
         }
       },
       "total_at_max": {
-        "atk_percent": 36,
-        "mag_percent": 36,
-        "def_percent": 36,
-        "hp": 392,
-        "mp": 294,
-        "cooldown_reduction": 28
+        "atk_percent": 62,
+        "mag_percent": 62,
+        "def_percent": 62,
+        "hp": 666,
+        "mp": 500,
+        "cooldown_reduction": 20
       }
     },
     "_comment_8p": "========== SETS COMPLETS (8 PIÈCES) ==========",
@@ -1648,30 +1648,30 @@
       },
       "bonuses": {
         "2": {
-          "def_percent": 35
+          "def_percent": 38
         },
         "4": {
-          "armor": 588,
-          "hp": 784
+          "armor": 641,
+          "hp": 855
         },
         "6": {
-          "armor": 245,
-          "hp": 588
+          "armor": 267,
+          "hp": 641
         },
         "8": {
-          "def_percent": 74,
-          "hp": 588,
-          "block_chance": 60,
-          "thorns": 100,
-          "armor": 245
+          "def_percent": 81,
+          "hp": 641,
+          "block_chance": 30,
+          "thorns": 50,
+          "armor": 267
         }
       },
       "total_at_max": {
-        "def_percent": 109,
-        "armor": 1078,
-        "hp": 1960,
-        "block_chance": 60,
-        "thorns": 100
+        "def_percent": 119,
+        "armor": 1175,
+        "hp": 2137,
+        "block_chance": 30,
+        "thorns": 50
       }
     },
     "tzayad": {
@@ -1731,28 +1731,28 @@
       },
       "bonuses": {
         "2": {
-          "atk_percent": 35
+          "atk_percent": 60
         },
         "4": {
-          "crit": 50,
-          "crit_dmg": 70
+          "crit": 20,
+          "crit_dmg": 119
         },
         "6": {
-          "crit_dmg": 105,
-          "armor_pen": 35
+          "crit_dmg": 179,
+          "armor_pen": 18
         },
         "8": {
-          "atk_percent": 84,
-          "crit": 50,
-          "crit_dmg": 140,
-          "armor_pen": 35
+          "atk_percent": 143,
+          "crit": 20,
+          "crit_dmg": 238,
+          "armor_pen": 17
         }
       },
       "total_at_max": {
-        "atk_percent": 119,
-        "crit": 100,
-        "crit_dmg": 315,
-        "armor_pen": 70
+        "atk_percent": 203,
+        "crit": 40,
+        "crit_dmg": 536,
+        "armor_pen": 35
       }
     },
     "neshamah": {
@@ -1818,32 +1818,32 @@
       },
       "bonuses": {
         "2": {
-          "hp_regen": 28
+          "hp_regen": 48
         },
         "4": {
-          "mp_regen": 28,
-          "hp": 700
+          "mp_regen": 48,
+          "hp": 1190
         },
         "6": {
-          "healing_received": 100,
-          "mp": 560
+          "healing_received": 50,
+          "mp": 952
         },
         "8": {
-          "hp_regen": 56,
-          "mp_regen": 42,
-          "hp": 1120,
-          "lifesteal": 35,
-          "spell_vamp": 35
+          "hp_regen": 95,
+          "mp_regen": 71,
+          "hp": 1904,
+          "lifesteal": 25,
+          "spell_vamp": 25
         }
       },
       "total_at_max": {
-        "hp_regen": 84,
-        "mp_regen": 70,
-        "hp": 1820,
-        "healing_received": 100,
-        "mp": 560,
-        "lifesteal": 35,
-        "spell_vamp": 35
+        "hp_regen": 143,
+        "mp_regen": 119,
+        "hp": 3094,
+        "healing_received": 50,
+        "mp": 952,
+        "lifesteal": 25,
+        "spell_vamp": 25
       }
     },
     "adamah": {
@@ -1903,30 +1903,30 @@
       },
       "bonuses": {
         "2": {
-          "hp": 840
+          "hp": 1428
         },
         "4": {
-          "atk_percent": 42,
-          "armor": 560
+          "atk_percent": 71,
+          "armor": 952
         },
         "6": {
-          "hp": 1120,
-          "armor": 210,
-          "def_percent": 42
+          "hp": 1904,
+          "armor": 357,
+          "def_percent": 71
         },
         "8": {
-          "atk_percent": 84,
-          "hp": 1400,
-          "lifesteal": 42,
-          "armor": 700
+          "atk_percent": 143,
+          "hp": 2380,
+          "lifesteal": 25,
+          "armor": 1190
         }
       },
       "total_at_max": {
-        "hp": 3360,
-        "atk_percent": 126,
-        "armor": 1470,
-        "def_percent": 42,
-        "lifesteal": 42
+        "hp": 5712,
+        "atk_percent": 214,
+        "armor": 2499,
+        "def_percent": 71,
+        "lifesteal": 25
       }
     },
     "set_tournoi_role_tank": {
