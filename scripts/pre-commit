@@ -1,14 +1,27 @@
 #!/bin/bash
-# Pre-commit hook: verifies that content_hash is up to date
-# Installation: cp scripts/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+# Pre-commit hook : verifie que content_hash decrit bien ce qui va etre commite.
+# Installation : cp scripts/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+#
+# POURQUOI IL DELEGUE A PYTHON
+# ----------------------------
+# L'ancienne version calculait le hash avec `find ... | cat`, donc sur les
+# fichiers du DISQUE. Sous Windows git convertit les fins de ligne a
+# l'extraction : le 2026-09-28, 51 fichiers sur 123 etaient en CRLF sur le disque
+# et en LF dans l'index. Ce hook validait donc un hash que la CI Linux refusait,
+# et refusait celui qu'elle attendait. Sur ce poste, aucun commit de data ne
+# pouvait satisfaire les deux.
+#
+# scripts/hash_content.py lit les octets de l'INDEX, ce qui donne le meme
+# resultat qu'une extraction Linux, sur toutes les plateformes.
 
 set -e
 cd "$(git rev-parse --show-toplevel)"
 
-# Check if any gameplay JSON files have been staged
+# Y a-t-il du JSON de gameplay dans ce commit ?
 STAGED_JSON=$(git diff --cached --name-only --diff-filter=ACMR \
   | grep '\.json$' \
   | grep -v 'kanarion-editor/' \
+  | grep -v '^scripts/' \
   | grep -v '_meta/version.json' \
   | grep -v '_meta/statistics.json' \
   | grep -v '_meta/index.json' \
@@ -16,31 +29,29 @@ STAGED_JSON=$(git diff --cached --name-only --diff-filter=ACMR \
   | grep -v '_meta/ideas_to_integrate.json' \
   || true)
 
-if [ -n "$STAGED_JSON" ]; then
-  # Gameplay JSON files are modified — verify hash is fresh
-  EXPECTED=$(find . -name "*.json" \
-    -not -path "./.git/*" \
-    -not -path "*/.claude/*" \
-    -not -path "./kanarion-editor/*" \
-    -not -path "./scripts/*" \
-    -not -path "./_meta/version.json" \
-    -not -path "./_meta/statistics.json" \
-    -not -path "./_meta/index.json" \
-    -not -path "./_meta/changelog.json" \
-    -not -path "./_meta/ideas_to_integrate.json" \
-    | sort \
-    | while read f; do echo "$f"; cat "$f"; done \
-    | sha256sum | cut -d' ' -f1)
-
-  ACTUAL=$(python -c "import json; print(json.load(open('_meta/version.json')).get('content_hash','').replace('sha256:',''))" 2>/dev/null || echo "")
-
-  if [ "$EXPECTED" != "$ACTUAL" ]; then
-    echo "ERROR: content_hash is stale!"
-    echo "JSON gameplay files were modified but hash was not regenerated."
-    echo ""
-    echo "Run: ./scripts/gen_hash.sh"
-    echo "Then: git add _meta/version.json"
-    echo ""
-    exit 1
-  fi
+if [ -z "$STAGED_JSON" ]; then
+  exit 0
 fi
+
+if ! command -v python > /dev/null 2>&1; then
+  echo "ERREUR : python est introuvable, le content_hash ne peut pas etre verifie." >&2
+  exit 1
+fi
+
+if python scripts/hash_content.py --check; then
+  exit 0
+fi
+
+cat >&2 <<'AIDE'
+
+content_hash perime : du JSON de gameplay est dans ce commit mais le hash ne le
+decrit pas.
+
+Dans cet ordre, L'ORDRE COMPTE (le script lit l'index, pas le disque) :
+
+    git add .
+    python scripts/hash_content.py
+    git add _meta/version.json
+
+AIDE
+exit 1

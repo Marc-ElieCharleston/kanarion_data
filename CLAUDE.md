@@ -463,45 +463,47 @@ Les `description_fr` / `description_en` reflètent la VALEUR EFFECTIVE appliqué
 - "+50% dégâts critiques" pour `crit_damage_up` (additif, écrire "+50 dégâts critiques")
 - Description annonçant +30% alors que canonical max = +25% (Frenzy avant migration : atk_up cap à +25%)
 
-## Windows-specific gotcha — `gen_hash.sh` is broken, use Python
+## Le content_hash se calcule sur les octets de git, jamais sur le disque
 
-This project runs on **Windows 11**. The repo has two shells available (PowerShell + Git Bash) and both work for git operations. The only real platform-specific issue is `gen_hash.sh`:
-
-All `.sh` files in this repo have CRLF line endings because Git checks them out on Windows. Combined with a `dirname` resolution quirk, this means `bash scripts/gen_hash.sh` fails with `$'\r': command not found`. **Do not try to fix it inline** — use this Python equivalent every time you need to regenerate the content hash:
+`scripts/hash_content.py` est la seule implementation. `scripts/gen_hash.sh` n'est
+plus qu'une facade qui l'appelle, et le hook de pre-commit le verifie.
 
 ```bash
-python -c "
-import hashlib, json, os, datetime
-os.chdir(r'C:\Users\Charl\Documents\Kanarion Online\kanarion_database')
-exclude_files = {'./_meta/version.json', './_meta/statistics.json', './_meta/index.json', './_meta/changelog.json', './_meta/ideas_to_integrate.json'}
-exclude_dirs = {'.git', '.claude', 'kanarion-editor', 'scripts'}
-json_files = []
-for root, dirs, files in os.walk('.'):
-    dirs[:] = [d for d in dirs if d not in exclude_dirs]
-    for f in files:
-        if f.endswith('.json'):
-            path = os.path.join(root, f).replace(os.sep, '/')
-            if path not in exclude_files:
-                json_files.append(path)
-json_files.sort()
-content = b''
-for fp in json_files:
-    content += (fp + '\n').encode()
-    with open(fp, 'rb') as fh:
-        content += fh.read()
-h = hashlib.sha256(content).hexdigest()
-with open('_meta/version.json', 'r', encoding='utf-8') as f:
-    v = json.load(f)
-v['content_hash'] = f'sha256:{h}'
-v['last_updated'] = datetime.date.today().isoformat()
-with open('_meta/version.json', 'w', encoding='utf-8') as f:
-    json.dump(v, f, indent=2, ensure_ascii=False)
-    f.write('\n')
-print(f'Updated content_hash: sha256:{h}')
-"
+git add .                          # les modifications entrent dans l'index
+python scripts/hash_content.py     # ecrit _meta/version.json
+git add _meta/version.json
+git commit
 ```
 
-Same caveat applies to `scripts/tag_release.sh` and `scripts/pre-commit` — CRLF + `dirname` will break them; run their logic manually (or via Python) if needed.
+**L'ORDRE COMPTE, et il a change le 2026-09-28** : le script lit l'INDEX, donc
+`git add` doit passer AVANT. L'ancienne version lisait le disque et pouvait donc
+tourner avant.
+
+### Pourquoi, et ce qui a casse avant
+
+Le hash doit decrire les octets que git **stocke**, pas ceux du repertoire de
+travail. Sous Windows git convertit les fins de ligne a l'extraction : le
+2026-09-28, **51 fichiers sur 123** etaient en CRLF sur le disque et en LF dans
+l'index. Deux commits data ont ete pousses avec un hash decrivant l'arbre local et
+non la livraison, et la CI Linux les aurait rejetes.
+
+Le piege etait double, et c'est ce qui le rendait insoluble : **le hook de
+pre-commit lisait AUSSI le disque**. Il validait donc le hash que la CI refusait,
+et refusait celui qu'elle attendait. Sur ce poste, aucun commit de data ne pouvait
+satisfaire les deux.
+
+### Ce qu'il ne faut PAS faire
+
+Ajouter un `.gitattributes` avec `*.json text eol=lf` parait etre le correctif
+evident. Ce n'en est pas un : **73 des 128 blobs commites contiennent du CRLF**.
+Normaliser les reecrirait tous, ce qui produirait un diff de fichier entier sur
+chacun et changerait le hash de toute la base. Le depot melange les deux
+conventions parce qu'il a ete alimente depuis Windows et depuis Linux ; lire les
+octets de git rend cette heterogeneite sans consequence, la normaliser serait une
+migration a part entiere.
+
+Les autres `.sh` du depot gardent leur fragilite CRLF connue : sous Windows,
+appeler Python directement les contourne.
 
 ## Commit Workflow on Windows
 

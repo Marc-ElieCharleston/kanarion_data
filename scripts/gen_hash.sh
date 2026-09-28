@@ -1,45 +1,34 @@
 #!/bin/bash
-# Generates a SHA-256 content_hash of all gameplay JSON files
-# Includes: file paths + content (detects renames)
-# Excludes: metadata files that shouldn't invalidate authoritative gameplay
-# Usage: ./scripts/gen_hash.sh
+# Regenere content_hash dans _meta/version.json.
+#
+# Ce script n'est plus qu'une facade : tout le calcul vit dans
+# scripts/hash_content.py. Entretenir deux implementations du meme hash, une en
+# shell et une en Python, a produit exactement le defaut qu'on corrige ici — elles
+# ont divergé sans que personne le voie.
+#
+# CE QUI A CHANGE, ET POURQUOI L'ORDRE COMPTE MAINTENANT
+# ------------------------------------------------------
+# L'ancienne version lisait les fichiers du DISQUE (`find ... | cat`). Sous
+# Windows git convertit les fins de ligne a l'extraction : le 2026-09-28, 51
+# fichiers sur 123 etaient en CRLF sur le disque et en LF dans l'index. Le hash
+# decrivait donc l'arbre local et non la livraison, et la CI Linux le rejetait.
+#
+# Le calcul porte desormais sur les octets de l'INDEX. Il faut donc avoir fait
+# `git add` AVANT de lancer ce script, ce qui inverse l'ancien ordre :
+#
+#     git add .
+#     ./scripts/gen_hash.sh
+#     git add _meta/version.json
+#     git commit
+#
+# Le resultat est identique a un calcul fait sur une extraction Linux, verifie
+# contre le hash stocke sur origin/master.
+#
+# Sous Windows, prefere appeler Python directement : ce fichier .sh a des fins de
+# ligne CRLF et bash peut echouer dessus avec « $'\r': command not found ».
+#
+#     python scripts/hash_content.py
 
 set -e
-cd "$(dirname "$0")/.."
-
-# Hash = SHA-256 of (filepath + content) for each gameplay JSON
-# Sorted by path for determinism
-HASH=$(find . -name "*.json" \
-  -not -path "./.git/*" \
-  -not -path "*/.claude/*" \
-  -not -path "./kanarion-editor/*" \
-  -not -path "./scripts/*" \
-  -not -path "./_meta/version.json" \
-  -not -path "./_meta/statistics.json" \
-  -not -path "./_meta/index.json" \
-  -not -path "./_meta/changelog.json" \
-  -not -path "./_meta/ideas_to_integrate.json" \
-  | sort \
-  | while read f; do
-      echo "$f"
-      cat "$f"
-    done \
-  | sha256sum | cut -d' ' -f1)
-
-echo "content_hash: sha256:${HASH}"
-
-# Update version.json
-python -c "
-import json
-with open('_meta/version.json', 'r') as f:
-    v = json.load(f)
-v['content_hash'] = 'sha256:${HASH}'
-v['last_updated'] = '$(date +%Y-%m-%d)'
-with open('_meta/version.json', 'w') as f:
-    json.dump(v, f, indent=2)
-    f.write('\n')
-print('Updated _meta/version.json')
-print(f'  content_hash: sha256:${HASH}')
-print(f'  schema_version: {v.get(\"schema_version\", \"N/A\")}')
-print(f'  database_version: {v.get(\"database_version\", \"N/A\")}')
-"
+cd "$(git rev-parse --show-toplevel)"
+exec python scripts/hash_content.py "$@"
