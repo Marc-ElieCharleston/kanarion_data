@@ -3701,48 +3701,48 @@
     "_comment": "Equipement de base (armure, accessoires, armes). UN tirage PAR COMBAT et par joueur depuis le 2026-09-28 (avant : un tirage par monstre, avec l etat du monstre compte deux fois : chance de base par etat PUIS multiplicateur d etat). Chance = base_chance_per_fight x config/rewards.json fight_loot, plafond 0.95. Niveau de la piece = monstre le plus haut du combat ; rarete tiree sur le danger le plus haut du combat.",
     "base_chance_per_fight": 0.06,
     "rarity_weights_by_danger": {
-      "_comment": "Poids de rarete par danger_level du mob (total 1000). Courbe MONOTONE (corrige 2026-08-08) : avant, danger_3 droppait strictement moins bien que danger_2 (60% commun contre 48%, legendaire 0.2% contre 1%) et le joueur voyait son loot regresser en montant en danger. Extremites danger_1/danger_6 conservees, seul le milieu a ete lisse. Un danger au-dela du dernier palier defini (7, 8, 10 : boss et elites lv 53-100) prend le DERNIER palier (danger_6), plus danger_1 (corrige 2026-09-28 : les mobs les plus durs avaient 0% de legendaire).",
+      "_comment": "Poids de rarete par danger_level du mob (total 1000). Courbe MONOTONE (corrige 2026-08-08) : avant, danger_3 droppait strictement moins bien que danger_2 (60% commun contre 48%, legendaire 0.2% contre 1%) et le joueur voyait son loot regresser en montant en danger. Extremites danger_1/danger_6 conservees, seul le milieu a ete lisse. Un danger au-dela du dernier palier defini (7, 8, 10 : boss et elites lv 53-100) prend le DERNIER palier (danger_6), plus danger_1 (corrige 2026-09-28 : les mobs les plus durs avaient 0% de legendaire). BUDGET DE PUISSANCE (2026-09-28) : le classique legendaire (gros jet de stats) est la REFERENCE obtenable ; sa part passe de 0-5% a 2% (danger_1) -> 10% (danger_6), les autres raretes renormalisees au prorata (total 1000, courbe toujours monotone). La chance d un equipement par combat (base_chance_per_fight) ne change pas.",
       "danger_1": {
-        "common": 550,
-        "uncommon": 280,
-        "rare": 140,
+        "common": 539,
+        "uncommon": 274,
+        "rare": 137,
         "epic": 30,
-        "legendary": 0
-      },
-      "danger_2": {
-        "common": 505,
-        "uncommon": 280,
-        "rare": 160,
-        "epic": 50,
-        "legendary": 5
-      },
-      "danger_3": {
-        "common": 460,
-        "uncommon": 275,
-        "rare": 180,
-        "epic": 75,
-        "legendary": 10
-      },
-      "danger_4": {
-        "common": 410,
-        "uncommon": 270,
-        "rare": 200,
-        "epic": 100,
         "legendary": 20
       },
+      "danger_2": {
+        "common": 492,
+        "uncommon": 273,
+        "rare": 156,
+        "epic": 49,
+        "legendary": 30
+      },
+      "danger_3": {
+        "common": 444,
+        "uncommon": 265,
+        "rare": 174,
+        "epic": 72,
+        "legendary": 45
+      },
+      "danger_4": {
+        "common": 393,
+        "uncommon": 259,
+        "rare": 192,
+        "epic": 96,
+        "legendary": 60
+      },
       "danger_5": {
-        "common": 358,
-        "uncommon": 260,
-        "rare": 225,
-        "epic": 125,
-        "legendary": 32
+        "common": 340,
+        "uncommon": 247,
+        "rare": 214,
+        "epic": 119,
+        "legendary": 80
       },
       "danger_6": {
-        "common": 300,
-        "uncommon": 250,
-        "rare": 250,
-        "epic": 150,
-        "legendary": 50
+        "common": 284,
+        "uncommon": 237,
+        "rare": 237,
+        "epic": 142,
+        "legendary": 100
       }
     },
     "slot_weights": {
@@ -3759,17 +3759,21 @@
     }
   },
   "panoplie_drops": {
-    "_comment": "Pieces de panoplie. UN tirage PAR COMBAT et par joueur depuis le 2026-09-28 (avant : 10% par monstre normal, etat compte deux fois, sans plafond : un boss donnait 100%). Chance = base_chance_per_fight x config/rewards.json fight_loot, plafond 0.95. Set uniforme parmi les sets lootables (no_loot/tournament exclus), piece uniforme dans le set. Rang = bande de niveau du monstre le plus haut du combat (_meta.rank_system de panoplies.json), rarete = poids equipment_drops.rarity_weights_by_danger du danger le plus haut. Modele 'chaque set vit son epoque' (1 bande de niveau par set) : a valider, pas encore applique.",
-    "base_chance_per_fight": 0.023,
+    "_comment": "Pieces de panoplie. UN tirage PAR COMBAT et par joueur depuis le 2026-09-28 (avant : 10% par monstre normal, etat compte deux fois, sans plafond : un boss donnait 100%). Chance = base_chance_per_fight x config/rewards.json fight_loot, plafond 0.95. Set uniforme parmi les sets lootables (no_loot/tournament exclus), piece uniforme dans le set. Rang = bande de niveau du monstre le plus haut du combat (_meta.rank_system de panoplies.json). BUDGET DE PUISSANCE (2026-09-28, modele Dofus) : qualite FIXE, une piece tire TOUJOURS ses stats en piece_rarity (legendaire) x piece_stat_scale (0.85 : stat principale, substats, affixes et bornes affichees ; la base du modele n est pas touchee), sur le poids d armure de SA panoplie (panoplies.json armor_type, ou pieces.<slot>.weight pour les sets mixed) et, pour l arme, sur pieces.weapon.weapon_type. Seule, une piece vaut ~0.85 d un classique legendaire ; sa force vient du set complet (bonus x3.5 / x5). piece_rarity absent ou 'danger' = ancien tirage sur les poids de danger ; piece_stat_scale absent = x1. Chance baissee de 0.023 a 0.009 : a 0.023 les pieces (desormais toutes de qualite legendaire) auraient ete ~8x plus frequentes qu un classique legendaire.",
+    "base_chance_per_fight": 0.009,
+    "piece_rarity": "legendary",
+    "piece_stat_scale": 0.85,
     "notes": [
       "La piece droppee est aleatoire parmi les pieces du set",
-      "Les pieces de pano ont les memes substats aleatoires que l'equipement classique",
+      "Les pieces de pano tirent les memes pools de substats que l'equipement classique, a qualite fixe (piece_rarity x piece_stat_scale)",
       "Supprimes le 2026-09-28 car jamais lus : rank_by_danger (le rang vient du niveau du monstre) et set_size_drop_multiplier"
     ]
   },
   "unique_drops": {
-    "_comment": "Objets uniques. UN tirage PAR COMBAT et par joueur dans un POOL GLOBAL (tous les uniques de items/uniques.json, quelle que soit leur source d'origine) depuis le 2026-09-28. Avant : 2% par kill du SEUL monstre source, x tout le drop_mult, plafond 0.95, un unique max PAR MONSTRE ; et ce bloc etait charge mais jamais lu. Chance = base_chance_per_fight x config/rewards.json fight_loot (etoiles unique_chance x presence) x donjon x groupe x evenement, plafonnee a max_drop_chance. Si le tirage touche : candidats = uniques du pool dont level_req <= niveau du combat (monstre le plus haut, JAMAIS le joueur) ; tirage pondere (poids 1, voir _signature_monsters) ; rang C-SS = bande de niveau du combat (uniques.json _meta.rank_system). Aucun lien au drop : echangeable.",
+    "_comment": "Objets uniques. UN tirage PAR COMBAT et par joueur dans un POOL GLOBAL (tous les uniques de items/uniques.json, quelle que soit leur source d'origine) depuis le 2026-09-28. Avant : 2% par kill du SEUL monstre source, x tout le drop_mult, plafond 0.95, un unique max PAR MONSTRE ; et ce bloc etait charge mais jamais lu. Chance = base_chance_per_fight x config/rewards.json fight_loot (etoiles unique_chance x presence) x donjon x groupe x evenement, plafonnee a max_drop_chance. Si le tirage touche : candidats = uniques du pool dont level_req <= niveau du combat (monstre le plus haut, JAMAIS le joueur) ; tirage pondere (poids 1, voir _signature_monsters) ; rang C-SS = bande de niveau du combat (uniques.json _meta.rank_system). Aucun lien au drop : echangeable. BUDGET DE PUISSANCE (2026-09-28) : un unique = stats modestes + effet qui definit un build. Ses stats tirent en stat_rarity (legendaire) x stat_scale (0.80 : stat principale, substats, affixes et bornes affichees), sur son poids d armure (uniques.json armor_weight) ; il reste affiche legendaire. stat_rarity absent = legendaire, stat_scale absent = x1.",
     "base_chance_per_fight": 0.0005,
+    "stat_rarity": "legendary",
+    "stat_scale": 0.8,
     "max_drop_chance": 0.25,
     "max_unique_per_combat": 1,
     "pool_exclusions": {
