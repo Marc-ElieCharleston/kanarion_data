@@ -361,8 +361,9 @@
     },
     "notes": {
       "bonuses_cumulative": "Les bonus 2p/4p/6p/8p s'additionnent",
-      "armor_types": "Implicite via stats: light (MAG), medium (ATK/Crit), heavy (DEF/HP)",
-      "reloot": "Chaque rang doit etre farm separement. Le joueur garde l'ancien stuff en attendant de completer le rang suivant."
+      "armor_types": "armor_type du set = poids d armure REEL des pieces qui tombent (light/medium/heavy, lu par le serveur depuis le 2026-09-28). Sets mixed : pieces.<slot>.weight donne le poids de chaque piece (sans lui, poids aleatoire). L arme d un set porte pieces.weapon.weapon_type (groupe d arme de equipment.json).",
+      "reloot": "Chaque rang doit etre farm separement. Le joueur garde l'ancien stuff en attendant de completer le rang suivant.",
+      "power_budget": "BUDGET DE PUISSANCE (2026-09-28, modele Dofus) : une piece seule tire en legendaire x0.85 (loot_tables.json panoplie_drops.piece_rarity / piece_stat_scale), un peu en dessous d un classique legendaire ; la force du set vient du set COMPLET. Bonus multiplies par 3.5 (sets 4-8 pieces) et par 5 (mini-sets 2 pieces) sur les valeurs figees de la bande, arrondis a l entier. Plafonds runtime respectes sur le total du set : crit 100, armor_pen / magic_pen 70, cooldown_reduction 40, cast_speed 50, buff_duration / debuff_duration 50, healing_received 100, effect_chance 85 (la resistance cible plafonne a 85), thorns 100 (au-dela, damage_calculator le lit comme des degats PLATS), block_chance 75 ; un total au-dessus est ramene au plafond au prorata des paliers. def plat (sans consommateur de mitigation depuis le modele de defense B) remplace par armor a valeur egale avant multiplication. Sets de tournoi (set_tournoi_*) inchanges."
     }
   },
   "piece_base_stats": {
@@ -376,18 +377,17 @@
         },
         "medium": {
           "hp": 18,
-          "def": 3,
+          "armor": 3,
           "flee": 2
         },
         "heavy": {
           "hp": 25,
-          "def": 5,
-          "armor": 3
+          "armor": 8
         },
         "mixed": {
           "hp": 12,
           "mp": 6,
-          "def": 2
+          "armor": 2
         }
       },
       "chest": {
@@ -398,19 +398,16 @@
         },
         "medium": {
           "hp": 30,
-          "def": 5,
-          "armor": 4
+          "armor": 9
         },
         "heavy": {
           "hp": 40,
-          "def": 8,
-          "armor": 6
+          "armor": 14
         },
         "mixed": {
           "hp": 20,
           "mp": 10,
-          "def": 3,
-          "armor": 2
+          "armor": 5
         }
       },
       "legs": {
@@ -421,18 +418,16 @@
         },
         "medium": {
           "hp": 20,
-          "def": 3,
-          "armor": 2
+          "armor": 5
         },
         "heavy": {
           "hp": 30,
-          "def": 5,
-          "armor": 4
+          "armor": 9
         },
         "mixed": {
           "hp": 15,
           "mp": 6,
-          "def": 2
+          "armor": 2
         }
       },
       "boots": {
@@ -443,18 +438,17 @@
         },
         "medium": {
           "hp": 8,
-          "def": 2,
+          "armor": 2,
           "flee": 2
         },
         "heavy": {
           "hp": 20,
-          "def": 4,
-          "armor": 3
+          "armor": 7
         },
         "mixed": {
           "hp": 10,
           "flee": 2,
-          "def": 1
+          "armor": 1
         }
       },
       "belt": {
@@ -466,17 +460,16 @@
         "medium": {
           "hp": 15,
           "mp": 6,
-          "def": 2
+          "armor": 2
         },
         "heavy": {
           "hp": 22,
-          "def": 3,
-          "armor": 3
+          "armor": 6
         },
         "mixed": {
           "hp": 10,
           "mp": 8,
-          "def": 1
+          "armor": 1
         }
       },
       "cape": {
@@ -486,12 +479,11 @@
         },
         "medium": {
           "hp": 10,
-          "def": 2
+          "armor": 2
         },
         "heavy": {
           "hp": 15,
-          "def": 3,
-          "armor": 2
+          "armor": 5
         },
         "mixed": {
           "hp": 8,
@@ -519,7 +511,7 @@
       "melee_tank": {
         "atk": 8,
         "hp": 25,
-        "def": 5
+        "armor": 5
       },
       "ranged_physical": {
         "atk": 12,
@@ -541,7 +533,7 @@
       "bruiser": {
         "atk": 10,
         "hp": 20,
-        "def": 3
+        "armor": 3
       },
       "utility": {
         "atk": 6,
@@ -588,13 +580,13 @@
       },
       "bonuses": {
         "2": {
-          "lifesteal": 6,
-          "spell_vamp": 3
+          "lifesteal": 30,
+          "spell_vamp": 15
         }
       },
       "total_at_max": {
-        "lifesteal": 6,
-        "spell_vamp": 3
+        "lifesteal": 30,
+        "spell_vamp": 15
       }
     },
     "ot": {
@@ -622,13 +614,13 @@
       },
       "bonuses": {
         "2": {
-          "crit": 8,
-          "crit_dmg": 10
+          "crit": 40,
+          "crit_dmg": 50
         }
       },
       "total_at_max": {
-        "crit": 8,
-        "crit_dmg": 10
+        "crit": 40,
+        "crit_dmg": 50
       }
     },
     "chayim": {
@@ -656,13 +648,13 @@
       },
       "bonuses": {
         "2": {
-          "hp_regen": 8,
-          "hp": 140
+          "hp_regen": 40,
+          "hp": 700
         }
       },
       "total_at_max": {
-        "hp_regen": 8,
-        "hp": 140
+        "hp_regen": 40,
+        "hp": 700
       }
     },
     "binah": {
@@ -690,13 +682,13 @@
       },
       "bonuses": {
         "2": {
-          "mp": 40,
-          "cooldown_reduction": 8
+          "mp": 200,
+          "cooldown_reduction": 40
         }
       },
       "total_at_max": {
-        "mp": 40,
-        "cooldown_reduction": 8
+        "mp": 200,
+        "cooldown_reduction": 40
       }
     },
     "oz": {
@@ -724,13 +716,13 @@
       },
       "bonuses": {
         "2": {
-          "atk_percent": 8,
-          "damage_percent": 5
+          "atk_percent": 40,
+          "damage_percent": 25
         }
       },
       "total_at_max": {
-        "atk_percent": 8,
-        "damage_percent": 5
+        "atk_percent": 40,
+        "damage_percent": 25
       }
     },
     "sela": {
@@ -758,13 +750,13 @@
       },
       "bonuses": {
         "2": {
-          "def_percent": 8,
-          "def": 12
+          "def_percent": 40,
+          "armor": 60
         }
       },
       "total_at_max": {
-        "def_percent": 8,
-        "def": 12
+        "def_percent": 40,
+        "armor": 60
       }
     },
     "nefesh": {
@@ -792,13 +784,13 @@
       },
       "bonuses": {
         "2": {
-          "mp_regen": 3,
-          "mp": 50
+          "mp_regen": 15,
+          "mp": 250
         }
       },
       "total_at_max": {
-        "mp_regen": 3,
-        "mp": 50
+        "mp_regen": 15,
+        "mp": 250
       }
     },
     "_comment_4p": "========== SETS MOYENS (4 PIÈCES) ==========",
@@ -837,17 +829,17 @@
       },
       "bonuses": {
         "2": {
-          "cooldown_reduction": 7
+          "cooldown_reduction": 25
         },
         "4": {
-          "flee": 15,
-          "cast_speed": 7
+          "flee": 53,
+          "cast_speed": 25
         }
       },
       "total_at_max": {
-        "cooldown_reduction": 7,
-        "flee": 15,
-        "cast_speed": 7
+        "cooldown_reduction": 25,
+        "flee": 53,
+        "cast_speed": 25
       }
     },
     "kavod": {
@@ -885,16 +877,16 @@
       },
       "bonuses": {
         "2": {
-          "buff_duration": 24
+          "buff_duration": 27
         },
         "4": {
-          "buff_duration": 20,
-          "heal_power": 7
+          "buff_duration": 23,
+          "heal_power": 25
         }
       },
       "total_at_max": {
-        "buff_duration": 44,
-        "heal_power": 7
+        "buff_duration": 50,
+        "heal_power": 25
       }
     },
     "anan": {
@@ -932,17 +924,17 @@
       },
       "bonuses": {
         "2": {
-          "effect_chance": 15
+          "effect_chance": 53
         },
         "4": {
-          "debuff_duration": 30,
-          "mag_percent": 7
+          "debuff_duration": 50,
+          "mag_percent": 25
         }
       },
       "total_at_max": {
-        "effect_chance": 15,
-        "debuff_duration": 30,
-        "mag_percent": 7
+        "effect_chance": 53,
+        "debuff_duration": 50,
+        "mag_percent": 25
       }
     },
     "barzel": {
@@ -975,23 +967,24 @@
         },
         "weapon": {
           "id": "item_barzel_hammer",
+          "weapon_type": "tools",
           "name_fr": "Marteau de Barzel",
           "name_en": "Barzel Hammer"
         }
       },
       "bonuses": {
         "2": {
-          "armor_pen": 12
+          "armor_pen": 42
         },
         "4": {
-          "atk_percent": 12,
-          "atk": 50
+          "atk_percent": 42,
+          "atk": 175
         }
       },
       "total_at_max": {
-        "armor_pen": 12,
-        "atk_percent": 12,
-        "atk": 50
+        "armor_pen": 42,
+        "atk_percent": 42,
+        "atk": 175
       }
     },
     "refuah": {
@@ -1024,22 +1017,23 @@
         },
         "weapon": {
           "id": "item_refuah_staff",
+          "weapon_type": "staff",
           "name_fr": "Bâton de Refuah",
           "name_en": "Refuah Staff"
         }
       },
       "bonuses": {
         "2": {
-          "heal_power": 10
+          "heal_power": 35
         },
         "4": {
-          "heal_power": 12,
-          "mp_regen": 3
+          "heal_power": 42,
+          "mp_regen": 11
         }
       },
       "total_at_max": {
-        "heal_power": 22,
-        "mp_regen": 3
+        "heal_power": 77,
+        "mp_regen": 11
       }
     },
     "even": {
@@ -1077,18 +1071,18 @@
       },
       "bonuses": {
         "2": {
-          "hp": 120
+          "hp": 420
         },
         "4": {
-          "hp": 105,
-          "def_percent": 10,
-          "hp_regen": 1
+          "hp": 368,
+          "def_percent": 35,
+          "hp_regen": 4
         }
       },
       "total_at_max": {
-        "hp": 225,
-        "def_percent": 10,
-        "hp_regen": 1
+        "hp": 788,
+        "def_percent": 35,
+        "hp_regen": 4
       }
     },
     "koach": {
@@ -1121,23 +1115,24 @@
         },
         "weapon": {
           "id": "item_koach_staff",
+          "weapon_type": "staff",
           "name_fr": "Bâton de Koach",
           "name_en": "Koach Staff"
         }
       },
       "bonuses": {
         "2": {
-          "mag_percent": 7
+          "mag_percent": 25
         },
         "4": {
-          "magic_pen": 10,
-          "damage_percent": 7
+          "magic_pen": 35,
+          "damage_percent": 25
         }
       },
       "total_at_max": {
-        "mag_percent": 7,
-        "magic_pen": 10,
-        "damage_percent": 7
+        "mag_percent": 25,
+        "magic_pen": 35,
+        "damage_percent": 25
       }
     },
     "gevurah": {
@@ -1170,23 +1165,24 @@
         },
         "weapon": {
           "id": "item_gevurah_blade",
+          "weapon_type": "sword",
           "name_fr": "Lame de Gevurah",
           "name_en": "Gevurah Blade"
         }
       },
       "bonuses": {
         "2": {
-          "atk_percent": 7
+          "atk_percent": 25
         },
         "4": {
-          "armor_pen": 10,
-          "crit": 7
+          "armor_pen": 35,
+          "crit": 25
         }
       },
       "total_at_max": {
-        "atk_percent": 7,
-        "armor_pen": 10,
-        "crit": 7
+        "atk_percent": 25,
+        "armor_pen": 35,
+        "crit": 25
       }
     },
     "_comment_6p": "========== SETS LARGES (6 PIÈCES) ==========",
@@ -1230,28 +1226,29 @@
         },
         "weapon": {
           "id": "item_tzel_daggers",
+          "weapon_type": "dagger",
           "name_fr": "Dagues de Tzel",
           "name_en": "Tzel Daggers"
         }
       },
       "bonuses": {
         "2": {
-          "flee": 10
+          "flee": 35
         },
         "4": {
-          "crit": 14,
-          "armor_pen": 10
+          "crit": 49,
+          "armor_pen": 22
         },
         "6": {
-          "crit_dmg": 31,
-          "armor_pen": 21
+          "crit_dmg": 109,
+          "armor_pen": 48
         }
       },
       "total_at_max": {
-        "flee": 10,
-        "crit": 14,
-        "armor_pen": 31,
-        "crit_dmg": 31
+        "flee": 35,
+        "crit": 49,
+        "armor_pen": 70,
+        "crit_dmg": 109
       }
     },
     "orim": {
@@ -1294,30 +1291,31 @@
         },
         "weapon": {
           "id": "item_orim_scepter",
+          "weapon_type": "scepter",
           "name_fr": "Sceptre d'Orim",
           "name_en": "Orim Scepter"
         }
       },
       "bonuses": {
         "2": {
-          "heal_power": 9
+          "heal_power": 32
         },
         "4": {
-          "shield_power": 16,
-          "cooldown_reduction": 7
+          "shield_power": 56,
+          "cooldown_reduction": 25
         },
         "6": {
-          "heal_power": 15,
-          "buff_duration": 30,
-          "mp": 120
+          "heal_power": 53,
+          "buff_duration": 50,
+          "mp": 420
         }
       },
       "total_at_max": {
-        "heal_power": 24,
-        "shield_power": 16,
-        "cooldown_reduction": 7,
-        "buff_duration": 30,
-        "mp": 120
+        "heal_power": 85,
+        "shield_power": 56,
+        "cooldown_reduction": 25,
+        "buff_duration": 50,
+        "mp": 420
       }
     },
     "eshal": {
@@ -1360,29 +1358,30 @@
         },
         "weapon": {
           "id": "item_eshal_orb",
+          "weapon_type": "staff",
           "name_fr": "Orbe d'Esh'al",
           "name_en": "Esh'al Orb"
         }
       },
       "bonuses": {
         "2": {
-          "mag_percent": 8
+          "mag_percent": 28
         },
         "4": {
-          "damage_percent": 17,
-          "debuff_duration": 42
+          "damage_percent": 60,
+          "debuff_duration": 50
         },
         "6": {
-          "mag_percent": 17,
-          "damage_percent": 14,
-          "magic_pen": 14
+          "mag_percent": 60,
+          "damage_percent": 49,
+          "magic_pen": 49
         }
       },
       "total_at_max": {
-        "mag_percent": 25,
-        "damage_percent": 31,
-        "debuff_duration": 42,
-        "magic_pen": 14
+        "mag_percent": 88,
+        "damage_percent": 109,
+        "debuff_duration": 50,
+        "magic_pen": 49
       }
     },
     "mayim": {
@@ -1425,29 +1424,30 @@
         },
         "weapon": {
           "id": "item_mayim_staff",
+          "weapon_type": "staff",
           "name_fr": "Bâton de Mayim",
           "name_en": "Mayim Staff"
         }
       },
       "bonuses": {
         "2": {
-          "mag_percent": 10
+          "mag_percent": 35
         },
         "4": {
-          "effect_chance": 24,
-          "debuff_duration": 72
+          "effect_chance": 51,
+          "debuff_duration": 50
         },
         "6": {
-          "mag_percent": 20,
-          "effect_chance": 16,
-          "magic_pen": 20
+          "mag_percent": 70,
+          "effect_chance": 34,
+          "magic_pen": 70
         }
       },
       "total_at_max": {
-        "mag_percent": 30,
-        "effect_chance": 40,
-        "debuff_duration": 72,
-        "magic_pen": 20
+        "mag_percent": 105,
+        "effect_chance": 85,
+        "debuff_duration": 50,
+        "magic_pen": 70
       }
     },
     "magen": {
@@ -1490,31 +1490,31 @@
         },
         "weapon": {
           "id": "item_magen_sword",
+          "weapon_type": "sword",
           "name_fr": "Épée de Magen",
           "name_en": "Magen Sword"
         }
       },
       "bonuses": {
         "2": {
-          "shield_power": 20
+          "shield_power": 70
         },
         "4": {
-          "block_chance": 12,
-          "armor": 100
+          "block_chance": 42,
+          "armor": 350
         },
         "6": {
-          "healing_received": 30,
-          "def": 50,
-          "hp": 160
+          "healing_received": 100,
+          "armor": 175,
+          "hp": 560
         }
       },
       "total_at_max": {
-        "shield_power": 20,
-        "block_chance": 12,
-        "armor": 100,
-        "healing_received": 30,
-        "def": 50,
-        "hp": 160
+        "shield_power": 70,
+        "block_chance": 42,
+        "armor": 525,
+        "healing_received": 100,
+        "hp": 560
       }
     },
     "davar": {
@@ -1531,21 +1531,25 @@
       "pieces": {
         "helmet": {
           "id": "item_davar_circlet",
+          "weight": "light",
           "name_fr": "Diadème de Davar",
           "name_en": "Davar Circlet"
         },
         "chest": {
           "id": "item_davar_vest",
+          "weight": "medium",
           "name_fr": "Veste de Davar",
           "name_en": "Davar Vest"
         },
         "cape": {
           "id": "item_davar_cloak",
+          "weight": "medium",
           "name_fr": "Cape de Davar",
           "name_en": "Davar Cloak"
         },
         "belt": {
           "id": "item_davar_belt",
+          "weight": "heavy",
           "name_fr": "Ceinture de Davar",
           "name_en": "Davar Belt"
         },
@@ -1562,28 +1566,28 @@
       },
       "bonuses": {
         "2": {
-          "atk_percent": 5,
-          "mag_percent": 5,
-          "def_percent": 5
+          "atk_percent": 18,
+          "mag_percent": 18,
+          "def_percent": 18
         },
         "4": {
-          "hp": 112,
-          "mp": 84
+          "hp": 392,
+          "mp": 294
         },
         "6": {
-          "cooldown_reduction": 8,
-          "atk_percent": 5,
-          "mag_percent": 5,
-          "def_percent": 5
+          "cooldown_reduction": 28,
+          "atk_percent": 18,
+          "mag_percent": 18,
+          "def_percent": 18
         }
       },
       "total_at_max": {
-        "atk_percent": 10,
-        "mag_percent": 10,
-        "def_percent": 10,
-        "hp": 112,
-        "mp": 84,
-        "cooldown_reduction": 8
+        "atk_percent": 36,
+        "mag_percent": 36,
+        "def_percent": 36,
+        "hp": 392,
+        "mp": 294,
+        "cooldown_reduction": 28
       }
     },
     "_comment_8p": "========== SETS COMPLETS (8 PIÈCES) ==========",
@@ -1637,37 +1641,37 @@
         },
         "weapon": {
           "id": "item_shomer_sword",
+          "weapon_type": "sword",
           "name_fr": "Épée de Shomer",
           "name_en": "Shomer Sword"
         }
       },
       "bonuses": {
         "2": {
-          "def_percent": 10
+          "def_percent": 35
         },
         "4": {
-          "armor": 168,
-          "hp": 224
+          "armor": 588,
+          "hp": 784
         },
         "6": {
-          "def": 70,
-          "hp": 168
+          "armor": 245,
+          "hp": 588
         },
         "8": {
-          "def_percent": 21,
-          "hp": 168,
-          "block_chance": 17,
-          "thorns": 42,
-          "def": 70
+          "def_percent": 74,
+          "hp": 588,
+          "block_chance": 60,
+          "thorns": 100,
+          "armor": 245
         }
       },
       "total_at_max": {
-        "def_percent": 31,
-        "armor": 168,
-        "hp": 560,
-        "def": 140,
-        "block_chance": 17,
-        "thorns": 42
+        "def_percent": 109,
+        "armor": 1078,
+        "hp": 1960,
+        "block_chance": 60,
+        "thorns": 100
       }
     },
     "tzayad": {
@@ -1720,34 +1724,35 @@
         },
         "weapon": {
           "id": "item_tzayad_bow",
+          "weapon_type": "bow",
           "name_fr": "Arc de Tzayad",
           "name_en": "Tzayad Bow"
         }
       },
       "bonuses": {
         "2": {
-          "atk_percent": 10
+          "atk_percent": 35
         },
         "4": {
-          "crit": 16,
-          "crit_dmg": 20
+          "crit": 50,
+          "crit_dmg": 70
         },
         "6": {
-          "crit_dmg": 30,
-          "armor_pen": 10
+          "crit_dmg": 105,
+          "armor_pen": 35
         },
         "8": {
-          "atk_percent": 24,
-          "crit": 16,
-          "crit_dmg": 40,
-          "armor_pen": 10
+          "atk_percent": 84,
+          "crit": 50,
+          "crit_dmg": 140,
+          "armor_pen": 35
         }
       },
       "total_at_max": {
-        "atk_percent": 34,
-        "crit": 32,
-        "crit_dmg": 90,
-        "armor_pen": 20
+        "atk_percent": 119,
+        "crit": 100,
+        "crit_dmg": 315,
+        "armor_pen": 70
       }
     },
     "neshamah": {
@@ -1765,31 +1770,37 @@
       "pieces": {
         "helmet": {
           "id": "item_neshamah_crown",
+          "weight": "light",
           "name_fr": "Couronne de Neshamah",
           "name_en": "Neshamah Crown"
         },
         "chest": {
           "id": "item_neshamah_robe",
+          "weight": "light",
           "name_fr": "Robe de Neshamah",
           "name_en": "Neshamah Robe"
         },
         "cape": {
           "id": "item_neshamah_mantle",
+          "weight": "medium",
           "name_fr": "Manteau de Neshamah",
           "name_en": "Neshamah Mantle"
         },
         "legs": {
           "id": "item_neshamah_leggings",
+          "weight": "medium",
           "name_fr": "Jambières de Neshamah",
           "name_en": "Neshamah Leggings"
         },
         "belt": {
           "id": "item_neshamah_cord",
+          "weight": "heavy",
           "name_fr": "Cordon de Neshamah",
           "name_en": "Neshamah Cord"
         },
         "boots": {
           "id": "item_neshamah_sandals",
+          "weight": "light",
           "name_fr": "Sandales de Neshamah",
           "name_en": "Neshamah Sandals"
         },
@@ -1800,38 +1811,39 @@
         },
         "weapon": {
           "id": "item_neshamah_staff",
+          "weapon_type": "staff",
           "name_fr": "Bâton de Neshamah",
           "name_en": "Neshamah Staff"
         }
       },
       "bonuses": {
         "2": {
-          "hp_regen": 8
+          "hp_regen": 28
         },
         "4": {
-          "mp_regen": 8,
-          "hp": 200
+          "mp_regen": 28,
+          "hp": 700
         },
         "6": {
-          "healing_received": 48,
-          "mp": 160
+          "healing_received": 100,
+          "mp": 560
         },
         "8": {
-          "hp_regen": 16,
-          "mp_regen": 12,
-          "hp": 320,
-          "lifesteal": 10,
-          "spell_vamp": 10
+          "hp_regen": 56,
+          "mp_regen": 42,
+          "hp": 1120,
+          "lifesteal": 35,
+          "spell_vamp": 35
         }
       },
       "total_at_max": {
-        "hp_regen": 24,
-        "mp_regen": 20,
-        "hp": 520,
-        "healing_received": 48,
-        "mp": 160,
-        "lifesteal": 10,
-        "spell_vamp": 10
+        "hp_regen": 84,
+        "mp_regen": 70,
+        "hp": 1820,
+        "healing_received": 100,
+        "mp": 560,
+        "lifesteal": 35,
+        "spell_vamp": 35
       }
     },
     "adamah": {
@@ -1884,37 +1896,37 @@
         },
         "weapon": {
           "id": "item_adamah_mace",
+          "weapon_type": "sword",
           "name_fr": "Masse d'Adamah",
           "name_en": "Adamah Mace"
         }
       },
       "bonuses": {
         "2": {
-          "hp": 240
+          "hp": 840
         },
         "4": {
-          "atk_percent": 12,
-          "armor": 160
+          "atk_percent": 42,
+          "armor": 560
         },
         "6": {
-          "hp": 320,
-          "def": 60,
-          "def_percent": 12
+          "hp": 1120,
+          "armor": 210,
+          "def_percent": 42
         },
         "8": {
-          "atk_percent": 24,
-          "hp": 400,
-          "lifesteal": 12,
-          "armor": 200
+          "atk_percent": 84,
+          "hp": 1400,
+          "lifesteal": 42,
+          "armor": 700
         }
       },
       "total_at_max": {
-        "hp": 960,
-        "atk_percent": 36,
-        "armor": 360,
-        "def": 60,
-        "def_percent": 12,
-        "lifesteal": 12
+        "hp": 3360,
+        "atk_percent": 126,
+        "armor": 1470,
+        "def_percent": 42,
+        "lifesteal": 42
       }
     },
     "set_tournoi_role_tank": {
