@@ -7,6 +7,7 @@
     "naming_convention": "Hébreu — cohérent avec les panoplies et l'univers de Kanarion",
     "rank_system": {
       "_comment": "Le rang (1-5 = C->SS) est determine par le niveau du mob qui drop l unique (voir level_range de chaque rang). rank_scaling.rang_N donne les STATS DIRECTES du rang (pas des multiplicateurs). L item reste unique (1 skin), affichage joueur = label C->SS ou chiffre romain I-V.",
+      "_rank_scaling_map": "Chaque unique porte rank_scaling_map : pointeur JSON dans son bloc effect -> cle de rank_scaling.rang_N. Le serveur (combat ET economy) remplace la valeur pointee par rank_scaling.rang_N[cle] pour un objet de rang N : ce tableau est la SEULE source des valeurs par rang, le tooltip lit le meme. rang_2 doit egaler la valeur ecrite dans effect (verifie au boot).",
       "rang_1": {
         "level_range": [
           1,
@@ -106,6 +107,10 @@
           "accuracy": 10
         }
       },
+      "rank_scaling_map": {
+        "/effects/0/value": "crit_buff",
+        "/effects/1/value": "accuracy"
+      },
       "source": {
         "type": "monster_drop",
         "monster_ids": [
@@ -187,6 +192,11 @@
           "def_mr_buff": 48
         }
       },
+      "rank_scaling_map": {
+        "/triggers/0/effect/value": "atk_per_kill",
+        "/triggers/1/effect/0/value": "def_mr_buff",
+        "/triggers/1/effect/1/value": "def_mr_buff"
+      },
       "source": {
         "type": "quest_reward",
         "quest_chain": "chain_4_tower_asher",
@@ -247,6 +257,10 @@
           "burn_chance": 19
         }
       },
+      "rank_scaling_map": {
+        "/effects/0/value": "burn_bonus",
+        "/effects/1/chance": "burn_chance"
+      },
       "source": {
         "type": "monster_drop",
         "monster_ids": [
@@ -300,6 +314,10 @@
           "per_hit": 14,
           "max": 76
         }
+      },
+      "rank_scaling_map": {
+        "/effects/0/value_per_hit": "per_hit",
+        "/effects/0/max_bonus": "max"
       },
       "source": {
         "type": "monster_drop",
@@ -363,6 +381,10 @@
           "first_skill_bonus": 95,
           "permanent_dmg": 19
         }
+      },
+      "rank_scaling_map": {
+        "/effects/0/value": "first_skill_bonus",
+        "/effects/1/value": "permanent_dmg"
       },
       "source": {
         "type": "monster_drop",
@@ -432,6 +454,10 @@
           "heal_received": 50
         }
       },
+      "rank_scaling_map": {
+        "/effects/0/value": "hp_max",
+        "/effects/1/effect/0/value": "heal_received"
+      },
       "source": {
         "type": "monster_drop",
         "monster_ids": [
@@ -490,6 +516,10 @@
           "block_chance": 29,
           "shield_percent": 19
         }
+      },
+      "rank_scaling_map": {
+        "/effects/0/value": "block_chance",
+        "/effects/1/apply_shield_percent_max_hp": "shield_percent"
       },
       "source": {
         "type": "monster_drop",
@@ -557,6 +587,11 @@
           "armor": 57
         }
       },
+      "rank_scaling_map": {
+        "/effects/0/chance": "proc_chance",
+        "/effects/0/apply_shield_percent_max_hp": "shield_percent",
+        "/effects/1/value": "armor"
+      },
       "source": {
         "type": "monster_drop",
         "monster_ids": [
@@ -610,6 +645,10 @@
           "dr_per_enemy": 5,
           "dr_max": 29
         }
+      },
+      "rank_scaling_map": {
+        "/effects/0/value": "dr_per_enemy",
+        "/effects/0/max_bonus": "dr_max"
       },
       "source": {
         "type": "monster_drop",
@@ -674,6 +713,10 @@
           "evasion": 14
         }
       },
+      "rank_scaling_map": {
+        "/effects/0/duration": "invisible_duration",
+        "/effects/1/value": "evasion"
+      },
       "source": {
         "type": "monster_drop",
         "monster_ids": [
@@ -732,6 +775,10 @@
           "heal_on_buff": 10,
           "heal_power": 14
         }
+      },
+      "rank_scaling_map": {
+        "/effects/0/heal_percent_mag": "heal_on_buff",
+        "/effects/1/value": "heal_power"
       },
       "source": {
         "type": "monster_drop",
@@ -793,6 +840,10 @@
           "mag": 29
         }
       },
+      "rank_scaling_map": {
+        "/effects/0/reduce_next_cd": "cd_reduction",
+        "/effects/1/value": "mag"
+      },
       "source": {
         "type": "quest_reward",
         "quest_chain": "chain_3_fissures_convergent",
@@ -853,6 +904,10 @@
           "dodge_atk_speed": 38
         }
       },
+      "rank_scaling_map": {
+        "/effects/0/value": "base_atk_speed",
+        "/effects/1/value": "dodge_atk_speed"
+      },
       "source": {
         "type": "monster_drop",
         "monster_ids": [
@@ -912,6 +967,10 @@
           "magic_resist": 19,
           "convert_percent": 10
         }
+      },
+      "rank_scaling_map": {
+        "/effects/0/value": "magic_resist",
+        "/effects/1/percent": "convert_percent"
       },
       "source": {
         "type": "monster_drop",
@@ -977,6 +1036,10 @@
           "atk_buff": 19
         }
       },
+      "rank_scaling_map": {
+        "/triggers/0/effects/0/value": "heal_percent",
+        "/triggers/0/effects/1/value": "atk_buff"
+      },
       "source": {
         "type": "monster_drop",
         "monster_ids": [],
@@ -1036,6 +1099,10 @@
           "evasion": 12
         }
       },
+      "rank_scaling_map": {
+        "/effects/0/value": "thorns",
+        "/effects/1/value": "evasion"
+      },
       "source": {
         "type": "monster_drop",
         "monster_ids": [],
@@ -1084,6 +1151,9 @@
         "rang_5": {
           "double_hit": 30
         }
+      },
+      "rank_scaling_map": {
+        "/effects/0/value": "double_hit"
       },
       "source": {
         "type": "monster_drop",
@@ -1151,6 +1221,10 @@
           "heal_mag_percent": 190
         }
       },
+      "rank_scaling_map": {
+        "/triggers/0/effects/0/value": "shield_percent",
+        "/triggers/0/effects/1/scaling_percent": "heal_mag_percent"
+      },
       "source": {
         "type": "quest_reward",
         "quest_chain": "TBD_subclass_migration",
@@ -1203,6 +1277,9 @@
         "rang_5": {
           "heal_percent_of_total": 38
         }
+      },
+      "rank_scaling_map": {
+        "/triggers/0/effects/0/percent_of_hot_total": "heal_percent_of_total"
       },
       "source": {
         "type": "monster_drop",
@@ -1257,6 +1334,9 @@
         "rang_5": {
           "crit_buff": 57
         }
+      },
+      "rank_scaling_map": {
+        "/triggers/0/effects/0/value": "crit_buff"
       },
       "source": {
         "type": "monster_drop",
@@ -1324,6 +1404,10 @@
           "dr": 24
         }
       },
+      "rank_scaling_map": {
+        "/effects/0/value": "hp_max",
+        "/effects/1/effect/0/value": "dr"
+      },
       "source": {
         "type": "monster_drop",
         "description_fr": "Drop par les gros monstres (tough/elite)",
@@ -1380,6 +1464,10 @@
           "evasion": 16,
           "atk_speed": 12
         }
+      },
+      "rank_scaling_map": {
+        "/effects/0/value": "evasion",
+        "/effects/1/value": "atk_speed"
       },
       "source": {
         "type": "monster_drop",
@@ -1441,6 +1529,10 @@
           "lifesteal": 14,
           "heal_on_kill": 11
         }
+      },
+      "rank_scaling_map": {
+        "/effects/0/value": "lifesteal",
+        "/effects/1/effect/0/value": "heal_on_kill"
       },
       "source": {
         "type": "monster_drop",
