@@ -40,7 +40,7 @@ def generate():
                 card = dict(id=card_id, name_fr=f"Koro : {skill['name_fr']} ({rank})",
                     name_en=f"Koro: {skill.get('name_en', skill['name_fr'])} ({rank})",
                     base_skill_id=sid, base_class_id=path.parent.name, rank=rank, rank_percent=percent,
-                    level_req=rules['equipment']['slot_unlock_levels'][0], tradeable=True, hdv_listable=True,
+                    level_req=rules['equipment']['slot_unlock_levels'][0], tradeable=True, hdv_listable=True, sell_price=0,
                     skill_tier=skill.get('tier', 'active'),
                     drop_weight=generation['skill_weight_by_tier'].get(skill.get('tier', ''), 2),
                     icon=f"res://assets/icons/koro/koro_rank_{rank.lower()}.png",
