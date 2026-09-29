@@ -4135,16 +4135,17 @@
       "min_level": 7,
       "title_fr": "Ce qui a refusé de lâcher",
       "title_en": "What Refused to Let Go",
-      "summary_fr": "Colette sait faire éclore une empreinte de Souffle. Trouves-en une sur une bête libérée, ou achète-lui-en une, et rapporte-la-lui pour la faire incuber.",
-      "summary_en": "Colette knows how to hatch a Breath imprint. Find one on a freed beast, or buy one from her, and bring it back for her to incubate.",
+      "summary_fr": "Le rat t'a montré comment ça marche. Au nid de scarabées, près du terrier, les bêtes libérées laissent parfois une empreinte. Rapportes-en une à Colette, ou achète-la-lui, et confie-la à son incubation.",
+      "summary_en": "The rat showed you how it works. At the beetles' nest, near the warren, freed beasts sometimes leave an imprint. Bring one back to Colette, or buy one from her, and hand it over to her incubation.",
       "npc_giver": "npc_familiar_breeder_colette",
       "objectives": [
         {
           "template": "capture_familiar",
           "count": 1,
-          "description_fr": "Faire éclore une empreinte de Souffle",
-          "description_en": "Hatch a Breath imprint",
-          "_note": "Livre back 2026-08-22 (62b47b1) : template capture_familiar branche sur kanarion.familiar.event.trace_deposited. Le champ optionnel est \"family\" (vide = n'importe quelle espece), volontairement laisse vide ici."
+          "description_fr": "Confier une empreinte de scarabée à Colette",
+          "description_en": "Give Colette a beetle imprint",
+          "_note": "2026-09-29 (retour QA Wassem, doublon de q_tut_intro_08) : cible family=scarabee, lue par le serveur comme objective_target_id (quest_service.cpp). Nid de Scarabees mz_scarabees_3_8, empreinte 5 % (fodder), ou empreinte_souffle_scarabee_attaque_common chez Colette (200 or). Ancienne note : Livre back 2026-08-22 (62b47b1) : template capture_familiar branche sur kanarion.familiar.event.trace_deposited. Le champ optionnel est \"family\" (vide = n'importe quelle espece), volontairement laisse vide ici.",
+          "family": "scarabee"
         }
       ],
       "rewards": {
@@ -4160,22 +4161,24 @@
       "min_level": 7,
       "title_fr": "Apprendre à un compagnon",
       "title_en": "Teaching a Companion",
-      "summary_fr": "Un familier ne connaît qu'une compétence en sortant de l'œuf. Procure-toi un grimoire, chez Colette ou sur une bête, et apprends-lui ce qu'il contient.",
-      "summary_en": "A familiar only knows one skill when it hatches. Get hold of a book, from Colette or off a beast, and teach it what's inside.",
+      "summary_fr": "Colette vend des grimoires sur la place. Passe voir ce qu'elle a en stock : chacun apprend une compétence à ton familier.",
+      "summary_en": "Colette sells books on the square. Drop by and see what she has in stock: each one teaches your familiar a skill.",
       "npc_giver": "npc_familiar_breeder_colette",
       "objectives": [
         {
-          "template": "familiar_learn_skill",
+          "template": "talk_to_npc",
+          "npc_id": "npc_familiar_breeder_colette",
           "count": 1,
-          "description_fr": "Apprendre une compétence à ton familier",
-          "description_en": "Teach your familiar a skill"
+          "description_fr": "Voir les grimoires que propose Colette",
+          "description_en": "See the books Colette has to offer",
+          "_note": "2026-09-29 (retour QA Wassem, doublon de q_tut_intro_05b qui fait deja apprendre un grimoire). Etait familiar_learn_skill. L'objectif « ouvrir un ecran » n'existe plus cote serveur (open_ui_screen retire le 2026-08-22) : c'est donc une visite, la replique q_colette_grimoire_obj_0 presente la boutique (bouton « Acheter des grimoires »)."
         }
       ],
       "rewards": {
         "xp": 65,
         "gold": 150
       },
-      "_note": "Template deja branche (kanarion.familiar.event.skill_learned), le tutoriel s'en sert deja sur q_tut_intro_05b. Colette stocke tout le catalogue de grimoires rang C dans son shop_inventory, mais son menu client n'a AUCUNE action boutique : sa boutique est injoignable tant que npc_shop n'est pas ajoute a ses cles de role."
+      "_note": "2026-09-29 : devient une visite de la boutique de grimoires. Template deja branche (kanarion.familiar.event.skill_learned), le tutoriel s'en sert deja sur q_tut_intro_05b. Colette stocke tout le catalogue de grimoires rang C dans son shop_inventory, mais son menu client n'a AUCUNE action boutique : sa boutique est injoignable tant que npc_shop n'est pas ajoute a ses cles de role."
     },
     {
       "id": "q_hestia_ne_pars_pas_seul",
