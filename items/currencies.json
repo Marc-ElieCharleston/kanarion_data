@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "version": "3.1",
-    "last_updated": "2026-02-15",
+    "version": "3.2",
+    "last_updated": "2026-09-30",
     "description": "Monnaies du jeu"
   },
   "currencies": [
@@ -71,6 +71,25 @@
       ],
       "_design_note": "Ne tombe QUE sur les créatures touchées par les Fissures : une bête saine ne rend rien. La quantité mesure à quel point l'emprise la tenait, d'où très peu sur du fodder et beaucoup sur une élite ou un contrat. Taux de drop et prix à définir côté balance. Nécessite un champ de portefeuille backend.",
       "_design_note_shop": "Comptoir tenu par Milo. Le catalogue tourne chaque semaine (ce que le village arrive à stabiliser varie), mais le STOCK est illimité : on fait tourner l'offre, jamais la quantité."
+    },
+    {
+      "id": "arena_tokens",
+      "name_fr": "Jetons d'arène",
+      "name_en": "Arena tokens",
+      "name_short_fr": "Jetons",
+      "name_short_en": "Tokens",
+      "description_fr": "Gagnés en remportant des matchs d'arène. Ils serviront à l'artisanat.",
+      "description_en": "Earned by winning arena matches. They will be used for crafting.",
+      "is_soft_currency": true,
+      "scope": "account",
+      "icon": "currency_arena_tokens",
+      "sources": [
+        "arena_wins"
+      ],
+      "uses": [
+        "crafting"
+      ],
+      "_design_note": "Portefeuille au COMPTE (colonne accounts.arena_tokens, comme les diamants) : le personnage de tournoi gagne des jetons et les retrouve en aventure. Bareme dans config/rewards.json arena_match. Credit idempotent par match (table arena_match_rewards). Les usages (artisanat, rayon d'equipement) ne sont pas encore construits."
     }
   ],
   "rarity_colors": {

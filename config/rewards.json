@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "version": "1.1",
-    "last_updated": "2026-08-14",
+    "version": "1.2",
+    "last_updated": "2026-09-30",
     "schema_version": 1,
     "description": "Proprietaire UNIQUE des recompenses : XP, or et chance de drop. Toute quantite qui depend du CONTEXTE d'un combat vit ici. Ce que la rencontre EST (stats, IA, composition, tirage des etoiles) vit dans entities/monster_variants.json star_system. Le critere de rangement est le verbe : ETRE vs RAPPORTER.",
     "why": "Avant ce fichier, la meme quantite etait ecrite dans jusqu'a cinq endroits dont quatre morts. Releve du 2026-08-13 : le multiplicateur d'XP a 5 etoiles valait 14.0 dans monster_variants, 3.0 dans encounter_stars et 2.3 dans loot_tables — seul le dernier etait lu. Les 180 monstres portaient un base_xp ecrit a la main que le moteur n'a jamais lu. config/monster_tiers.json documentait son propre consommateur (loot_roller) qui ne l'a jamais ouvert. La formule documentee dans loot_tables.final_calculation avait perdu son etape 5 (les etoiles) que le code applique pourtant. Un seul proprietaire supprime la question.",
@@ -473,6 +473,23 @@
     ],
     "_rank_to_zero_means_open": "rank_to = 0 signifie 'et au-dela' : c'est le palier de participation, qui couvre tout le reste du tableau quelle que soit sa taille. Sans lui, un tableau de 32 laisserait 24 equipes sans rien, et une soiree ou l'on repart les mains vides ne se rejoue pas le lendemain.",
     "_no_tier_means_no_payout": "Un rang qui ne tombe dans AUCUN palier ne recoit rien, et le service le journalise. On n'invente pas un palier par defaut : une dotation silencieuse serait impossible a auditer."
+  },
+  "arena_match": {
+    "_comment": "Recompense d'un match d'ARENE (2026-09-30, modele Dofus valide par Charleston). Seules l'arene de matchmaking (equipe, classee ou non) et l'arene comblee par des recrues paient : l'adversaire y est tire au sort, on ne peut pas s'arranger. Duel, salle perso et tournoi ne paient RIEN ici (le tournoi a son propre bareme, tournament_payout). Lu par services/quest (grant_arena_reward).",
+    "_why_level_fraction": "L'XP d'une victoire est une FRACTION DU NIVEAU EN COURS, comme l'XP d'un monstre (xp_to_next / diviseur). Rien ne peut s'accumuler pour etre encaisse plus tard : un match se paie au moment ou il se joue. 0.75 = le rythme mesure du combat de monstres a partir de 20 (0,75 niveau par combat) : le PvP est un chemin vers 100 AU MEME RYTHME que le bash, pas un raccourci.",
+    "win_xp_level_fraction": 0.75,
+    "loss_xp_level_fraction": 0.0,
+    "win_tokens": 10,
+    "loss_tokens": 0,
+    "_why_losers_nothing": "Comme au Kolizeum : seule la victoire paie. A reevaluer si la file se vide par le bas.",
+    "daily_bonus": {
+      "_comment": "Plafond POSITIF facon Dofus : les premieres victoires du jour valent double, le tarif normal reprend ensuite. Compte par COMPTE et par jour calendaire du serveur.",
+      "first_wins_per_day": 5,
+      "multiplier": 2.0
+    },
+    "bot_fill_multiplier": 0.5,
+    "_why_bot_fill": "Une arene comblee par des recrues (IA) paie moitie : c'est plus facile qu'une equipe humaine, mais c'est ce qui fait tourner la file tant que la population est basse.",
+    "tournament_character": "Le personnage de tournoi touche les JETONS (portefeuille au compte, il les retrouvera en aventure) mais ZERO XP : c'est une vitrine."
   },
   "extension_procedure": {
     "_comment": "Les donjons, les contrats du Maitre Combat et les Failles apporteront leurs propres multiplicateurs. Ils s'ajoutent ICI, comme familles, sans toucher au moteur.",
