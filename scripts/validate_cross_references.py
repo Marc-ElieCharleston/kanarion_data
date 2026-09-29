@@ -1006,7 +1006,13 @@ def validate_achievements(db: Path) -> list:
             errors.append(f"[achievements.json] '{aid}' : categorie '{a.get('category')}' absente")
         if not isinstance(a.get("threshold"), int) or a["threshold"] < 1:
             errors.append(f"[achievements.json] '{aid}' : threshold doit etre un entier >= 1")
-        title = a.get("reward", {}).get("title_id")
+        reward = a.get("reward", {})
+        if "xp_percent" in reward:
+            errors.append(f"[achievements.json] '{aid}' : xp_percent n'existe plus, "
+                          f"la recompense est une XP fixe (reward.xp)")
+        if not isinstance(reward.get("xp", 0), int) or reward.get("xp", 0) < 0:
+            errors.append(f"[achievements.json] '{aid}' : reward.xp doit etre un entier >= 0")
+        title = reward.get("title_id")
         if title and title not in grant_titles:
             errors.append(f"[achievements.json] '{aid}' : titre '{title}' absent de ui/cosmetics.json "
                           f"ou non octroyable (acquisition 'grant')")
