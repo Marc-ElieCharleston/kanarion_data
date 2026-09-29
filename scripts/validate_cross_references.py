@@ -969,6 +969,55 @@ def validate_item_display_contract(db: Path, valid_stats: set) -> list:
     return errors
 
 
+# Sources que le moteur de succes (kanarion_back services/quest, AchievementEngine) sait
+# RELIRE en base. Un succes dont la source n'est pas ici n'a aucun ecrivain : il ne se
+# debloquerait jamais, et personne ne le signalerait. A tenir en phase avec le moteur.
+KNOWN_ACHIEVEMENT_SOURCES = {
+    "char_level", "char_stat_points_spent", "char_skill_points_spent", "char_subclass_chosen",
+    "quests_completed", "quests_set_completed",
+    "arena_matches", "arena_wins", "arena_losses", "arena_matches_2v2", "arena_matches_4v4",
+    "arena_best_win_streak",
+    "familiar_hatched", "familiar_rare_plus", "familiar_epic_plus", "familiar_legendary",
+    "familiar_distinct_roles", "familiar_collection",
+}
+
+
+def validate_achievements(db: Path) -> list:
+    """systems/achievements.json : source connue du moteur, titre octroyable, quetes existantes."""
+    errors = []
+    path = db / "systems" / "achievements.json"
+    if not path.exists():
+        return errors
+    data = load_json(path)
+    cosmetics = load_json(db / "ui" / "cosmetics.json").get("cosmetics", [])
+    grant_titles = {c["id"] for c in cosmetics
+                    if c.get("type") == "title" and c.get("acquisition") == "grant"}
+    quests = {q["id"] for q in load_json(db / "world" / "quests.json").get("quests", [])}
+    categories = {c["id"] for c in data.get("categories", [])}
+    seen = set()
+    for a in data.get("achievements", []):
+        aid = a.get("id", "?")
+        if aid in seen:
+            errors.append(f"[achievements.json] id en double '{aid}'")
+        seen.add(aid)
+        if a.get("source") not in KNOWN_ACHIEVEMENT_SOURCES:
+            errors.append(f"[achievements.json] '{aid}' : source '{a.get('source')}' inconnue du moteur")
+        if a.get("category") not in categories:
+            errors.append(f"[achievements.json] '{aid}' : categorie '{a.get('category')}' absente")
+        if not isinstance(a.get("threshold"), int) or a["threshold"] < 1:
+            errors.append(f"[achievements.json] '{aid}' : threshold doit etre un entier >= 1")
+        title = a.get("reward", {}).get("title_id")
+        if title and title not in grant_titles:
+            errors.append(f"[achievements.json] '{aid}' : titre '{title}' absent de ui/cosmetics.json "
+                          f"ou non octroyable (acquisition 'grant')")
+        for qid in a.get("params", {}).get("quests", []):
+            if qid not in quests:
+                errors.append(f"[achievements.json] '{aid}' : quete '{qid}' inexistante")
+        if a.get("source") == "quests_set_completed" and                 a.get("threshold") != len(a.get("params", {}).get("quests", [])):
+            errors.append(f"[achievements.json] '{aid}' : threshold doit valoir le nombre de quetes")
+    return errors
+
+
 def main():
     # Find database root
     db_root = os.environ.get("DB_ROOT", "")
@@ -1057,6 +1106,11 @@ def main():
 
     print("[11/11] Validating the item display contract (rolls, affixes, sockets)...")
     errs = validate_item_display_contract(db, valid_stats)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12/12] Validating achievements (engine sources, grant titles, quests)...")
+    errs = validate_achievements(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
     # Report

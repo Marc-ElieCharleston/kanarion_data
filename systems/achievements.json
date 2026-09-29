@@ -1,68 +1,651 @@
 {
   "_meta": {
-    "version": "3.0",
-    "last_updated": "2026-01-10",
-    "description": "Système d'achievements et statistiques"
+    "version": "4.0",
+    "last_updated": "2026-09-30",
+    "description": "Succes, vague 1 (conception : La Matrice des Succes, https://claude.ai/artifact/JJ2sE2jHBgQ8ioC9NCPNpR). Uniquement des sources d'ETAT relues en base : un succes ajoute plus tard se debloque retroactivement, et aucun ne peut mourir en silence faute d'ecrivain.",
+    "owner": "services/quest (AchievementEngine). Le serveur evalue, debloque et recompense ; le client lit ce fichier pour l'AFFICHAGE seulement (noms, descriptions, recompense).",
+    "reward_rule": "reward.xp_percent = pourcentage de l'XP du NIVEAU EN COURS (xp_to_next), jamais un nombre fixe. Personnage tournoi : 0 XP (vitrine), titres quand meme (compte). reward.title_id reference ui/cosmetics.json (acquisition 'grant').",
+    "scope_rule": "Une source 'account' (familiers) se debloque UNE fois par compte : un personnage secondaire ne reencaisse pas la collection.",
+    "shapes": "premier | echelle | detour (voir la Matrice). Pas de compteur pur.",
+    "not_in_wave_1": "Competence montee au maximum (aucun niveau max de competence fiable dans la data) ; elites, zones visitees, detours de combat (aucune source aujourd'hui)."
   },
-
   "categories": [
-    "combat",
-    "exploration",
-    "collection",
-    "social",
-    "progression",
-    "special"
+    {
+      "id": "progression",
+      "name_fr": "Progression",
+      "name_en": "Progression"
+    },
+    {
+      "id": "quetes",
+      "name_fr": "Quêtes",
+      "name_en": "Quests"
+    },
+    {
+      "id": "arene",
+      "name_fr": "Arène",
+      "name_en": "Arena"
+    },
+    {
+      "id": "familier",
+      "name_fr": "Familiers",
+      "name_en": "Familiars"
+    }
   ],
-
-  "achievements": {
-    "combat": [
-      {"id": "ach_first_blood", "name_fr": "Premier Sang", "name_en": "First Blood", "desc_fr": "Tue ton premier monstre", "desc_en": "Slay your first monster", "reward": {"gold": 50}},
-      {"id": "ach_monster_slayer_100", "name_fr": "Chasseur", "name_en": "Hunter", "desc_fr": "Tue 100 monstres", "desc_en": "Slay 100 monsters", "reward": {"gold": 200}},
-      {"id": "ach_monster_slayer_1000", "name_fr": "Tueur", "name_en": "Slayer", "desc_fr": "Tue 1000 monstres", "desc_en": "Slay 1000 monsters", "reward": {"gold": 500, "title_fr": "Tueur", "title_en": "Slayer"}},
-      {"id": "ach_boss_hunter_10", "name_fr": "Chasseur de Boss", "name_en": "Boss Hunter", "desc_fr": "Tue 10 boss", "desc_en": "Slay 10 bosses", "reward": {"gold": 300}},
-      {"id": "ach_elite_hunter_50", "name_fr": "Chasseur d'Élite", "name_en": "Elite Hunter", "desc_fr": "Tue 50 élites", "desc_en": "Slay 50 elites", "reward": {"gold": 400}}
-    ],
-    "exploration": [
-      {"id": "ach_first_zone", "name_fr": "Explorateur", "name_en": "Explorer", "desc_fr": "Découvre ta première zone", "desc_en": "Discover your first zone", "reward": {"gold": 50}},
-      {"id": "ach_all_zones", "name_fr": "Cartographe", "name_en": "Cartographer", "desc_fr": "Découvre toutes les zones", "desc_en": "Discover all zones", "reward": {"gold": 1000, "title_fr": "Cartographe", "title_en": "Cartographer"}}
-    ],
-    "progression": [
-      {"id": "ach_level_10", "name_fr": "Apprenti", "name_en": "Apprentice", "desc_fr": "Atteins le niveau 10", "desc_en": "Reach level 10", "reward": {"gold": 100}},
-      {"id": "ach_level_20", "name_fr": "Aventurier", "name_en": "Adventurer", "desc_fr": "Atteins le niveau 20", "desc_en": "Reach level 20", "reward": {"gold": 300, "title_fr": "Aventurier", "title_en": "Adventurer"}},
-      {"id": "ach_subclass", "name_fr": "Spécialisation", "name_en": "Specialization", "desc_fr": "Choisis ta sous-classe", "desc_en": "Choose your subclass", "reward": {"gold": 200}}
-    ],
-    "social": [
-      {"id": "ach_first_party", "name_fr": "Coéquipier", "name_en": "Teammate", "desc_fr": "Rejoins un groupe", "desc_en": "Join a party", "reward": {"gold": 50}},
-      {"id": "ach_guild_join", "name_fr": "Membre de Guilde", "name_en": "Guild Member", "desc_fr": "Rejoins une guilde", "desc_en": "Join a guild", "reward": {"gold": 100}}
-    ],
-    "collection": [
-      {"id": "ach_first_koro", "name_fr": "Collectionneur", "name_en": "Collector", "desc_fr": "Obtiens ton premier Koro", "desc_en": "Obtain your first Koro", "reward": {"gold": 100}},
-      {"id": "ach_koro_10", "name_fr": "Amateur de Koro", "name_en": "Koro Enthusiast", "desc_fr": "Possède 10 Koros différents", "desc_en": "Own 10 different Koros", "reward": {"gold": 500}}
-    ]
+  "sources": {
+    "char_level": {
+      "scope": "character",
+      "from": "characters.level"
+    },
+    "char_stat_points_spent": {
+      "scope": "character",
+      "from": "SUM(characters.stat_allocations)"
+    },
+    "char_skill_points_spent": {
+      "scope": "character",
+      "from": "SUM(characters.skill_allocations)"
+    },
+    "char_subclass_chosen": {
+      "scope": "character",
+      "from": "characters.subclass_id non vide -> 1"
+    },
+    "quests_completed": {
+      "scope": "character",
+      "from": "COUNT(character_completed_quests)"
+    },
+    "quests_set_completed": {
+      "scope": "character",
+      "from": "COUNT(character_completed_quests IN params.quests)"
+    },
+    "arena_matches": {
+      "scope": "character",
+      "from": "COUNT(pvp_match_participants JOIN pvp_matches mode LIKE 'arena_%')"
+    },
+    "arena_wins": {
+      "scope": "character",
+      "from": "idem, won = true"
+    },
+    "arena_losses": {
+      "scope": "character",
+      "from": "idem, won = false et match non nul (winner_team non NULL)"
+    },
+    "arena_matches_2v2": {
+      "scope": "character",
+      "from": "idem, mode = 'arena_2v2'"
+    },
+    "arena_matches_4v4": {
+      "scope": "character",
+      "from": "idem, mode = 'arena_4v4'"
+    },
+    "arena_best_win_streak": {
+      "scope": "character",
+      "from": "MAX(pvp_ratings.best_win_streak), modes arena_%"
+    },
+    "familiar_hatched": {
+      "scope": "account",
+      "from": "COUNT(familiar_incubations claimed_at non NULL), compte"
+    },
+    "familiar_rare_plus": {
+      "scope": "account",
+      "from": "COUNT(familiars rarity IN rare, epic, legendary)"
+    },
+    "familiar_epic_plus": {
+      "scope": "account",
+      "from": "COUNT(familiars rarity IN epic, legendary)"
+    },
+    "familiar_legendary": {
+      "scope": "account",
+      "from": "COUNT(familiars rarity = legendary)"
+    },
+    "familiar_distinct_roles": {
+      "scope": "account",
+      "from": "COUNT(DISTINCT familiars.role)"
+    },
+    "familiar_collection": {
+      "scope": "account",
+      "from": "COUNT(familiars), compte"
+    }
   },
-
-  "statistics": {
-    "combat": [
-      "monsters_killed",
-      "bosses_killed",
-      "elites_killed",
-      "deaths",
-      "damage_dealt_total",
-      "damage_taken_total",
-      "healing_done_total",
-      "critical_hits",
-      "skills_used"
-    ],
-    "progression": [
-      "time_played_minutes",
-      "quests_completed",
-      "dungeons_cleared",
-      "gold_earned_total",
-      "gold_spent_total"
-    ],
-    "social": [
-      "party_combats",
-      "guild_missions_completed"
-    ]
-  }
+  "achievements": [
+    {
+      "id": "ach_prog_first_stat",
+      "category": "progression",
+      "shape": "premier",
+      "name_fr": "Premier pas",
+      "name_en": "First Step",
+      "desc_fr": "Dépense ton premier point de caractéristique.",
+      "desc_en": "Spend your first attribute point.",
+      "source": "char_stat_points_spent",
+      "threshold": 1,
+      "reward": {
+        "xp_percent": 50
+      }
+    },
+    {
+      "id": "ach_prog_first_skill",
+      "category": "progression",
+      "shape": "premier",
+      "name_fr": "Premier geste",
+      "name_en": "First Move",
+      "desc_fr": "Dépense ton premier point de compétence.",
+      "desc_en": "Spend your first skill point.",
+      "source": "char_skill_points_spent",
+      "threshold": 1,
+      "reward": {
+        "xp_percent": 50
+      }
+    },
+    {
+      "id": "ach_prog_subclass",
+      "category": "progression",
+      "shape": "premier",
+      "name_fr": "Une voie choisie",
+      "name_en": "A Path Chosen",
+      "desc_fr": "Choisis ta sous-classe auprès de Soren.",
+      "desc_en": "Choose your subclass with Soren.",
+      "source": "char_subclass_chosen",
+      "threshold": 1,
+      "reward": {
+        "xp_percent": 60
+      }
+    },
+    {
+      "id": "ach_level_10",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Niveau 10",
+      "name_en": "Level 10",
+      "desc_fr": "Atteins le niveau 10.",
+      "desc_en": "Reach level 10.",
+      "source": "char_level",
+      "threshold": 10,
+      "reward": {
+        "xp_percent": 30
+      }
+    },
+    {
+      "id": "ach_level_20",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Niveau 20",
+      "name_en": "Level 20",
+      "desc_fr": "Atteins le niveau 20.",
+      "desc_en": "Reach level 20.",
+      "source": "char_level",
+      "threshold": 20,
+      "reward": {
+        "xp_percent": 20,
+        "title_id": "title_aguerri"
+      }
+    },
+    {
+      "id": "ach_level_40",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Niveau 40",
+      "name_en": "Level 40",
+      "desc_fr": "Atteins le niveau 40.",
+      "desc_en": "Reach level 40.",
+      "source": "char_level",
+      "threshold": 40,
+      "reward": {
+        "xp_percent": 15
+      }
+    },
+    {
+      "id": "ach_level_60",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Niveau 60",
+      "name_en": "Level 60",
+      "desc_fr": "Atteins le niveau 60.",
+      "desc_en": "Reach level 60.",
+      "source": "char_level",
+      "threshold": 60,
+      "reward": {
+        "xp_percent": 10,
+        "title_id": "title_arpenteur"
+      }
+    },
+    {
+      "id": "ach_level_80",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Niveau 80",
+      "name_en": "Level 80",
+      "desc_fr": "Atteins le niveau 80.",
+      "desc_en": "Reach level 80.",
+      "source": "char_level",
+      "threshold": 80,
+      "reward": {
+        "xp_percent": 0,
+        "title_id": "title_maitre_souffle"
+      }
+    },
+    {
+      "id": "ach_level_100",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Niveau 100",
+      "name_en": "Level 100",
+      "desc_fr": "Atteins le niveau 100.",
+      "desc_en": "Reach level 100.",
+      "source": "char_level",
+      "threshold": 100,
+      "reward": {
+        "xp_percent": 0,
+        "title_id": "title_legende"
+      }
+    },
+    {
+      "id": "ach_quest_first",
+      "category": "quetes",
+      "shape": "premier",
+      "name_fr": "Parole tenue",
+      "name_en": "Word Kept",
+      "desc_fr": "Rends ta première quête.",
+      "desc_en": "Turn in your first quest.",
+      "source": "quests_completed",
+      "threshold": 1,
+      "reward": {
+        "xp_percent": 50
+      }
+    },
+    {
+      "id": "ach_quest_10",
+      "category": "quetes",
+      "shape": "echelle",
+      "name_fr": "Dix services",
+      "name_en": "Ten Favours",
+      "desc_fr": "Rends 10 quêtes.",
+      "desc_en": "Turn in 10 quests.",
+      "source": "quests_completed",
+      "threshold": 10,
+      "reward": {
+        "xp_percent": 30
+      }
+    },
+    {
+      "id": "ach_quest_50",
+      "category": "quetes",
+      "shape": "echelle",
+      "name_fr": "Cinquante services",
+      "name_en": "Fifty Favours",
+      "desc_fr": "Rends 50 quêtes.",
+      "desc_en": "Turn in 50 quests.",
+      "source": "quests_completed",
+      "threshold": 50,
+      "reward": {
+        "xp_percent": 20
+      }
+    },
+    {
+      "id": "ach_quest_100",
+      "category": "quetes",
+      "shape": "echelle",
+      "name_fr": "Cent services",
+      "name_en": "A Hundred Favours",
+      "desc_fr": "Rends 100 quêtes.",
+      "desc_en": "Turn in 100 quests.",
+      "source": "quests_completed",
+      "threshold": 100,
+      "reward": {
+        "xp_percent": 15
+      }
+    },
+    {
+      "id": "ach_quest_aldric",
+      "category": "quetes",
+      "shape": "detour",
+      "name_fr": "Le terrier nettoyé",
+      "name_en": "The Burrow Cleared",
+      "desc_fr": "Termine tout ce qu'Aldric t'a demandé dans l'arrière-salle de la taverne.",
+      "desc_en": "Finish everything Aldric asked of you in the tavern's back room.",
+      "source": "quests_set_completed",
+      "threshold": 8,
+      "reward": {
+        "xp_percent": 60
+      },
+      "params": {
+        "quests": [
+          "q_tut_intro_01",
+          "q_tut_intro_03",
+          "q_tut_intro_05",
+          "q_tut_intro_05c",
+          "q_tut_intro_05b",
+          "q_tut_intro_06",
+          "q_tut_intro_07",
+          "q_tut_intro_08"
+        ]
+      }
+    },
+    {
+      "id": "ach_quest_havreden",
+      "category": "quetes",
+      "shape": "detour",
+      "name_fr": "Havreden n'a plus de secrets",
+      "name_en": "No Secrets Left in Havreden",
+      "desc_fr": "Rends toutes les quêtes des gens de la place de Havreden.",
+      "desc_en": "Turn in every quest from the people on Havreden's square.",
+      "source": "quests_set_completed",
+      "threshold": 12,
+      "reward": {
+        "xp_percent": 80,
+        "title_id": "title_ami_havreden"
+      },
+      "params": {
+        "quests": [
+          "q_havreden_arrivee",
+          "q_havreden_tour_01",
+          "q_havreden_tour_02",
+          "q_havreden_tour_03",
+          "q_milo_premier_cristal",
+          "q_milo_ravitaillement",
+          "q_gorik_crocs_et_cuirs",
+          "q_colette_incubation",
+          "q_colette_grimoire",
+          "q_colette_premier_compagnon",
+          "q_hestia_ne_pars_pas_seul",
+          "q_dargo_arene"
+        ]
+      }
+    },
+    {
+      "id": "ach_arena_first",
+      "category": "arene",
+      "shape": "premier",
+      "name_fr": "Premier pas dans l'arène",
+      "name_en": "First Step in the Arena",
+      "desc_fr": "Termine ton premier combat d'arène.",
+      "desc_en": "Finish your first arena fight.",
+      "source": "arena_matches",
+      "threshold": 1,
+      "reward": {
+        "xp_percent": 50
+      }
+    },
+    {
+      "id": "ach_arena_first_win",
+      "category": "arene",
+      "shape": "premier",
+      "name_fr": "Première victoire",
+      "name_en": "First Victory",
+      "desc_fr": "Gagne ton premier combat d'arène.",
+      "desc_en": "Win your first arena fight.",
+      "source": "arena_wins",
+      "threshold": 1,
+      "reward": {
+        "xp_percent": 50
+      }
+    },
+    {
+      "id": "ach_arena_first_loss",
+      "category": "arene",
+      "shape": "premier",
+      "name_fr": "Ça fait partie du jeu",
+      "name_en": "Part of the Game",
+      "desc_fr": "Perds ton premier combat d'arène. Dargo dit qu'on apprend plus d'une défaite que de dix victoires.",
+      "desc_en": "Lose your first arena fight. Dargo says you learn more from one defeat than from ten wins.",
+      "source": "arena_losses",
+      "threshold": 1,
+      "reward": {
+        "xp_percent": 50
+      }
+    },
+    {
+      "id": "ach_arena_first_2v2",
+      "category": "arene",
+      "shape": "premier",
+      "name_fr": "À deux",
+      "name_en": "As a Pair",
+      "desc_fr": "Termine ton premier combat d'arène en 2 contre 2.",
+      "desc_en": "Finish your first 2v2 arena fight.",
+      "source": "arena_matches_2v2",
+      "threshold": 1,
+      "reward": {
+        "xp_percent": 50
+      }
+    },
+    {
+      "id": "ach_arena_first_4v4",
+      "category": "arene",
+      "shape": "premier",
+      "name_fr": "En escouade",
+      "name_en": "As a Squad",
+      "desc_fr": "Termine ton premier combat d'arène en 4 contre 4.",
+      "desc_en": "Finish your first 4v4 arena fight.",
+      "source": "arena_matches_4v4",
+      "threshold": 1,
+      "reward": {
+        "xp_percent": 50
+      }
+    },
+    {
+      "id": "ach_arena_5",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Habitué de l'arène",
+      "name_en": "Arena Regular",
+      "desc_fr": "Termine 5 combats d'arène.",
+      "desc_en": "Finish 5 arena fights.",
+      "source": "arena_matches",
+      "threshold": 5,
+      "reward": {
+        "xp_percent": 30
+      }
+    },
+    {
+      "id": "ach_arena_20",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Pilier de l'arène",
+      "name_en": "Arena Mainstay",
+      "desc_fr": "Termine 20 combats d'arène.",
+      "desc_en": "Finish 20 arena fights.",
+      "source": "arena_matches",
+      "threshold": 20,
+      "reward": {
+        "xp_percent": 20
+      }
+    },
+    {
+      "id": "ach_arena_50",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Vieux routier",
+      "name_en": "Old Hand",
+      "desc_fr": "Termine 50 combats d'arène.",
+      "desc_en": "Finish 50 arena fights.",
+      "source": "arena_matches",
+      "threshold": 50,
+      "reward": {
+        "xp_percent": 15
+      }
+    },
+    {
+      "id": "ach_arena_200",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Gladiateur",
+      "name_en": "Gladiator",
+      "desc_fr": "Termine 200 combats d'arène.",
+      "desc_en": "Finish 200 arena fights.",
+      "source": "arena_matches",
+      "threshold": 200,
+      "reward": {
+        "xp_percent": 10,
+        "title_id": "title_gladiateur"
+      }
+    },
+    {
+      "id": "ach_arena_wins_10",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Dix victoires",
+      "name_en": "Ten Victories",
+      "desc_fr": "Gagne 10 combats d'arène.",
+      "desc_en": "Win 10 arena fights.",
+      "source": "arena_wins",
+      "threshold": 10,
+      "reward": {
+        "xp_percent": 30
+      }
+    },
+    {
+      "id": "ach_arena_wins_50",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Cinquante victoires",
+      "name_en": "Fifty Victories",
+      "desc_fr": "Gagne 50 combats d'arène.",
+      "desc_en": "Win 50 arena fights.",
+      "source": "arena_wins",
+      "threshold": 50,
+      "reward": {
+        "xp_percent": 20
+      }
+    },
+    {
+      "id": "ach_arena_streak_3",
+      "category": "arene",
+      "shape": "detour",
+      "name_fr": "Sur sa lancée",
+      "name_en": "On a Roll",
+      "desc_fr": "Gagne 3 combats d'arène classés d'affilée.",
+      "desc_en": "Win 3 ranked arena fights in a row.",
+      "source": "arena_best_win_streak",
+      "threshold": 3,
+      "reward": {
+        "xp_percent": 60
+      }
+    },
+    {
+      "id": "ach_arena_streak_10",
+      "category": "arene",
+      "shape": "detour",
+      "name_fr": "Invaincu",
+      "name_en": "Unbroken",
+      "desc_fr": "Gagne 10 combats d'arène classés d'affilée.",
+      "desc_en": "Win 10 ranked arena fights in a row.",
+      "source": "arena_best_win_streak",
+      "threshold": 10,
+      "reward": {
+        "xp_percent": 80,
+        "title_id": "title_invaincu"
+      }
+    },
+    {
+      "id": "ach_familiar_first_hatch",
+      "category": "familier",
+      "shape": "premier",
+      "name_fr": "Ce qui a refusé de lâcher",
+      "name_en": "What Refused to Let Go",
+      "desc_fr": "Fais éclore ta première empreinte chez Colette.",
+      "desc_en": "Hatch your first imprint at Colette's.",
+      "source": "familiar_hatched",
+      "threshold": 1,
+      "reward": {
+        "xp_percent": 50
+      }
+    },
+    {
+      "id": "ach_familiar_rare",
+      "category": "familier",
+      "shape": "premier",
+      "name_fr": "Un compagnon rare",
+      "name_en": "A Rare Companion",
+      "desc_fr": "Obtiens un familier rare ou mieux.",
+      "desc_en": "Get a rare familiar or better.",
+      "source": "familiar_rare_plus",
+      "threshold": 1,
+      "reward": {
+        "xp_percent": 50
+      }
+    },
+    {
+      "id": "ach_familiar_epic",
+      "category": "familier",
+      "shape": "premier",
+      "name_fr": "Un compagnon épique",
+      "name_en": "An Epic Companion",
+      "desc_fr": "Obtiens un familier épique ou mieux.",
+      "desc_en": "Get an epic familiar or better.",
+      "source": "familiar_epic_plus",
+      "threshold": 1,
+      "reward": {
+        "xp_percent": 60
+      }
+    },
+    {
+      "id": "ach_familiar_legendary",
+      "category": "familier",
+      "shape": "detour",
+      "name_fr": "Lié à la légende",
+      "name_en": "Legend-Bound",
+      "desc_fr": "Obtiens un familier légendaire.",
+      "desc_en": "Get a legendary familiar.",
+      "source": "familiar_legendary",
+      "threshold": 1,
+      "reward": {
+        "xp_percent": 80,
+        "title_id": "title_lie_legende"
+      }
+    },
+    {
+      "id": "ach_familiar_roles",
+      "category": "familier",
+      "shape": "detour",
+      "name_fr": "Quatre façons de se battre",
+      "name_en": "Four Ways to Fight",
+      "desc_fr": "Possède un familier de chacun des quatre rôles.",
+      "desc_en": "Own a familiar of each of the four roles.",
+      "source": "familiar_distinct_roles",
+      "threshold": 4,
+      "reward": {
+        "xp_percent": 60
+      }
+    },
+    {
+      "id": "ach_familiar_collection_10",
+      "category": "familier",
+      "shape": "echelle",
+      "name_fr": "Petite ménagerie",
+      "name_en": "Small Menagerie",
+      "desc_fr": "Possède 10 familiers.",
+      "desc_en": "Own 10 familiars.",
+      "source": "familiar_collection",
+      "threshold": 10,
+      "reward": {
+        "xp_percent": 30
+      }
+    },
+    {
+      "id": "ach_familiar_collection_25",
+      "category": "familier",
+      "shape": "echelle",
+      "name_fr": "Ménagerie",
+      "name_en": "Menagerie",
+      "desc_fr": "Possède 25 familiers.",
+      "desc_en": "Own 25 familiars.",
+      "source": "familiar_collection",
+      "threshold": 25,
+      "reward": {
+        "xp_percent": 20
+      }
+    },
+    {
+      "id": "ach_familiar_collection_50",
+      "category": "familier",
+      "shape": "echelle",
+      "name_fr": "Grand éleveur",
+      "name_en": "Master Breeder",
+      "desc_fr": "Possède 50 familiers.",
+      "desc_en": "Own 50 familiars.",
+      "source": "familiar_collection",
+      "threshold": 50,
+      "reward": {
+        "xp_percent": 15,
+        "title_id": "title_grand_eleveur"
+      }
+    }
+  ]
 }
