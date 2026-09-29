@@ -39,8 +39,17 @@
         { "stat": "hp_regen", "weight": 12 },
         { "stat": "mp_regen", "weight": 12 },
         { "stat": "def_percent", "weight": 8 },
-        { "stat": "damage_reduction", "weight": 3 }
-      ]
+        { "stat": "damage_reduction", "weight": 3 },
+        { "stat": "crit", "weight": 6 },
+        { "stat": "flee", "weight": 6 },
+        { "stat": "cast_speed", "weight": 6 }
+      ],
+      "substat_weight_multipliers": {
+        "_comment": "Budget de puissance (2026-09-28) : substats PONDEREES par le role de la piece, jamais interdites. Cle = poids d armure de la piece (le meme qui choisit la stat principale). Poids effectif = weight du pool x facteur (absent = 1). Hors role = x0.25 : lourde = defense/PV (Souffle, crit, esquive, vitesse d incantation rares) ; moyenne = physique/esquive (Souffle et vitesse d incantation rares) ; legere = magie/Souffle/vitesse d incantation (armure, crit, esquive rares). crit/flee/cast_speed ajoutees au pool (poids 6) pour que le role moyen/leger ait ses stats.",
+        "heavy": { "mp": 0.25, "mp_regen": 0.25, "crit": 0.25, "flee": 0.25, "cast_speed": 0.25 },
+        "medium": { "mp": 0.25, "mp_regen": 0.25, "cast_speed": 0.25 },
+        "light": { "armor": 0.25, "crit": 0.25, "flee": 0.25 }
+      }
     },
 
     "accessory": {
@@ -113,7 +122,12 @@
         { "stat": "cast_speed", "weight": 5 },
         { "stat": "damage_percent", "weight": 3 },
         { "stat": "lifesteal", "weight": 2 }
-      ]
+      ],
+      "substat_weight_multipliers": {
+        "_comment": "Budget de puissance (2026-09-28) : substats PONDEREES par l essence de l arme (celle qui choisit la stat principale : essence_force = epee, dague, arc, outils ; essence_arcane = baton, sceptre). Poids effectif = weight du pool x facteur (absent = 1). Les stats de l autre voie tombent 4x moins souvent (x0.25), jamais interdites. essence_equilibre (hybride) n est pas ponderee.",
+        "essence_force": { "mag": 0.25, "mag_percent": 0.25, "magic_pen": 0.25 },
+        "essence_arcane": { "atk": 0.25, "atk_percent": 0.25, "armor_pen": 0.25 }
+      }
     }
   },
 
@@ -143,7 +157,8 @@
       "damage_percent": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] },
       "def_percent": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] },
       "hp_regen": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] },
-      "mp_regen": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] }
+      "mp_regen": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] },
+      "flee": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] }
     },
     "substats": {
       "_note": "Substats ont des valeurs plus faibles que main stats (~40-60%)",

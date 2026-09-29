@@ -13,6 +13,7 @@
       "_rank_curve": "Phase C (2026-09-28), courbe LINEAIRE : valeur numerique C x1 / B x1.25 / A x1.5 / S x1.75 / SS x2 (SS = 2 x C), arrondi a l entier le plus proche (0.5 vers le haut ; pas de 0.5 pour les secondes). Charges de statut 1/1/2/2/3. Durees et recharges fixes a tous les rangs. Verifie par test (server-combat RoomUniqueEngineTest.C3_RankTablesFollowTheLinearCurve). Hors courbe : les 4 uniques legacy (Keter Barzel et Etzem HaTzayad y sont passes avec le lot moteur N1-N5 du 2026-09-28).",
       "_charges_and_shown": "Une cle <x>_charges est mappee sur stacks_to_apply (nombre de charges du statut canonique posees). La cle <x>_shown n est PAS mappee : c est la valeur affichee au joueur = charges x value_per_stack du statut (stats/status_effects.json _meta.canonical_grid), lue par le tooltip via le jeton [R]. Les deux sont verifiees ensemble par test. Dans un meme unique, deux cles n ont jamais la meme valeur au rang B : le tooltip identifie la cle d un jeton [R] par cette valeur.",
       "_max_equipped": "3 uniques equipes au maximum par personnage (legacy compris) : economy refuse le 4e a l equipement (ErrorCode UNIQUE_LIMIT_REACHED 0x021A). Remplacer un unique dans son propre emplacement reste permis.",
+      "_power_budget": "Budget de puissance (2026-09-28) : un unique = stats MODESTES + effet qui definit un build, fort seulement dans son build. Ses stats tirent en legendaire x0.80 (items/loot_tables.json unique_drops.stat_rarity / stat_scale), il reste affiche legendaire. armor_weight (pieces d armure seulement) = poids du modele de base tire, choisi par role : tank / defensif -> heavy ; physique melee ou distance, esquive, saignement, poison -> medium ; magie, soin, soutien, Souffle -> light. Sans armor_weight, poids aleatoire. Effets offensifs faibles renforces x1.5 a x2 le meme jour (valeurs de rang C ou durees / recharges) : Patish Edric, Dam Rishon, Gachelet, Shalshelet, Chaver Ne'eman, Tzel HaMidbar, Shiryon Or, Lev Anak, Chosen, Esh Kadma, Etzem HaTzayad, Tzama Dam, Shen HaTzama, Tachbulot, Dam Zorem, Eres, Be'er. La courbe lineaire (SS = 2 x C) et les charges 1/1/2/2/3 sont conservees.",
       "_fields": "band = bande du niveau requis (C 1-20, B 21-40, A 41-60, S 61-80, SS 81-100). payoff_family = famille de keystone dont l unique paie l etat (systems/keystones.json), ou generic_<theme>. legacy = true : fusionne ou coupe, retire du pool (items/loot_tables.json unique_drops.pool_exclusions) mais garde pour les exemplaires deja possedes. pve_only (effet) = sans effet dans les salles PvP (duel, arene, tournoi).",
       "rang_1": {
         "level_range": [
@@ -74,8 +75,8 @@
       "description_fr": "Le premier sang versé ouvre la voie. Cet anneau taillé dans un croc de loup confère une précision meurtrière à celui qui frappe le premier.",
       "description_en": "The first blood spilled opens the way. This ring carved from a wolf fang grants deadly precision to the one who strikes first.",
       "effect": {
-        "description_fr": "Pendant les 6 premières secondes du combat : +[R]5 % de chance critique et +[R]5 % de dégâts, mais vous subissez 10 % de dégâts en plus.",
-        "description_en": "For the first 6 seconds of combat: +[R]5% crit chance and +[R]5% damage, but you take 10% more damage.",
+        "description_fr": "Pendant les 12 premières secondes du combat : +[R]5 % de chance critique, de dégâts, d'ATK et de MAG ; vous subissez 10 % de dégâts en plus pendant les 6 premières.",
+        "description_en": "For the first 12 seconds of combat: +[R]5% crit chance, damage, ATK and MAG; you take 10% more damage during the first 6.",
         "type": "combat_proc",
         "triggers": [
           {
@@ -85,14 +86,28 @@
                 "apply_status": "crit_chance_up",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 6.0,
+                "duration": 12.0,
                 "scalable": true
               },
               {
                 "apply_status": "damage_percent_up",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 6.0,
+                "duration": 12.0,
+                "scalable": true
+              },
+              {
+                "apply_status": "atk_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 12.0,
+                "scalable": true
+              },
+              {
+                "apply_status": "mag_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 12.0,
                 "scalable": true
               },
               {
@@ -129,7 +144,9 @@
       },
       "rank_scaling_map": {
         "/triggers/0/effects/0/stacks_to_apply": "opener_charges",
-        "/triggers/0/effects/1/stacks_to_apply": "opener_charges"
+        "/triggers/0/effects/1/stacks_to_apply": "opener_charges",
+        "/triggers/0/effects/2/stacks_to_apply": "opener_charges",
+        "/triggers/0/effects/3/stacks_to_apply": "opener_charges"
       },
       "source": {
         "type": "monster_drop",
@@ -157,8 +174,8 @@
       "description_fr": "Le marteau du fils du constructeur. Edric croyait être le remède. Son arme porte encore cette conviction : une force qui grandit avec chaque ennemi abattu.",
       "description_en": "The hammer of the builder's son. Edric believed he was the cure. His weapon still carries that conviction — a force that grows with each enemy felled.",
       "effect": {
-        "description_fr": "Tuer un ennemi : vous regagnez [R]6 % de votre Souffle max et gagnez +[R]5 % de dégâts pendant 8 s. Recharge 4 s.",
-        "description_en": "Killing an enemy: restores [R]6% of your max Breath and grants +[R]5% damage for 8 s. 4 s cooldown.",
+        "description_fr": "Tuer un ennemi : vous regagnez [R]6 % de votre Souffle max et gagnez +[R]5 % de dégâts, d'ATK et de MAG pendant 12 s. Recharge 4 s.",
+        "description_en": "Killing an enemy: restores [R]6% of your max Breath and grants +[R]5% damage, ATK and MAG for 12 s. 4 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
@@ -174,7 +191,21 @@
                 "apply_status": "damage_percent_up",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 8.0,
+                "duration": 12.0,
+                "scalable": true
+              },
+              {
+                "apply_status": "atk_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 12.0,
+                "scalable": true
+              },
+              {
+                "apply_status": "mag_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 12.0,
                 "scalable": true
               }
             ]
@@ -184,33 +215,35 @@
       "rank_scaling": {
         "rang_1": {
           "souffle_pct": 5,
-          "dmg_charges": 1,
-          "dmg_shown": 5
+          "frenzy_charges": 1,
+          "frenzy_shown": 5
         },
         "rang_2": {
           "souffle_pct": 6,
-          "dmg_charges": 1,
-          "dmg_shown": 5
+          "frenzy_charges": 1,
+          "frenzy_shown": 5
         },
         "rang_3": {
           "souffle_pct": 8,
-          "dmg_charges": 2,
-          "dmg_shown": 10
+          "frenzy_charges": 2,
+          "frenzy_shown": 10
         },
         "rang_4": {
           "souffle_pct": 9,
-          "dmg_charges": 2,
-          "dmg_shown": 10
+          "frenzy_charges": 2,
+          "frenzy_shown": 10
         },
         "rang_5": {
           "souffle_pct": 10,
-          "dmg_charges": 3,
-          "dmg_shown": 15
+          "frenzy_charges": 3,
+          "frenzy_shown": 15
         }
       },
       "rank_scaling_map": {
         "/triggers/0/effects/0/restore_souffle_pct": "souffle_pct",
-        "/triggers/0/effects/1/stacks_to_apply": "dmg_charges"
+        "/triggers/0/effects/1/stacks_to_apply": "frenzy_charges",
+        "/triggers/0/effects/2/stacks_to_apply": "frenzy_charges",
+        "/triggers/0/effects/3/stacks_to_apply": "frenzy_charges"
       },
       "source": {
         "type": "quest_reward",
@@ -234,32 +267,32 @@
       "description_fr": "Une flamme qui brûlait avant la création elle-même. L'amulette irradie une chaleur qui ne s'éteint jamais.",
       "description_en": "A flame that burned before creation itself. The amulet radiates a heat that never fades.",
       "effect": {
-        "description_fr": "Vos Brûlures infligent +[R]19 % de dégâts.",
-        "description_en": "Your Burns deal +[R]19% damage.",
+        "description_fr": "Vos Brûlures infligent +[R]9 % de dégâts.",
+        "description_en": "Your Burns deal +[R]9% damage.",
         "type": "passive_modifier",
         "effects": [
           {
             "modifier": "burn_damage_bonus",
-            "value": 19,
+            "value": 9,
             "scalable": true
           }
         ]
       },
       "rank_scaling": {
         "rang_1": {
-          "burn_bonus": 15
+          "burn_bonus": 7
         },
         "rang_2": {
-          "burn_bonus": 19
+          "burn_bonus": 9
         },
         "rang_3": {
-          "burn_bonus": 23
+          "burn_bonus": 11
         },
         "rang_4": {
-          "burn_bonus": 26
+          "burn_bonus": 12
         },
         "rang_5": {
-          "burn_bonus": 30
+          "burn_bonus": 14
         }
       },
       "rank_scaling_map": {
@@ -287,14 +320,14 @@
       "description_fr": "Un os poli par des années de chasse, transformé en anneau. Chaque frappe successive trouve une faiblesse nouvelle.",
       "description_en": "A bone polished by years of hunting, turned into a ring. Each successive strike finds a new weakness.",
       "effect": {
-        "description_fr": "Contre une cible Ralentie, chaque touche d'un même sort après la première inflige +[R]5 % de dégâts de plus que la précédente (jusqu'à +[R]20 %). Le bonus repart de zéro à chaque sort.",
-        "description_en": "Against a Slowed target, each hit of the same spell after the first deals +[R]5% more damage than the one before (up to +[R]20%). The bonus resets with every spell.",
+        "description_fr": "Contre une cible Ralentie, chaque touche d'un même sort après la première inflige +[R]8 % de dégâts de plus que la précédente (jusqu'à +[R]30 %). Le bonus repart de zéro à chaque sort.",
+        "description_en": "Against a Slowed target, each hit of the same spell after the first deals +[R]8% more damage than the one before (up to +[R]30%). The bonus resets with every spell.",
         "type": "passive_modifier",
         "effects": [
           {
             "modifier": "multi_hit_damage_escalation",
-            "value_per_hit": 5,
-            "max_bonus": 20,
+            "value_per_hit": 8,
+            "max_bonus": 30,
             "required_target_status": "slow",
             "scalable": true
           }
@@ -302,24 +335,24 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "per_hit": 4,
-          "max": 16
-        },
-        "rang_2": {
-          "per_hit": 5,
-          "max": 20
-        },
-        "rang_3": {
           "per_hit": 6,
           "max": 24
         },
+        "rang_2": {
+          "per_hit": 8,
+          "max": 30
+        },
+        "rang_3": {
+          "per_hit": 9,
+          "max": 36
+        },
         "rang_4": {
-          "per_hit": 7,
-          "max": 28
+          "per_hit": 11,
+          "max": 42
         },
         "rang_5": {
-          "per_hit": 8,
-          "max": 32
+          "per_hit": 12,
+          "max": 48
         }
       },
       "rank_scaling_map": {
@@ -412,19 +445,20 @@
       "name_en": "Shoresh Oz",
       "meaning": "Racine de Force / Root of Strength",
       "slot": "belt",
+      "armor_weight": "heavy",
       "role": "defensive",
       "band": "B",
       "payoff_family": "generic_survival",
       "description_fr": "Une ceinture tissée de racines qui ancre le porteur dans la terre. Plus il souffre, plus il tient bon.",
       "description_en": "A belt woven from roots that anchors its bearer to the earth. The more it suffers, the more it endures.",
       "effect": {
-        "description_fr": "+[R]10 % de soins reçus. Quand vos PV passent sous 35 % : soin de [R]6 % de vos PV max. Recharge 30 s.",
-        "description_en": "+[R]10% healing received. When your HP drops below 35%: heals you for [R]6% of your max HP. 30 s cooldown.",
+        "description_fr": "+[R]8 % de soins reçus. Quand vos PV passent sous 35 % : soin de [R]4 % de vos PV max. Recharge 30 s.",
+        "description_en": "+[R]8% healing received. When your HP drops below 35%: heals you for [R]4% of your max HP. 30 s cooldown.",
         "type": "combat_proc",
         "effects": [
           {
             "stat": "healing_received",
-            "value": 10,
+            "value": 8,
             "duration": -1,
             "scalable": true
           }
@@ -436,7 +470,7 @@
             "cooldown": 30.0,
             "effects": [
               {
-                "heal_percent_max_hp": 6,
+                "heal_percent_max_hp": 4,
                 "target_rule": "self",
                 "scalable": true
               }
@@ -446,24 +480,24 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "healing_received": 8,
-          "heal_pct": 5
+          "healing_received": 6,
+          "heal_pct": 3
         },
         "rang_2": {
-          "healing_received": 10,
-          "heal_pct": 6
+          "healing_received": 8,
+          "heal_pct": 4
         },
         "rang_3": {
-          "healing_received": 12,
-          "heal_pct": 8
+          "healing_received": 9,
+          "heal_pct": 5
         },
         "rang_4": {
-          "healing_received": 14,
-          "heal_pct": 9
+          "healing_received": 11,
+          "heal_pct": 5
         },
         "rang_5": {
-          "healing_received": 16,
-          "heal_pct": 10
+          "healing_received": 12,
+          "heal_pct": 6
         }
       },
       "rank_scaling_map": {
@@ -487,19 +521,20 @@
       "name_en": "Magen HaSela",
       "meaning": "Bouclier du Rocher / Shield of Rock",
       "slot": "helmet",
+      "armor_weight": "heavy",
       "role": "defensive",
       "band": "B",
       "payoff_family": "ks_tank_fortress",
       "description_fr": "Taillé dans la carapace d'une tortue de pierre ancienne. Chaque coup bloqué renforce celui qui le porte.",
       "description_en": "Carved from the shell of an ancient stone turtle. Each blocked blow strengthens the wearer.",
       "effect": {
-        "description_fr": "+[R]10 % de chance de blocage. Bloquer une attaque vous donne un bouclier de [R]8 % de vos PV max pendant 4 s. Recharge 8 s.",
-        "description_en": "+[R]10% block chance. Blocking an attack grants you a shield worth [R]8% of your max HP for 4 s. 8 s cooldown.",
+        "description_fr": "+[R]5 % de chance de blocage. Bloquer une attaque vous donne un bouclier de [R]4 % de vos PV max pendant 4 s. Recharge 8 s.",
+        "description_en": "+[R]5% block chance. Blocking an attack grants you a shield worth [R]4% of your max HP for 4 s. 8 s cooldown.",
         "type": "combat_proc",
         "effects": [
           {
             "stat": "block_chance",
-            "value": 10,
+            "value": 5,
             "duration": -1,
             "scalable": true
           }
@@ -510,7 +545,7 @@
             "cooldown": 8.0,
             "effects": [
               {
-                "apply_shield_percent_max_hp": 8,
+                "apply_shield_percent_max_hp": 4,
                 "target_rule": "self",
                 "duration": 4.0,
                 "scalable": true
@@ -521,24 +556,24 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "block_chance": 8,
-          "block_shield": 6
+          "block_chance": 4,
+          "block_shield": 3
         },
         "rang_2": {
-          "block_chance": 10,
-          "block_shield": 8
+          "block_chance": 5,
+          "block_shield": 4
         },
         "rang_3": {
-          "block_chance": 12,
-          "block_shield": 9
+          "block_chance": 6,
+          "block_shield": 5
         },
         "rang_4": {
-          "block_chance": 14,
-          "block_shield": 11
+          "block_chance": 7,
+          "block_shield": 5
         },
         "rang_5": {
-          "block_chance": 16,
-          "block_shield": 12
+          "block_chance": 8,
+          "block_shield": 6
         }
       },
       "rank_scaling_map": {
@@ -561,33 +596,41 @@
       "name_en": "Or HaShomer",
       "meaning": "Lumière du Gardien / Guardian's Light",
       "slot": "cape",
+      "armor_weight": "heavy",
       "role": "defensive",
       "band": "B",
       "payoff_family": "ks_tank_sacrifice",
       "description_fr": "La lumière de ceux qui veillent sur les autres. Cette cape irradie une protection qui s'étend aux alliés proches.",
       "description_en": "The light of those who watch over others. This cape radiates protection that extends to nearby allies.",
       "effect": {
-        "description_fr": "Quand un allié passe sous 30 % de PV : vous gagnez +[R]5 % de réduction des dégâts et il reçoit +[R]10 % de soins pendant 5 s. Recharge 20 s.",
-        "description_en": "When an ally drops below 30% HP: you gain +[R]5% damage reduction and they receive +[R]10% healing for 5 s. 20 s cooldown.",
+        "description_fr": "Quand un allié passe sous 30 % de PV : vous gagnez +[R]5 % de réduction des dégâts et d'armure, et il reçoit +[R]10 % de soins pendant 8 s. Recharge 12 s.",
+        "description_en": "When an ally drops below 30% HP: you gain +[R]5% damage reduction and armor, and they receive +[R]10% healing for 8 s. 12 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
             "trigger": "ally_hp_below_pct",
             "threshold": 0.3,
-            "cooldown": 20.0,
+            "cooldown": 12.0,
             "effects": [
               {
                 "apply_status": "damage_reduction_up",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 5.0,
+                "duration": 8.0,
                 "scalable": true
               },
               {
                 "apply_status": "heal_received_up",
                 "target_rule": "ally",
                 "stacks_to_apply": 1,
-                "duration": 5.0,
+                "duration": 8.0,
+                "scalable": true
+              },
+              {
+                "apply_status": "armor_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 8.0,
                 "scalable": true
               }
             ]
@@ -596,39 +639,40 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "dr_charges": 1,
-          "dr_shown": 5,
+          "guard_charges": 1,
+          "guard_shown": 5,
           "heal_recv_charges": 1,
           "heal_recv_shown": 10
         },
         "rang_2": {
-          "dr_charges": 1,
-          "dr_shown": 5,
+          "guard_charges": 1,
+          "guard_shown": 5,
           "heal_recv_charges": 1,
           "heal_recv_shown": 10
         },
         "rang_3": {
-          "dr_charges": 2,
-          "dr_shown": 10,
+          "guard_charges": 2,
+          "guard_shown": 10,
           "heal_recv_charges": 2,
           "heal_recv_shown": 20
         },
         "rang_4": {
-          "dr_charges": 2,
-          "dr_shown": 10,
+          "guard_charges": 2,
+          "guard_shown": 10,
           "heal_recv_charges": 2,
           "heal_recv_shown": 20
         },
         "rang_5": {
-          "dr_charges": 3,
-          "dr_shown": 15,
+          "guard_charges": 3,
+          "guard_shown": 15,
           "heal_recv_charges": 3,
           "heal_recv_shown": 30
         }
       },
       "rank_scaling_map": {
-        "/triggers/0/effects/0/stacks_to_apply": "dr_charges",
-        "/triggers/0/effects/1/stacks_to_apply": "heal_recv_charges"
+        "/triggers/0/effects/0/stacks_to_apply": "guard_charges",
+        "/triggers/0/effects/1/stacks_to_apply": "heal_recv_charges",
+        "/triggers/0/effects/2/stacks_to_apply": "guard_charges"
       },
       "source": {
         "type": "monster_drop",
@@ -646,39 +690,40 @@
       "name_en": "Keter Barzel",
       "meaning": "Couronne de Fer / Iron Crown",
       "slot": "helmet",
+      "armor_weight": "heavy",
       "role": "defensive",
       "band": "S",
       "payoff_family": "ks_tank_anchor",
       "description_fr": "La couronne de celui qui tient la ligne. Plus les ennemis se concentrent sur toi, plus tu deviens inébranlable.",
       "description_en": "The crown of the one who holds the line. The more enemies focus on you, the more unshakeable you become.",
       "effect": {
-        "description_fr": "+[R]4 % de réduction des dégâts subis par ennemi qui vous cible ou que vous avez provoqué (3 ennemis au plus).",
-        "description_en": "+[R]4% damage reduction per enemy targeting you or taunted by you (3 enemies at most).",
+        "description_fr": "+[R]3 % de réduction des dégâts subis par ennemi qui vous cible ou que vous avez provoqué (2 ennemis au plus).",
+        "description_en": "+[R]3% damage reduction per enemy targeting you or taunted by you (2 enemies at most).",
         "type": "passive_modifier",
         "effects": [
           {
             "modifier": "dr_per_targeting_enemy",
-            "value": 4,
-            "max_targets": 3,
+            "value": 3,
+            "max_targets": 2,
             "scalable": true
           }
         ]
       },
       "rank_scaling": {
         "rang_1": {
-          "dr_per_enemy": 3
+          "dr_per_enemy": 2
         },
         "rang_2": {
-          "dr_per_enemy": 4
+          "dr_per_enemy": 3
         },
         "rang_3": {
-          "dr_per_enemy": 5
+          "dr_per_enemy": 3
         },
         "rang_4": {
-          "dr_per_enemy": 5
+          "dr_per_enemy": 4
         },
         "rang_5": {
-          "dr_per_enemy": 6
+          "dr_per_enemy": 4
         }
       },
       "rank_scaling_map": {
@@ -700,6 +745,7 @@
       "name_en": "Seter HaLayla",
       "meaning": "Refuge de la Nuit / Night's Refuge",
       "slot": "cape",
+      "armor_weight": "medium",
       "role": "support",
       "band": "B",
       "payoff_family": "generic_survival",
@@ -769,13 +815,13 @@
       "description_fr": "Le souffle qui donne la vie. Chaque bénédiction que tu accordes porte aussi une étincelle de guérison.",
       "description_en": "The breath that gives life. Every blessing you grant also carries a spark of healing.",
       "effect": {
-        "description_fr": "+[R]6 % de puissance de soin. Renforcer un allié le soigne de [R]19 % de votre MAG. Recharge 6 s.",
-        "description_en": "+[R]6% healing power. Buffing an ally heals them for [R]19% of your MAG. 6 s cooldown.",
+        "description_fr": "+[R]1 % de puissance de soin. Renforcer un allié le soigne de [R]8 % de votre MAG. Recharge 6 s.",
+        "description_en": "+[R]1% healing power. Buffing an ally heals them for [R]8% of your MAG. 6 s cooldown.",
         "type": "combat_proc",
         "effects": [
           {
             "stat": "heal_power",
-            "value": 6,
+            "value": 1,
             "duration": -1,
             "scalable": true
           }
@@ -786,7 +832,7 @@
             "cooldown": 6.0,
             "effects": [
               {
-                "heal_percent_mag": 19,
+                "heal_percent_mag": 8,
                 "scalable": true
               }
             ]
@@ -795,24 +841,24 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "heal_power": 5,
-          "heal_mag": 15
+          "heal_power": 1,
+          "heal_mag": 6
         },
         "rang_2": {
-          "heal_power": 6,
-          "heal_mag": 19
+          "heal_power": 1,
+          "heal_mag": 8
         },
         "rang_3": {
-          "heal_power": 8,
-          "heal_mag": 23
+          "heal_power": 2,
+          "heal_mag": 9
         },
         "rang_4": {
-          "heal_power": 9,
-          "heal_mag": 26
+          "heal_power": 2,
+          "heal_mag": 11
         },
         "rang_5": {
-          "heal_power": 10,
-          "heal_mag": 30
+          "heal_power": 2,
+          "heal_mag": 12
         }
       },
       "rank_scaling_map": {
@@ -835,26 +881,35 @@
       "name_en": "Ruach HaRefuah",
       "meaning": "Vent de Guérison / Wind of Healing",
       "slot": "legs",
+      "armor_weight": "light",
       "role": "support",
       "band": "B",
       "payoff_family": "ks_support_relay",
       "description_fr": "Un bâton qui porte le vent de la guérison. Chaque soin accélère le rythme du soigneur.",
       "description_en": "A staff that carries the wind of healing. Each heal accelerates the healer's rhythm.",
       "effect": {
-        "description_fr": "Un soin qui rend des PV vous donne +[R]6 % de réduction de recharge pendant 4 s. Recharge 10 s.",
-        "description_en": "A heal that restores HP grants you +[R]6% cooldown reduction for 4 s. 10 s cooldown.",
+        "description_fr": "Un soin qui rend des PV vous donne +[R]4 % de réduction de recharge et +[R]5 % de puissance de soin pendant 6 s. Recharge 8 s.",
+        "description_en": "A heal that restores HP grants you +[R]4% cooldown reduction and +[R]5% healing power for 6 s. 8 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
             "trigger": "on_heal_cast",
-            "cooldown": 10.0,
+            "cooldown": 8.0,
             "effects": [
               {
                 "stat": "cooldown_reduction",
-                "value": 6,
-                "duration": 4.0,
+                "value": 4,
+                "duration": 6.0,
                 "require_effective_heal": true,
                 "scalable": true
+              },
+              {
+                "apply_status": "heal_power_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 6.0,
+                "scalable": true,
+                "require_effective_heal": true
               }
             ]
           }
@@ -862,23 +917,34 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "cdr": 5
+          "cdr": 3,
+          "relay_charges": 1,
+          "relay_shown": 5
         },
         "rang_2": {
-          "cdr": 6
+          "cdr": 4,
+          "relay_charges": 1,
+          "relay_shown": 5
         },
         "rang_3": {
-          "cdr": 8
+          "cdr": 5,
+          "relay_charges": 2,
+          "relay_shown": 10
         },
         "rang_4": {
-          "cdr": 9
+          "cdr": 5,
+          "relay_charges": 2,
+          "relay_shown": 10
         },
         "rang_5": {
-          "cdr": 10
+          "cdr": 6,
+          "relay_charges": 3,
+          "relay_shown": 15
         }
       },
       "rank_scaling_map": {
-        "/triggers/0/effects/0/value": "cdr"
+        "/triggers/0/effects/0/value": "cdr",
+        "/triggers/0/effects/1/stacks_to_apply": "relay_charges"
       },
       "source": {
         "type": "quest_reward",
@@ -895,19 +961,20 @@
       "name_en": "Tzel HaMidbar",
       "meaning": "Ombre du Désert / Desert Shadow",
       "slot": "boots",
+      "armor_weight": "medium",
       "role": "utility",
       "band": "C",
       "payoff_family": "generic_tempo",
       "description_fr": "Dehors, l'ombre est ton meilleur allié. Ces bottes te permettent de danser entre les attaques.",
       "description_en": "Out there, shadow is your best ally. These boots let you dance between attacks.",
       "effect": {
-        "description_fr": "+[R]4 % d'esquive. Esquiver une attaque : +[R]5 % de vitesse d'incantation pendant 4 s. Recharge 8 s.",
-        "description_en": "+[R]4% evasion. Dodging an attack: +[R]5% cast speed for 4 s. 8 s cooldown.",
+        "description_fr": "+[R]3 % d'esquive. Esquiver une attaque : +[R]5 % de vitesse d'incantation pendant 6 s. Recharge 8 s.",
+        "description_en": "+[R]3% evasion. Dodging an attack: +[R]5% cast speed for 6 s. 8 s cooldown.",
         "type": "combat_proc",
         "effects": [
           {
             "stat": "evasion",
-            "value": 4,
+            "value": 3,
             "duration": -1,
             "scalable": true
           }
@@ -921,7 +988,7 @@
                 "apply_status": "cast_speed_up",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 4.0,
+                "duration": 6.0,
                 "scalable": true
               }
             ]
@@ -930,27 +997,27 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "evasion": 3,
+          "evasion": 2,
           "cast_charges": 1,
           "cast_shown": 5
         },
         "rang_2": {
-          "evasion": 4,
+          "evasion": 3,
           "cast_charges": 1,
           "cast_shown": 5
         },
         "rang_3": {
-          "evasion": 5,
+          "evasion": 3,
           "cast_charges": 2,
           "cast_shown": 10
         },
         "rang_4": {
-          "evasion": 5,
+          "evasion": 4,
           "cast_charges": 2,
           "cast_shown": 10
         },
         "rang_5": {
-          "evasion": 6,
+          "evasion": 4,
           "cast_charges": 3,
           "cast_shown": 15
         }
@@ -982,18 +1049,26 @@
       "description_fr": "L'œil qui voit entre les mondes. Cet anneau convertit la résistance spirituelle en puissance arcanique.",
       "description_en": "The eye that sees between worlds. This ring converts spiritual resistance into arcane power.",
       "effect": {
-        "description_fr": "Toucher une cible sous DEF - : +[R]8 % de pénétration d'armure pendant 4 s. Recharge 10 s.",
-        "description_en": "Hitting a target under DEF Down: +[R]8% armor penetration for 4 s. 10 s cooldown.",
+        "description_fr": "Toucher une cible sous DEF - : +[R]13 % de pénétration d'armure et +[R]5 % de dégâts pendant 6 s. Recharge 8 s.",
+        "description_en": "Hitting a target under DEF Down: +[R]13% armor penetration and +[R]5% damage for 6 s. 8 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
             "trigger": "on_hit",
-            "cooldown": 10.0,
+            "cooldown": 8.0,
             "effects": [
               {
                 "stat": "armor_pen",
-                "value": 8,
-                "duration": 4.0,
+                "value": 13,
+                "duration": 6.0,
+                "required_target_status": "def_down",
+                "scalable": true
+              },
+              {
+                "apply_status": "damage_percent_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 6.0,
                 "required_target_status": "def_down",
                 "scalable": true
               }
@@ -1003,23 +1078,34 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "armor_pen": 6
+          "armor_pen": 10,
+          "breach_charges": 1,
+          "breach_shown": 5
         },
         "rang_2": {
-          "armor_pen": 8
+          "armor_pen": 13,
+          "breach_charges": 1,
+          "breach_shown": 5
         },
         "rang_3": {
-          "armor_pen": 9
+          "armor_pen": 15,
+          "breach_charges": 2,
+          "breach_shown": 10
         },
         "rang_4": {
-          "armor_pen": 11
+          "armor_pen": 18,
+          "breach_charges": 2,
+          "breach_shown": 10
         },
         "rang_5": {
-          "armor_pen": 12
+          "armor_pen": 20,
+          "breach_charges": 3,
+          "breach_shown": 15
         }
       },
       "rank_scaling_map": {
-        "/triggers/0/effects/0/value": "armor_pen"
+        "/triggers/0/effects/0/value": "armor_pen",
+        "/triggers/0/effects/1/stacks_to_apply": "breach_charges"
       },
       "source": {
         "type": "monster_drop",
@@ -1043,8 +1129,8 @@
       "description_fr": "Cet anneau a été porté par un chasseur d'Havreden qui sortait pour protéger les troupeaux. À force de courir après les loups, il a fini par les comprendre. Un peu trop.",
       "description_en": "This ring was worn by a hunter from Havreden who went out to protect the herds. By chasing wolves long enough, he came to understand them. A little too well.",
       "effect": {
-        "description_fr": "Toucher une cible sous 30 % de PV : +[R]10 % de dégâts critiques pendant 4 s et soin de [R]3 % de vos PV max. Recharge 10 s.",
-        "description_en": "Hitting a target below 30% HP: +[R]10% critical damage for 4 s and heals you for [R]3% of your max HP. 10 s cooldown.",
+        "description_fr": "Toucher une cible sous 30 % de PV : +[R]10 % de dégâts critiques pendant 6 s et soin de [R]4 % de vos PV max. Recharge 10 s.",
+        "description_en": "Hitting a target below 30% HP: +[R]10% critical damage for 6 s and heals you for [R]4% of your max HP. 10 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
@@ -1056,11 +1142,11 @@
                 "apply_status": "crit_damage_up",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 4.0,
+                "duration": 6.0,
                 "scalable": true
               },
               {
-                "heal_percent_max_hp": 3,
+                "heal_percent_max_hp": 4,
                 "target_rule": "self",
                 "scalable": true
               }
@@ -1072,27 +1158,27 @@
         "rang_1": {
           "crit_dmg_charges": 1,
           "crit_dmg_shown": 10,
-          "heal_pct": 2
+          "heal_pct": 3
         },
         "rang_2": {
           "crit_dmg_charges": 1,
           "crit_dmg_shown": 10,
-          "heal_pct": 3
+          "heal_pct": 4
         },
         "rang_3": {
           "crit_dmg_charges": 2,
           "crit_dmg_shown": 20,
-          "heal_pct": 3
+          "heal_pct": 5
         },
         "rang_4": {
           "crit_dmg_charges": 2,
           "crit_dmg_shown": 20,
-          "heal_pct": 4
+          "heal_pct": 5
         },
         "rang_5": {
           "crit_dmg_charges": 3,
           "crit_dmg_shown": 30,
-          "heal_pct": 4
+          "heal_pct": 6
         }
       },
       "rank_scaling_map": {
@@ -1114,19 +1200,20 @@
       "name_en": "Tzinat Refleks",
       "meaning": "Épines Réflexes / Reflexive Thorns",
       "slot": "cape",
+      "armor_weight": "heavy",
       "role": "defensive",
       "band": "A",
       "payoff_family": "ks_tank_fortress",
       "description_fr": "Une cape hérissée d'échardes de cristal qui renvoient la douleur à qui la donne.",
       "description_en": "A cloak bristling with crystal splinters that return pain to whoever deals it.",
       "effect": {
-        "description_fr": "Renvoie [R]6 % des dégâts subis à l'attaquant. Après un blocage ou une parade : pendant 4 s, [R]10 % des dégâts reçus sont renvoyés à l'attaquant au lieu de vous toucher. Recharge 10 s.",
-        "description_en": "Returns [R]6% of the damage you take to the attacker. After a block or a parry: for 4 s, [R]10% of incoming damage is sent back to the attacker instead of hitting you. 10 s cooldown.",
+        "description_fr": "Renvoie [R]5 % des dégâts subis à l'attaquant. Après un blocage ou une parade : pendant 4 s, [R]33 % des dégâts reçus sont renvoyés à l'attaquant au lieu de vous toucher. Recharge 10 s.",
+        "description_en": "Returns [R]5% of the damage you take to the attacker. After a block or a parry: for 4 s, [R]33% of incoming damage is sent back to the attacker instead of hitting you. 10 s cooldown.",
         "type": "combat_proc",
         "effects": [
           {
             "stat": "thorns_percent",
-            "value": 6,
+            "value": 5,
             "duration": -1,
             "scalable": true
           }
@@ -1138,7 +1225,7 @@
             "effects": [
               {
                 "stat": "reflect_percent",
-                "value": 10,
+                "value": 33,
                 "duration": 4.0,
                 "scalable": true
               }
@@ -1148,24 +1235,24 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "thorns": 5,
-          "reflect": 8
+          "thorns": 4,
+          "reflect": 26
         },
         "rang_2": {
-          "thorns": 6,
-          "reflect": 10
+          "thorns": 5,
+          "reflect": 33
         },
         "rang_3": {
-          "thorns": 8,
-          "reflect": 12
+          "thorns": 6,
+          "reflect": 39
         },
         "rang_4": {
-          "thorns": 9,
-          "reflect": 14
+          "thorns": 7,
+          "reflect": 46
         },
         "rang_5": {
-          "thorns": 10,
-          "reflect": 16
+          "thorns": 8,
+          "reflect": 52
         }
       },
       "rank_scaling_map": {
@@ -1241,6 +1328,7 @@
       "name_en": "Korban Acharon",
       "meaning": "Sacrifice Final / Last Sacrifice",
       "slot": "belt",
+      "armor_weight": "light",
       "role": "support",
       "band": "A",
       "payoff_family": "ks_support_rescue",
@@ -1306,8 +1394,8 @@
       "description_fr": "Un anneau taillé dans une branche d'olivier qui n'a jamais brûlé. On dit qu'il a poussé au bord d'une fissure, sans en connaître la chaleur. Il garde un peu de chaque soin qu'il accompagne, et le rend quand le besoin s'éloigne.",
       "description_en": "A ring carved from an olive branch that never burned. It is said to have grown at the edge of a fissure, untouched by its heat. It keeps a little of each healing it accompanies, and gives it back when the need fades.",
       "effect": {
-        "description_fr": "Un soin qui rend des PV applique Amplification des Soins à sa cible pendant 6 s : les soins périodiques qu'elle reçoit sont augmentés de [R]13 %. Recharge 8 s.",
-        "description_en": "A heal that restores HP applies Healing Amplification to its target for 6 s: the periodic heals it receives are increased by [R]13%. 8 s cooldown.",
+        "description_fr": "Un soin qui rend des PV applique Amplification des Soins à sa cible pendant 6 s : les soins périodiques qu'elle reçoit sont augmentés de [R]4 %. Recharge 8 s.",
+        "description_en": "A heal that restores HP applies Healing Amplification to its target for 6 s: the periodic heals it receives are increased by [R]4%. 8 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
@@ -1316,7 +1404,7 @@
             "effects": [
               {
                 "apply_status": "amplify",
-                "value": 13,
+                "value": 4,
                 "target_rule": "ally",
                 "duration": 6.0,
                 "require_effective_heal": true,
@@ -1328,19 +1416,19 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "amplify_pct": 10
+          "amplify_pct": 3
         },
         "rang_2": {
-          "amplify_pct": 13
+          "amplify_pct": 4
         },
         "rang_3": {
-          "amplify_pct": 15
+          "amplify_pct": 5
         },
         "rang_4": {
-          "amplify_pct": 18
+          "amplify_pct": 5
         },
         "rang_5": {
-          "amplify_pct": 20
+          "amplify_pct": 6
         }
       },
       "rank_scaling_map": {
@@ -1420,19 +1508,20 @@
       "name_en": "Lev Anak",
       "meaning": "Cœur de Titan / Titan's Heart",
       "slot": "chest",
+      "armor_weight": "heavy",
       "role": "defensive",
       "band": "B",
       "payoff_family": "ks_tank_bastion",
       "description_fr": "Un plastron forgé autour d'un éclat de cœur de titan. Plus le danger monte, plus il protège.",
       "description_en": "A cuirass forged around a shard of a titan's heart. The greater the danger, the more it shields.",
       "effect": {
-        "description_fr": "+[R]13 % de puissance des boucliers. Quand vos PV passent sous 35 % : +[R]5 % de réduction des dégâts subis pendant 6 s. Recharge 30 s.",
-        "description_en": "+[R]13% shield power. When your HP drops below 35%: +[R]5% damage reduction for 6 s. 30 s cooldown.",
+        "description_fr": "+[R]8 % de puissance des boucliers. Quand vos PV passent sous 35 % : +[R]5 % de réduction des dégâts subis pendant 10 s. Recharge 30 s.",
+        "description_en": "+[R]8% shield power. When your HP drops below 35%: +[R]5% damage reduction for 10 s. 30 s cooldown.",
         "type": "combat_proc",
         "effects": [
           {
             "stat": "shield_power",
-            "value": 13,
+            "value": 8,
             "duration": -1,
             "scalable": true
           }
@@ -1447,7 +1536,7 @@
                 "apply_status": "damage_reduction_up",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 6.0,
+                "duration": 10.0,
                 "scalable": true
               }
             ]
@@ -1456,27 +1545,27 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "shield_power": 10,
+          "shield_power": 6,
           "dr_charges": 1,
           "dr_shown": 5
         },
         "rang_2": {
-          "shield_power": 13,
+          "shield_power": 8,
           "dr_charges": 1,
           "dr_shown": 5
         },
         "rang_3": {
-          "shield_power": 15,
+          "shield_power": 9,
           "dr_charges": 2,
           "dr_shown": 10
         },
         "rang_4": {
-          "shield_power": 18,
+          "shield_power": 11,
           "dr_charges": 2,
           "dr_shown": 10
         },
         "rang_5": {
-          "shield_power": 20,
+          "shield_power": 12,
           "dr_charges": 3,
           "dr_shown": 15
         }
@@ -1500,6 +1589,7 @@
       "name_en": "Tzaad Ruach",
       "meaning": "Pas du Vent / Wind Step",
       "slot": "legs",
+      "armor_weight": "medium",
       "role": "utility",
       "description_fr": "Des jambières si légères que le porteur semble danser au-dessus du sol.",
       "description_en": "Greaves so light the wearer seems to dance above the ground.",
@@ -1567,27 +1657,41 @@
       "description_fr": "Un croc suspendu qui ne se rassasie jamais ; chaque mort abreuve son porteur.",
       "description_en": "A hanging fang that is never sated; every death slakes its bearer.",
       "effect": {
-        "description_fr": "Quand vos PV passent sous 35 % : +[R]5 % de dégâts et +[R]5 % de vol de vie pendant 6 s. Recharge 30 s.",
-        "description_en": "When your HP drops below 35%: +[R]5% damage and +[R]5% lifesteal for 6 s. 30 s cooldown.",
+        "description_fr": "Quand vos PV passent sous 50 % : +[R]5 % de dégâts, d'ATK, de MAG et de vol de vie pendant 5 s. Recharge 30 s.",
+        "description_en": "When your HP drops below 50%: +[R]5% damage, ATK, MAG and lifesteal for 5 s. 30 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
             "trigger": "on_hp_threshold",
-            "threshold": 0.35,
+            "threshold": 0.5,
             "cooldown": 30.0,
             "effects": [
               {
                 "apply_status": "damage_percent_up",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 6.0,
+                "duration": 5.0,
+                "scalable": true
+              },
+              {
+                "apply_status": "atk_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 5.0,
+                "scalable": true
+              },
+              {
+                "apply_status": "mag_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 5.0,
                 "scalable": true
               },
               {
                 "apply_status": "lifesteal",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 6.0,
+                "duration": 5.0,
                 "scalable": true
               }
             ]
@@ -1618,7 +1722,9 @@
       },
       "rank_scaling_map": {
         "/triggers/0/effects/0/stacks_to_apply": "fury_charges",
-        "/triggers/0/effects/1/stacks_to_apply": "fury_charges"
+        "/triggers/0/effects/1/stacks_to_apply": "fury_charges",
+        "/triggers/0/effects/2/stacks_to_apply": "fury_charges",
+        "/triggers/0/effects/3/stacks_to_apply": "fury_charges"
       },
       "source": {
         "type": "monster_drop",
@@ -1633,19 +1739,20 @@
       "name_en": "Ometz Lev",
       "meaning": "Courage / Courage",
       "slot": "belt",
+      "armor_weight": "heavy",
       "role": "defensive",
       "band": "SS",
       "payoff_family": "ks_tank_iron_will",
       "description_fr": "Une ceinture de cuir tanné que l'on serre avant la charge. Elle ne rend pas insensible aux coups, elle aide à se relever plus fort.",
       "description_en": "A tanned leather belt you tighten before the charge. It does not make you numb to blows, it helps you rise stronger.",
       "effect": {
-        "description_fr": "+[R]6 % de résistance aux effets. Quand un contrôle vous touche : +[R]5 % de dégâts pendant 5 s. Recharge 20 s.",
-        "description_en": "+[R]6% effect resistance. When a crowd control hits you: +[R]5% damage for 5 s. 20 s cooldown.",
+        "description_fr": "+[R]8 % de résistance aux effets. Quand un contrôle vous touche : +[R]5 % de dégâts et de réduction des dégâts pendant 8 s. Recharge 15 s.",
+        "description_en": "+[R]8% effect resistance. When a crowd control hits you: +[R]5% damage and damage reduction for 8 s. 15 s cooldown.",
         "type": "combat_proc",
         "effects": [
           {
             "stat": "effect_resist",
-            "value": 6,
+            "value": 8,
             "duration": -1,
             "scalable": true
           }
@@ -1653,13 +1760,20 @@
         "triggers": [
           {
             "trigger": "on_cc_received",
-            "cooldown": 20.0,
+            "cooldown": 15.0,
             "effects": [
               {
                 "apply_status": "damage_percent_up",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 5.0,
+                "duration": 8.0,
+                "scalable": true
+              },
+              {
+                "apply_status": "damage_reduction_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 8.0,
                 "scalable": true
               }
             ]
@@ -1668,34 +1782,35 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "effect_resist": 5,
-          "dmg_charges": 1,
-          "dmg_shown": 5
+          "effect_resist": 6,
+          "will_charges": 1,
+          "will_shown": 5
         },
         "rang_2": {
-          "effect_resist": 6,
-          "dmg_charges": 1,
-          "dmg_shown": 5
+          "effect_resist": 8,
+          "will_charges": 1,
+          "will_shown": 5
         },
         "rang_3": {
-          "effect_resist": 8,
-          "dmg_charges": 2,
-          "dmg_shown": 10
+          "effect_resist": 9,
+          "will_charges": 2,
+          "will_shown": 10
         },
         "rang_4": {
-          "effect_resist": 9,
-          "dmg_charges": 2,
-          "dmg_shown": 10
+          "effect_resist": 11,
+          "will_charges": 2,
+          "will_shown": 10
         },
         "rang_5": {
-          "effect_resist": 10,
-          "dmg_charges": 3,
-          "dmg_shown": 15
+          "effect_resist": 12,
+          "will_charges": 3,
+          "will_shown": 15
         }
       },
       "rank_scaling_map": {
         "/effects/0/value": "effect_resist",
-        "/triggers/0/effects/0/stacks_to_apply": "dmg_charges"
+        "/triggers/0/effects/0/stacks_to_apply": "will_charges",
+        "/triggers/0/effects/1/stacks_to_apply": "will_charges"
       },
       "source": {
         "type": "global_pool",
@@ -1710,23 +1825,31 @@
       "name_en": "Tekuma",
       "meaning": "Relèvement / Revival",
       "slot": "boots",
+      "armor_weight": "medium",
       "role": "offensive",
       "band": "A",
       "payoff_family": "ks_util_second_wind",
       "description_fr": "Des bottes de coursier usées jusqu'à la trame. Chaque ennemi tombé leur rend un peu de l'élan perdu.",
       "description_en": "Courier boots worn down to the weave. Every fallen foe gives them back a little of the lost momentum.",
       "effect": {
-        "description_fr": "Tuer un ennemi réduit de [R]13 % le temps restant de vos recharges en cours. Recharge 15 s.",
-        "description_en": "Killing an enemy cuts [R]13% off the remaining time of your active cooldowns. 15 s cooldown.",
+        "description_fr": "Tuer un ennemi réduit de [R]15 % le temps restant de vos recharges en cours et vous donne +[R]5 % de dégâts pendant 6 s. Recharge 10 s.",
+        "description_en": "Killing an enemy cuts [R]15% off the remaining time of your active cooldowns and grants +[R]5% damage for 6 s. 10 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
             "trigger": "on_kill",
-            "cooldown": 15.0,
+            "cooldown": 10.0,
             "effects": [
               {
                 "type": "cooldown_reduce_percent",
-                "value": 13,
+                "value": 15,
+                "scalable": true
+              },
+              {
+                "apply_status": "damage_percent_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 6.0,
                 "scalable": true
               }
             ]
@@ -1735,23 +1858,34 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "cd_cut": 10
+          "cd_cut": 12,
+          "rush_charges": 1,
+          "rush_shown": 5
         },
         "rang_2": {
-          "cd_cut": 13
+          "cd_cut": 15,
+          "rush_charges": 1,
+          "rush_shown": 5
         },
         "rang_3": {
-          "cd_cut": 15
+          "cd_cut": 18,
+          "rush_charges": 2,
+          "rush_shown": 10
         },
         "rang_4": {
-          "cd_cut": 18
+          "cd_cut": 21,
+          "rush_charges": 2,
+          "rush_shown": 10
         },
         "rang_5": {
-          "cd_cut": 20
+          "cd_cut": 24,
+          "rush_charges": 3,
+          "rush_shown": 15
         }
       },
       "rank_scaling_map": {
-        "/triggers/0/effects/0/value": "cd_cut"
+        "/triggers/0/effects/0/value": "cd_cut",
+        "/triggers/0/effects/1/stacks_to_apply": "rush_charges"
       },
       "source": {
         "type": "global_pool",
@@ -1766,14 +1900,15 @@
       "name_en": "Tachbulot",
       "meaning": "Stratagèmes / Stratagems",
       "slot": "helmet",
+      "armor_weight": "medium",
       "role": "offensive",
       "band": "SS",
       "payoff_family": "ks_util_tactical",
       "description_fr": "Le heaume d'un capitaine qui ne frappait qu'une fois, au bon moment. Le reste du temps, il regardait.",
       "description_en": "The helm of a captain who struck only once, at the right moment. The rest of the time, he watched.",
       "effect": {
-        "description_fr": "Après votre ultime : +[R]5 % de dégâts pendant 8 s et vous regagnez [R]10 % de votre Souffle max. Recharge 60 s.",
-        "description_en": "After your ultimate: +[R]5% damage for 8 s and restores [R]10% of your max Breath. 60 s cooldown.",
+        "description_fr": "Après votre ultime : +[R]5 % de dégâts, d'ATK et de MAG pendant 10 s et vous regagnez [R]15 % de votre Souffle max. Recharge 60 s.",
+        "description_en": "After your ultimate: +[R]5% damage, ATK and MAG for 10 s and restores [R]15% of your max Breath. 60 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
@@ -1784,11 +1919,25 @@
                 "apply_status": "damage_percent_up",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 8.0,
+                "duration": 10.0,
                 "scalable": true
               },
               {
-                "restore_souffle_pct": 10,
+                "apply_status": "atk_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 10.0,
+                "scalable": true
+              },
+              {
+                "apply_status": "mag_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 10.0,
+                "scalable": true
+              },
+              {
+                "restore_souffle_pct": 15,
                 "target_rule": "self",
                 "scalable": true
               }
@@ -1798,34 +1947,36 @@
       },
       "rank_scaling": {
         "rang_1": {
+          "souffle_pct": 12,
           "dmg_charges": 1,
-          "dmg_shown": 5,
-          "souffle_pct": 8
+          "dmg_shown": 5
         },
         "rang_2": {
+          "souffle_pct": 15,
           "dmg_charges": 1,
-          "dmg_shown": 5,
-          "souffle_pct": 10
+          "dmg_shown": 5
         },
         "rang_3": {
+          "souffle_pct": 18,
           "dmg_charges": 2,
-          "dmg_shown": 10,
-          "souffle_pct": 12
+          "dmg_shown": 10
         },
         "rang_4": {
+          "souffle_pct": 21,
           "dmg_charges": 2,
-          "dmg_shown": 10,
-          "souffle_pct": 14
+          "dmg_shown": 10
         },
         "rang_5": {
+          "souffle_pct": 24,
           "dmg_charges": 3,
-          "dmg_shown": 15,
-          "souffle_pct": 16
+          "dmg_shown": 15
         }
       },
       "rank_scaling_map": {
         "/triggers/0/effects/0/stacks_to_apply": "dmg_charges",
-        "/triggers/0/effects/1/restore_souffle_pct": "souffle_pct"
+        "/triggers/0/effects/1/stacks_to_apply": "dmg_charges",
+        "/triggers/0/effects/2/stacks_to_apply": "dmg_charges",
+        "/triggers/0/effects/3/restore_souffle_pct": "souffle_pct"
       },
       "source": {
         "type": "global_pool",
@@ -1840,25 +1991,26 @@
       "name_en": "Gachelet",
       "meaning": "Braise / Ember",
       "slot": "cape",
+      "armor_weight": "light",
       "role": "offensive",
       "band": "S",
       "payoff_family": "ks_dps_embers",
       "description_fr": "Une cape roussie dont l'ourlet rougeoie encore. Elle se réveille quand le feu prend chez l'ennemi.",
       "description_en": "A scorched cape whose hem still glows. It wakes whenever fire catches on the enemy.",
       "effect": {
-        "description_fr": "Toucher une cible en Brûlure : +[R]5 % de dégâts pendant 4 s. Recharge 8 s.",
-        "description_en": "Hitting a Burning target: +[R]5% damage for 4 s. 8 s cooldown.",
+        "description_fr": "Toucher une cible en Brûlure : +[R]5 % de dégâts pendant 5 s. Recharge 6 s.",
+        "description_en": "Hitting a Burning target: +[R]5% damage for 5 s. 6 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
             "trigger": "on_hit",
-            "cooldown": 8.0,
+            "cooldown": 6.0,
             "effects": [
               {
                 "apply_status": "damage_percent_up",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 4.0,
+                "duration": 5.0,
                 "required_target_status": "burn",
                 "scalable": true
               }
@@ -1904,33 +2056,34 @@
       "name_en": "Shalshelet",
       "meaning": "Chaîne / Chain",
       "slot": "legs",
+      "armor_weight": "light",
       "role": "offensive",
       "band": "A",
       "payoff_family": "ks_util_synergy",
       "description_fr": "Des jambières aux anneaux entrelacés. Un sort appelle le suivant, et le suivant encore.",
       "description_en": "Greaves of interlocked rings. One spell calls the next, and the next again.",
       "effect": {
-        "description_fr": "Après 3 sorts différents d'affilée : +[R]5 % de vitesse d'incantation et +5 % de dégâts pendant 5 s. Recharge 15 s.",
-        "description_en": "After 3 different spells in a row: +[R]5% cast speed and +5% damage for 5 s. 15 s cooldown.",
+        "description_fr": "Après 3 sorts différents d'affilée : +[R]5 % de vitesse d'incantation et +5 % de dégâts pendant 8 s. Recharge 12 s.",
+        "description_en": "After 3 different spells in a row: +[R]5% cast speed and +5% damage for 8 s. 12 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
             "trigger": "skill_combo",
             "skill_count": 3,
-            "cooldown": 15.0,
+            "cooldown": 12.0,
             "effects": [
               {
                 "apply_status": "cast_speed_up",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 5.0,
+                "duration": 8.0,
                 "scalable": true
               },
               {
                 "apply_status": "damage_percent_up",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 5.0
+                "duration": 8.0
               }
             ]
           }
@@ -1980,13 +2133,13 @@
       "description_fr": "Un pendentif creusé comme un puits sans fond. Plus on y puise, plus il répond.",
       "description_en": "A pendant hollowed like a bottomless well. The deeper you draw, the stronger it answers.",
       "effect": {
-        "description_fr": "+[R]3 Souffle régénéré par seconde. Quand votre Souffle passe sous 30 % : +[R]5 % de dégâts pendant 8 s. Recharge 30 s.",
-        "description_en": "+[R]3 Breath regenerated per second. When your Breath drops below 30%: +[R]5% damage for 8 s. 30 s cooldown.",
+        "description_fr": "+[R]4 Souffle régénéré par seconde. Quand votre Souffle passe sous 30 % : +[R]5 % de dégâts pendant 20 s. Recharge 30 s.",
+        "description_en": "+[R]4 Breath regenerated per second. When your Breath drops below 30%: +[R]5% damage for 20 s. 30 s cooldown.",
         "type": "combat_proc",
         "effects": [
           {
             "stat": "mp_regen",
-            "value": 3,
+            "value": 4,
             "duration": -1,
             "scalable": true
           }
@@ -2001,7 +2154,7 @@
                 "apply_status": "damage_percent_up",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 8.0,
+                "duration": 20.0,
                 "scalable": true
               }
             ]
@@ -2010,27 +2163,27 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "mp_regen": 2,
+          "mp_regen": 3,
           "dmg_charges": 1,
           "dmg_shown": 5
         },
         "rang_2": {
-          "mp_regen": 3,
+          "mp_regen": 4,
           "dmg_charges": 1,
           "dmg_shown": 5
         },
         "rang_3": {
-          "mp_regen": 3,
+          "mp_regen": 5,
           "dmg_charges": 2,
           "dmg_shown": 10
         },
         "rang_4": {
-          "mp_regen": 4,
+          "mp_regen": 5,
           "dmg_charges": 2,
           "dmg_shown": 10
         },
         "rang_5": {
-          "mp_regen": 4,
+          "mp_regen": 6,
           "dmg_charges": 3,
           "dmg_shown": 15
         }
@@ -2052,14 +2205,15 @@
       "name_en": "Makhela",
       "meaning": "Chœur / Choir",
       "slot": "chest",
+      "armor_weight": "light",
       "role": "support",
       "band": "A",
       "payoff_family": "ks_support_harmony",
       "description_fr": "Une robe brodée de lignes de chant. Quand on la porte, le groupe finit par respirer au même rythme.",
       "description_en": "A robe embroidered with lines of song. Wear it and the group ends up breathing in the same rhythm.",
       "effect": {
-        "description_fr": "Tous les 5 sorts lancés : vous et vos alliés regagnez [R]4 % de votre Souffle max.",
-        "description_en": "Every 5 spells cast: you and your allies restore [R]4% of your max Breath.",
+        "description_fr": "Tous les 5 sorts lancés : vous et vos alliés regagnez [R]8 % de votre Souffle max.",
+        "description_en": "Every 5 spells cast: you and your allies restore [R]8% of your max Breath.",
         "type": "combat_proc",
         "triggers": [
           {
@@ -2067,7 +2221,7 @@
             "skill_count": 5,
             "effects": [
               {
-                "restore_souffle_pct": 4,
+                "restore_souffle_pct": 8,
                 "target_rule": "all_allies",
                 "scalable": true
               }
@@ -2077,19 +2231,19 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "souffle_pct": 3
+          "souffle_pct": 6
         },
         "rang_2": {
-          "souffle_pct": 4
+          "souffle_pct": 8
         },
         "rang_3": {
-          "souffle_pct": 5
+          "souffle_pct": 9
         },
         "rang_4": {
-          "souffle_pct": 5
+          "souffle_pct": 11
         },
         "rang_5": {
-          "souffle_pct": 6
+          "souffle_pct": 12
         }
       },
       "rank_scaling_map": {
@@ -2108,6 +2262,7 @@
       "name_en": "Brit",
       "meaning": "Alliance / Covenant",
       "slot": "boots",
+      "armor_weight": "light",
       "role": "support",
       "band": "S",
       "payoff_family": "ks_support_accord",
@@ -2171,14 +2326,15 @@
       "name_en": "Hed",
       "meaning": "Écho / Echo",
       "slot": "cape",
+      "armor_weight": "light",
       "role": "support",
       "band": "SS",
       "payoff_family": "ks_support_echo",
       "description_fr": "Une cape qui répète chaque bénédiction en sourdine. L'écho arrive toujours après, mais il protège.",
       "description_en": "A cape that repeats every blessing under its breath. The echo always comes after, but it protects.",
       "effect": {
-        "description_fr": "Renforcer un allié lui donne un bouclier de [R]4 % de vos PV max pendant 4 s. Recharge 10 s.",
-        "description_en": "Buffing an ally grants them a shield worth [R]4% of your max HP for 4 s. 10 s cooldown.",
+        "description_fr": "Renforcer un allié lui donne un bouclier de [R]3 % de vos PV max pendant 4 s. Recharge 10 s.",
+        "description_en": "Buffing an ally grants them a shield worth [R]3% of your max HP for 4 s. 10 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
@@ -2186,7 +2342,7 @@
             "cooldown": 10.0,
             "effects": [
               {
-                "apply_shield_percent_max_hp": 4,
+                "apply_shield_percent_max_hp": 3,
                 "target_rule": "ally",
                 "duration": 4.0,
                 "scalable": true
@@ -2197,19 +2353,19 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "shield_pct": 3
+          "shield_pct": 2
         },
         "rang_2": {
-          "shield_pct": 4
+          "shield_pct": 3
         },
         "rang_3": {
-          "shield_pct": 5
+          "shield_pct": 3
         },
         "rang_4": {
-          "shield_pct": 5
+          "shield_pct": 4
         },
         "rang_5": {
-          "shield_pct": 6
+          "shield_pct": 4
         }
       },
       "rank_scaling_map": {
@@ -2228,25 +2384,26 @@
       "name_en": "Kvalim",
       "meaning": "Chaînes / Shackles",
       "slot": "helmet",
+      "armor_weight": "medium",
       "role": "utility",
       "band": "A",
       "payoff_family": "ks_util_mastery",
       "description_fr": "Un heaume dont la visière se referme comme un fer. Celui qu'il entrave ne s'en relève pas indemne.",
       "description_en": "A helm whose visor snaps shut like a shackle. Whoever it binds does not come back unharmed.",
       "effect": {
-        "description_fr": "Quand vous placez un contrôle sur un ennemi : il devient Vulnérable (+[R]5 % de dégâts subis) pendant 3 s. Recharge 12 s.",
-        "description_en": "When you land a crowd control on an enemy: it becomes Vulnerable (+[R]5% damage taken) for 3 s. 12 s cooldown.",
+        "description_fr": "Quand vous placez un contrôle sur un ennemi : il devient Vulnérable (+[R]5 % de dégâts subis) pendant 4 s. Recharge 8 s.",
+        "description_en": "When you land a crowd control on an enemy: it becomes Vulnerable (+[R]5% damage taken) for 4 s. 8 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
             "trigger": "on_cc_applied",
-            "cooldown": 12.0,
+            "cooldown": 8.0,
             "effects": [
               {
                 "apply_status": "vulnerable",
                 "target_rule": "enemy",
                 "stacks_to_apply": 1,
-                "duration": 3.0,
+                "duration": 4.0,
                 "scalable": true
               }
             ]
@@ -2291,19 +2448,20 @@
       "name_en": "Chosen",
       "meaning": "Résilience / Resilience",
       "slot": "chest",
+      "armor_weight": "heavy",
       "role": "defensive",
       "band": "S",
       "payoff_family": "ks_util_adaptation",
       "description_fr": "Un plastron marqué de vieilles cicatrices de poison. Il a appris à guérir de ce qui l'affaiblit.",
       "description_en": "A breastplate scarred by old poisons. It has learned to heal from what weakens it.",
       "effect": {
-        "description_fr": "+[R]6 % de résistance aux effets. Quand vous subissez un affaiblissement : soin de [R]4 % de vos PV max. Recharge 15 s.",
-        "description_en": "+[R]6% effect resistance. When you suffer a debuff: heals you for [R]4% of your max HP. 15 s cooldown.",
+        "description_fr": "+[R]8 % de résistance aux effets. Quand vous subissez un affaiblissement : soin de [R]5 % de vos PV max. Recharge 15 s.",
+        "description_en": "+[R]8% effect resistance. When you suffer a debuff: heals you for [R]5% of your max HP. 15 s cooldown.",
         "type": "combat_proc",
         "effects": [
           {
             "stat": "effect_resist",
-            "value": 6,
+            "value": 8,
             "duration": -1,
             "scalable": true
           }
@@ -2314,7 +2472,7 @@
             "cooldown": 15.0,
             "effects": [
               {
-                "heal_percent_max_hp": 4,
+                "heal_percent_max_hp": 5,
                 "target_rule": "self",
                 "scalable": true
               }
@@ -2324,24 +2482,24 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "effect_resist": 5,
-          "heal_pct": 3
-        },
-        "rang_2": {
           "effect_resist": 6,
           "heal_pct": 4
         },
-        "rang_3": {
+        "rang_2": {
           "effect_resist": 8,
           "heal_pct": 5
         },
-        "rang_4": {
+        "rang_3": {
           "effect_resist": 9,
-          "heal_pct": 5
+          "heal_pct": 6
+        },
+        "rang_4": {
+          "effect_resist": 11,
+          "heal_pct": 7
         },
         "rang_5": {
-          "effect_resist": 10,
-          "heal_pct": 6
+          "effect_resist": 12,
+          "heal_pct": 8
         }
       },
       "rank_scaling_map": {
@@ -2367,19 +2525,19 @@
       "description_fr": "Un collier de fils de cuivre qui grésille près de la magie. Il boit ce que l'ennemi a perdu.",
       "description_en": "A necklace of copper wires that crackles near magic. It drinks what the enemy has lost.",
       "effect": {
-        "description_fr": "Toucher une cible sous MAG - : votre résistance magique et celle de votre allié le plus proche augmentent de [R]5 % pendant 4 s. Recharge 12 s.",
-        "description_en": "Hitting a target under MAG Down: your magic resistance and your nearest ally's rise by [R]5% for 4 s. 12 s cooldown.",
+        "description_fr": "Toucher une cible sous MAG - : +[R]5 % de résistance magique et de réduction des dégâts pendant 3 s ; votre allié le plus proche gagne la même résistance magique. Recharge 8 s.",
+        "description_en": "Hitting a target under MAG Down: +[R]5% magic resistance and damage reduction for 3 s; your nearest ally gains the same magic resistance. 8 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
             "trigger": "on_hit",
-            "cooldown": 12.0,
+            "cooldown": 8.0,
             "effects": [
               {
                 "apply_status": "magic_resist_up",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 4.0,
+                "duration": 3.0,
                 "required_target_status": "mag_down",
                 "scalable": true
               },
@@ -2387,7 +2545,15 @@
                 "apply_status": "magic_resist_up",
                 "target_rule": "nearest_ally",
                 "stacks_to_apply": 1,
-                "duration": 4.0,
+                "duration": 3.0,
+                "required_target_status": "mag_down",
+                "scalable": true
+              },
+              {
+                "apply_status": "damage_reduction_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 3.0,
                 "required_target_status": "mag_down",
                 "scalable": true
               }
@@ -2397,29 +2563,30 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "mr_charges": 1,
-          "mr_shown": 5
+          "ward_charges": 1,
+          "ward_shown": 5
         },
         "rang_2": {
-          "mr_charges": 1,
-          "mr_shown": 5
+          "ward_charges": 1,
+          "ward_shown": 5
         },
         "rang_3": {
-          "mr_charges": 2,
-          "mr_shown": 10
+          "ward_charges": 2,
+          "ward_shown": 10
         },
         "rang_4": {
-          "mr_charges": 2,
-          "mr_shown": 10
+          "ward_charges": 2,
+          "ward_shown": 10
         },
         "rang_5": {
-          "mr_charges": 3,
-          "mr_shown": 15
+          "ward_charges": 3,
+          "ward_shown": 15
         }
       },
       "rank_scaling_map": {
-        "/triggers/0/effects/0/stacks_to_apply": "mr_charges",
-        "/triggers/0/effects/1/stacks_to_apply": "mr_charges"
+        "/triggers/0/effects/0/stacks_to_apply": "ward_charges",
+        "/triggers/0/effects/1/stacks_to_apply": "ward_charges",
+        "/triggers/0/effects/2/stacks_to_apply": "ward_charges"
       },
       "source": {
         "type": "global_pool",
@@ -2434,21 +2601,22 @@
       "name_en": "Shiryon Or",
       "meaning": "Armure de lumière / Armor of Light",
       "slot": "chest",
+      "armor_weight": "heavy",
       "role": "defensive",
       "band": "C",
       "payoff_family": "generic_survival",
       "description_fr": "Une cotte claire qui capte la première lueur du combat. Elle ne tient pas longtemps, mais elle tient d'abord.",
       "description_en": "A bright mail shirt that catches the first gleam of battle. It does not hold for long, but it holds first.",
       "effect": {
-        "description_fr": "Au début du combat : bouclier de [R]6 % de vos PV max pendant 8 s.",
-        "description_en": "At the start of combat: a shield worth [R]6% of your max HP for 8 s.",
+        "description_fr": "Au début du combat : bouclier de [R]13 % de vos PV max pendant 8 s.",
+        "description_en": "At the start of combat: a shield worth [R]13% of your max HP for 8 s.",
         "type": "combat_proc",
         "triggers": [
           {
             "trigger": "combat_start",
             "effects": [
               {
-                "apply_shield_percent_max_hp": 6,
+                "apply_shield_percent_max_hp": 13,
                 "target_rule": "self",
                 "duration": 8.0,
                 "scalable": true
@@ -2459,19 +2627,19 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "shield_pct": 5
+          "shield_pct": 10
         },
         "rang_2": {
-          "shield_pct": 6
+          "shield_pct": 13
         },
         "rang_3": {
-          "shield_pct": 8
+          "shield_pct": 15
         },
         "rang_4": {
-          "shield_pct": 9
+          "shield_pct": 18
         },
         "rang_5": {
-          "shield_pct": 10
+          "shield_pct": 20
         }
       },
       "rank_scaling_map": {
@@ -2490,19 +2658,20 @@
       "name_en": "Ma'ayan",
       "meaning": "Source / Spring",
       "slot": "legs",
+      "armor_weight": "light",
       "role": "support",
       "band": "A",
       "payoff_family": "generic_souffle",
       "description_fr": "Des jambières taillées dans une pierre de source. Elles gardent le Souffle au frais pour les grands moments.",
       "description_en": "Greaves carved from spring stone. They keep Breath cool for the big moments.",
       "effect": {
-        "description_fr": "+[R]3 Souffle régénéré par seconde. Après votre ultime : vous regagnez [R]13 % de votre Souffle max. Recharge 60 s.",
-        "description_en": "+[R]3 Breath regenerated per second. After your ultimate: restores [R]13% of your max Breath. 60 s cooldown.",
+        "description_fr": "+[R]5 Souffle régénéré par seconde. Après votre ultime : vous regagnez [R]40 % de votre Souffle max. Recharge 60 s.",
+        "description_en": "+[R]5 Breath regenerated per second. After your ultimate: restores [R]40% of your max Breath. 60 s cooldown.",
         "type": "combat_proc",
         "effects": [
           {
             "stat": "mp_regen",
-            "value": 3,
+            "value": 5,
             "duration": -1,
             "scalable": true
           }
@@ -2513,7 +2682,7 @@
             "cooldown": 60.0,
             "effects": [
               {
-                "restore_souffle_pct": 13,
+                "restore_souffle_pct": 40,
                 "target_rule": "self",
                 "scalable": true
               }
@@ -2523,24 +2692,24 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "mp_regen": 2,
-          "souffle_pct": 10
+          "mp_regen": 4,
+          "souffle_pct": 32
         },
         "rang_2": {
-          "mp_regen": 3,
-          "souffle_pct": 13
+          "mp_regen": 5,
+          "souffle_pct": 40
         },
         "rang_3": {
-          "mp_regen": 3,
-          "souffle_pct": 15
+          "mp_regen": 6,
+          "souffle_pct": 48
         },
         "rang_4": {
-          "mp_regen": 4,
-          "souffle_pct": 18
+          "mp_regen": 7,
+          "souffle_pct": 56
         },
         "rang_5": {
-          "mp_regen": 4,
-          "souffle_pct": 20
+          "mp_regen": 8,
+          "souffle_pct": 64
         }
       },
       "rank_scaling_map": {
@@ -2560,19 +2729,20 @@
       "name_en": "Omed",
       "meaning": "Debout / Standing",
       "slot": "boots",
+      "armor_weight": "heavy",
       "role": "defensive",
       "band": "S",
       "payoff_family": "generic_anti_cc",
       "description_fr": "Des bottes ferrées qui refusent de plier. Tombé une fois, on ne l'est pas deux.",
       "description_en": "Hobnailed boots that refuse to bend. Knocked down once, never twice.",
       "effect": {
-        "description_fr": "+[R]8 % de résistance aux effets. Après un contrôle subi : immunité aux contrôles pendant 2 s. Recharge 40 s.",
-        "description_en": "+[R]8% effect resistance. After suffering a crowd control: immune to crowd control for 2 s. 40 s cooldown.",
+        "description_fr": "+[R]10 % de résistance aux effets. Après un contrôle subi : immunité aux contrôles pendant 3 s et +[R]5 % de réduction des dégâts pendant 6 s. Recharge 20 s.",
+        "description_en": "+[R]10% effect resistance. After suffering a crowd control: immune to crowd control for 3 s and +[R]5% damage reduction for 6 s. 20 s cooldown.",
         "type": "combat_proc",
         "effects": [
           {
             "stat": "effect_resist",
-            "value": 8,
+            "value": 10,
             "duration": -1,
             "scalable": true
           }
@@ -2580,13 +2750,20 @@
         "triggers": [
           {
             "trigger": "on_cc_received",
-            "cooldown": 40.0,
+            "cooldown": 20.0,
             "effects": [
               {
                 "apply_status": "cc_immune",
                 "target_rule": "self",
                 "stacks_to_apply": 0,
-                "duration": 2.0
+                "duration": 3.0
+              },
+              {
+                "apply_status": "damage_reduction_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 6.0,
+                "scalable": true
               }
             ]
           }
@@ -2594,23 +2771,34 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "effect_resist": 6
+          "effect_resist": 8,
+          "steady_charges": 1,
+          "steady_shown": 5
         },
         "rang_2": {
-          "effect_resist": 8
+          "effect_resist": 10,
+          "steady_charges": 1,
+          "steady_shown": 5
         },
         "rang_3": {
-          "effect_resist": 9
+          "effect_resist": 12,
+          "steady_charges": 2,
+          "steady_shown": 10
         },
         "rang_4": {
-          "effect_resist": 11
+          "effect_resist": 14,
+          "steady_charges": 2,
+          "steady_shown": 10
         },
         "rang_5": {
-          "effect_resist": 12
+          "effect_resist": 16,
+          "steady_charges": 3,
+          "steady_shown": 15
         }
       },
       "rank_scaling_map": {
-        "/effects/0/value": "effect_resist"
+        "/effects/0/value": "effect_resist",
+        "/triggers/0/effects/1/stacks_to_apply": "steady_charges"
       },
       "source": {
         "type": "global_pool",
@@ -2625,19 +2813,20 @@
       "name_en": "Kova HaZman",
       "meaning": "Casque du temps / Helm of Time",
       "slot": "helmet",
+      "armor_weight": "light",
       "role": "utility",
       "band": "S",
       "payoff_family": "generic_tempo",
       "description_fr": "Un casque dont les rivets battent comme une horloge. Le temps qu'il fait gagner, il le prend ailleurs.",
       "description_en": "A helm whose rivets tick like a clock. The time it gives you, it takes from somewhere else.",
       "effect": {
-        "description_fr": "+[R]5 % de réduction de recharge. Vous recevez 10 % de soins en moins.",
-        "description_en": "+[R]5% cooldown reduction. You receive 10% less healing.",
+        "description_fr": "+[R]10 % de réduction de recharge. Vous recevez 10 % de soins en moins.",
+        "description_en": "+[R]10% cooldown reduction. You receive 10% less healing.",
         "type": "combat_proc",
         "effects": [
           {
             "stat": "cooldown_reduction",
-            "value": 5,
+            "value": 10,
             "duration": -1,
             "scalable": true
           },
@@ -2650,19 +2839,19 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "cdr": 4
+          "cdr": 8
         },
         "rang_2": {
-          "cdr": 5
+          "cdr": 10
         },
         "rang_3": {
-          "cdr": 6
+          "cdr": 12
         },
         "rang_4": {
-          "cdr": 7
+          "cdr": 14
         },
         "rang_5": {
-          "cdr": 8
+          "cdr": 16
         }
       },
       "rank_scaling_map": {
@@ -2681,14 +2870,15 @@
       "name_en": "Mehirut",
       "meaning": "Célérité / Swiftness",
       "slot": "legs",
+      "armor_weight": "light",
       "role": "utility",
       "band": "SS",
       "payoff_family": "generic_tempo",
       "description_fr": "Des jambières si légères qu'on oublie de les porter. Chaque sort lancé en rapproche un autre.",
       "description_en": "Greaves so light you forget you wear them. Every spell cast brings the next one closer.",
       "effect": {
-        "description_fr": "Tous les 4 sorts lancés : le temps restant de vos recharges en cours est réduit de [R]6 %.",
-        "description_en": "Every 4 spells cast: the remaining time of your active cooldowns is cut by [R]6%.",
+        "description_fr": "Tous les 4 sorts lancés : le temps restant de vos recharges en cours est réduit de [R]4 % et vous gagnez +[R]5 % de vitesse d'incantation pendant 5 s.",
+        "description_en": "Every 4 spells cast: the remaining time of your active cooldowns is cut by [R]4% and you gain +[R]5% cast speed for 5 s.",
         "type": "combat_proc",
         "triggers": [
           {
@@ -2697,7 +2887,14 @@
             "effects": [
               {
                 "type": "cooldown_reduce_percent",
-                "value": 6,
+                "value": 4,
+                "scalable": true
+              },
+              {
+                "apply_status": "cast_speed_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 5.0,
                 "scalable": true
               }
             ]
@@ -2706,23 +2903,34 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "cd_cut": 5
+          "cd_cut": 3,
+          "tempo_charges": 1,
+          "tempo_shown": 5
         },
         "rang_2": {
-          "cd_cut": 6
+          "cd_cut": 4,
+          "tempo_charges": 1,
+          "tempo_shown": 5
         },
         "rang_3": {
-          "cd_cut": 8
+          "cd_cut": 5,
+          "tempo_charges": 2,
+          "tempo_shown": 10
         },
         "rang_4": {
-          "cd_cut": 9
+          "cd_cut": 5,
+          "tempo_charges": 2,
+          "tempo_shown": 10
         },
         "rang_5": {
-          "cd_cut": 10
+          "cd_cut": 6,
+          "tempo_charges": 3,
+          "tempo_shown": 15
         }
       },
       "rank_scaling_map": {
-        "/triggers/0/effects/0/value": "cd_cut"
+        "/triggers/0/effects/0/value": "cd_cut",
+        "/triggers/0/effects/1/stacks_to_apply": "tempo_charges"
       },
       "source": {
         "type": "global_pool",
@@ -2737,26 +2945,34 @@
       "name_en": "Avir",
       "meaning": "Air / Air",
       "slot": "boots",
+      "armor_weight": "light",
       "role": "support",
       "band": "SS",
       "payoff_family": "generic_souffle",
       "description_fr": "Des bottes qui laissent passer le vent. Quand le Souffle manque, elles en trouvent.",
       "description_en": "Boots that let the wind through. When Breath runs short, they find some.",
       "effect": {
-        "description_fr": "Quand votre Souffle passe sous 25 % : vous régénérez [R]2 % de votre Souffle max par seconde pendant 8 s. Recharge 40 s.",
-        "description_en": "When your Breath drops below 25%: you regenerate [R]2% of your max Breath per second for 8 s. 40 s cooldown.",
+        "description_fr": "Quand votre Souffle passe sous 30 % : vous régénérez [R]2 % de votre Souffle max par seconde et gagnez +[R]5 % de vitesse d'incantation pendant 10 s. Recharge 20 s.",
+        "description_en": "When your Breath drops below 30%: you regenerate [R]2% of your max Breath per second and gain +[R]5% cast speed for 10 s. 20 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
             "trigger": "souffle_below_pct",
-            "threshold": 0.25,
-            "cooldown": 40.0,
+            "threshold": 0.3,
+            "cooldown": 20.0,
             "effects": [
               {
                 "apply_status": "mana_regen",
                 "target_rule": "self",
                 "stacks_to_apply": 1,
-                "duration": 8.0,
+                "duration": 10.0,
+                "scalable": true
+              },
+              {
+                "apply_status": "cast_speed_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 10.0,
                 "scalable": true
               }
             ]
@@ -2766,27 +2982,38 @@
       "rank_scaling": {
         "rang_1": {
           "breath_charges": 1,
-          "breath_shown": 2
+          "breath_shown": 2,
+          "haste_charges": 1,
+          "haste_shown": 5
         },
         "rang_2": {
           "breath_charges": 1,
-          "breath_shown": 2
+          "breath_shown": 2,
+          "haste_charges": 1,
+          "haste_shown": 5
         },
         "rang_3": {
           "breath_charges": 2,
-          "breath_shown": 4
+          "breath_shown": 4,
+          "haste_charges": 2,
+          "haste_shown": 10
         },
         "rang_4": {
           "breath_charges": 2,
-          "breath_shown": 4
+          "breath_shown": 4,
+          "haste_charges": 2,
+          "haste_shown": 10
         },
         "rang_5": {
           "breath_charges": 3,
-          "breath_shown": 6
+          "breath_shown": 6,
+          "haste_charges": 3,
+          "haste_shown": 15
         }
       },
       "rank_scaling_map": {
-        "/triggers/0/effects/0/stacks_to_apply": "breath_charges"
+        "/triggers/0/effects/0/stacks_to_apply": "breath_charges",
+        "/triggers/0/effects/1/stacks_to_apply": "haste_charges"
       },
       "source": {
         "type": "global_pool",
@@ -2801,14 +3028,15 @@
       "name_en": "Chevel Hatzala",
       "meaning": "Corde de secours / Lifeline",
       "slot": "belt",
+      "armor_weight": "heavy",
       "role": "defensive",
       "band": "SS",
       "payoff_family": "generic_survival",
       "description_fr": "Une corde tressée autour de la taille, usée à l'endroit où l'on s'y accroche. Elle ne sert qu'une fois par minute, mais elle sert.",
       "description_en": "A rope braided around the waist, worn where you grab it. It only works once a minute, but it works.",
       "effect": {
-        "description_fr": "Quand vos PV passent sous 25 % : soin de [R]13 % de vos PV max et +10 % de réduction des dégâts pendant 4 s. Recharge 60 s.",
-        "description_en": "When your HP drops below 25%: heals you for [R]13% of your max HP and +10% damage reduction for 4 s. 60 s cooldown.",
+        "description_fr": "Quand vos PV passent sous 25 % : soin de [R]4 % de vos PV max et +10 % de réduction des dégâts pendant 4 s. Recharge 60 s.",
+        "description_en": "When your HP drops below 25%: heals you for [R]4% of your max HP and +10% damage reduction for 4 s. 60 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
@@ -2817,7 +3045,7 @@
             "cooldown": 60.0,
             "effects": [
               {
-                "heal_percent_max_hp": 13,
+                "heal_percent_max_hp": 4,
                 "target_rule": "self",
                 "scalable": true
               },
@@ -2833,19 +3061,19 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "heal_pct": 10
+          "heal_pct": 3
         },
         "rang_2": {
-          "heal_pct": 13
+          "heal_pct": 4
         },
         "rang_3": {
-          "heal_pct": 15
+          "heal_pct": 5
         },
         "rang_4": {
-          "heal_pct": 18
+          "heal_pct": 5
         },
         "rang_5": {
-          "heal_pct": 20
+          "heal_pct": 6
         }
       },
       "rank_scaling_map": {
@@ -2864,20 +3092,21 @@
       "name_en": "Dam Zorem",
       "meaning": "Sang qui coule / Flowing Blood",
       "slot": "legs",
+      "armor_weight": "medium",
       "role": "offensive",
       "band": "S",
       "payoff_family": "ks_dps_wounds",
       "description_fr": "Des jambières de cuir rouge sombre, raides de sang séché. Elles se réveillent quand une plaie s'ouvre.",
       "description_en": "Dark red leather greaves, stiff with dried blood. They wake when a wound opens.",
       "effect": {
-        "description_fr": "Vos Saignements infligent +[R]19 % de dégâts. Toucher une cible qui saigne : +[R]5 % de chance critique pendant 4 s. Recharge 10 s.",
-        "description_en": "Your Bleeds deal +[R]19% damage. Hitting a Bleeding target: +[R]5% crit chance for 4 s. 10 s cooldown.",
+        "description_fr": "Vos Saignements infligent +[R]15 % de dégâts. Toucher une cible qui saigne : +[R]5 % de chance critique pendant 4 s. Recharge 10 s.",
+        "description_en": "Your Bleeds deal +[R]15% damage. Hitting a Bleeding target: +[R]5% crit chance for 4 s. 10 s cooldown.",
         "type": "combat_proc",
         "effects": [
           {
             "modifier": "dot_damage_bonus",
             "status_id": "bleed",
-            "value": 19,
+            "value": 15,
             "scalable": true
           }
         ],
@@ -2900,27 +3129,27 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "bleed_bonus": 15,
+          "bleed_bonus": 12,
           "crit_charges": 1,
           "crit_shown": 5
         },
         "rang_2": {
-          "bleed_bonus": 19,
+          "bleed_bonus": 15,
           "crit_charges": 1,
           "crit_shown": 5
         },
         "rang_3": {
-          "bleed_bonus": 23,
+          "bleed_bonus": 18,
           "crit_charges": 2,
           "crit_shown": 10
         },
         "rang_4": {
-          "bleed_bonus": 26,
+          "bleed_bonus": 21,
           "crit_charges": 2,
           "crit_shown": 10
         },
         "rang_5": {
-          "bleed_bonus": 30,
+          "bleed_bonus": 24,
           "crit_charges": 3,
           "crit_shown": 15
         }
@@ -2942,20 +3171,21 @@
       "name_en": "Eres",
       "meaning": "Venin / Venom",
       "slot": "belt",
+      "armor_weight": "medium",
       "role": "utility",
       "band": "S",
       "payoff_family": "ks_util_venom",
       "description_fr": "Une ceinture en peau de serpent dont la boucle suinte encore. Ce qu'elle touche guérit mal.",
       "description_en": "A snakeskin belt whose buckle still oozes. What it touches heals poorly.",
       "effect": {
-        "description_fr": "Vos Poisons infligent +[R]13 % de dégâts. Toucher une cible empoisonnée : elle reçoit 15 % de soins en moins pendant 3 s. Recharge 12 s.",
-        "description_en": "Your Poisons deal +[R]13% damage. Hitting a Poisoned target: it receives 15% less healing for 3 s. 12 s cooldown.",
+        "description_fr": "Vos Poisons infligent +[R]25 % de dégâts. Toucher une cible empoisonnée : elle reçoit 15 % de soins en moins pendant 3 s. Recharge 12 s.",
+        "description_en": "Your Poisons deal +[R]25% damage. Hitting a Poisoned target: it receives 15% less healing for 3 s. 12 s cooldown.",
         "type": "combat_proc",
         "effects": [
           {
             "modifier": "dot_damage_bonus",
             "status_id": "poison",
-            "value": 13,
+            "value": 25,
             "scalable": true
           }
         ],
@@ -2977,19 +3207,19 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "poison_bonus": 10
+          "poison_bonus": 20
         },
         "rang_2": {
-          "poison_bonus": 13
+          "poison_bonus": 25
         },
         "rang_3": {
-          "poison_bonus": 15
+          "poison_bonus": 30
         },
         "rang_4": {
-          "poison_bonus": 18
+          "poison_bonus": 35
         },
         "rang_5": {
-          "poison_bonus": 20
+          "poison_bonus": 40
         }
       },
       "rank_scaling_map": {
@@ -3008,6 +3238,7 @@
       "name_en": "Tehiya",
       "meaning": "Résurrection / Revival",
       "slot": "chest",
+      "armor_weight": "light",
       "role": "support",
       "band": "SS",
       "payoff_family": "ks_support_last_breath",
@@ -3075,14 +3306,15 @@
       "name_en": "Chaver Ne'eman",
       "meaning": "Ami fidèle / Faithful Friend",
       "slot": "helmet",
+      "armor_weight": "light",
       "role": "support",
       "band": "C",
       "payoff_family": "generic_familiar",
       "description_fr": "Un casque cabossé que votre familier a pris l'habitude de mordiller. Il le reconnaît de loin.",
       "description_en": "A dented helmet your familiar has taken to chewing on. It knows it from afar.",
       "effect": {
-        "description_fr": "Au début du combat : votre familier gagne +[R]5 % d'ATK et de MAG pendant 10 s.",
-        "description_en": "At the start of combat: your familiar gains +[R]5% ATK and MAG for 10 s.",
+        "description_fr": "Au début du combat : votre familier gagne +[R]5 % d'ATK, de MAG et de dégâts pendant 30 s.",
+        "description_en": "At the start of combat: your familiar gains +[R]5% ATK, MAG and damage for 30 s.",
         "type": "combat_proc",
         "triggers": [
           {
@@ -3092,14 +3324,21 @@
                 "apply_status": "atk_up",
                 "target_rule": "own_familiar",
                 "stacks_to_apply": 1,
-                "duration": 10.0,
+                "duration": 30.0,
                 "scalable": true
               },
               {
                 "apply_status": "mag_up",
                 "target_rule": "own_familiar",
                 "stacks_to_apply": 1,
-                "duration": 10.0,
+                "duration": 30.0,
+                "scalable": true
+              },
+              {
+                "apply_status": "damage_percent_up",
+                "target_rule": "own_familiar",
+                "stacks_to_apply": 1,
+                "duration": 30.0,
                 "scalable": true
               }
             ]
@@ -3108,29 +3347,30 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "familiar_buff_charges": 1,
-          "familiar_buff_shown": 5
+          "bond_charges": 1,
+          "bond_shown": 5
         },
         "rang_2": {
-          "familiar_buff_charges": 1,
-          "familiar_buff_shown": 5
+          "bond_charges": 1,
+          "bond_shown": 5
         },
         "rang_3": {
-          "familiar_buff_charges": 2,
-          "familiar_buff_shown": 10
+          "bond_charges": 2,
+          "bond_shown": 10
         },
         "rang_4": {
-          "familiar_buff_charges": 2,
-          "familiar_buff_shown": 10
+          "bond_charges": 2,
+          "bond_shown": 10
         },
         "rang_5": {
-          "familiar_buff_charges": 3,
-          "familiar_buff_shown": 15
+          "bond_charges": 3,
+          "bond_shown": 15
         }
       },
       "rank_scaling_map": {
-        "/triggers/0/effects/0/stacks_to_apply": "familiar_buff_charges",
-        "/triggers/0/effects/1/stacks_to_apply": "familiar_buff_charges"
+        "/triggers/0/effects/0/stacks_to_apply": "bond_charges",
+        "/triggers/0/effects/1/stacks_to_apply": "bond_charges",
+        "/triggers/0/effects/2/stacks_to_apply": "bond_charges"
       },
       "source": {
         "type": "global_pool",
@@ -3145,25 +3385,40 @@
       "name_en": "Kesher Nefesh",
       "meaning": "Lien d'âme / Soul Bond",
       "slot": "legs",
+      "armor_weight": "heavy",
       "role": "defensive",
       "band": "S",
       "payoff_family": "generic_familiar",
       "description_fr": "Des jambières tissées avec un poil de votre compagnon. Quand il faiblit, vous le sentez.",
       "description_en": "Greaves woven with a strand of your companion's fur. When it falters, you feel it.",
       "effect": {
-        "description_fr": "Quand votre familier passe sous 30 % de PV : il reçoit un bouclier de [R]10 % de vos PV max pendant 5 s. Recharge 30 s.",
-        "description_en": "When your familiar drops below 30% HP: it gets a shield worth [R]10% of your max HP for 5 s. 30 s cooldown.",
+        "description_fr": "Quand votre familier passe sous 30 % de PV : il reçoit un bouclier de [R]10 % de vos PV max pendant 5 s, et vous et lui gagnez +[R]5 % de réduction des dégâts pendant 8 s. Recharge 20 s.",
+        "description_en": "When your familiar drops below 30% HP: it gets a shield worth [R]10% of your max HP for 5 s, and both of you gain +[R]5% damage reduction for 8 s. 20 s cooldown.",
         "type": "combat_proc",
         "triggers": [
           {
             "trigger": "ally_hp_below_pct",
             "threshold": 0.3,
-            "cooldown": 30.0,
+            "cooldown": 20.0,
             "effects": [
               {
                 "apply_shield_percent_max_hp": 10,
                 "target_rule": "own_familiar",
                 "duration": 5.0,
+                "scalable": true
+              },
+              {
+                "apply_status": "damage_reduction_up",
+                "target_rule": "own_familiar",
+                "stacks_to_apply": 1,
+                "duration": 8.0,
+                "scalable": true
+              },
+              {
+                "apply_status": "damage_reduction_up",
+                "target_rule": "self",
+                "stacks_to_apply": 1,
+                "duration": 8.0,
                 "scalable": true
               }
             ]
@@ -3172,23 +3427,35 @@
       },
       "rank_scaling": {
         "rang_1": {
-          "shield_pct": 8
+          "shield_pct": 8,
+          "bond_charges": 1,
+          "bond_shown": 5
         },
         "rang_2": {
-          "shield_pct": 10
+          "shield_pct": 10,
+          "bond_charges": 1,
+          "bond_shown": 5
         },
         "rang_3": {
-          "shield_pct": 12
+          "shield_pct": 12,
+          "bond_charges": 2,
+          "bond_shown": 10
         },
         "rang_4": {
-          "shield_pct": 14
+          "shield_pct": 14,
+          "bond_charges": 2,
+          "bond_shown": 10
         },
         "rang_5": {
-          "shield_pct": 16
+          "shield_pct": 16,
+          "bond_charges": 3,
+          "bond_shown": 15
         }
       },
       "rank_scaling_map": {
-        "/triggers/0/effects/0/apply_shield_percent_max_hp": "shield_pct"
+        "/triggers/0/effects/0/apply_shield_percent_max_hp": "shield_pct",
+        "/triggers/0/effects/1/stacks_to_apply": "bond_charges",
+        "/triggers/0/effects/2/stacks_to_apply": "bond_charges"
       },
       "source": {
         "type": "global_pool",

@@ -260,6 +260,26 @@ Deux modes coexistent V1 :
 
 ## Game Systems Knowledge
 
+### Budget de puissance des objets (2026-09-28) : modèle Dofus horizontal
+
+Trois familles, trois rôles : le **classique** à gros jet est la référence ; une **pièce de panoplie** seule vaut un peu moins (sa force vient du set complet) ; un **unique** a des stats modestes et un effet qui fait un build (fort seulement dans ce build). Tous les boutons sont dans la data, avec un défaut serveur = ancien comportement si la clé manque.
+
+| Bouton | Fichier / clé | Valeur |
+|---|---|---|
+| Part de légendaire du classique | `items/loot_tables.json` `equipment_drops.rarity_weights_by_danger` | 2 % (danger 1) → 10 % (danger 6), monotone ; danger 7-10 = dernière ligne |
+| Qualité fixe des pièces de panoplie | `panoplie_drops.piece_rarity` / `piece_stat_scale` | `legendary` × 0.85 (stat principale, substats, affixes et bornes affichées ; base du modèle intacte). `danger` ou absent = ancien tirage |
+| Chance de panoplie par combat | `panoplie_drops.base_chance_per_fight` | 0.015 (un set de 6 pièces de sa bande en ~100 / 32 / 14 jours Casual / Regular / Hardcore) |
+| Stats des uniques | `unique_drops.stat_rarity` / `stat_scale` | `legendary` × 0.80 ; l'unique reste affiché légendaire |
+| Poids d'armure d'un set | `items/panoplies.json` `armor_type`, `pieces.<slot>.weight` (sets `mixed`), `pieces.weapon.weapon_type` | le serveur tire le modèle de base sur ce poids / ce groupe d'arme |
+| Poids d'armure d'un unique | `items/uniques.json` `armor_weight` (emplacements d'armure) | tank / défensif → heavy ; physique, esquive, saignement, poison → medium ; magie, soin, soutien, Souffle → light |
+| Substats pondérées par rôle | `items/equipment_stats.json` `<catégorie>.substat_weight_multipliers` | clé = poids d'armure ou essence de l'arme ; hors rôle × 0.25 (plus rare, jamais interdit) ; absent = poids du pool |
+
+**Bonus de set** (valeurs figées dans `panoplies.json`, `_meta.notes.power_budget`) : passe 1 × un facteur k par set **mesuré en combat réel** (banc `kanarion_back/server-combat/tests/item_power_combat_probe.cpp`, hors CI) pour qu'un set complet vaille 1.05-1.15 × le classique légendaire MOYEN des mêmes emplacements dans son rôle (DPS : 0.75 × dégâts par seconde + 0.25 × survie ; tank : pression supportée 45 s ; soin : soins + boucliers par seconde). Le modèle AEP de la passe 2 sous-évaluait les pourcentages : k va de 0.02 à 1.5. Plafonds **par set** sur les pourcentages : `atk_percent` / `mag_percent` / `def_percent` / `hp_percent` ≤ 40, `crit_dmg` ≤ 60 ; plafond de jeu `crit_dmg` 300 (x3.0, `stats/definitions.json`, appliqué par `DamageCalculator::kCritDamageCap`). **Aucun set n'atteint seul un plafond du jeu** : total par stat ≤ ~la moitié du plafond runtime (crit 40, CDR 20, durées de buff / debuff 25, blocage 30, soins reçus 50, esquive 30, pénétrations 35, réduction des dégâts 37, chance d'effet 42, épines 50, vitesse d'incantation 25, vol de sort / vol de vie 25, résistance aux effets 42, dégâts 50). Garde : `FightLootTest.PowerBudget_NoSetReachesAGameCapAlone`. Sets de tournoi hors budget.
+
+**Uniques** : un effet paie l'état que sa famille de keystone crée (`payoff_family`), passe par les statuts canoniques partagés (`damage_percent_up`, `atk_up`, `mag_up`, `crit_chance_up`… : un seul seau, plafond de charges commun), charges 1/1/2/2/3, courbe linéaire C → SS = 2 × C, `rank_scaling_map` et jetons `[R]` cohérents (tests `C3_RankTablesFollowTheLinearCurve`). Cibles mesurées au même banc (emplacement de l'unique face au classique légendaire moyen de cet emplacement) : unique de payoff 1.0-1.1 dans son build (keystone de la famille équipée), 0.7-0.85 hors build ; unique générique 0.9-1.05.
+
+**Stats mortes interdites dans la data lootable** : `def` plat (aucune mitigation depuis le modèle de défense B, remplacé par `armor`) et `hit` (sans effet au-dessus de 100 de précision). Gardes : `FightLootTest.NoDeadStatInLootableItemData`, `NoDeadStatInAnySetBonus`, economy `StatKeyInvariant.NoDeadDefOrHitInLootableData`.
+
 ### Combat System
 - **Grid:** 10x6 — 10 rangs de 6 colonnes, soit 5 rangs et 30 cases par equipe. rows/cols sont serveur-autoritaires et envoyes au ROOM_JOINED ; `config/game.json` `combat_grids` ne sert qu'a amorcer le client
 - **Rows:** front, mid_front, mid_back, back (positioning matters for tanks/healers)
