@@ -3863,8 +3863,8 @@
       ],
       "title_fr": "Se préparer",
       "title_en": "Getting Ready",
-      "summary_fr": "Tobin veut que tu sortes équipé. Achète une potion chez Milo, fais améliorer ton arme chez Gorik avec les pierres qu'il t'a données, et reçois la bénédiction de Naya.",
-      "summary_en": "Tobin wants you to head out properly equipped. Buy a potion from Milo, have Gorik enhance your weapon with the stones he gave you, and receive Naya's blessing.",
+      "summary_fr": "Tobin veut que tu sortes équipé. Passe voir Milo, fais améliorer ton arme chez Gorik avec les pierres qu'il t'a données, et reçois la bénédiction de Naya.",
+      "summary_en": "Tobin wants you to head out properly equipped. Stop by Milo's, have Gorik enhance your weapon with the stones he gave you, and receive Naya's blessing.",
       "npc_giver": "npc_hub_guide_tobin",
       "objective_mode": "parallel",
       "rewards_on_accept": {
@@ -3878,11 +3878,12 @@
       },
       "objectives": [
         {
-          "template": "buy_item",
+          "template": "talk_to_npc",
+          "npc_id": "npc_vendor_milo",
           "count": 1,
-          "description_fr": "Acheter une potion chez Milo",
-          "description_en": "Buy a potion from Milo",
-          "_note": "Pas de filtre item_id : n'importe quel achat compte, pour qu'une potion de Souffle compte autant qu'une potion de vie.",
+          "description_fr": "Parler à Milo",
+          "description_en": "Talk to Milo",
+          "_note": "2026-09-29 : remplace buy_item (retour QA : acheter une potion sous la contrainte faisait corvee, et Aldric apprend deja les potions). Milo sert a planter le doute sur les routes du sud.",
           "hints": {
             "on_active": [
               {
@@ -4609,10 +4610,16 @@
         }
       ],
       "rewards": {
-        "xp": 100
+        "xp": 300,
+        "items": [
+          {
+            "id": "chest_medium_b1",
+            "qty": 1
+          }
+        ]
       },
-      "chain_next": "q_tut_intro_02",
-      "_note": "Onboarding V2 (2026-09-23) : donnee par Tobin (npc_giver), independante du tour de Havreden. Garde le drapeau tutorial, donc rendu automatique au dialogue avec Aldric. auto_accept_on_zone_enter conserve : un joueur qui passe la porte de l'arriere-salle sans l'avoir prise chez Tobin la recoit quand meme, a condition d'avoir fini q_havreden_arrivee (prerequisites, verifie aussi par try_auto_accept_quest)."
+      "chain_next": "q_tut_intro_03",
+      "_note": "Onboarding V2 (2026-09-23) : donnee par Tobin (npc_giver), independante du tour de Havreden. Garde le drapeau tutorial, donc rendu automatique au dialogue avec Aldric. auto_accept_on_zone_enter conserve : un joueur qui passe la porte de l'arriere-salle sans l'avoir prise chez Tobin la recoit quand meme, a condition d'avoir fini q_havreden_arrivee (prerequisites, verifie aussi par try_auto_accept_quest). 2026-09-29 : enchaine directement sur q_tut_intro_03. q_tut_intro_02 (equiper la veste) doublait « Equiper ton arme » de q_onb_forces : la veste devient une recompense de cette etape (XP 100 + 200 de la 02)."
     },
     {
       "id": "q_tut_intro_02",
@@ -4705,7 +4712,7 @@
         "xp": 200
       },
       "chain_next": "q_tut_intro_03",
-      "_note": "Onboarding V2 lot 2 (2026-09-23) : remplace 'Tes passifs' (le passif va dans q_onb_forces). Drapeau adventure_only : DEMANDE BACK S3, jamais offerte/acceptee/auto-acceptee/chain-acceptee pour un perso tournoi. Solution retenue pour la chaine : q_tut_intro_01.chain_next reste q_tut_intro_02 ; au chain-accept, si la quete suivante est adventure_only et le perso is_tournament, le serveur suit son chain_next (q_tut_intro_03) au lieu de s'arreter. Rangs C->SS = champ rank de items/equipment.json (b1..b5, un par tranche de 20 niveaux) ; rarete = nombre de substats (equipment_scaling.json rarity_system)."
+      "_note": "2026-09-29 : HORS PARCOURS pour les nouveaux personnages (q_tut_intro_01 enchaine sur 03). Gardee definie pour les personnages qui l'ont deja en cours : elle se termine et enchaine toujours sur 03. Onboarding V2 lot 2 (2026-09-23) : remplace 'Tes passifs' (le passif va dans q_onb_forces). Drapeau adventure_only : DEMANDE BACK S3, jamais offerte/acceptee/auto-acceptee/chain-acceptee pour un perso tournoi. Solution retenue pour la chaine : q_tut_intro_01.chain_next reste q_tut_intro_02 ; au chain-accept, si la quete suivante est adventure_only et le perso is_tournament, le serveur suit son chain_next (q_tut_intro_03) au lieu de s'arreter. Rangs C->SS = champ rank de items/equipment.json (b1..b5, un par tranche de 20 niveaux) ; rarete = nombre de substats (equipment_scaling.json rarity_system)."
     },
     {
       "id": "q_tut_intro_03",
