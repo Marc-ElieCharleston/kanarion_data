@@ -5208,8 +5208,8 @@
       ],
       "title_fr": "Sortie avec ton familier",
       "title_en": "Heading Out With Your Familiar",
-      "summary_fr": "Un nid de rats s'est formé près du terrier. Nettoie-le avec ton familier, puis reviens voir Aldric.",
-      "summary_en": "A rats' nest has formed near the burrow. Clear it with your familiar, then come back to Aldric.",
+      "summary_fr": "Un nid de rats s'est formé près du terrier. Nettoie-le avec ton familier, garde sa potion à portée de main, puis reviens voir Aldric.",
+      "summary_en": "A rats' nest has formed near the warren. Clear it with your familiar, keep its potion within reach, then come back to Aldric.",
       "npc_giver": "npc_tutorial_instructor_aldric",
       "objective_mode": "sequential",
       "rewards_on_accept": {
@@ -5239,6 +5239,28 @@
                 "payload": {
                   "label_fr": "Parle à Aldric pour partir",
                   "label_en": "Talk to Aldric to head out"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "assign_quickslot",
+          "count": 1,
+          "description_fr": "Placer la potion de ton familier sur la barre rapide",
+          "description_en": "Put your familiar's potion on the quick bar",
+          "_note": "2026-09-29 : remplace use_item cons_hp_potion_pet_t1. Le serveur refuse une potion sur un familier plein (RESOURCE_ALREADY_FULL, rien consomme) ; apres le nid le familier etait plein (les rats visent le joueur, la regen hors combat remplit le reste) et la chaine se bloquait. Toujours trois objectifs : un personnage deja a cette etape garde ses lignes en base (use_item a l'index 1, retour Aldric a l'index 2) sans decalage.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_07_obj1_inv",
+                "type": "arrow",
+                "target": "ui_inventory_button",
+                "priority": 88,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Ouvre ton inventaire",
+                  "label_en": "Open your inventory"
                 }
               }
             ]
@@ -5294,7 +5316,7 @@
         ]
       },
       "chain_next": "q_tut_intro_08",
-      "_note": "2026-09-29 : objectif use_item (potion de familier) RETIRE. Le serveur refuse une potion sur un familier plein (RESOURCE_ALREADY_FULL, rien consomme) : apres le nid le familier etait plein (les rats visent le joueur, et la regen hors combat remplit le reste), la chaine se bloquait. La lecon potion passe dans la replique de retour d'Aldric (q_tut_intro_07_obj_1, ex obj_2) ; la potion reste donnee a l'acceptation. 2026-09-29 : meute_sortie = cinq mob_rat niveau 5 (330 XP, inchange) au lieu de 2 loups + 1 sanglier. Onboarding V2 lot 2 (2026-09-23). XP de quete 800 -> 400 : le combat rapporte desormais sa propre XP (3 x 110 = 330 a niveau de joueur <= 10, loot_roller base_xp_for_level(5) = round(315 / 2.875) = 110, tier standard x1.0). Le sparring_trinity reste dans tutorial_encounters.json mais n'est plus reference par une quete."
+      "_note": "2026-09-29 : meute_sortie = cinq mob_rat niveau 5 (330 XP, inchange) au lieu de 2 loups + 1 sanglier. Onboarding V2 lot 2 (2026-09-23). XP de quete 800 -> 400 : le combat rapporte desormais sa propre XP (3 x 110 = 330 a niveau de joueur <= 10, loot_roller base_xp_for_level(5) = round(315 / 2.875) = 110, tier standard x1.0). Le sparring_trinity reste dans tutorial_encounters.json mais n'est plus reference par une quete."
     },
     {
       "id": "q_tut_intro_08",
