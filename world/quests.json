@@ -4035,18 +4035,17 @@
       "min_level": 1,
       "title_fr": "Ne pars pas seul",
       "title_en": "Don't Go Out Alone",
-      "summary_fr": "Personne ne tient longtemps seul dehors. Colette t'offre un compagnon de plus : choisis-le et active-le. Engage ensuite un mercenaire chez Hestia.",
-      "summary_en": "Nobody lasts long alone out there. Colette offers you one more companion: choose it and set it active. Then hire a mercenary from Hestia.",
+      "summary_fr": "Personne ne tient longtemps seul dehors. Ton empreinte a éclos chez Colette : récupère ce nouveau compagnon et active-le. Engage ensuite un mercenaire chez Hestia.",
+      "summary_en": "Nobody lasts long alone out there. Your imprint has hatched at Colette's: collect your new companion and set it active. Then hire a mercenary from Hestia.",
       "npc_giver": "npc_hub_guide_tobin",
       "objective_mode": "parallel",
       "objectives": [
         {
-          "template": "claim_familiar_gift",
-          "offer_id": "colette_village",
+          "template": "claim_hatched_familiar",
           "count": 1,
-          "description_fr": "Choisir le compagnon que Colette t'offre",
-          "description_en": "Choose the companion Colette offers you",
-          "_note": "Lot 3 (2026-09-24). Remplace choose_familiar. Cible = offer_id (config/familiar_balance.json gift_offers.colette_village : loup attaque, sanglier tank, rat heal, scarabee utilitaire). Writer : kanarion.familiar.event.gift_claimed + reconciliation a l'acceptation depuis familiar_gifts. Le familier offert va dans un emplacement porte libre (sinon au stock), jamais actif : d'ou l'objectif suivant.",
+          "description_fr": "Récupérer chez Colette le familier éclos de ton empreinte",
+          "description_en": "Collect from Colette the familiar hatched from your imprint",
+          "_note": "2026-09-29 (retour QA Wassem : trois familiers en vingt minutes). Remplace le cadeau claim_familiar_gift colette_village, deplace dans q_colette_premier_compagnon (niveau 12). Ferme la boucle de l'empreinte deposee a q_tut_intro_08 (eclosion en 2 min). Writer : kanarion.familiar.event.incubation_claimed (INCUBATION_CLAIM reussi) + reconciliation a l'acceptation depuis familiar_incubations.claimed_at. Cible optionnelle = archetype_id, vide ici.",
           "hints": {
             "on_active": [
               {
@@ -4079,11 +4078,10 @@
         },
         {
           "template": "activate_familiar",
-          "gift_offer_id": "colette_village",
           "count": 1,
           "description_fr": "Active ton nouveau familier",
           "description_en": "Set your new familiar active",
-          "_note": "Lot 3 (2026-09-24). Sans archetype_id : n'importe quel passage en actif (set_active, ou event.chosen avec is_active). Le mode parallel permet en theorie de le valider AVANT le cadeau en reactivant un ancien familier : si le back cible le familier du cadeau (alternative du contrat), rien a changer ici. Replique de Colette : q_havreden_tour_02_obj_1. Modale des regles : on_complete de l'objectif cadeau."
+          "_note": "2026-09-29 : cible gift_offer_id retiree avec le cadeau. Sans cible : n'importe quel passage en actif (SET_ACTIVE explicite). Replique de Colette : q_havreden_tour_02_obj_1. Modale des regles : on_complete de l'objectif 0."
         },
         {
           "template": "recruit_mercenary",
@@ -4128,7 +4126,7 @@
         "gold": 50
       },
       "chain_next": "q_havreden_tour_03",
-      "_note": "Tour de Havreden, etape 2 (onboarding V2, 2026-09-23). Choisir un compagnon et engager un mercenaire sont des actions. Repliques : cle q_havreden_tour_02_default chez Colette et Hestia. 2026-09-28 : visite a Verena RETIREE (retour QA de Wassem : la guilde n'a pas sa place dans l'onboarding) ; la guilde vit dans q_verena_guilde, secondaire, niveau 20. Lot 3 (2026-09-24) : choose_familiar remplace par claim_familiar_gift (colette_village) + activate_familiar, replique q_havreden_tour_02_obj_1 de Colette pour l'activation, XP 800 -> 850."
+      "_note": "Tour de Havreden, etape 2 (onboarding V2, 2026-09-23). Choisir un compagnon et engager un mercenaire sont des actions. Repliques : cle q_havreden_tour_02_default chez Colette et Hestia. 2026-09-28 : visite a Verena RETIREE (retour QA de Wassem : la guilde n'a pas sa place dans l'onboarding) ; la guilde vit dans q_verena_guilde, secondaire, niveau 20. Lot 3 (2026-09-24) : choose_familiar remplace par claim_familiar_gift (colette_village) + activate_familiar, replique q_havreden_tour_02_obj_1 de Colette pour l'activation, XP 800 -> 850. 2026-09-29 : cadeau de Colette DEPLACE dans q_colette_premier_compagnon (niveau 12) ; l'objectif 0 devient claim_hatched_familiar (recuperer le familier eclos de l'empreinte de q_tut_intro_08)."
     },
     {
       "id": "q_colette_incubation",
@@ -4474,29 +4472,32 @@
       "min_level": 12,
       "title_fr": "Un compagnon de la lisière",
       "title_en": "A Companion from the Verge",
-      "summary_fr": "Les bois autour de Havreden grouillent de créatures qui n'attendent qu'un lien. Rapporte à Colette l'empreinte de l'une d'elles, fais-la éclore, puis emmène ce nouveau compagnon au combat.",
-      "summary_en": "The woods around Havreden teem with creatures waiting for a bond. Bring Colette the imprint of one of them, hatch it, then take your new companion into battle.",
+      "summary_fr": "Colette a encore quatre bêtes qui attendent quelqu'un : un loup, un sanglier, un rat soigneur et un scarabée. Choisis celle qui complète ce que tu sais faire, puis emmène-la au combat.",
+      "summary_en": "Colette still has four beasts waiting for someone: a wolf, a boar, a healer rat and a beetle. Pick the one that complements what you can do, then take it into battle.",
       "npc_giver": "npc_familiar_breeder_colette",
       "objective_mode": "sequential",
       "objectives": [
         {
-          "template": "capture_familiar",
+          "template": "claim_familiar_gift",
+          "offer_id": "colette_village",
           "count": 1,
-          "description_fr": "Faire éclore une empreinte de Souffle chez Colette",
-          "description_en": "Hatch a Breath imprint at Colette's"
+          "description_fr": "Choisir le compagnon que Colette t'offre",
+          "description_en": "Choose the companion Colette offers you",
+          "_note": "2026-09-29 : cadeau deplace depuis q_havreden_tour_02. Offre = config/familiar_balance.json gift_offers.colette_village. Le client ouvre l'ecran du cadeau chez Colette tant que cet objectif est ouvert (main.gd pending_gift_offer). Replique : q_colette_premier_compagnon_obj_0."
         },
         {
           "template": "activate_familiar",
+          "gift_offer_id": "colette_village",
           "count": 1,
-          "description_fr": "Activer un familier",
-          "description_en": "Set a familiar active"
+          "description_fr": "Active ton nouveau compagnon",
+          "description_en": "Set your new companion active"
         }
       ],
       "rewards": {
         "xp": 135,
         "gold": 100
       },
-      "_note": "Lot 3 (2026-09-24). Etait choose_familiar : ce template n'avance plus que sur le choix tutoriel du rat d'Aldric, unique par personnage (faille P1 fermee cote serveur), donc la quete etait infaisable, ou validee d'office par la reconciliation B7. Devient capture_familiar (evenement trace_deposited) puis activate_familiar sans cible."
+      "_note": "2026-09-29 (retour QA Wassem) : devient la quete du cadeau de Colette (loup, sanglier, rat soigneur, scarabee), deplace depuis q_havreden_tour_02. Avant : capture_familiar puis activate_familiar, doublon de q_colette_incubation (niveau 7) et de q_tut_intro_08."
     },
     {
       "id": "q_varn_tetes_de_bande",
@@ -4963,7 +4964,7 @@
         ]
       },
       "rewards": {
-        "xp": 250
+        "xp": 212
       },
       "chain_next": "q_tut_intro_05b",
       "_note": "Onboarding V2 lot 2 (2026-09-23), nouvelle etape entre le choix du familier (q_tut_intro_05) et le grimoire (q_tut_intro_05b). Emplacements : config/familiar_balance.json slot_progression (2/3/4/5 a 1/20/50/100). Signature : slot 1, stockee dans rolled_skills, remplacable mais aucun des pet_books n'enseigne de signature."
@@ -5306,7 +5307,7 @@
         ]
       },
       "rewards": {
-        "xp": 400,
+        "xp": 286,
         "gold": 50,
         "items": [
           {
