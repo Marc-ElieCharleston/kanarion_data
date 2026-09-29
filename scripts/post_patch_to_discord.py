@@ -220,7 +220,54 @@ def build_embeds(patch: dict) -> list[dict]:
     return [build_single_embed(patch, "en"), build_single_embed(patch, "fr")]
 
 
+# Discord refuse un message dont les encarts totalisent plus de 6000 caracteres
+# (erreur 400 "Embed size exceeds maximum size of 6000"). La note 0.15.16 faisait
+# 6369 a elle seule, anglais plus francais, et le message partait en un bloc : la
+# note n'etait pas publiee du tout. On garde une marge sous la limite.
+EMBED_TOTAL_LIMIT = 5600
+
+
+def embed_size(embed: dict) -> int:
+    """Longueur comptee par Discord : titre, description et pied de page."""
+    return (len(embed.get("title", ""))
+            + len(embed.get("description", ""))
+            + len(embed.get("footer", {}).get("text", "")))
+
+
+def split_embeds(embeds: list[dict]) -> list[list[dict]]:
+    """Repartit les encarts en messages tenant sous la limite, ordre preserve.
+
+    Un encart seul au-dela de la limite est laisse tel quel : mieux vaut l'erreur
+    explicite de Discord qu'une note tronquee en silence.
+    """
+    lots: list[list[dict]] = []
+    courant: list[dict] = []
+    total = 0
+    for e in embeds:
+        t = embed_size(e)
+        if courant and total + t > EMBED_TOTAL_LIMIT:
+            lots.append(courant)
+            courant, total = [], 0
+        courant.append(e)
+        total += t
+    if courant:
+        lots.append(courant)
+    return lots
+
+
 def post_embeds(webhook_url: str, embeds: list[dict]) -> None:
+    """Publie les encarts, en plusieurs messages si la limite l'exige."""
+    lots = split_embeds(embeds)
+    for i, lot in enumerate(lots):
+        if i:
+            time.sleep(1.0)   # on ne bouscule pas la limite de debit du webhook
+        post_one_message(webhook_url, lot)
+        if len(lots) > 1:
+            print("  message %d/%d envoye (%d encart(s), %d caracteres)"
+                  % (i + 1, len(lots), len(lot), sum(embed_size(e) for e in lot)))
+
+
+def post_one_message(webhook_url: str, embeds: list[dict]) -> None:
     """POST one Discord webhook message containing up to 10 embeds."""
     payload = json.dumps({"embeds": embeds}).encode("utf-8")
     # Cloudflare (in front of Discord) blocks the default Python-urllib UA as
