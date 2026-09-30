@@ -1,9 +1,10 @@
 {
   "_meta": {
-    "version": "0.1",
+    "version": "0.2",
     "status": "CONCEPTION, rien n'est encore branche (2026-09-30). Regles validees avec Charleston ; les recettes, l'attribution des materiaux et le code viennent en lots.",
     "why": "Les monstres lachent 215 materiaux differents et la forge n'en utilise que 39 : les 176 autres ne servent qu'a etre revendus. Les metiers les rendent utiles, autour des trois piliers du jeu : la chasse, le Souffle et les familiers.",
-    "reuse": "Fabrication = le flux du forgeron (economy handle_craft_item, CRAFT_ITEM 0x041D/0x041E : or + materiaux consommes atomiquement, idempotent, ITEM_CRAFTED publie). A etendre : station + niveau de metier dans Recipe, XP de metier dans la meme transaction, rang tire et pose dans custom_data. Client : forge_window.gd, ouvert avec un id de station."
+    "reuse": "Fabrication = le flux du forgeron (economy handle_craft_item, CRAFT_ITEM 0x041D/0x041E : or + materiaux consommes atomiquement, idempotent, ITEM_CRAFTED publie). A etendre : station + niveau de metier dans Recipe, XP de metier dans la meme transaction, rang tire et pose dans custom_data. Client : forge_window.gd, ouvert avec un id de station.",
+    "roster": "11 metiers valides avec Charleston le 2026-09-30 : 2 de recolte (Ecorcheur, Chasseur de Failles) et 9 de fabrication. Chacun a sa niche ; la regle des 2 specialites cree le marche."
   },
   "rules": {
     "level_max": 100,
@@ -12,7 +13,12 @@
     "_specialties": "Tous les metiers sont accessibles a tous les personnages. Deux seulement, les specialites, montent jusqu'au niveau 100 ; les autres plafonnent a 50 pour FABRIQUER. Le haut de gamme demande un specialiste, ce qui cree un marche entre joueurs.",
     "specialty_change": {
       "allowed": true,
-      "gold_costs": [5000, 20000, 60000, 150000],
+      "gold_costs": [
+        5000,
+        20000,
+        60000,
+        150000
+      ],
       "_rule": "Le metier quitte GARDE son niveau mais fabrique de nouveau au plafond 50 ; le metier choisi retrouve son niveau reel. Cout croissant par changement (le dernier palier se repete).",
       "npc": "npc_class_artisan"
     },
@@ -20,8 +26,20 @@
   },
   "quality": {
     "_rule": "Chaque objet fabrique sort avec un rang de qualite C, B, A, S ou SS, tire par le serveur. Le niveau du metier et la rarete des materiaux deplacent les chances vers le haut ; un rang ne depasse jamais le plafond de la recette. Stocke dans item_instances.custom_data.rank (1..5), comme le butin. Les objets a rang deja porte par l'id (grimoires, stigmates, Koro) gardent ce modele : la recette vise un id par rang.",
-    "ranks": ["C", "B", "A", "S", "SS"],
-    "base_weights": [60, 25, 10, 4, 1],
+    "ranks": [
+      "C",
+      "B",
+      "A",
+      "S",
+      "SS"
+    ],
+    "base_weights": [
+      60,
+      25,
+      10,
+      4,
+      1
+    ],
     "per_10_levels_above_recipe_shift": 0.08,
     "rare_material_shift": 0.05,
     "rank_effect": "Le rang multiplie les statistiques ou la puissance de l'objet selon items/equipment_scaling.json (equipement) ; pour un consommable, il multiplie son effet (duree ou valeur)."
@@ -34,75 +52,228 @@
   "professions": [
     {
       "id": "skinner",
-      "name_fr": "Écorcheur", "name_en": "Skinner",
+      "name_fr": "Écorcheur",
+      "name_en": "Skinner",
       "kind": "gathering",
       "station": null,
       "master_npc": "npc_master_skinner",
       "_how": "AUTOMATIQUE apres un combat gagne : un jet supplementaire par monstre vaincu, dont la chance et la qualite montent avec le niveau d'Ecorcheur. Il donne les materiaux de base des autres metiers (cuirs de qualite, os intacts, glandes, sang). Branchement : LootContext.skinning_level + roll_skinning() dans LootRoller::roll_loot.",
-      "inputs": ["monstres vaincus"],
-      "outputs": ["cuirs, peaux et laines de qualite", "os et crocs intacts", "glandes, sang, venin"]
+      "inputs": [
+        "monstres vaincus"
+      ],
+      "outputs": [
+        "cuirs, peaux et laines de qualite",
+        "os et crocs intacts",
+        "glandes, sang, venin"
+      ]
+    },
+    {
+      "id": "fissure_hunter",
+      "name_fr": "Chasseur de Failles",
+      "name_en": "Rift Hunter",
+      "kind": "gathering",
+      "station": "workshop_fissure_hunter",
+      "master_npc": "npc_master_fissure_hunter",
+      "_how": "Recolte ce que la Faille laisse derriere elle : (1) pendant une invasion de Fissure, des ECLATS DE FAILLE reserves a ce metier, en plus de la recompense normale ; (2) de petites BRECHES cachees sur la carte, visibles de lui seul, qu'il sonde pour des reactifs rares (le serveur les place et ne les montre qu'aux chasseurs de niveau suffisant). C'est la source des reactifs du haut de gamme de TOUS les metiers.",
+      "inputs": [
+        "invasions de Fissure",
+        "breches cachees"
+      ],
+      "outputs": [
+        "eclats de Faille (reactifs rares)",
+        "boussoles de Faille : signalent coffres et Fissures proches sur la minimap"
+      ]
     },
     {
       "id": "tanner",
-      "name_fr": "Tanneur", "name_en": "Tanner",
+      "name_fr": "Tanneur",
+      "name_en": "Tanner",
       "kind": "crafting",
       "station": "workshop_tanner",
       "master_npc": "npc_master_tanner",
-      "inputs": ["peaux", "cuirs", "laines", "crins", "fourrures", "ecailles", "membranes"],
-      "outputs": ["armures legeres", "capes", "ceintures", "sacs (places d'inventaire)"],
+      "inputs": [
+        "peaux",
+        "cuirs",
+        "laines",
+        "crins",
+        "fourrures",
+        "ecailles",
+        "membranes"
+      ],
+      "outputs": [
+        "armures legeres",
+        "capes",
+        "ceintures",
+        "sacs (places d'inventaire)"
+      ],
       "_bags": "Les sacs n'existent pas encore : le serveur a 100 places fixes (MAX_INVENTORY_SLOTS). Il faudra une colonne de places par personnage."
     },
     {
       "id": "bone_carver",
-      "name_fr": "Sculpteur d'os", "name_en": "Bone Carver",
+      "name_fr": "Sculpteur d'os",
+      "name_en": "Bone Carver",
       "kind": "crafting",
       "station": "workshop_bone_carver",
       "master_npc": "npc_master_bone_carver",
-      "inputs": ["os", "crocs", "cornes", "carapaces", "griffes", "mandibules", "dards"],
-      "outputs": ["armes", "anneaux", "amulettes", "boucliers"]
+      "inputs": [
+        "os",
+        "crocs",
+        "cornes",
+        "carapaces",
+        "griffes",
+        "mandibules",
+        "dards"
+      ],
+      "outputs": [
+        "armes",
+        "anneaux",
+        "amulettes",
+        "boucliers"
+      ]
     },
     {
-      "id": "distiller",
-      "name_fr": "Distillateur de Souffle", "name_en": "Breath Distiller",
+      "id": "apothecary",
+      "name_fr": "Apothicaire",
+      "name_en": "Apothecary",
       "kind": "crafting",
-      "station": "workshop_distiller",
-      "master_npc": "npc_master_distiller",
-      "inputs": ["essences", "noyaux", "sang", "glandes", "venins", "poudres", "spores"],
-      "outputs": ["potions de vie et de Souffle", "elixirs", "cristaux de Souffle"]
+      "station": "workshop_apothecary",
+      "master_npc": "npc_master_apothecary",
+      "inputs": [
+        "essences",
+        "noyaux",
+        "sang",
+        "glandes",
+        "venins",
+        "poudres",
+        "spores"
+      ],
+      "outputs": [
+        "potions de vie et de Souffle",
+        "elixirs de combat",
+        "cristaux de Souffle"
+      ]
     },
     {
       "id": "cook",
-      "name_fr": "Cuisinier", "name_en": "Cook",
+      "name_fr": "Cuisinier",
+      "name_en": "Cook",
       "kind": "crafting",
       "station": "workshop_cook",
       "master_npc": "npc_master_cook",
-      "inputs": ["viandes", "abats", "oeufs", "herbes", "laits"],
-      "outputs": ["plats a buff (les 95 food_* existants : 19 familles x 5 rangs)"]
+      "inputs": [
+        "viandes",
+        "abats",
+        "oeufs",
+        "herbes",
+        "laits"
+      ],
+      "outputs": [
+        "plats a buff (les 95 food_* existants : 19 familles x 5 rangs)"
+      ]
+    },
+    {
+      "id": "brewer",
+      "name_fr": "Brasseur",
+      "name_en": "Brewer",
+      "kind": "crafting",
+      "station": "workshop_brewer",
+      "master_npc": "npc_master_brewer",
+      "_how": "Boissons a buff. stats/world_buffs.json a deja la source food_drink, separee de food_meal : un repas du Cuisinier et une boisson du Brasseur peuvent etre actifs en meme temps.",
+      "inputs": [
+        "herbes",
+        "baies",
+        "miel",
+        "laits",
+        "essences"
+      ],
+      "outputs": [
+        "boissons a buff (source food_drink)"
+      ]
+    },
+    {
+      "id": "scribe",
+      "name_fr": "Scribe",
+      "name_en": "Scribe",
+      "kind": "crafting",
+      "station": "workshop_scribe",
+      "master_npc": "npc_master_scribe",
+      "_how": "Parchemins de buffs HORS COMBAT (bonus d'XP, de trouvaille d'or ou d'objets, vitesse de deplacement, rappel en ville : l'effet recall_to_town existe) et copie de grimoires de familier (items/pet_books.json : aujourd'hui seul le rang C s'achete chez Colette, le reste tombe).",
+      "inputs": [
+        "ecrits",
+        "tomes",
+        "peaux fines",
+        "encres tirees des materiaux"
+      ],
+      "outputs": [
+        "parchemins hors combat",
+        "grimoires de familier copies"
+      ]
     },
     {
       "id": "breeder",
-      "name_fr": "Éleveur", "name_en": "Breeder",
+      "name_fr": "Éleveur",
+      "name_en": "Breeder",
       "kind": "crafting",
       "station": "workshop_breeder",
       "master_npc": "npc_master_breeder",
-      "inputs": ["empreintes de Souffle", "oeufs", "plumes", "duvets", "parties de monstres"],
-      "outputs": ["friandises de familier", "colliers de familier", "accelerateurs d'incubation", "potions de familier"],
+      "inputs": [
+        "empreintes de Souffle",
+        "oeufs",
+        "plumes",
+        "duvets",
+        "parties de monstres"
+      ],
+      "outputs": [
+        "friandises de familier",
+        "colliers de familier",
+        "accelerateurs d'incubation",
+        "potions de familier"
+      ],
       "_reuse": "Accelerateur = reduction partielle de familiar_incubations.ready_at (pg_store set_incubation_ready_now existe pour l'acceleration payante). Potions de familier = cons_*_potion_pet_* existantes."
     },
     {
       "id": "runist",
-      "name_fr": "Runiste", "name_en": "Runist",
+      "name_fr": "Runiste",
+      "name_en": "Runist",
       "kind": "crafting",
       "station": "workshop_runist",
       "master_npc": "npc_master_runist",
-      "inputs": ["eclats de Fissure", "noyaux runiques", "pierres enchantees", "sceaux", "reliques", "ecrits"],
-      "outputs": ["pierres de forge (even_*)", "gemmes", "stigmates de keystone", "fusion de cartes Koro"],
-      "_koro_fusion": "Aucune fusion de Koro n'existe (ni code ni data) : a concevoir, par exemple 3 cartes du meme sort et du meme rang -> 1 carte du rang au-dessus."
+      "inputs": [
+        "eclats de Fissure",
+        "noyaux runiques",
+        "pierres enchantees",
+        "sceaux",
+        "reliques",
+        "ecrits"
+      ],
+      "outputs": [
+        "pierres de forge (even_*)",
+        "gemmes",
+        "stigmates de keystone"
+      ]
+    },
+    {
+      "id": "collector",
+      "name_fr": "Collectionneur",
+      "name_en": "Collector",
+      "kind": "crafting",
+      "station": "workshop_collector",
+      "master_npc": "npc_koro_collector_yuki",
+      "_how": "Fabrique et fait monter les cartes Koro : FUSION = 3 cartes du meme sort et du meme rang -> 1 carte du rang au-dessus (C->B->A->S->SS) ; REVELATION = une carte vierge + reactifs -> une carte au hasard du rang de la recette. Aucune fusion n'existe aujourd'hui (ni code ni data). Maitre : Yuki, qui revend deja ses doubles.",
+      "inputs": [
+        "cartes Koro",
+        "eclats de Faille",
+        "pigments tires des materiaux"
+      ],
+      "outputs": [
+        "cartes Koro de rang superieur",
+        "cartes Koro revelees"
+      ]
     }
   ],
   "materials": {
     "_rule": "Chaque materiau recoit un ou plusieurs metiers dans une liste EXPLICITE (items/materials.json, champ professions), relue a la main. Un premier classement automatique par nom a montre ses limites (Lame Rouillee classee chez le Distillateur).",
     "trophies": "46 materiaux sont des TROPHEES (insignes, pieces, masques, totems, jetons) : ils iront au Runiste (metal, reliques), au Sculpteur (armes brisees) ou a des echanges de reputation plus tard."
   },
-  "achievements": "Les metiers alimentent les succes (objectif ~300) : niveau de chaque metier, premieres fabrications, fabrications de rang S et SS, prelevements. Chaque action doit laisser une trace relisible en base."
+  "achievements": "Les 11 metiers alimentent les succes (objectif ~300) : niveau de chaque metier, premieres fabrications, rangs S et SS fabriques, prelevements, eclats de Faille, fusions de Koro. Chaque action doit laisser une trace relisible en base."
 }
