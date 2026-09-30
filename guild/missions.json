@@ -1,0 +1,275 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "Missions de guilde hebdomadaires (valide par Charleston le 2026-10-01) : de GROSSES missions communes, toute la guilde y contribue, toute la guilde est recompensee.",
+    "owner": "services/guild (compteurs par guilde et par semaine, alimentes par kanarion.guild.activity.ingest)."
+  },
+  "week": {
+    "timezone": "Europe/Paris",
+    "reset_day": "monday",
+    "reset_hour": 5,
+    "_why": "Meme remise a zero que les coffres de contrats (world/quests.json contract_chests.reset)."
+  },
+  "missions_per_week": 3,
+  "draw": "Chaque lundi, 3 missions tirees dans la reserve, une par categorie (pve, pvp, divers), meme graine pour toute la guilde. Deblocage mission_reroll (niveau 8) : une relance par semaine, chef ou officier.",
+  "steps": {
+    "_rule": "Chaque mission a 3 PALIERS. Une petite guilde peut valider le premier, une grosse vise le troisieme : pas besoin d'ajuster l'objectif a la taille. Chaque palier paie a part, des qu'il est atteint.",
+    "guild_xp": [
+      3000,
+      6000,
+      12000
+    ],
+    "_guild_xp_why": "3 missions x (3000 + 6000 + 12000) = 63 000 XP de guilde par semaine au maximum, environ 3 000 par jour en moyenne pour une guilde active qui valide la plupart des paliers."
+  },
+  "member_reward": {
+    "who": "TOUTE la guilde (choix de Charleston) : chaque membre present au moment ou le palier est atteint, a condition d'etre membre depuis au moins 24 h (on ne rejoint pas une guilde le dimanche soir pour encaisser ses paliers).",
+    "payout": "Automatique, au moment du palier, par personnage. L'XP est une fraction du niveau EN COURS versee tout de suite (jamais stockee). Un membre hors ligne la recoit a sa connexion suivante, calculee a ce moment-la, pendant la meme semaine seulement.",
+    "by_step": [
+      {
+        "xp_level_fraction": 0.1,
+        "gold_by_band": [
+          150,
+          300,
+          600,
+          1200,
+          2400
+        ],
+        "arena_tokens": 5
+      },
+      {
+        "xp_level_fraction": 0.2,
+        "gold_by_band": [
+          300,
+          600,
+          1200,
+          2400,
+          4800
+        ],
+        "arena_tokens": 10
+      },
+      {
+        "xp_level_fraction": 0.3,
+        "gold_by_band": [
+          600,
+          1200,
+          2400,
+          4800,
+          9600
+        ],
+        "arena_tokens": 20,
+        "items": [
+          {
+            "id": "mat_fissure_shard",
+            "qty": 1
+          }
+        ]
+      }
+    ],
+    "bands": [
+      [
+        1,
+        20
+      ],
+      [
+        21,
+        40
+      ],
+      [
+        41,
+        60
+      ],
+      [
+        61,
+        80
+      ],
+      [
+        81,
+        100
+      ]
+    ],
+    "account_limit": "Jetons d'arene : un seul personnage par compte les touche, comme les coffres de contrats."
+  },
+  "pool": [
+    {
+      "id": "gm_win_combats",
+      "category": "pve",
+      "counts": "combat PvE gagne par un membre (monstres, contrats, donjons)",
+      "fact": "pve_win",
+      "targets": [
+        100,
+        200,
+        400
+      ],
+      "name_fr": "Victoires en campagne",
+      "name_en": "Field Victories",
+      "desc_fr": "Gagnez {n} combats contre des monstres.",
+      "desc_en": "Win {n} fights against monsters."
+    },
+    {
+      "id": "gm_star_packs",
+      "category": "pve",
+      "counts": "groupe etoile (3 etoiles ou plus) vaincu",
+      "fact": "star_pack_clear",
+      "targets": [
+        30,
+        60,
+        120
+      ],
+      "name_fr": "Chasse aux etoiles",
+      "name_en": "Star Hunt",
+      "desc_fr": "Battez {n} groupes de 3 etoiles ou plus.",
+      "desc_en": "Defeat {n} groups of 3 stars or more."
+    },
+    {
+      "id": "gm_elites_bosses",
+      "category": "pve",
+      "counts": "elite ou boss vaincu",
+      "fact": "elite_or_boss_kill",
+      "targets": [
+        40,
+        80,
+        160
+      ],
+      "name_fr": "Tetes couronnees",
+      "name_en": "Crowned Heads",
+      "desc_fr": "Abattez {n} elites ou boss.",
+      "desc_en": "Bring down {n} elites or bosses."
+    },
+    {
+      "id": "gm_contracts",
+      "category": "pve",
+      "counts": "contrat rendu (Varn ou Dargo)",
+      "fact": "contract_complete",
+      "targets": [
+        25,
+        50,
+        100
+      ],
+      "name_fr": "Tableau vide",
+      "name_en": "Empty Board",
+      "desc_fr": "Rendez {n} contrats.",
+      "desc_en": "Turn in {n} contracts."
+    },
+    {
+      "id": "gm_arena_fights",
+      "category": "pvp",
+      "counts": "match d'arene joue (gagne ou perdu), arene de matchmaking",
+      "fact": "arena_match",
+      "targets": [
+        25,
+        50,
+        100
+      ],
+      "name_fr": "Sable chaud",
+      "name_en": "Hot Sand",
+      "desc_fr": "Disputez {n} combats d'arene.",
+      "desc_en": "Fight {n} arena matches."
+    },
+    {
+      "id": "gm_arena_wins",
+      "category": "pvp",
+      "counts": "match d'arene gagne, arene de matchmaking",
+      "fact": "arena_win",
+      "targets": [
+        15,
+        30,
+        60
+      ],
+      "name_fr": "Couronne de l'arene",
+      "name_en": "Arena Crown",
+      "desc_fr": "Gagnez {n} combats d'arene.",
+      "desc_en": "Win {n} arena matches."
+    },
+    {
+      "id": "gm_dungeons",
+      "category": "misc",
+      "counts": "donjon termine",
+      "fact": "dungeon_clear",
+      "targets": [
+        5,
+        10,
+        20
+      ],
+      "name_fr": "Sous la ville",
+      "name_en": "Beneath the Town",
+      "desc_fr": "Terminez {n} donjons.",
+      "desc_en": "Clear {n} dungeons."
+    },
+    {
+      "id": "gm_captures",
+      "category": "misc",
+      "counts": "familier capture",
+      "fact": "familiar_capture",
+      "targets": [
+        10,
+        20,
+        40
+      ],
+      "name_fr": "Nouveaux compagnons",
+      "name_en": "New Companions",
+      "desc_fr": "Capturez {n} familiers.",
+      "desc_en": "Capture {n} familiars."
+    },
+    {
+      "id": "gm_chests",
+      "category": "misc",
+      "counts": "coffre de zone ouvert",
+      "fact": "zone_chest_open",
+      "targets": [
+        15,
+        30,
+        60
+      ],
+      "name_fr": "Chercheurs de tresors",
+      "name_en": "Treasure Seekers",
+      "desc_fr": "Ouvrez {n} coffres dans les zones.",
+      "desc_en": "Open {n} chests in the zones."
+    },
+    {
+      "id": "gm_invasions",
+      "category": "misc",
+      "counts": "invasion de Fissure repoussee avec au moins un membre present",
+      "fact": "fissure_invasion_won",
+      "targets": [
+        3,
+        6,
+        12
+      ],
+      "name_fr": "Gardiens de la Faille",
+      "name_en": "Rift Wardens",
+      "desc_fr": "Repoussez {n} invasions de Fissure.",
+      "desc_en": "Repel {n} Rift invasions."
+    },
+    {
+      "id": "gm_tower",
+      "category": "misc",
+      "min_guild_level": 10,
+      "counts": "etage de la Tour de la Faille gagne",
+      "fact": "tower_floor_won",
+      "targets": [
+        20,
+        40,
+        80
+      ],
+      "name_fr": "Ascension",
+      "name_en": "Ascent",
+      "desc_fr": "Gagnez {n} etages de la Tour de la Faille.",
+      "desc_en": "Win {n} floors of the Rift Tower."
+    }
+  ],
+  "facts": {
+    "_rule": "Un fait est publie par le service proprietaire sur kanarion.guild.activity.ingest (activity_type = le nom du fait), avec un source_event_id unique : la mission compte UNE fois par fait. Les faits deja publies aujourd'hui : monster_kill, boss_kill (combat), quest_complete (quest), dungeon_clear (dungeon). Les autres sont a ajouter chez leur proprietaire.",
+    "pve_win": "combat (fin de salle PvE gagnee, un fait par membre de guilde present)",
+    "star_pack_clear": "combat (star_level de la rencontre >= 3, fourni par presence au spawn)",
+    "elite_or_boss_kill": "combat (deja : boss_kill ; ajouter elite_kill)",
+    "contract_complete": "quest (rendu d'une quete de quest_board contrats ; activity_rewards.json le prevoit deja)",
+    "arena_match": "quest (grant_arena_reward, arene de matchmaking seulement)",
+    "arena_win": "quest (grant_arena_reward, won = vrai)",
+    "dungeon_clear": "dungeon (deja publie)",
+    "familiar_capture": "familiar (claim de capture)",
+    "zone_chest_open": "presence (ChestWorld)",
+    "fissure_invasion_won": "presence (FissureWorld, invasion repoussee)",
+    "tower_floor_won": "dungeon (tour, floor_result victoire)"
+  },
+  "_legacy": "systems/guilds.json (v3.0, janvier 2026, niveau max 20, missions sans paliers) est PERIME : ni le serveur ni ce fichier ne le suivent. Le client le charge encore (data_db.gd guilds_config) : a retirer quand l'ecran de guilde lira ces donnees serveur."
+}

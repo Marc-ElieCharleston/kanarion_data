@@ -23,7 +23,8 @@
       "dungeon_difficulty",
       "act_progression",
       "group_size",
-      "events"
+      "events",
+      "guild_level"
     ]
   },
   "inputs_declared_elsewhere": {
@@ -220,6 +221,34 @@
       "cap": 1.5,
       "_correction": "CORRIGE le 2026-08-14 apres contre-lecture du backend. La v1.0 de ce fichier decrivait '1 + N * 0.05, max 10 joueurs' : c'etait la table de items/loot_tables.json, qui est MORTE. Le moteur applique 1 + (N-1) * 0.055 plafonne a 1.5 (loot_roller.cpp calc_group_mult), depuis des defauts de struct qu'AUCUN fichier ne charge. Le 0.05f ecrit par content_loader.cpp:1527 va dans group_size_bonus_per_player, un champ sans aucun lecteur. Ecart reel a 4 joueurs : live 1.165 contre 1.20 annonce. C'est le meme piege que le reste du chantier, avec une couche de plus : ici la donnee morte avait un chargeur, ce qui la faisait passer pour vivante.",
       "_engine_anchor": "Etape 2 FAITE pour cette famille (audit XP 2026-08-29 F5) : le moteur lit bonus_per_extra_player + cap DEPUIS ce fichier (content_loader.cpp:1465-1471). Changer ces valeurs change le jeu. loot_types.hpp:212-213 = valeurs de repli si absent. (Lancien texte >constantes C++, etape 2 a faire< etait perime.)"
+    },
+    "guild_level": {
+      "description": "Niveau de la guilde du personnage (guild/levels.json, deblocages bonus_tier_N). Le palier le plus haut atteint s'applique ; sans guilde, ou sous le niveau 10, la famille vaut 1.0.",
+      "_select": "tier_N = le plus haut bonus_tier_N debloque par le niveau de la guilde (10, 20, 30, 40, 50).",
+      "_why_small": "Choix de Charleston (2026-10-01) : confort et PETITS bonus. +5 % d'XP au maximum ne deplace pas la cible des 7 jours de la courbe joueur.",
+      "values": {
+        "tier_1": {
+          "xp": 1.02
+        },
+        "tier_2": {
+          "xp": 1.02,
+          "gold": 1.03
+        },
+        "tier_3": {
+          "xp": 1.03,
+          "gold": 1.03
+        },
+        "tier_4": {
+          "xp": 1.04,
+          "gold": 1.05
+        },
+        "tier_5": {
+          "xp": 1.05,
+          "gold": 1.05,
+          "drop_chance": 1.03
+        }
+      },
+      "_no_producer_yet": "Le contexte de recompense du combat ne connait pas encore la guilde du joueur : tant qu'il ne la passe pas, la famille vaut 1.0 (neutre), comme events."
     },
     "events": {
       "description": "Evenements temporaires actives par l'exploitation. Le contexte passe l'evenement actif, ou aucun.",
