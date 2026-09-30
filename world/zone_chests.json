@@ -1,0 +1,98 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-09-30",
+    "description": "Coffres de zone (valide par Charleston le 2026-09-30). Un coffre apparait de temps en temps dans une AIRE de monstres (world/zones.json spawn_areas), a un point tire dans les bornes de l'aire comme un monstre. Le PREMIER qui l'ouvre le prend : son groupe present dans la zone recoit le meme contenu, puis le coffre disparait pour tout le monde. Ouverture instantanee, pas de PvP.",
+    "owner": "services/presence (apparition, ouverture, tirage du contenu). Le client lit ce fichier pour l'AFFICHAGE seulement (portee de revelation sur la minimap, sprite).",
+    "lore": "Du Souffle libere qui s'est solidifie tout seul, sans attendre personne : la meme physique que le Cristal de Souffle, jamais un butin de depouilles."
+  },
+  "spawn": {
+    "_comment": "Par AIRE de monstres : au plus max_per_area coffres a la fois. Apres une ouverture, le suivant revient entre respawn_seconds[0] et [1]. Au demarrage du serveur, premier coffre entre first_spawn_seconds[0] et [1] (etale, pour ne pas tout faire apparaitre d'un coup).",
+    "max_per_area": 1,
+    "respawn_seconds": [600, 1200],
+    "first_spawn_seconds": [60, 600],
+    "open_range": 160,
+    "_open_range": "Distance max (px monde) entre le joueur et le coffre pour l'ouvrir. Verifiee par le serveur, sur la position qu'il connait.",
+    "minimap_reveal_range": 700,
+    "_minimap_reveal_range": "Le coffre n'apparait sur la minimap que dans ce rayon autour du joueur : on le decouvre, on ne court pas vers un point.",
+    "zones": ["village", "expedition_lv_01_10", "expedition_lv_11_20", "expedition_lv_21_30"],
+    "_zones": "Zones ou les coffres apparaissent. Chaque aire de monstres de ces zones en recoit (les aires sans monstres, donjons et taverne n'en ont pas)."
+  },
+  "tiers": {
+    "_comment": "Contenu selon le RANG de l'aire : rang = ceil(niveau max de l'aire / 20), borne a 1..5 (meme decoupage que les rangs d'objet I-V et les pierres d'amelioration). Chaque coffre donne de l'or ET `rolls` tirages ponderes dans `items` (tirage avec remise).",
+    "1": {
+      "gold": [60, 150],
+      "rolls": 2,
+      "items": [
+        {"item_id": "cons_hp_potion_t1", "weight": 25, "min": 1, "max": 3},
+        {"item_id": "cons_mp_potion_t1", "weight": 25, "min": 1, "max": 3},
+        {"item_id": "gem_minor", "weight": 15, "min": 1, "max": 1},
+        {"item_id": "mat_magic_crystal", "weight": 10, "min": 1, "max": 1},
+        {"item_id": "even_cherev_rank_1", "weight": 5, "min": 1, "max": 1},
+        {"item_id": "even_magen_rank_1", "weight": 5, "min": 1, "max": 1},
+        {"item_id": "even_koach_rank_1", "weight": 5, "min": 1, "max": 1},
+        {"item_id": "even_neshama_rank_1", "weight": 5, "min": 1, "max": 1}
+      ]
+    },
+    "2": {
+      "gold": [200, 400],
+      "rolls": 2,
+      "items": [
+        {"item_id": "cons_hp_potion_t2", "weight": 25, "min": 1, "max": 3},
+        {"item_id": "cons_mp_potion_t2", "weight": 25, "min": 1, "max": 3},
+        {"item_id": "gem_minor", "weight": 12, "min": 1, "max": 2},
+        {"item_id": "gem_major", "weight": 3, "min": 1, "max": 1},
+        {"item_id": "mat_magic_crystal", "weight": 10, "min": 1, "max": 2},
+        {"item_id": "even_cherev_rank_2", "weight": 5, "min": 1, "max": 1},
+        {"item_id": "even_magen_rank_2", "weight": 5, "min": 1, "max": 1},
+        {"item_id": "even_koach_rank_2", "weight": 5, "min": 1, "max": 1},
+        {"item_id": "even_neshama_rank_2", "weight": 5, "min": 1, "max": 1}
+      ]
+    },
+    "3": {
+      "gold": [450, 800],
+      "rolls": 3,
+      "items": [
+        {"item_id": "cons_hp_potion_t3", "weight": 25, "min": 1, "max": 3},
+        {"item_id": "cons_mp_potion_t3", "weight": 25, "min": 1, "max": 3},
+        {"item_id": "gem_minor", "weight": 10, "min": 1, "max": 2},
+        {"item_id": "gem_major", "weight": 5, "min": 1, "max": 1},
+        {"item_id": "mat_magic_crystal", "weight": 10, "min": 1, "max": 2},
+        {"item_id": "even_cherev_rank_3", "weight": 5, "min": 1, "max": 1},
+        {"item_id": "even_magen_rank_3", "weight": 5, "min": 1, "max": 1},
+        {"item_id": "even_koach_rank_3", "weight": 5, "min": 1, "max": 1},
+        {"item_id": "even_neshama_rank_3", "weight": 5, "min": 1, "max": 1}
+      ]
+    },
+    "4": {
+      "gold": [900, 1500],
+      "rolls": 3,
+      "items": [
+        {"item_id": "cons_hp_potion_t4", "weight": 25, "min": 1, "max": 3},
+        {"item_id": "cons_mp_potion_t4", "weight": 25, "min": 1, "max": 3},
+        {"item_id": "gem_minor", "weight": 8, "min": 1, "max": 2},
+        {"item_id": "gem_major", "weight": 7, "min": 1, "max": 1},
+        {"item_id": "mat_magic_crystal", "weight": 10, "min": 1, "max": 2},
+        {"item_id": "even_cherev_rank_4", "weight": 5, "min": 1, "max": 1},
+        {"item_id": "even_magen_rank_4", "weight": 5, "min": 1, "max": 1},
+        {"item_id": "even_koach_rank_4", "weight": 5, "min": 1, "max": 1},
+        {"item_id": "even_neshama_rank_4", "weight": 5, "min": 1, "max": 1}
+      ]
+    },
+    "5": {
+      "gold": [1600, 2600],
+      "rolls": 3,
+      "items": [
+        {"item_id": "cons_hp_potion_t5", "weight": 25, "min": 1, "max": 3},
+        {"item_id": "cons_mp_potion_t5", "weight": 25, "min": 1, "max": 3},
+        {"item_id": "gem_minor", "weight": 5, "min": 1, "max": 2},
+        {"item_id": "gem_major", "weight": 10, "min": 1, "max": 2},
+        {"item_id": "mat_magic_crystal", "weight": 10, "min": 1, "max": 3},
+        {"item_id": "even_cherev_rank_5", "weight": 5, "min": 1, "max": 1},
+        {"item_id": "even_magen_rank_5", "weight": 5, "min": 1, "max": 1},
+        {"item_id": "even_koach_rank_5", "weight": 5, "min": 1, "max": 1},
+        {"item_id": "even_neshama_rank_5", "weight": 5, "min": 1, "max": 1}
+      ]
+    }
+  }
+}

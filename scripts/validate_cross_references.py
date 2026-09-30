@@ -1024,6 +1024,38 @@ def validate_achievements(db: Path) -> list:
     return errors
 
 
+def validate_zone_chests(db: Path, all_item_ids: set) -> list:
+    """world/zone_chests.json : objets existants, zones connues, rangs 1..5 complets."""
+    errors = []
+    path = db / "world" / "zone_chests.json"
+    if not path.exists():
+        return errors
+    data = load_json(path)
+    zones_path = db / "world" / "zones.json"
+    zone_ids = set()
+    if zones_path.exists():
+        zones = load_json(zones_path).get("zones", [])
+        zone_ids = {z.get("id") for z in zones if isinstance(z, dict)}
+    for zid in data.get("spawn", {}).get("zones", []):
+        if zone_ids and zid not in zone_ids:
+            errors.append(f"[zone_chests.json] zone '{zid}' absente de world/zones.json")
+    tiers = {k: v for k, v in data.get("tiers", {}).items() if not k.startswith("_")}
+    for rank in ("1", "2", "3", "4", "5"):
+        if rank not in tiers:
+            errors.append(f"[zone_chests.json] rang '{rank}' manquant (rangs 1 a 5)")
+    for rank, tier in tiers.items():
+        gold = tier.get("gold", [])
+        if not (isinstance(gold, list) and len(gold) == 2 and 0 <= gold[0] <= gold[1]):
+            errors.append(f"[zone_chests.json] rang {rank} : gold doit etre [min, max]")
+        for it in tier.get("items", []):
+            iid = it.get("item_id")
+            if iid not in all_item_ids:
+                errors.append(f"[zone_chests.json] rang {rank} : objet '{iid}' inexistant")
+            if it.get("weight", 0) <= 0 or it.get("min", 1) > it.get("max", 1):
+                errors.append(f"[zone_chests.json] rang {rank} : '{iid}' poids ou quantites invalides")
+    return errors
+
+
 def main():
     # Find database root
     db_root = os.environ.get("DB_ROOT", "")
@@ -1112,6 +1144,11 @@ def main():
 
     print("[11/11] Validating the item display contract (rolls, affixes, sockets)...")
     errs = validate_item_display_contract(db, valid_stats)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12b/12] Validating zone chests (items, zones, tiers)...")
+    errs = validate_zone_chests(db, all_item_ids)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
