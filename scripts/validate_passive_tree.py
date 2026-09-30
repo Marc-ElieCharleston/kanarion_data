@@ -11,6 +11,8 @@ Ce qu'il verifie :
   2. un seul centre, un sommet par bras, et le sommet declare dans `arms` existe
   3. petits noeuds : max_rank = rules.small_max_rank, effets sur des stats connues,
      jamais add_percent sur une stat `bonus_type: flat` (meme regle que validate_passives)
+     ni sur une stat dont la base vaut 0 (heal_power, shield_power, thorns : +X % de 0 = 0,
+     trouve par PassiveDataValidityTest sur Ferveur le 2026-09-30)
   4. grands noeuds : max_rank 1, cout = rules.costs[sorte], mecanique au catalogue,
      parametres exactement ceux du catalogue, stats et categories de statut connues
   5. aretes : extremites existantes, pas de boucle, pas de doublon, graphe connexe
@@ -44,7 +46,7 @@ def load(path):
 
 
 def stat_info(defs):
-    names, flat_only = set(), set()
+    names, flat_only, zero_base = set(), set(), set()
     for cat in defs.get("stats", {}).values():
         if isinstance(cat, dict):
             for key, value in cat.items():
@@ -52,13 +54,15 @@ def stat_info(defs):
                     names.add(key)
                     if value.get("bonus_type") == "flat":
                         flat_only.add(key)
-    return names, flat_only
+                    if value.get("default") == 0:
+                        zero_base.add(key)
+    return names, flat_only, zero_base
 
 
 def main():
     # Un chemin en argument remplace l'arbre du depot (tests du validateur).
     tree = load(sys.argv[1]) if len(sys.argv) > 1 else load(TREE)
-    stats, flat_only = stat_info(load("stats/definitions.json"))
+    stats, flat_only, zero_base = stat_info(load("stats/definitions.json"))
     status_categories = set(load("stats/status_effects.json").get("categories", []))
     rules = tree["rules"]
     mechanics = tree["mechanics"]
@@ -102,6 +106,8 @@ def main():
                     errors.append(f"{nid}: op invalide '{op}'")
                 if op == "add_percent" and stat in flat_only:
                     errors.append(f"{nid}: add_percent sur '{stat}' (bonus_type flat)")
+                elif op == "add_percent" and stat in zero_base:
+                    errors.append(f"{nid}: add_percent sur '{stat}' dont la base vaut 0 : le bonus vaut 0")
                 if not (isinstance(e.get("value_per_rank"), (int, float)) and e["value_per_rank"] > 0):
                     errors.append(f"{nid}: value_per_rank absente ou <= 0")
                 if "mechanic" in e:
