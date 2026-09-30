@@ -4,7 +4,7 @@
     "status": "CONCEPTION, rien n'est encore branche (2026-09-30). Regles validees avec Charleston ; les recettes, l'attribution des materiaux et le code viennent en lots.",
     "why": "Les monstres lachent 215 materiaux differents et la forge n'en utilise que 39 : les 176 autres ne servent qu'a etre revendus. Les metiers les rendent utiles, autour des trois piliers du jeu : la chasse, le Souffle et les familiers.",
     "reuse": "Fabrication = le flux du forgeron (economy handle_craft_item, CRAFT_ITEM 0x041D/0x041E : or + materiaux consommes atomiquement, idempotent, ITEM_CRAFTED publie). A etendre : station + niveau de metier dans Recipe, XP de metier dans la meme transaction, rang tire et pose dans custom_data. Client : forge_window.gd, ouvert avec un id de station.",
-    "roster": "14 metiers (2026-09-30) : 5 de recolte (Ecorcheur, Chasseur de Failles, Mineur, Bucheron, Pecheur) et 9 de fabrication."
+    "roster": "14 metiers (2026-09-30) : 5 de recolte (Glaneur, Chasseur de Failles, Mineur, Bucheron, Pecheur) et 9 de fabrication."
   },
   "rules": {
     "level_max": 100,
@@ -45,19 +45,19 @@
     "rank_effect": "Le rang multiplie les statistiques ou la puissance de l'objet selon items/equipment_scaling.json (equipement) ; pour un consommable, il multiplie son effet (duree ou valeur)."
   },
   "xp": {
-    "_rule": "L'XP de metier vient de la fabrication (recettes) et, pour l'Ecorcheur, des prelevements. Une recette trop basse pour le niveau du metier rapporte de moins en moins, puis rien : on monte en fabricant a son niveau.",
+    "_rule": "L'XP de metier vient de la fabrication (recettes) et, pour le Glaneur, des prelevements. Une recette trop basse pour le niveau du metier rapporte de moins en moins, puis rien : on monte en fabricant a son niveau.",
     "curve": "same_shape_as_character",
     "gray_after_levels": 20
   },
   "professions": [
     {
-      "id": "skinner",
-      "name_fr": "Écorcheur",
-      "name_en": "Skinner",
+      "id": "gleaner",
+      "name_fr": "Glaneur",
+      "name_en": "Gleaner",
       "kind": "gathering",
       "station": null,
-      "master_npc": "npc_master_skinner",
-      "_how": "AUTOMATIQUE apres un combat gagne : un jet supplementaire par monstre vaincu, dont la chance et la qualite montent avec le niveau d'Ecorcheur. Il donne les materiaux de base des autres metiers (cuirs de qualite, os intacts, glandes, sang). Branchement : LootContext.skinning_level + roll_skinning() dans LootRoller::roll_loot.",
+      "master_npc": "npc_master_gleaner",
+      "_how": "AUTOMATIQUE apres un combat gagne : un jet supplementaire par monstre vaincu, dont la chance et la qualite montent avec le niveau de Glaneur. Il donne les materiaux de base des autres metiers (cuirs de qualite, os intacts, glandes, sang). Branchement : LootContext.gleaning_level + roll_gleaning() dans LootRoller::roll_loot.",
       "inputs": [
         "monstres vaincus"
       ],
@@ -66,7 +66,7 @@
         "os et crocs intacts",
         "glandes, sang, venin"
       ],
-      "_naming_warning": "NOM A REVOIR : la regle de lore du 2026-07-30 interdit tout cadrage mort / depouilles / charognard (le Souffle est la vie, tuer une creature prise la LIBERE). 'Ecorcheur' est ce cadrage."
+      "_lore": "Nom choisi par Charleston le 2026-10-01 (regle de lore du 2026-07-30 : la vie, pas la mort). Le Glaneur recueille ce que la creature LIBEREE laisse derriere elle ; aucun cadrage depouille."
     },
     {
       "id": "fissure_hunter",
