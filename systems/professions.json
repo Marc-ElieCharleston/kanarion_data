@@ -1,0 +1,108 @@
+{
+  "_meta": {
+    "version": "0.1",
+    "status": "CONCEPTION, rien n'est encore branche (2026-09-30). Regles validees avec Charleston ; les recettes, l'attribution des materiaux et le code viennent en lots.",
+    "why": "Les monstres lachent 215 materiaux differents et la forge n'en utilise que 39 : les 176 autres ne servent qu'a etre revendus. Les metiers les rendent utiles, autour des trois piliers du jeu : la chasse, le Souffle et les familiers.",
+    "reuse": "Fabrication = le flux du forgeron (economy handle_craft_item, CRAFT_ITEM 0x041D/0x041E : or + materiaux consommes atomiquement, idempotent, ITEM_CRAFTED publie). A etendre : station + niveau de metier dans Recipe, XP de metier dans la meme transaction, rang tire et pose dans custom_data. Client : forge_window.gd, ouvert avec un id de station."
+  },
+  "rules": {
+    "level_max": 100,
+    "specialties": 2,
+    "non_specialty_level_cap": 50,
+    "_specialties": "Tous les metiers sont accessibles a tous les personnages. Deux seulement, les specialites, montent jusqu'au niveau 100 ; les autres plafonnent a 50 pour FABRIQUER. Le haut de gamme demande un specialiste, ce qui cree un marche entre joueurs.",
+    "specialty_change": {
+      "allowed": true,
+      "gold_costs": [5000, 20000, 60000, 150000],
+      "_rule": "Le metier quitte GARDE son niveau mais fabrique de nouveau au plafond 50 ; le metier choisi retrouve son niveau reel. Cout croissant par changement (le dernier palier se repete).",
+      "npc": "npc_class_artisan"
+    },
+    "scope": "character"
+  },
+  "quality": {
+    "_rule": "Chaque objet fabrique sort avec un rang de qualite C, B, A, S ou SS, tire par le serveur. Le niveau du metier et la rarete des materiaux deplacent les chances vers le haut ; un rang ne depasse jamais le plafond de la recette. Stocke dans item_instances.custom_data.rank (1..5), comme le butin. Les objets a rang deja porte par l'id (grimoires, stigmates, Koro) gardent ce modele : la recette vise un id par rang.",
+    "ranks": ["C", "B", "A", "S", "SS"],
+    "base_weights": [60, 25, 10, 4, 1],
+    "per_10_levels_above_recipe_shift": 0.08,
+    "rare_material_shift": 0.05,
+    "rank_effect": "Le rang multiplie les statistiques ou la puissance de l'objet selon items/equipment_scaling.json (equipement) ; pour un consommable, il multiplie son effet (duree ou valeur)."
+  },
+  "xp": {
+    "_rule": "L'XP de metier vient de la fabrication (recettes) et, pour l'Ecorcheur, des prelevements. Une recette trop basse pour le niveau du metier rapporte de moins en moins, puis rien : on monte en fabricant a son niveau.",
+    "curve": "same_shape_as_character",
+    "gray_after_levels": 20
+  },
+  "professions": [
+    {
+      "id": "skinner",
+      "name_fr": "Écorcheur", "name_en": "Skinner",
+      "kind": "gathering",
+      "station": null,
+      "master_npc": "npc_master_skinner",
+      "_how": "AUTOMATIQUE apres un combat gagne : un jet supplementaire par monstre vaincu, dont la chance et la qualite montent avec le niveau d'Ecorcheur. Il donne les materiaux de base des autres metiers (cuirs de qualite, os intacts, glandes, sang). Branchement : LootContext.skinning_level + roll_skinning() dans LootRoller::roll_loot.",
+      "inputs": ["monstres vaincus"],
+      "outputs": ["cuirs, peaux et laines de qualite", "os et crocs intacts", "glandes, sang, venin"]
+    },
+    {
+      "id": "tanner",
+      "name_fr": "Tanneur", "name_en": "Tanner",
+      "kind": "crafting",
+      "station": "workshop_tanner",
+      "master_npc": "npc_master_tanner",
+      "inputs": ["peaux", "cuirs", "laines", "crins", "fourrures", "ecailles", "membranes"],
+      "outputs": ["armures legeres", "capes", "ceintures", "sacs (places d'inventaire)"],
+      "_bags": "Les sacs n'existent pas encore : le serveur a 100 places fixes (MAX_INVENTORY_SLOTS). Il faudra une colonne de places par personnage."
+    },
+    {
+      "id": "bone_carver",
+      "name_fr": "Sculpteur d'os", "name_en": "Bone Carver",
+      "kind": "crafting",
+      "station": "workshop_bone_carver",
+      "master_npc": "npc_master_bone_carver",
+      "inputs": ["os", "crocs", "cornes", "carapaces", "griffes", "mandibules", "dards"],
+      "outputs": ["armes", "anneaux", "amulettes", "boucliers"]
+    },
+    {
+      "id": "distiller",
+      "name_fr": "Distillateur de Souffle", "name_en": "Breath Distiller",
+      "kind": "crafting",
+      "station": "workshop_distiller",
+      "master_npc": "npc_master_distiller",
+      "inputs": ["essences", "noyaux", "sang", "glandes", "venins", "poudres", "spores"],
+      "outputs": ["potions de vie et de Souffle", "elixirs", "cristaux de Souffle"]
+    },
+    {
+      "id": "cook",
+      "name_fr": "Cuisinier", "name_en": "Cook",
+      "kind": "crafting",
+      "station": "workshop_cook",
+      "master_npc": "npc_master_cook",
+      "inputs": ["viandes", "abats", "oeufs", "herbes", "laits"],
+      "outputs": ["plats a buff (les 95 food_* existants : 19 familles x 5 rangs)"]
+    },
+    {
+      "id": "breeder",
+      "name_fr": "Éleveur", "name_en": "Breeder",
+      "kind": "crafting",
+      "station": "workshop_breeder",
+      "master_npc": "npc_master_breeder",
+      "inputs": ["empreintes de Souffle", "oeufs", "plumes", "duvets", "parties de monstres"],
+      "outputs": ["friandises de familier", "colliers de familier", "accelerateurs d'incubation", "potions de familier"],
+      "_reuse": "Accelerateur = reduction partielle de familiar_incubations.ready_at (pg_store set_incubation_ready_now existe pour l'acceleration payante). Potions de familier = cons_*_potion_pet_* existantes."
+    },
+    {
+      "id": "runist",
+      "name_fr": "Runiste", "name_en": "Runist",
+      "kind": "crafting",
+      "station": "workshop_runist",
+      "master_npc": "npc_master_runist",
+      "inputs": ["eclats de Fissure", "noyaux runiques", "pierres enchantees", "sceaux", "reliques", "ecrits"],
+      "outputs": ["pierres de forge (even_*)", "gemmes", "stigmates de keystone", "fusion de cartes Koro"],
+      "_koro_fusion": "Aucune fusion de Koro n'existe (ni code ni data) : a concevoir, par exemple 3 cartes du meme sort et du meme rang -> 1 carte du rang au-dessus."
+    }
+  ],
+  "materials": {
+    "_rule": "Chaque materiau recoit un ou plusieurs metiers dans une liste EXPLICITE (items/materials.json, champ professions), relue a la main. Un premier classement automatique par nom a montre ses limites (Lame Rouillee classee chez le Distillateur).",
+    "trophies": "46 materiaux sont des TROPHEES (insignes, pieces, masques, totems, jetons) : ils iront au Runiste (metal, reliques), au Sculpteur (armes brisees) ou a des echanges de reputation plus tard."
+  },
+  "achievements": "Les metiers alimentent les succes (objectif ~300) : niveau de chaque metier, premieres fabrications, fabrications de rang S et SS, prelevements. Chaque action doit laisser une trace relisible en base."
+}
