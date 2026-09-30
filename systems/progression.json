@@ -123,9 +123,9 @@
       "group_incentive": "Trio = sweet spot (120% XP/min vs solo + 20% drop bonus)"
     },
     "divisor_base": 2.0,
-    "divisor_ramp": 3.5,
-    "divisor_cap_level": 20,
-    "_divisor_note": "PROPRIETAIRE REEL : ce bloc pilote vraiment le jeu. Diviseur qui convertit XP-dun-niveau en XP-dun-monstre : base_xp_for_level = xp_to_next(niv+1) / (divisor_base + min(niv,divisor_cap_level)/divisor_cap_level * divisor_ramp). PR-B livree : server-combat/src/loot/loot_roller.cpp et services/quest/src/db/quest_queries.cpp lisent ces trois champs, les constantes C++ ne servent plus que de repli. ⚠️ calibre pour 1v1, JAMAIS retune pour les packs -> un combat moyen vaut 0.77 niveau (audit XP F2). Le retune (5.5 -> ~19) reste a faire."
+    "divisor_ramp": 17.5,
+    "divisor_cap_level": 100,
+    "_divisor_note": "PROPRIETAIRE REEL : ce bloc pilote vraiment le jeu. Diviseur qui convertit XP-dun-niveau en XP-dun-monstre : base_xp_for_level = xp_to_next(niv+1) / (divisor_base + min(niv,divisor_cap_level)/divisor_cap_level * divisor_ramp). PR-B livree : server-combat/src/loot/loot_roller.cpp et services/quest/src/db/quest_queries.cpp lisent ces trois champs, les constantes C++ ne servent plus que de repli. ⚠️ calibre pour 1v1, JAMAIS retune pour les packs -> un combat moyen vaut 0.77 niveau (audit XP F2). Le retune (5.5 -> ~19) est FAIT, voir ci-apres. RETUNE 2026-09-30 (valide Charleston) : cap 20 -> 100 et ramp 3.5 -> 17.5. Meme pente (0.175 par niveau), donc niveaux 1-20 STRICTEMENT identiques ; au-dela l XP par monstre continue de baisser (diviseur 10.75 au niv 50, 19.5 au niv 100) au lieu de rester gele a 5.5. Cible en TEMPS : ~12 h de combat en groupe optimise pour le niv 100 (tryharder day 1), ~7 jours pour un joueur moyen ; le solo est bloque par la force des monstres 60+, pas par l XP. Hypothese de duree d un combat de groupe : 3 min niv 10, 10 min niv 60, 15 min niv 80, 20 min niv 100, a remesurer quand les monstres haut niveau seront regles. Seul bouton a retoucher : divisor_ramp (garder cap 100)."
   },
   "class_tiers": {
     "_owner": "Bloc LU par le client (kanarion_front BalanceConfig.tier_unlock_level, qui interdit tout 20 ou 60 en dur). Cote serveur la porte est ouverte par config/skill_system.json `skill_categories.<base|subclass|tier3>.unlock_at_player_level` (services/character/src/character/character_manager.cpp load_skill_unlock_levels). Les deux fichiers concordent aujourd'hui : 1 / 20 / 60. Si l'un bouge, bouger l'autre dans le meme commit.",
