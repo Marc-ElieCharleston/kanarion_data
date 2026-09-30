@@ -1089,6 +1089,34 @@ def validate_fissure_invasions(db: Path) -> list:
     return errors
 
 
+def validate_rest_npcs(db: Path) -> list:
+    """stats/world_buffs.json granted_by_npcs : chaque PNJ de repos existe."""
+    errors = []
+    npc_ids = set()
+
+    def walk(node):
+        if isinstance(node, dict):
+            if isinstance(node.get("id"), str) and node["id"].startswith("npc_"):
+                npc_ids.add(node["id"])
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v)
+    walk(load_json(db / "entities" / "npcs.json"))
+    buffs = load_json(db / "stats" / "world_buffs.json").get("world_buffs", {})
+    seen = {}
+    for bid, d in buffs.items():
+        for npc in d.get("granted_by_npcs", []):
+            # npc_tavern : identifiant generique encore envoye par un vieux client.
+            if npc not in npc_ids and npc != "npc_tavern":
+                errors.append(f"[world_buffs.json] {bid}.granted_by_npcs : PNJ inconnu '{npc}'")
+            if npc in seen:
+                errors.append(f"[world_buffs.json] '{npc}' donne deux buffs de repos ({seen[npc]}, {bid})")
+            seen[npc] = bid
+    return errors
+
+
 def validate_tower(db: Path, all_item_ids: set) -> list:
     """systems/tower.json + world/tower_floors.json : monstres actifs, cles, bornes."""
     errors = []
@@ -1235,6 +1263,11 @@ def main():
 
     print("[12c/12] Validating fissure invasions (zones, bounds)...")
     errs = validate_fissure_invasions(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12e/12] Validating rest NPCs of world buffs (tavern, healer)...")
+    errs = validate_rest_npcs(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
