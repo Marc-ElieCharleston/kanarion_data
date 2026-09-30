@@ -1,0 +1,1949 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-09-30",
+    "description": "Arbre des passifs communs (onglet Passif) : un centre, 5 bras (Attaque, Defense, Soin, Soutien, Affaiblissement), des ponts entre bras voisins. Remplacera classes/common_passives.json quand le serveur le lira (phase 2). Les passifs de classe (classes/<classe>/passives.json) ne sont PAS concernes.",
+    "status": "phase 1 : data seule. Ni le serveur ni le client ne lisent encore ce fichier.",
+    "coordinates": "pos en unites d'arbre, centre en [0,0], x vers la droite, y vers le bas. Le client met a l'echelle.",
+    "icons": "chemin relatif a kanarion_front/assets/icons/passives/ sans extension. Les icones tree/* sont a produire."
+  },
+  "rules": {
+    "max_points": 99,
+    "_max_points_note": "1 point par niveau gagne (niveaux 2 a 100). Source reelle : les grants de level-up cote serveur (voir systems/progression.json).",
+    "small_max_rank": 5,
+    "costs": {
+      "small_per_rank": 1,
+      "big": 3,
+      "unique": 5,
+      "capstone": 5,
+      "bridge": 3
+    },
+    "capstone_arm_points_required": 30,
+    "_capstone_note": "Points investis dans les noeuds du bras (rangs des petits + cout des grands). Les ponts ne comptent pour aucun bras.",
+    "grand_kinds": [
+      "big",
+      "unique",
+      "capstone",
+      "bridge"
+    ],
+    "grand_slots_by_level": [
+      {
+        "level": 20,
+        "slots": 1
+      },
+      {
+        "level": 35,
+        "slots": 2
+      },
+      {
+        "level": 50,
+        "slots": 3
+      },
+      {
+        "level": 65,
+        "slots": 4
+      },
+      {
+        "level": 80,
+        "slots": 5
+      },
+      {
+        "level": 100,
+        "slots": 6
+      }
+    ],
+    "fork_rule": "Dans un groupe de fourche, ouvrir un noeud d'un cote ferme l'autre cote.",
+    "path_rule": "Un noeud ne s'achete que s'il est relie par une arete a un noeud deja acquis (le centre est toujours acquis). Un rang suffit pour etre acquis. Retirer un noeud qui couperait le chemin d'un autre est refuse."
+  },
+  "arms": [
+    {
+      "id": "attack",
+      "name_fr": "Attaque",
+      "name_en": "Attack",
+      "color": "#e66b52",
+      "angle_deg": -90,
+      "capstone": "pt_atk_fatal_strike"
+    },
+    {
+      "id": "defense",
+      "name_fr": "Défense",
+      "name_en": "Defense",
+      "color": "#5c99e6",
+      "angle_deg": -18,
+      "capstone": "pt_def_unshakable"
+    },
+    {
+      "id": "healing",
+      "name_fr": "Soin",
+      "name_en": "Healing",
+      "color": "#5cc78f",
+      "angle_deg": 54,
+      "capstone": "pt_heal_last_breath"
+    },
+    {
+      "id": "support",
+      "name_fr": "Soutien",
+      "name_en": "Support",
+      "color": "#f2b84d",
+      "angle_deg": 126,
+      "capstone": "pt_sup_conductor"
+    },
+    {
+      "id": "debuff",
+      "name_fr": "Affaiblissement",
+      "name_en": "Weakening",
+      "color": "#a875e6",
+      "angle_deg": 198,
+      "capstone": "pt_deb_tempo_master"
+    }
+  ],
+  "mechanics": {
+    "damage_vs_target_hp_below": {
+      "params": {
+        "hp_pct": "number",
+        "damage_pct": "number"
+      },
+      "doc_fr": "Bonus de degats contre une cible sous un seuil de PV.",
+      "status": "a implementer (phase 3)"
+    },
+    "skill_range_bonus": {
+      "params": {
+        "bonus": "int",
+        "min_base_range": "int",
+        "skill_filter": "string"
+      },
+      "doc_fr": "Portee augmentee pour les sorts filtres dont la portee de base atteint le minimum.",
+      "status": "a implementer (phase 3)"
+    },
+    "stat_window_after_event": {
+      "params": {
+        "event": "string",
+        "stat": "stat",
+        "value": "number",
+        "duration_s": "number"
+      },
+      "doc_fr": "Bonus de stat temporaire apres un evenement de combat (non cumulable, rafraichi).",
+      "status": "a implementer (phase 3)"
+    },
+    "next_hit_bonus_after_event": {
+      "params": {
+        "events": "list",
+        "damage_pct": "number"
+      },
+      "doc_fr": "La prochaine attaque apres l'evenement inflige plus de degats.",
+      "status": "a implementer (phase 3)"
+    },
+    "cooldown_reduction_on_event": {
+      "params": {
+        "event": "string",
+        "seconds": "number",
+        "scope": "string",
+        "internal_cooldown_s": "number"
+      },
+      "doc_fr": "Reduit la recharge restante de sorts quand l'evenement survient.",
+      "status": "a implementer (phase 3)"
+    },
+    "damage_taken_reduction_conditional": {
+      "params": {
+        "condition": "string",
+        "reduction_pct": "number"
+      },
+      "doc_fr": "Reduit les degats recus quand la condition est vraie (zone, immobile, distance...).",
+      "status": "a implementer (phase 3)"
+    },
+    "shield_on_low_hp": {
+      "params": {
+        "hp_pct": "number",
+        "shield_pct_max_hp": "number",
+        "internal_cooldown_s": "number"
+      },
+      "doc_fr": "Bouclier quand les PV passent sous le seuil.",
+      "status": "a implementer (phase 3)"
+    },
+    "heal_bonus_target_hp_below": {
+      "params": {
+        "hp_pct": "number",
+        "heal_pct": "number"
+      },
+      "doc_fr": "Bonus de soin sur un allie sous un seuil de PV.",
+      "status": "a implementer (phase 3)"
+    },
+    "heal_splash_nearest_ally": {
+      "params": {
+        "ratio_pct": "number",
+        "skill_filter": "string"
+      },
+      "doc_fr": "Un soin mono-cible soigne aussi l'allie le plus proche de la cible.",
+      "status": "a implementer (phase 3)"
+    },
+    "heal_return_to_caster": {
+      "params": {
+        "ratio_pct": "number"
+      },
+      "doc_fr": "Une part des soins donnes revient au lanceur.",
+      "status": "a implementer (phase 3)"
+    },
+    "prevent_ally_death": {
+      "params": {
+        "heal_pct": "number",
+        "per_combat": "int"
+      },
+      "doc_fr": "Un allie qui devrait mourir reste a 1 PV puis recoit un soin.",
+      "status": "a implementer (phase 3)"
+    },
+    "buff_grants_stat": {
+      "params": {
+        "stat": "stat",
+        "value": "number"
+      },
+      "doc_fr": "Tes ameliorations sur un allie ajoutent une stat pendant leur duree.",
+      "status": "a implementer (phase 3)"
+    },
+    "buff_splash_adjacent_ally": {
+      "params": {
+        "skill_filter": "string"
+      },
+      "doc_fr": "Une amelioration mono-cible touche aussi un allie adjacent.",
+      "status": "a implementer (phase 3)"
+    },
+    "free_cast_every_n": {
+      "params": {
+        "n": "int"
+      },
+      "doc_fr": "Un sort sur N ne coute pas de Souffle.",
+      "status": "a implementer (phase 3)"
+    },
+    "damage_vs_target_with_status": {
+      "params": {
+        "status_category": "status_category",
+        "damage_pct": "number"
+      },
+      "doc_fr": "Bonus de degats contre une cible portant un statut de la categorie.",
+      "status": "a implementer (phase 3)"
+    },
+    "stat_vs_target_with_status": {
+      "params": {
+        "status_category": "status_category",
+        "stat": "stat",
+        "value": "number"
+      },
+      "doc_fr": "Bonus de stat contre une cible portant un statut de la categorie.",
+      "status": "a implementer (phase 3)"
+    },
+    "control_splash_adjacent": {
+      "params": {
+        "skill_filter": "string"
+      },
+      "doc_fr": "Un sort de controle mono-cible touche aussi une case adjacente.",
+      "status": "a implementer (phase 3)"
+    },
+    "debuff_spread_on_death": {
+      "params": {
+        "max_spread": "int"
+      },
+      "doc_fr": "A la mort d'une cible affaiblie, ses affaiblissements passent a l'ennemi le plus proche.",
+      "status": "a implementer (phase 3)"
+    },
+    "shield_from_healing_received": {
+      "params": {
+        "ratio_pct": "number"
+      },
+      "doc_fr": "Une part des soins recus devient du bouclier.",
+      "status": "a implementer (phase 3)"
+    },
+    "buff_cleanses_debuff": {
+      "params": {
+        "count": "int"
+      },
+      "doc_fr": "Tes ameliorations sur un allie retirent des affaiblissements.",
+      "status": "a implementer (phase 3)"
+    },
+    "ally_buffed_bonus_vs_debuffed": {
+      "params": {
+        "damage_pct": "number"
+      },
+      "doc_fr": "Un allie que tu as ameliore inflige plus de degats a une cible que tu as affaiblie.",
+      "status": "a implementer (phase 3)"
+    }
+  },
+  "nodes": [
+    {
+      "id": "pt_center",
+      "kind": "center",
+      "arm": null,
+      "pos": [
+        0,
+        0
+      ],
+      "icon": "tree/tree_center",
+      "name_fr": "Centre",
+      "name_en": "Center",
+      "description_fr": "Point de départ de l'arbre. Toujours acquis.",
+      "description_en": "Starting point of the tree. Always acquired.",
+      "effects": []
+    },
+    {
+      "id": "pt_atk_crit",
+      "kind": "small",
+      "arm": "attack",
+      "pos": [
+        0,
+        -70
+      ],
+      "icon": "common/critical_instinct",
+      "name_fr": "Chance critique",
+      "name_en": "Critical Chance",
+      "description_fr": "+1,6 % de chance critique par rang.",
+      "description_en": "+1.6% critical chance per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "crit",
+          "op": "add_flat",
+          "value_per_rank": 1.6
+        }
+      ]
+    },
+    {
+      "id": "pt_atk_precision",
+      "kind": "small",
+      "arm": "attack",
+      "pos": [
+        0,
+        -125
+      ],
+      "icon": "common/precision",
+      "name_fr": "Précision",
+      "name_en": "Accuracy",
+      "description_fr": "+3 précision par rang.",
+      "description_en": "+3 accuracy per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "hit",
+          "op": "add_flat",
+          "value_per_rank": 3
+        }
+      ]
+    },
+    {
+      "id": "pt_atk_execution",
+      "kind": "big",
+      "arm": "attack",
+      "pos": [
+        0,
+        -185
+      ],
+      "icon": "tree/execution",
+      "name_fr": "Exécution",
+      "name_en": "Execution",
+      "description_fr": "+15 % de dégâts contre une cible sous 30 % de ses PV.",
+      "description_en": "+15% damage against a target below 30% HP.",
+      "max_rank": 1,
+      "cost": 3,
+      "effects": [
+        {
+          "mechanic": "damage_vs_target_hp_below",
+          "params": {
+            "hp_pct": 30,
+            "damage_pct": 15
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_atk_crit_damage",
+      "kind": "small",
+      "arm": "attack",
+      "pos": [
+        -60,
+        -250
+      ],
+      "icon": "tree/crit_damage",
+      "name_fr": "Dégâts critiques",
+      "name_en": "Critical Damage",
+      "description_fr": "+6 dégâts critiques par rang.",
+      "description_en": "+6 critical damage per rank.",
+      "max_rank": 5,
+      "fork": {
+        "group": "attack",
+        "side": "a"
+      },
+      "effects": [
+        {
+          "stat": "crit_dmg",
+          "op": "add_flat",
+          "value_per_rank": 6
+        }
+      ]
+    },
+    {
+      "id": "pt_atk_reach",
+      "kind": "unique",
+      "arm": "attack",
+      "pos": [
+        -60,
+        -315
+      ],
+      "icon": "tree/reach",
+      "name_fr": "Allonge",
+      "name_en": "Reach",
+      "description_fr": "+1 portée à tes sorts offensifs dont la portée de base est d'au moins 3.",
+      "description_en": "+1 range to your offensive spells whose base range is at least 3.",
+      "max_rank": 1,
+      "cost": 5,
+      "fork": {
+        "group": "attack",
+        "side": "a"
+      },
+      "effects": [
+        {
+          "mechanic": "skill_range_bonus",
+          "params": {
+            "bonus": 1,
+            "min_base_range": 3,
+            "skill_filter": "offensive"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_atk_penetration",
+      "kind": "small",
+      "arm": "attack",
+      "pos": [
+        60,
+        -250
+      ],
+      "icon": "tree/penetration",
+      "name_fr": "Percée",
+      "name_en": "Penetration",
+      "description_fr": "+1,2 pénétration d'armure et +1,2 pénétration magique par rang.",
+      "description_en": "+1.2 armor penetration and +1.2 magic penetration per rank.",
+      "max_rank": 5,
+      "fork": {
+        "group": "attack",
+        "side": "b"
+      },
+      "effects": [
+        {
+          "stat": "armor_pen",
+          "op": "add_flat",
+          "value_per_rank": 1.2
+        },
+        {
+          "stat": "magic_pen",
+          "op": "add_flat",
+          "value_per_rank": 1.2
+        }
+      ]
+    },
+    {
+      "id": "pt_atk_killer_instinct",
+      "kind": "big",
+      "arm": "attack",
+      "pos": [
+        60,
+        -315
+      ],
+      "icon": "tree/killer_instinct",
+      "name_fr": "Instinct du tueur",
+      "name_en": "Killer Instinct",
+      "description_fr": "Après un coup critique : +10 % de chance critique pendant 3 s.",
+      "description_en": "After a critical hit: +10% critical chance for 3 s.",
+      "max_rank": 1,
+      "cost": 3,
+      "fork": {
+        "group": "attack",
+        "side": "b"
+      },
+      "effects": [
+        {
+          "mechanic": "stat_window_after_event",
+          "params": {
+            "event": "crit",
+            "stat": "crit",
+            "value": 10,
+            "duration_s": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_atk_ferocity",
+      "kind": "small",
+      "arm": "attack",
+      "pos": [
+        0,
+        -375
+      ],
+      "icon": "common/swiftness",
+      "name_fr": "Férocité",
+      "name_en": "Ferocity",
+      "description_fr": "+1,2 % de dégâts infligés par rang.",
+      "description_en": "+1.2% damage dealt per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "damage_percent",
+          "op": "add_flat",
+          "value_per_rank": 1.2
+        }
+      ]
+    },
+    {
+      "id": "pt_atk_cast_speed",
+      "kind": "small",
+      "arm": "attack",
+      "pos": [
+        105,
+        -160
+      ],
+      "icon": "tree/cast_speed",
+      "name_fr": "Vitesse d'incantation",
+      "name_en": "Casting Speed",
+      "description_fr": "+2 vitesse d'incantation par rang.",
+      "description_en": "+2 casting speed per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "cast_speed",
+          "op": "add_flat",
+          "value_per_rank": 2
+        }
+      ]
+    },
+    {
+      "id": "pt_atk_fatal_strike",
+      "kind": "capstone",
+      "arm": "attack",
+      "pos": [
+        0,
+        -440
+      ],
+      "icon": "tree/fatal_strike",
+      "name_fr": "Coup Fatal",
+      "name_en": "Fatal Strike",
+      "description_fr": "Tes coups critiques réduisent de 0,5 s la recharge du sort lancé.",
+      "description_en": "Your critical hits reduce the cooldown of the cast spell by 0.5 s.",
+      "max_rank": 1,
+      "cost": 5,
+      "effects": [
+        {
+          "mechanic": "cooldown_reduction_on_event",
+          "params": {
+            "event": "crit",
+            "seconds": 0.5,
+            "scope": "cast_skill",
+            "internal_cooldown_s": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_def_magic_resist",
+      "kind": "small",
+      "arm": "defense",
+      "pos": [
+        67,
+        -22
+      ],
+      "icon": "tree/magic_resist",
+      "name_fr": "Résistance magique",
+      "name_en": "Magic Resistance",
+      "description_fr": "+4 résistance magique par rang.",
+      "description_en": "+4 magic resistance per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "magic_resist",
+          "op": "add_flat",
+          "value_per_rank": 4
+        }
+      ]
+    },
+    {
+      "id": "pt_def_agility",
+      "kind": "small",
+      "arm": "defense",
+      "pos": [
+        119,
+        -39
+      ],
+      "icon": "common/agility",
+      "name_fr": "Agilité",
+      "name_en": "Agility",
+      "description_fr": "+3 esquive par rang.",
+      "description_en": "+3 evasion per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "flee",
+          "op": "add_flat",
+          "value_per_rank": 3
+        }
+      ]
+    },
+    {
+      "id": "pt_def_iron_skin",
+      "kind": "big",
+      "arm": "defense",
+      "pos": [
+        176,
+        -57
+      ],
+      "icon": "tree/iron_skin",
+      "name_fr": "Peau de fer",
+      "name_en": "Iron Skin",
+      "description_fr": "-15 % de dégâts reçus des attaques de zone.",
+      "description_en": "-15% damage taken from area attacks.",
+      "max_rank": 1,
+      "cost": 3,
+      "effects": [
+        {
+          "mechanic": "damage_taken_reduction_conditional",
+          "params": {
+            "condition": "area_attack",
+            "reduction_pct": 15
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_def_damage_reduction",
+      "kind": "small",
+      "arm": "defense",
+      "pos": [
+        219,
+        -134
+      ],
+      "icon": "tree/damage_reduction",
+      "name_fr": "Réduction de dégâts",
+      "name_en": "Damage Reduction",
+      "description_fr": "+0,8 % de réduction de dégâts par rang.",
+      "description_en": "+0.8% damage reduction per rank.",
+      "max_rank": 5,
+      "fork": {
+        "group": "defense",
+        "side": "a"
+      },
+      "effects": [
+        {
+          "stat": "damage_reduction",
+          "op": "add_flat",
+          "value_per_rank": 0.8
+        }
+      ]
+    },
+    {
+      "id": "pt_def_hold_position",
+      "kind": "unique",
+      "arm": "defense",
+      "pos": [
+        281,
+        -154
+      ],
+      "icon": "tree/hold_position",
+      "name_fr": "Position tenue",
+      "name_en": "Hold Position",
+      "description_fr": "Si tu ne t'es pas déplacé depuis 3 s : -10 % de dégâts reçus.",
+      "description_en": "If you have not moved for 3 s: -10% damage taken.",
+      "max_rank": 1,
+      "cost": 5,
+      "fork": {
+        "group": "defense",
+        "side": "a"
+      },
+      "effects": [
+        {
+          "mechanic": "damage_taken_reduction_conditional",
+          "params": {
+            "condition": "stationary_3s",
+            "reduction_pct": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_def_vampirism",
+      "kind": "small",
+      "arm": "defense",
+      "pos": [
+        256,
+        -20
+      ],
+      "icon": "common/vampirism",
+      "name_fr": "Vampirisme",
+      "name_en": "Vampirism",
+      "description_fr": "+1 % de vol de vie par rang.",
+      "description_en": "+1% lifesteal per rank.",
+      "max_rank": 5,
+      "fork": {
+        "group": "defense",
+        "side": "b"
+      },
+      "effects": [
+        {
+          "stat": "lifesteal",
+          "op": "add_flat",
+          "value_per_rank": 1
+        }
+      ]
+    },
+    {
+      "id": "pt_def_composure",
+      "kind": "big",
+      "arm": "defense",
+      "pos": [
+        318,
+        -40
+      ],
+      "icon": "tree/composure",
+      "name_fr": "Sang-froid",
+      "name_en": "Composure",
+      "description_fr": "-12 % de dégâts reçus des ennemis à plus de 3 cases.",
+      "description_en": "-12% damage taken from enemies more than 3 tiles away.",
+      "max_rank": 1,
+      "cost": 3,
+      "fork": {
+        "group": "defense",
+        "side": "b"
+      },
+      "effects": [
+        {
+          "mechanic": "damage_taken_reduction_conditional",
+          "params": {
+            "condition": "attacker_beyond_3_tiles",
+            "reduction_pct": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_def_parry",
+      "kind": "small",
+      "arm": "defense",
+      "pos": [
+        357,
+        -116
+      ],
+      "icon": "tree/parry",
+      "name_fr": "Parade",
+      "name_en": "Parry",
+      "description_fr": "+1 % de chance de parade par rang.",
+      "description_en": "+1% parry chance per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "parry_chance",
+          "op": "add_flat",
+          "value_per_rank": 1
+        }
+      ]
+    },
+    {
+      "id": "pt_def_thorns",
+      "kind": "small",
+      "arm": "defense",
+      "pos": [
+        185,
+        50
+      ],
+      "icon": "tree/thorns",
+      "name_fr": "Épines",
+      "name_en": "Thorns",
+      "description_fr": "+2 dégâts d'épines par rang.",
+      "description_en": "+2 thorns damage per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "thorns",
+          "op": "add_flat",
+          "value_per_rank": 2
+        }
+      ]
+    },
+    {
+      "id": "pt_def_unshakable",
+      "kind": "capstone",
+      "arm": "defense",
+      "pos": [
+        418,
+        -136
+      ],
+      "icon": "tree/unshakable",
+      "name_fr": "Inébranlable",
+      "name_en": "Unshakable",
+      "description_fr": "Sous 30 % de PV : bouclier égal à 20 % de tes PV max. Une fois toutes les 45 s.",
+      "description_en": "Below 30% HP: a shield equal to 20% of your max HP. Once every 45 s.",
+      "max_rank": 1,
+      "cost": 5,
+      "effects": [
+        {
+          "mechanic": "shield_on_low_hp",
+          "params": {
+            "hp_pct": 30,
+            "shield_pct_max_hp": 20,
+            "internal_cooldown_s": 45
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_heal_healing_received",
+      "kind": "small",
+      "arm": "healing",
+      "pos": [
+        41,
+        57
+      ],
+      "icon": "tree/healing_received",
+      "name_fr": "Soins reçus",
+      "name_en": "Healing Received",
+      "description_fr": "+2 % de soins reçus par rang.",
+      "description_en": "+2% healing received per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "healing_received",
+          "op": "add_flat",
+          "value_per_rank": 2
+        }
+      ]
+    },
+    {
+      "id": "pt_heal_heal_power",
+      "kind": "small",
+      "arm": "healing",
+      "pos": [
+        73,
+        101
+      ],
+      "icon": "tree/heal_power",
+      "name_fr": "Puissance de soin",
+      "name_en": "Healing Power",
+      "description_fr": "+3 puissance de soin et +1,5 % de puissance de soin par rang.",
+      "description_en": "+3 healing power and +1.5% healing power per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "heal_power",
+          "op": "add_flat",
+          "value_per_rank": 3
+        },
+        {
+          "stat": "heal_power",
+          "op": "add_percent",
+          "value_per_rank": 1.5
+        }
+      ]
+    },
+    {
+      "id": "pt_heal_helping_hand",
+      "kind": "big",
+      "arm": "healing",
+      "pos": [
+        109,
+        150
+      ],
+      "icon": "tree/helping_hand",
+      "name_fr": "Main secourable",
+      "name_en": "Helping Hand",
+      "description_fr": "+20 % de soin sur un allié sous 40 % de ses PV.",
+      "description_en": "+20% healing on an ally below 40% HP.",
+      "max_rank": 1,
+      "cost": 3,
+      "effects": [
+        {
+          "mechanic": "heal_bonus_target_hp_below",
+          "params": {
+            "hp_pct": 40,
+            "heal_pct": 20
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_heal_spell_vamp",
+      "kind": "small",
+      "arm": "healing",
+      "pos": [
+        195,
+        167
+      ],
+      "icon": "tree/spell_vamp",
+      "name_fr": "Vampirisme magique",
+      "name_en": "Spell Vampirism",
+      "description_fr": "+1 vampirisme magique par rang.",
+      "description_en": "+1 spell vampirism per rank.",
+      "max_rank": 5,
+      "fork": {
+        "group": "healing",
+        "side": "a"
+      },
+      "effects": [
+        {
+          "stat": "spell_vamp",
+          "op": "add_flat",
+          "value_per_rank": 1
+        }
+      ]
+    },
+    {
+      "id": "pt_heal_extended_heal",
+      "kind": "unique",
+      "arm": "healing",
+      "pos": [
+        234,
+        220
+      ],
+      "icon": "tree/extended_heal",
+      "name_fr": "Soin étendu",
+      "name_en": "Extended Heal",
+      "description_fr": "Tes soins mono-cible soignent aussi l'allié le plus proche de la cible, à 30 %.",
+      "description_en": "Your single-target heals also heal the ally closest to the target, at 30%.",
+      "max_rank": 1,
+      "cost": 5,
+      "fork": {
+        "group": "healing",
+        "side": "a"
+      },
+      "effects": [
+        {
+          "mechanic": "heal_splash_nearest_ally",
+          "params": {
+            "ratio_pct": 30,
+            "skill_filter": "single_target_heal"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_heal_shield_power",
+      "kind": "small",
+      "arm": "healing",
+      "pos": [
+        98,
+        238
+      ],
+      "icon": "tree/shield_power",
+      "name_fr": "Puissance de bouclier",
+      "name_en": "Shield Power",
+      "description_fr": "+3 puissance de bouclier par rang.",
+      "description_en": "+3 shield power per rank.",
+      "max_rank": 5,
+      "fork": {
+        "group": "healing",
+        "side": "b"
+      },
+      "effects": [
+        {
+          "stat": "shield_power",
+          "op": "add_flat",
+          "value_per_rank": 3
+        }
+      ]
+    },
+    {
+      "id": "pt_heal_transfusion",
+      "kind": "big",
+      "arm": "healing",
+      "pos": [
+        137,
+        290
+      ],
+      "icon": "tree/transfusion",
+      "name_fr": "Transfusion",
+      "name_en": "Transfusion",
+      "description_fr": "10 % des soins que tu donnes te reviennent.",
+      "description_en": "10% of the healing you give comes back to you.",
+      "max_rank": 1,
+      "cost": 3,
+      "fork": {
+        "group": "healing",
+        "side": "b"
+      },
+      "effects": [
+        {
+          "mechanic": "heal_return_to_caster",
+          "params": {
+            "ratio_pct": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_heal_fervor",
+      "kind": "small",
+      "arm": "healing",
+      "pos": [
+        220,
+        303
+      ],
+      "icon": "tree/heal_power",
+      "name_fr": "Ferveur",
+      "name_en": "Fervor",
+      "description_fr": "+2 % de puissance de soin par rang.",
+      "description_en": "+2% healing power per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "heal_power",
+          "op": "add_percent",
+          "value_per_rank": 2
+        }
+      ]
+    },
+    {
+      "id": "pt_heal_breath_pool",
+      "kind": "small",
+      "arm": "healing",
+      "pos": [
+        9,
+        191
+      ],
+      "icon": "common/deep_breath",
+      "name_fr": "Souffle max",
+      "name_en": "Max Breath",
+      "description_fr": "+2 % de Souffle max par rang.",
+      "description_en": "+2% max Breath per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "mp",
+          "op": "add_percent",
+          "value_per_rank": 2
+        }
+      ]
+    },
+    {
+      "id": "pt_heal_last_breath",
+      "kind": "capstone",
+      "arm": "healing",
+      "pos": [
+        259,
+        356
+      ],
+      "icon": "tree/last_breath",
+      "name_fr": "Dernier Souffle",
+      "name_en": "Last Breath",
+      "description_fr": "Une fois par combat, un allié qui devrait mourir reste à 1 PV puis reçoit un soin de 25 % de ses PV max.",
+      "description_en": "Once per combat, an ally who should die stays at 1 HP then is healed for 25% of their max HP.",
+      "max_rank": 1,
+      "cost": 5,
+      "effects": [
+        {
+          "mechanic": "prevent_ally_death",
+          "params": {
+            "heal_pct": 25,
+            "per_combat": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_sup_buff_duration",
+      "kind": "small",
+      "arm": "support",
+      "pos": [
+        -41,
+        57
+      ],
+      "icon": "tree/buff_duration",
+      "name_fr": "Durée des améliorations",
+      "name_en": "Buff Duration",
+      "description_fr": "+2 durée des améliorations par rang.",
+      "description_en": "+2 buff duration per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "buff_duration",
+          "op": "add_flat",
+          "value_per_rank": 2
+        }
+      ]
+    },
+    {
+      "id": "pt_sup_breathing",
+      "kind": "small",
+      "arm": "support",
+      "pos": [
+        -73,
+        101
+      ],
+      "icon": "tree/mp_regen",
+      "name_fr": "Respiration",
+      "name_en": "Breathing",
+      "description_fr": "+0,1 Souffle par seconde par rang.",
+      "description_en": "+0.1 Breath per second per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "mp_regen",
+          "op": "add_flat",
+          "value_per_rank": 0.1
+        }
+      ]
+    },
+    {
+      "id": "pt_sup_inspiration",
+      "kind": "big",
+      "arm": "support",
+      "pos": [
+        -109,
+        150
+      ],
+      "icon": "tree/inspiration",
+      "name_fr": "Inspiration",
+      "name_en": "Inspiration",
+      "description_fr": "Tes améliorations sur un allié lui donnent aussi +5 % de dégâts pendant leur durée.",
+      "description_en": "Your buffs on an ally also grant them +5% damage for their duration.",
+      "max_rank": 1,
+      "cost": 3,
+      "effects": [
+        {
+          "mechanic": "buff_grants_stat",
+          "params": {
+            "stat": "damage_percent",
+            "value": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_sup_cooldown",
+      "kind": "small",
+      "arm": "support",
+      "pos": [
+        -98,
+        238
+      ],
+      "icon": "tree/cooldown_reduction",
+      "name_fr": "Réduction de recharge",
+      "name_en": "Cooldown Reduction",
+      "description_fr": "+0,8 réduction de recharge par rang.",
+      "description_en": "+0.8 cooldown reduction per rank.",
+      "max_rank": 5,
+      "fork": {
+        "group": "support",
+        "side": "a"
+      },
+      "effects": [
+        {
+          "stat": "cooldown_reduction",
+          "op": "add_flat",
+          "value_per_rank": 0.8
+        }
+      ]
+    },
+    {
+      "id": "pt_sup_extended_aura",
+      "kind": "unique",
+      "arm": "support",
+      "pos": [
+        -137,
+        290
+      ],
+      "icon": "tree/extended_aura",
+      "name_fr": "Aura étendue",
+      "name_en": "Extended Aura",
+      "description_fr": "Tes améliorations mono-cible touchent aussi un allié adjacent.",
+      "description_en": "Your single-target buffs also reach an adjacent ally.",
+      "max_rank": 1,
+      "cost": 5,
+      "fork": {
+        "group": "support",
+        "side": "a"
+      },
+      "effects": [
+        {
+          "mechanic": "buff_splash_adjacent_ally",
+          "params": {
+            "skill_filter": "single_target_buff"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_sup_tenacity",
+      "kind": "small",
+      "arm": "support",
+      "pos": [
+        -195,
+        167
+      ],
+      "icon": "common/tenacity",
+      "name_fr": "Ténacité",
+      "name_en": "Tenacity",
+      "description_fr": "+1,6 ténacité par rang.",
+      "description_en": "+1.6 tenacity per rank.",
+      "max_rank": 5,
+      "fork": {
+        "group": "support",
+        "side": "b"
+      },
+      "effects": [
+        {
+          "stat": "tenacity",
+          "op": "add_flat",
+          "value_per_rank": 1.6
+        }
+      ]
+    },
+    {
+      "id": "pt_sup_rhythm",
+      "kind": "big",
+      "arm": "support",
+      "pos": [
+        -234,
+        220
+      ],
+      "icon": "tree/rhythm",
+      "name_fr": "Rythme",
+      "name_en": "Rhythm",
+      "description_fr": "Un sort sur 4 ne coûte pas de Souffle.",
+      "description_en": "One spell in 4 costs no Breath.",
+      "max_rank": 1,
+      "cost": 3,
+      "fork": {
+        "group": "support",
+        "side": "b"
+      },
+      "effects": [
+        {
+          "mechanic": "free_cast_every_n",
+          "params": {
+            "n": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_sup_effect_resist",
+      "kind": "small",
+      "arm": "support",
+      "pos": [
+        -220,
+        303
+      ],
+      "icon": "common/safeguard",
+      "name_fr": "Résistance aux effets",
+      "name_en": "Effect Resistance",
+      "description_fr": "+2 résistance aux effets par rang.",
+      "description_en": "+2 effect resistance per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "effect_resist",
+          "op": "add_flat",
+          "value_per_rank": 2
+        }
+      ]
+    },
+    {
+      "id": "pt_sup_quickness",
+      "kind": "small",
+      "arm": "support",
+      "pos": [
+        -179,
+        68
+      ],
+      "icon": "tree/cast_speed",
+      "name_fr": "Vivacité",
+      "name_en": "Quickness",
+      "description_fr": "+2 vitesse d'incantation par rang.",
+      "description_en": "+2 casting speed per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "cast_speed",
+          "op": "add_flat",
+          "value_per_rank": 2
+        }
+      ]
+    },
+    {
+      "id": "pt_sup_conductor",
+      "kind": "capstone",
+      "arm": "support",
+      "pos": [
+        -259,
+        356
+      ],
+      "icon": "tree/conductor",
+      "name_fr": "Chef d'orchestre",
+      "name_en": "Conductor",
+      "description_fr": "Quand tu améliores un allié, ses recharges diminuent de 1 s. Une fois toutes les 5 s par allié.",
+      "description_en": "When you buff an ally, their cooldowns drop by 1 s. Once every 5 s per ally.",
+      "max_rank": 1,
+      "cost": 5,
+      "effects": [
+        {
+          "mechanic": "cooldown_reduction_on_event",
+          "params": {
+            "event": "buff_applied_to_ally",
+            "seconds": 1,
+            "scope": "buffed_ally",
+            "internal_cooldown_s": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_deb_effect_chance",
+      "kind": "small",
+      "arm": "debuff",
+      "pos": [
+        -67,
+        -22
+      ],
+      "icon": "tree/effect_chance",
+      "name_fr": "Chance d'effet",
+      "name_en": "Effect Chance",
+      "description_fr": "+2 chance d'effet par rang.",
+      "description_en": "+2 effect chance per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "effect_chance",
+          "op": "add_flat",
+          "value_per_rank": 2
+        }
+      ]
+    },
+    {
+      "id": "pt_deb_debuff_duration",
+      "kind": "small",
+      "arm": "debuff",
+      "pos": [
+        -119,
+        -39
+      ],
+      "icon": "tree/debuff_duration",
+      "name_fr": "Durée des affaiblissements",
+      "name_en": "Debuff Duration",
+      "description_fr": "+2 durée des affaiblissements par rang.",
+      "description_en": "+2 debuff duration per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "debuff_duration",
+          "op": "add_flat",
+          "value_per_rank": 2
+        }
+      ]
+    },
+    {
+      "id": "pt_deb_grip",
+      "kind": "big",
+      "arm": "debuff",
+      "pos": [
+        -176,
+        -57
+      ],
+      "icon": "tree/grip",
+      "name_fr": "Emprise",
+      "name_en": "Grip",
+      "description_fr": "+10 % de dégâts contre une cible sous contrôle (étourdie, ralentie, réduite au silence...).",
+      "description_en": "+10% damage against a controlled target (stunned, slowed, silenced...).",
+      "max_rank": 1,
+      "cost": 3,
+      "effects": [
+        {
+          "mechanic": "damage_vs_target_with_status",
+          "params": {
+            "status_category": "control",
+            "damage_pct": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_deb_sure_hand",
+      "kind": "small",
+      "arm": "debuff",
+      "pos": [
+        -256,
+        -20
+      ],
+      "icon": "common/precision",
+      "name_fr": "Main sûre",
+      "name_en": "Steady Hand",
+      "description_fr": "+3 précision par rang.",
+      "description_en": "+3 accuracy per rank.",
+      "max_rank": 5,
+      "fork": {
+        "group": "debuff",
+        "side": "a"
+      },
+      "effects": [
+        {
+          "stat": "hit",
+          "op": "add_flat",
+          "value_per_rank": 3
+        }
+      ]
+    },
+    {
+      "id": "pt_deb_control_zone",
+      "kind": "unique",
+      "arm": "debuff",
+      "pos": [
+        -318,
+        -40
+      ],
+      "icon": "tree/control_zone",
+      "name_fr": "Zone de contrôle",
+      "name_en": "Control Zone",
+      "description_fr": "Tes sorts de contrôle mono-cible touchent aussi une case adjacente.",
+      "description_en": "Your single-target control spells also hit an adjacent tile.",
+      "max_rank": 1,
+      "cost": 5,
+      "fork": {
+        "group": "debuff",
+        "side": "a"
+      },
+      "effects": [
+        {
+          "mechanic": "control_splash_adjacent",
+          "params": {
+            "skill_filter": "single_target_control"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_deb_haste",
+      "kind": "small",
+      "arm": "debuff",
+      "pos": [
+        -219,
+        -134
+      ],
+      "icon": "tree/cooldown_reduction",
+      "name_fr": "Hâte",
+      "name_en": "Haste",
+      "description_fr": "+0,8 réduction de recharge par rang.",
+      "description_en": "+0.8 cooldown reduction per rank.",
+      "max_rank": 5,
+      "fork": {
+        "group": "debuff",
+        "side": "b"
+      },
+      "effects": [
+        {
+          "stat": "cooldown_reduction",
+          "op": "add_flat",
+          "value_per_rank": 0.8
+        }
+      ]
+    },
+    {
+      "id": "pt_deb_contagion",
+      "kind": "big",
+      "arm": "debuff",
+      "pos": [
+        -281,
+        -154
+      ],
+      "icon": "tree/contagion",
+      "name_fr": "Contagion",
+      "name_en": "Contagion",
+      "description_fr": "Quand une cible affaiblie meurt, ses affaiblissements passent à l'ennemi le plus proche.",
+      "description_en": "When a weakened target dies, its debuffs spread to the nearest enemy.",
+      "max_rank": 1,
+      "cost": 3,
+      "fork": {
+        "group": "debuff",
+        "side": "b"
+      },
+      "effects": [
+        {
+          "mechanic": "debuff_spread_on_death",
+          "params": {
+            "max_spread": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_deb_lingering",
+      "kind": "small",
+      "arm": "debuff",
+      "pos": [
+        -357,
+        -116
+      ],
+      "icon": "tree/debuff_duration",
+      "name_fr": "Affaiblissements tenaces",
+      "name_en": "Lingering Debuffs",
+      "description_fr": "+2 durée des affaiblissements par rang.",
+      "description_en": "+2 debuff duration per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "debuff_duration",
+          "op": "add_flat",
+          "value_per_rank": 2
+        }
+      ]
+    },
+    {
+      "id": "pt_deb_arcane_piercing",
+      "kind": "small",
+      "arm": "debuff",
+      "pos": [
+        -120,
+        -149
+      ],
+      "icon": "common/arcane_piercing",
+      "name_fr": "Percée magique",
+      "name_en": "Arcane Piercing",
+      "description_fr": "+1,2 pénétration magique par rang.",
+      "description_en": "+1.2 magic penetration per rank.",
+      "max_rank": 5,
+      "effects": [
+        {
+          "stat": "magic_pen",
+          "op": "add_flat",
+          "value_per_rank": 1.2
+        }
+      ]
+    },
+    {
+      "id": "pt_deb_tempo_master",
+      "kind": "capstone",
+      "arm": "debuff",
+      "pos": [
+        -418,
+        -136
+      ],
+      "icon": "tree/tempo_master",
+      "name_fr": "Maître du tempo",
+      "name_en": "Tempo Master",
+      "description_fr": "Quand tu contrôles une cible : -1 s de recharge sur tes autres sorts. Une fois toutes les 3 s.",
+      "description_en": "When you control a target: -1 s cooldown on your other spells. Once every 3 s.",
+      "max_rank": 1,
+      "cost": 5,
+      "effects": [
+        {
+          "mechanic": "cooldown_reduction_on_event",
+          "params": {
+            "event": "control_applied",
+            "seconds": 1,
+            "scope": "other_skills",
+            "internal_cooldown_s": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_bridge_riposte",
+      "kind": "bridge",
+      "arm": null,
+      "arms": [
+        "attack",
+        "defense"
+      ],
+      "pos": [
+        179,
+        -163
+      ],
+      "icon": "tree/riposte",
+      "name_fr": "Riposte",
+      "name_en": "Riposte",
+      "description_fr": "Après un blocage ou une parade, ta prochaine attaque inflige +25 % de dégâts.",
+      "description_en": "After a block or a parry, your next attack deals +25% damage.",
+      "max_rank": 1,
+      "cost": 3,
+      "effects": [
+        {
+          "mechanic": "next_hit_bonus_after_event",
+          "params": {
+            "events": [
+              "block",
+              "parry"
+            ],
+            "damage_pct": 25
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_bridge_living_rampart",
+      "kind": "bridge",
+      "arm": null,
+      "arms": [
+        "defense",
+        "healing"
+      ],
+      "pos": [
+        210,
+        120
+      ],
+      "icon": "tree/living_rampart",
+      "name_fr": "Rempart vivant",
+      "name_en": "Living Rampart",
+      "description_fr": "10 % des soins que tu reçois deviennent du bouclier.",
+      "description_en": "10% of the healing you receive becomes a shield.",
+      "max_rank": 1,
+      "cost": 3,
+      "effects": [
+        {
+          "mechanic": "shield_from_healing_received",
+          "params": {
+            "ratio_pct": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_bridge_war_chant",
+      "kind": "bridge",
+      "arm": null,
+      "arms": [
+        "healing",
+        "support"
+      ],
+      "pos": [
+        -49,
+        237
+      ],
+      "icon": "tree/war_chant",
+      "name_fr": "Chant de guerre",
+      "name_en": "War Chant",
+      "description_fr": "Tes améliorations sur un allié retirent un de ses affaiblissements.",
+      "description_en": "Your buffs on an ally remove one of their debuffs.",
+      "max_rank": 1,
+      "cost": 3,
+      "effects": [
+        {
+          "mechanic": "buff_cleanses_debuff",
+          "params": {
+            "count": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_bridge_coordination",
+      "kind": "bridge",
+      "arm": null,
+      "arms": [
+        "support",
+        "debuff"
+      ],
+      "pos": [
+        -241,
+        27
+      ],
+      "icon": "tree/coordination",
+      "name_fr": "Coordination",
+      "name_en": "Coordination",
+      "description_fr": "Un allié que tu as amélioré inflige +8 % de dégâts aux cibles que tu as affaiblies.",
+      "description_en": "An ally you buffed deals +8% damage to targets you weakened.",
+      "max_rank": 1,
+      "cost": 3,
+      "effects": [
+        {
+          "mechanic": "ally_buffed_bonus_vs_debuffed",
+          "params": {
+            "damage_pct": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt_bridge_opportunist",
+      "kind": "bridge",
+      "arm": null,
+      "arms": [
+        "debuff",
+        "attack"
+      ],
+      "pos": [
+        -100,
+        -221
+      ],
+      "icon": "tree/opportunist",
+      "name_fr": "Opportuniste",
+      "name_en": "Opportunist",
+      "description_fr": "+15 % de chance critique contre une cible sous contrôle.",
+      "description_en": "+15% critical chance against a controlled target.",
+      "max_rank": 1,
+      "cost": 3,
+      "effects": [
+        {
+          "mechanic": "stat_vs_target_with_status",
+          "params": {
+            "status_category": "control",
+            "stat": "crit",
+            "value": 15
+          }
+        }
+      ]
+    }
+  ],
+  "edges": [
+    [
+      "pt_center",
+      "pt_atk_crit"
+    ],
+    [
+      "pt_atk_crit",
+      "pt_atk_precision"
+    ],
+    [
+      "pt_atk_precision",
+      "pt_atk_execution"
+    ],
+    [
+      "pt_atk_execution",
+      "pt_atk_crit_damage"
+    ],
+    [
+      "pt_atk_execution",
+      "pt_atk_penetration"
+    ],
+    [
+      "pt_atk_crit_damage",
+      "pt_atk_reach"
+    ],
+    [
+      "pt_atk_penetration",
+      "pt_atk_killer_instinct"
+    ],
+    [
+      "pt_atk_reach",
+      "pt_atk_ferocity"
+    ],
+    [
+      "pt_atk_killer_instinct",
+      "pt_atk_ferocity"
+    ],
+    [
+      "pt_atk_ferocity",
+      "pt_atk_fatal_strike"
+    ],
+    [
+      "pt_atk_precision",
+      "pt_atk_cast_speed"
+    ],
+    [
+      "pt_center",
+      "pt_def_magic_resist"
+    ],
+    [
+      "pt_def_magic_resist",
+      "pt_def_agility"
+    ],
+    [
+      "pt_def_agility",
+      "pt_def_iron_skin"
+    ],
+    [
+      "pt_def_iron_skin",
+      "pt_def_damage_reduction"
+    ],
+    [
+      "pt_def_iron_skin",
+      "pt_def_vampirism"
+    ],
+    [
+      "pt_def_damage_reduction",
+      "pt_def_hold_position"
+    ],
+    [
+      "pt_def_vampirism",
+      "pt_def_composure"
+    ],
+    [
+      "pt_def_hold_position",
+      "pt_def_parry"
+    ],
+    [
+      "pt_def_composure",
+      "pt_def_parry"
+    ],
+    [
+      "pt_def_parry",
+      "pt_def_unshakable"
+    ],
+    [
+      "pt_def_agility",
+      "pt_def_thorns"
+    ],
+    [
+      "pt_center",
+      "pt_heal_healing_received"
+    ],
+    [
+      "pt_heal_healing_received",
+      "pt_heal_heal_power"
+    ],
+    [
+      "pt_heal_heal_power",
+      "pt_heal_helping_hand"
+    ],
+    [
+      "pt_heal_helping_hand",
+      "pt_heal_spell_vamp"
+    ],
+    [
+      "pt_heal_helping_hand",
+      "pt_heal_shield_power"
+    ],
+    [
+      "pt_heal_spell_vamp",
+      "pt_heal_extended_heal"
+    ],
+    [
+      "pt_heal_shield_power",
+      "pt_heal_transfusion"
+    ],
+    [
+      "pt_heal_extended_heal",
+      "pt_heal_fervor"
+    ],
+    [
+      "pt_heal_transfusion",
+      "pt_heal_fervor"
+    ],
+    [
+      "pt_heal_fervor",
+      "pt_heal_last_breath"
+    ],
+    [
+      "pt_heal_heal_power",
+      "pt_heal_breath_pool"
+    ],
+    [
+      "pt_center",
+      "pt_sup_buff_duration"
+    ],
+    [
+      "pt_sup_buff_duration",
+      "pt_sup_breathing"
+    ],
+    [
+      "pt_sup_breathing",
+      "pt_sup_inspiration"
+    ],
+    [
+      "pt_sup_inspiration",
+      "pt_sup_cooldown"
+    ],
+    [
+      "pt_sup_inspiration",
+      "pt_sup_tenacity"
+    ],
+    [
+      "pt_sup_cooldown",
+      "pt_sup_extended_aura"
+    ],
+    [
+      "pt_sup_tenacity",
+      "pt_sup_rhythm"
+    ],
+    [
+      "pt_sup_extended_aura",
+      "pt_sup_effect_resist"
+    ],
+    [
+      "pt_sup_rhythm",
+      "pt_sup_effect_resist"
+    ],
+    [
+      "pt_sup_effect_resist",
+      "pt_sup_conductor"
+    ],
+    [
+      "pt_sup_breathing",
+      "pt_sup_quickness"
+    ],
+    [
+      "pt_center",
+      "pt_deb_effect_chance"
+    ],
+    [
+      "pt_deb_effect_chance",
+      "pt_deb_debuff_duration"
+    ],
+    [
+      "pt_deb_debuff_duration",
+      "pt_deb_grip"
+    ],
+    [
+      "pt_deb_grip",
+      "pt_deb_sure_hand"
+    ],
+    [
+      "pt_deb_grip",
+      "pt_deb_haste"
+    ],
+    [
+      "pt_deb_sure_hand",
+      "pt_deb_control_zone"
+    ],
+    [
+      "pt_deb_haste",
+      "pt_deb_contagion"
+    ],
+    [
+      "pt_deb_control_zone",
+      "pt_deb_lingering"
+    ],
+    [
+      "pt_deb_contagion",
+      "pt_deb_lingering"
+    ],
+    [
+      "pt_deb_lingering",
+      "pt_deb_tempo_master"
+    ],
+    [
+      "pt_deb_debuff_duration",
+      "pt_deb_arcane_piercing"
+    ],
+    [
+      "pt_atk_cast_speed",
+      "pt_bridge_riposte"
+    ],
+    [
+      "pt_bridge_riposte",
+      "pt_def_damage_reduction"
+    ],
+    [
+      "pt_def_thorns",
+      "pt_bridge_living_rampart"
+    ],
+    [
+      "pt_bridge_living_rampart",
+      "pt_heal_spell_vamp"
+    ],
+    [
+      "pt_heal_breath_pool",
+      "pt_bridge_war_chant"
+    ],
+    [
+      "pt_bridge_war_chant",
+      "pt_sup_cooldown"
+    ],
+    [
+      "pt_sup_quickness",
+      "pt_bridge_coordination"
+    ],
+    [
+      "pt_bridge_coordination",
+      "pt_deb_sure_hand"
+    ],
+    [
+      "pt_deb_arcane_piercing",
+      "pt_bridge_opportunist"
+    ],
+    [
+      "pt_bridge_opportunist",
+      "pt_atk_crit_damage"
+    ]
+  ]
+}
