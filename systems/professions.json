@@ -1,10 +1,10 @@
 {
   "_meta": {
-    "version": "0.2",
+    "version": "0.3",
     "status": "CONCEPTION, rien n'est encore branche (2026-09-30). Regles validees avec Charleston ; les recettes, l'attribution des materiaux et le code viennent en lots.",
     "why": "Les monstres lachent 215 materiaux differents et la forge n'en utilise que 39 : les 176 autres ne servent qu'a etre revendus. Les metiers les rendent utiles, autour des trois piliers du jeu : la chasse, le Souffle et les familiers.",
     "reuse": "Fabrication = le flux du forgeron (economy handle_craft_item, CRAFT_ITEM 0x041D/0x041E : or + materiaux consommes atomiquement, idempotent, ITEM_CRAFTED publie). A etendre : station + niveau de metier dans Recipe, XP de metier dans la meme transaction, rang tire et pose dans custom_data. Client : forge_window.gd, ouvert avec un id de station.",
-    "roster": "11 metiers valides avec Charleston le 2026-09-30 : 2 de recolte (Ecorcheur, Chasseur de Failles) et 9 de fabrication. Chacun a sa niche ; la regle des 2 specialites cree le marche."
+    "roster": "14 metiers (2026-09-30) : 5 de recolte (Ecorcheur, Chasseur de Failles, Mineur, Bucheron, Pecheur) et 9 de fabrication."
   },
   "rules": {
     "level_max": 100,
@@ -74,15 +74,110 @@
       "kind": "gathering",
       "station": "workshop_fissure_hunter",
       "master_npc": "npc_master_fissure_hunter",
-      "_how": "Recolte ce que la Faille laisse derriere elle : (1) pendant une invasion de Fissure, des ECLATS DE FAILLE reserves a ce metier, en plus de la recompense normale ; (2) de petites BRECHES cachees sur la carte, visibles de lui seul, qu'il sonde pour des reactifs rares (le serveur les place et ne les montre qu'aux chasseurs de niveau suffisant). C'est la source des reactifs du haut de gamme de TOUS les metiers.",
+      "_how": "PRESSENTIMENT (Charleston, 2026-09-30) : le chasseur sait ou s'ouvrira la PROCHAINE Fissure, de plus en plus precisement avec son niveau. Le serveur connait deja, pour chaque aire, l'heure de la prochaine invasion (presence FissureWorld, AreaSlot.next_start_s) : il n'envoie au chasseur que ce que son niveau autorise. Pendant l'invasion, il recolte en plus des ECLATS DE FAILLE reserves a ce metier : la source des reactifs rares de tous les metiers.",
       "inputs": [
-        "invasions de Fissure",
-        "breches cachees"
+        "invasions de Fissure"
       ],
       "outputs": [
         "eclats de Faille (reactifs rares)",
-        "boussoles de Faille : signalent coffres et Fissures proches sur la minimap"
+        "pressentiment de la prochaine Fissure (zone, puis aire, puis position)"
+      ],
+      "forecast": {
+        "_rule": "Ce que le chasseur apprend de la prochaine Fissure, par palier de niveau (le palier le plus haut atteint s'applique).",
+        "tiers": [
+          {
+            "from_level": 1,
+            "reveals": "zone",
+            "time_window_min": 60
+          },
+          {
+            "from_level": 25,
+            "reveals": "zone",
+            "time_window_min": 20
+          },
+          {
+            "from_level": 50,
+            "reveals": "area",
+            "time_window_min": 10
+          },
+          {
+            "from_level": 75,
+            "reveals": "area",
+            "time_window_min": 3
+          },
+          {
+            "from_level": 100,
+            "reveals": "exact_position",
+            "time_window_min": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "miner",
+      "name_fr": "Mineur",
+      "name_en": "Miner",
+      "kind": "gathering",
+      "station": null,
+      "master_npc": "npc_master_miner",
+      "_how": "Recolte SUR LA CARTE : des points de ressource poses par le serveur dans les aires de zone, sur le modele des coffres de zone (presence ChestWorld : aires, reapparition, premier arrive). Clic, courte recolte, reapparition apres un delai. Le niveau du metier ouvre les ressources plus rares et augmente la quantite.",
+      "inputs": [
+        "filons de minerai sur la carte"
+      ],
+      "outputs": [
+        "minerais et metaux (fer, argent, metaux du Souffle)",
+        "pierres brutes"
+      ],
+      "feeds": [
+        "runist",
+        "bone_carver",
+        "tanner"
       ]
+    },
+    {
+      "id": "lumberjack",
+      "name_fr": "Bûcheron",
+      "name_en": "Lumberjack",
+      "kind": "gathering",
+      "station": null,
+      "master_npc": "npc_master_lumberjack",
+      "_how": "Recolte SUR LA CARTE : des points de ressource poses par le serveur dans les aires de zone, sur le modele des coffres de zone (presence ChestWorld : aires, reapparition, premier arrive). Clic, courte recolte, reapparition apres un delai. Le niveau du metier ouvre les ressources plus rares et augmente la quantite.",
+      "inputs": [
+        "arbres sur la carte"
+      ],
+      "outputs": [
+        "bois (du commun au Bois Obscur)",
+        "resines",
+        "ecorces"
+      ],
+      "feeds": [
+        "bone_carver",
+        "scribe",
+        "apothecary"
+      ]
+    },
+    {
+      "id": "fisher",
+      "name_fr": "Pêcheur",
+      "name_en": "Fisher",
+      "kind": "gathering",
+      "station": null,
+      "master_npc": "npc_fisher_tobin",
+      "_how": "Recolte SUR LA CARTE : des points de ressource poses par le serveur dans les aires de zone, sur le modele des coffres de zone (presence ChestWorld : aires, reapparition, premier arrive). Clic, courte recolte, reapparition apres un delai. Le niveau du metier ouvre les ressources plus rares et augmente la quantite. Ici : des coins de peche au bord de l'eau.",
+      "inputs": [
+        "coins de peche"
+      ],
+      "outputs": [
+        "poissons",
+        "coquillages",
+        "algues"
+      ],
+      "feeds": [
+        "cook",
+        "brewer",
+        "apothecary"
+      ],
+      "_master": "Tobin est deja pecheur (npc_fisher_tobin) : il devient le maitre du metier."
     },
     {
       "id": "tanner",
