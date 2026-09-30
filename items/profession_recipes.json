@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "version": "0.4",
-    "status": "PILOTE (2026-10-01) : Apothicaire, Cuisinier, Brasseur, Runiste, Tanneur, Sculpteur d'os. Fichier NON charge par le serveur ; rien ne change en jeu tant que les metiers ne sont pas branches.",
+    "version": "0.5",
+    "status": "PILOTE (2026-10-01) : les 9 metiers de fabrication ont leurs recettes. Fichier NON charge par le serveur ; rien ne change en jeu tant que les metiers ne sont pas branches.",
     "format": "Une recette = profession + station + profession_level (niveau de METIER requis) + xp (XP de metier gagnee) + gold_cost + output_item/output_qty + quality_cap (rang maximum C..SS, voir systems/professions.json quality) + materials [{id, qty}].",
     "consumable_quality": "Pour un consommable, le rang de qualite multiplie l'effet : C x1.00, B x1.08, A x1.16, S x1.24, SS x1.32 (valeur ou duree).",
     "new_items_rule": "new_items = objets PROPOSES qui n'existent pas encore : ils passeront dans consumables.json / materials.json / world_buffs.json a la validation. Chaque objet porte le chemin de son icone a produire.",
@@ -9,7 +9,9 @@
     "food_split": "Les 18 familles de plats existantes se partagent : 14 repas (source food_meal) au Cuisinier, 4 boissons (source food_drink : Cidre, Infusion de sauge, Vin corse, Ale forte) au Brasseur. Ingredients de base : poissons du Pecheur et produits de la foret cueillis par le Bucheron, un rang par tranche de niveau (1, 20, 40, 60, 80).",
     "id_ranked_items": "Les objets dont le rang est dans l'id (pierres even_*_rank_N, stigmates ks_*_<rang>, grimoires, cartes Koro) ne tirent PAS de qualite : quality_cap = C, la recette vise directement l'id du rang voulu.",
     "runist": "Pierres de forge : une nouvelle SOURCE (minerais du Mineur + un materiau de monstre), a cote du butin ; la fusion 10 -> 1 du forgeron reste. Stigmates : REACCORD 3 identiques -> 1 du rang au-dessus, jamais de creation a partir de rien (la keystone reste un butin rare). Gemmes : aucune recette tant qu'aucun systeme ne les utilise (aucun consommateur serveur).",
-    "equipment_split": "Equipement : Tanneur = armures legeres (tissus, soies, crins) et moyennes (peaux, cuirs) pour tete/torse/jambes/pieds, plus TOUTES les ceintures et capes (la version lourde ajoute du minerai). Sculpteur d'os = les 6 armes, anneaux et amulettes (minerai du Mineur pour les lames et anneaux, bois du Bucheron pour batons, arcs et sceptres). Les pieces lourdes en metal (tete/torse/jambes/pieds) restent a la Forge du village, qui garde ses 61 recettes. Chaque piece sort avec un rang C..SS tire par le serveur. Les pieces de tournoi ne se fabriquent pas. Les sacs du Tanneur attendent une colonne de places par personnage."
+    "equipment_split": "Equipement : Tanneur = armures legeres (tissus, soies, crins) et moyennes (peaux, cuirs) pour tete/torse/jambes/pieds, plus TOUTES les ceintures et capes (la version lourde ajoute du minerai). Sculpteur d'os = les 6 armes, anneaux et amulettes (minerai du Mineur pour les lames et anneaux, bois du Bucheron pour batons, arcs et sceptres). Les pieces lourdes en metal (tete/torse/jambes/pieds) restent a la Forge du village, qui garde ses 61 recettes. Chaque piece sort avec un rang C..SS tire par le serveur. Les pieces de tournoi ne se fabriquent pas. Les sacs du Tanneur attendent une colonne de places par personnage.",
+    "rule_recipes": "rule_recipes = une operation sur TOUTE une famille d'objets, au lieu d'une recette par objet (553 sorts Koro x 4 fusions = 2212 lignes sinon). kind : fusion (input_qty objets identiques par 'same' au rang input_rank -> 1 au rang output_rank), reveal (tirage au hasard dans la famille au rang output_rank), copy (1 objet -> output_qty exemplaires du meme id). Les stigmates de keystone restent en recettes explicites (120).",
+    "scribe_breeder": "Parchemins : nouvelle source de buff 'scroll' (un seul actif, 30 min), cumulable avec repas, boisson et elixir ; leurs stats (xp_bonus_percent, gold_find_percent, item_find_percent, move_speed_percent) n'existent pas encore cote serveur. Friandises : nouvel effet 'familiar_buff' sur le familier actif, a creer. Pas d'accelerateur d'incubation (elle dure 2 a 10 minutes) ni de collier (le familier n'a pas d'emplacement d'equipement)."
   },
   "new_items": [
     {
@@ -673,6 +675,595 @@
       "gathered_by": "lumberjack",
       "gather_level": 80,
       "icon": "assets/icons/items/materials/mat_wood_obscur.png"
+    },
+    {
+      "id": "scroll_savoir_t1",
+      "kind": "consumable",
+      "category": "scroll",
+      "name_fr": "Parchemin de Savoir I",
+      "name_en": "Insight Scroll I",
+      "description_fr": "Augmente l'XP gagnée en combat de 5 % pendant 30 minutes.",
+      "description_en": "Increases combat XP by 5% for 30 minutes.",
+      "rarity": "uncommon",
+      "stack_max": 20,
+      "sell_price": 25,
+      "level_req": 1,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_scroll_savoir_t1",
+        "duration": 1800
+      },
+      "world_buff": {
+        "source": "scroll",
+        "out_of_combat_only": false,
+        "stats": [
+          {
+            "stat": "xp_bonus_percent",
+            "mode": "flat",
+            "value": 5
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/scrolls/scroll_savoir_t1.png"
+    },
+    {
+      "id": "scroll_savoir_t2",
+      "kind": "consumable",
+      "category": "scroll",
+      "name_fr": "Parchemin de Savoir II",
+      "name_en": "Insight Scroll II",
+      "description_fr": "Augmente l'XP gagnée en combat de 10 % pendant 30 minutes.",
+      "description_en": "Increases combat XP by 10% for 30 minutes.",
+      "rarity": "rare",
+      "stack_max": 20,
+      "sell_price": 80,
+      "level_req": 1,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_scroll_savoir_t2",
+        "duration": 1800
+      },
+      "world_buff": {
+        "source": "scroll",
+        "out_of_combat_only": false,
+        "stats": [
+          {
+            "stat": "xp_bonus_percent",
+            "mode": "flat",
+            "value": 10
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/scrolls/scroll_savoir_t2.png"
+    },
+    {
+      "id": "scroll_savoir_t3",
+      "kind": "consumable",
+      "category": "scroll",
+      "name_fr": "Parchemin de Savoir III",
+      "name_en": "Insight Scroll III",
+      "description_fr": "Augmente l'XP gagnée en combat de 15 % pendant 30 minutes.",
+      "description_en": "Increases combat XP by 15% for 30 minutes.",
+      "rarity": "epic",
+      "stack_max": 20,
+      "sell_price": 220,
+      "level_req": 1,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_scroll_savoir_t3",
+        "duration": 1800
+      },
+      "world_buff": {
+        "source": "scroll",
+        "out_of_combat_only": false,
+        "stats": [
+          {
+            "stat": "xp_bonus_percent",
+            "mode": "flat",
+            "value": 15
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/scrolls/scroll_savoir_t3.png"
+    },
+    {
+      "id": "scroll_fortune_t1",
+      "kind": "consumable",
+      "category": "scroll",
+      "name_fr": "Parchemin de Fortune I",
+      "name_en": "Fortune Scroll I",
+      "description_fr": "Augmente l'or trouvé de 8 % pendant 30 minutes.",
+      "description_en": "Increases gold found by 8% for 30 minutes.",
+      "rarity": "uncommon",
+      "stack_max": 20,
+      "sell_price": 25,
+      "level_req": 1,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_scroll_fortune_t1",
+        "duration": 1800
+      },
+      "world_buff": {
+        "source": "scroll",
+        "out_of_combat_only": false,
+        "stats": [
+          {
+            "stat": "gold_find_percent",
+            "mode": "flat",
+            "value": 8
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/scrolls/scroll_fortune_t1.png"
+    },
+    {
+      "id": "scroll_fortune_t2",
+      "kind": "consumable",
+      "category": "scroll",
+      "name_fr": "Parchemin de Fortune II",
+      "name_en": "Fortune Scroll II",
+      "description_fr": "Augmente l'or trouvé de 15 % pendant 30 minutes.",
+      "description_en": "Increases gold found by 15% for 30 minutes.",
+      "rarity": "rare",
+      "stack_max": 20,
+      "sell_price": 80,
+      "level_req": 1,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_scroll_fortune_t2",
+        "duration": 1800
+      },
+      "world_buff": {
+        "source": "scroll",
+        "out_of_combat_only": false,
+        "stats": [
+          {
+            "stat": "gold_find_percent",
+            "mode": "flat",
+            "value": 15
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/scrolls/scroll_fortune_t2.png"
+    },
+    {
+      "id": "scroll_fortune_t3",
+      "kind": "consumable",
+      "category": "scroll",
+      "name_fr": "Parchemin de Fortune III",
+      "name_en": "Fortune Scroll III",
+      "description_fr": "Augmente l'or trouvé de 25 % pendant 30 minutes.",
+      "description_en": "Increases gold found by 25% for 30 minutes.",
+      "rarity": "epic",
+      "stack_max": 20,
+      "sell_price": 220,
+      "level_req": 1,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_scroll_fortune_t3",
+        "duration": 1800
+      },
+      "world_buff": {
+        "source": "scroll",
+        "out_of_combat_only": false,
+        "stats": [
+          {
+            "stat": "gold_find_percent",
+            "mode": "flat",
+            "value": 25
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/scrolls/scroll_fortune_t3.png"
+    },
+    {
+      "id": "scroll_trouvaille_t1",
+      "kind": "consumable",
+      "category": "scroll",
+      "name_fr": "Parchemin de Trouvaille I",
+      "name_en": "Discovery Scroll I",
+      "description_fr": "Augmente les chances de butin de 5 % pendant 30 minutes.",
+      "description_en": "Increases loot chance by 5% for 30 minutes.",
+      "rarity": "uncommon",
+      "stack_max": 20,
+      "sell_price": 25,
+      "level_req": 1,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_scroll_trouvaille_t1",
+        "duration": 1800
+      },
+      "world_buff": {
+        "source": "scroll",
+        "out_of_combat_only": false,
+        "stats": [
+          {
+            "stat": "item_find_percent",
+            "mode": "flat",
+            "value": 5
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/scrolls/scroll_trouvaille_t1.png"
+    },
+    {
+      "id": "scroll_trouvaille_t2",
+      "kind": "consumable",
+      "category": "scroll",
+      "name_fr": "Parchemin de Trouvaille II",
+      "name_en": "Discovery Scroll II",
+      "description_fr": "Augmente les chances de butin de 10 % pendant 30 minutes.",
+      "description_en": "Increases loot chance by 10% for 30 minutes.",
+      "rarity": "rare",
+      "stack_max": 20,
+      "sell_price": 80,
+      "level_req": 1,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_scroll_trouvaille_t2",
+        "duration": 1800
+      },
+      "world_buff": {
+        "source": "scroll",
+        "out_of_combat_only": false,
+        "stats": [
+          {
+            "stat": "item_find_percent",
+            "mode": "flat",
+            "value": 10
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/scrolls/scroll_trouvaille_t2.png"
+    },
+    {
+      "id": "scroll_trouvaille_t3",
+      "kind": "consumable",
+      "category": "scroll",
+      "name_fr": "Parchemin de Trouvaille III",
+      "name_en": "Discovery Scroll III",
+      "description_fr": "Augmente les chances de butin de 15 % pendant 30 minutes.",
+      "description_en": "Increases loot chance by 15% for 30 minutes.",
+      "rarity": "epic",
+      "stack_max": 20,
+      "sell_price": 220,
+      "level_req": 1,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_scroll_trouvaille_t3",
+        "duration": 1800
+      },
+      "world_buff": {
+        "source": "scroll",
+        "out_of_combat_only": false,
+        "stats": [
+          {
+            "stat": "item_find_percent",
+            "mode": "flat",
+            "value": 15
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/scrolls/scroll_trouvaille_t3.png"
+    },
+    {
+      "id": "scroll_vent_t1",
+      "kind": "consumable",
+      "category": "scroll",
+      "name_fr": "Parchemin de Vent I",
+      "name_en": "Wind Scroll I",
+      "description_fr": "Augmente la vitesse de déplacement hors combat de 10 % pendant 30 minutes.",
+      "description_en": "Increases out-of-combat movement speed by 10% for 30 minutes.",
+      "rarity": "uncommon",
+      "stack_max": 20,
+      "sell_price": 25,
+      "level_req": 1,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_scroll_vent_t1",
+        "duration": 1800
+      },
+      "world_buff": {
+        "source": "scroll",
+        "out_of_combat_only": true,
+        "stats": [
+          {
+            "stat": "move_speed_percent",
+            "mode": "flat",
+            "value": 10
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/scrolls/scroll_vent_t1.png"
+    },
+    {
+      "id": "scroll_vent_t2",
+      "kind": "consumable",
+      "category": "scroll",
+      "name_fr": "Parchemin de Vent II",
+      "name_en": "Wind Scroll II",
+      "description_fr": "Augmente la vitesse de déplacement hors combat de 15 % pendant 30 minutes.",
+      "description_en": "Increases out-of-combat movement speed by 15% for 30 minutes.",
+      "rarity": "rare",
+      "stack_max": 20,
+      "sell_price": 80,
+      "level_req": 1,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_scroll_vent_t2",
+        "duration": 1800
+      },
+      "world_buff": {
+        "source": "scroll",
+        "out_of_combat_only": true,
+        "stats": [
+          {
+            "stat": "move_speed_percent",
+            "mode": "flat",
+            "value": 15
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/scrolls/scroll_vent_t2.png"
+    },
+    {
+      "id": "scroll_vent_t3",
+      "kind": "consumable",
+      "category": "scroll",
+      "name_fr": "Parchemin de Vent III",
+      "name_en": "Wind Scroll III",
+      "description_fr": "Augmente la vitesse de déplacement hors combat de 20 % pendant 30 minutes.",
+      "description_en": "Increases out-of-combat movement speed by 20% for 30 minutes.",
+      "rarity": "epic",
+      "stack_max": 20,
+      "sell_price": 220,
+      "level_req": 1,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_scroll_vent_t3",
+        "duration": 1800
+      },
+      "world_buff": {
+        "source": "scroll",
+        "out_of_combat_only": true,
+        "stats": [
+          {
+            "stat": "move_speed_percent",
+            "mode": "flat",
+            "value": 20
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/scrolls/scroll_vent_t3.png"
+    },
+    {
+      "id": "pet_treat_vigueur_t1",
+      "kind": "consumable",
+      "category": "pet_treat",
+      "name_fr": "Friandise vigoureuse I",
+      "name_en": "Hearty Treat I",
+      "description_fr": "Se donne au familier actif. Augmente ses PV max de 5 % pendant 30 minutes.",
+      "description_en": "Given to the active familiar. Increases its max HP by 5% for 30 minutes.",
+      "rarity": "uncommon",
+      "stack_max": 20,
+      "sell_price": 25,
+      "effect": {
+        "type": "familiar_buff",
+        "duration": 1800,
+        "stats": [
+          {
+            "stat": "hp",
+            "mode": "percent",
+            "value": 5
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/pet/pet_treat_vigueur_t1.png"
+    },
+    {
+      "id": "pet_treat_vigueur_t2",
+      "kind": "consumable",
+      "category": "pet_treat",
+      "name_fr": "Friandise vigoureuse II",
+      "name_en": "Hearty Treat II",
+      "description_fr": "Se donne au familier actif. Augmente ses PV max de 8 % pendant 30 minutes.",
+      "description_en": "Given to the active familiar. Increases its max HP by 8% for 30 minutes.",
+      "rarity": "rare",
+      "stack_max": 20,
+      "sell_price": 80,
+      "effect": {
+        "type": "familiar_buff",
+        "duration": 1800,
+        "stats": [
+          {
+            "stat": "hp",
+            "mode": "percent",
+            "value": 8
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/pet/pet_treat_vigueur_t2.png"
+    },
+    {
+      "id": "pet_treat_vigueur_t3",
+      "kind": "consumable",
+      "category": "pet_treat",
+      "name_fr": "Friandise vigoureuse III",
+      "name_en": "Hearty Treat III",
+      "description_fr": "Se donne au familier actif. Augmente ses PV max de 12 % pendant 30 minutes.",
+      "description_en": "Given to the active familiar. Increases its max HP by 12% for 30 minutes.",
+      "rarity": "epic",
+      "stack_max": 20,
+      "sell_price": 220,
+      "effect": {
+        "type": "familiar_buff",
+        "duration": 1800,
+        "stats": [
+          {
+            "stat": "hp",
+            "mode": "percent",
+            "value": 12
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/pet/pet_treat_vigueur_t3.png"
+    },
+    {
+      "id": "pet_treat_crocs_t1",
+      "kind": "consumable",
+      "category": "pet_treat",
+      "name_fr": "Friandise mordante I",
+      "name_en": "Biting Treat I",
+      "description_fr": "Se donne au familier actif. Augmente ses dégâts infligés de 3 % pendant 30 minutes.",
+      "description_en": "Given to the active familiar. Increases its damage dealt by 3% for 30 minutes.",
+      "rarity": "uncommon",
+      "stack_max": 20,
+      "sell_price": 25,
+      "effect": {
+        "type": "familiar_buff",
+        "duration": 1800,
+        "stats": [
+          {
+            "stat": "damage_percent",
+            "mode": "flat",
+            "value": 3
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/pet/pet_treat_crocs_t1.png"
+    },
+    {
+      "id": "pet_treat_crocs_t2",
+      "kind": "consumable",
+      "category": "pet_treat",
+      "name_fr": "Friandise mordante II",
+      "name_en": "Biting Treat II",
+      "description_fr": "Se donne au familier actif. Augmente ses dégâts infligés de 5 % pendant 30 minutes.",
+      "description_en": "Given to the active familiar. Increases its damage dealt by 5% for 30 minutes.",
+      "rarity": "rare",
+      "stack_max": 20,
+      "sell_price": 80,
+      "effect": {
+        "type": "familiar_buff",
+        "duration": 1800,
+        "stats": [
+          {
+            "stat": "damage_percent",
+            "mode": "flat",
+            "value": 5
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/pet/pet_treat_crocs_t2.png"
+    },
+    {
+      "id": "pet_treat_crocs_t3",
+      "kind": "consumable",
+      "category": "pet_treat",
+      "name_fr": "Friandise mordante III",
+      "name_en": "Biting Treat III",
+      "description_fr": "Se donne au familier actif. Augmente ses dégâts infligés de 8 % pendant 30 minutes.",
+      "description_en": "Given to the active familiar. Increases its damage dealt by 8% for 30 minutes.",
+      "rarity": "epic",
+      "stack_max": 20,
+      "sell_price": 220,
+      "effect": {
+        "type": "familiar_buff",
+        "duration": 1800,
+        "stats": [
+          {
+            "stat": "damage_percent",
+            "mode": "flat",
+            "value": 8
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/pet/pet_treat_crocs_t3.png"
+    },
+    {
+      "id": "pet_treat_ecaille_t1",
+      "kind": "consumable",
+      "category": "pet_treat",
+      "name_fr": "Friandise coriace I",
+      "name_en": "Tough Treat I",
+      "description_fr": "Se donne au familier actif. Réduit ses dégâts subis de 3 % pendant 30 minutes.",
+      "description_en": "Given to the active familiar. Reduces its damage taken by 3% for 30 minutes.",
+      "rarity": "uncommon",
+      "stack_max": 20,
+      "sell_price": 25,
+      "effect": {
+        "type": "familiar_buff",
+        "duration": 1800,
+        "stats": [
+          {
+            "stat": "damage_reduction",
+            "mode": "flat",
+            "value": 3
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/pet/pet_treat_ecaille_t1.png"
+    },
+    {
+      "id": "pet_treat_ecaille_t2",
+      "kind": "consumable",
+      "category": "pet_treat",
+      "name_fr": "Friandise coriace II",
+      "name_en": "Tough Treat II",
+      "description_fr": "Se donne au familier actif. Réduit ses dégâts subis de 5 % pendant 30 minutes.",
+      "description_en": "Given to the active familiar. Reduces its damage taken by 5% for 30 minutes.",
+      "rarity": "rare",
+      "stack_max": 20,
+      "sell_price": 80,
+      "effect": {
+        "type": "familiar_buff",
+        "duration": 1800,
+        "stats": [
+          {
+            "stat": "damage_reduction",
+            "mode": "flat",
+            "value": 5
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/pet/pet_treat_ecaille_t2.png"
+    },
+    {
+      "id": "pet_treat_ecaille_t3",
+      "kind": "consumable",
+      "category": "pet_treat",
+      "name_fr": "Friandise coriace III",
+      "name_en": "Tough Treat III",
+      "description_fr": "Se donne au familier actif. Réduit ses dégâts subis de 8 % pendant 30 minutes.",
+      "description_en": "Given to the active familiar. Reduces its damage taken by 8% for 30 minutes.",
+      "rarity": "epic",
+      "stack_max": 20,
+      "sell_price": 220,
+      "effect": {
+        "type": "familiar_buff",
+        "duration": 1800,
+        "stats": [
+          {
+            "stat": "damage_reduction",
+            "mode": "flat",
+            "value": 8
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/pet/pet_treat_ecaille_t3.png"
+    },
+    {
+      "id": "koro_blank",
+      "kind": "material",
+      "category": "collector",
+      "name_fr": "Carte Koro vierge",
+      "name_en": "Blank Koro Card",
+      "description_fr": "Une carte sans sort. Yuki sait la faire parler : c'est ainsi qu'on révèle une carte Koro.",
+      "description_en": "A card with no spell yet. Yuki knows how to make it speak.",
+      "rarity": "rare",
+      "stack_max": 99,
+      "sell_price": 50,
+      "icon": "assets/icons/items/materials/koro_blank.png"
     }
   ],
   "recipes": [
@@ -8839,6 +9430,1136 @@
           "qty": 1
         }
       ]
+    },
+    {
+      "id": "recipe_scribe_savoir_t1",
+      "profession": "scribe",
+      "station": "workshop_scribe",
+      "profession_level": 10,
+      "xp": 80,
+      "gold_cost": 30,
+      "output_item": "scroll_savoir_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_torn_scripture",
+          "qty": 2
+        },
+        {
+          "id": "mat_spider_silk",
+          "qty": 1
+        },
+        {
+          "id": "mat_ancient_dust",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_scribe_savoir_t2",
+      "profession": "scribe",
+      "station": "workshop_scribe",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 150,
+      "output_item": "scroll_savoir_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_holy_scripture",
+          "qty": 2
+        },
+        {
+          "id": "mat_ritual_candle",
+          "qty": 1
+        },
+        {
+          "id": "mat_crow_feather",
+          "qty": 2
+        },
+        {
+          "id": "mat_ancient_dust",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_scribe_savoir_t3",
+      "profession": "scribe",
+      "station": "workshop_scribe",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 600,
+      "output_item": "scroll_savoir_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_dark_scripture",
+          "qty": 2
+        },
+        {
+          "id": "mat_corrupted_ink",
+          "qty": 1
+        },
+        {
+          "id": "mat_abyssal_tome",
+          "qty": 1
+        },
+        {
+          "id": "mat_ancient_dust",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_scribe_fortune_t1",
+      "profession": "scribe",
+      "station": "workshop_scribe",
+      "profession_level": 10,
+      "xp": 80,
+      "gold_cost": 30,
+      "output_item": "scroll_fortune_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_torn_scripture",
+          "qty": 2
+        },
+        {
+          "id": "mat_spider_silk",
+          "qty": 1
+        },
+        {
+          "id": "mat_village_seal",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_scribe_fortune_t2",
+      "profession": "scribe",
+      "station": "workshop_scribe",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 150,
+      "output_item": "scroll_fortune_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_holy_scripture",
+          "qty": 2
+        },
+        {
+          "id": "mat_ritual_candle",
+          "qty": 1
+        },
+        {
+          "id": "mat_crow_feather",
+          "qty": 2
+        },
+        {
+          "id": "mat_village_seal",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_scribe_fortune_t3",
+      "profession": "scribe",
+      "station": "workshop_scribe",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 600,
+      "output_item": "scroll_fortune_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_dark_scripture",
+          "qty": 2
+        },
+        {
+          "id": "mat_corrupted_ink",
+          "qty": 1
+        },
+        {
+          "id": "mat_abyssal_tome",
+          "qty": 1
+        },
+        {
+          "id": "mat_village_seal",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_scribe_trouvaille_t1",
+      "profession": "scribe",
+      "station": "workshop_scribe",
+      "profession_level": 10,
+      "xp": 80,
+      "gold_cost": 30,
+      "output_item": "scroll_trouvaille_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_torn_scripture",
+          "qty": 2
+        },
+        {
+          "id": "mat_spider_silk",
+          "qty": 1
+        },
+        {
+          "id": "mat_tower_sigil",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_scribe_trouvaille_t2",
+      "profession": "scribe",
+      "station": "workshop_scribe",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 150,
+      "output_item": "scroll_trouvaille_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_holy_scripture",
+          "qty": 2
+        },
+        {
+          "id": "mat_ritual_candle",
+          "qty": 1
+        },
+        {
+          "id": "mat_crow_feather",
+          "qty": 2
+        },
+        {
+          "id": "mat_tower_sigil",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_scribe_trouvaille_t3",
+      "profession": "scribe",
+      "station": "workshop_scribe",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 600,
+      "output_item": "scroll_trouvaille_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_dark_scripture",
+          "qty": 2
+        },
+        {
+          "id": "mat_corrupted_ink",
+          "qty": 1
+        },
+        {
+          "id": "mat_abyssal_tome",
+          "qty": 1
+        },
+        {
+          "id": "mat_tower_sigil",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_scribe_vent_t1",
+      "profession": "scribe",
+      "station": "workshop_scribe",
+      "profession_level": 10,
+      "xp": 80,
+      "gold_cost": 30,
+      "output_item": "scroll_vent_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_torn_scripture",
+          "qty": 2
+        },
+        {
+          "id": "mat_spider_silk",
+          "qty": 1
+        },
+        {
+          "id": "mat_horsehair",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_scribe_vent_t2",
+      "profession": "scribe",
+      "station": "workshop_scribe",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 150,
+      "output_item": "scroll_vent_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_holy_scripture",
+          "qty": 2
+        },
+        {
+          "id": "mat_ritual_candle",
+          "qty": 1
+        },
+        {
+          "id": "mat_crow_feather",
+          "qty": 2
+        },
+        {
+          "id": "mat_horsehair",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_scribe_vent_t3",
+      "profession": "scribe",
+      "station": "workshop_scribe",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 600,
+      "output_item": "scroll_vent_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_dark_scripture",
+          "qty": 2
+        },
+        {
+          "id": "mat_corrupted_ink",
+          "qty": 1
+        },
+        {
+          "id": "mat_abyssal_tome",
+          "qty": 1
+        },
+        {
+          "id": "mat_horsehair",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_pet_hp_t1",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "cons_hp_potion_pet_t1",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_raw_meat",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 1
+        },
+        {
+          "id": "mat_healing_salve",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_pet_mp_t1",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "cons_mp_potion_pet_t1",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_raw_meat",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 1
+        },
+        {
+          "id": "mat_misty_essence",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_pet_hp_t2",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "cons_hp_potion_pet_t2",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_raw_meat",
+          "qty": 3
+        },
+        {
+          "id": "mat_hare_foot",
+          "qty": 1
+        },
+        {
+          "id": "mat_healing_salve",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_pet_mp_t2",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "cons_mp_potion_pet_t2",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_raw_meat",
+          "qty": 3
+        },
+        {
+          "id": "mat_hare_foot",
+          "qty": 1
+        },
+        {
+          "id": "mat_misty_essence",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_pet_hp_t3",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "cons_hp_potion_pet_t3",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spider_egg",
+          "qty": 2
+        },
+        {
+          "id": "mat_crow_feather",
+          "qty": 1
+        },
+        {
+          "id": "mat_healing_salve",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_pet_mp_t3",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "cons_mp_potion_pet_t3",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spider_egg",
+          "qty": 2
+        },
+        {
+          "id": "mat_crow_feather",
+          "qty": 1
+        },
+        {
+          "id": "mat_misty_essence",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_pet_hp_t4",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "cons_hp_potion_pet_t4",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spider_egg",
+          "qty": 3
+        },
+        {
+          "id": "mat_soul_essence",
+          "qty": 1
+        },
+        {
+          "id": "mat_healing_salve",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_pet_mp_t4",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "cons_mp_potion_pet_t4",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spider_egg",
+          "qty": 3
+        },
+        {
+          "id": "mat_soul_essence",
+          "qty": 1
+        },
+        {
+          "id": "mat_misty_essence",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_pet_hp_t5",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "cons_hp_potion_pet_t5",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_soul_essence",
+          "qty": 2
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        },
+        {
+          "id": "mat_healing_salve",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_pet_mp_t5",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "cons_mp_potion_pet_t5",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_soul_essence",
+          "qty": 2
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        },
+        {
+          "id": "mat_misty_essence",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_reroll_one",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2500,
+      "output_item": "cons_pet_skill_reroll_one",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_soul_essence",
+          "qty": 2
+        },
+        {
+          "id": "mat_crow_feather",
+          "qty": 3
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_reroll_choose",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 20000,
+      "output_item": "cons_pet_skill_reroll_choose",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_soul_essence",
+          "qty": 4
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        },
+        {
+          "id": "mat_fissure_shard",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_treat_vigueur_t1",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 15,
+      "xp": 110,
+      "gold_cost": 20,
+      "output_item": "pet_treat_vigueur_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_raw_meat",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 1
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_treat_vigueur_t2",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 45,
+      "xp": 290,
+      "gold_cost": 80,
+      "output_item": "pet_treat_vigueur_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spider_egg",
+          "qty": 2
+        },
+        {
+          "id": "mat_crow_feather",
+          "qty": 1
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_treat_vigueur_t3",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 75,
+      "xp": 470,
+      "gold_cost": 200,
+      "output_item": "pet_treat_vigueur_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spider_egg",
+          "qty": 3
+        },
+        {
+          "id": "mat_soul_essence",
+          "qty": 1
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_treat_crocs_t1",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 15,
+      "xp": 110,
+      "gold_cost": 20,
+      "output_item": "pet_treat_crocs_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_raw_meat",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 1
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_treat_crocs_t2",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 45,
+      "xp": 290,
+      "gold_cost": 80,
+      "output_item": "pet_treat_crocs_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spider_egg",
+          "qty": 2
+        },
+        {
+          "id": "mat_crow_feather",
+          "qty": 1
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_treat_crocs_t3",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 75,
+      "xp": 470,
+      "gold_cost": 200,
+      "output_item": "pet_treat_crocs_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spider_egg",
+          "qty": 3
+        },
+        {
+          "id": "mat_soul_essence",
+          "qty": 1
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_treat_ecaille_t1",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 15,
+      "xp": 110,
+      "gold_cost": 20,
+      "output_item": "pet_treat_ecaille_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_raw_meat",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 1
+        },
+        {
+          "id": "mat_hare_foot",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_treat_ecaille_t2",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 45,
+      "xp": 290,
+      "gold_cost": 80,
+      "output_item": "pet_treat_ecaille_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spider_egg",
+          "qty": 2
+        },
+        {
+          "id": "mat_crow_feather",
+          "qty": 1
+        },
+        {
+          "id": "mat_hare_foot",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_breed_treat_ecaille_t3",
+      "profession": "breeder",
+      "station": "workshop_breeder",
+      "profession_level": 75,
+      "xp": 470,
+      "gold_cost": 200,
+      "output_item": "pet_treat_ecaille_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spider_egg",
+          "qty": 3
+        },
+        {
+          "id": "mat_soul_essence",
+          "qty": 1
+        },
+        {
+          "id": "mat_hare_foot",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_coll_koro_blank",
+      "profession": "collector",
+      "station": "workshop_collector",
+      "profession_level": 10,
+      "xp": 80,
+      "gold_cost": 200,
+      "output_item": "koro_blank",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_stolen_goods",
+          "qty": 2
+        },
+        {
+          "id": "mat_outlaw_badge",
+          "qty": 1
+        },
+        {
+          "id": "mat_spider_silk",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_coll_koro_blank_trophy",
+      "profession": "collector",
+      "station": "workshop_collector",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 600,
+      "output_item": "koro_blank",
+      "output_qty": 2,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_goblin_token",
+          "qty": 2
+        },
+        {
+          "id": "mat_silver_coin",
+          "qty": 2
+        },
+        {
+          "id": "mat_bone_charm",
+          "qty": 1
+        }
+      ]
+    }
+  ],
+  "rule_recipes": [
+    {
+      "id": "rule_koro_fuse_c_b",
+      "profession": "collector",
+      "station": "workshop_collector",
+      "kind": "fusion",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 300,
+      "description_fr": "3 cartes Koro du MEME sort au rang C -> 1 carte de ce sort au rang B.",
+      "materials": [
+        {
+          "id": "mat_fissure_shard",
+          "qty": 1
+        }
+      ],
+      "item_family": "koro_cards",
+      "input_rank": "C",
+      "input_qty": 3,
+      "output_rank": "B",
+      "same": "base_skill_id"
+    },
+    {
+      "id": "rule_koro_fuse_b_a",
+      "profession": "collector",
+      "station": "workshop_collector",
+      "kind": "fusion",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 1500,
+      "description_fr": "3 cartes Koro du MEME sort au rang B -> 1 carte de ce sort au rang A.",
+      "materials": [
+        {
+          "id": "mat_fissure_shard",
+          "qty": 1
+        }
+      ],
+      "item_family": "koro_cards",
+      "input_rank": "B",
+      "input_qty": 3,
+      "output_rank": "A",
+      "same": "base_skill_id"
+    },
+    {
+      "id": "rule_koro_fuse_a_s",
+      "profession": "collector",
+      "station": "workshop_collector",
+      "kind": "fusion",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 6000,
+      "description_fr": "3 cartes Koro du MEME sort au rang A -> 1 carte de ce sort au rang S.",
+      "materials": [
+        {
+          "id": "mat_magic_crystal",
+          "qty": 1
+        }
+      ],
+      "item_family": "koro_cards",
+      "input_rank": "A",
+      "input_qty": 3,
+      "output_rank": "S",
+      "same": "base_skill_id"
+    },
+    {
+      "id": "rule_koro_fuse_s_ss",
+      "profession": "collector",
+      "station": "workshop_collector",
+      "kind": "fusion",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 25000,
+      "description_fr": "3 cartes Koro du MEME sort au rang S -> 1 carte de ce sort au rang SS.",
+      "materials": [
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ],
+      "item_family": "koro_cards",
+      "input_rank": "S",
+      "input_qty": 3,
+      "output_rank": "SS",
+      "same": "base_skill_id"
+    },
+    {
+      "id": "rule_koro_reveal_c",
+      "profession": "collector",
+      "station": "workshop_collector",
+      "kind": "reveal",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 150,
+      "description_fr": "1 carte vierge + reactifs -> 1 carte Koro AU HASARD de rang C (poids drop_weight des cartes).",
+      "materials": [
+        {
+          "id": "koro_blank",
+          "qty": 1
+        },
+        {
+          "id": "mat_goblin_token",
+          "qty": 1
+        }
+      ],
+      "item_family": "koro_cards",
+      "output_rank": "C",
+      "output_qty": 1
+    },
+    {
+      "id": "rule_koro_reveal_b",
+      "profession": "collector",
+      "station": "workshop_collector",
+      "kind": "reveal",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 1200,
+      "description_fr": "1 carte vierge + reactifs -> 1 carte Koro AU HASARD de rang B (poids drop_weight des cartes).",
+      "materials": [
+        {
+          "id": "koro_blank",
+          "qty": 1
+        },
+        {
+          "id": "mat_warlord_crest",
+          "qty": 1
+        },
+        {
+          "id": "mat_fissure_shard",
+          "qty": 1
+        }
+      ],
+      "item_family": "koro_cards",
+      "output_rank": "B",
+      "output_qty": 1
+    },
+    {
+      "id": "rule_koro_reveal_a",
+      "profession": "collector",
+      "station": "workshop_collector",
+      "kind": "reveal",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 6000,
+      "description_fr": "1 carte vierge + reactifs -> 1 carte Koro AU HASARD de rang A (poids drop_weight des cartes).",
+      "materials": [
+        {
+          "id": "koro_blank",
+          "qty": 1
+        },
+        {
+          "id": "mat_edric_seal",
+          "qty": 1
+        },
+        {
+          "id": "mat_void_crystal",
+          "qty": 1
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ],
+      "item_family": "koro_cards",
+      "output_rank": "A",
+      "output_qty": 1
+    },
+    {
+      "id": "rule_book_copy_b",
+      "profession": "scribe",
+      "station": "workshop_scribe",
+      "kind": "copy",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 800,
+      "description_fr": "1 grimoire de familier de rang B -> 2 exemplaires du meme grimoire. S et SS ne se copient pas (ils restent des butins) ; le rang C s'achete deja chez Colette.",
+      "materials": [
+        {
+          "id": "mat_holy_scripture",
+          "qty": 3
+        },
+        {
+          "id": "mat_ancient_dust",
+          "qty": 2
+        }
+      ],
+      "item_family": "pet_books",
+      "input_rank": "B",
+      "input_qty": 1,
+      "output_rank": "B",
+      "output_qty": 2,
+      "same": "id"
+    },
+    {
+      "id": "rule_book_copy_a",
+      "profession": "scribe",
+      "station": "workshop_scribe",
+      "kind": "copy",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 4000,
+      "description_fr": "1 grimoire de familier de rang A -> 2 exemplaires du meme grimoire. S et SS ne se copient pas (ils restent des butins) ; le rang C s'achete deja chez Colette.",
+      "materials": [
+        {
+          "id": "mat_dark_scripture",
+          "qty": 3
+        },
+        {
+          "id": "mat_corrupted_ink",
+          "qty": 2
+        },
+        {
+          "id": "mat_abyssal_tome",
+          "qty": 1
+        }
+      ],
+      "item_family": "pet_books",
+      "input_rank": "A",
+      "input_qty": 1,
+      "output_rank": "A",
+      "output_qty": 2,
+      "same": "id"
     }
   ]
 }

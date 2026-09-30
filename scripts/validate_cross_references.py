@@ -1149,6 +1149,21 @@ def validate_profession_recipes(db: Path, all_item_ids: set) -> list:
         for m in r.get("materials", []):
             if m.get("id") not in known:
                 errors.append(f"[profession_recipes.json] '{rid}' : materiau inconnu '{m.get('id')}'")
+    families = {"koro_cards", "pet_books", "keystone_items"}
+    for r in d.get("rule_recipes", []):
+        rid = r.get("id", "?")
+        if rid in seen:
+            errors.append(f"[profession_recipes.json] regle en double '{rid}'")
+        seen.add(rid)
+        if r.get("profession") not in profs:
+            errors.append(f"[profession_recipes.json] '{rid}' : metier inconnu '{r.get('profession')}'")
+        if not 1 <= int(r.get("profession_level", 0)) <= 100:
+            errors.append(f"[profession_recipes.json] '{rid}' : profession_level hors 1..100")
+        if r.get("kind") not in ("fusion", "reveal", "copy") or r.get("item_family") not in families:
+            errors.append(f"[profession_recipes.json] '{rid}' : kind ou item_family invalide")
+        for m in r.get("materials", []):
+            if m.get("id") not in known:
+                errors.append(f"[profession_recipes.json] '{rid}' : materiau inconnu '{m.get('id')}'")
     return errors
 
 
