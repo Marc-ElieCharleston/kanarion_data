@@ -1,0 +1,912 @@
+{
+  "_meta": {
+    "version": "0.1",
+    "status": "PILOTE a valider (2026-10-01) : seul l'Apothicaire. Fichier NON charge par le serveur ; rien ne change en jeu tant que les metiers ne sont pas branches (items/recipes.json reste celui du forgeron).",
+    "format": "Une recette = profession + station + profession_level (niveau de METIER requis) + xp (XP de metier gagnee) + gold_cost + output_item/output_qty + quality_cap (rang maximum C..SS, voir systems/professions.json quality) + materials [{id, qty}].",
+    "consumable_quality": "Pour un consommable, le rang de qualite multiplie l'effet : C x1.00, B x1.08, A x1.16, S x1.24, SS x1.32 (valeur ou duree).",
+    "new_items_rule": "new_items = objets PROPOSES qui n'existent pas encore : ils passeront dans consumables.json / materials.json / world_buffs.json a la validation. Chaque objet porte le chemin de son icone a produire.",
+    "elixirs": "Nouvelle famille : un seul elixir actif a la fois (source 'elixir'), qui se cumule avec un repas (food_meal) et une boisson (food_drink). 15 minutes. Axes volontairement differents des 19 familles de nourriture."
+  },
+  "new_items": [
+    {
+      "id": "elix_vigueur_t1",
+      "kind": "consumable",
+      "category": "elixir",
+      "name_fr": "Élixir de Vigueur I",
+      "name_en": "Vigor Elixir I",
+      "description_fr": "Augmente les PV max de 5 % pendant 15 minutes.",
+      "description_en": "Increases max HP by 5% for 15 minutes.",
+      "rarity": "uncommon",
+      "stack_max": 20,
+      "sell_price": 30,
+      "level_req": 15,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_elixir_vigueur_t1",
+        "duration": 900
+      },
+      "world_buff": {
+        "source": "elixir",
+        "stats": [
+          {
+            "stat": "hp",
+            "mode": "percent",
+            "value": 5
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/elixirs/elix_vigueur_t1.png"
+    },
+    {
+      "id": "elix_vigueur_t2",
+      "kind": "consumable",
+      "category": "elixir",
+      "name_fr": "Élixir de Vigueur II",
+      "name_en": "Vigor Elixir II",
+      "description_fr": "Augmente les PV max de 8 % pendant 15 minutes.",
+      "description_en": "Increases max HP by 8% for 15 minutes.",
+      "rarity": "rare",
+      "stack_max": 20,
+      "sell_price": 90,
+      "level_req": 45,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_elixir_vigueur_t2",
+        "duration": 900
+      },
+      "world_buff": {
+        "source": "elixir",
+        "stats": [
+          {
+            "stat": "hp",
+            "mode": "percent",
+            "value": 8
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/elixirs/elix_vigueur_t2.png"
+    },
+    {
+      "id": "elix_vigueur_t3",
+      "kind": "consumable",
+      "category": "elixir",
+      "name_fr": "Élixir de Vigueur III",
+      "name_en": "Vigor Elixir III",
+      "description_fr": "Augmente les PV max de 12 % pendant 15 minutes.",
+      "description_en": "Increases max HP by 12% for 15 minutes.",
+      "rarity": "epic",
+      "stack_max": 20,
+      "sell_price": 250,
+      "level_req": 75,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_elixir_vigueur_t3",
+        "duration": 900
+      },
+      "world_buff": {
+        "source": "elixir",
+        "stats": [
+          {
+            "stat": "hp",
+            "mode": "percent",
+            "value": 12
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/elixirs/elix_vigueur_t3.png"
+    },
+    {
+      "id": "elix_rage_t1",
+      "kind": "consumable",
+      "category": "elixir",
+      "name_fr": "Élixir de Rage I",
+      "name_en": "Fury Elixir I",
+      "description_fr": "Augmente les dégâts infligés de 4 % pendant 15 minutes.",
+      "description_en": "Increases damage dealt by 4% for 15 minutes.",
+      "rarity": "uncommon",
+      "stack_max": 20,
+      "sell_price": 30,
+      "level_req": 15,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_elixir_rage_t1",
+        "duration": 900
+      },
+      "world_buff": {
+        "source": "elixir",
+        "stats": [
+          {
+            "stat": "damage_percent",
+            "mode": "flat",
+            "value": 4
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/elixirs/elix_rage_t1.png"
+    },
+    {
+      "id": "elix_rage_t2",
+      "kind": "consumable",
+      "category": "elixir",
+      "name_fr": "Élixir de Rage II",
+      "name_en": "Fury Elixir II",
+      "description_fr": "Augmente les dégâts infligés de 7 % pendant 15 minutes.",
+      "description_en": "Increases damage dealt by 7% for 15 minutes.",
+      "rarity": "rare",
+      "stack_max": 20,
+      "sell_price": 90,
+      "level_req": 45,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_elixir_rage_t2",
+        "duration": 900
+      },
+      "world_buff": {
+        "source": "elixir",
+        "stats": [
+          {
+            "stat": "damage_percent",
+            "mode": "flat",
+            "value": 7
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/elixirs/elix_rage_t2.png"
+    },
+    {
+      "id": "elix_rage_t3",
+      "kind": "consumable",
+      "category": "elixir",
+      "name_fr": "Élixir de Rage III",
+      "name_en": "Fury Elixir III",
+      "description_fr": "Augmente les dégâts infligés de 10 % pendant 15 minutes.",
+      "description_en": "Increases damage dealt by 10% for 15 minutes.",
+      "rarity": "epic",
+      "stack_max": 20,
+      "sell_price": 250,
+      "level_req": 75,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_elixir_rage_t3",
+        "duration": 900
+      },
+      "world_buff": {
+        "source": "elixir",
+        "stats": [
+          {
+            "stat": "damage_percent",
+            "mode": "flat",
+            "value": 10
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/elixirs/elix_rage_t3.png"
+    },
+    {
+      "id": "elix_rempart_t1",
+      "kind": "consumable",
+      "category": "elixir",
+      "name_fr": "Élixir de Rempart I",
+      "name_en": "Bulwark Elixir I",
+      "description_fr": "Réduit les dégâts subis de 3 % pendant 15 minutes.",
+      "description_en": "Reduces damage taken by 3% for 15 minutes.",
+      "rarity": "uncommon",
+      "stack_max": 20,
+      "sell_price": 30,
+      "level_req": 15,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_elixir_rempart_t1",
+        "duration": 900
+      },
+      "world_buff": {
+        "source": "elixir",
+        "stats": [
+          {
+            "stat": "damage_reduction",
+            "mode": "flat",
+            "value": 3
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/elixirs/elix_rempart_t1.png"
+    },
+    {
+      "id": "elix_rempart_t2",
+      "kind": "consumable",
+      "category": "elixir",
+      "name_fr": "Élixir de Rempart II",
+      "name_en": "Bulwark Elixir II",
+      "description_fr": "Réduit les dégâts subis de 5 % pendant 15 minutes.",
+      "description_en": "Reduces damage taken by 5% for 15 minutes.",
+      "rarity": "rare",
+      "stack_max": 20,
+      "sell_price": 90,
+      "level_req": 45,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_elixir_rempart_t2",
+        "duration": 900
+      },
+      "world_buff": {
+        "source": "elixir",
+        "stats": [
+          {
+            "stat": "damage_reduction",
+            "mode": "flat",
+            "value": 5
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/elixirs/elix_rempart_t2.png"
+    },
+    {
+      "id": "elix_rempart_t3",
+      "kind": "consumable",
+      "category": "elixir",
+      "name_fr": "Élixir de Rempart III",
+      "name_en": "Bulwark Elixir III",
+      "description_fr": "Réduit les dégâts subis de 8 % pendant 15 minutes.",
+      "description_en": "Reduces damage taken by 8% for 15 minutes.",
+      "rarity": "epic",
+      "stack_max": 20,
+      "sell_price": 250,
+      "level_req": 75,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_elixir_rempart_t3",
+        "duration": 900
+      },
+      "world_buff": {
+        "source": "elixir",
+        "stats": [
+          {
+            "stat": "damage_reduction",
+            "mode": "flat",
+            "value": 8
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/elixirs/elix_rempart_t3.png"
+    },
+    {
+      "id": "elix_clarte_t1",
+      "kind": "consumable",
+      "category": "elixir",
+      "name_fr": "Élixir de Clarté I",
+      "name_en": "Clarity Elixir I",
+      "description_fr": "Augmente la régénération du Souffle de 10 % pendant 15 minutes.",
+      "description_en": "Increases Breath regeneration by 10% for 15 minutes.",
+      "rarity": "uncommon",
+      "stack_max": 20,
+      "sell_price": 30,
+      "level_req": 15,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_elixir_clarte_t1",
+        "duration": 900
+      },
+      "world_buff": {
+        "source": "elixir",
+        "stats": [
+          {
+            "stat": "mp_regen",
+            "mode": "percent",
+            "value": 10
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/elixirs/elix_clarte_t1.png"
+    },
+    {
+      "id": "elix_clarte_t2",
+      "kind": "consumable",
+      "category": "elixir",
+      "name_fr": "Élixir de Clarté II",
+      "name_en": "Clarity Elixir II",
+      "description_fr": "Augmente la régénération du Souffle de 18 % pendant 15 minutes.",
+      "description_en": "Increases Breath regeneration by 18% for 15 minutes.",
+      "rarity": "rare",
+      "stack_max": 20,
+      "sell_price": 90,
+      "level_req": 45,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_elixir_clarte_t2",
+        "duration": 900
+      },
+      "world_buff": {
+        "source": "elixir",
+        "stats": [
+          {
+            "stat": "mp_regen",
+            "mode": "percent",
+            "value": 18
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/elixirs/elix_clarte_t2.png"
+    },
+    {
+      "id": "elix_clarte_t3",
+      "kind": "consumable",
+      "category": "elixir",
+      "name_fr": "Élixir de Clarté III",
+      "name_en": "Clarity Elixir III",
+      "description_fr": "Augmente la régénération du Souffle de 28 % pendant 15 minutes.",
+      "description_en": "Increases Breath regeneration by 28% for 15 minutes.",
+      "rarity": "epic",
+      "stack_max": 20,
+      "sell_price": 250,
+      "level_req": 75,
+      "effect": {
+        "type": "buff",
+        "status_id": "wbuff_elixir_clarte_t3",
+        "duration": 900
+      },
+      "world_buff": {
+        "source": "elixir",
+        "stats": [
+          {
+            "stat": "mp_regen",
+            "mode": "percent",
+            "value": 28
+          }
+        ]
+      },
+      "icon": "assets/icons/items/consumables/elixirs/elix_clarte_t3.png"
+    },
+    {
+      "id": "mat_rift_ember",
+      "kind": "material",
+      "category": "fissure_hunter",
+      "name_fr": "Braise de Faille",
+      "name_en": "Rift Ember",
+      "description_fr": "Un reste de Souffle encore chaud, recueilli par un Chasseur de Failles pendant une invasion.",
+      "description_en": "A still-warm trace of Breath, gathered by a Rift Hunter during an invasion.",
+      "rarity": "epic",
+      "stack_max": 99,
+      "sell_price": 120,
+      "source": "Chasseur de Failles, pendant une invasion de Fissure",
+      "icon": "assets/icons/items/materials/mat_rift_ember.png"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "recipe_apo_hp_t1",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "cons_hp_potion_t1",
+      "output_qty": 3,
+      "quality_cap": "A",
+      "materials": [
+        {
+          "id": "mat_dried_herbs",
+          "qty": 2
+        },
+        {
+          "id": "mat_rat_tail",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_mp_t1",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "cons_mp_potion_t1",
+      "output_qty": 3,
+      "quality_cap": "A",
+      "materials": [
+        {
+          "id": "mat_dried_herbs",
+          "qty": 2
+        },
+        {
+          "id": "mat_foam_saliva",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_recall",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 10,
+      "xp": 80,
+      "gold_cost": 15,
+      "output_item": "cons_recall_potion",
+      "output_qty": 2,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_healing_salve",
+          "qty": 1
+        },
+        {
+          "id": "mat_goblin_ear",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_vigueur_t1",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 15,
+      "xp": 110,
+      "gold_cost": 20,
+      "output_item": "elix_vigueur_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_pork_fat",
+          "qty": 2
+        },
+        {
+          "id": "mat_healing_salve",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_rage_t1",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 15,
+      "xp": 110,
+      "gold_cost": 20,
+      "output_item": "elix_rage_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_explosive_powder",
+          "qty": 1
+        },
+        {
+          "id": "mat_bloodshot_eye",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_rempart_t1",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 15,
+      "xp": 110,
+      "gold_cost": 20,
+      "output_item": "elix_rempart_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_toad_wart",
+          "qty": 2
+        },
+        {
+          "id": "mat_lizard_tail",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_clarte_t1",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 15,
+      "xp": 110,
+      "gold_cost": 20,
+      "output_item": "elix_clarte_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_venom_gland",
+          "qty": 1
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_hp_t2",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "cons_hp_potion_t2",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_healing_salve",
+          "qty": 2
+        },
+        {
+          "id": "mat_lizard_tail",
+          "qty": 2
+        },
+        {
+          "id": "mat_toad_wart",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_mp_t2",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "cons_mp_potion_t2",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_venom_gland",
+          "qty": 1
+        },
+        {
+          "id": "mat_frog_skin",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_hp_t3",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "cons_hp_potion_t3",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_witch_herb",
+          "qty": 2
+        },
+        {
+          "id": "mat_luminous_sac",
+          "qty": 1
+        },
+        {
+          "id": "mat_healing_salve",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_mp_t3",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "cons_mp_potion_t3",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_misty_essence",
+          "qty": 2
+        },
+        {
+          "id": "mat_ectoplasm",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_vigueur_t2",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 45,
+      "xp": 290,
+      "gold_cost": 80,
+      "output_item": "elix_vigueur_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_witch_herb",
+          "qty": 2
+        },
+        {
+          "id": "mat_corrupt_essence",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_rage_t2",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 45,
+      "xp": 290,
+      "gold_cost": 80,
+      "output_item": "elix_rage_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spider_venom",
+          "qty": 2
+        },
+        {
+          "id": "mat_serpent_fang",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_rempart_t2",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 45,
+      "xp": 290,
+      "gold_cost": 80,
+      "output_item": "elix_rempart_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_ancient_dust",
+          "qty": 2
+        },
+        {
+          "id": "mat_ectoplasm",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_clarte_t2",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 45,
+      "xp": 290,
+      "gold_cost": 80,
+      "output_item": "elix_clarte_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_misty_essence",
+          "qty": 2
+        },
+        {
+          "id": "mat_luminous_sac",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_hp_t4",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "cons_hp_potion_t4",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_shadow_essence",
+          "qty": 1
+        },
+        {
+          "id": "mat_soul_essence",
+          "qty": 1
+        },
+        {
+          "id": "mat_witch_herb",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_mp_t4",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "cons_mp_potion_t4",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_nightmare_essence",
+          "qty": 1
+        },
+        {
+          "id": "mat_ice_shard",
+          "qty": 1
+        },
+        {
+          "id": "mat_misty_essence",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_vigueur_t3",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 75,
+      "xp": 470,
+      "gold_cost": 200,
+      "output_item": "elix_vigueur_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_soul_essence",
+          "qty": 2
+        },
+        {
+          "id": "mat_queen_venom",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_rage_t3",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 75,
+      "xp": 470,
+      "gold_cost": 200,
+      "output_item": "elix_rage_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fire_essence",
+          "qty": 2
+        },
+        {
+          "id": "mat_infernal_shard",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_rempart_t3",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 75,
+      "xp": 470,
+      "gold_cost": 200,
+      "output_item": "elix_rempart_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_shadow_essence",
+          "qty": 2
+        },
+        {
+          "id": "mat_ice_shard",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_clarte_t3",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 75,
+      "xp": 470,
+      "gold_cost": 200,
+      "output_item": "elix_clarte_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_nightmare_essence",
+          "qty": 2
+        },
+        {
+          "id": "mat_soul_essence",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_hp_t5",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "cons_hp_potion_t5",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_soul_essence",
+          "qty": 2
+        },
+        {
+          "id": "mat_fire_essence",
+          "qty": 1
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_mp_t5",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "cons_mp_potion_t5",
+      "output_qty": 3,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_nightmare_essence",
+          "qty": 2
+        },
+        {
+          "id": "mat_ice_shard",
+          "qty": 1
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_apo_elixir_full",
+      "profession": "apothecary",
+      "station": "workshop_apothecary",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 800,
+      "output_item": "elixir_full",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_soul_essence",
+          "qty": 2
+        },
+        {
+          "id": "mat_nightmare_essence",
+          "qty": 2
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    }
+  ]
+}

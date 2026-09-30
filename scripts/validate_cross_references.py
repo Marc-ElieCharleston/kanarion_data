@@ -1118,6 +1118,36 @@ def validate_professions(db: Path) -> list:
     return errors
 
 
+def validate_profession_recipes(db: Path, all_item_ids: set) -> list:
+    """items/profession_recipes.json : metier connu, niveaux 1..100, objets existants ou proposes."""
+    errors = []
+    path = db / "items" / "profession_recipes.json"
+    if not path.exists():
+        return errors
+    d = load_json(path)
+    profs = {p["id"] for p in load_json(db / "systems" / "professions.json").get("professions", [])}
+    proposed = {i["id"] for i in d.get("new_items", [])}
+    known = all_item_ids | proposed
+    seen = set()
+    for r in d.get("recipes", []):
+        rid = r.get("id", "?")
+        if rid in seen:
+            errors.append(f"[profession_recipes.json] recette en double '{rid}'")
+        seen.add(rid)
+        if r.get("profession") not in profs:
+            errors.append(f"[profession_recipes.json] '{rid}' : metier inconnu '{r.get('profession')}'")
+        if not 1 <= int(r.get("profession_level", 0)) <= 100:
+            errors.append(f"[profession_recipes.json] '{rid}' : profession_level hors 1..100")
+        if r.get("output_item") not in known:
+            errors.append(f"[profession_recipes.json] '{rid}' : objet produit inconnu '{r.get('output_item')}'")
+        if r.get("quality_cap") not in ("C", "B", "A", "S", "SS"):
+            errors.append(f"[profession_recipes.json] '{rid}' : quality_cap invalide")
+        for m in r.get("materials", []):
+            if m.get("id") not in known:
+                errors.append(f"[profession_recipes.json] '{rid}' : materiau inconnu '{m.get('id')}'")
+    return errors
+
+
 def validate_rest_npcs(db: Path) -> list:
     """stats/world_buffs.json granted_by_npcs : chaque PNJ de repos existe."""
     errors = []
@@ -1297,6 +1327,11 @@ def main():
 
     print("[12f/12] Validating professions (every monster material has a use)...")
     errs = validate_professions(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12g/12] Validating profession recipes (professions, items, levels)...")
+    errs = validate_profession_recipes(db, all_item_ids)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
