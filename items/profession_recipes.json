@@ -1,12 +1,14 @@
 {
   "_meta": {
-    "version": "0.2",
-    "status": "PILOTE (2026-10-01) : Apothicaire, Cuisinier, Brasseur. Fichier NON charge par le serveur ; rien ne change en jeu tant que les metiers ne sont pas branches.",
+    "version": "0.3",
+    "status": "PILOTE (2026-10-01) : Apothicaire, Cuisinier, Brasseur, Runiste. Fichier NON charge par le serveur ; rien ne change en jeu tant que les metiers ne sont pas branches.",
     "format": "Une recette = profession + station + profession_level (niveau de METIER requis) + xp (XP de metier gagnee) + gold_cost + output_item/output_qty + quality_cap (rang maximum C..SS, voir systems/professions.json quality) + materials [{id, qty}].",
     "consumable_quality": "Pour un consommable, le rang de qualite multiplie l'effet : C x1.00, B x1.08, A x1.16, S x1.24, SS x1.32 (valeur ou duree).",
     "new_items_rule": "new_items = objets PROPOSES qui n'existent pas encore : ils passeront dans consumables.json / materials.json / world_buffs.json a la validation. Chaque objet porte le chemin de son icone a produire.",
     "elixirs": "Nouvelle famille : un seul elixir actif a la fois (source 'elixir'), qui se cumule avec un repas (food_meal) et une boisson (food_drink). 15 minutes. Axes volontairement differents des 19 familles de nourriture.",
-    "food_split": "Les 18 familles de plats existantes se partagent : 14 repas (source food_meal) au Cuisinier, 4 boissons (source food_drink : Cidre, Infusion de sauge, Vin corse, Ale forte) au Brasseur. Ingredients de base : poissons du Pecheur et produits de la foret cueillis par le Bucheron, un rang par tranche de niveau (1, 20, 40, 60, 80)."
+    "food_split": "Les 18 familles de plats existantes se partagent : 14 repas (source food_meal) au Cuisinier, 4 boissons (source food_drink : Cidre, Infusion de sauge, Vin corse, Ale forte) au Brasseur. Ingredients de base : poissons du Pecheur et produits de la foret cueillis par le Bucheron, un rang par tranche de niveau (1, 20, 40, 60, 80).",
+    "id_ranked_items": "Les objets dont le rang est dans l'id (pierres even_*_rank_N, stigmates ks_*_<rang>, grimoires, cartes Koro) ne tirent PAS de qualite : quality_cap = C, la recette vise directement l'id du rang voulu.",
+    "runist": "Pierres de forge : une nouvelle SOURCE (minerais du Mineur + un materiau de monstre), a cote du butin ; la fusion 10 -> 1 du forgeron reste. Stigmates : REACCORD 3 identiques -> 1 du rang au-dessus, jamais de creation a partir de rien (la keystone reste un butin rare). Gemmes : aucune recette tant qu'aucun systeme ne les utilise (aucun consommateur serveur)."
   },
   "new_items": [
     {
@@ -520,6 +522,81 @@
       "gathered_by": "lumberjack",
       "gather_level": 80,
       "icon": "assets/icons/items/materials/mat_forage_fleur.png"
+    },
+    {
+      "id": "mat_ore_fer",
+      "kind": "material",
+      "category": "miner",
+      "name_fr": "Minerai de fer",
+      "name_en": "Iron Ore",
+      "description_fr": "Minerai de rang 1. Récolte : Mineur, filons sur la carte.",
+      "description_en": "Rank 1 ore.",
+      "rarity": "common",
+      "stack_max": 99,
+      "sell_price": 4,
+      "gathered_by": "miner",
+      "gather_level": 1,
+      "icon": "assets/icons/items/materials/mat_ore_fer.png"
+    },
+    {
+      "id": "mat_ore_argent",
+      "kind": "material",
+      "category": "miner",
+      "name_fr": "Argent brut",
+      "name_en": "Raw Silver",
+      "description_fr": "Minerai de rang 2. Récolte : Mineur, filons sur la carte.",
+      "description_en": "Rank 2 ore.",
+      "rarity": "uncommon",
+      "stack_max": 99,
+      "sell_price": 12,
+      "gathered_by": "miner",
+      "gather_level": 20,
+      "icon": "assets/icons/items/materials/mat_ore_argent.png"
+    },
+    {
+      "id": "mat_ore_cuivre",
+      "kind": "material",
+      "category": "miner",
+      "name_fr": "Cuivre de Souffle",
+      "name_en": "Breath Copper",
+      "description_fr": "Minerai de rang 3. Récolte : Mineur, filons sur la carte.",
+      "description_en": "Rank 3 ore.",
+      "rarity": "rare",
+      "stack_max": 99,
+      "sell_price": 32,
+      "gathered_by": "miner",
+      "gather_level": 40,
+      "icon": "assets/icons/items/materials/mat_ore_cuivre.png"
+    },
+    {
+      "id": "mat_ore_astral",
+      "kind": "material",
+      "category": "miner",
+      "name_fr": "Minerai astral",
+      "name_en": "Astral Ore",
+      "description_fr": "Minerai de rang 4. Récolte : Mineur, filons sur la carte.",
+      "description_en": "Rank 4 ore.",
+      "rarity": "epic",
+      "stack_max": 99,
+      "sell_price": 90,
+      "gathered_by": "miner",
+      "gather_level": 60,
+      "icon": "assets/icons/items/materials/mat_ore_astral.png"
+    },
+    {
+      "id": "mat_ore_faille",
+      "kind": "material",
+      "category": "miner",
+      "name_fr": "Métal de Faille",
+      "name_en": "Rift Metal",
+      "description_fr": "Minerai de rang 5. Récolte : Mineur, filons sur la carte.",
+      "description_en": "Rank 5 ore.",
+      "rarity": "legendary",
+      "stack_max": 99,
+      "sell_price": 220,
+      "gathered_by": "miner",
+      "gather_level": 80,
+      "icon": "assets/icons/items/materials/mat_ore_faille.png"
     }
   ],
   "recipes": [
@@ -3269,6 +3346,2962 @@
         },
         {
           "id": "mat_ice_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_cherev_r1",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 10,
+      "output_item": "even_cherev_rank_1",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_fer",
+          "qty": 3
+        },
+        {
+          "id": "mat_rusty_blade",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_cherev_r2",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 40,
+      "output_item": "even_cherev_rank_2",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_argent",
+          "qty": 3
+        },
+        {
+          "id": "mat_broken_sword",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_cherev_r3",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 150,
+      "output_item": "even_cherev_rank_3",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_cuivre",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_cherev_r4",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 500,
+      "output_item": "even_cherev_rank_4",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_astral",
+          "qty": 3
+        },
+        {
+          "id": "mat_sacred_metal",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_cherev_r5",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 1500,
+      "output_item": "even_cherev_rank_5",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_faille",
+          "qty": 3
+        },
+        {
+          "id": "mat_void_metal",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_magen_r1",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 10,
+      "output_item": "even_magen_rank_1",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_fer",
+          "qty": 3
+        },
+        {
+          "id": "mat_iron_plate",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_magen_r2",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 40,
+      "output_item": "even_magen_rank_2",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_argent",
+          "qty": 3
+        },
+        {
+          "id": "mat_rusted_armor",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_magen_r3",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 150,
+      "output_item": "even_magen_rank_3",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_cuivre",
+          "qty": 3
+        },
+        {
+          "id": "mat_corrupted_plate",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_magen_r4",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 500,
+      "output_item": "even_magen_rank_4",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_astral",
+          "qty": 3
+        },
+        {
+          "id": "mat_sentinel_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_magen_r5",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 1500,
+      "output_item": "even_magen_rank_5",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_faille",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_plate",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_koach_r1",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 10,
+      "output_item": "even_koach_rank_1",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_fer",
+          "qty": 3
+        },
+        {
+          "id": "mat_stone_fragment",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_koach_r2",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 40,
+      "output_item": "even_koach_rank_2",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_argent",
+          "qty": 3
+        },
+        {
+          "id": "mat_ancient_rock",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_koach_r3",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 150,
+      "output_item": "even_koach_rank_3",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_cuivre",
+          "qty": 3
+        },
+        {
+          "id": "mat_golem_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_koach_r4",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 500,
+      "output_item": "even_koach_rank_4",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_astral",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_koach_r5",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 1500,
+      "output_item": "even_koach_rank_5",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_faille",
+          "qty": 3
+        },
+        {
+          "id": "mat_void_crystal",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_neshama_r1",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 10,
+      "output_item": "even_neshama_rank_1",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_fer",
+          "qty": 3
+        },
+        {
+          "id": "mat_tower_brick",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_neshama_r2",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 40,
+      "output_item": "even_neshama_rank_2",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_argent",
+          "qty": 3
+        },
+        {
+          "id": "mat_ritual_focus",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_neshama_r3",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 150,
+      "output_item": "even_neshama_rank_3",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_cuivre",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_neshama_r4",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 500,
+      "output_item": "even_neshama_rank_4",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_astral",
+          "qty": 3
+        },
+        {
+          "id": "mat_magic_crystal",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_neshama_r5",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 1500,
+      "output_item": "even_neshama_rank_5",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "mat_ore_faille",
+          "qty": 3
+        },
+        {
+          "id": "mat_bell_fragment",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_embers_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_dps_embers_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_embers_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_embers_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_dps_embers_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_embers_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_embers_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_dps_embers_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_embers_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_embers_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_dps_embers_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_embers_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_executioner_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_dps_executioner_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_executioner_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_executioner_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_dps_executioner_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_executioner_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_executioner_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_dps_executioner_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_executioner_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_executioner_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_dps_executioner_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_executioner_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_frenzy_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_dps_frenzy_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_frenzy_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_frenzy_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_dps_frenzy_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_frenzy_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_frenzy_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_dps_frenzy_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_frenzy_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_frenzy_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_dps_frenzy_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_frenzy_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_fury_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_dps_fury_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_fury_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_fury_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_dps_fury_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_fury_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_fury_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_dps_fury_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_fury_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_fury_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_dps_fury_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_fury_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_hunt_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_dps_hunt_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_hunt_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_hunt_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_dps_hunt_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_hunt_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_hunt_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_dps_hunt_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_hunt_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_hunt_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_dps_hunt_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_hunt_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_ignition_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_dps_ignition_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_ignition_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_ignition_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_dps_ignition_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_ignition_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_ignition_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_dps_ignition_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_ignition_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_ignition_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_dps_ignition_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_ignition_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_predator_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_dps_predator_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_predator_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_predator_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_dps_predator_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_predator_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_predator_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_dps_predator_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_predator_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_predator_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_dps_predator_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_predator_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_wounds_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_dps_wounds_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_wounds_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_wounds_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_dps_wounds_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_wounds_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_wounds_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_dps_wounds_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_wounds_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_dps_wounds_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_dps_wounds_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_dps_wounds_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_accord_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_support_accord_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_accord_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_accord_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_support_accord_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_accord_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_accord_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_support_accord_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_accord_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_accord_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_support_accord_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_accord_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_blessing_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_support_blessing_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_blessing_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_blessing_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_support_blessing_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_blessing_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_blessing_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_support_blessing_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_blessing_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_blessing_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_support_blessing_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_blessing_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_echo_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_support_echo_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_echo_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_echo_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_support_echo_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_echo_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_echo_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_support_echo_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_echo_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_echo_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_support_echo_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_echo_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_harmony_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_support_harmony_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_harmony_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_harmony_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_support_harmony_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_harmony_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_harmony_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_support_harmony_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_harmony_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_harmony_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_support_harmony_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_harmony_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_last_breath_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_support_last_breath_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_last_breath_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_last_breath_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_support_last_breath_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_last_breath_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_last_breath_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_support_last_breath_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_last_breath_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_last_breath_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_support_last_breath_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_last_breath_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_life_link_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_support_life_link_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_life_link_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_life_link_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_support_life_link_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_life_link_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_life_link_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_support_life_link_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_life_link_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_life_link_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_support_life_link_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_life_link_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_relay_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_support_relay_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_relay_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_relay_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_support_relay_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_relay_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_relay_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_support_relay_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_relay_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_relay_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_support_relay_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_relay_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_rescue_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_support_rescue_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_rescue_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_rescue_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_support_rescue_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_rescue_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_rescue_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_support_rescue_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_rescue_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_support_rescue_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_support_rescue_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_support_rescue_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_anchor_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_tank_anchor_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_anchor_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_anchor_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_tank_anchor_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_anchor_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_anchor_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_tank_anchor_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_anchor_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_anchor_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_tank_anchor_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_anchor_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_bastion_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_tank_bastion_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_bastion_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_bastion_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_tank_bastion_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_bastion_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_bastion_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_tank_bastion_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_bastion_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_bastion_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_tank_bastion_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_bastion_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_fortress_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_tank_fortress_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_fortress_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_fortress_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_tank_fortress_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_fortress_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_fortress_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_tank_fortress_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_fortress_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_fortress_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_tank_fortress_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_fortress_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_iron_will_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_tank_iron_will_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_iron_will_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_iron_will_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_tank_iron_will_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_iron_will_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_iron_will_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_tank_iron_will_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_iron_will_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_iron_will_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_tank_iron_will_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_iron_will_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_sacrifice_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_tank_sacrifice_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_sacrifice_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_sacrifice_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_tank_sacrifice_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_sacrifice_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_sacrifice_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_tank_sacrifice_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_sacrifice_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_tank_sacrifice_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_tank_sacrifice_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_tank_sacrifice_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_adaptation_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_util_adaptation_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_adaptation_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_adaptation_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_util_adaptation_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_adaptation_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_adaptation_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_util_adaptation_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_adaptation_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_adaptation_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_util_adaptation_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_adaptation_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_breach_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_util_breach_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_breach_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_breach_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_util_breach_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_breach_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_breach_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_util_breach_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_breach_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_breach_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_util_breach_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_breach_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_breath_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_util_breath_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_breath_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_breath_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_util_breath_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_breath_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_breath_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_util_breath_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_breath_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_breath_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_util_breath_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_breath_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_interference_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_util_interference_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_interference_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_interference_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_util_interference_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_interference_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_interference_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_util_interference_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_interference_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_interference_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_util_interference_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_interference_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_mastery_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_util_mastery_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_mastery_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_mastery_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_util_mastery_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_mastery_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_mastery_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_util_mastery_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_mastery_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_mastery_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_util_mastery_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_mastery_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_second_wind_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_util_second_wind_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_second_wind_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_second_wind_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_util_second_wind_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_second_wind_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_second_wind_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_util_second_wind_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_second_wind_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_second_wind_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_util_second_wind_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_second_wind_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_synergy_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_util_synergy_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_synergy_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_synergy_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_util_synergy_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_synergy_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_synergy_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_util_synergy_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_synergy_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_synergy_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_util_synergy_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_synergy_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_tactical_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_util_tactical_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_tactical_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_tactical_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_util_tactical_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_tactical_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_tactical_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_util_tactical_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_tactical_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_tactical_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_util_tactical_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_tactical_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_venom_b",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 30,
+      "xp": 200,
+      "gold_cost": 500,
+      "output_item": "ks_util_venom_b",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_venom_a",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_venom_a",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 50,
+      "xp": 320,
+      "gold_cost": 2000,
+      "output_item": "ks_util_venom_c",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_venom_b",
+          "qty": 3
+        },
+        {
+          "id": "mat_enchanted_stone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_venom_s",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 70,
+      "xp": 440,
+      "gold_cost": 8000,
+      "output_item": "ks_util_venom_s",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_venom_c",
+          "qty": 3
+        },
+        {
+          "id": "mat_rune_core",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_rune_attune_util_venom_ss",
+      "profession": "runist",
+      "station": "workshop_runist",
+      "profession_level": 90,
+      "xp": 560,
+      "gold_cost": 30000,
+      "output_item": "ks_util_venom_ss",
+      "output_qty": 1,
+      "quality_cap": "C",
+      "materials": [
+        {
+          "id": "ks_util_venom_s",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
           "qty": 2
         }
       ]
