@@ -14,6 +14,10 @@ Ce qu'il verifie :
   4. `op` est add_flat ou add_percent
   5. les passifs levelables ont un max_level (les innes n'en ont pas, c'est voulu)
   6. aucun id de passif en double dans toute la base
+  7. pas de `add_percent` sur une stat `bonus_type: flat` (crit, pen, DR...) :
+     le moteur applique add_percent en MULTIPLIANT la valeur courante, donc
+     "+0.5% crit" en add_percent = 5% de 5 crit = 0 apres arrondi. (2026-09-30)
+  8. max_level d'un passif levelable == progression.passive_allocation.max_level_per_passive
 
 Exit 0 = tout va bien, exit 1 = erreurs.
 """
@@ -42,6 +46,9 @@ DEAD_STATS = {
     "double_attack_chance": "ne procque que sur basic_attack, et les auto-attaques sont coupees",
     "double_hit_chance": "ne procque que sur basic_attack, et les auto-attaques sont coupees",
     "triple_attack_chance": "meme chemin que double_attack_chance, mort pour les memes raisons",
+    # 2026-09-30 : combat_profile_builder ne track() pas 'def' (PASSIVE_GUARD).
+    # La DEF allouee EST l'armure cote serveur (def_total -> stats.armor) : utiliser 'armor'.
+    "def": "non consommee par combat_profile_builder pour les passifs ; utiliser 'armor'",
 }
 
 # Stats parsees mais pas encore APPLIQUEES en prod. Tolerees (la stat est legitime,
@@ -55,6 +62,17 @@ PENDING_STATS = {}
 def load(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
+
+
+def collect_flat_only_stats(defs):
+    """Stats dont definitions.json dit `bonus_type: flat` : bonus toujours en points."""
+    out = set()
+    for cat in defs.get("stats", {}).values():
+        if isinstance(cat, dict):
+            for key, value in cat.items():
+                if isinstance(value, dict) and value.get("bonus_type") == "flat":
+                    out.add(key)
+    return out
 
 
 def collect_stat_names(defs):
@@ -110,7 +128,11 @@ def extract_passives(data):
 
 def main():
     os.chdir(DB)
-    valid_stats = collect_stat_names(load("stats/definitions.json"))
+    defs = load("stats/definitions.json")
+    valid_stats = collect_stat_names(defs)
+    flat_only = collect_flat_only_stats(defs)
+    max_level_rule = (load("systems/progression.json").get("passive_allocation") or {}).get(
+        "max_level_per_passive")
     valid_effects = collect_effect_ids(load("stats/status_effects.json"))
 
     errors, warnings = [], []
@@ -131,6 +153,11 @@ def main():
             is_innate = bool(p.get("trigger_rule") or p.get("conditions"))
             if not is_innate and not p.get("max_level"):
                 errors.append(f"{path}: passif '{pid}' levelable SANS max_level")
+            if not is_innate and max_level_rule and p.get("max_level") not in (None, max_level_rule):
+                errors.append(
+                    f"{path}: passif '{pid}' max_level={p.get('max_level')} "
+                    f"!= max_level_per_passive={max_level_rule}"
+                )
 
             for i, e in enumerate(p.get("effects") or []):
                 if not isinstance(e, dict):
@@ -151,6 +178,12 @@ def main():
                         errors.append(
                             f"{path}: passif '{pid}' effects[{i}] stat inconnue '{stat}'"
                         )
+                if op == "add_percent" and stat in flat_only:
+                    errors.append(
+                        f"{path}: passif '{pid}' effects[{i}] add_percent sur '{stat}' "
+                        f"(bonus_type flat) : le moteur multiplierait la valeur courante, "
+                        f"utiliser add_flat"
+                    )
                 if op is not None and op not in ("add_flat", "add_percent"):
                     errors.append(f"{path}: passif '{pid}' effects[{i}] op invalide '{op}'")
 
