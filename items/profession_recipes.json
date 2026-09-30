@@ -1,11 +1,12 @@
 {
   "_meta": {
-    "version": "0.1",
-    "status": "PILOTE a valider (2026-10-01) : seul l'Apothicaire. Fichier NON charge par le serveur ; rien ne change en jeu tant que les metiers ne sont pas branches (items/recipes.json reste celui du forgeron).",
+    "version": "0.2",
+    "status": "PILOTE (2026-10-01) : Apothicaire, Cuisinier, Brasseur. Fichier NON charge par le serveur ; rien ne change en jeu tant que les metiers ne sont pas branches.",
     "format": "Une recette = profession + station + profession_level (niveau de METIER requis) + xp (XP de metier gagnee) + gold_cost + output_item/output_qty + quality_cap (rang maximum C..SS, voir systems/professions.json quality) + materials [{id, qty}].",
     "consumable_quality": "Pour un consommable, le rang de qualite multiplie l'effet : C x1.00, B x1.08, A x1.16, S x1.24, SS x1.32 (valeur ou duree).",
     "new_items_rule": "new_items = objets PROPOSES qui n'existent pas encore : ils passeront dans consumables.json / materials.json / world_buffs.json a la validation. Chaque objet porte le chemin de son icone a produire.",
-    "elixirs": "Nouvelle famille : un seul elixir actif a la fois (source 'elixir'), qui se cumule avec un repas (food_meal) et une boisson (food_drink). 15 minutes. Axes volontairement differents des 19 familles de nourriture."
+    "elixirs": "Nouvelle famille : un seul elixir actif a la fois (source 'elixir'), qui se cumule avec un repas (food_meal) et une boisson (food_drink). 15 minutes. Axes volontairement differents des 19 familles de nourriture.",
+    "food_split": "Les 18 familles de plats existantes se partagent : 14 repas (source food_meal) au Cuisinier, 4 boissons (source food_drink : Cidre, Infusion de sauge, Vin corse, Ale forte) au Brasseur. Ingredients de base : poissons du Pecheur et produits de la foret cueillis par le Bucheron, un rang par tranche de niveau (1, 20, 40, 60, 80)."
   },
   "new_items": [
     {
@@ -369,6 +370,156 @@
       "sell_price": 120,
       "source": "Chasseur de Failles, pendant une invasion de Fissure",
       "icon": "assets/icons/items/materials/mat_rift_ember.png"
+    },
+    {
+      "id": "mat_fish_gardon",
+      "kind": "material",
+      "category": "fisher",
+      "name_fr": "Gardon de rivière",
+      "name_en": "River Roach",
+      "description_fr": "Ingrédient de rang 1. Récolte : Pêcheur, coins de pêche.",
+      "description_en": "Rank 1 ingredient.",
+      "rarity": "common",
+      "stack_max": 99,
+      "sell_price": 3,
+      "gathered_by": "fisher",
+      "gather_level": 1,
+      "icon": "assets/icons/items/materials/mat_fish_gardon.png"
+    },
+    {
+      "id": "mat_forage_baies",
+      "kind": "material",
+      "category": "lumberjack",
+      "name_fr": "Baies sauvages",
+      "name_en": "Wild Berries",
+      "description_fr": "Ingrédient de rang 1. Récolte : Bûcheron, cueilli au pied des arbres.",
+      "description_en": "Rank 1 ingredient.",
+      "rarity": "common",
+      "stack_max": 99,
+      "sell_price": 3,
+      "gathered_by": "lumberjack",
+      "gather_level": 1,
+      "icon": "assets/icons/items/materials/mat_forage_baies.png"
+    },
+    {
+      "id": "mat_fish_truite",
+      "kind": "material",
+      "category": "fisher",
+      "name_fr": "Truite argentée",
+      "name_en": "Silver Trout",
+      "description_fr": "Ingrédient de rang 2. Récolte : Pêcheur, coins de pêche.",
+      "description_en": "Rank 2 ingredient.",
+      "rarity": "uncommon",
+      "stack_max": 99,
+      "sell_price": 9,
+      "gathered_by": "fisher",
+      "gather_level": 20,
+      "icon": "assets/icons/items/materials/mat_fish_truite.png"
+    },
+    {
+      "id": "mat_forage_champignons",
+      "kind": "material",
+      "category": "lumberjack",
+      "name_fr": "Champignons des bois",
+      "name_en": "Wood Mushrooms",
+      "description_fr": "Ingrédient de rang 2. Récolte : Bûcheron, cueilli au pied des arbres.",
+      "description_en": "Rank 2 ingredient.",
+      "rarity": "uncommon",
+      "stack_max": 99,
+      "sell_price": 9,
+      "gathered_by": "lumberjack",
+      "gather_level": 20,
+      "icon": "assets/icons/items/materials/mat_forage_champignons.png"
+    },
+    {
+      "id": "mat_fish_brochet",
+      "kind": "material",
+      "category": "fisher",
+      "name_fr": "Brochet des marais",
+      "name_en": "Marsh Pike",
+      "description_fr": "Ingrédient de rang 3. Récolte : Pêcheur, coins de pêche.",
+      "description_en": "Rank 3 ingredient.",
+      "rarity": "rare",
+      "stack_max": 99,
+      "sell_price": 25,
+      "gathered_by": "fisher",
+      "gather_level": 40,
+      "icon": "assets/icons/items/materials/mat_fish_brochet.png"
+    },
+    {
+      "id": "mat_forage_miel",
+      "kind": "material",
+      "category": "lumberjack",
+      "name_fr": "Miel sauvage",
+      "name_en": "Wild Honey",
+      "description_fr": "Ingrédient de rang 3. Récolte : Bûcheron, cueilli au pied des arbres.",
+      "description_en": "Rank 3 ingredient.",
+      "rarity": "rare",
+      "stack_max": 99,
+      "sell_price": 25,
+      "gathered_by": "lumberjack",
+      "gather_level": 40,
+      "icon": "assets/icons/items/materials/mat_forage_miel.png"
+    },
+    {
+      "id": "mat_fish_anguille",
+      "kind": "material",
+      "category": "fisher",
+      "name_fr": "Anguille du Souffle",
+      "name_en": "Breath Eel",
+      "description_fr": "Ingrédient de rang 4. Récolte : Pêcheur, coins de pêche.",
+      "description_en": "Rank 4 ingredient.",
+      "rarity": "epic",
+      "stack_max": 99,
+      "sell_price": 70,
+      "gathered_by": "fisher",
+      "gather_level": 60,
+      "icon": "assets/icons/items/materials/mat_fish_anguille.png"
+    },
+    {
+      "id": "mat_forage_racines",
+      "kind": "material",
+      "category": "lumberjack",
+      "name_fr": "Racines de Souffle",
+      "name_en": "Breath Roots",
+      "description_fr": "Ingrédient de rang 4. Récolte : Bûcheron, cueilli au pied des arbres.",
+      "description_en": "Rank 4 ingredient.",
+      "rarity": "epic",
+      "stack_max": 99,
+      "sell_price": 70,
+      "gathered_by": "lumberjack",
+      "gather_level": 60,
+      "icon": "assets/icons/items/materials/mat_forage_racines.png"
+    },
+    {
+      "id": "mat_fish_lune",
+      "kind": "material",
+      "category": "fisher",
+      "name_fr": "Poisson-lune de Faille",
+      "name_en": "Rift Moonfish",
+      "description_fr": "Ingrédient de rang 5. Récolte : Pêcheur, coins de pêche.",
+      "description_en": "Rank 5 ingredient.",
+      "rarity": "legendary",
+      "stack_max": 99,
+      "sell_price": 180,
+      "gathered_by": "fisher",
+      "gather_level": 80,
+      "icon": "assets/icons/items/materials/mat_fish_lune.png"
+    },
+    {
+      "id": "mat_forage_fleur",
+      "kind": "material",
+      "category": "lumberjack",
+      "name_fr": "Fleur de Faille",
+      "name_en": "Rift Blossom",
+      "description_fr": "Ingrédient de rang 5. Récolte : Bûcheron, cueilli au pied des arbres.",
+      "description_en": "Rank 5 ingredient.",
+      "rarity": "legendary",
+      "stack_max": 99,
+      "sell_price": 180,
+      "gathered_by": "lumberjack",
+      "gather_level": 80,
+      "icon": "assets/icons/items/materials/mat_forage_fleur.png"
     }
   ],
   "recipes": [
@@ -904,6 +1055,2220 @@
         },
         {
           "id": "mat_rift_ember",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_hp_t1",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_hp_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_baies",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_hp_t2",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_hp_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_champignons",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_hp_t3",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_hp_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_miel",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_hp_t4",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_hp_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_racines",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 4
+        },
+        {
+          "id": "mat_fire_essence",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_hp_t5",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_hp_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_fleur",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 5
+        },
+        {
+          "id": "mat_fire_essence",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_hp_regen_t1",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_hp_regen_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_baies",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 1
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_hp_regen_t2",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_hp_regen_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_champignons",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_hp_regen_t3",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_hp_regen_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_miel",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 3
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_hp_regen_t4",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_hp_regen_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_racines",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 4
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 4
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_hp_regen_t5",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_hp_regen_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_fleur",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 5
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 5
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_atk_t1",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_atk_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_baies",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_atk_t2",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_atk_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_champignons",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_atk_t3",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_atk_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_miel",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_atk_t4",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_atk_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_racines",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 4
+        },
+        {
+          "id": "mat_fire_essence",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_atk_t5",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_atk_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_fleur",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 5
+        },
+        {
+          "id": "mat_fire_essence",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_mag_t1",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_mag_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fish_gardon",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_mag_t2",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_mag_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fish_truite",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_mag_t3",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_mag_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fish_brochet",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_mag_t4",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_mag_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fish_anguille",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 4
+        },
+        {
+          "id": "mat_fire_essence",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_mag_t5",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_mag_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fish_lune",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 5
+        },
+        {
+          "id": "mat_fire_essence",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_crit_t1",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_crit_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_baies",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_crit_t2",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_crit_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_champignons",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_crit_t3",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_crit_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_miel",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_crit_t4",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_crit_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_racines",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 4
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_crit_t5",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_crit_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_fleur",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 5
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_crit_dmg_t1",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_crit_dmg_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_baies",
+          "qty": 2
+        },
+        {
+          "id": "mat_fish_gardon",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_crit_dmg_t2",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_crit_dmg_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_champignons",
+          "qty": 2
+        },
+        {
+          "id": "mat_fish_truite",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_crit_dmg_t3",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_crit_dmg_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_miel",
+          "qty": 2
+        },
+        {
+          "id": "mat_fish_brochet",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_crit_dmg_t4",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_crit_dmg_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_racines",
+          "qty": 2
+        },
+        {
+          "id": "mat_fish_anguille",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 4
+        },
+        {
+          "id": "mat_fire_essence",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_crit_dmg_t5",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_crit_dmg_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_fleur",
+          "qty": 2
+        },
+        {
+          "id": "mat_fish_lune",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 5
+        },
+        {
+          "id": "mat_fire_essence",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_attack_speed_t1",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_attack_speed_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_baies",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 1
+        },
+        {
+          "id": "mat_pork_fat",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_attack_speed_t2",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_attack_speed_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_champignons",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 2
+        },
+        {
+          "id": "mat_pork_fat",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_attack_speed_t3",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_attack_speed_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_miel",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 3
+        },
+        {
+          "id": "mat_pork_fat",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_attack_speed_t4",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_attack_speed_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_racines",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 4
+        },
+        {
+          "id": "mat_pork_fat",
+          "qty": 4
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_attack_speed_t5",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_attack_speed_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_fleur",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 5
+        },
+        {
+          "id": "mat_pork_fat",
+          "qty": 5
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_armor_t1",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_armor_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_baies",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 1
+        },
+        {
+          "id": "mat_pork_fat",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_armor_t2",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_armor_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_champignons",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 2
+        },
+        {
+          "id": "mat_pork_fat",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_armor_t3",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_armor_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_miel",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 3
+        },
+        {
+          "id": "mat_pork_fat",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_armor_t4",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_armor_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_racines",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 4
+        },
+        {
+          "id": "mat_pork_fat",
+          "qty": 4
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_armor_t5",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_armor_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_fleur",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 5
+        },
+        {
+          "id": "mat_pork_fat",
+          "qty": 5
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_magic_resist_t1",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_magic_resist_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_baies",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_magic_resist_t2",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_magic_resist_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_champignons",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_magic_resist_t3",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_magic_resist_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_miel",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_magic_resist_t4",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_magic_resist_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_racines",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 4
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_magic_resist_t5",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_magic_resist_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_fleur",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 5
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_tenacity_t1",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_tenacity_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_baies",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 1
+        },
+        {
+          "id": "mat_pork_fat",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_tenacity_t2",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_tenacity_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_champignons",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 2
+        },
+        {
+          "id": "mat_pork_fat",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_tenacity_t3",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_tenacity_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_miel",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 3
+        },
+        {
+          "id": "mat_pork_fat",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_tenacity_t4",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_tenacity_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_racines",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 4
+        },
+        {
+          "id": "mat_pork_fat",
+          "qty": 4
+        },
+        {
+          "id": "mat_fire_essence",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_tenacity_t5",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_tenacity_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_fleur",
+          "qty": 2
+        },
+        {
+          "id": "mat_raw_meat",
+          "qty": 5
+        },
+        {
+          "id": "mat_pork_fat",
+          "qty": 5
+        },
+        {
+          "id": "mat_fire_essence",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_heal_power_t1",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_heal_power_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_baies",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_heal_power_t2",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_heal_power_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_champignons",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_heal_power_t3",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_heal_power_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_miel",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_heal_power_t4",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_heal_power_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_racines",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 4
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_heal_power_t5",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_heal_power_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_fleur",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 5
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_healing_received_t1",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_healing_received_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_baies",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 1
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_healing_received_t2",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_healing_received_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_champignons",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_healing_received_t3",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_healing_received_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_miel",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 3
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_healing_received_t4",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_healing_received_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_racines",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 4
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 4
+        },
+        {
+          "id": "mat_fire_essence",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_healing_received_t5",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_healing_received_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_fleur",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 5
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 5
+        },
+        {
+          "id": "mat_fire_essence",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_cooldown_reduction_t1",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_cooldown_reduction_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_baies",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_cooldown_reduction_t2",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_cooldown_reduction_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_champignons",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_cooldown_reduction_t3",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_cooldown_reduction_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_miel",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_cooldown_reduction_t4",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_cooldown_reduction_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_racines",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 4
+        },
+        {
+          "id": "mat_fire_essence",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_cooldown_reduction_t5",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_cooldown_reduction_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_fleur",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 5
+        },
+        {
+          "id": "mat_fire_essence",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_hit_t1",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_hit_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fish_gardon",
+          "qty": 2
+        },
+        {
+          "id": "mat_lizard_tail",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_hit_t2",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_hit_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fish_truite",
+          "qty": 2
+        },
+        {
+          "id": "mat_lizard_tail",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_hit_t3",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_hit_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fish_brochet",
+          "qty": 2
+        },
+        {
+          "id": "mat_lizard_tail",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_hit_t4",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_hit_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fish_anguille",
+          "qty": 2
+        },
+        {
+          "id": "mat_lizard_tail",
+          "qty": 4
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_cook_hit_t5",
+      "profession": "cook",
+      "station": "workshop_cook",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_hit_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fish_lune",
+          "qty": 2
+        },
+        {
+          "id": "mat_lizard_tail",
+          "qty": 5
+        },
+        {
+          "id": "mat_spider_egg",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_mp_t1",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_mp_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_baies",
+          "qty": 2
+        },
+        {
+          "id": "mat_bull_horn",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_mp_t2",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_mp_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_champignons",
+          "qty": 2
+        },
+        {
+          "id": "mat_bull_horn",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_mp_t3",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_mp_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_miel",
+          "qty": 2
+        },
+        {
+          "id": "mat_bull_horn",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_mp_t4",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_mp_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_racines",
+          "qty": 2
+        },
+        {
+          "id": "mat_bull_horn",
+          "qty": 4
+        },
+        {
+          "id": "mat_ice_shard",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_mp_t5",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_mp_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_fleur",
+          "qty": 2
+        },
+        {
+          "id": "mat_bull_horn",
+          "qty": 5
+        },
+        {
+          "id": "mat_ice_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_mp_regen_t1",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_mp_regen_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_baies",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 1
+        },
+        {
+          "id": "mat_witch_herb",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_mp_regen_t2",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_mp_regen_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_champignons",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 2
+        },
+        {
+          "id": "mat_witch_herb",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_mp_regen_t3",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_mp_regen_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_miel",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 3
+        },
+        {
+          "id": "mat_witch_herb",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_mp_regen_t4",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_mp_regen_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_racines",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 4
+        },
+        {
+          "id": "mat_witch_herb",
+          "qty": 4
+        },
+        {
+          "id": "mat_ice_shard",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_mp_regen_t5",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_mp_regen_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_fleur",
+          "qty": 2
+        },
+        {
+          "id": "mat_dried_herbs",
+          "qty": 5
+        },
+        {
+          "id": "mat_witch_herb",
+          "qty": 5
+        },
+        {
+          "id": "mat_ice_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_lifesteal_t1",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_lifesteal_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_baies",
+          "qty": 2
+        },
+        {
+          "id": "mat_goat_horn",
+          "qty": 1
+        },
+        {
+          "id": "mat_misty_essence",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_lifesteal_t2",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_lifesteal_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_champignons",
+          "qty": 2
+        },
+        {
+          "id": "mat_goat_horn",
+          "qty": 2
+        },
+        {
+          "id": "mat_misty_essence",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_lifesteal_t3",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_lifesteal_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_miel",
+          "qty": 2
+        },
+        {
+          "id": "mat_goat_horn",
+          "qty": 3
+        },
+        {
+          "id": "mat_misty_essence",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_lifesteal_t4",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_lifesteal_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_racines",
+          "qty": 2
+        },
+        {
+          "id": "mat_goat_horn",
+          "qty": 4
+        },
+        {
+          "id": "mat_misty_essence",
+          "qty": 4
+        },
+        {
+          "id": "mat_ice_shard",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_lifesteal_t5",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_lifesteal_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_fleur",
+          "qty": 2
+        },
+        {
+          "id": "mat_goat_horn",
+          "qty": 5
+        },
+        {
+          "id": "mat_misty_essence",
+          "qty": 5
+        },
+        {
+          "id": "mat_ice_shard",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_damage_reduction_t1",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 5,
+      "output_item": "food_damage_reduction_t1",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_baies",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 1
+        },
+        {
+          "id": "mat_luminous_sac",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_damage_reduction_t2",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 20,
+      "output_item": "food_damage_reduction_t2",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_champignons",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 2
+        },
+        {
+          "id": "mat_luminous_sac",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_damage_reduction_t3",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 60,
+      "output_item": "food_damage_reduction_t3",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_miel",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 3
+        },
+        {
+          "id": "mat_luminous_sac",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_damage_reduction_t4",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 150,
+      "output_item": "food_damage_reduction_t4",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_racines",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 4
+        },
+        {
+          "id": "mat_luminous_sac",
+          "qty": 4
+        },
+        {
+          "id": "mat_ice_shard",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_brew_damage_reduction_t5",
+      "profession": "brewer",
+      "station": "workshop_brewer",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 400,
+      "output_item": "food_damage_reduction_t5",
+      "output_qty": 2,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_forage_fleur",
+          "qty": 2
+        },
+        {
+          "id": "mat_curdled_milk",
+          "qty": 5
+        },
+        {
+          "id": "mat_luminous_sac",
+          "qty": 5
+        },
+        {
+          "id": "mat_ice_shard",
           "qty": 2
         }
       ]
