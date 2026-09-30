@@ -6138,5 +6138,137 @@
     "main_quests": 17,
     "side_quests": 7,
     "repeatable_quests": 3
-  }
+  },
+    "contract_chests": {
+        "_comment": "Coffres des contrats (valide par Charleston le 2026-10-01). Aucune nouvelle quete et aucun tirage : les contrats de Varn et de Dargo restent repetables a volonte, et chaque contrat RENDU compte pour le coffre du jour et celui de la semaine. Lu par services/quest.",
+        "counts": "Tout contrat rendu : quete dont quest_board vaut havreden_contracts ou rochebourg_contracts, tout rang, toute bande. Par PERSONNAGE.",
+        "reset": {
+            "timezone": "Europe/Paris",
+            "daily_hour": 5,
+            "weekly_day": "monday",
+            "weekly_hour": 5,
+            "_why": "Heure fixe pour tout le monde (5 h, heure de Paris, changement d'heure compris), et non 24 h glissantes apres la fin comme reset_mode aujourd'hui. Le bonus des premieres victoires d'arene (config/rewards.json arena_match) doit suivre la meme journee : il compte aujourd'hui depuis minuit UTC."
+        },
+        "payout": "AUTOMATIQUE au contrat qui atteint le seuil, dans la meme transaction que le rendu, pousse au client. Pas de coffre a reclamer plus tard : l'XP est une fraction du niveau EN COURS, et un coffre garde en reserve se ferait encaisser a haut niveau (la raison du passage des succes en XP fixe). Idempotent : une ligne par (personnage, periode, type).",
+        "band_by": "niveau du personnage au moment du versement",
+        "daily": {
+            "id": "contract_chest_daily",
+            "name_fr": "Coffre du jour",
+            "name_en": "Daily Chest",
+            "contracts_required": 3,
+            "xp_level_fraction": 0.25,
+            "gold_by_band": [
+                200,
+                400,
+                800,
+                1600,
+                3200
+            ],
+            "arena_tokens": 5,
+            "material": {
+                "qty": 1,
+                "pick": "un au hasard dans la reserve de la bande",
+                "pool_by_band": [
+                    [
+                        "mat_witch_herb",
+                        "mat_misty_essence",
+                        "mat_horsehair"
+                    ],
+                    [
+                        "mat_ectoplasm",
+                        "mat_spider_venom",
+                        "mat_ancient_dust"
+                    ],
+                    [
+                        "mat_shadow_essence",
+                        "mat_enchanted_stone",
+                        "mat_rune_shard"
+                    ],
+                    [
+                        "mat_soul_essence",
+                        "mat_nightmare_essence",
+                        "mat_rune_core"
+                    ],
+                    [
+                        "mat_fire_essence",
+                        "mat_ice_shard",
+                        "mat_magic_crystal"
+                    ]
+                ]
+            }
+        },
+        "weekly": {
+            "id": "contract_chest_weekly",
+            "name_fr": "Coffre de la semaine",
+            "name_en": "Weekly Chest",
+            "contracts_required": 15,
+            "_why_15": "5 jours de 3 contrats : on peut manquer deux jours dans la semaine.",
+            "xp_level_fraction": 1.0,
+            "gold_by_band": [
+                1000,
+                2000,
+                4000,
+                8000,
+                16000
+            ],
+            "arena_tokens": 30,
+            "items_by_band": [
+                [
+                    {
+                        "id": "mat_fissure_shard",
+                        "qty": 1
+                    }
+                ],
+                [
+                    {
+                        "id": "mat_fissure_shard",
+                        "qty": 1
+                    }
+                ],
+                [
+                    {
+                        "id": "mat_fissure_shard",
+                        "qty": 2
+                    }
+                ],
+                [
+                    {
+                        "id": "mat_fissure_shard",
+                        "qty": 2
+                    }
+                ],
+                [
+                    {
+                        "id": "mat_fissure_shard",
+                        "qty": 2
+                    }
+                ]
+            ],
+            "_pending": "Charleston veut une Braise de Faille (mat_rift_ember) dans ce coffre : elle n'existe pas encore (objet propose dans items/profession_recipes.json). A remplacer quand les metiers seront branches ; d'ici la, eclat de Faille."
+        },
+        "account_limit": "Les jetons d'arene vont au COMPTE : seuls le premier coffre du jour et le premier coffre de la semaine du compte en donnent, pour qu'une rotation de personnages secondaires ne les multiplie pas. XP, or et materiaux restent par personnage.",
+        "bands": [
+            [
+                1,
+                20
+            ],
+            [
+                21,
+                40
+            ],
+            [
+                41,
+                60
+            ],
+            [
+                61,
+                80
+            ],
+            [
+                81,
+                100
+            ]
+        ],
+        "client": "Panneau des contrats : compteurs 'Jour 2/3' et 'Semaine 9/15' fournis par le serveur, et l'heure de la prochaine remise a zero. Le client ne compte rien lui-meme."
+    }
 }

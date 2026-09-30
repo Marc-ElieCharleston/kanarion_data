@@ -1167,6 +1167,26 @@ def validate_profession_recipes(db: Path, all_item_ids: set) -> list:
     return errors
 
 
+def validate_contract_chests(db: Path, all_item_ids: set) -> list:
+    """world/quests.json contract_chests : seuils, 5 bandes, objets existants."""
+    errors = []
+    cc = load_json(db / "world" / "quests.json").get("contract_chests")
+    if not cc:
+        return errors
+    for kind in ("daily", "weekly"):
+        c = cc.get(kind, {})
+        if int(c.get("contracts_required", 0)) < 1:
+            errors.append(f"[quests.json contract_chests.{kind}] contracts_required < 1")
+        if len(c.get("gold_by_band", [])) != len(cc.get("bands", [])):
+            errors.append(f"[quests.json contract_chests.{kind}] gold_by_band != nombre de bandes")
+        ids = [i for pool in c.get("material", {}).get("pool_by_band", []) for i in pool]
+        ids += [it["id"] for band in c.get("items_by_band", []) for it in band]
+        for i in ids:
+            if i not in all_item_ids:
+                errors.append(f"[quests.json contract_chests.{kind}] objet inconnu '{i}'")
+    return errors
+
+
 def validate_rest_npcs(db: Path) -> list:
     """stats/world_buffs.json granted_by_npcs : chaque PNJ de repos existe."""
     errors = []
@@ -1351,6 +1371,11 @@ def main():
 
     print("[12g/12] Validating profession recipes (professions, items, levels)...")
     errs = validate_profession_recipes(db, all_item_ids)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12h/12] Validating contract chests (daily/weekly)...")
+    errs = validate_contract_chests(db, all_item_ids)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
