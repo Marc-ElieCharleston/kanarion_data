@@ -1089,6 +1089,54 @@ def validate_fissure_invasions(db: Path) -> list:
     return errors
 
 
+def validate_tower(db: Path, all_item_ids: set) -> list:
+    """systems/tower.json + world/tower_floors.json : monstres actifs, cles, bornes."""
+    errors = []
+    rules_path, floors_path = db / "systems" / "tower.json", db / "world" / "tower_floors.json"
+    if not rules_path.exists():
+        return errors
+    rules = load_json(rules_path)
+    mons = load_json(db / "entities" / "monsters.json")
+    roster = {m["id"]: m for m in (mons["monsters"] if isinstance(mons, dict) else mons)}
+    diff, access = rules["difficulty"], rules["access"]
+    for name, ids in diff["pools"].items():
+        for mid in ids:
+            if mid not in roster:
+                errors.append(f"[tower.json] pool '{name}' : monstre inconnu '{mid}'")
+            elif roster[mid].get("roster_status") != "active":
+                errors.append(f"[tower.json] pool '{name}' : '{mid}' n'est pas actif (pas d'art client)")
+    for row in diff["floor_pools"]:
+        for name in row["pools"]:
+            if name not in diff["pools"]:
+                errors.append(f"[tower.json] floor_pools : pool inconnu '{name}'")
+    for decade in diff["guardians_by_decade"]:
+        for mid in decade:
+            if mid not in roster or roster[mid].get("roster_status") != "active":
+                errors.append(f"[tower.json] gardien '{mid}' inconnu ou inactif")
+    keys = rules["keys"]
+    for tier in range(2, keys["max_tier"] + 1):
+        if f"{keys['item_prefix']}{tier}" not in all_item_ids:
+            errors.append(f"[tower.json] cle '{keys['item_prefix']}{tier}' absente des objets")
+    for item in rules["rewards"]["guardian_chest"]["items"]:
+        if item["id"] not in all_item_ids:
+            errors.append(f"[tower.json] coffre de gardien : objet inconnu '{item['id']}'")
+    if not floors_path.exists():
+        return errors + ["[tower_floors.json] absent : lancer scripts/generate_tower.py"]
+    cap = diff["stat_multiplier_cap"]
+    for fl in load_json(floors_path)["floors"]:
+        ms = fl["monsters"]
+        if not 0 < len(ms) <= access["max_monsters"]:
+            errors.append(f"[tower_floors.json] etage {fl['floor']} : {len(ms)} monstres (1..{access['max_monsters']})")
+        for m in ms:
+            if m["template_id"] not in roster:
+                errors.append(f"[tower_floors.json] etage {fl['floor']} : monstre inconnu '{m['template_id']}'")
+            if not 1 <= m["level"] <= 255 or not 0 <= m["star_level"] <= 5:
+                errors.append(f"[tower_floors.json] etage {fl['floor']} : niveau ou etoiles hors bornes")
+            if any(not 0.1 <= m[k] <= cap for k in ("hp_multiplier", "atk_multiplier", "def_multiplier")):
+                errors.append(f"[tower_floors.json] etage {fl['floor']} : multiplicateur hors [0.1, {cap}]")
+    return errors
+
+
 def main():
     # Find database root
     db_root = os.environ.get("DB_ROOT", "")
@@ -1187,6 +1235,11 @@ def main():
 
     print("[12c/12] Validating fissure invasions (zones, bounds)...")
     errs = validate_fissure_invasions(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12d/12] Validating the Rift Tower (pools, guardians, keys, floors)...")
+    errs = validate_tower(db, all_item_ids)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
