@@ -1080,6 +1080,9 @@ def validate_fissure_invasions(db: Path) -> list:
     obj = data.get("objective", {})
     if not (0 < obj.get("kill_target_min", 0) <= obj.get("kill_target_max", 0)):
         errors.append("[fissure_invasions.json] objective : 0 < kill_target_min <= kill_target_max")
+    for rank, level in data.get("visual", {}).get("level_by_rank", {}).items():
+        if not (isinstance(level, int) and 1 <= level <= 3):
+            errors.append(f"[fissure_invasions.json] visual.level_by_rank[{rank}] doit valoir 1, 2 ou 3")
     eff = data.get("effects", {})
     if not (0 < eff.get("respawn_time_multiplier", 0) <= 1):
         errors.append("[fissure_invasions.json] effects.respawn_time_multiplier doit etre dans ]0, 1]")
