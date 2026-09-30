@@ -1,0 +1,35 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-09-30",
+    "description": "Invasions de Fissure (validees par Charleston le 2026-09-30). Une Fissure s'ouvre dans une AIRE de monstres (world/zones.json spawn_areas) : l'emprise se resserre, les creatures reviennent plus vite et plus fortes. Les joueurs presents doivent en liberer `kill_target` avant la fin ; tous ceux qui ont assez contribue sont recompenses et un coffre apparait a la place de la Fissure. Plusieurs aires peuvent etre envahies en meme temps.",
+    "owner": "services/presence (declenchement, compteur, effets, recompenses objets/or) + services/quest (XP, idempotente). Le client lit ce fichier pour l'AFFICHAGE seulement.",
+    "lore": "La Fissure s'empare du Souffle des creatures sans le detruire. Refermer la Fissure, c'est liberer l'aire : jamais un cadrage de mort ou de depouilles."
+  },
+  "spawn": {
+    "_comment": "Au demarrage, chaque aire tire une premiere ouverture entre first_start_seconds[0] et [1]. Apres une invasion (reussie ou non), la suivante dans la meme aire revient entre cooldown_seconds[0] et [1]. Jamais plus de max_active_per_zone invasions a la fois dans une zone : une aire dont le tour tombe quand la zone est pleine attend la place suivante.",
+    "zones": ["village", "expedition_lv_01_10", "expedition_lv_11_20", "expedition_lv_21_30"],
+    "max_active_per_zone": 3,
+    "first_start_seconds": [120, 1800],
+    "cooldown_seconds": [1800, 3600],
+    "duration_seconds": 900
+  },
+  "objective": {
+    "_comment": "Nombre de creatures a liberer : kill_target_ratio x le nombre de monstres de l'aire (champ count), borne a [kill_target_min, kill_target_max]. Seuls les monstres DE L'AIRE comptent.",
+    "kill_target_ratio": 0.6,
+    "kill_target_min": 15,
+    "kill_target_max": 60
+  },
+  "effects": {
+    "_comment": "Pendant l'invasion, dans l'aire seulement : les creatures reviennent respawn_time_multiplier fois plus vite (0.25 = 4x plus vite, la densite monte sans ajouter de monstres) et leur etoile monte de star_bonus (plafond 5, comme partout).",
+    "respawn_time_multiplier": 0.25,
+    "star_bonus": 1
+  },
+  "rewards": {
+    "_comment": "A la fermeture reussie, chaque joueur ayant libere au moins min_contribution_kills creatures de l'aire recoit : de l'XP (xp_level_fraction de son niveau en cours, comme un combat : rien ne s'accumule), de l'or et loot_rolls tirages dans la table du RANG de l'aire (world/zone_chests.json tiers, meme contenu que les coffres). Un coffre apparait en bonus a la place de la Fissure (spawn_chest_on_close).",
+    "min_contribution_kills": 3,
+    "xp_level_fraction": 1.0,
+    "loot_rolls": 2,
+    "spawn_chest_on_close": true
+  }
+}

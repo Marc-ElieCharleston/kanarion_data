@@ -1056,6 +1056,36 @@ def validate_zone_chests(db: Path, all_item_ids: set) -> list:
     return errors
 
 
+def validate_fissure_invasions(db: Path) -> list:
+    """world/fissure_invasions.json : zones connues, bornes coherentes."""
+    errors = []
+    path = db / "world" / "fissure_invasions.json"
+    if not path.exists():
+        return errors
+    data = load_json(path)
+    zones_path = db / "world" / "zones.json"
+    zone_ids = set()
+    if zones_path.exists():
+        zone_ids = {z.get("id") for z in load_json(zones_path).get("zones", []) if isinstance(z, dict)}
+    spawn = data.get("spawn", {})
+    for zid in spawn.get("zones", []):
+        if zone_ids and zid not in zone_ids:
+            errors.append(f"[fissure_invasions.json] zone '{zid}' absente de world/zones.json")
+    for key in ("first_start_seconds", "cooldown_seconds"):
+        v = spawn.get(key, [])
+        if not (isinstance(v, list) and len(v) == 2 and 0 <= v[0] <= v[1]):
+            errors.append(f"[fissure_invasions.json] spawn.{key} doit etre [min, max]")
+    if spawn.get("duration_seconds", 0) <= 0 or spawn.get("max_active_per_zone", 0) <= 0:
+        errors.append("[fissure_invasions.json] duration_seconds et max_active_per_zone doivent etre > 0")
+    obj = data.get("objective", {})
+    if not (0 < obj.get("kill_target_min", 0) <= obj.get("kill_target_max", 0)):
+        errors.append("[fissure_invasions.json] objective : 0 < kill_target_min <= kill_target_max")
+    eff = data.get("effects", {})
+    if not (0 < eff.get("respawn_time_multiplier", 0) <= 1):
+        errors.append("[fissure_invasions.json] effects.respawn_time_multiplier doit etre dans ]0, 1]")
+    return errors
+
+
 def main():
     # Find database root
     db_root = os.environ.get("DB_ROOT", "")
@@ -1149,6 +1179,11 @@ def main():
 
     print("[12b/12] Validating zone chests (items, zones, tiers)...")
     errs = validate_zone_chests(db, all_item_ids)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12c/12] Validating fissure invasions (zones, bounds)...")
+    errs = validate_fissure_invasions(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
