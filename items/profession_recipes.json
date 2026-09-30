@@ -1,14 +1,15 @@
 {
   "_meta": {
-    "version": "0.3",
-    "status": "PILOTE (2026-10-01) : Apothicaire, Cuisinier, Brasseur, Runiste. Fichier NON charge par le serveur ; rien ne change en jeu tant que les metiers ne sont pas branches.",
+    "version": "0.4",
+    "status": "PILOTE (2026-10-01) : Apothicaire, Cuisinier, Brasseur, Runiste, Tanneur, Sculpteur d'os. Fichier NON charge par le serveur ; rien ne change en jeu tant que les metiers ne sont pas branches.",
     "format": "Une recette = profession + station + profession_level (niveau de METIER requis) + xp (XP de metier gagnee) + gold_cost + output_item/output_qty + quality_cap (rang maximum C..SS, voir systems/professions.json quality) + materials [{id, qty}].",
     "consumable_quality": "Pour un consommable, le rang de qualite multiplie l'effet : C x1.00, B x1.08, A x1.16, S x1.24, SS x1.32 (valeur ou duree).",
     "new_items_rule": "new_items = objets PROPOSES qui n'existent pas encore : ils passeront dans consumables.json / materials.json / world_buffs.json a la validation. Chaque objet porte le chemin de son icone a produire.",
     "elixirs": "Nouvelle famille : un seul elixir actif a la fois (source 'elixir'), qui se cumule avec un repas (food_meal) et une boisson (food_drink). 15 minutes. Axes volontairement differents des 19 familles de nourriture.",
     "food_split": "Les 18 familles de plats existantes se partagent : 14 repas (source food_meal) au Cuisinier, 4 boissons (source food_drink : Cidre, Infusion de sauge, Vin corse, Ale forte) au Brasseur. Ingredients de base : poissons du Pecheur et produits de la foret cueillis par le Bucheron, un rang par tranche de niveau (1, 20, 40, 60, 80).",
     "id_ranked_items": "Les objets dont le rang est dans l'id (pierres even_*_rank_N, stigmates ks_*_<rang>, grimoires, cartes Koro) ne tirent PAS de qualite : quality_cap = C, la recette vise directement l'id du rang voulu.",
-    "runist": "Pierres de forge : une nouvelle SOURCE (minerais du Mineur + un materiau de monstre), a cote du butin ; la fusion 10 -> 1 du forgeron reste. Stigmates : REACCORD 3 identiques -> 1 du rang au-dessus, jamais de creation a partir de rien (la keystone reste un butin rare). Gemmes : aucune recette tant qu'aucun systeme ne les utilise (aucun consommateur serveur)."
+    "runist": "Pierres de forge : une nouvelle SOURCE (minerais du Mineur + un materiau de monstre), a cote du butin ; la fusion 10 -> 1 du forgeron reste. Stigmates : REACCORD 3 identiques -> 1 du rang au-dessus, jamais de creation a partir de rien (la keystone reste un butin rare). Gemmes : aucune recette tant qu'aucun systeme ne les utilise (aucun consommateur serveur).",
+    "equipment_split": "Equipement : Tanneur = armures legeres (tissus, soies, crins) et moyennes (peaux, cuirs) pour tete/torse/jambes/pieds, plus TOUTES les ceintures et capes (la version lourde ajoute du minerai). Sculpteur d'os = les 6 armes, anneaux et amulettes (minerai du Mineur pour les lames et anneaux, bois du Bucheron pour batons, arcs et sceptres). Les pieces lourdes en metal (tete/torse/jambes/pieds) restent a la Forge du village, qui garde ses 61 recettes. Chaque piece sort avec un rang C..SS tire par le serveur. Les pieces de tournoi ne se fabriquent pas. Les sacs du Tanneur attendent une colonne de places par personnage."
   },
   "new_items": [
     {
@@ -597,6 +598,81 @@
       "gathered_by": "miner",
       "gather_level": 80,
       "icon": "assets/icons/items/materials/mat_ore_faille.png"
+    },
+    {
+      "id": "mat_wood_frene",
+      "kind": "material",
+      "category": "lumberjack",
+      "name_fr": "Bois de frêne",
+      "name_en": "Ash Wood",
+      "description_fr": "Bois de rang 1. Récolte : Bûcheron, arbres sur la carte.",
+      "description_en": "Rank 1 wood.",
+      "rarity": "common",
+      "stack_max": 99,
+      "sell_price": 3,
+      "gathered_by": "lumberjack",
+      "gather_level": 1,
+      "icon": "assets/icons/items/materials/mat_wood_frene.png"
+    },
+    {
+      "id": "mat_wood_chene",
+      "kind": "material",
+      "category": "lumberjack",
+      "name_fr": "Bois de chêne",
+      "name_en": "Oak Wood",
+      "description_fr": "Bois de rang 2. Récolte : Bûcheron, arbres sur la carte.",
+      "description_en": "Rank 2 wood.",
+      "rarity": "uncommon",
+      "stack_max": 99,
+      "sell_price": 10,
+      "gathered_by": "lumberjack",
+      "gather_level": 20,
+      "icon": "assets/icons/items/materials/mat_wood_chene.png"
+    },
+    {
+      "id": "mat_wood_if",
+      "kind": "material",
+      "category": "lumberjack",
+      "name_fr": "Bois d'if",
+      "name_en": "Yew Wood",
+      "description_fr": "Bois de rang 3. Récolte : Bûcheron, arbres sur la carte.",
+      "description_en": "Rank 3 wood.",
+      "rarity": "rare",
+      "stack_max": 99,
+      "sell_price": 28,
+      "gathered_by": "lumberjack",
+      "gather_level": 40,
+      "icon": "assets/icons/items/materials/mat_wood_if.png"
+    },
+    {
+      "id": "mat_wood_souffle",
+      "kind": "material",
+      "category": "lumberjack",
+      "name_fr": "Bois de Souffle",
+      "name_en": "Breath Wood",
+      "description_fr": "Bois de rang 4. Récolte : Bûcheron, arbres sur la carte.",
+      "description_en": "Rank 4 wood.",
+      "rarity": "epic",
+      "stack_max": 99,
+      "sell_price": 80,
+      "gathered_by": "lumberjack",
+      "gather_level": 60,
+      "icon": "assets/icons/items/materials/mat_wood_souffle.png"
+    },
+    {
+      "id": "mat_wood_obscur",
+      "kind": "material",
+      "category": "lumberjack",
+      "name_fr": "Bois Obscur",
+      "name_en": "Darkwood",
+      "description_fr": "Bois de rang 5. Récolte : Bûcheron, arbres sur la carte.",
+      "description_en": "Rank 5 wood.",
+      "rarity": "legendary",
+      "stack_max": 99,
+      "sell_price": 200,
+      "gathered_by": "lumberjack",
+      "gather_level": 80,
+      "icon": "assets/icons/items/materials/mat_wood_obscur.png"
     }
   ],
   "recipes": [
@@ -6303,6 +6379,2464 @@
         {
           "id": "mat_rift_ember",
           "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_head_light_b1",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "head_light_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_roughspun_cloth",
+          "qty": 2
+        },
+        {
+          "id": "mat_torn_cloth",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_head_light_b2",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "head_light_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spider_silk",
+          "qty": 2
+        },
+        {
+          "id": "mat_shadow_cloth",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_head_light_b3",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "head_light_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_horsehair",
+          "qty": 3
+        },
+        {
+          "id": "mat_zealot_robe",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_head_light_b4",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "head_light_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_shadow_horsehair",
+          "qty": 3
+        },
+        {
+          "id": "mat_stitcher_needle",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_head_light_b5",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "head_light_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_void_thread",
+          "qty": 4
+        },
+        {
+          "id": "mat_war_banner",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_head_medium_b1",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "head_medium_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_rat_fur",
+          "qty": 2
+        },
+        {
+          "id": "mat_boar_hide",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_head_medium_b2",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "head_medium_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_wolf_pelt",
+          "qty": 2
+        },
+        {
+          "id": "mat_tough_hide",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_head_medium_b3",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "head_medium_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fox_fur",
+          "qty": 3
+        },
+        {
+          "id": "mat_reinforced_leather",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_head_medium_b4",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "head_medium_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_shadow_hide",
+          "qty": 3
+        },
+        {
+          "id": "mat_cursed_pelt",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_head_medium_b5",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "head_medium_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_void_hide",
+          "qty": 4
+        },
+        {
+          "id": "mat_corrupted_hide",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_chest_light_b1",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "chest_light_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_roughspun_cloth",
+          "qty": 4
+        },
+        {
+          "id": "mat_torn_cloth",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_chest_light_b2",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "chest_light_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spider_silk",
+          "qty": 4
+        },
+        {
+          "id": "mat_shadow_cloth",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_chest_light_b3",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "chest_light_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_horsehair",
+          "qty": 5
+        },
+        {
+          "id": "mat_zealot_robe",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_chest_light_b4",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "chest_light_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_shadow_horsehair",
+          "qty": 5
+        },
+        {
+          "id": "mat_stitcher_needle",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_chest_light_b5",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "chest_light_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_void_thread",
+          "qty": 6
+        },
+        {
+          "id": "mat_war_banner",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_chest_medium_b1",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "chest_medium_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_rat_fur",
+          "qty": 4
+        },
+        {
+          "id": "mat_boar_hide",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_chest_medium_b2",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "chest_medium_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_wolf_pelt",
+          "qty": 4
+        },
+        {
+          "id": "mat_tough_hide",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_chest_medium_b3",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "chest_medium_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fox_fur",
+          "qty": 5
+        },
+        {
+          "id": "mat_reinforced_leather",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_chest_medium_b4",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "chest_medium_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_shadow_hide",
+          "qty": 5
+        },
+        {
+          "id": "mat_cursed_pelt",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_chest_medium_b5",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "chest_medium_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_void_hide",
+          "qty": 6
+        },
+        {
+          "id": "mat_corrupted_hide",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_legs_light_b1",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "legs_light_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_roughspun_cloth",
+          "qty": 3
+        },
+        {
+          "id": "mat_torn_cloth",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_legs_light_b2",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "legs_light_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spider_silk",
+          "qty": 3
+        },
+        {
+          "id": "mat_shadow_cloth",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_legs_light_b3",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "legs_light_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_horsehair",
+          "qty": 4
+        },
+        {
+          "id": "mat_zealot_robe",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_legs_light_b4",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "legs_light_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_shadow_horsehair",
+          "qty": 4
+        },
+        {
+          "id": "mat_stitcher_needle",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_legs_light_b5",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "legs_light_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_void_thread",
+          "qty": 5
+        },
+        {
+          "id": "mat_war_banner",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_legs_medium_b1",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "legs_medium_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_rat_fur",
+          "qty": 3
+        },
+        {
+          "id": "mat_boar_hide",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_legs_medium_b2",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "legs_medium_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_wolf_pelt",
+          "qty": 3
+        },
+        {
+          "id": "mat_tough_hide",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_legs_medium_b3",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "legs_medium_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fox_fur",
+          "qty": 4
+        },
+        {
+          "id": "mat_reinforced_leather",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_legs_medium_b4",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "legs_medium_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_shadow_hide",
+          "qty": 4
+        },
+        {
+          "id": "mat_cursed_pelt",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_legs_medium_b5",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "legs_medium_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_void_hide",
+          "qty": 5
+        },
+        {
+          "id": "mat_corrupted_hide",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_feet_light_b1",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "feet_light_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_roughspun_cloth",
+          "qty": 2
+        },
+        {
+          "id": "mat_torn_cloth",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_feet_light_b2",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "feet_light_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spider_silk",
+          "qty": 2
+        },
+        {
+          "id": "mat_shadow_cloth",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_feet_light_b3",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "feet_light_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_horsehair",
+          "qty": 3
+        },
+        {
+          "id": "mat_zealot_robe",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_feet_light_b4",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "feet_light_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_shadow_horsehair",
+          "qty": 3
+        },
+        {
+          "id": "mat_stitcher_needle",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_feet_light_b5",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "feet_light_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_void_thread",
+          "qty": 4
+        },
+        {
+          "id": "mat_war_banner",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_feet_medium_b1",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "feet_medium_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_rat_fur",
+          "qty": 2
+        },
+        {
+          "id": "mat_boar_hide",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_feet_medium_b2",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "feet_medium_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_wolf_pelt",
+          "qty": 2
+        },
+        {
+          "id": "mat_tough_hide",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_feet_medium_b3",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "feet_medium_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fox_fur",
+          "qty": 3
+        },
+        {
+          "id": "mat_reinforced_leather",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_feet_medium_b4",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "feet_medium_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_shadow_hide",
+          "qty": 3
+        },
+        {
+          "id": "mat_cursed_pelt",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_feet_medium_b5",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "feet_medium_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_void_hide",
+          "qty": 4
+        },
+        {
+          "id": "mat_corrupted_hide",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_belt_light_b1",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "belt_light_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_worn_leather",
+          "qty": 2
+        },
+        {
+          "id": "mat_soft_hide",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_belt_light_b2",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "belt_light_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_beast_hide",
+          "qty": 2
+        },
+        {
+          "id": "mat_lizard_scale",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_belt_light_b3",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "belt_light_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_leather_scrap",
+          "qty": 3
+        },
+        {
+          "id": "mat_hyena_pelt",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_belt_light_b4",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "belt_light_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_corrupted_hide",
+          "qty": 3
+        },
+        {
+          "id": "mat_shadow_pelt",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_belt_light_b5",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "belt_light_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_void_hide",
+          "qty": 4
+        },
+        {
+          "id": "mat_void_thread",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_belt_medium_b1",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "belt_medium_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_worn_leather",
+          "qty": 2
+        },
+        {
+          "id": "mat_soft_hide",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_belt_medium_b2",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "belt_medium_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_beast_hide",
+          "qty": 2
+        },
+        {
+          "id": "mat_lizard_scale",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_belt_medium_b3",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "belt_medium_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_leather_scrap",
+          "qty": 3
+        },
+        {
+          "id": "mat_hyena_pelt",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_belt_medium_b4",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "belt_medium_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_corrupted_hide",
+          "qty": 3
+        },
+        {
+          "id": "mat_shadow_pelt",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_belt_medium_b5",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "belt_medium_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_void_hide",
+          "qty": 4
+        },
+        {
+          "id": "mat_void_thread",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_belt_heavy_b1",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "belt_heavy_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_worn_leather",
+          "qty": 2
+        },
+        {
+          "id": "mat_soft_hide",
+          "qty": 1
+        },
+        {
+          "id": "mat_ore_fer",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_belt_heavy_b2",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "belt_heavy_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_beast_hide",
+          "qty": 2
+        },
+        {
+          "id": "mat_lizard_scale",
+          "qty": 1
+        },
+        {
+          "id": "mat_ore_argent",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_belt_heavy_b3",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "belt_heavy_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_leather_scrap",
+          "qty": 3
+        },
+        {
+          "id": "mat_hyena_pelt",
+          "qty": 2
+        },
+        {
+          "id": "mat_ore_cuivre",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_belt_heavy_b4",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "belt_heavy_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_corrupted_hide",
+          "qty": 3
+        },
+        {
+          "id": "mat_shadow_pelt",
+          "qty": 2
+        },
+        {
+          "id": "mat_ore_astral",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_belt_heavy_b5",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "belt_heavy_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_void_hide",
+          "qty": 4
+        },
+        {
+          "id": "mat_void_thread",
+          "qty": 3
+        },
+        {
+          "id": "mat_ore_faille",
+          "qty": 2
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_cape_light_b1",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "cape_light_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_wool",
+          "qty": 3
+        },
+        {
+          "id": "mat_otter_fur",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_cape_light_b2",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "cape_light_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fox_pelt",
+          "qty": 3
+        },
+        {
+          "id": "mat_fur_pelt",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_cape_light_b3",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "cape_light_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_prime_fleece",
+          "qty": 4
+        },
+        {
+          "id": "mat_fox_fur",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_cape_light_b4",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "cape_light_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_shadow_pelt",
+          "qty": 4
+        },
+        {
+          "id": "mat_shadow_horsehair",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_cape_light_b5",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "cape_light_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_war_banner",
+          "qty": 5
+        },
+        {
+          "id": "mat_void_thread",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_cape_medium_b1",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "cape_medium_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_wool",
+          "qty": 3
+        },
+        {
+          "id": "mat_otter_fur",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_cape_medium_b2",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "cape_medium_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fox_pelt",
+          "qty": 3
+        },
+        {
+          "id": "mat_fur_pelt",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_cape_medium_b3",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "cape_medium_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_prime_fleece",
+          "qty": 4
+        },
+        {
+          "id": "mat_fox_fur",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_cape_medium_b4",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "cape_medium_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_shadow_pelt",
+          "qty": 4
+        },
+        {
+          "id": "mat_shadow_horsehair",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_cape_medium_b5",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "cape_medium_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_war_banner",
+          "qty": 5
+        },
+        {
+          "id": "mat_void_thread",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_cape_heavy_b1",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "cape_heavy_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_wool",
+          "qty": 3
+        },
+        {
+          "id": "mat_otter_fur",
+          "qty": 1
+        },
+        {
+          "id": "mat_ore_fer",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_cape_heavy_b2",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "cape_heavy_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_fox_pelt",
+          "qty": 3
+        },
+        {
+          "id": "mat_fur_pelt",
+          "qty": 1
+        },
+        {
+          "id": "mat_ore_argent",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_cape_heavy_b3",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "cape_heavy_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_prime_fleece",
+          "qty": 4
+        },
+        {
+          "id": "mat_fox_fur",
+          "qty": 2
+        },
+        {
+          "id": "mat_ore_cuivre",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_cape_heavy_b4",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "cape_heavy_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_shadow_pelt",
+          "qty": 4
+        },
+        {
+          "id": "mat_shadow_horsehair",
+          "qty": 2
+        },
+        {
+          "id": "mat_ore_astral",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_tan_cape_heavy_b5",
+      "profession": "tanner",
+      "station": "workshop_tanner",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "cape_heavy_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_war_banner",
+          "qty": 5
+        },
+        {
+          "id": "mat_void_thread",
+          "qty": 3
+        },
+        {
+          "id": "mat_ore_faille",
+          "qty": 2
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_sword_b1",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "wpn_sword_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_hunting_knife",
+          "qty": 3
+        },
+        {
+          "id": "mat_ore_fer",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_sword_b2",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "wpn_sword_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_iron_blade",
+          "qty": 3
+        },
+        {
+          "id": "mat_ore_argent",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_sword_b3",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "wpn_sword_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_inquisitor_blade",
+          "qty": 4
+        },
+        {
+          "id": "mat_ore_cuivre",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_sword_b4",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "wpn_sword_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_werewolf_claw",
+          "qty": 4
+        },
+        {
+          "id": "mat_ore_astral",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_sword_b5",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "wpn_sword_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_rift_claw",
+          "qty": 5
+        },
+        {
+          "id": "mat_ore_faille",
+          "qty": 2
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_dagger_b1",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "wpn_dagger_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_wolf_fang",
+          "qty": 3
+        },
+        {
+          "id": "mat_ore_fer",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_dagger_b2",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "wpn_dagger_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spider_fang",
+          "qty": 3
+        },
+        {
+          "id": "mat_ore_argent",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_dagger_b3",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "wpn_dagger_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_serpent_fang",
+          "qty": 4
+        },
+        {
+          "id": "mat_ore_cuivre",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_dagger_b4",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "wpn_dagger_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_mutated_fang",
+          "qty": 4
+        },
+        {
+          "id": "mat_ore_astral",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_dagger_b5",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "wpn_dagger_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_void_fang",
+          "qty": 5
+        },
+        {
+          "id": "mat_ore_faille",
+          "qty": 2
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_staff_b1",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "wpn_staff_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_bone_fragment",
+          "qty": 3
+        },
+        {
+          "id": "mat_wood_frene",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_staff_b2",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "wpn_staff_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_cursed_bone",
+          "qty": 3
+        },
+        {
+          "id": "mat_wood_chene",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_staff_b3",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "wpn_staff_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_elder_staff",
+          "qty": 4
+        },
+        {
+          "id": "mat_wood_if",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_staff_b4",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "wpn_staff_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_necromancer_staff",
+          "qty": 4
+        },
+        {
+          "id": "mat_wood_souffle",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_staff_b5",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "wpn_staff_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_abyssal_horn",
+          "qty": 5
+        },
+        {
+          "id": "mat_wood_obscur",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_bow_b1",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "wpn_bow_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_goat_horn",
+          "qty": 3
+        },
+        {
+          "id": "mat_wood_frene",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_bow_b2",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "wpn_bow_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_spiral_horn",
+          "qty": 3
+        },
+        {
+          "id": "mat_wood_chene",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_bow_b3",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "wpn_bow_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_horned_ridge",
+          "qty": 4
+        },
+        {
+          "id": "mat_wood_if",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_bow_b4",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "wpn_bow_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_dark_antler",
+          "qty": 4
+        },
+        {
+          "id": "mat_wood_souffle",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_bow_b5",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "wpn_bow_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_nightmare_antler",
+          "qty": 5
+        },
+        {
+          "id": "mat_wood_obscur",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_tool_b1",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "wpn_tool_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_mandible",
+          "qty": 3
+        },
+        {
+          "id": "mat_ore_fer",
+          "qty": 2
+        },
+        {
+          "id": "mat_wood_frene",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_tool_b2",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "wpn_tool_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_digging_claw",
+          "qty": 3
+        },
+        {
+          "id": "mat_ore_argent",
+          "qty": 2
+        },
+        {
+          "id": "mat_wood_chene",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_tool_b3",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "wpn_tool_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_armadillo_shell",
+          "qty": 4
+        },
+        {
+          "id": "mat_ore_cuivre",
+          "qty": 2
+        },
+        {
+          "id": "mat_wood_if",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_tool_b4",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "wpn_tool_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_ember_claw",
+          "qty": 4
+        },
+        {
+          "id": "mat_ore_astral",
+          "qty": 2
+        },
+        {
+          "id": "mat_wood_souffle",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_tool_b5",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "wpn_tool_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_crystal_fang",
+          "qty": 5
+        },
+        {
+          "id": "mat_ore_faille",
+          "qty": 2
+        },
+        {
+          "id": "mat_wood_obscur",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_scepter_b1",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "wpn_scepter_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_ram_horn",
+          "qty": 3
+        },
+        {
+          "id": "mat_wood_frene",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_scepter_b2",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "wpn_scepter_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_boar_tusk",
+          "qty": 3
+        },
+        {
+          "id": "mat_wood_chene",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_scepter_b3",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "wpn_scepter_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_enchanted_bone",
+          "qty": 4
+        },
+        {
+          "id": "mat_wood_if",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_scepter_b4",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "wpn_scepter_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_dark_bone",
+          "qty": 4
+        },
+        {
+          "id": "mat_wood_souffle",
+          "qty": 3
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_wpn_scepter_b5",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "wpn_scepter_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_demon_horn",
+          "qty": 5
+        },
+        {
+          "id": "mat_wood_obscur",
+          "qty": 3
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_acc_ring_b1",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "acc_ring_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_carapace",
+          "qty": 3
+        },
+        {
+          "id": "mat_ore_fer",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_acc_ring_b2",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "acc_ring_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_chitin_shard",
+          "qty": 3
+        },
+        {
+          "id": "mat_ore_argent",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_acc_ring_b3",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "acc_ring_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_lizard_claw",
+          "qty": 4
+        },
+        {
+          "id": "mat_ore_cuivre",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_acc_ring_b4",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "acc_ring_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_crystal_fang",
+          "qty": 4
+        },
+        {
+          "id": "mat_ore_astral",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_acc_ring_b5",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "acc_ring_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_void_fang",
+          "qty": 5
+        },
+        {
+          "id": "mat_ore_faille",
+          "qty": 2
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_acc_necklace_b1",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 1,
+      "xp": 26,
+      "gold_cost": 20,
+      "output_item": "acc_necklace_b1",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_monster_fang",
+          "qty": 3
+        },
+        {
+          "id": "mat_bone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_acc_necklace_b2",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 20,
+      "xp": 140,
+      "gold_cost": 80,
+      "output_item": "acc_necklace_b2",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_bone_necklace",
+          "qty": 3
+        },
+        {
+          "id": "mat_bone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_acc_necklace_b3",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 40,
+      "xp": 260,
+      "gold_cost": 300,
+      "output_item": "acc_necklace_b3",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_beast_fang",
+          "qty": 4
+        },
+        {
+          "id": "mat_enchanted_bone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_acc_necklace_b4",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 60,
+      "xp": 380,
+      "gold_cost": 1000,
+      "output_item": "acc_necklace_b4",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_dark_antler",
+          "qty": 4
+        },
+        {
+          "id": "mat_enchanted_bone",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "id": "recipe_bone_acc_necklace_b5",
+      "profession": "bone_carver",
+      "station": "workshop_bone_carver",
+      "profession_level": 80,
+      "xp": 500,
+      "gold_cost": 3000,
+      "output_item": "acc_necklace_b5",
+      "output_qty": 1,
+      "quality_cap": "SS",
+      "materials": [
+        {
+          "id": "mat_abyssal_horn",
+          "qty": 5
+        },
+        {
+          "id": "mat_enchanted_bone",
+          "qty": 2
+        },
+        {
+          "id": "mat_rift_ember",
+          "qty": 1
         }
       ]
     }
