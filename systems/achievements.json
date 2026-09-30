@@ -1,13 +1,16 @@
 {
   "_meta": {
-    "version": "5.0",
+    "version": "6.0",
     "last_updated": "2026-09-30",
     "description": "Succes, vague 1 (conception : La Matrice des Succes, https://claude.ai/artifact/JJ2sE2jHBgQ8ioC9NCPNpR). Uniquement des sources d'ETAT relues en base : un succes ajoute plus tard se debloque retroactivement, et aucun ne peut mourir en silence faute d'ecrivain.",
     "owner": "services/quest (AchievementEngine). Le serveur evalue, debloque et recompense ; le client lit ce fichier pour l'AFFICHAGE seulement (noms, descriptions, recompense).",
     "reward_rule": "reward.xp = XP FIXE (2026-09-30, choix de Charleston : un pourcentage du niveau en cours laissait garder ses succes et les encaisser tard, 80 -> 100 en cliquant). Calibre : l'ancien pourcentage applique au cout du niveau ou le succes tombe normalement (premiers pas ~2, sous-classe/arene ~10, legendaire ~50). Puis x10 (30/09, Charleston : 100 quetes pour 2 250 XP pesait moins qu'un petit combat). Tout encaisser au niveau 80 vaut environ 5 niveaux. Personnage tournoi : 0 XP (vitrine), titres quand meme (compte). reward.title_id reference ui/cosmetics.json (acquisition 'grant').",
     "scope_rule": "Une source 'account' (familiers) se debloque UNE fois par compte : un personnage secondaire ne reencaisse pas la collection.",
     "shapes": "premier | echelle | detour (voir la Matrice). Pas de compteur pur.",
-    "not_in_wave_1": "Competence montee au maximum (aucun niveau max de competence fiable dans la data) ; elites, zones visitees, detours de combat (aucune source aujourd'hui)."
+    "not_in_wave_1": "Competence montee au maximum (aucun niveau max de competence fiable dans la data) ; elites, zones visitees, detours de combat (aucune source aujourd'hui).",
+    "reward_cap_levels": 2,
+    "reward_cap_rule": "PLAFOND (2026-09-30, Charleston : un familier epique trouve au niveau 2 donnait 31 000 XP, soit une quinzaine de niveaux) : le serveur n'accorde jamais plus que le cout des reward_cap_levels niveaux suivants le niveau COURANT. A haut niveau le plafond depasse la valeur fixe et ne joue plus. Encaisser tard reste impossible (deblocage automatique).",
+    "wave_2": "Vague 2 (2026-09-30) : ~100 succes, 14 sources nouvelles (migr 103). XP = forme x cout du niveau ou le succes tombe normalement (premier 0.5, echelle 1, detour 2 niveaux)."
   },
   "categories": [
     {
@@ -29,6 +32,26 @@
       "id": "familier",
       "name_fr": "Familiers",
       "name_en": "Familiars"
+    },
+    {
+      "id": "combat",
+      "name_fr": "Combat",
+      "name_en": "Combat"
+    },
+    {
+      "id": "donjon",
+      "name_fr": "Donjons et Failles",
+      "name_en": "Dungeons and Rifts"
+    },
+    {
+      "id": "artisanat",
+      "name_fr": "Forge et commerce",
+      "name_en": "Forge and Trade"
+    },
+    {
+      "id": "social",
+      "name_fr": "Social",
+      "name_en": "Social"
     }
   ],
   "sources": {
@@ -103,6 +126,62 @@
     "familiar_collection": {
       "scope": "account",
       "from": "COUNT(familiars), compte"
+    },
+    "pve_wins": {
+      "scope": "character",
+      "from": "COUNT(combat_results pve/dungeon ou le participant est dans l'equipe gagnante)"
+    },
+    "monsters_killed": {
+      "scope": "character",
+      "from": "SUM(combat_results.participants.kills), salles pve/dungeon"
+    },
+    "damage_dealt_total": {
+      "scope": "character",
+      "from": "SUM(combat_results.participants.damage_dealt), hors test/tutoriel"
+    },
+    "healing_done_total": {
+      "scope": "character",
+      "from": "SUM(combat_results.participants.healing_done), hors test/tutoriel"
+    },
+    "dungeon_floors_cleared": {
+      "scope": "character",
+      "from": "COUNT(dungeon_combat_results outcome victory%)"
+    },
+    "dungeon_runs_completed": {
+      "scope": "character",
+      "from": "COUNT(dungeon_combat_results outcome = victory_completed)"
+    },
+    "fissures_closed": {
+      "scope": "character",
+      "from": "COUNT(world_event_rewards kind = fissure)"
+    },
+    "friends_count": {
+      "scope": "character",
+      "from": "COUNT(friendships)"
+    },
+    "guild_joined": {
+      "scope": "character",
+      "from": "membre d'une guilde -> 1"
+    },
+    "auction_items_sold": {
+      "scope": "character",
+      "from": "COUNT(auction_listings vendeur, status = sold)"
+    },
+    "max_enhancement_level": {
+      "scope": "character",
+      "from": "MAX(item_instances.enhancement_level)"
+    },
+    "koro_cards_owned": {
+      "scope": "character",
+      "from": "COUNT(DISTINCT item_instances koro_%)"
+    },
+    "keystones_equipped": {
+      "scope": "character",
+      "from": "COUNT(character_keystones)"
+    },
+    "gold_held": {
+      "scope": "character",
+      "from": "character_currencies.gold"
     }
   },
   "achievements": [
@@ -645,6 +724,1541 @@
       "reward": {
         "xp": 36000,
         "title_id": "title_grand_eleveur"
+      }
+    },
+    {
+      "id": "ach_level_5",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Premiers galons",
+      "name_en": "First Stripes",
+      "desc_fr": "Atteins le niveau 5.",
+      "desc_en": "Reach level 5.",
+      "source": "char_level",
+      "threshold": 5,
+      "reward": {
+        "xp": 250
+      }
+    },
+    {
+      "id": "ach_level_15",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Sur la bonne voie",
+      "name_en": "On the Right Path",
+      "desc_fr": "Atteins le niveau 15.",
+      "desc_en": "Reach level 15.",
+      "source": "char_level",
+      "threshold": 15,
+      "reward": {
+        "xp": 1150
+      }
+    },
+    {
+      "id": "ach_level_25",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Un quart du chemin",
+      "name_en": "A Quarter of the Way",
+      "desc_fr": "Atteins le niveau 25.",
+      "desc_en": "Reach level 25.",
+      "source": "char_level",
+      "threshold": 25,
+      "reward": {
+        "xp": 3300
+      }
+    },
+    {
+      "id": "ach_level_30",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Trentaine",
+      "name_en": "Thirty Strong",
+      "desc_fr": "Atteins le niveau 30.",
+      "desc_en": "Reach level 30.",
+      "source": "char_level",
+      "threshold": 30,
+      "reward": {
+        "xp": 4800
+      }
+    },
+    {
+      "id": "ach_level_35",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Endurci",
+      "name_en": "Hardened",
+      "desc_fr": "Atteins le niveau 35.",
+      "desc_en": "Reach level 35.",
+      "source": "char_level",
+      "threshold": 35,
+      "reward": {
+        "xp": 6600
+      }
+    },
+    {
+      "id": "ach_level_45",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Confirmé",
+      "name_en": "Proven",
+      "desc_fr": "Atteins le niveau 45.",
+      "desc_en": "Reach level 45.",
+      "source": "char_level",
+      "threshold": 45,
+      "reward": {
+        "xp": 11250
+      }
+    },
+    {
+      "id": "ach_level_50",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "À mi-parcours",
+      "name_en": "Halfway There",
+      "desc_fr": "Atteins le niveau 50.",
+      "desc_en": "Reach level 50.",
+      "source": "char_level",
+      "threshold": 50,
+      "reward": {
+        "xp": 14250
+      }
+    },
+    {
+      "id": "ach_level_55",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Rompu au combat",
+      "name_en": "Battle-Worn",
+      "desc_fr": "Atteins le niveau 55.",
+      "desc_en": "Reach level 55.",
+      "source": "char_level",
+      "threshold": 55,
+      "reward": {
+        "xp": 18000
+      }
+    },
+    {
+      "id": "ach_level_65",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Vétéran des routes",
+      "name_en": "Road Veteran",
+      "desc_fr": "Atteins le niveau 65.",
+      "desc_en": "Reach level 65.",
+      "source": "char_level",
+      "threshold": 65,
+      "reward": {
+        "xp": 30000
+      }
+    },
+    {
+      "id": "ach_level_70",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Soixante-dix",
+      "name_en": "Seventy",
+      "desc_fr": "Atteins le niveau 70.",
+      "desc_en": "Reach level 70.",
+      "source": "char_level",
+      "threshold": 70,
+      "reward": {
+        "xp": 42000
+      }
+    },
+    {
+      "id": "ach_level_75",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Trois quarts",
+      "name_en": "Three Quarters",
+      "desc_fr": "Atteins le niveau 75.",
+      "desc_en": "Reach level 75.",
+      "source": "char_level",
+      "threshold": 75,
+      "reward": {
+        "xp": 60000
+      }
+    },
+    {
+      "id": "ach_level_85",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Au sommet approche",
+      "name_en": "Near the Summit",
+      "desc_fr": "Atteins le niveau 85.",
+      "desc_en": "Reach level 85.",
+      "source": "char_level",
+      "threshold": 85,
+      "reward": {
+        "xp": 112500
+      }
+    },
+    {
+      "id": "ach_level_90",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Quatre-vingt-dix",
+      "name_en": "Ninety",
+      "desc_fr": "Atteins le niveau 90.",
+      "desc_en": "Reach level 90.",
+      "source": "char_level",
+      "threshold": 90,
+      "reward": {
+        "xp": 150000
+      }
+    },
+    {
+      "id": "ach_level_95",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Aux portes de la légende",
+      "name_en": "At Legend's Door",
+      "desc_fr": "Atteins le niveau 95.",
+      "desc_en": "Reach level 95.",
+      "source": "char_level",
+      "threshold": 95,
+      "reward": {
+        "xp": 202500
+      }
+    },
+    {
+      "id": "ach_prog_stats_10",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Bien réparti",
+      "name_en": "Well Spread",
+      "desc_fr": "Dépense 10 points de caractéristique.",
+      "desc_en": "Spend 10 attribute points.",
+      "source": "char_stat_points_spent",
+      "threshold": 10,
+      "reward": {
+        "xp": 250
+      }
+    },
+    {
+      "id": "ach_prog_stats_50",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Corps affûté",
+      "name_en": "Honed Body",
+      "desc_fr": "Dépense 50 points de caractéristique.",
+      "desc_en": "Spend 50 attribute points.",
+      "source": "char_stat_points_spent",
+      "threshold": 50,
+      "reward": {
+        "xp": 2100
+      }
+    },
+    {
+      "id": "ach_prog_stats_150",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Forgé par l'effort",
+      "name_en": "Forged by Effort",
+      "desc_fr": "Dépense 150 points de caractéristique.",
+      "desc_en": "Spend 150 attribute points.",
+      "source": "char_stat_points_spent",
+      "threshold": 150,
+      "reward": {
+        "xp": 18000
+      }
+    },
+    {
+      "id": "ach_prog_skills_10",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Technique affirmée",
+      "name_en": "Sharpened Technique",
+      "desc_fr": "Dépense 10 points de compétence.",
+      "desc_en": "Spend 10 skill points.",
+      "source": "char_skill_points_spent",
+      "threshold": 10,
+      "reward": {
+        "xp": 800
+      }
+    },
+    {
+      "id": "ach_prog_skills_30",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Répertoire étoffé",
+      "name_en": "Broad Repertoire",
+      "desc_fr": "Dépense 30 points de compétence.",
+      "desc_en": "Spend 30 skill points.",
+      "source": "char_skill_points_spent",
+      "threshold": 30,
+      "reward": {
+        "xp": 6600
+      }
+    },
+    {
+      "id": "ach_prog_skills_60",
+      "category": "progression",
+      "shape": "echelle",
+      "name_fr": "Maître de ses gestes",
+      "name_en": "Master of Every Move",
+      "desc_fr": "Dépense 60 points de compétence.",
+      "desc_en": "Spend 60 skill points.",
+      "source": "char_skill_points_spent",
+      "threshold": 60,
+      "reward": {
+        "xp": 42000
+      }
+    },
+    {
+      "id": "ach_quest_25",
+      "category": "quetes",
+      "shape": "echelle",
+      "name_fr": "Vingt-cinq services",
+      "name_en": "Twenty-Five Favors",
+      "desc_fr": "Termine 25 quêtes.",
+      "desc_en": "Complete 25 quests.",
+      "source": "quests_completed",
+      "threshold": 25,
+      "reward": {
+        "xp": 1650
+      }
+    },
+    {
+      "id": "ach_quest_200",
+      "category": "quetes",
+      "shape": "echelle",
+      "name_fr": "Deux cents services",
+      "name_en": "Two Hundred Favors",
+      "desc_fr": "Termine 200 quêtes.",
+      "desc_en": "Complete 200 quests.",
+      "source": "quests_completed",
+      "threshold": 200,
+      "reward": {
+        "xp": 60000
+      }
+    },
+    {
+      "id": "ach_quest_300",
+      "category": "quetes",
+      "shape": "echelle",
+      "name_fr": "Au service de tous",
+      "name_en": "At Everyone's Service",
+      "desc_fr": "Termine 300 quêtes.",
+      "desc_en": "Complete 300 quests.",
+      "source": "quests_completed",
+      "threshold": 300,
+      "reward": {
+        "xp": 150000
+      }
+    },
+    {
+      "id": "ach_arena_100",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Centurion",
+      "name_en": "Centurion",
+      "desc_fr": "Dispute 100 combats d'arène.",
+      "desc_en": "Fight 100 arena matches.",
+      "source": "arena_matches",
+      "threshold": 100,
+      "reward": {
+        "xp": 11250
+      }
+    },
+    {
+      "id": "ach_arena_500",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Légende des gradins",
+      "name_en": "Legend of the Stands",
+      "desc_fr": "Dispute 500 combats d'arène.",
+      "desc_en": "Fight 500 arena matches.",
+      "source": "arena_matches",
+      "threshold": 500,
+      "reward": {
+        "xp": 82500,
+        "title_id": "title_legende_gradins"
+      }
+    },
+    {
+      "id": "ach_arena_wins_5",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Cinq victoires",
+      "name_en": "Five Wins",
+      "desc_fr": "Remporte 5 combats d'arène.",
+      "desc_en": "Win 5 arena matches.",
+      "source": "arena_wins",
+      "threshold": 5,
+      "reward": {
+        "xp": 800
+      }
+    },
+    {
+      "id": "ach_arena_wins_25",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Vingt-cinq victoires",
+      "name_en": "Twenty-Five Wins",
+      "desc_fr": "Remporte 25 combats d'arène.",
+      "desc_en": "Win 25 arena matches.",
+      "source": "arena_wins",
+      "threshold": 25,
+      "reward": {
+        "xp": 4200
+      }
+    },
+    {
+      "id": "ach_arena_wins_100",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Cent victoires",
+      "name_en": "A Hundred Wins",
+      "desc_fr": "Remporte 100 combats d'arène.",
+      "desc_en": "Win 100 arena matches.",
+      "source": "arena_wins",
+      "threshold": 100,
+      "reward": {
+        "xp": 18000
+      }
+    },
+    {
+      "id": "ach_arena_wins_250",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Champion confirmé",
+      "name_en": "Proven Champion",
+      "desc_fr": "Remporte 250 combats d'arène.",
+      "desc_en": "Win 250 arena matches.",
+      "source": "arena_wins",
+      "threshold": 250,
+      "reward": {
+        "xp": 82500,
+        "title_id": "title_champion_confirme"
+      }
+    },
+    {
+      "id": "ach_arena_losses_10",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "On apprend en tombant",
+      "name_en": "Learning by Falling",
+      "desc_fr": "Perds 10 combats d'arène sans baisser les bras.",
+      "desc_en": "Lose 10 arena matches and keep going.",
+      "source": "arena_losses",
+      "threshold": 10,
+      "reward": {
+        "xp": 2100
+      }
+    },
+    {
+      "id": "ach_arena_losses_50",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Increvable",
+      "name_en": "Unbreakable Spirit",
+      "desc_fr": "Perds 50 combats d'arène sans baisser les bras.",
+      "desc_en": "Lose 50 arena matches and keep going.",
+      "source": "arena_losses",
+      "threshold": 50,
+      "reward": {
+        "xp": 11250
+      }
+    },
+    {
+      "id": "ach_arena_2v2_10",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Duo rodé",
+      "name_en": "Drilled Duo",
+      "desc_fr": "Dispute 10 combats d'arène en 2v2.",
+      "desc_en": "Fight 10 arena matches in 2v2.",
+      "source": "arena_matches_2v2",
+      "threshold": 10,
+      "reward": {
+        "xp": 3300
+      }
+    },
+    {
+      "id": "ach_arena_2v2_50",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Duo soudé",
+      "name_en": "Bonded Duo",
+      "desc_fr": "Dispute 50 combats d'arène en 2v2.",
+      "desc_en": "Fight 50 arena matches in 2v2.",
+      "source": "arena_matches_2v2",
+      "threshold": 50,
+      "reward": {
+        "xp": 18000
+      }
+    },
+    {
+      "id": "ach_arena_4v4_10",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Escouade rodé",
+      "name_en": "Drilled Squad",
+      "desc_fr": "Dispute 10 combats d'arène en 4v4.",
+      "desc_en": "Fight 10 arena matches in 4v4.",
+      "source": "arena_matches_4v4",
+      "threshold": 10,
+      "reward": {
+        "xp": 3300
+      }
+    },
+    {
+      "id": "ach_arena_4v4_50",
+      "category": "arene",
+      "shape": "echelle",
+      "name_fr": "Escouade soudé",
+      "name_en": "Bonded Squad",
+      "desc_fr": "Dispute 50 combats d'arène en 4v4.",
+      "desc_en": "Fight 50 arena matches in 4v4.",
+      "source": "arena_matches_4v4",
+      "threshold": 50,
+      "reward": {
+        "xp": 18000
+      }
+    },
+    {
+      "id": "ach_arena_streak_5",
+      "category": "arene",
+      "shape": "detour",
+      "name_fr": "Série en cours",
+      "name_en": "On a Roll",
+      "desc_fr": "Enchaîne 5 victoires d'arène sans défaite.",
+      "desc_en": "Win 5 arena matches in a row.",
+      "source": "arena_best_win_streak",
+      "threshold": 5,
+      "reward": {
+        "xp": 13200
+      }
+    },
+    {
+      "id": "ach_familiar_hatch_5",
+      "category": "familier",
+      "shape": "echelle",
+      "name_fr": "Couvée",
+      "name_en": "Brood",
+      "desc_fr": "Fais éclore 5 familiers.",
+      "desc_en": "Hatch 5 familiars.",
+      "source": "familiar_hatched",
+      "threshold": 5,
+      "reward": {
+        "xp": 2100
+      }
+    },
+    {
+      "id": "ach_familiar_hatch_20",
+      "category": "familier",
+      "shape": "echelle",
+      "name_fr": "Nurserie",
+      "name_en": "Nursery",
+      "desc_fr": "Fais éclore 20 familiers.",
+      "desc_en": "Hatch 20 familiars.",
+      "source": "familiar_hatched",
+      "threshold": 20,
+      "reward": {
+        "xp": 11250
+      }
+    },
+    {
+      "id": "ach_familiar_hatch_50",
+      "category": "familier",
+      "shape": "echelle",
+      "name_fr": "Berceau des bêtes",
+      "name_en": "Cradle of Beasts",
+      "desc_fr": "Fais éclore 50 familiers.",
+      "desc_en": "Hatch 50 familiars.",
+      "source": "familiar_hatched",
+      "threshold": 50,
+      "reward": {
+        "xp": 60000
+      }
+    },
+    {
+      "id": "ach_familiar_rare_5",
+      "category": "familier",
+      "shape": "echelle",
+      "name_fr": "Collection soignée",
+      "name_en": "Curated Collection",
+      "desc_fr": "Possède 5 familiers rares ou mieux.",
+      "desc_en": "Own 5 rare or better familiars.",
+      "source": "familiar_rare_plus",
+      "threshold": 5,
+      "reward": {
+        "xp": 8700
+      }
+    },
+    {
+      "id": "ach_familiar_rare_15",
+      "category": "familier",
+      "shape": "echelle",
+      "name_fr": "Rareté ordinaire",
+      "name_en": "Common Rarity",
+      "desc_fr": "Possède 15 familiers rares ou mieux.",
+      "desc_en": "Own 15 rare or better familiars.",
+      "source": "familiar_rare_plus",
+      "threshold": 15,
+      "reward": {
+        "xp": 42000
+      }
+    },
+    {
+      "id": "ach_familiar_epic_3",
+      "category": "familier",
+      "shape": "detour",
+      "name_fr": "Trio épique",
+      "name_en": "Epic Trio",
+      "desc_fr": "Possède 3 familiers épiques ou légendaires.",
+      "desc_en": "Own 3 epic or legendary familiars.",
+      "source": "familiar_epic_plus",
+      "threshold": 3,
+      "reward": {
+        "xp": 36000
+      }
+    },
+    {
+      "id": "ach_familiar_epic_10",
+      "category": "familier",
+      "shape": "detour",
+      "name_fr": "Panthéon",
+      "name_en": "Pantheon",
+      "desc_fr": "Possède 10 familiers épiques ou légendaires.",
+      "desc_en": "Own 10 epic or legendary familiars.",
+      "source": "familiar_epic_plus",
+      "threshold": 10,
+      "reward": {
+        "xp": 225000
+      }
+    },
+    {
+      "id": "ach_familiar_legendary_3",
+      "category": "familier",
+      "shape": "detour",
+      "name_fr": "Gardien des légendes",
+      "name_en": "Keeper of Legends",
+      "desc_fr": "Possède 3 familiers légendaires.",
+      "desc_en": "Own 3 legendary familiars.",
+      "source": "familiar_legendary",
+      "threshold": 3,
+      "reward": {
+        "xp": 405000,
+        "title_id": "title_gardien_legendes"
+      }
+    },
+    {
+      "id": "ach_familiar_collection_5",
+      "category": "familier",
+      "shape": "echelle",
+      "name_fr": "Premiers compagnons",
+      "name_en": "First Companions",
+      "desc_fr": "Possède 5 familiers.",
+      "desc_en": "Own 5 familiars.",
+      "source": "familiar_collection",
+      "threshold": 5,
+      "reward": {
+        "xp": 800
+      }
+    },
+    {
+      "id": "ach_familiar_collection_75",
+      "category": "familier",
+      "shape": "echelle",
+      "name_fr": "Arche",
+      "name_en": "Ark",
+      "desc_fr": "Possède 75 familiers.",
+      "desc_en": "Own 75 familiars.",
+      "source": "familiar_collection",
+      "threshold": 75,
+      "reward": {
+        "xp": 112500
+      }
+    },
+    {
+      "id": "ach_familiar_collection_100",
+      "category": "familier",
+      "shape": "echelle",
+      "name_fr": "Cent compagnons",
+      "name_en": "A Hundred Companions",
+      "desc_fr": "Possède 100 familiers.",
+      "desc_en": "Own 100 familiars.",
+      "source": "familiar_collection",
+      "threshold": 100,
+      "reward": {
+        "xp": 202500
+      }
+    },
+    {
+      "id": "ach_combat_wins_1",
+      "category": "combat",
+      "shape": "premier",
+      "name_fr": "Premier sang",
+      "name_en": "First Blood",
+      "desc_fr": "Gagne 1 combat contre des monstres.",
+      "desc_en": "Win 1 fight against monsters.",
+      "source": "pve_wins",
+      "threshold": 1,
+      "reward": {
+        "xp": 50
+      }
+    },
+    {
+      "id": "ach_combat_wins_10",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Dix combats gagnés",
+      "name_en": "Ten Fights Won",
+      "desc_fr": "Gagne 10 combats contre des monstres.",
+      "desc_en": "Win 10 fights against monsters.",
+      "source": "pve_wins",
+      "threshold": 10,
+      "reward": {
+        "xp": 300
+      }
+    },
+    {
+      "id": "ach_combat_wins_50",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Aguerri au combat",
+      "name_en": "Battle-Hardened",
+      "desc_fr": "Gagne 50 combats contre des monstres.",
+      "desc_en": "Win 50 fights against monsters.",
+      "source": "pve_wins",
+      "threshold": 50,
+      "reward": {
+        "xp": 1150
+      }
+    },
+    {
+      "id": "ach_combat_wins_100",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Centenaire",
+      "name_en": "A Century of Wins",
+      "desc_fr": "Gagne 100 combats contre des monstres.",
+      "desc_en": "Win 100 fights against monsters.",
+      "source": "pve_wins",
+      "threshold": 100,
+      "reward": {
+        "xp": 2600
+      }
+    },
+    {
+      "id": "ach_combat_wins_250",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Chasseur",
+      "name_en": "Hunter",
+      "desc_fr": "Gagne 250 combats contre des monstres.",
+      "desc_en": "Win 250 fights against monsters.",
+      "source": "pve_wins",
+      "threshold": 250,
+      "reward": {
+        "xp": 6600
+      }
+    },
+    {
+      "id": "ach_combat_wins_500",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Traqueur",
+      "name_en": "Tracker",
+      "desc_fr": "Gagne 500 combats contre des monstres.",
+      "desc_en": "Win 500 fights against monsters.",
+      "source": "pve_wins",
+      "threshold": 500,
+      "reward": {
+        "xp": 14250
+      }
+    },
+    {
+      "id": "ach_combat_wins_1000",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Mille victoires",
+      "name_en": "A Thousand Victories",
+      "desc_fr": "Gagne 1 000 combats contre des monstres.",
+      "desc_en": "Win 1,000 fights against monsters.",
+      "source": "pve_wins",
+      "threshold": 1000,
+      "reward": {
+        "xp": 42000,
+        "title_id": "title_mille_victoires"
+      }
+    },
+    {
+      "id": "ach_combat_wins_2500",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Inarrêtable",
+      "name_en": "Unstoppable",
+      "desc_fr": "Gagne 2 500 combats contre des monstres.",
+      "desc_en": "Win 2,500 fights against monsters.",
+      "source": "pve_wins",
+      "threshold": 2500,
+      "reward": {
+        "xp": 202500
+      }
+    },
+    {
+      "id": "ach_combat_kills_10",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Nettoyeur",
+      "name_en": "Cleaner",
+      "desc_fr": "Abats 10 monstres.",
+      "desc_en": "Defeat 10 monsters.",
+      "source": "monsters_killed",
+      "threshold": 10,
+      "reward": {
+        "xp": 200
+      }
+    },
+    {
+      "id": "ach_combat_kills_100",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Chasse ouverte",
+      "name_en": "Open Season",
+      "desc_fr": "Abats 100 monstres.",
+      "desc_en": "Defeat 100 monsters.",
+      "source": "monsters_killed",
+      "threshold": 100,
+      "reward": {
+        "xp": 800
+      }
+    },
+    {
+      "id": "ach_combat_kills_500",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Fléau des terriers",
+      "name_en": "Burrow Bane",
+      "desc_fr": "Abats 500 monstres.",
+      "desc_en": "Defeat 500 monsters.",
+      "source": "monsters_killed",
+      "threshold": 500,
+      "reward": {
+        "xp": 3300
+      }
+    },
+    {
+      "id": "ach_combat_kills_1000",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Mille proies",
+      "name_en": "A Thousand Prey",
+      "desc_fr": "Abats 1 000 monstres.",
+      "desc_en": "Defeat 1,000 monsters.",
+      "source": "monsters_killed",
+      "threshold": 1000,
+      "reward": {
+        "xp": 6600
+      }
+    },
+    {
+      "id": "ach_combat_kills_2500",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Faucheur",
+      "name_en": "Reaper",
+      "desc_fr": "Abats 2 500 monstres.",
+      "desc_en": "Defeat 2,500 monsters.",
+      "source": "monsters_killed",
+      "threshold": 2500,
+      "reward": {
+        "xp": 14250
+      }
+    },
+    {
+      "id": "ach_combat_kills_5000",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Terreur des bêtes",
+      "name_en": "Terror of Beasts",
+      "desc_fr": "Abats 5 000 monstres.",
+      "desc_en": "Defeat 5,000 monsters.",
+      "source": "monsters_killed",
+      "threshold": 5000,
+      "reward": {
+        "xp": 30000
+      }
+    },
+    {
+      "id": "ach_combat_kills_10000",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Fléau des monstres",
+      "name_en": "Scourge of Monsters",
+      "desc_fr": "Abats 10 000 monstres.",
+      "desc_en": "Defeat 10,000 monsters.",
+      "source": "monsters_killed",
+      "threshold": 10000,
+      "reward": {
+        "xp": 82500,
+        "title_id": "title_fleau_monstres"
+      }
+    },
+    {
+      "id": "ach_combat_kills_25000",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Extinction",
+      "name_en": "Extinction",
+      "desc_fr": "Abats 25 000 monstres.",
+      "desc_en": "Defeat 25,000 monsters.",
+      "source": "monsters_killed",
+      "threshold": 25000,
+      "reward": {
+        "xp": 247500
+      }
+    },
+    {
+      "id": "ach_combat_damage_10000",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Coup de poing",
+      "name_en": "Punch Line",
+      "desc_fr": "Inflige 10 000 points de dégâts au total.",
+      "desc_en": "Deal 10,000 total damage.",
+      "source": "damage_dealt_total",
+      "threshold": 10000,
+      "reward": {
+        "xp": 600
+      }
+    },
+    {
+      "id": "ach_combat_damage_100000",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Force de frappe",
+      "name_en": "Striking Force",
+      "desc_fr": "Inflige 100 000 points de dégâts au total.",
+      "desc_en": "Deal 100,000 total damage.",
+      "source": "damage_dealt_total",
+      "threshold": 100000,
+      "reward": {
+        "xp": 4800
+      }
+    },
+    {
+      "id": "ach_combat_damage_1000000",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Déluge de coups",
+      "name_en": "Storm of Blows",
+      "desc_fr": "Inflige 1 000 000 points de dégâts au total.",
+      "desc_en": "Deal 1,000,000 total damage.",
+      "source": "damage_dealt_total",
+      "threshold": 1000000,
+      "reward": {
+        "xp": 22500
+      }
+    },
+    {
+      "id": "ach_combat_damage_10000000",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Cataclysme",
+      "name_en": "Cataclysm",
+      "desc_fr": "Inflige 10 000 000 points de dégâts au total.",
+      "desc_en": "Deal 10,000,000 total damage.",
+      "source": "damage_dealt_total",
+      "threshold": 10000000,
+      "reward": {
+        "xp": 150000
+      }
+    },
+    {
+      "id": "ach_combat_healing_5000",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Main secourable",
+      "name_en": "Helping Hand",
+      "desc_fr": "Rends 5 000 points de vie au total.",
+      "desc_en": "Restore 5,000 total health.",
+      "source": "healing_done_total",
+      "threshold": 5000,
+      "reward": {
+        "xp": 600
+      }
+    },
+    {
+      "id": "ach_combat_healing_50000",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Rempart vivant",
+      "name_en": "Living Bulwark",
+      "desc_fr": "Rends 50 000 points de vie au total.",
+      "desc_en": "Restore 50,000 total health.",
+      "source": "healing_done_total",
+      "threshold": 50000,
+      "reward": {
+        "xp": 4800
+      }
+    },
+    {
+      "id": "ach_combat_healing_500000",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Source de vie",
+      "name_en": "Wellspring",
+      "desc_fr": "Rends 500 000 points de vie au total.",
+      "desc_en": "Restore 500,000 total health.",
+      "source": "healing_done_total",
+      "threshold": 500000,
+      "reward": {
+        "xp": 22500
+      }
+    },
+    {
+      "id": "ach_combat_healing_5000000",
+      "category": "combat",
+      "shape": "echelle",
+      "name_fr": "Souffle éternel",
+      "name_en": "Eternal Breath",
+      "desc_fr": "Rends 5 000 000 points de vie au total.",
+      "desc_en": "Restore 5,000,000 total health.",
+      "source": "healing_done_total",
+      "threshold": 5000000,
+      "reward": {
+        "xp": 150000
+      }
+    },
+    {
+      "id": "ach_dungeon_floors_1",
+      "category": "donjon",
+      "shape": "premier",
+      "name_fr": "Premier étage",
+      "name_en": "First Floor",
+      "desc_fr": "Termine 1 étage de donjon.",
+      "desc_en": "Clear 1 dungeon floor.",
+      "source": "dungeon_floors_cleared",
+      "threshold": 1,
+      "reward": {
+        "xp": 300
+      }
+    },
+    {
+      "id": "ach_dungeon_floors_10",
+      "category": "donjon",
+      "shape": "echelle",
+      "name_fr": "Dans les profondeurs",
+      "name_en": "Into the Depths",
+      "desc_fr": "Termine 10 étages de donjon.",
+      "desc_en": "Clear 10 dungeon floors.",
+      "source": "dungeon_floors_cleared",
+      "threshold": 10,
+      "reward": {
+        "xp": 1150
+      }
+    },
+    {
+      "id": "ach_dungeon_floors_50",
+      "category": "donjon",
+      "shape": "echelle",
+      "name_fr": "Habitué des souterrains",
+      "name_en": "Underground Regular",
+      "desc_fr": "Termine 50 étages de donjon.",
+      "desc_en": "Clear 50 dungeon floors.",
+      "source": "dungeon_floors_cleared",
+      "threshold": 50,
+      "reward": {
+        "xp": 4800
+      }
+    },
+    {
+      "id": "ach_dungeon_floors_100",
+      "category": "donjon",
+      "shape": "echelle",
+      "name_fr": "Cent étages",
+      "name_en": "A Hundred Floors",
+      "desc_fr": "Termine 100 étages de donjon.",
+      "desc_en": "Clear 100 dungeon floors.",
+      "source": "dungeon_floors_cleared",
+      "threshold": 100,
+      "reward": {
+        "xp": 11250
+      }
+    },
+    {
+      "id": "ach_dungeon_floors_250",
+      "category": "donjon",
+      "shape": "echelle",
+      "name_fr": "Maître des galeries",
+      "name_en": "Master of the Tunnels",
+      "desc_fr": "Termine 250 étages de donjon.",
+      "desc_en": "Clear 250 dungeon floors.",
+      "source": "dungeon_floors_cleared",
+      "threshold": 250,
+      "reward": {
+        "xp": 42000
+      }
+    },
+    {
+      "id": "ach_dungeon_runs_1",
+      "category": "donjon",
+      "shape": "detour",
+      "name_fr": "Jusqu'au bout",
+      "name_en": "All the Way Down",
+      "desc_fr": "Termine 1 donjon jusqu'au dernier étage.",
+      "desc_en": "Complete 1 dungeon to the last floor.",
+      "source": "dungeon_runs_completed",
+      "threshold": 1,
+      "reward": {
+        "xp": 2300
+      }
+    },
+    {
+      "id": "ach_dungeon_runs_5",
+      "category": "donjon",
+      "shape": "echelle",
+      "name_fr": "Égoutier",
+      "name_en": "Sewer Runner",
+      "desc_fr": "Termine 5 donjons jusqu'au dernier étage.",
+      "desc_en": "Complete 5 dungeons to the last floor.",
+      "source": "dungeon_runs_completed",
+      "threshold": 5,
+      "reward": {
+        "xp": 2600
+      }
+    },
+    {
+      "id": "ach_dungeon_runs_25",
+      "category": "donjon",
+      "shape": "echelle",
+      "name_fr": "Explorateur des profondeurs",
+      "name_en": "Depth Explorer",
+      "desc_fr": "Termine 25 donjons jusqu'au dernier étage.",
+      "desc_en": "Complete 25 dungeons to the last floor.",
+      "source": "dungeon_runs_completed",
+      "threshold": 25,
+      "reward": {
+        "xp": 8700
+      }
+    },
+    {
+      "id": "ach_dungeon_runs_100",
+      "category": "donjon",
+      "shape": "echelle",
+      "name_fr": "Seigneur des donjons",
+      "name_en": "Dungeon Lord",
+      "desc_fr": "Termine 100 donjons jusqu'au dernier étage.",
+      "desc_en": "Complete 100 dungeons to the last floor.",
+      "source": "dungeon_runs_completed",
+      "threshold": 100,
+      "reward": {
+        "xp": 60000,
+        "title_id": "title_seigneur_donjons"
+      }
+    },
+    {
+      "id": "ach_fissure_1",
+      "category": "donjon",
+      "shape": "detour",
+      "name_fr": "Faille refermée",
+      "name_en": "Rift Sealed",
+      "desc_fr": "Aide à refermer 1 invasion de Fissure.",
+      "desc_en": "Help seal 1 Fissure invasion.",
+      "source": "fissures_closed",
+      "threshold": 1,
+      "reward": {
+        "xp": 1600
+      }
+    },
+    {
+      "id": "ach_fissure_5",
+      "category": "donjon",
+      "shape": "echelle",
+      "name_fr": "Gardien des brèches",
+      "name_en": "Breach Warden",
+      "desc_fr": "Aide à refermer 5 invasions de Fissure.",
+      "desc_en": "Help seal 5 Fissure invasions.",
+      "source": "fissures_closed",
+      "threshold": 5,
+      "reward": {
+        "xp": 2600
+      }
+    },
+    {
+      "id": "ach_fissure_25",
+      "category": "donjon",
+      "shape": "echelle",
+      "name_fr": "Chasseur de Failles",
+      "name_en": "Rift Hunter",
+      "desc_fr": "Aide à refermer 25 invasions de Fissure.",
+      "desc_en": "Help seal 25 Fissure invasions.",
+      "source": "fissures_closed",
+      "threshold": 25,
+      "reward": {
+        "xp": 11250
+      }
+    },
+    {
+      "id": "ach_fissure_100",
+      "category": "donjon",
+      "shape": "echelle",
+      "name_fr": "Seigneur des Failles",
+      "name_en": "Rift Lord",
+      "desc_fr": "Aide à refermer 100 invasions de Fissure.",
+      "desc_en": "Help seal 100 Fissure invasions.",
+      "source": "fissures_closed",
+      "threshold": 100,
+      "reward": {
+        "xp": 82500,
+        "title_id": "title_seigneur_failles"
+      }
+    },
+    {
+      "id": "ach_forge_enhance_1",
+      "category": "artisanat",
+      "shape": "premier",
+      "name_fr": "Premier coup de marteau",
+      "name_en": "First Hammer Blow",
+      "desc_fr": "Améliore un objet jusqu'à +1.",
+      "desc_en": "Enhance an item to +1.",
+      "source": "max_enhancement_level",
+      "threshold": 1,
+      "reward": {
+        "xp": 200
+      }
+    },
+    {
+      "id": "ach_forge_enhance_5",
+      "category": "artisanat",
+      "shape": "detour",
+      "name_fr": "Arme affûtée",
+      "name_en": "Sharpened Edge",
+      "desc_fr": "Améliore un objet jusqu'à +5.",
+      "desc_en": "Enhance an item to +5.",
+      "source": "max_enhancement_level",
+      "threshold": 5,
+      "reward": {
+        "xp": 4200
+      }
+    },
+    {
+      "id": "ach_forge_enhance_10",
+      "category": "artisanat",
+      "shape": "detour",
+      "name_fr": "Chef-d'œuvre",
+      "name_en": "Masterwork",
+      "desc_fr": "Améliore un objet jusqu'à +10.",
+      "desc_en": "Enhance an item to +10.",
+      "source": "max_enhancement_level",
+      "threshold": 10,
+      "reward": {
+        "xp": 17400
+      }
+    },
+    {
+      "id": "ach_forge_enhance_15",
+      "category": "artisanat",
+      "shape": "detour",
+      "name_fr": "Forgé dans le Souffle",
+      "name_en": "Breath-Forged",
+      "desc_fr": "Améliore un objet jusqu'à +15.",
+      "desc_en": "Enhance an item to +15.",
+      "source": "max_enhancement_level",
+      "threshold": 15,
+      "reward": {
+        "xp": 60000
+      }
+    },
+    {
+      "id": "ach_forge_enhance_20",
+      "category": "artisanat",
+      "shape": "detour",
+      "name_fr": "Perfection",
+      "name_en": "Perfection",
+      "desc_fr": "Améliore un objet jusqu'à +20.",
+      "desc_en": "Enhance an item to +20.",
+      "source": "max_enhancement_level",
+      "threshold": 20,
+      "reward": {
+        "xp": 300000,
+        "title_id": "title_maitre_forge"
+      }
+    },
+    {
+      "id": "ach_trade_sold_1",
+      "category": "artisanat",
+      "shape": "premier",
+      "name_fr": "Première vente",
+      "name_en": "First Sale",
+      "desc_fr": "Vends 1 objet à l'hôtel des ventes.",
+      "desc_en": "Sell 1 item at the auction house.",
+      "source": "auction_items_sold",
+      "threshold": 1,
+      "reward": {
+        "xp": 400
+      }
+    },
+    {
+      "id": "ach_trade_sold_10",
+      "category": "artisanat",
+      "shape": "echelle",
+      "name_fr": "Étal ouvert",
+      "name_en": "Open Stall",
+      "desc_fr": "Vends 10 objets à l'hôtel des ventes.",
+      "desc_en": "Sell 10 items at the auction house.",
+      "source": "auction_items_sold",
+      "threshold": 10,
+      "reward": {
+        "xp": 3300
+      }
+    },
+    {
+      "id": "ach_trade_sold_50",
+      "category": "artisanat",
+      "shape": "echelle",
+      "name_fr": "Commerçant",
+      "name_en": "Trader",
+      "desc_fr": "Vends 50 objets à l'hôtel des ventes.",
+      "desc_en": "Sell 50 items at the auction house.",
+      "source": "auction_items_sold",
+      "threshold": 50,
+      "reward": {
+        "xp": 11250
+      }
+    },
+    {
+      "id": "ach_trade_sold_200",
+      "category": "artisanat",
+      "shape": "echelle",
+      "name_fr": "Marchand prospère",
+      "name_en": "Prosperous Merchant",
+      "desc_fr": "Vends 200 objets à l'hôtel des ventes.",
+      "desc_en": "Sell 200 items at the auction house.",
+      "source": "auction_items_sold",
+      "threshold": 200,
+      "reward": {
+        "xp": 60000,
+        "title_id": "title_marchand_prospere"
+      }
+    },
+    {
+      "id": "ach_trade_gold_1000",
+      "category": "artisanat",
+      "shape": "echelle",
+      "name_fr": "Bourse garnie",
+      "name_en": "Full Purse",
+      "desc_fr": "Possède 1 000 pièces d'or.",
+      "desc_en": "Hold 1,000 gold.",
+      "source": "gold_held",
+      "threshold": 1000,
+      "reward": {
+        "xp": 600
+      }
+    },
+    {
+      "id": "ach_trade_gold_10000",
+      "category": "artisanat",
+      "shape": "echelle",
+      "name_fr": "Économe",
+      "name_en": "Thrifty",
+      "desc_fr": "Possède 10 000 pièces d'or.",
+      "desc_en": "Hold 10,000 gold.",
+      "source": "gold_held",
+      "threshold": 10000,
+      "reward": {
+        "xp": 4800
+      }
+    },
+    {
+      "id": "ach_trade_gold_100000",
+      "category": "artisanat",
+      "shape": "echelle",
+      "name_fr": "Petite fortune",
+      "name_en": "Small Fortune",
+      "desc_fr": "Possède 100 000 pièces d'or.",
+      "desc_en": "Hold 100,000 gold.",
+      "source": "gold_held",
+      "threshold": 100000,
+      "reward": {
+        "xp": 18000
+      }
+    },
+    {
+      "id": "ach_trade_gold_1000000",
+      "category": "artisanat",
+      "shape": "echelle",
+      "name_fr": "Trésor",
+      "name_en": "Hoard",
+      "desc_fr": "Possède 1 000 000 pièces d'or.",
+      "desc_en": "Hold 1,000,000 gold.",
+      "source": "gold_held",
+      "threshold": 1000000,
+      "reward": {
+        "xp": 112500
+      }
+    },
+    {
+      "id": "ach_koro_1",
+      "category": "artisanat",
+      "shape": "premier",
+      "name_fr": "Premier Koro",
+      "name_en": "First Koro",
+      "desc_fr": "Possède 1 carte Koro différente.",
+      "desc_en": "Own 1 different Koro card.",
+      "source": "koro_cards_owned",
+      "threshold": 1,
+      "reward": {
+        "xp": 4350
+      }
+    },
+    {
+      "id": "ach_koro_10",
+      "category": "artisanat",
+      "shape": "echelle",
+      "name_fr": "Carnet de motifs",
+      "name_en": "Pattern Notebook",
+      "desc_fr": "Possède 10 cartes Koro différentes.",
+      "desc_en": "Own 10 different Koro cards.",
+      "source": "koro_cards_owned",
+      "threshold": 10,
+      "reward": {
+        "xp": 14250
+      }
+    },
+    {
+      "id": "ach_koro_50",
+      "category": "artisanat",
+      "shape": "echelle",
+      "name_fr": "Collection de reflets",
+      "name_en": "Collection of Reflections",
+      "desc_fr": "Possède 50 cartes Koro différentes.",
+      "desc_en": "Own 50 different Koro cards.",
+      "source": "koro_cards_owned",
+      "threshold": 50,
+      "reward": {
+        "xp": 42000
+      }
+    },
+    {
+      "id": "ach_koro_100",
+      "category": "artisanat",
+      "shape": "echelle",
+      "name_fr": "Codex vivant",
+      "name_en": "Living Codex",
+      "desc_fr": "Possède 100 cartes Koro différentes.",
+      "desc_en": "Own 100 different Koro cards.",
+      "source": "koro_cards_owned",
+      "threshold": 100,
+      "reward": {
+        "xp": 150000
+      }
+    },
+    {
+      "id": "ach_keystone_1",
+      "category": "artisanat",
+      "shape": "detour",
+      "name_fr": "Pierre de voûte",
+      "name_en": "Keystone",
+      "desc_fr": "Équipe 1 keystone en même temps.",
+      "desc_en": "Equip 1 keystone at once.",
+      "source": "keystones_equipped",
+      "threshold": 1,
+      "reward": {
+        "xp": 9600
+      }
+    },
+    {
+      "id": "ach_keystone_2",
+      "category": "artisanat",
+      "shape": "detour",
+      "name_fr": "Double résonance",
+      "name_en": "Double Resonance",
+      "desc_fr": "Équipe 2 keystones en même temps.",
+      "desc_en": "Equip 2 keystones at once.",
+      "source": "keystones_equipped",
+      "threshold": 2,
+      "reward": {
+        "xp": 28500
+      }
+    },
+    {
+      "id": "ach_keystone_3",
+      "category": "artisanat",
+      "shape": "detour",
+      "name_fr": "Triple résonance",
+      "name_en": "Triple Resonance",
+      "desc_fr": "Équipe 3 keystones en même temps.",
+      "desc_en": "Equip 3 keystones at once.",
+      "source": "keystones_equipped",
+      "threshold": 3,
+      "reward": {
+        "xp": 84000
+      }
+    },
+    {
+      "id": "ach_keystone_4",
+      "category": "artisanat",
+      "shape": "detour",
+      "name_fr": "Harmonie complète",
+      "name_en": "Full Harmony",
+      "desc_fr": "Équipe 4 keystones en même temps.",
+      "desc_en": "Equip 4 keystones at once.",
+      "source": "keystones_equipped",
+      "threshold": 4,
+      "reward": {
+        "xp": 555000
+      }
+    },
+    {
+      "id": "ach_social_friends_1",
+      "category": "social",
+      "shape": "premier",
+      "name_fr": "Premier ami",
+      "name_en": "First Friend",
+      "desc_fr": "Compte 1 ami.",
+      "desc_en": "Have 1 friend.",
+      "source": "friends_count",
+      "threshold": 1,
+      "reward": {
+        "xp": 150
+      }
+    },
+    {
+      "id": "ach_social_friends_10",
+      "category": "social",
+      "shape": "echelle",
+      "name_fr": "Bien entouré",
+      "name_en": "Well Surrounded",
+      "desc_fr": "Compte 10 amis.",
+      "desc_en": "Have 10 friends.",
+      "source": "friends_count",
+      "threshold": 10,
+      "reward": {
+        "xp": 2100
+      }
+    },
+    {
+      "id": "ach_social_friends_25",
+      "category": "social",
+      "shape": "echelle",
+      "name_fr": "Cercle d'amis",
+      "name_en": "Circle of Friends",
+      "desc_fr": "Compte 25 amis.",
+      "desc_en": "Have 25 friends.",
+      "source": "friends_count",
+      "threshold": 25,
+      "reward": {
+        "xp": 8700
+      }
+    },
+    {
+      "id": "ach_social_guild",
+      "category": "social",
+      "shape": "premier",
+      "name_fr": "Sous une bannière",
+      "name_en": "Under a Banner",
+      "desc_fr": "Rejoins une guilde.",
+      "desc_en": "Join a guild.",
+      "source": "guild_joined",
+      "threshold": 1,
+      "reward": {
+        "xp": 600
       }
     }
   ]

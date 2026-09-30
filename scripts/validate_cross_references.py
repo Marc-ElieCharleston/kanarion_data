@@ -979,6 +979,11 @@ KNOWN_ACHIEVEMENT_SOURCES = {
     "arena_best_win_streak",
     "familiar_hatched", "familiar_rare_plus", "familiar_epic_plus", "familiar_legendary",
     "familiar_distinct_roles", "familiar_collection",
+    # Vague 2 (2026-09-30, back migr 103 + read_achievement_snapshot)
+    "pve_wins", "monsters_killed", "damage_dealt_total", "healing_done_total",
+    "dungeon_floors_cleared", "dungeon_runs_completed", "fissures_closed",
+    "friends_count", "guild_joined", "auction_items_sold", "max_enhancement_level",
+    "koro_cards_owned", "keystones_equipped", "gold_held",
 }
 
 
