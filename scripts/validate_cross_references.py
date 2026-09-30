@@ -1094,6 +1094,30 @@ def validate_fissure_invasions(db: Path) -> list:
     return errors
 
 
+def validate_professions(db: Path) -> list:
+    """systems/professions.json : chaque materiau de monstre sert a au moins un metier connu."""
+    errors = []
+    path = db / "systems" / "professions.json"
+    if not path.exists():
+        return errors
+    d = load_json(path)
+    prof_ids = {p["id"] for p in d.get("professions", [])}
+    uses = d.get("materials", {}).get("material_uses", {})
+    mats = load_json(db / "items" / "materials.json")
+    ids = {i["id"] for k in ("common", "uncommon", "rare") for i in mats.get(k, [])}
+    for mid in sorted(ids - set(uses)):
+        errors.append(f"[professions.json] materiau '{mid}' sans metier (material_uses)")
+    for mid, profs in uses.items():
+        if mid not in ids:
+            errors.append(f"[professions.json] material_uses : materiau inconnu '{mid}'")
+        if not profs:
+            errors.append(f"[professions.json] material_uses['{mid}'] vide")
+        for p in profs:
+            if p not in prof_ids:
+                errors.append(f"[professions.json] material_uses['{mid}'] : metier inconnu '{p}'")
+    return errors
+
+
 def validate_rest_npcs(db: Path) -> list:
     """stats/world_buffs.json granted_by_npcs : chaque PNJ de repos existe."""
     errors = []
@@ -1268,6 +1292,11 @@ def main():
 
     print("[12c/12] Validating fissure invasions (zones, bounds)...")
     errs = validate_fissure_invasions(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12f/12] Validating professions (every monster material has a use)...")
+    errs = validate_professions(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
