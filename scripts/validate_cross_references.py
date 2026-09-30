@@ -1128,6 +1128,10 @@ def validate_profession_recipes(db: Path, all_item_ids: set) -> list:
     profs = {p["id"] for p in load_json(db / "systems" / "professions.json").get("professions", [])}
     proposed = {i["id"] for i in d.get("new_items", [])}
     known = all_item_ids | proposed
+    # Les stigmates de keystone vivent dans leur propre fichier, hors collect_all_item_ids.
+    ks_path = db / "items" / "keystone_items.json"
+    if ks_path.exists():
+        known |= {k["id"] for k in load_json(ks_path).get("keystone_items", [])}
     seen = set()
     for r in d.get("recipes", []):
         rid = r.get("id", "?")
