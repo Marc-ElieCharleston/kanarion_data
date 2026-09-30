@@ -10,7 +10,9 @@
     "_companions": "Les familiers remplissent les places LIBRES : joueurs + familiers + mercenaires <= max_allies (regle des 10 allies, 2026-09-29). Un groupe de 6 joueurs emmene au plus 4 compagnons.",
     "companions_fill_free_slots": true,
     "max_allies": 10,
-    "max_monsters": 10
+    "max_monsters": 10,
+    "solo_allowed": true,
+    "_solo": "Valide par Charleston le 2026-10-01 : un joueur sans groupe peut monter seul (avec ses compagnons dans les places libres). Il n'ira pas loin, c'est voulu."
   },
   "recovery": {
     "_why": "Aucune recuperation entre les etages : on part prepare (potions, soigneurs qui soignent en fin de combat, artisans qui rendent du Souffle). La halte apres chaque gardien evite qu'un mauvais etage 42 condamne un etage 47 ; pour durcir, espacer guardian_every ou baisser full_restore_after_guardian.",
@@ -34,7 +36,14 @@
     "growth_start_floor": 40,
     "stat_growth_per_floor": 0.06,
     "stat_multiplier_cap": 50.0,
-    "stars_by_decade": [1, 2, 3, 4, 5, 5],
+    "stars_by_decade": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      5
+    ],
     "guardian_extra_stars": 1,
     "guardian_hp_multiplier": 1.5,
     "monster_count": {
@@ -46,19 +55,71 @@
     "elites_from_floor_in_decade": 7,
     "healer_from_floor_in_decade": 4,
     "pools": {
-      "abyss": ["mob_abyss_swarmling", "mob_void_revenant", "mob_dread_horror", "mob_abyssal_warlock", "mob_rift_maw", "mob_lesser_void_titan", "mob_soul_harvester", "mob_abyssal_seraph", "mob_dread_matron"],
-      "void": ["mob_void_spawn", "mob_abyssal_reaver", "mob_bone_colossus", "mob_nether_caller", "mob_dread_stalker", "mob_abyssal_juggernaut", "mob_void_priest", "mob_soul_devourer", "mob_abyssal_archon"]
+      "abyss": [
+        "mob_abyss_swarmling",
+        "mob_void_revenant",
+        "mob_dread_horror",
+        "mob_abyssal_warlock",
+        "mob_rift_maw",
+        "mob_lesser_void_titan",
+        "mob_soul_harvester",
+        "mob_abyssal_seraph",
+        "mob_dread_matron"
+      ],
+      "void": [
+        "mob_void_spawn",
+        "mob_abyssal_reaver",
+        "mob_bone_colossus",
+        "mob_nether_caller",
+        "mob_dread_stalker",
+        "mob_abyssal_juggernaut",
+        "mob_void_priest",
+        "mob_soul_devourer",
+        "mob_abyssal_archon"
+      ]
     },
     "_pools": "Listes EXPLICITES de monstres actifs AVEC leur art client (verifie le 2026-09-30). Les monstres 81-100 sont shelved sans sprites : quand ils auront leur art, les ajouter dans un nouveau pool et une nouvelle ligne de floor_pools. Le role (tank, soigneur, artillerie...) vient de ai_role dans entities/monsters.json ; leur niveau est releve a celui de l'etage.",
     "floor_pools": [
-      {"floors": [1, 10], "pools": ["abyss"]},
-      {"floors": [11, 20], "pools": ["void"]},
-      {"floors": [21, 9999], "pools": ["abyss", "void"]}
+      {
+        "floors": [
+          1,
+          10
+        ],
+        "pools": [
+          "abyss"
+        ]
+      },
+      {
+        "floors": [
+          11,
+          20
+        ],
+        "pools": [
+          "void"
+        ]
+      },
+      {
+        "floors": [
+          21,
+          9999
+        ],
+        "pools": [
+          "abyss",
+          "void"
+        ]
+      }
     ],
     "guardians_by_decade": [
-      ["mob_maw_of_the_abyss"],
-      ["mob_abyssal_sovereign"],
-      ["mob_maw_of_the_abyss", "mob_abyssal_sovereign"]
+      [
+        "mob_maw_of_the_abyss"
+      ],
+      [
+        "mob_abyssal_sovereign"
+      ],
+      [
+        "mob_maw_of_the_abyss",
+        "mob_abyssal_sovereign"
+      ]
     ],
     "_guardians": "Gardien de la dizaine n (etage 10n). Au-dela de la liste, la derniere ligne se repete ; la difficulte monte alors par le niveau, les etoiles et les multiplicateurs.",
     "seed": 4242
@@ -77,10 +138,17 @@
     "guardian_chest": {
       "gold_per_floor": 150,
       "items": [
-        {"id": "cons_hp_potion_t5", "qty": 3},
-        {"id": "cons_mp_potion_t5", "qty": 3}
+        {
+          "id": "cons_hp_potion_t5",
+          "qty": 3
+        },
+        {
+          "id": "cons_mp_potion_t5",
+          "qty": 3
+        }
       ],
-      "arena_tokens_per_floor": 1
+      "arena_tokens_per_floor": 1,
+      "_scaling": "Valide par Charleston le 2026-10-01 : l'or et les jetons du coffre sont multiplies par le numero de l'etage gardien (etage 10 = 1500 or et 10 jetons, etage 60 = 9000 or et 60 jetons). Les objets ne sont pas multiplies."
     }
   },
   "season": {
@@ -89,14 +157,35 @@
     "ranking": "highest_floor_desc_then_time_asc",
     "_time_fairness": "Le temps n'est compare qu'entre montees parties du MEME palier : une montee lancee a l'etage 41 avec une cle ne bat pas au temps une montee partie de l'etage 1.",
     "rewards": [
-      {"rank_max": 1, "title_id": "title_tower_conqueror", "arena_tokens": 500},
-      {"rank_max": 10, "title_id": "title_tower_vanguard", "arena_tokens": 250},
-      {"rank_max": 100, "title_id": "title_tower_climber", "arena_tokens": 100}
+      {
+        "rank_max": 1,
+        "title_id": "title_tower_conqueror",
+        "arena_tokens": 500
+      },
+      {
+        "rank_max": 10,
+        "title_id": "title_tower_vanguard",
+        "arena_tokens": 250
+      },
+      {
+        "rank_max": 100,
+        "title_id": "title_tower_climber",
+        "arena_tokens": 100
+      }
     ],
     "titles": {
-      "title_tower_conqueror": {"name_fr": "Conquérant de la Faille", "name_en": "Rift Conqueror"},
-      "title_tower_vanguard": {"name_fr": "Avant-garde de la Faille", "name_en": "Rift Vanguard"},
-      "title_tower_climber": {"name_fr": "Grimpeur de la Faille", "name_en": "Rift Climber"}
+      "title_tower_conqueror": {
+        "name_fr": "Conquérant de la Faille",
+        "name_en": "Rift Conqueror"
+      },
+      "title_tower_vanguard": {
+        "name_fr": "Avant-garde de la Faille",
+        "name_en": "Rift Vanguard"
+      },
+      "title_tower_climber": {
+        "name_fr": "Grimpeur de la Faille",
+        "name_en": "Rift Climber"
+      }
     }
   },
   "floor_overrides": {}
