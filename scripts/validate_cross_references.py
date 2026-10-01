@@ -1094,76 +1094,435 @@ def validate_fissure_invasions(db: Path) -> list:
     return errors
 
 
+RANK_BANDS = ((1, 19), (20, 39), (40, 59), (60, 79), (80, 100))
+
+
+def _rank_of_level(level: int) -> int:
+    for i, (lo, hi) in enumerate(RANK_BANDS):
+        if lo <= level <= hi:
+            return i + 1
+    return 0
+
+
+def _profession_data(db: Path) -> dict:
+    """Charge metiers + recettes et derive producteurs, liens et rarete. Partage par les etapes 12f/12g/12i/12j."""
+    prof = load_json(db / "systems" / "professions.json")
+    rec_path = db / "items" / "profession_recipes.json"
+    rec = load_json(rec_path) if rec_path.exists() else {}
+    new_items = {i["id"]: i for i in rec.get("new_items", [])}
+    producer = {}
+    for iid, it in new_items.items():
+        if it.get("gathered_by"):
+            producer[iid] = it["gathered_by"]
+        elif it.get("crafted_by"):
+            producer[iid] = it["crafted_by"]
+    mats = load_json(db / "items" / "materials.json")
+    monster = {i["id"] for k in ("common", "uncommon", "rare") for i in mats.get(k, [])}
+    rarity = prof.get("resource_rarity", {})
+    suffixes = [t.get("suffix", "") for t in rarity.get("tiers", []) if t.get("suffix")]
+    return {"prof": prof, "rec": rec, "new_items": new_items, "producer": producer, "monster": monster,
+            "prof_ids": {p["id"] for p in prof.get("professions", [])},
+            "gathering": {p["id"] for p in prof.get("professions", []) if p.get("kind") == "gathering"},
+            "suffixes": suffixes}
+
+
+def _derived_links(pd: dict):
+    """consumes[p] / feeds[p] derives des recettes et des outils (le Glaneur produit les materiaux de monstre)."""
+    consumes, uses = {}, {}
+    for x in pd["rec"].get("recipes", []) + pd["rec"].get("rule_recipes", []):
+        for m in x.get("materials", []):
+            uses.setdefault(m.get("id"), set()).add(x.get("profession"))
+            src = pd["producer"].get(m.get("id")) or ("gleaner" if m.get("id") in pd["monster"] else None)
+            if src and src != x.get("profession"):
+                consumes.setdefault(x.get("profession"), set()).add(src)
+    for it in pd["new_items"].values():
+        if it.get("kind") == "tool" and it.get("profession") and it.get("crafted_by"):
+            if it["crafted_by"] != it["profession"]:
+                consumes.setdefault(it["profession"], set()).add(it["crafted_by"])
+    feeds = {}
+    for p, srcs in consumes.items():
+        for s in srcs:
+            feeds.setdefault(s, set()).add(p)
+    return consumes, feeds, uses
+
+
 def validate_professions(db: Path) -> list:
-    """systems/professions.json : chaque materiau de monstre sert a au moins un metier connu."""
+    """systems/professions.json : usages des materiaux, liens declares = liens derives, aucun metier isole."""
     errors = []
     path = db / "systems" / "professions.json"
     if not path.exists():
         return errors
-    d = load_json(path)
-    prof_ids = {p["id"] for p in d.get("professions", [])}
+    pd = _profession_data(db)
+    d = pd["prof"]
+    prof_ids = pd["prof_ids"]
     uses = d.get("materials", {}).get("material_uses", {})
-    mats = load_json(db / "items" / "materials.json")
-    ids = {i["id"] for k in ("common", "uncommon", "rare") for i in mats.get(k, [])}
+    ids = pd["monster"]
+    tracked = {iid for iid, it in pd["new_items"].items()
+               if it.get("category") == "intermediate"
+               or it.get("gathered_by") in ("miner", "lumberjack", "fisher", "herbalist", "fissure_hunter")}
     for mid in sorted(ids - set(uses)):
         errors.append(f"[professions.json] materiau '{mid}' sans metier (material_uses)")
+    consumes, feeds, recipe_uses = _derived_links(pd)
     for mid, profs in uses.items():
-        if mid not in ids:
+        if mid not in ids and mid not in tracked:
             errors.append(f"[professions.json] material_uses : materiau inconnu '{mid}'")
         if not profs:
             errors.append(f"[professions.json] material_uses['{mid}'] vide")
         for p in profs:
             if p not in prof_ids:
                 errors.append(f"[professions.json] material_uses['{mid}'] : metier inconnu '{p}'")
+        if mid in tracked and sorted(profs) != sorted(recipe_uses.get(mid, set())):
+            errors.append(f"[professions.json] material_uses['{mid}'] {sorted(profs)} != recettes "
+                          f"{sorted(recipe_uses.get(mid, set()))} (relancer le generateur)")
+    for mid in sorted(tracked - set(uses)):
+        errors.append(f"[professions.json] ressource/intermediaire '{mid}' absent de material_uses")
+    for mid in sorted(tracked):
+        if not recipe_uses.get(mid):
+            errors.append(f"[professions.json] '{mid}' n'est consomme par aucune recette (ressource morte)")
+    for p in d.get("professions", []):
+        pid = p["id"]
+        for key, derived in (("consumes_from", consumes), ("feeds", feeds)):
+            want = sorted(derived.get(pid, set()))
+            if sorted(p.get(key, [])) != want:
+                errors.append(f"[professions.json] {pid}.{key} {sorted(p.get(key, []))} != derive {want}")
+            if not want:
+                errors.append(f"[professions.json] metier ISOLE '{pid}' : {key} vide (doit consommer d'un "
+                              f"autre metier ET en nourrir un)")
+    if pd["gathering"]:
+        tools = {it.get("profession") for it in pd["new_items"].values() if it.get("kind") == "tool"}
+        for g in sorted(pd["gathering"]):
+            if g not in tools:
+                errors.append(f"[professions.json] metier de recolte '{g}' sans outil (kind tool)")
+    q = d.get("quality", {})
+    tiers = [t.get("id") for t in d.get("resource_rarity", {}).get("tiers", [])]
+    if set(q.get("material_rarity_shift", {})) != set(tiers):
+        errors.append(f"[professions.json] quality.material_rarity_shift {sorted(q.get('material_rarity_shift', {}))}"
+                      f" != tiers de rarete {sorted(tiers)}")
     return errors
 
 
 def validate_profession_recipes(db: Path, all_item_ids: set) -> list:
-    """items/profession_recipes.json : metier connu, niveaux 1..100, objets existants ou proposes."""
+    """items/profession_recipes.json : objets, niveaux et rangs, liens entre metiers (regle V2), cycles."""
     errors = []
     path = db / "items" / "profession_recipes.json"
     if not path.exists():
         return errors
-    d = load_json(path)
-    profs = {p["id"] for p in load_json(db / "systems" / "professions.json").get("professions", [])}
-    proposed = {i["id"] for i in d.get("new_items", [])}
-    known = all_item_ids | proposed
+    pd = _profession_data(db)
+    d = pd["rec"]
+    profs = pd["prof_ids"]
+    new_items = pd["new_items"]
+    producer = pd["producer"]
+    known = all_item_ids | set(new_items)
     # Les stigmates de keystone vivent dans leur propre fichier, hors collect_all_item_ids.
     ks_path = db / "items" / "keystone_items.json"
     if ks_path.exists():
         known |= {k["id"] for k in load_json(ks_path).get("keystone_items", [])}
+    for iid in new_items:
+        if iid in all_item_ids:
+            errors.append(f"[profession_recipes.json] new_items '{iid}' existe deja dans la base")
     seen = set()
-    for r in d.get("recipes", []):
+    made_by = {}
+    families = {"koro_cards", "pet_books", "keystone_items"}
+    all_rows = [("recipe", r) for r in d.get("recipes", [])] + [("rule", r) for r in d.get("rule_recipes", [])]
+    for kind, r in all_rows:
         rid = r.get("id", "?")
         if rid in seen:
             errors.append(f"[profession_recipes.json] recette en double '{rid}'")
         seen.add(rid)
-        if r.get("profession") not in profs:
-            errors.append(f"[profession_recipes.json] '{rid}' : metier inconnu '{r.get('profession')}'")
-        if not 1 <= int(r.get("profession_level", 0)) <= 100:
+        p = r.get("profession")
+        if p not in profs:
+            errors.append(f"[profession_recipes.json] '{rid}' : metier inconnu '{p}'")
+        lvl = int(r.get("profession_level", 0))
+        if not 1 <= lvl <= 100:
             errors.append(f"[profession_recipes.json] '{rid}' : profession_level hors 1..100")
-        if r.get("output_item") not in known:
-            errors.append(f"[profession_recipes.json] '{rid}' : objet produit inconnu '{r.get('output_item')}'")
-        if r.get("quality_cap") not in ("C", "B", "A", "S", "SS"):
-            errors.append(f"[profession_recipes.json] '{rid}' : quality_cap invalide")
-        for m in r.get("materials", []):
-            if m.get("id") not in known:
-                errors.append(f"[profession_recipes.json] '{rid}' : materiau inconnu '{m.get('id')}'")
-    families = {"koro_cards", "pet_books", "keystone_items"}
-    for r in d.get("rule_recipes", []):
-        rid = r.get("id", "?")
-        if rid in seen:
-            errors.append(f"[profession_recipes.json] regle en double '{rid}'")
-        seen.add(rid)
-        if r.get("profession") not in profs:
-            errors.append(f"[profession_recipes.json] '{rid}' : metier inconnu '{r.get('profession')}'")
-        if not 1 <= int(r.get("profession_level", 0)) <= 100:
-            errors.append(f"[profession_recipes.json] '{rid}' : profession_level hors 1..100")
-        if r.get("kind") not in ("fusion", "reveal", "copy") or r.get("item_family") not in families:
-            errors.append(f"[profession_recipes.json] '{rid}' : kind ou item_family invalide")
-        for m in r.get("materials", []):
-            if m.get("id") not in known:
-                errors.append(f"[profession_recipes.json] '{rid}' : materiau inconnu '{m.get('id')}'")
+        rank = r.get("rank")
+        if rank != _rank_of_level(lvl):
+            errors.append(f"[profession_recipes.json] '{rid}' : rank {rank} != rang du niveau {lvl} "
+                          f"({_rank_of_level(lvl)})")
+        if kind == "recipe":
+            out = r.get("output_item")
+            if out not in known:
+                errors.append(f"[profession_recipes.json] '{rid}' : objet produit inconnu '{out}'")
+            if r.get("quality_cap") not in ("C", "B", "A", "S", "SS"):
+                errors.append(f"[profession_recipes.json] '{rid}' : quality_cap invalide")
+            made_by.setdefault(out, set()).add(p)
+        else:
+            out = None
+            if r.get("kind") not in ("fusion", "reveal", "copy") or r.get("item_family") not in families:
+                errors.append(f"[profession_recipes.json] '{rid}' : kind ou item_family invalide")
+        mids = [m.get("id") for m in r.get("materials", [])]
+        if len(mids) != len(set(mids)):
+            errors.append(f"[profession_recipes.json] '{rid}' : materiau cite deux fois")
+        for mid in mids:
+            if mid not in known:
+                base = next((mid[: -len(s)] for s in pd["suffixes"] if mid.endswith(s)), None)
+                if base and base in new_items:
+                    errors.append(f"[profession_recipes.json] '{rid}' : variante de rarete '{mid}' citee, "
+                                  f"ecrire l'id de base '{base}'")
+                else:
+                    errors.append(f"[profession_recipes.json] '{rid}' : materiau inconnu '{mid}'")
+        # Regle V2 : liens entre metiers. Les materiaux de monstre ne comptent pas.
+        foreign = {producer[m] for m in mids if m in producer and producer[m] != p}
+        foreign_int = {producer[m] for m in mids if m in producer and producer[m] != p
+                       and new_items[m].get("category") == "intermediate"}
+        is_intermediate = out in new_items and new_items[out].get("category") == "intermediate"
+        if isinstance(rank, int) and rank >= 2 and not foreign:
+            errors.append(f"[profession_recipes.json] '{rid}' (rang {rank}) : aucun apport d'un autre metier")
+        if isinstance(rank, int) and rank >= 4:
+            if len(foreign) < 2:
+                errors.append(f"[profession_recipes.json] '{rid}' (rang {rank}) : {len(foreign)} metier(s) "
+                              f"etranger(s) {sorted(foreign)}, il en faut 2")
+            if not is_intermediate and not foreign_int:
+                errors.append(f"[profession_recipes.json] '{rid}' (rang {rank}) : recette finale sans "
+                              f"intermediaire d'un autre metier")
+    # Producteur declare = metier qui fabrique ; chaque intermediaire/outil a une recette.
+    for iid, it in new_items.items():
+        cb = it.get("crafted_by")
+        if cb and made_by.get(iid) != {cb}:
+            errors.append(f"[profession_recipes.json] '{iid}' : crafted_by '{cb}' != recette(s) "
+                          f"{sorted(made_by.get(iid, set()))}")
+        if it.get("category") == "intermediate" and not cb:
+            errors.append(f"[profession_recipes.json] intermediaire '{iid}' sans crafted_by")
+        if it.get("gathered_by") and it["gathered_by"] not in pd["gathering"]:
+            errors.append(f"[profession_recipes.json] '{iid}' : gathered_by '{it['gathered_by']}' n'est pas un "
+                          f"metier de recolte")
+        if it.get("kind") == "tool":
+            if it.get("profession") not in pd["gathering"]:
+                errors.append(f"[profession_recipes.json] outil '{iid}' : profession '{it.get('profession')}' "
+                              f"n'est pas un metier de recolte")
+            if not isinstance(it.get("uses"), int) or it["uses"] <= 0:
+                errors.append(f"[profession_recipes.json] outil '{iid}' : uses doit etre > 0")
+    # Cycles : un objet NOUVEAU sans autre source (pas starter) ne doit pas dependre de lui-meme.
+    # Une ressource recoltee de rang N depend de l'outil de son metier au rang N.
+    deps = {}
+    for r in d.get("recipes", []):
+        if r.get("output_item") in new_items:
+            deps.setdefault(r["output_item"], set()).update(m.get("id") for m in r.get("materials", []))
+    tool_by = {(it.get("profession"), it.get("rank")): iid for iid, it in new_items.items()
+               if it.get("kind") == "tool"}
+    for iid, it in new_items.items():
+        if it.get("gathered_by") in pd["gathering"] and isinstance(it.get("rank"), int):
+            t = tool_by.get((it["gathered_by"], it["rank"])) or tool_by.get((it["gathered_by"], 1))
+            if t:
+                deps.setdefault(iid, set()).add(t)
+    roots = {iid for iid, it in new_items.items() if it.get("starter")}
+    state = {}
+
+    def visit(node, stack):
+        if node in roots or node not in deps:
+            return
+        if state.get(node) == 1:
+            errors.append(f"[profession_recipes.json] CYCLE impossible a amorcer : {' -> '.join(stack + [node])}")
+            return
+        if state.get(node) == 2:
+            return
+        state[node] = 1
+        for nxt in sorted(deps[node]):
+            visit(nxt, stack + [node])
+        state[node] = 2
+
+    for node in sorted(deps):
+        visit(node, [])
+    return errors
+
+
+def validate_resource_rarity(db: Path) -> list:
+    """systems/professions.json resource_rarity : tiers coherents, suffixes uniques, aucune variante ecrite a la main."""
+    errors = []
+    path = db / "systems" / "professions.json"
+    if not path.exists():
+        return errors
+    pd = _profession_data(db)
+    rr = pd["prof"].get("resource_rarity")
+    if not rr:
+        return errors
+    tiers = rr.get("tiers", [])
+    if [t.get("id") for t in tiers] != ["C", "B", "A", "S", "SS"] or tiers[0].get("suffix") != "":
+        errors.append("[professions.json] resource_rarity.tiers doit etre C, B, A, S, SS (echelle unique du jeu), "
+                      "C sans suffixe")
+    sfx = [t.get("suffix") for t in tiers]
+    if len(set(sfx)) != len(sfx):
+        errors.append("[professions.json] resource_rarity : suffixes en double")
+    prev = 0
+    for t in tiers:
+        for k in ("id", "suffix", "item_rarity", "name_suffix_fr", "name_suffix_en", "xp_multiplier",
+                  "sell_multiplier"):
+            if k not in t:
+                errors.append(f"[professions.json] resource_rarity tier '{t.get('id')}' : champ '{k}' manquant")
+        xm = t.get("xp_multiplier", 0)
+        if not isinstance(xm, (int, float)) or xm < prev:
+            errors.append(f"[professions.json] resource_rarity tier '{t.get('id')}' : xp_multiplier doit croitre")
+        prev = xm if isinstance(xm, (int, float)) else prev
+        if t.get("suffix") and not t["suffix"].startswith("_"):
+            errors.append(f"[professions.json] resource_rarity tier '{t.get('id')}' : le suffixe commence par '_'")
+    for g in rr.get("applies_to", {}).get("gathered_by", []):
+        if g not in pd["gathering"]:
+            errors.append(f"[professions.json] resource_rarity.applies_to : '{g}' n'est pas un metier de recolte")
+    # Aucune variante ecrite a la main : un id qui finit par un suffixe de rarete est refuse.
+    # Les ids de base ne doivent pas finir par un suffixe (sinon collision avec une variante generee).
+    for iid in pd["new_items"]:
+        for s in pd["suffixes"]:
+            if iid.endswith(s):
+                errors.append(f"[professions.json] '{iid}' finit par le suffixe de rarete '{s}' : les variantes "
+                              f"sont generees par regle, jamais ecrites")
+    shift = pd["prof"].get("quality", {}).get("material_rarity_shift", {})
+    vals = [shift.get(t.get("id")) for t in tiers]
+    if any(v is None for v in vals) or vals != sorted(vals) or (vals and vals[0] != 0):
+        errors.append("[professions.json] quality.material_rarity_shift doit couvrir chaque tier, partir de 0 et "
+                      "croitre")
+    return errors
+
+
+def validate_gather_nodes(db: Path) -> list:
+    """world/gather_nodes.json : metiers, outils, ressources, rangs, rarete, aires et rives."""
+    errors = []
+    path = db / "world" / "gather_nodes.json"
+    if not path.exists():
+        return errors
+    g = load_json(path)
+    pd = _profession_data(db)
+    items = pd["new_items"]
+    tiers = [t.get("id") for t in pd["prof"].get("resource_rarity", {}).get("tiers", [])]
+    tool_types = {(it.get("tool_type"), it.get("profession")) for it in items.values() if it.get("kind") == "tool"}
+    ranks = ("1", "2", "3", "4", "5")
+    types = {k: v for k, v in g.get("node_types", {}).items() if not k.startswith("_")}
+    reachable = set()
+    for tname, t in types.items():
+        p = t.get("profession")
+        if p not in pd["gathering"]:
+            errors.append(f"[gather_nodes.json] type '{tname}' : metier '{p}' inconnu ou pas de recolte")
+        if (t.get("tool"), p) not in tool_types:
+            errors.append(f"[gather_nodes.json] type '{tname}' : outil '{t.get('tool')}' du metier '{p}' absent")
+        if t.get("placement") not in ("ground", "water_edge"):
+            errors.append(f"[gather_nodes.json] type '{tname}' : placement invalide")
+        if tname == "fishing_spot" and t.get("placement") != "water_edge":
+            errors.append("[gather_nodes.json] fishing_spot doit etre place au bord de l'eau (water_edge)")
+        rb = t.get("resources_by_rank", {})
+        for r in ranks:
+            if r not in rb:
+                errors.append(f"[gather_nodes.json] type '{tname}' : rang {r} manquant")
+                continue
+            main = rb[r].get("main")
+            it = items.get(main)
+            if not it:
+                errors.append(f"[gather_nodes.json] type '{tname}' rang {r} : ressource '{main}' inconnue")
+            else:
+                reachable.add(main)
+                if it.get("gathered_by") != p:
+                    errors.append(f"[gather_nodes.json] '{main}' recolte par '{it.get('gathered_by')}', pas '{p}'")
+                if str(it.get("rank")) != r:
+                    errors.append(f"[gather_nodes.json] type '{tname}' rang {r} : '{main}' est de rang "
+                                  f"{it.get('rank')}")
+                if it.get("node_type") != tname:
+                    errors.append(f"[gather_nodes.json] '{main}' : node_type '{it.get('node_type')}' != '{tname}'")
+            for s in rb[r].get("secondary", []):
+                sit = items.get(s.get("id"))
+                if not sit:
+                    errors.append(f"[gather_nodes.json] type '{tname}' rang {r} : secondaire '{s.get('id')}' inconnu")
+                    continue
+                reachable.add(s["id"])
+                if sit.get("gathered_by") != p:
+                    errors.append(f"[gather_nodes.json] secondaire '{s['id']}' recolte par "
+                                  f"'{sit.get('gathered_by')}', pas '{p}'")
+                if not 0 < s.get("chance", 0) <= 1:
+                    errors.append(f"[gather_nodes.json] secondaire '{s['id']}' : chance hors ]0, 1]")
+    node_profs = {t.get("profession") for t in types.values()}
+    for iid, it in items.items():
+        if it.get("gathered_by") in node_profs and iid not in reachable:
+            errors.append(f"[gather_nodes.json] ressource '{iid}' ({it['gathered_by']}) ne tombe d'aucun point")
+    w = g.get("rarity", {}).get("weights_by_rank", {})
+    for r in ranks:
+        row = w.get(r, {})
+        if sorted(row) != sorted(tiers):
+            errors.append(f"[gather_nodes.json] rarity.weights_by_rank[{r}] {sorted(row)} != tiers {sorted(tiers)}")
+        if any(v < 0 for v in row.values()) or sum(row.values()) <= 0:
+            errors.append(f"[gather_nodes.json] rarity.weights_by_rank[{r}] : poids invalides")
+    gd = g.get("gather_duration", {})
+    for r in ranks:
+        if gd.get("base_ms_by_rank", {}).get(r, 0) <= 0:
+            errors.append(f"[gather_nodes.json] gather_duration.base_ms_by_rank[{r}] doit etre > 0")
+    for tname in types:
+        if gd.get("type_multiplier", {}).get(tname, 0) <= 0:
+            errors.append(f"[gather_nodes.json] gather_duration.type_multiplier : '{tname}' manquant")
+    xp_path = db / "systems" / "profession_xp.json"
+    if xp_path.exists():
+        want = load_json(xp_path).get("gather_xp", {}).get("by_rank", {})
+        if g.get("profession_xp", {}).get("by_rank", {}) != want:
+            errors.append("[gather_nodes.json] profession_xp.by_rank != systems/profession_xp.json gather_xp.by_rank")
+    for r in ranks:
+        rs = g.get("rules", {}).get("respawn_seconds", {}).get(r, [])
+        if not (isinstance(rs, list) and len(rs) == 2 and 0 < rs[0] <= rs[1]):
+            errors.append(f"[gather_nodes.json] rules.respawn_seconds[{r}] doit etre [min, max]")
+        if g.get("rules", {}).get("charges", {}).get(r, 0) <= 0:
+            errors.append(f"[gather_nodes.json] rules.charges[{r}] doit etre > 0")
+    zone_ids = set()
+    zp = db / "world" / "zones.json"
+    if zp.exists():
+        zone_ids = {z.get("id") for z in load_json(zp).get("zones", []) if isinstance(z, dict)}
+    areas_by_zone = [(zid, z) for zid, z in g.get("zones", {}).items() if not zid.startswith("_")]
+    ex = g.get("_example_area")
+    if ex:
+        areas_by_zone.append((ex.get("zone"), ex))
+    seen_areas = set()
+    for zid, z in areas_by_zone:
+        if zone_ids and zid not in zone_ids:
+            errors.append(f"[gather_nodes.json] zone '{zid}' absente de world/zones.json")
+        for a in z.get("areas", []):
+            aid = a.get("id", "?")
+            if aid in seen_areas:
+                errors.append(f"[gather_nodes.json] aire en double '{aid}'")
+            seen_areas.add(aid)
+            nts = [n.get("type") for n in a.get("node_types", [])]
+            if not nts:
+                errors.append(f"[gather_nodes.json] aire '{aid}' : node_types vide")
+            for nt in nts:
+                if nt not in types:
+                    errors.append(f"[gather_nodes.json] aire '{aid}' : type '{nt}' inconnu")
+            water = any(types.get(nt, {}).get("placement") == "water_edge" for nt in nts)
+            ground = any(types.get(nt, {}).get("placement") == "ground" for nt in nts)
+            if water and ground:
+                errors.append(f"[gather_nodes.json] aire '{aid}' : ne pas melanger rive et terre ferme")
+            if water:
+                pts = a.get("points") or []
+                if not pts or a.get("bounds"):
+                    errors.append(f"[gather_nodes.json] aire '{aid}' : une rive se pose par points (x, y, facing), "
+                                  f"jamais par bounds")
+                for pt in pts:
+                    if pt.get("facing") not in ("north", "south", "east", "west"):
+                        errors.append(f"[gather_nodes.json] aire '{aid}' : point sans facing valide")
+            if ground and not a.get("bounds"):
+                errors.append(f"[gather_nodes.json] aire '{aid}' : bounds manquant")
+            lr = a.get("level_range", [])
+            if not (isinstance(lr, list) and len(lr) == 2 and 1 <= lr[0] <= lr[1] <= 100):
+                errors.append(f"[gather_nodes.json] aire '{aid}' : level_range invalide")
+    return errors
+
+
+def validate_profession_xp(db: Path) -> list:
+    """systems/profession_xp.json : table 2..100 complete et croissante, regle grise, modele de temps dans les cibles."""
+    errors = []
+    path = db / "systems" / "profession_xp.json"
+    if not path.exists():
+        return errors
+    d = load_json(path)
+    t = d.get("xp_table", {})
+    prev = 0
+    for lvl in range(2, 101):
+        v = t.get(str(lvl))
+        if not isinstance(v, int) or v <= 0:
+            errors.append(f"[profession_xp.json] xp_table[{lvl}] manquant ou <= 0")
+            continue
+        if v < prev:
+            errors.append(f"[profession_xp.json] xp_table[{lvl}] decroit ({v} < {prev})")
+        prev = v
+    gr = d.get("gray", {})
+    if not (0 <= gr.get("full_until_levels_above", -1) < gr.get("half_at_levels_above", -1)
+            < gr.get("zero_from_levels_above", -1)):
+        errors.append("[profession_xp.json] gray : full_until < half_at < zero_from")
+    hrs = d.get("time_model", {}).get("hours_to_level_crafting", {})
+    if hrs and not (3 <= hrs.get("50", 0) <= 7 and 25 <= hrs.get("100", 0) <= 45):
+        errors.append(f"[profession_xp.json] modele de temps hors cible : 50 en {hrs.get('50')} h (3-7), 100 en "
+                      f"{hrs.get('100')} h (25-45)")
     return errors
 
 
@@ -1364,13 +1723,28 @@ def main():
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[12f/12] Validating professions (every monster material has a use)...")
+    print("[12f/12] Validating professions (material uses, declared links, no isolated profession)...")
     errs = validate_professions(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
-    print("[12g/12] Validating profession recipes (professions, items, levels)...")
+    print("[12g/12] Validating profession recipes (items, ranks, cross-profession links, cycles)...")
     errs = validate_profession_recipes(db, all_item_ids)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12i/12] Validating resource rarity rule (tiers, suffixes, no hand-written variant)...")
+    errs = validate_resource_rarity(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12j/12] Validating gather nodes (professions, tools, resources, ranks, rarity, areas)...")
+    errs = validate_gather_nodes(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12k/12] Validating profession XP curve (table, gray rule, time model)...")
+    errs = validate_profession_xp(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
