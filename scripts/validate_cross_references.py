@@ -1337,8 +1337,9 @@ def validate_resource_rarity(db: Path) -> list:
     if not rr:
         return errors
     tiers = rr.get("tiers", [])
-    if not tiers or tiers[0].get("suffix") != "" or tiers[0].get("id") != "normal":
-        errors.append("[professions.json] resource_rarity.tiers[0] doit etre 'normal' sans suffixe")
+    if [t.get("id") for t in tiers] != ["C", "B", "A", "S", "SS"] or tiers[0].get("suffix") != "":
+        errors.append("[professions.json] resource_rarity.tiers doit etre C, B, A, S, SS (echelle unique du jeu), "
+                      "C sans suffixe")
     sfx = [t.get("suffix") for t in tiers]
     if len(set(sfx)) != len(sfx):
         errors.append("[professions.json] resource_rarity : suffixes en double")
