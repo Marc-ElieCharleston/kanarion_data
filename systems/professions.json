@@ -1,10 +1,10 @@
 {
   "_meta": {
-    "version": "0.3",
-    "status": "CONCEPTION, rien n'est encore branche (2026-09-30). Regles validees avec Charleston ; les recettes, l'attribution des materiaux et le code viennent en lots.",
+    "version": "0.4",
+    "status": "CONCEPTION V2 (2026-10-01), rien n'est encore branche. Regles validees avec Charleston : Herboriste, rang + rarete des ressources, points de recolte (world/gather_nodes.json), intermediaires et liens entre metiers, courbe d'XP chiffree (systems/profession_xp.json).",
     "why": "Les monstres lachent 215 materiaux differents et la forge n'en utilise que 39 : les 176 autres ne servent qu'a etre revendus. Les metiers les rendent utiles, autour des trois piliers du jeu : la chasse, le Souffle et les familiers.",
     "reuse": "Fabrication = le flux du forgeron (economy handle_craft_item, CRAFT_ITEM 0x041D/0x041E : or + materiaux consommes atomiquement, idempotent, ITEM_CRAFTED publie). A etendre : station + niveau de metier dans Recipe, XP de metier dans la meme transaction, rang tire et pose dans custom_data. Client : forge_window.gd, ouvert avec un id de station.",
-    "roster": "14 metiers (2026-09-30) : 5 de recolte (Glaneur, Chasseur de Failles, Mineur, Bucheron, Pecheur) et 9 de fabrication."
+    "roster": "15 metiers (2026-10-01) : 6 de recolte (Glaneur, Chasseur de Failles, Mineur, Bucheron, Pecheur, Herboriste) et 9 de fabrication."
   },
   "rules": {
     "level_max": 100,
@@ -41,13 +41,22 @@
       1
     ],
     "per_10_levels_above_recipe_shift": 0.08,
-    "rare_material_shift": 0.05,
-    "rank_effect": "Le rang multiplie les statistiques ou la puissance de l'objet selon items/equipment_scaling.json (equipement) ; pour un consommable, il multiplie son effet (duree ou valeur)."
+    "material_rarity_shift": {
+      "normal": 0.0,
+      "rare": 0.05,
+      "epic": 0.12,
+      "legendary": 0.25
+    },
+    "_material_rarity_shift": "Remplace l'ancien rare_material_shift (0.05, un seul palier). Decalage de la recette = moyenne, ponderee par les quantites, du decalage de rarete de chaque ressource recoltee ou intermediaire consommee (les materiaux de monstre comptent pour 0). Toutes en legendaire = +0.25.",
+    "rank_effect": "Le rang multiplie les statistiques ou la puissance de l'objet selon items/equipment_scaling.json (equipement) ; pour un consommable, il multiplie son effet (duree ou valeur).",
+    "_shift_rule": "Decalage total d = per_10_levels_above_recipe_shift x floor((niveau du metier - niveau de la recette) / 10) + decalage de rarete des materiaux. Application : en partant du rang SS vers C, chaque rang cede d x son poids au rang du dessus (SS garde le sien), puis on tire ; un resultat au-dessus de quality_cap est ramene a quality_cap. d est borne a 0.9."
   },
   "xp": {
-    "_rule": "L'XP de metier vient de la fabrication (recettes) et, pour le Glaneur, des prelevements. Une recette trop basse pour le niveau du metier rapporte de moins en moins, puis rien : on monte en fabricant a son niveau.",
+    "_rule": "L'XP de metier vient de la fabrication (une recette executee) et de la recolte (un coup sur un point, un jet de glanage, une braise de Faille). Une recette ou un point trop bas pour le niveau du metier rapporte de moins en moins, puis rien : on monte en travaillant a son niveau.",
     "curve": "same_shape_as_character",
-    "gray_after_levels": 20
+    "gray_after_levels": 20,
+    "owner": "systems/profession_xp.json",
+    "_owner": "Les chiffres (table niveau par niveau, XP par recette et par recolte, bonus de premiere fabrication, modele de temps) vivent dans systems/profession_xp.json. Ne pas les recopier ici."
   },
   "professions": [
     {
@@ -66,7 +75,22 @@
         "os et crocs intacts",
         "glandes, sang, venin"
       ],
-      "_lore": "Nom choisi par Charleston le 2026-10-01 (regle de lore du 2026-07-30 : la vie, pas la mort). Le Glaneur recueille ce que la creature LIBEREE laisse derriere elle ; aucun cadrage depouille."
+      "_lore": "Nom choisi par Charleston le 2026-10-01 (regle de lore du 2026-07-30 : la vie, pas la mort). Le Glaneur recueille ce que la creature LIBEREE laisse derriere elle ; aucun cadrage depouille.",
+      "tool": "satchel",
+      "consumes_from": [
+        "tanner"
+      ],
+      "feeds": [
+        "apothecary",
+        "bone_carver",
+        "breeder",
+        "brewer",
+        "collector",
+        "cook",
+        "runist",
+        "scribe",
+        "tanner"
+      ]
     },
     {
       "id": "fissure_hunter",
@@ -112,7 +136,19 @@
             "time_window_min": 1
           }
         ]
-      }
+      },
+      "tool": "lantern",
+      "consumes_from": [
+        "runist"
+      ],
+      "feeds": [
+        "apothecary",
+        "bone_carver",
+        "breeder",
+        "collector",
+        "runist",
+        "tanner"
+      ]
     },
     {
       "id": "miner",
@@ -123,15 +159,23 @@
       "master_npc": "npc_master_miner",
       "_how": "Recolte SUR LA CARTE : des points de ressource poses par le serveur dans les aires de zone, sur le modele des coffres de zone (presence ChestWorld : aires, reapparition, premier arrive). Clic, courte recolte, reapparition apres un delai. Le niveau du metier ouvre les ressources plus rares et augmente la quantite.",
       "inputs": [
-        "filons de minerai sur la carte"
+        "filons de minerai et berges de sable sur la carte"
       ],
       "outputs": [
-        "minerais et metaux (fer, argent, metaux du Souffle)",
-        "pierres brutes"
+        "minerais de rang 1 a 5 (fer, argent, cuivre de Souffle, astral, metal de Faille)",
+        "sable et quartz de rang 1 a 5 (verre des fioles, polissage)",
+        "sel gemme"
+      ],
+      "tool": "pickaxe",
+      "consumes_from": [
+        "bone_carver"
       ],
       "feeds": [
-        "runist",
+        "apothecary",
         "bone_carver",
+        "breeder",
+        "cook",
+        "runist",
         "tanner"
       ]
     },
@@ -147,15 +191,24 @@
         "arbres sur la carte"
       ],
       "outputs": [
-        "bois (du commun au Bois Obscur)",
-        "resines",
-        "ecorces",
-        "produits de la foret cueillis au pied des arbres : baies, champignons, miel, racines, fleurs (ingredients du Cuisinier et du Brasseur)"
+        "bois de rang 1 a 5 (du frene au Bois Obscur)",
+        "ecorces de rang 1 a 5",
+        "resines de rang 1 a 5"
+      ],
+      "_v2": "2026-10-01 : la cueillette (baies, champignons, miel, racines, Fleur de Faille) passe a l'Herboriste. Le Bucheron garde le bois et gagne l'ecorce et la resine, prelevees sans abattre.",
+      "tool": "axe",
+      "consumes_from": [
+        "bone_carver"
       ],
       "feeds": [
+        "apothecary",
         "bone_carver",
+        "breeder",
+        "brewer",
+        "collector",
+        "runist",
         "scribe",
-        "apothecary"
+        "tanner"
       ]
     },
     {
@@ -172,12 +225,45 @@
       "outputs": [
         "poissons de rang 1 a 5 (gardon, truite, brochet, anguille, poisson-lune de Faille)"
       ],
-      "feeds": [
-        "cook",
-        "brewer",
-        "apothecary"
+      "_master": "Tobin est deja pecheur (npc_fisher_tobin) : il devient le maitre du metier.",
+      "tool": "fishing_rod",
+      "consumes_from": [
+        "tanner"
       ],
-      "_master": "Tobin est deja pecheur (npc_fisher_tobin) : il devient le maitre du metier."
+      "feeds": [
+        "apothecary",
+        "breeder",
+        "cook"
+      ]
+    },
+    {
+      "id": "herbalist",
+      "name_fr": "Herboriste",
+      "name_en": "Herbalist",
+      "kind": "gathering",
+      "station": null,
+      "master_npc": "npc_master_herbalist",
+      "_how": "Recolte SUR LA CARTE, comme le Mineur : carres d'herbes (herb_patch) et buissons sauvages (wild_bush) poses par le serveur dans les aires de zone (world/gather_nodes.json). Faucille requise, rang >= rang du point. Reprend au Bucheron la cueillette de la foret (baies, champignons, miel, racines, Fleur de Faille) et ajoute 5 herbes de rang 1 a 5.",
+      "inputs": [
+        "carres d'herbes et buissons sauvages sur la carte"
+      ],
+      "outputs": [
+        "herbes de rang 1 a 5 (Sauge de Havreden, Clair-de-pre, Veilleuse des marais, Feuille-de-Souffle, Cicatrice-verte)",
+        "produits de la foret : baies, champignons, miel, racines, Fleur de Faille"
+      ],
+      "_lore": "L'Herboriste coupe au-dessus de la racine : la plante repousse. Il ne prend que ce que la terre redonne (regle de lore du 2026-07-30 : la vie, pas la mort).",
+      "tool": "sickle",
+      "consumes_from": [
+        "bone_carver"
+      ],
+      "feeds": [
+        "apothecary",
+        "breeder",
+        "brewer",
+        "cook",
+        "scribe",
+        "tanner"
+      ]
     },
     {
       "id": "tanner",
@@ -187,21 +273,38 @@
       "station": "workshop_tanner",
       "master_npc": "npc_master_tanner",
       "inputs": [
-        "peaux",
-        "cuirs",
-        "laines",
-        "crins",
-        "fourrures",
-        "ecailles",
-        "membranes"
+        "peaux, cuirs, laines, crins, fourrures (monstres)",
+        "ecorce et resine (Bucheron)",
+        "sel gemme (Mineur)",
+        "aiguilles d'os (Sculpteur d'os)",
+        "lingots (Runiste) pour le lourd",
+        "herbes de teinture (Herboriste)"
       ],
       "outputs": [
         "armures legeres",
         "capes",
         "ceintures",
-        "sacs (places d'inventaire)"
+        "sacs (places d'inventaire)",
+        "cuir tanne (intermediaire)",
+        "cannes a peche et besaces de glaneur (outils)"
       ],
-      "_bags": "Les sacs n'existent pas encore : le serveur a 100 places fixes (MAX_INVENTORY_SLOTS). Il faudra une colonne de places par personnage."
+      "_bags": "Les sacs n'existent pas encore : le serveur a 100 places fixes (MAX_INVENTORY_SLOTS). Il faudra une colonne de places par personnage.",
+      "consumes_from": [
+        "bone_carver",
+        "fissure_hunter",
+        "gleaner",
+        "herbalist",
+        "lumberjack",
+        "miner",
+        "runist"
+      ],
+      "feeds": [
+        "bone_carver",
+        "breeder",
+        "fisher",
+        "gleaner",
+        "scribe"
+      ]
     },
     {
       "id": "bone_carver",
@@ -211,19 +314,33 @@
       "station": "workshop_bone_carver",
       "master_npc": "npc_master_bone_carver",
       "inputs": [
-        "os",
-        "crocs",
-        "cornes",
-        "carapaces",
-        "griffes",
-        "mandibules",
-        "dards"
+        "os, crocs, cornes, carapaces, griffes (monstres)",
+        "lingots (Runiste)",
+        "bois, ecorce et resine (Bucheron)",
+        "cuir tanne (Tanneur) pour les poignees",
+        "sable et quartz (Mineur)"
       ],
       "outputs": [
         "armes",
         "anneaux",
         "amulettes",
-        "boucliers"
+        "boucliers",
+        "aiguilles d'os (intermediaire)",
+        "pioches, haches et faucilles (outils)"
+      ],
+      "consumes_from": [
+        "fissure_hunter",
+        "gleaner",
+        "lumberjack",
+        "miner",
+        "runist",
+        "tanner"
+      ],
+      "feeds": [
+        "herbalist",
+        "lumberjack",
+        "miner",
+        "tanner"
       ]
     },
     {
@@ -234,21 +351,35 @@
       "station": "workshop_apothecary",
       "master_npc": "npc_master_apothecary",
       "inputs": [
-        "essences",
-        "noyaux",
-        "sang",
-        "glandes",
-        "venins",
-        "poudres",
-        "spores"
+        "herbes (Herboriste)",
+        "glandes, sang, venins, essences (monstres)",
+        "sable et resine pour les fioles (Mineur, Bucheron)",
+        "eau-de-vie (Brasseur)"
       ],
       "outputs": [
         "potions de vie et de Souffle",
         "potion de rappel",
         "elixirs (source elixir, cumulables avec repas et boisson)",
-        "Elixir Complet"
+        "Elixir Complet",
+        "fioles, solvants et encres (intermediaires)"
       ],
-      "_no_currency": "Le Cristal de Souffle est une MONNAIE (items/currencies.json) : aucun metier ne le fabrique, sinon on imprime de l'argent."
+      "_no_currency": "Le Cristal de Souffle est une MONNAIE (items/currencies.json) : aucun metier ne le fabrique, sinon on imprime de l'argent.",
+      "consumes_from": [
+        "brewer",
+        "fisher",
+        "fissure_hunter",
+        "gleaner",
+        "herbalist",
+        "lumberjack",
+        "miner"
+      ],
+      "feeds": [
+        "breeder",
+        "brewer",
+        "collector",
+        "runist",
+        "scribe"
+      ]
     },
     {
       "id": "cook",
@@ -258,14 +389,26 @@
       "station": "workshop_cook",
       "master_npc": "npc_master_cook",
       "inputs": [
-        "viandes",
-        "abats",
-        "oeufs",
-        "herbes",
-        "laits"
+        "viandes, laits, oeufs (monstres)",
+        "produits de la foret et herbes (Herboriste)",
+        "poissons (Pecheur)",
+        "sel gemme (Mineur)",
+        "eau-de-vie (Brasseur) au rang 4-5"
       ],
       "outputs": [
-        "les 14 familles de repas existantes (source food_meal)"
+        "les 14 familles de repas existantes (source food_meal)",
+        "epices et farine (intermediaires)"
+      ],
+      "consumes_from": [
+        "brewer",
+        "fisher",
+        "gleaner",
+        "herbalist",
+        "miner"
+      ],
+      "feeds": [
+        "breeder",
+        "brewer"
       ]
     },
     {
@@ -277,14 +420,26 @@
       "master_npc": "npc_master_brewer",
       "_how": "Boissons a buff. stats/world_buffs.json a deja la source food_drink, separee de food_meal : un repas du Cuisinier et une boisson du Brasseur peuvent etre actifs en meme temps.",
       "inputs": [
-        "herbes",
-        "baies",
-        "miel",
-        "laits",
-        "essences"
+        "produits de la foret et herbes (Herboriste)",
+        "bois (Bucheron)",
+        "fioles (Apothicaire)",
+        "epices et farine (Cuisinier)",
+        "cornes, essences (monstres)"
       ],
       "outputs": [
-        "les 4 familles de boissons existantes (source food_drink) : Cidre, Infusion de sauge, Vin corse, Ale forte"
+        "les 4 familles de boissons existantes (source food_drink) : Cidre, Infusion de sauge, Vin corse, Ale forte",
+        "eau-de-vie (intermediaire)"
+      ],
+      "consumes_from": [
+        "apothecary",
+        "cook",
+        "gleaner",
+        "herbalist",
+        "lumberjack"
+      ],
+      "feeds": [
+        "apothecary",
+        "cook"
       ]
     },
     {
@@ -296,14 +451,29 @@
       "master_npc": "npc_master_scribe",
       "_how": "Parchemins de buffs HORS COMBAT (bonus d'XP, de trouvaille d'or ou d'objets, vitesse de deplacement, rappel en ville : l'effet recall_to_town existe) et copie de grimoires de familier (items/pet_books.json : aujourd'hui seul le rang C s'achete chez Colette, le reste tombe).",
       "inputs": [
-        "ecrits",
-        "tomes",
-        "peaux fines",
-        "encres tirees des materiaux"
+        "ecrits et tomes (monstres)",
+        "ecorce (Bucheron) et herbes (Herboriste) pour le papier",
+        "encre (Apothicaire)",
+        "plumes taillees (Eleveur)",
+        "cuir tanne (Tanneur) pour les reliures"
       ],
       "outputs": [
         "parchemins hors combat",
-        "grimoires de familier copies"
+        "grimoires de familier copies",
+        "papier (intermediaire)"
+      ],
+      "consumes_from": [
+        "apothecary",
+        "breeder",
+        "collector",
+        "gleaner",
+        "herbalist",
+        "lumberjack",
+        "tanner"
+      ],
+      "feeds": [
+        "collector",
+        "runist"
       ]
     },
     {
@@ -314,19 +484,37 @@
       "station": "workshop_breeder",
       "master_npc": "npc_master_breeder",
       "inputs": [
-        "empreintes de Souffle",
-        "oeufs",
-        "plumes",
-        "duvets",
-        "parties de monstres"
+        "empreintes, oeufs, plumes, viandes (monstres)",
+        "fioles, solvant, encre (Apothicaire)",
+        "farine (Cuisinier)",
+        "herbes et produits de la foret (Herboriste)",
+        "cuir tanne (Tanneur) et lingots (Runiste) pour les harnais"
       ],
       "outputs": [
         "friandises de familier",
         "colliers de familier",
         "accelerateurs d'incubation",
-        "potions de familier"
+        "potions de familier",
+        "plumes taillees (intermediaire)",
+        "harnais d'entrainement de familier"
       ],
-      "_reuse": "Accelerateur = reduction partielle de familiar_incubations.ready_at (pg_store set_incubation_ready_now existe pour l'acceleration payante). Potions de familier = cons_*_potion_pet_* existantes."
+      "_reuse": "Accelerateur = reduction partielle de familiar_incubations.ready_at (pg_store set_incubation_ready_now existe pour l'acceleration payante). Potions de familier = cons_*_potion_pet_* existantes.",
+      "consumes_from": [
+        "apothecary",
+        "cook",
+        "fisher",
+        "fissure_hunter",
+        "gleaner",
+        "herbalist",
+        "lumberjack",
+        "miner",
+        "runist",
+        "tanner"
+      ],
+      "feeds": [
+        "collector",
+        "scribe"
+      ]
     },
     {
       "id": "runist",
@@ -336,17 +524,34 @@
       "station": "workshop_runist",
       "master_npc": "npc_master_runist",
       "inputs": [
-        "eclats de Fissure",
-        "noyaux runiques",
-        "pierres enchantees",
-        "sceaux",
-        "reliques",
-        "ecrits"
+        "minerais et sable (Mineur)",
+        "bois (Bucheron)",
+        "materiaux runiques (monstres)",
+        "solvant et fioles (Apothicaire)",
+        "reliques restaurees (Collectionneur)",
+        "braises de Faille (Chasseur de Failles)"
       ],
       "outputs": [
         "pierres de forge (even_*)",
         "gemmes",
-        "stigmates de keystone"
+        "stigmates de keystone",
+        "lingots (intermediaire)",
+        "lanternes de Faille (outils)"
+      ],
+      "consumes_from": [
+        "apothecary",
+        "collector",
+        "fissure_hunter",
+        "gleaner",
+        "lumberjack",
+        "miner",
+        "scribe"
+      ],
+      "feeds": [
+        "bone_carver",
+        "breeder",
+        "fissure_hunter",
+        "tanner"
       ]
     },
     {
@@ -358,13 +563,28 @@
       "master_npc": "npc_koro_collector_yuki",
       "_how": "Fabrique et fait monter les cartes Koro : FUSION = 3 cartes du meme sort et du meme rang -> 1 carte du rang au-dessus (C->B->A->S->SS) ; REVELATION = une carte vierge + reactifs -> une carte au hasard du rang de la recette. Aucune fusion n'existe aujourd'hui (ni code ni data). Maitre : Yuki, qui revend deja ses doubles.",
       "inputs": [
-        "cartes Koro",
-        "eclats de Faille",
-        "pigments tires des materiaux"
+        "trophees et cartes Koro (monstres)",
+        "papier (Scribe)",
+        "encre et solvant (Apothicaire)",
+        "plumes taillees (Eleveur)",
+        "resine (Bucheron)"
       ],
       "outputs": [
         "cartes Koro de rang superieur",
-        "cartes Koro revelees"
+        "cartes Koro revelees",
+        "reliques restaurees (intermediaire)"
+      ],
+      "consumes_from": [
+        "apothecary",
+        "breeder",
+        "fissure_hunter",
+        "gleaner",
+        "lumberjack",
+        "scribe"
+      ],
+      "feeds": [
+        "runist",
+        "scribe"
       ]
     }
   ],
@@ -1054,10 +1274,542 @@
       "mat_war_banner": [
         "tanner",
         "collector"
+      ],
+      "mat_rift_ember": [
+        "apothecary",
+        "bone_carver",
+        "breeder",
+        "collector",
+        "runist",
+        "tanner"
+      ],
+      "mat_fish_gardon": [
+        "apothecary",
+        "breeder",
+        "cook"
+      ],
+      "mat_forage_baies": [
+        "breeder",
+        "brewer",
+        "cook"
+      ],
+      "mat_fish_truite": [
+        "cook"
+      ],
+      "mat_forage_champignons": [
+        "brewer",
+        "cook"
+      ],
+      "mat_fish_brochet": [
+        "apothecary",
+        "breeder",
+        "cook"
+      ],
+      "mat_forage_miel": [
+        "breeder",
+        "brewer",
+        "cook"
+      ],
+      "mat_fish_anguille": [
+        "apothecary",
+        "breeder",
+        "cook"
+      ],
+      "mat_forage_racines": [
+        "breeder",
+        "brewer",
+        "cook"
+      ],
+      "mat_fish_lune": [
+        "cook"
+      ],
+      "mat_forage_fleur": [
+        "brewer",
+        "cook"
+      ],
+      "mat_ore_fer": [
+        "bone_carver",
+        "runist"
+      ],
+      "mat_ore_argent": [
+        "runist"
+      ],
+      "mat_ore_cuivre": [
+        "runist"
+      ],
+      "mat_ore_astral": [
+        "runist"
+      ],
+      "mat_ore_faille": [
+        "runist"
+      ],
+      "mat_wood_frene": [
+        "bone_carver",
+        "brewer",
+        "runist",
+        "tanner"
+      ],
+      "mat_wood_chene": [
+        "bone_carver",
+        "brewer",
+        "runist",
+        "tanner"
+      ],
+      "mat_wood_if": [
+        "bone_carver",
+        "brewer",
+        "runist",
+        "tanner"
+      ],
+      "mat_wood_souffle": [
+        "bone_carver",
+        "brewer",
+        "runist",
+        "tanner"
+      ],
+      "mat_wood_obscur": [
+        "bone_carver",
+        "brewer",
+        "runist"
+      ],
+      "mat_herb_sauge": [
+        "apothecary",
+        "breeder",
+        "brewer",
+        "cook",
+        "scribe"
+      ],
+      "mat_herb_clairpre": [
+        "apothecary",
+        "breeder",
+        "brewer",
+        "cook",
+        "scribe"
+      ],
+      "mat_herb_veilleuse": [
+        "apothecary",
+        "breeder",
+        "brewer",
+        "cook",
+        "scribe"
+      ],
+      "mat_herb_souffle": [
+        "apothecary",
+        "breeder",
+        "brewer",
+        "cook",
+        "scribe",
+        "tanner"
+      ],
+      "mat_herb_cicatrice": [
+        "apothecary",
+        "breeder",
+        "brewer",
+        "cook",
+        "scribe",
+        "tanner"
+      ],
+      "mat_bark_frene": [
+        "scribe",
+        "tanner"
+      ],
+      "mat_bark_chene": [
+        "scribe",
+        "tanner"
+      ],
+      "mat_bark_if": [
+        "scribe",
+        "tanner"
+      ],
+      "mat_bark_souffle": [
+        "scribe",
+        "tanner"
+      ],
+      "mat_bark_obscur": [
+        "scribe",
+        "tanner"
+      ],
+      "mat_resin_frene": [
+        "apothecary",
+        "bone_carver",
+        "breeder",
+        "collector",
+        "tanner"
+      ],
+      "mat_resin_chene": [
+        "apothecary",
+        "bone_carver",
+        "breeder",
+        "collector",
+        "tanner"
+      ],
+      "mat_resin_if": [
+        "apothecary",
+        "bone_carver",
+        "breeder",
+        "collector",
+        "tanner"
+      ],
+      "mat_resin_souffle": [
+        "apothecary",
+        "bone_carver",
+        "breeder",
+        "collector",
+        "tanner"
+      ],
+      "mat_resin_obscur": [
+        "apothecary",
+        "bone_carver",
+        "breeder",
+        "collector",
+        "tanner"
+      ],
+      "mat_sand_riviere": [
+        "apothecary",
+        "bone_carver",
+        "breeder",
+        "runist"
+      ],
+      "mat_sand_blanc": [
+        "apothecary",
+        "bone_carver",
+        "breeder",
+        "runist"
+      ],
+      "mat_sand_quartz": [
+        "apothecary",
+        "bone_carver",
+        "breeder",
+        "runist"
+      ],
+      "mat_sand_souffle": [
+        "apothecary",
+        "bone_carver",
+        "breeder",
+        "runist"
+      ],
+      "mat_sand_faille": [
+        "apothecary",
+        "bone_carver",
+        "breeder",
+        "runist"
+      ],
+      "mat_salt_gemme": [
+        "cook",
+        "tanner"
+      ],
+      "mat_leather_r1": [
+        "bone_carver",
+        "tanner"
+      ],
+      "mat_leather_r2": [
+        "bone_carver",
+        "breeder",
+        "tanner"
+      ],
+      "mat_leather_r3": [
+        "bone_carver",
+        "breeder",
+        "tanner"
+      ],
+      "mat_leather_r4": [
+        "bone_carver",
+        "scribe",
+        "tanner"
+      ],
+      "mat_leather_r5": [
+        "bone_carver",
+        "breeder",
+        "tanner"
+      ],
+      "mat_ingot_r1": [
+        "bone_carver",
+        "runist",
+        "tanner"
+      ],
+      "mat_ingot_r2": [
+        "bone_carver",
+        "breeder",
+        "runist",
+        "tanner"
+      ],
+      "mat_ingot_r3": [
+        "bone_carver",
+        "breeder",
+        "runist",
+        "tanner"
+      ],
+      "mat_ingot_r4": [
+        "bone_carver",
+        "runist",
+        "tanner"
+      ],
+      "mat_ingot_r5": [
+        "bone_carver",
+        "breeder",
+        "runist",
+        "tanner"
+      ],
+      "mat_vial_r1": [
+        "apothecary",
+        "breeder",
+        "brewer",
+        "runist"
+      ],
+      "mat_vial_r2": [
+        "apothecary",
+        "breeder",
+        "brewer",
+        "runist"
+      ],
+      "mat_vial_r3": [
+        "apothecary",
+        "breeder",
+        "brewer",
+        "runist"
+      ],
+      "mat_vial_r4": [
+        "apothecary",
+        "breeder",
+        "brewer",
+        "runist"
+      ],
+      "mat_vial_r5": [
+        "apothecary",
+        "breeder",
+        "brewer"
+      ],
+      "mat_solvent_r1": [
+        "collector"
+      ],
+      "mat_solvent_r2": [
+        "collector"
+      ],
+      "mat_solvent_r3": [
+        "collector"
+      ],
+      "mat_solvent_r4": [
+        "breeder",
+        "collector",
+        "runist"
+      ],
+      "mat_solvent_r5": [
+        "breeder",
+        "collector",
+        "runist"
+      ],
+      "mat_ink_r1": [
+        "scribe"
+      ],
+      "mat_ink_r2": [
+        "collector"
+      ],
+      "mat_ink_r3": [
+        "breeder",
+        "collector",
+        "scribe"
+      ],
+      "mat_ink_r4": [
+        "collector",
+        "scribe"
+      ],
+      "mat_ink_r5": [
+        "breeder",
+        "collector"
+      ],
+      "mat_paper_r1": [
+        "collector",
+        "scribe"
+      ],
+      "mat_paper_r2": [
+        "runist"
+      ],
+      "mat_paper_r3": [
+        "collector",
+        "runist",
+        "scribe"
+      ],
+      "mat_paper_r4": [
+        "runist",
+        "scribe"
+      ],
+      "mat_paper_r5": [
+        "runist"
+      ],
+      "mat_spice_r1": [
+        "brewer",
+        "cook"
+      ],
+      "mat_spice_r2": [
+        "brewer",
+        "cook"
+      ],
+      "mat_spice_r3": [
+        "brewer",
+        "cook"
+      ],
+      "mat_spice_r4": [
+        "brewer",
+        "cook"
+      ],
+      "mat_spice_r5": [
+        "brewer",
+        "cook"
+      ],
+      "mat_flour_r1": [
+        "breeder",
+        "brewer"
+      ],
+      "mat_flour_r2": [
+        "brewer"
+      ],
+      "mat_flour_r3": [
+        "breeder",
+        "brewer"
+      ],
+      "mat_flour_r4": [
+        "breeder",
+        "brewer"
+      ],
+      "mat_flour_r5": [
+        "brewer"
+      ],
+      "mat_needle_r1": [
+        "tanner"
+      ],
+      "mat_needle_r2": [
+        "tanner"
+      ],
+      "mat_needle_r3": [
+        "tanner"
+      ],
+      "mat_needle_r4": [
+        "tanner"
+      ],
+      "mat_needle_r5": [
+        "tanner"
+      ],
+      "mat_spirit_r1": [
+        "apothecary"
+      ],
+      "mat_spirit_r2": [
+        "apothecary"
+      ],
+      "mat_spirit_r3": [
+        "apothecary"
+      ],
+      "mat_spirit_r4": [
+        "apothecary",
+        "cook"
+      ],
+      "mat_spirit_r5": [
+        "apothecary",
+        "cook"
+      ],
+      "mat_quill_r1": [
+        "scribe"
+      ],
+      "mat_quill_r2": [
+        "collector"
+      ],
+      "mat_quill_r3": [
+        "breeder",
+        "collector",
+        "scribe"
+      ],
+      "mat_quill_r4": [
+        "collector",
+        "scribe"
+      ],
+      "mat_quill_r5": [
+        "breeder",
+        "collector"
+      ],
+      "mat_relic_r1": [
+        "scribe"
+      ],
+      "mat_relic_r2": [
+        "runist"
+      ],
+      "mat_relic_r3": [
+        "runist",
+        "scribe"
+      ],
+      "mat_relic_r4": [
+        "runist",
+        "scribe"
+      ],
+      "mat_relic_r5": [
+        "runist"
       ]
     },
     "_material_uses": "Metiers qui UTILISENT chaque materiau de monstre, le principal en premier (relu a la main, 2026-10-01). Les TROPHEES (insignes, pieces, bourses, sceaux, masques, totems) vont au Collectionneur : des curiosites qu'il consomme pour reveler des cartes Koro. Les empreintes de Souffle servent d'abord a faire eclore un familier chez Colette ; l'Eleveur les utilise en second.",
-    "_data_issues": "Corriges le 2026-10-01 (data 87e9fd5) : mat_corrupted_relic fusionne, trois noms francais alignes sur l'anglais."
+    "_data_issues": "Corriges le 2026-10-01 (data 87e9fd5) : mat_corrupted_relic fusionne, trois noms francais alignes sur l'anglais.",
+    "_material_uses_v2": "Depuis la V2, material_uses liste aussi les ressources recoltees et les intermediaires (items/profession_recipes.json new_items) : pour eux la liste est DERIVEE des recettes par le generateur et verifiee par le validateur (aucune ressource sans usage)."
   },
-  "achievements": "Les 11 metiers alimentent les succes (objectif ~300) : niveau de chaque metier, premieres fabrications, rangs S et SS fabriques, prelevements, eclats de Faille, fusions de Koro. Chaque action doit laisser une trace relisible en base."
+  "achievements": "Les 15 metiers alimentent les succes (objectif ~300) : niveau de chaque metier, premieres fabrications, rangs S et SS fabriques, prelevements, eclats de Faille, fusions de Koro. Chaque action doit laisser une trace relisible en base.",
+  "resource_rarity": {
+    "_rule": "Modele Albion (Charleston, 2026-10-01). Chaque ressource RECOLTEE sur un point (Mineur, Bucheron, Pecheur, Herboriste) a un RANG 1..5, porte par son id comme aujourd'hui, ET une RARETE tiree quand le point apparait (world/gather_nodes.json rarity_weights). Les intermediaires portent aussi une rarete. Le rang dit QUOI, la rarete dit A QUEL POINT c'est beau : deux axes independants.",
+    "applies_to": {
+      "gathered_by": [
+        "miner",
+        "lumberjack",
+        "fisher",
+        "herbalist"
+      ],
+      "category": [
+        "intermediate"
+      ]
+    },
+    "tiers": [
+      {
+        "id": "normal",
+        "suffix": "",
+        "item_rarity": "common",
+        "name_suffix_fr": "",
+        "name_suffix_en": "",
+        "xp_multiplier": 1.0,
+        "sell_multiplier": 1
+      },
+      {
+        "id": "rare",
+        "suffix": "_rare",
+        "item_rarity": "rare",
+        "name_suffix_fr": " (rare)",
+        "name_suffix_en": " (rare)",
+        "xp_multiplier": 1.25,
+        "sell_multiplier": 3
+      },
+      {
+        "id": "epic",
+        "suffix": "_epic",
+        "item_rarity": "epic",
+        "name_suffix_fr": " (épique)",
+        "name_suffix_en": " (epic)",
+        "xp_multiplier": 1.6,
+        "sell_multiplier": 8
+      },
+      {
+        "id": "legendary",
+        "suffix": "_legendary",
+        "item_rarity": "legendary",
+        "name_suffix_fr": " (légendaire)",
+        "name_suffix_en": " (legendary)",
+        "xp_multiplier": 2.5,
+        "sell_multiplier": 25
+      }
+    ],
+    "variant_rule": "Une variante est un id GENERE, jamais ecrit a la main : id = id de base + suffix (ex. mat_herb_sauge_epic). Elle reprend tout l'objet de base (icone comprise : le client dessine le cadre de rarete), remplace rarity par item_rarity, ajoute name_suffix_fr/en au nom et multiplie sell_price par sell_multiplier. Le serveur et le client construisent les variantes au chargement a partir de cette table ; aucune n'apparait dans les fichiers. Les variantes ne s'empilent pas entre elles (une pile par id).",
+    "base_rarity": "L'objet de base (rarete normale) porte rarity 'common' a tous les rangs : le rang s'affiche a part (I..V, champ rank). Les anciennes raretes par rang des ressources (common..legendary selon le rang) ont ete retirees le 2026-10-01 pour ne pas melanger les deux axes.",
+    "recipe_matching": "Une recette ecrit l'id de BASE ; n'importe quelle variante le satisfait. La requete de fabrication nomme les piles choisies par le joueur ; par defaut le serveur prend les raretes les plus basses d'abord (on ne grille pas une legendaire par accident). Une recette qui citerait une variante est refusee par le validateur.",
+    "crafted_quality": "La rarete des ressources consommees deplace la qualite C..SS du produit fini : voir quality.material_rarity_shift.",
+    "intermediate_rarity": "Un intermediaire sort a la rarete la plus BASSE parmi ses ressources et intermediaires consommes (les materiaux de monstre ne comptent pas). Une Fiole legendaire demande donc du sable ET de la resine legendaires : la rarete traverse la chaine jusqu'au produit fini.",
+    "gathering_xp": "Recolter une ressource rare rapporte plus d'XP de metier : xp_multiplier (voir systems/profession_xp.json gather_xp)."
+  },
+  "links": {
+    "_rule": "REGLE V2 (Charleston, 2026-10-01), verifiee par le validateur (etape 12g) : toute recette de rang >= 2 consomme au moins un objet produit par un AUTRE metier (ressource recoltee ou intermediaire) ; toute recette FINALE de rang 4-5 (tout sauf les intermediaires) en consomme d'au moins DEUX autres metiers, dont au moins un intermediaire ; un intermediaire de rang 4-5 consomme au moins deux autres metiers. Les materiaux de monstre restent (combat et Glaneur) mais ne comptent PAS comme apport d'un autre metier : ils tombent aussi sans metier.",
+    "tools": "Outils de recolte (kind 'tool', id tool_<type>_r<rang>) : il faut un outil de rang >= au rang du point pour recolter. L'outil de rang N se fabrique avec des materiaux de rang N-1 (sinon il faudrait l'outil pour recolter de quoi le fabriquer) ; le rang 1 est offert par le maitre du metier (starter). Chaque recolte use une utilisation. Ils lient les metiers de recolte aux artisans : Pioche, Hache, Faucille = Sculpteur d'os ; Canne a peche, Besace de glaneur = Tanneur ; Lanterne de Faille = Runiste.",
+    "producer": "Producteur d'un objet : gathered_by (ressource recoltee) ou crafted_by (intermediaire, outil) dans items/profession_recipes.json new_items. Les materiaux de monstre ont pour producteur le combat ; le Glaneur en ajoute (feeds) mais ils ne comptent pas comme apport d'un autre metier.",
+    "_feeds": "Les champs feeds / consumes_from de chaque metier sont DERIVES des recettes et des outils par le generateur ; le validateur verifie qu'ils correspondent et qu'aucun metier n'est isole."
+  }
 }
