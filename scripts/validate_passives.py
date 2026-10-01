@@ -17,6 +17,10 @@ Ce qu'il verifie :
   7. pas de `add_percent` sur une stat `bonus_type: flat` (crit, pen, DR...) :
      le moteur applique add_percent en MULTIPLIANT la valeur courante, donc
      "+0.5% crit" en add_percent = 5% de 5 crit = 0 apres arrondi. (2026-09-30)
+  8. pas de `add_percent` sur une stat dont la base de la CLASSE vaut 0
+     (stats/class_base_stats.json) : un pourcentage de zero vaut zero. Toucher
+     Divin (heal_power) n'a rien donne pendant des mois pour cette raison.
+     Les familiers (pas dans ce fichier) ont leur propre moteur. (2026-10-01)
   8. max_level d'un passif levelable == progression.passive_allocation.max_level_per_passive
 
 Exit 0 = tout va bien, exit 1 = erreurs.
@@ -134,6 +138,8 @@ def main():
     max_level_rule = (load("systems/progression.json").get("passive_allocation") or {}).get(
         "max_level_per_passive")
     valid_effects = collect_effect_ids(load("stats/status_effects.json"))
+    class_bases = {k: v for k, v in load("stats/class_base_stats.json").items()
+                   if not k.startswith("_") and isinstance(v, dict)}
 
     errors, warnings = [], []
     seen_ids = {}
@@ -142,6 +148,8 @@ def main():
     files = sorted(glob.glob("classes/**/*passives*.json", recursive=True))
     for path in files:
         data = load(path)
+        parts = path.replace("\\", "/").split("/")
+        class_base = class_bases.get(parts[1], {}) if len(parts) > 2 else {}
         for p in extract_passives(data):
             total += 1
             pid = p["id"]
@@ -183,6 +191,11 @@ def main():
                         f"{path}: passif '{pid}' effects[{i}] add_percent sur '{stat}' "
                         f"(bonus_type flat) : le moteur multiplierait la valeur courante, "
                         f"utiliser add_flat"
+                    )
+                if op == "add_percent" and stat in class_base and class_base[stat] == 0:
+                    errors.append(
+                        f"{path}: passif '{pid}' effects[{i}] add_percent sur '{stat}' dont la "
+                        f"base de la classe vaut 0 : le bonus vaut 0, utiliser add_flat"
                     )
                 if op is not None and op not in ("add_flat", "add_percent"):
                     errors.append(f"{path}: passif '{pid}' effects[{i}] op invalide '{op}'")
