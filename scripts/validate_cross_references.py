@@ -984,7 +984,28 @@ KNOWN_ACHIEVEMENT_SOURCES = {
     "dungeon_floors_cleared", "dungeon_runs_completed", "fissures_closed",
     "friends_count", "guild_joined", "auction_items_sold", "max_enhancement_level",
     "koro_cards_owned", "keystones_equipped", "gold_held",
+    # Metiers V1 (2026-10-01, back migr 111). Sources parametrees : voir
+    # PARAMETERIZED_ACHIEVEMENT_SOURCES.
+    "crafts_total", "gathers_total", "recipes_distinct", "crafts_quality_top",
+    "crafts_quality_second", "gathers_rarity_top", "gathers_rarity_second",
+    "profession_specialties_at_100", "intermediates_crafted", "max_tool_rank_used",
 }
+# Prefixe -> le parametre doit etre un id de metier (profession_level) ou un niveau 1..100.
+PARAMETERIZED_ACHIEVEMENT_SOURCES = ("profession_level:", "professions_at_or_above:")
+
+
+def _known_achievement_source(db: Path, source) -> bool:
+    if source in KNOWN_ACHIEVEMENT_SOURCES:
+        return True
+    if not isinstance(source, str):
+        return False
+    if source.startswith("profession_level:"):
+        ids = {p["id"] for p in load_json(db / "systems" / "professions.json").get("professions", [])}
+        return source.split(":", 1)[1] in ids
+    if source.startswith("professions_at_or_above:"):
+        n = source.split(":", 1)[1]
+        return n.isdigit() and 1 <= int(n) <= 100
+    return False
 
 
 def validate_achievements(db: Path) -> list:
@@ -1005,7 +1026,7 @@ def validate_achievements(db: Path) -> list:
         if aid in seen:
             errors.append(f"[achievements.json] id en double '{aid}'")
         seen.add(aid)
-        if a.get("source") not in KNOWN_ACHIEVEMENT_SOURCES:
+        if not _known_achievement_source(db, a.get("source")):
             errors.append(f"[achievements.json] '{aid}' : source '{a.get('source')}' inconnue du moteur")
         if a.get("category") not in categories:
             errors.append(f"[achievements.json] '{aid}' : categorie '{a.get('category')}' absente")
