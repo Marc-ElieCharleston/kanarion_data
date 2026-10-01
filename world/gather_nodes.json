@@ -1,0 +1,730 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-10-01",
+    "description": "Points de recolte (Metiers V2, valide par Charleston le 2026-10-01). Le SERVEUR pose des points (arbres, rochers, berges de sable, carres d'herbes, buissons, coins de peche) dans des AIRES de recolte dessinees par zone, sur le modele des coffres de zone (world/zone_chests.json, presence ChestWorld). Le joueur clique, une barre d'extraction se remplit pendant gather_ms (envoye par le serveur), la ressource tombe a la fin. Bouger, entrer en combat ou prendre un coup annule la recolte.",
+    "owner": "services/presence (apparition, rang, rarete, verrou de recolte, duree, tirage) + services/economy (ajout en inventaire, usure de l'outil et XP de metier dans la meme transaction). Le client lit ce fichier pour l'AFFICHAGE seulement (sprite par type et rang, cadre de rarete).",
+    "status": "CONCEPTION : rien n'est branche. Les aires sont a dessiner par Charleston (areas vide par zone, voir _example_area).",
+    "lore": "On ne prend que ce que la terre redonne : bois mort, ecorce, resine, herbes coupees au-dessus de la racine. Les points reviennent : la vie reprend sa place."
+  },
+  "rules": {
+    "rank_from_area": "Rang d'un point = ceil(niveau max de l'aire / 20), borne a 1..5 (meme decoupage que les coffres de zone et les rangs I-V). Une aire peut forcer rank_override.",
+    "access": "Pour recolter : niveau du metier >= gather_level de la ressource principale (1, 20, 40, 60, 80) ET un outil du bon type de rang >= rang du point dans le sac (items/profession_recipes.json, tool_<type>_r<rang>). Chaque coup use une utilisation de l'outil. Sinon le serveur refuse avec la raison (niveau ou outil) et le client l'affiche.",
+    "lock": "Un point est VERROUILLE pour le premier joueur qui commence a le recolter, jusqu'a la fin ou l'annulation. Les autres le voient occupe. Pas de PvP, pas de vol.",
+    "charges": {
+      "1": 3,
+      "2": 3,
+      "3": 4,
+      "4": 4,
+      "5": 5
+    },
+    "_charges": "Nombre de coups avant epuisement, par rang. Epuise : sprite vide, puis reapparition apres respawn_seconds, a un AUTRE point tire dans l'aire (rang et rarete retires).",
+    "respawn_seconds": {
+      "1": [
+        240,
+        420
+      ],
+      "2": [
+        300,
+        540
+      ],
+      "3": [
+        360,
+        660
+      ],
+      "4": [
+        480,
+        780
+      ],
+      "5": [
+        600,
+        900
+      ]
+    },
+    "first_spawn_seconds": [
+      10,
+      120
+    ],
+    "max_nodes_per_area_default": 6,
+    "interact_range": 400,
+    "_interact_range": "Distance max (px monde) joueur-point verifiee par le serveur, meme logique et meme valeur que open_range des coffres de zone."
+  },
+  "gather_duration": {
+    "base_ms_by_rank": {
+      "1": 3000,
+      "2": 3500,
+      "3": 4000,
+      "4": 4500,
+      "5": 5000
+    },
+    "type_multiplier": {
+      "tree": 1.0,
+      "rock": 1.0,
+      "sand_bank": 0.8,
+      "herb_patch": 0.8,
+      "wild_bush": 0.8,
+      "fishing_spot": 1.5
+    },
+    "reduction_per_level_above": 0.005,
+    "min_ratio": 0.6,
+    "_rule": "gather_ms = base_ms_by_rank[rang] x type_multiplier[type] x max(min_ratio, 1 - reduction_per_level_above x (niveau du metier - gather_level de la ressource)). Calcule par le SERVEUR et envoye au client au debut de la recolte : la barre d'extraction n'a aucune duree en dur cote client. La ressource n'est donnee qu'a la fin, par le serveur.",
+    "cancel_on": [
+      "move",
+      "combat_start",
+      "damage_taken",
+      "zone_change",
+      "disconnect"
+    ],
+    "_cancel_on": "Annulation = rien n'est donne, aucune utilisation d'outil consommee, le verrou saute."
+  },
+  "yield": {
+    "main_qty_by_rank": {
+      "1": [
+        1,
+        2
+      ],
+      "2": [
+        1,
+        2
+      ],
+      "3": [
+        1,
+        2
+      ],
+      "4": [
+        1,
+        1
+      ],
+      "5": [
+        1,
+        1
+      ]
+    },
+    "bonus_max_per_levels_above": 25,
+    "bonus_max_cap": 2,
+    "_rule": "Quantite principale tiree dans main_qty_by_rank[rang], dont le max monte de +1 tous les 25 niveaux de metier au-dessus du gather_level de la ressource (au plus +2). Les secondaires ont leur propre qty [min, max] et leur chance par coup."
+  },
+  "rarity": {
+    "_rule": "Rarete tiree A L'APPARITION du point et visible avant de recolter (lueur sur le sprite, cadre sur la ressource). Toutes les ressources d'un point ont sa rarete. Ids des tiers et suffixes : systems/professions.json resource_rarity.",
+    "weights_by_rank": {
+      "1": {
+        "normal": 85,
+        "rare": 10,
+        "epic": 4,
+        "legendary": 1
+      },
+      "2": {
+        "normal": 82,
+        "rare": 12,
+        "epic": 5,
+        "legendary": 1
+      },
+      "3": {
+        "normal": 78,
+        "rare": 14,
+        "epic": 6,
+        "legendary": 2
+      },
+      "4": {
+        "normal": 74,
+        "rare": 16,
+        "epic": 7,
+        "legendary": 3
+      },
+      "5": {
+        "normal": 70,
+        "rare": 18,
+        "epic": 8,
+        "legendary": 4
+      }
+    },
+    "fissure_invasion_multiplier": 2.0,
+    "_fissure_invasion_multiplier": "Pendant une invasion de Fissure dans la zone, les poids rare, epic et legendary des points qui apparaissent sont multiplies par cette valeur : le Souffle libere fait fleurir ce qui pousse autour."
+  },
+  "profession_xp": {
+    "by_rank": {
+      "1": 13,
+      "2": 70,
+      "3": 130,
+      "4": 190,
+      "5": 250
+    },
+    "_rule": "XP de metier par COUP reussi = by_rank[rang du point] x xp_multiplier de la rarete, puis la regle grise de systems/profession_xp.json (meme table, recopiee ici pour le serveur de presence ; le validateur verifie qu'elles concordent)."
+  },
+  "node_types": {
+    "_comment": "Un type de point = un metier + un outil + ce qu'il donne par rang. main tombe a chaque coup (quantite : yield), chaque secondary a sa chance independante par coup. Les ids sont des ids de BASE : la variante de rarete est celle du point (voir rarity).",
+    "tree": {
+      "profession": "lumberjack",
+      "tool": "axe",
+      "placement": "ground",
+      "_note": "Bois mort et branches tombees, ecorce et resine prelevees sans abattre : l'arbre reste.",
+      "resources_by_rank": {
+        "1": {
+          "main": "mat_wood_frene",
+          "secondary": [
+            {
+              "id": "mat_bark_frene",
+              "chance": 0.5,
+              "qty": [
+                1,
+                1
+              ]
+            },
+            {
+              "id": "mat_resin_frene",
+              "chance": 0.25,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "2": {
+          "main": "mat_wood_chene",
+          "secondary": [
+            {
+              "id": "mat_bark_chene",
+              "chance": 0.5,
+              "qty": [
+                1,
+                1
+              ]
+            },
+            {
+              "id": "mat_resin_chene",
+              "chance": 0.25,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "3": {
+          "main": "mat_wood_if",
+          "secondary": [
+            {
+              "id": "mat_bark_if",
+              "chance": 0.5,
+              "qty": [
+                1,
+                1
+              ]
+            },
+            {
+              "id": "mat_resin_if",
+              "chance": 0.25,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "4": {
+          "main": "mat_wood_souffle",
+          "secondary": [
+            {
+              "id": "mat_bark_souffle",
+              "chance": 0.5,
+              "qty": [
+                1,
+                1
+              ]
+            },
+            {
+              "id": "mat_resin_souffle",
+              "chance": 0.25,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "5": {
+          "main": "mat_wood_obscur",
+          "secondary": [
+            {
+              "id": "mat_bark_obscur",
+              "chance": 0.5,
+              "qty": [
+                1,
+                1
+              ]
+            },
+            {
+              "id": "mat_resin_obscur",
+              "chance": 0.25,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "rock": {
+      "profession": "miner",
+      "tool": "pickaxe",
+      "placement": "ground",
+      "resources_by_rank": {
+        "1": {
+          "main": "mat_ore_fer",
+          "secondary": [
+            {
+              "id": "mat_salt_gemme",
+              "chance": 0.3,
+              "qty": [
+                1,
+                1
+              ]
+            },
+            {
+              "id": "mat_sand_riviere",
+              "chance": 0.15,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "2": {
+          "main": "mat_ore_argent",
+          "secondary": [
+            {
+              "id": "mat_salt_gemme",
+              "chance": 0.3,
+              "qty": [
+                1,
+                1
+              ]
+            },
+            {
+              "id": "mat_sand_blanc",
+              "chance": 0.15,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "3": {
+          "main": "mat_ore_cuivre",
+          "secondary": [
+            {
+              "id": "mat_salt_gemme",
+              "chance": 0.3,
+              "qty": [
+                1,
+                1
+              ]
+            },
+            {
+              "id": "mat_sand_quartz",
+              "chance": 0.15,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "4": {
+          "main": "mat_ore_astral",
+          "secondary": [
+            {
+              "id": "mat_salt_gemme",
+              "chance": 0.3,
+              "qty": [
+                1,
+                1
+              ]
+            },
+            {
+              "id": "mat_sand_souffle",
+              "chance": 0.15,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "5": {
+          "main": "mat_ore_faille",
+          "secondary": [
+            {
+              "id": "mat_salt_gemme",
+              "chance": 0.3,
+              "qty": [
+                1,
+                1
+              ]
+            },
+            {
+              "id": "mat_sand_faille",
+              "chance": 0.15,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "sand_bank": {
+      "profession": "miner",
+      "tool": "pickaxe",
+      "placement": "water_edge",
+      "_note": "Berges de riviere et de marais : comme les coins de peche, posee au bord de l'eau.",
+      "resources_by_rank": {
+        "1": {
+          "main": "mat_sand_riviere",
+          "secondary": [
+            {
+              "id": "mat_salt_gemme",
+              "chance": 0.2,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "2": {
+          "main": "mat_sand_blanc",
+          "secondary": [
+            {
+              "id": "mat_salt_gemme",
+              "chance": 0.2,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "3": {
+          "main": "mat_sand_quartz",
+          "secondary": [
+            {
+              "id": "mat_salt_gemme",
+              "chance": 0.2,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "4": {
+          "main": "mat_sand_souffle",
+          "secondary": [
+            {
+              "id": "mat_salt_gemme",
+              "chance": 0.2,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "5": {
+          "main": "mat_sand_faille",
+          "secondary": [
+            {
+              "id": "mat_salt_gemme",
+              "chance": 0.2,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "herb_patch": {
+      "profession": "herbalist",
+      "tool": "sickle",
+      "placement": "ground",
+      "resources_by_rank": {
+        "1": {
+          "main": "mat_herb_sauge",
+          "secondary": [
+            {
+              "id": "mat_forage_baies",
+              "chance": 0.15,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "2": {
+          "main": "mat_herb_clairpre",
+          "secondary": [
+            {
+              "id": "mat_forage_champignons",
+              "chance": 0.15,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "3": {
+          "main": "mat_herb_veilleuse",
+          "secondary": [
+            {
+              "id": "mat_forage_miel",
+              "chance": 0.15,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "4": {
+          "main": "mat_herb_souffle",
+          "secondary": [
+            {
+              "id": "mat_forage_racines",
+              "chance": 0.15,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "5": {
+          "main": "mat_herb_cicatrice",
+          "secondary": [
+            {
+              "id": "mat_forage_fleur",
+              "chance": 0.15,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "wild_bush": {
+      "profession": "herbalist",
+      "tool": "sickle",
+      "placement": "ground",
+      "_note": "Baies, champignons au pied, ruche sauvage (miel), racines, Fleur de Faille selon le rang.",
+      "resources_by_rank": {
+        "1": {
+          "main": "mat_forage_baies",
+          "secondary": [
+            {
+              "id": "mat_herb_sauge",
+              "chance": 0.2,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "2": {
+          "main": "mat_forage_champignons",
+          "secondary": [
+            {
+              "id": "mat_herb_clairpre",
+              "chance": 0.2,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "3": {
+          "main": "mat_forage_miel",
+          "secondary": [
+            {
+              "id": "mat_herb_veilleuse",
+              "chance": 0.2,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "4": {
+          "main": "mat_forage_racines",
+          "secondary": [
+            {
+              "id": "mat_herb_souffle",
+              "chance": 0.2,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        },
+        "5": {
+          "main": "mat_forage_fleur",
+          "secondary": [
+            {
+              "id": "mat_herb_cicatrice",
+              "chance": 0.2,
+              "qty": [
+                1,
+                1
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "fishing_spot": {
+      "profession": "fisher",
+      "tool": "fishing_rod",
+      "placement": "water_edge",
+      "_note": "Toujours sur une rive : le joueur pêche depuis la terre ferme, face a l'eau.",
+      "resources_by_rank": {
+        "1": {
+          "main": "mat_fish_gardon",
+          "secondary": []
+        },
+        "2": {
+          "main": "mat_fish_truite",
+          "secondary": []
+        },
+        "3": {
+          "main": "mat_fish_brochet",
+          "secondary": []
+        },
+        "4": {
+          "main": "mat_fish_anguille",
+          "secondary": []
+        },
+        "5": {
+          "main": "mat_fish_lune",
+          "secondary": []
+        }
+      }
+    }
+  },
+  "areas_schema": {
+    "id": "identifiant unique dans la zone, ex. gn_village_bois_est",
+    "node_types": "liste des types poses dans l'aire, avec un poids : [{type, weight}]",
+    "level_range": "[min, max] : donne le rang des points (rank_from_area)",
+    "rank_override": "optionnel : force le rang 1..5",
+    "max_nodes": "optionnel : nombre de points actifs a la fois (defaut rules.max_nodes_per_area_default)",
+    "bounds": "placement ground : rectangle {x_min, x_max, y_min, y_max} en px monde, comme spawn_areas",
+    "points": "placement water_edge (OBLIGATOIRE pour fishing_spot et sand_bank) : liste de positions {x, y, facing} posees a la main sur la rive ; facing = direction de l'eau (north, south, east, west). Le serveur tire parmi ces points, jamais dans un rectangle : un coin de peche au milieu d'un champ est impossible."
+  },
+  "_example_area": {
+    "_comment": "EXEMPLE documente, jamais lu par le serveur (hors de zones). Deux aires du village : un bois et une rive. Coordonnees fictives.",
+    "zone": "village",
+    "areas": [
+      {
+        "id": "gn_village_exemple_bois",
+        "node_types": [
+          {
+            "type": "tree",
+            "weight": 3
+          },
+          {
+            "type": "herb_patch",
+            "weight": 2
+          },
+          {
+            "type": "wild_bush",
+            "weight": 2
+          }
+        ],
+        "level_range": [
+          1,
+          15
+        ],
+        "max_nodes": 8,
+        "bounds": {
+          "x_min": 5100,
+          "x_max": 6500,
+          "y_min": 2000,
+          "y_max": 3200
+        }
+      },
+      {
+        "id": "gn_village_exemple_rive",
+        "node_types": [
+          {
+            "type": "fishing_spot",
+            "weight": 3
+          },
+          {
+            "type": "sand_bank",
+            "weight": 1
+          }
+        ],
+        "level_range": [
+          1,
+          15
+        ],
+        "max_nodes": 3,
+        "points": [
+          {
+            "x": -400,
+            "y": 900,
+            "facing": "west"
+          },
+          {
+            "x": -380,
+            "y": 1040,
+            "facing": "west"
+          },
+          {
+            "x": -420,
+            "y": 1180,
+            "facing": "west"
+          },
+          {
+            "x": -350,
+            "y": 1320,
+            "facing": "south"
+          }
+        ]
+      }
+    ]
+  },
+  "zones": {
+    "_comment": "Aires par zone, a dessiner par Charleston. Une zone sans aire ne pose aucun point.",
+    "village": {
+      "_todo": "Bois Tranquilles (12-26), Bois des Loups (13-23), rives du Marais de Havreden (20-30), Patures (10-20), lisieres des aires 40-100 pour les rangs 3 a 5.",
+      "areas": []
+    },
+    "expedition_lv_01_10": {
+      "_todo": "rang 1 : arbres, rochers, herbes, une rive.",
+      "areas": []
+    },
+    "expedition_lv_11_20": {
+      "_todo": "rang 1 : idem, plus dense.",
+      "areas": []
+    },
+    "expedition_lv_21_30": {
+      "_todo": "rang 2 : arbres, rochers, herbes, berges.",
+      "areas": []
+    }
+  }
+}
