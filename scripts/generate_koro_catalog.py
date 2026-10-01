@@ -9,6 +9,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
+# Displayed letter of an internal rank (product decision 2026-10-01). Internal
+# stays C..SS (ids, `rank` field); players read D..S. Never write an internal
+# letter into player text. Rule: systems/professions.json quality.display_letters.
+DISPLAY = {'C': 'D', 'B': 'C', 'A': 'B', 'S': 'A', 'SS': 'S'}
+
 
 def active_skills(node):
     if isinstance(node, dict):
@@ -37,8 +42,8 @@ def generate():
             for rank, percent in generation['rank_percents'].items():
                 key = sid + ':' + rank
                 card_id = generation['legacy_ids'].get(key, 'koro_' + sid.removeprefix('skill_') + '_' + rank.lower())
-                card = dict(id=card_id, name_fr=f"Koro : {skill['name_fr']} ({rank})",
-                    name_en=f"Koro: {skill.get('name_en', skill['name_fr'])} ({rank})",
+                card = dict(id=card_id, name_fr=f"Koro : {skill['name_fr']} ({DISPLAY[rank]})",
+                    name_en=f"Koro: {skill.get('name_en', skill['name_fr'])} ({DISPLAY[rank]})",
                     base_skill_id=sid, base_class_id=path.parent.name, rank=rank, rank_percent=percent,
                     level_req=rules['equipment']['slot_unlock_levels'][0], tradeable=True, hdv_listable=True, sell_price=0,
                     skill_tier=skill.get('tier', 'active'),

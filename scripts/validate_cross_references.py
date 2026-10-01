@@ -21,6 +21,7 @@ Exit code 0 = pass, 1 = failures found.
 """
 
 import json
+import re
 import sys
 import os
 from pathlib import Path
@@ -551,6 +552,118 @@ def validate_item_ranks(db: Path) -> list:
                 "[item_ranks] recipes.json _meta.rank_system est de retour : ce sont les rangs "
                 "de CRAFT (bandes de 10 niveaux), semantique incompatible avec les 5 rangs "
                 "d'item C->SS. Utiliser la cle `craft_ranks`.")
+
+    return errors
+
+
+# Lettre AFFICHEE d'un rang interne (decision produit 2026-10-01). L'interne reste
+# C..SS partout (ids, champs `rank`, DB) ; le joueur lit D..S. Recopie ici de
+# systems/professions.json quality.display_letters pour que la garde ne valide pas
+# une table contre elle-meme : les deux doivent concorder.
+DISPLAY_RANK_LETTERS = {"C": "D", "B": "C", "A": "B", "S": "A", "SS": "S"}
+
+# Cles de texte joueur scannees par la garde globale.
+_PLAYER_TEXT_KEY = re.compile(
+    r"^(name|title|description|summary|dialogue|content|text|tooltip|hint_text|label|lines)"
+    r"(_[a-z]+)*$")
+# Formes qui ne peuvent venir que d'une lettre INTERNE recopiee dans un texte.
+_INTERNAL_LETTER_TEXT = re.compile(
+    r"\(SS\)|\b(rang|rank) SS\b|\bSS-rank\b|\b(à|to|->|→) ?SS\b|\bS et SS\b|\bS and SS\b")
+
+
+def validate_rank_display(db: Path) -> list:
+    """Verifie que tout texte joueur porte la lettre AFFICHEE (D..S), jamais l'interne.
+
+    1. `quality.display_letters` (systems/professions.json) == la table canonique.
+    2. Koro, grimoires, stigmates : le suffixe ' (X)' des noms et 'au rang X' /
+       'at rank X' des descriptions valent DISPLAY[rank interne].
+    3. Contrats : '(rang X)' / '(rank X)' du titre vaut DISPLAY[contract_rank].
+    4. Variantes de ressource : name_suffix_* vaut ' (DISPLAY[id])' (vide pour C).
+    5. Garde globale : aucun texte joueur ne montre '(SS)', 'rang SS', 'C a SS'...
+       (le changelog, historique, est exclu).
+    """
+    errors = []
+    tag = "[rank_display]"
+    prof = load_json(db / "systems" / "professions.json")
+    q = prof.get("quality", {})
+    if q.get("display_letters") != DISPLAY_RANK_LETTERS:
+        errors.append(f"{tag} systems/professions.json quality.display_letters != {DISPLAY_RANK_LETTERS}")
+    if list(DISPLAY_RANK_LETTERS) != CANONICAL_RANK_LABELS or q.get("ranks") != CANONICAL_RANK_LABELS:
+        errors.append(f"{tag} rangs internes != {CANONICAL_RANK_LABELS}")
+
+    def check_name(where, item, key, rank):
+        val = item.get(key)
+        if val is None:
+            return
+        want = f"({DISPLAY_RANK_LETTERS.get(rank, '?')})"
+        if not val.endswith(want):
+            errors.append(f"{tag} {where} {item.get('id')} {key}={val!r} : attendu suffixe {want} (rang interne {rank})")
+
+    def check_phrase(where, item, key, word, rank):
+        val = item.get(key)
+        if not val:
+            return
+        for m in re.finditer(r"\b" + word + r" (SS|S|A|B|C|D)\b", val):
+            if m.group(1) != DISPLAY_RANK_LETTERS.get(rank):
+                errors.append(f"{tag} {where} {item.get('id')} {key} : '{m.group(0)}' pour le rang interne {rank}")
+
+    sources = [("items/koro_cards.json", "koro_cards"), ("items/pet_books.json", "pet_books"),
+               ("items/keystone_items.json", "keystone_items")]
+    for rel, list_key in sources:
+        path = db / rel
+        if not path.exists():
+            continue
+        for item in load_json(path).get(list_key, []):
+            rank = item.get("rank")
+            if not rank:
+                continue
+            if rank not in DISPLAY_RANK_LETTERS:
+                errors.append(f"{tag} {rel} {item.get('id')} rang interne inconnu {rank!r}")
+                continue
+            for k in ("name_fr", "name_en"):
+                check_name(rel, item, k, rank)
+            check_phrase(rel, item, "description_fr", "au rang", rank)
+            check_phrase(rel, item, "description_en", "at rank", rank)
+
+    quests_path = db / "world" / "quests.json"
+    if quests_path.exists():
+        for quest in load_json(quests_path).get("quests", []):
+            rank = quest.get("contract_rank")
+            if not rank:
+                continue
+            for key, word in (("title_fr", "rang"), ("title_en", "rank")):
+                want = f"({word} {DISPLAY_RANK_LETTERS.get(rank, '?')})"
+                if not str(quest.get(key, "")).endswith(want):
+                    errors.append(f"{tag} quests {quest.get('id')} {key} : attendu {want} (contract_rank {rank})")
+
+    for tier in prof.get("resource_rarity", {}).get("tiers", []):
+        tid = tier.get("id")
+        want = "" if tid == "C" else f" ({DISPLAY_RANK_LETTERS.get(tid, '?')})"
+        for key in ("name_suffix_fr", "name_suffix_en"):
+            if tier.get(key) != want:
+                errors.append(f"{tag} professions resource_rarity {tid} {key}={tier.get(key)!r} : attendu {want!r}")
+
+    def scan(node, rel, key=""):
+        if isinstance(node, dict):
+            for k, v in node.items():
+                if not k.startswith("_"):
+                    scan(v, rel, k)
+        elif isinstance(node, list):
+            for v in node:
+                scan(v, rel, key)
+        elif isinstance(node, str) and _PLAYER_TEXT_KEY.match(key):
+            m = _INTERNAL_LETTER_TEXT.search(node)
+            if m:
+                errors.append(f"{tag} {rel} {key} : lettre interne affichee '{m.group(0)}' dans {node[:80]!r}")
+
+    for path in sorted(db.rglob("*.json")):
+        rel = path.relative_to(db).as_posix()
+        if rel.startswith((".", "_meta/")) or "/." in rel or "node_modules" in rel:
+            continue
+        try:
+            scan(load_json(path), rel)
+        except (ValueError, UnicodeDecodeError):
+            continue
 
     return errors
 
@@ -1690,6 +1803,11 @@ def main():
 
     print("[7/10] Validating item rank bands (C->SS) across their 3 copies...")
     errs = validate_item_ranks(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[7b/10] Validating displayed rank letters (internal C..SS shown as D..S)...")
+    errs = validate_rank_display(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 

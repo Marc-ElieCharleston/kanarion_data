@@ -103,6 +103,10 @@ Players choose a faction at level 60. Subclass lore must NOT lock players into a
 | Consumable | `cons_` | `cons_health_potion` |
 | NPC | `npc_` | `npc_merchant` |
 
+### Rank letters: internal vs displayed
+
+- **⚠️ LETTRE INTERNE ≠ LETTRE AFFICHÉE (décision produit 2026-10-01)** : en data, en base et dans les ids, les rangs restent `C/B/A/S/SS` (ou 1..5) et ne changent JAMAIS (`koro_<x>_c..ss`, `book_<x>_rank_c..ss`, `ks_<x>_*`, champs `rank` / `quality_cap` / `contract_rank`, `custom_data.rank`) : ces objets sont dans les inventaires en prod. Le joueur lit **D, C, B, A, S** (C→D, B→C, A→B, S→A, SS→S). Tout texte joueur écrit en data (noms `(X)`, `au rang X`, titres de contrat, suffixes de variantes de ressource) porte la lettre AFFICHÉE ; règle et table dans `systems/professions.json` `quality.display_letters`, garde CI `validate_cross_references.py` étape 7b. Les générateurs (`generate_koro_catalog.py`, `gen_pet_books.py`) écrivent déjà la lettre affichée. Les rangs I..V (équipement, pierres, arène) ne sont pas des lettres. Côté client : `RankDisplay.letter()`.
+
 ### Skill Structure
 - **Tiers:** `filler` (low CD, always usable), `basic`, `advanced`, `ultimate`
 - **Per character:** 15 skills (5 base + 5 subclass + 5 tier3), max 100 skill points, 150 needed to max all (intentional -50 deficit forcing build choices)
