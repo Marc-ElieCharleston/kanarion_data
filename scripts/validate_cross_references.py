@@ -1101,6 +1101,8 @@ def _rank_of_level(level: int) -> int:
     for i, (lo, hi) in enumerate(RANK_BANDS):
         if lo <= level <= hi:
             return i + 1
+    if level == 0:
+        return 1  # metiers V1 : le rang I s'ouvre au niveau 0
     return 0
 
 
@@ -1233,8 +1235,9 @@ def validate_profession_recipes(db: Path, all_item_ids: set) -> list:
         if p not in profs:
             errors.append(f"[profession_recipes.json] '{rid}' : metier inconnu '{p}'")
         lvl = int(r.get("profession_level", 0))
-        if not 1 <= lvl <= 100:
-            errors.append(f"[profession_recipes.json] '{rid}' : profession_level hors 1..100")
+        # Metiers V1 (2026-10-01) : les metiers commencent au niveau 0, rang I = 0..19.
+        if not 0 <= lvl <= 100:
+            errors.append(f"[profession_recipes.json] '{rid}' : profession_level hors 0..100")
         rank = r.get("rank")
         if rank != _rank_of_level(lvl):
             errors.append(f"[profession_recipes.json] '{rid}' : rank {rank} != rang du niveau {lvl} "
@@ -1507,7 +1510,7 @@ def validate_profession_xp(db: Path) -> list:
     d = load_json(path)
     t = d.get("xp_table", {})
     prev = 0
-    for lvl in range(2, 101):
+    for lvl in range(1, 101):  # xp_table['1'] = pas 0 -> 1 (metiers au niveau 0, 2026-10-01)
         v = t.get(str(lvl))
         if not isinstance(v, int) or v <= 0:
             errors.append(f"[profession_xp.json] xp_table[{lvl}] manquant ou <= 0")
