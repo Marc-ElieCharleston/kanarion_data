@@ -1546,6 +1546,39 @@ def validate_contract_chests(db: Path, all_item_ids: set) -> list:
     return errors
 
 
+def validate_recipe_chain(db: Path) -> list:
+    """Chainage des rangs (Albion sur les intermediaires, 2/2/1/1 sur l'equipement) et lots de fabrication."""
+    import re as _re
+    errors = []
+    path = db / "items" / "profession_recipes.json"
+    if not path.exists():
+        return errors
+    d = load_json(path)
+    inter = {i["id"] for i in d.get("new_items", []) if i.get("category") == "intermediate"}
+    k_equip = {5: 2, 4: 2, 3: 1, 2: 1}
+    batches = [(r"^cons_(hp|mp)_potion_(pet_)?t[1-5]$", 50), (r"^food_", 10), (r"^elix_", 10),
+               (r"^scroll_", 10), (r"^pet_treat_", 10), (r"^cons_recall_potion$", 10)]
+    eq = _re.compile(r"^((?:wpn|head|chest|legs|feet|belt|cape|acc)_[a-z_]+_b)([1-5])$")
+    for r in d.get("recipes", []):
+        rid, out = r.get("id", "?"), r.get("output_item", "")
+        mats = {m["id"]: m["qty"] for m in r.get("materials", [])}
+        m = _re.match(r"^mat_([a-z]+)_r([1-5])$", out)
+        if out in inter and m and int(m.group(2)) >= 2:
+            prev = f"mat_{m.group(1)}_r{int(m.group(2)) - 1}"
+            if mats.get(prev, 0) < 1:
+                errors.append(f"[profession_recipes.json] '{rid}' : intermediaire de rang {m.group(2)} sans '{prev}' (regle Albion)")
+        m = eq.match(out)
+        if m and int(m.group(2)) >= 2:
+            n = int(m.group(2))
+            prev = m.group(1) + str(n - 1)
+            if mats.get(prev, 0) < k_equip[n]:
+                errors.append(f"[profession_recipes.json] '{rid}' : piece de rang {n} sans {k_equip[n]} x '{prev}'")
+        for pat, size in batches:
+            if _re.match(pat, out) and r.get("output_qty") != size:
+                errors.append(f"[profession_recipes.json] '{rid}' : lot de {r.get('output_qty')} au lieu de {size}")
+    return errors
+
+
 def validate_rest_npcs(db: Path) -> list:
     """stats/world_buffs.json granted_by_npcs : chaque PNJ de repos existe."""
     errors = []
@@ -1745,6 +1778,11 @@ def main():
 
     print("[12k/12] Validating profession XP curve (table, gray rule, time model)...")
     errs = validate_profession_xp(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12l/12] Validating rank chaining and craft batches...")
+    errs = validate_recipe_chain(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
