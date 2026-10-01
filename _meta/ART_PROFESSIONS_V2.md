@@ -27,9 +27,9 @@ Une plante coupee au-dessus de la racine, en petit bouquet ou en brin, lisible a
 |---|---|---|---|
 | `mat_herb_sauge` | Sauge de Havreden | 1 | `assets/icons/items/materials/mat_herb_sauge.png` |
 | `mat_herb_clairpre` | Clair-de-pré | 2 | `assets/icons/items/materials/mat_herb_clairpre.png` |
-| `mat_herb_veilleuse` | Veilleuse des marais | 3 | `assets/icons/items/materials/mat_herb_veilleuse.png` |
+| `mat_herb_veilleuse` | Pourpre des marais | 3 | `assets/icons/items/materials/mat_herb_veilleuse.png` |
 | `mat_herb_souffle` | Feuille-de-Souffle | 4 | `assets/icons/items/materials/mat_herb_souffle.png` |
-| `mat_herb_cicatrice` | Cicatrice-verte | 5 | `assets/icons/items/materials/mat_herb_cicatrice.png` |
+| `mat_herb_cicatrice` | Cicatrice-de-Faille | 5 | `assets/icons/items/materials/mat_herb_cicatrice.png` |
 
 ### Ecorces (Bucheron)
 
@@ -125,7 +125,7 @@ Fiole a demi pleine d'un liquide incolore a reflets ; bulles plus vives avec le 
 
 ### Encres (Apothicaire)
 
-Encrier rond : encre vert sauge, jaune des pres, bleu des marais, bleu de Souffle, vert profond de Cicatrice-verte.
+Encrier rond : encre vert sauge, jaune des pres, bleu des marais, bleu de Souffle, violet de Cicatrice-de-Faille.
 
 | Id | Nom FR | Rang | Chemin |
 |---|---|---|---|
@@ -133,7 +133,7 @@ Encrier rond : encre vert sauge, jaune des pres, bleu des marais, bleu de Souffl
 | `mat_ink_r2` | Encre des prés | 2 | `assets/icons/items/materials/mat_ink_r2.png` |
 | `mat_ink_r3` | Encre des marais | 3 | `assets/icons/items/materials/mat_ink_r3.png` |
 | `mat_ink_r4` | Encre de Souffle | 4 | `assets/icons/items/materials/mat_ink_r4.png` |
-| `mat_ink_r5` | Encre de Cicatrice-verte | 5 | `assets/icons/items/materials/mat_ink_r5.png` |
+| `mat_ink_r5` | Encre de Faille | 5 | `assets/icons/items/materials/mat_ink_r5.png` |
 
 ### Papier (Scribe)
 
@@ -318,7 +318,7 @@ Chemin propose : `assets/sprites/gather_nodes/<type>/<type>_r<rang>_<etat>.png` 
 | `tree` | lumberjack | terre ferme | arbre vivant avec bois mort au pied et entaille de resine ; essence par rang : frene, chene, if, arbre de Souffle (feuillage bleute), arbre obscur (feuillage violet sombre). Epuise : l'arbre reste, sans bois mort ni resine. |
 | `rock` | miner | terre ferme | rocher avec filon visible : fer (gris), argent, cuivre de Souffle, astral, metal de Faille ; quelques cristaux de sel. Epuise : roche nue fendue. |
 | `sand_bank` | miner | rive (bord de l eau) | banc de sable au bord de l'eau, tache claire sur la rive ; quartz qui affleure aux rangs III-V. Toujours pose sur une rive : prevoir un bord d'eau dans le cadrage. Epuise : sable lisse. |
-| `herb_patch` | herbalist | terre ferme | touffe d'herbes au sol, une espece par rang (Sauge de Havreden, Clair-de-pre, Veilleuse des marais qui luit, Feuille-de-Souffle, Cicatrice-verte qui pousse sur une cicatrice de Faille refermee). Epuise : herbe rase qui repousse. |
+| `herb_patch` | herbalist | terre ferme | touffe d'herbes au sol, une espece par rang (Sauge de Havreden, Clair-de-pre, Pourpre des marais, rouge vif, Feuille-de-Souffle, Cicatrice-de-Faille qui pousse sur une cicatrice de Faille refermee). Epuise : herbe rase qui repousse. |
 | `wild_bush` | herbalist | terre ferme | buisson sauvage : baies (I), champignons au pied (II), ruche sauvage dans les branches (III), racines apparentes (IV), Fleur de Faille (V). Epuise : buisson nu. |
 | `fishing_spot` | fisher | rive (bord de l eau) | remous et bulles a la surface de l'eau, cadre depuis la rive ; plus de reflets et de poissons qui sautent avec le rang, lueur violette au V. Epuise : eau calme. Le coup = eclaboussure du flotteur. |
 
