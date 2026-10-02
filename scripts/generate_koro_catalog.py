@@ -34,7 +34,10 @@ def generate():
     tier3_level = max(koro_level, categories['tier3']['unlock_at_player_level'])
     cards = []
     seen = set()
+    excluded = set(generation.get('excluded_skill_classes', []))
     for path in sorted((ROOT / 'classes').glob('*/skills.json')):
+        if path.parent.name in excluded:
+            continue
         for skill, in_tier3 in active_skills(json.loads(path.read_text(encoding='utf8'))):
             sid = skill['id']
             if sid in seen:
