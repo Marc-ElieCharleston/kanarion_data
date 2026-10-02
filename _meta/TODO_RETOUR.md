@@ -259,10 +259,10 @@ Dernière mise à jour : 2026-10-02.
 - [ ] **Afficher ces informations EN JEU**, sinon les joueurs ne les découvriront jamais : stats de
       base et identité de l'espèce (PV / ATK / armure / RM), passif d'espèce et ses paliers 1 / 20 / 50 /
       100, effet de la rareté, archétype du monstre (bestiaire, fiche de capture, panneau Colette).
-- [ ] **Rareté des familiers** (proposition 2026-10-02, à valider) : multiplicateurs actuels commun 1.0 /
+- [x] **Rareté des familiers** (VALIDÉ et appliqué 2026-10-02, `config/familiar_balance.json`) : multiplicateurs actuels commun 1.0 /
       peu commun 1.06 / rare 1.12 / épique 1.2 / légendaire 1.3 → proposé 1.0 / 1.07 / 1.15 / 1.3 / 1.5.
       Avec 1.5, un rat légendaire tank ≈ 70 % des PV et 80 % de l'armure d'un golem commun : l'espèce
-      compte plus que la rareté pour le rôle, la rareté récompense la chasse (capture légendaire 0,2 %).
+      compte plus que la rareté pour le rôle, la rareté récompense la chasse (drop légendaire 0,2 % : pas de capture, une fois l'empreinte droppée le familier est obtenu).
 - [ ] **Passifs SPÉCIAUX de familier à préparer** (déclencheurs, ce qui rendra certains familiers ultra
       recherchés) : ex. « quand il est soigné, pose un soin sur la durée sur un allié proche », « quand
       il bloque, renvoie… », « à la mort d'un ennemi… ». Aujourd'hui le serveur n'implémente que 3
