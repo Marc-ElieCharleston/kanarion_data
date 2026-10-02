@@ -16,6 +16,16 @@ Base : `kits_tous.csv`. Ce fichier fait foi quand il contredit le CSV.
 - Boss terminés aujourd'hui : Égouts (Le Rongeur) et Tanière des loups. Tour d'Asher, doublons de
   boss : gérés par le propriétaire.
 - PixelLab gère bien les humanoïdes et les quadrupèdes, pas les créatures à 8 pattes.
+- **Sprite différent = monstre différent** (ex. Cerf et Cerf Gardien).
+- **Une attaque à recharge courte (filler, attaque d'espèce, rôle de base) ne contrôle JAMAIS** :
+  4 s de recharge + 2 s d'étourdissement = le joueur ne joue plus. Elle applique un débuff à la place
+  (armure −, attaque −, dégâts infligés −, réduction de soin, DoT…). Les contrôles durs (étourdissement,
+  peur, silence…) sont réservés aux compétences d'identité / ultimes à longue recharge. Corrigés :
+  Coup de tête (étourdissement → armure −10 % 4 s) et Hurlement d'Effroi (peur → dégâts infligés
+  −10 % 4 s), dans `new_skills.json`. Ralentissement, aveuglement et gel restent pour l'instant
+  (le joueur continue d'agir) : à confirmer.
+- Les coins de la carte sont plus ou moins infestés : des familles entières peuvent y vivre
+  (ex. une famille de tortues dans un lac).
 
 ## Lot 1 — bêtes du départ (38) : VALIDÉ le 2026-10-02
 
@@ -28,3 +38,12 @@ Base : `kits_tous.csv`. Ce fichier fait foi quand il contredit le CSV.
 - Après le niveau 60 aussi (créatures non normales) : Hybride Sanglier-Loup, Traqueur de Poussière,
   Molosse Corrompu, Chacal de la Faille. Loup-Garou : à confirmer.
 - Tanière des loups (Loup Alpha, 5 nouveaux loups) : à voir au retour.
+
+## Lot 2 — autres bêtes (26) : VALIDÉ le 2026-10-02
+
+- Kits et archétypes du CSV validés.
+- Cerf Gardien conservé (sprite différent de la Biche et du Cerf).
+- Tortue de Pierre conservée ; idée : créer la famille des tortues dans un lac.
+- Coup de corne de la Chèvre : saignement conservé (ce n'est pas un contrôle).
+- Les 4 créatures Faille / Vide mises de côté (Meute de la Faille, Chasseur du Vide, Béhémoth de la
+  Faille, Matriarche Corrompue) : à réactiver après le niveau 60 dans les zones corrompues.

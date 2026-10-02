@@ -72,6 +72,11 @@ Dernière mise à jour : 2026-10-02.
 - [ ] Appliquer les décisions de la revue lot par lot : `_meta/refonte_monstres/DECISIONS.md`.
 - [ ] Supprimer les araignées (`mob_spider_small`, `mob_spider_queen`, `boss_spider_queen`) et leurs
       placements ; retirer le Scarabée de Poussière (doublon) ; Larve et Géant = stades du scarabée.
+- [ ] Remplacer dans `skills/monster_skills.json` les compétences de `new_skills.json` →
+      `modified_existing` (Coup de tête : étourdissement → armure −10 %).
+- [ ] Réactiver après le niveau 60 (zones corrompues) : Meute de la Faille, Chasseur du Vide,
+      Béhémoth de la Faille, Matriarche Corrompue.
+- [ ] Vérifier toutes les autres compétences à recharge courte des monstres : aucun contrôle dur.
 - [ ] Déplacer après le niveau 60 (zones corrompues) les créatures non normales : Corbeau Charognard,
       Hybride Sanglier-Loup, Traqueur de Poussière, Molosse Corrompu, Chacal de la Faille (+ Loup-Garou ?).
 
@@ -136,6 +141,7 @@ Dernière mise à jour : 2026-10-02.
 
 ## 6. Assets (PixelLab, icônes)
 
+- [ ] Famille des tortues (dans un lac) autour de la Tortue de Pierre.
 - [ ] Nouvelle famille de monstres pour remplacer les araignées (supprimées : PixelLab ne gère
       pas bien les 8 pattes) — humanoïde ou quadrupède.
 

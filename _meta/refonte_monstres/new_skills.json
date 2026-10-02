@@ -978,21 +978,22 @@
       "cooldown": 8.0,
       "cast_time": 1.5,
       "vfx_type": "debuff_aura",
-      "description_fr": "Inflige 85% ATK dégâts magiques. Peur pendant 1 s : la cible ne peut plus agir.",
-      "description_en": "Deals 85% ATK magic damage. Fear for 1 s: the target cannot act.",
+      "description_fr": "Inflige 85% ATK dégâts magiques. Terreur : la cible inflige 10% de dégâts en moins pendant 4 s.",
+      "description_en": "Deals 85% ATK magic damage. Dread: the target deals 10% less damage for 4 s.",
       "tags": [
         "damage",
         "melee",
         "filler",
         "species",
-        "fear",
-        "effroi"
+        "effroi",
+        "debuff"
       ],
       "effects": [
         {
           "type": "debuff",
-          "stat": "fear",
-          "duration": 1.0
+          "stat": "damage_percent_down",
+          "stacks_to_apply": 2,
+          "duration": 4.0
         }
       ],
       "targeting": {
@@ -1042,5 +1043,52 @@
       },
       "range": 2
     }
-  ]
+  ],
+  "modified_existing": {
+    "_comment": "Compétences EXISTANTES de skills/monster_skills.json à remplacer (règle 2026-10-02 : une attaque à recharge courte ne contrôle jamais, elle débuffe).",
+    "basic_skills": [
+      {
+        "id": "skill_mob_headbutt",
+        "name_en": "Headbutt",
+        "name_fr": "Coup de tete",
+        "tier": "basic",
+        "target": "enemy",
+        "pattern": "single",
+        "damage_type": "physical",
+        "scaling_stat": "atk",
+        "base_power": 8,
+        "scaling_percent": 100,
+        "mana_cost": 14,
+        "cooldown": 12.0,
+        "cast_time": 1.5,
+        "vfx_type": "melee_slash",
+        "description_fr": "Inflige 100% ATK degats physiques et fend la garde : -10% d'armure pendant 4s. Le crane est fait pour ca, le reste du corps ne fait que suivre.",
+        "description_en": "Deals 100% ATK physical damage and cracks the guard: -10% armor for 4s. The skull is built for this, the body merely follows.",
+        "tags": [
+          "damage",
+          "melee",
+          "tank",
+          "beast",
+          "debuff"
+        ],
+        "effects": [
+          {
+            "type": "debuff",
+            "stat": "armor_down",
+            "stacks_to_apply": 2,
+            "duration": 4.0
+          }
+        ],
+        "targeting": {
+          "selection_mode": "entity",
+          "valid_target_team": "enemy",
+          "requires_line_of_sight": true,
+          "bypasses_los": false,
+          "requires_entity_on_target_tile": true,
+          "aoe_pattern_id": "single"
+        },
+        "range": 2
+      }
+    ]
+  }
 }
