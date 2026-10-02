@@ -74,7 +74,11 @@ Dernière mise à jour : 2026-10-02.
       placements ; retirer le Scarabée de Poussière (doublon) ; Larve et Géant = stades du scarabée.
 - [ ] Remplacer dans `skills/monster_skills.json` les compétences de `new_skills.json` →
       `modified_existing` (Coup de tête : étourdissement → armure −10 %).
-- [ ] Réactiver après le niveau 60 (zones corrompues) : Meute de la Faille, Chasseur du Vide,
+- [ ] Renommer `mob_bandit_enforcer` « Exécuteur Bandit » → « Homme de main » (FR + EN).
+- [ ] Drapeau « capturable en familier » par espèce : NON pour les humains (bandits, hors-la-loi,
+      convertis, zélotes, Edric, chevaliers déchus, culte obscur ; tribaux ?), OUI pour les humanoïdes
+      non humains (gobelins, hommes-lézards…) et les bêtes.
+- [ ] Réactiver chaque monstre mis de côté dès que son sprite existe ; Meute de la Faille, Chasseur du Vide,
       Béhémoth de la Faille, Matriarche Corrompue.
 - [ ] Vérifier toutes les autres compétences à recharge courte des monstres : aucun contrôle dur.
 - [ ] Déplacer après le niveau 60 (zones corrompues) les créatures non normales : Corbeau Charognard,
@@ -141,6 +145,41 @@ Dernière mise à jour : 2026-10-02.
 
 ## 6. Assets (PixelLab, icônes)
 
+- [ ] **Sprites des 33 monstres mis de côté** (tous `art_pending`, aucun portrait), à créer pour
+      pouvoir les réactiver :
+      - `mob_rift_pack` Meute de la Faille (niv. 51)
+      - `mob_void_wraith` Spectre du Vide (niv. 51)
+      - `mob_fallen_zealot` Zélote Déchu (niv. 52)
+      - `mob_void_hunter` Chasseur du Vide (niv. 53)
+      - `mob_abyssal_brute` Brute Abyssale (niv. 53)
+      - `mob_riftstone_colossus` Colosse de Pierre-Faille (niv. 54)
+      - `mob_corrupted_cleric` Clerc Corrompu (niv. 55)
+      - `mob_nightmare_weaver` Tisseur de Cauchemars (niv. 55)
+      - `mob_greater_demon` Démon Majeur (niv. 56)
+      - `mob_soul_reaver` Faucheur d'Âmes (niv. 57)
+      - `mob_imitator_echo` Écho de l'Imitateur (niv. 58)
+      - `mob_rift_behemoth` Behemoth de la Faille (niv. 58)
+      - `mob_corrupted_matriarch` Matriarche Corrompue (niv. 59)
+      - `mob_avatar_of_the_rift` Avatar de la Faille (niv. 60)
+      - `mob_broken_cherub` Chérubin Brisé (niv. 81)
+      - `mob_fallen_watcher` Veilleur Déchu (niv. 81)
+      - `mob_tarnished_guardian` Gardien Terni (niv. 82)
+      - `mob_corrupted_seraph` Séraphin Corrompu (niv. 83)
+      - `mob_hymn_breaker` Briseur d'Hymne (niv. 85)
+      - `mob_fallen_valkyr` Valkyr Déchue (niv. 86)
+      - `mob_light_eater` Mangeur de Lumière (niv. 87)
+      - `mob_choir_of_ruin` Chœur de Ruine (niv. 88)
+      - `mob_herald_of_the_fissure` Héraut de la Fissure (niv. 90)
+      - `mob_shard_of_severance` Éclat de Rupture (niv. 91)
+      - `mob_severance_priest` Prêtre de la Rupture (niv. 92)
+      - `mob_first_fallen` Premier Déchu (niv. 93)
+      - `mob_void_archangel` Archange du Vide (niv. 94)
+      - `mob_silence_bringer` Porteur de Silence (niv. 95)
+      - `mob_ruin_colossus` Colosse de Ruine (niv. 96)
+      - `mob_the_unmade` Le Défait (niv. 97)
+      - `mob_apostle_of_severance` Apôtre de la Rupture (niv. 98)
+      - `mob_warden_of_the_throne` Gardien du Trône (niv. 99)
+      - `mob_the_first_fissure` La Première Fissure (niv. 100)
 - [ ] Famille des tortues (dans un lac) autour de la Tortue de Pierre.
 - [ ] Nouvelle famille de monstres pour remplacer les araignées (supprimées : PixelLab ne gère
       pas bien les 8 pattes) — humanoïde ou quadrupède.

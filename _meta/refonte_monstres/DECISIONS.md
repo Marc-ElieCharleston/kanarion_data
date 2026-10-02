@@ -24,6 +24,10 @@ Base : `kits_tous.csv`. Ce fichier fait foi quand il contredit le CSV.
   Coup de tête (étourdissement → armure −10 % 4 s) et Hurlement d'Effroi (peur → dégâts infligés
   −10 % 4 s), dans `new_skills.json`. Ralentissement, aveuglement et gel restent pour l'instant
   (le joueur continue d'agir) : à confirmer.
+- **Familiers : les HUMAINS ne peuvent pas être des familiers** (bandits, hors-la-loi, convertis,
+  zélotes, Edric, chevaliers déchus, culte obscur, tribaux à confirmer). **Les humanoïdes non humains
+  le peuvent** (gobelins, hommes-lézards…). À porter comme un drapeau « capturable » par espèce.
+- Monstres mis de côté : on les réactive tous dès que leur sprite existe.
 - Les coins de la carte sont plus ou moins infestés : des familles entières peuvent y vivre
   (ex. une famille de tortues dans un lac).
 
@@ -47,3 +51,14 @@ Base : `kits_tous.csv`. Ce fichier fait foi quand il contredit le CSV.
 - Coup de corne de la Chèvre : saignement conservé (ce n'est pas un contrôle).
 - Les 4 créatures Faille / Vide mises de côté (Meute de la Faille, Chasseur du Vide, Béhémoth de la
   Faille, Matriarche Corrompue) : à réactiver après le niveau 60 dans les zones corrompues.
+
+## Lot 3 — humanoïdes (62) : VALIDÉ le 2026-10-02
+
+- Kits et archétypes du CSV validés. Boss (Edric, Inquisiteur, gobelins, bandits, cultiste) : gérés
+  par le propriétaire, kits du CSV à titre de proposition.
+- Renommer **Exécuteur Bandit → Homme de main** (c'est un tank).
+- Fanatique de la Tour : son portrait (hache + bouclier) contredit sa fiche de lanceur → le passer
+  en défensif (gardien proposé), à confirmer.
+- Doublons (Voleur / Coupe-Bourse, Pillard / Bandit, archers) : conservés si leurs sprites diffèrent.
+- Les 33 monstres mis de côté (tous `art_pending`, aucun portrait) seront réactivés quand leur sprite
+  existera, après le niveau 60 pour les créatures corrompues.
