@@ -117,6 +117,7 @@ seulement), enchanteur (buffs, ex-support).
 | `pve_matrix.py` | `out/pve_matrix.csv` | Joueur de base (stats + équipement mal / moyen / ultra) contre monstres du modèle, niveaux 10-100 : temps pour tuer / pour mourir, puissance manquante M, pression de pack. |
 | `monster_stats_v2.py` | `out/monster_stats_v2.csv` | Proposition V2 : stats niveau 1 par espèce (facteur d'espèce vs archétype et palier), croissance des stats d'identité par archétype, ratio par niveau. |
 | `monster_review.py` | `out/monster_review.csv` | Revue des 200 monstres : espèce, stade, rôle, archétype proposé (11), nombre de compétences visé, alertes. Vérifié sur les portraits du client pour 6 cas. |
+| `species_table.py` | `out/species_table.csv`, `out/species_monsters.csv` | 45 espèces (liste écrite à la main), multiplicateurs d'espèce PV / ATK / armure / RM (moyenne des membres, stade retiré, rat et scarabée corrigés à la main), puis stats niveau 1 et PV aux niveaux 1/10/40/70/100 de chaque monstre. Les 4 nouveaux archétypes utilisent provisoirement le profil le plus proche (gardien→tank, berserker→brute, soigneur/enchanteur→support, invocateur→mage). |
 
 Démarche : on relit les tableaux, puis un script appliquera les décisions à
 `entities/monsters.json` — relançable après la fusion du travail du bureau, plutôt que
