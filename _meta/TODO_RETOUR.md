@@ -95,7 +95,10 @@ Dernière mise à jour : 2026-10-02.
 - [ ] Appliquer la refonte des monstres à `entities/monsters.json` : archétype, espèce, stade, kit
       (tableaux dans `scripts/balance/out/`), après relecture.
 - [x] Profils des 11 archétypes écrits (branche `vac_archetype-profiles`).
-- [ ] Serveur : lire `mag` séparément de `atk` (aujourd'hui atk alimente les deux), `parry_chance`,
+- [ ] **BLOQUANT avant d'activer les profils V2** : le serveur doit lire `mag` pour `magic_power`
+      (`room_manager.cpp` met aujourd'hui `magic_power = atk`). Les archétypes magiques ont ATK 2 :
+      sans ce changement ils lanceraient à 2 de puissance.
+- [ ] Serveur : lire aussi `parry_chance`,
       `lifesteal`, `reflect`, et `rate_growth_per_10_levels` du modèle.
 - [ ] Retirer l'alias `support` quand plus aucun monstre ne pointe dessus (et adapter
       `test_monster_balance_rules.cpp` qui le cite).
