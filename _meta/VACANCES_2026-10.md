@@ -13,6 +13,8 @@ Règles suivies :
 - Aucune modification des zones, quêtes, PNJ, carte, histoire, leveling (conflits
   avec le travail du bureau).
 
+**La liste complète des tâches du retour est dans `_meta/TODO_RETOUR.md`** (tenue à jour).
+
 À faire au retour : fusionner le travail du bureau, puis relire chaque branche
 `vac_*`, compiler et lancer les tests du back, relancer les scripts de
 `scripts/balance/` sur la version fusionnée.
