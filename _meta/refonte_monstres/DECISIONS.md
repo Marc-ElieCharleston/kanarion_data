@@ -11,8 +11,14 @@ Base : `kits_tous.csv`. Ce fichier fait foi quand il contredit le CSV.
   avec ses propres stats de base. Un affixe de stade (jeune, alpha, géant…) = même espèce.
 - Ce système sert aussi à remplir la tour infinie et les zones de faille avec des monstres aléatoires.
 - MAG : tous les monstres ont un MAG dans leurs stats de base V2 (fini le repli ATK ÷ 2).
-- Tout ce qui n'est pas un animal « normal » (hybrides, créatures du lore) vit APRÈS le niveau 60,
-  dans les zones « corrompues » — sauf dans les donjons et les failles.
+- **Progression de la carte (2026-10-02)**, à appliquer avec la nouvelle carte du bureau :
+  - niv. 1-40 : ANIMAUX ;
+  - niv. 45-55 : HUMAINS touchés par les failles (voleurs, brigands, hors-la-loi) ;
+  - niv. ~55-60 : FANATIQUES qui ont perdu la raison, près de la Tour ;
+  - niv. 60 : la TOUR D'ASHER ;
+  - après 60 : les CRÉATURES (ni animaux ni humains : golems, squelettes, spectres, élémentaires,
+    Faille, Vide, Abîme, Effroi, démons, archontes) et les animaux non normaux (hybrides, Corbeau
+    Charognard…). Exceptions : donjons et failles.
 - Boss terminés aujourd'hui : Égouts (Le Rongeur) et Tanière des loups. Tour d'Asher, doublons de
   boss : gérés par le propriétaire.
 - PixelLab gère bien les humanoïdes et les quadrupèdes, pas les créatures à 8 pattes.
@@ -66,3 +72,18 @@ Base : `kits_tous.csv`. Ce fichier fait foi quand il contredit le CSV.
 - Doublons (Voleur / Coupe-Bourse, Pillard / Bandit, archers) : conservés si leurs sprites diffèrent.
 - Les 33 monstres mis de côté (tous `art_pending`, aucun portrait) seront réactivés quand leur sprite
   existera, après le niveau 60 pour les créatures corrompues.
+
+## Lot 4 — le sud (74) : VALIDÉ le 2026-10-02
+
+- Kits et archétypes du CSV validés.
+- Toutes les créatures du lot passent après le niveau 60 (après la Tour d'Asher), y compris celles
+  placées aujourd'hui entre 15 et 60 (golems, squelettes, Loup de Cristal, Chien de Braise, Cheval
+  Cauchemar, Faille / Vide / Abyssaux 40-60…).
+- Élémentaires séparés en deux espèces : cristal (Loup de Cristal, glace) et braise (Chien de Braise, feu).
+- Doublons (Horreur / Traqueur d'Effroi, Pillard d'Os / Guerrier Maudit, les 3 colosses, Spectre du
+  Vide / Moissonneur, Porteur de Silence / Briseur d'Hymne) : à trancher en créant les sprites ;
+  fusionner réduit le travail PixelLab.
+- Boss (Gardien de la Forêt, Champion Maudit, Gueule de l'Abîme, Souverain, Avatar, Héraut, Première
+  Fissure) : au retour, avec le lore à jour.
+
+## Revue terminée : les 4 lots (200 monstres) sont validés.

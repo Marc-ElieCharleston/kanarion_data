@@ -139,6 +139,11 @@ Dernière mise à jour : 2026-10-02.
       de quêtes / événements, sinon les passer en `shelved` ou les placer. Confirmés non placés par
       les relecteurs : Tortue, Tatou, Cheval, Cerf Obscur, Cerf Gardien, Traqueur de Poussière,
       Chacal de la Faille, Loup Alpha, boss gobelins.
+- [ ] **Replacer les monstres selon la progression décidée** (voir `DECISIONS.md`) : animaux 1-40,
+      humains touchés par les failles 45-55, fanatiques ~55-60 près de la Tour, Tour d'Asher 60,
+      créatures après 60 (golems, squelettes, spectres, élémentaires, Faille, Vide, Abîme, Effroi,
+      démons, archontes, hybrides).
+- [ ] Séparer l'espèce `elementaire` en `cristal` (Loup de Cristal) et `braise` (Chien de Braise).
 - [ ] Placements à comparer avec la NOUVELLE carte du bureau : Renard Brumeux (niv. 33) en
       expédition 1-10 et étage 1 du Repaire, Petite Araignée (niv. 10) en zone 25-30, Charognard
       (niv. 27) en zone 9-20, boss Gueule de l'Abîme aussi monstre de zone 60-70 / 85-100.
@@ -212,6 +217,10 @@ Dernière mise à jour : 2026-10-02.
 - [ ] Nouveaux monstres pour les archétypes peu fournis (1 seul invocateur aujourd'hui).
 
 ## 7. Discussions ouvertes (design)
+
+- [ ] Créer les monstres finaux du jeu à partir du lore À JOUR (pousser le lore du bureau d'abord) ;
+      boss du sud : Gardien de la Forêt, Champion Maudit, Gueule de l'Abîme, Souverain, Avatar, Héraut,
+      Première Fissure.
 
 - [ ] Idées de contenu PvE à proposer (déjà en jeu : coffres, failles, tour infinie ; idée : pages
       de livre à collectionner qui racontent des histoires).
