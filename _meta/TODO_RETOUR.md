@@ -69,6 +69,12 @@ Dernière mise à jour : 2026-10-02.
 
 ## 5. Data — travail à faire
 
+- [ ] Appliquer les décisions de la revue lot par lot : `_meta/refonte_monstres/DECISIONS.md`.
+- [ ] Supprimer les araignées (`mob_spider_small`, `mob_spider_queen`, `boss_spider_queen`) et leurs
+      placements ; retirer le Scarabée de Poussière (doublon) ; Larve et Géant = stades du scarabée.
+- [ ] Déplacer après le niveau 60 (zones corrompues) les créatures non normales : Corbeau Charognard,
+      Hybride Sanglier-Loup, Traqueur de Poussière, Molosse Corrompu, Chacal de la Faille (+ Loup-Garou ?).
+
 - [ ] Appliquer la refonte des monstres à `entities/monsters.json` : archétype, espèce, stade, kit
       (tableaux dans `scripts/balance/out/`), après relecture.
 - [ ] Écrire les profils des 4 nouveaux archétypes dans `config/monster_scaling_model.json`.
@@ -129,6 +135,9 @@ Dernière mise à jour : 2026-10-02.
       (descriptions périmées).
 
 ## 6. Assets (PixelLab, icônes)
+
+- [ ] Nouvelle famille de monstres pour remplacer les araignées (supprimées : PixelLab ne gère
+      pas bien les 8 pattes) — humanoïde ou quadrupède.
 
 - [ ] Seuls 158 portraits de monstres sont dans le dépôt client (le reste est synchronisé sur le
       serveur) : vérifier qu'aucun monstre actif n'en manque.
