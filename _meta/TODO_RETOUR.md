@@ -32,6 +32,12 @@ Dernière mise à jour : 2026-10-02.
 
 ## 3. Décisions à confirmer
 
+- [ ] **Tribaux : humains (non capturables) ou non ?** À trancher en regardant les sprites. Vu dans le
+      dépôt client : Brute Tribale = créature massive et velue à massue (ogre / troll ?) ; Seigneur de
+      guerre tribal = coiffe de plumes + bouclier (humain ou orc ?). Pas de portrait dans le dépôt pour
+      Sorcière Tribale, Chasseur Tribal, Chef de Guerre Tribal.
+- [ ] Fanatique de la Tour (portrait hache + bouclier, fiche de lanceur) : gardien proposé.
+
 - [ ] L'interrupteur `MONSTER_SCALING_MODEL` est-il activé en production ? (absent des dépôts)
 - [ ] Joueurs qui possèdent déjà une carte Koro de familier : rembourser, convertir, ou laisser ?
 - [ ] XP des familiers 90 % : valider en jeu sur un personnage neuf.

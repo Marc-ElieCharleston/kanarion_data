@@ -28,6 +28,10 @@ Base : `kits_tous.csv`. Ce fichier fait foi quand il contredit le CSV.
   zélotes, Edric, chevaliers déchus, culte obscur, tribaux à confirmer). **Les humanoïdes non humains
   le peuvent** (gobelins, hommes-lézards…). À porter comme un drapeau « capturable » par espèce.
 - Monstres mis de côté : on les réactive tous dès que leur sprite existe.
+- **Débuffs de défense (2026-10-02)** : une attaque PHYSIQUE à courte recharge réduit l'ARMURE seule
+  (ex. Coup de tête −10 % armure 4 s) ; une attaque MAGIQUE à courte recharge réduit la RÉSISTANCE
+  MAGIQUE seule ; les deux à la fois seulement sur une compétence d'identité / élite à longue
+  recharge (ex. Brise-Garde). Chaque monstre « prépare » ainsi un type de dégâts.
 - Les coins de la carte sont plus ou moins infestés : des familles entières peuvent y vivre
   (ex. une famille de tortues dans un lac).
 
