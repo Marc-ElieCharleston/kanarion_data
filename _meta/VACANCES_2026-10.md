@@ -38,8 +38,9 @@ Règles suivies :
 |---|---|---|---|
 | `vac_familiar-xp-90` | `2feade31` | Familier : 90 % de l'XP de combat du joueur (100 % depuis le 2026-08-03). | ctest combat + familiar |
 | `vac_poison-cap` | `1c45a99f` | Poison sur un MONSTRE plafonné à 50 % de max(ATK, MAG) de la source par stack et par tick (corrige `ks_util_venom_sting` sur les boss). Poison des monstres sur les joueurs inchangé (levier anti-tank). | `combat-tests --gtest_filter="*Poison*"` (nouveau test `PoisonDot_OnMonster_CappedBySourcePower`) |
+| `vac_v2-monster-mag` | `3809a674` | Serveur V2, étape 1 : les monstres ont une puissance magique séparée de l'attaque (`mag` du profil d'archétype → `magic_power`) ; sans `mag` dans la data, comportement inchangé. Nouveau test `MonsterScalingModelMag`. | `ctest -R MonsterScaling` |
 | `vac_defense-curve-test` | `06f3a72d` | Seuil du test `DefenseIsDecoupledFromOffense` adapté à la défense raide V2 (x25 au niv. 100). | `ctest -R MonsterScaling` |
-| `vac_koro-shield-rank` | `a696fb9a` | Bouclier d'une carte Koro proportionnel au rang. Les HoT ne bougent pas (leur durée porte déjà le rang). | `combat-tests --gtest_filter="*Koro*"` (nouveau test `KoroCard_ShieldAbsorbScalesWithRank`) |
+| `vac_koro-shield-rank` | `09b388b1` | Bouclier d'une carte Koro proportionnel au rang. Les HoT ne bougent pas (leur durée porte déjà le rang). | `combat-tests --gtest_filter="*Koro*"` (nouveau test `KoroCard_ShieldAbsorbScalesWithRank`) |
 
 ## Décisions de design (avec le propriétaire, 2026-10-02)
 

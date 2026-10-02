@@ -27,6 +27,7 @@ Dernière mise à jour : 2026-10-02.
   - [ ] `vac_familiar-xp-90` — ctest combat + familiar
   - [ ] `vac_poison-cap` — `combat-tests --gtest_filter="*Poison*"`
   - [ ] `vac_koro-shield-rank` — `combat-tests --gtest_filter="*Koro*"`
+  - [ ] `vac_v2-monster-mag` — `ctest -R MonsterScaling` (MAG séparée de l'ATK)
   - [ ] `vac_defense-curve-test` — `ctest -R MonsterScaling` avec la data `vac_archetype-profiles`
 - [ ] Mettre à jour le pin de la data (`kanarion-meta`) dans le back et le client après fusion.
 
@@ -105,7 +106,7 @@ Dernière mise à jour : 2026-10-02.
 - [ ] Vérifier en jeu que l'IA du rôle `tank` (utilisée par les gardiens) lance bien les compétences
       d'alliés (Égide, Bastion) ; sinon un rôle d'IA dédié.
 - [x] Profils des 11 archétypes écrits (branche `vac_archetype-profiles`).
-- [ ] **BLOQUANT avant d'activer les profils V2** : le serveur doit lire `mag` pour `magic_power`
+- [x] **BLOQUANT avant d'activer les profils V2** (fait sur `vac_v2-monster-mag`, à compiler) : le serveur doit lire `mag` pour `magic_power`
       (`room_manager.cpp` met aujourd'hui `magic_power = atk`). Les archétypes magiques ont ATK 2 :
       sans ce changement ils lanceraient à 2 de puissance.
 - [ ] Serveur : lire aussi `parry_chance`,
