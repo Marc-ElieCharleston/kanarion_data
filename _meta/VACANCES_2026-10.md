@@ -29,6 +29,7 @@ Règles suivies :
 | `vac_familiar-ultimate-cd` | `c45ff74` | Les 9 ultimes de familier : recharge 12 → 30 s, incantation 2 s. |
 | `vac_star-curve` | `3bb8a99` | Courbe des étoiles lissée (ATK par monstre 1 / 1.05 / 1.15 / 1.3 / 1.45 / 1.55, PV 5* 1.25, 4* = 5-6 monstres). Relancer le harness de taux de victoire du 2026-09-29. |
 | `vac_balance-tools` | (cette branche) | Scripts d'analyse, tables, revue des 200 monstres (`_meta/refonte_monstres/`), cette note, `TODO_RETOUR.md`. |
+| `vac_apply-monster-v2` | `e5c43b7` (script), `a0cab4b` (GÉNÉRÉ) | Branche de travail : tools + profils + `scripts/apply_monster_v2.py` et son résultat sur monsters.json / monster_skills.json / monster_species.json. Au retour : jeter le commit généré et relancer le script sur la data fusionnée. |
 | `vac_archetype-profiles` | voir `git log` | Les 11 profils d'archétypes V2 dans `config/monster_scaling_model.json` : ATK et MAG séparés (le serveur doit lire `mag`), croissance des stats d'identité, défense raide x25 au niv. 100. |
 
 ### Back (`kanarion_back`) — NON COMPILÉ

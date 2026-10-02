@@ -14,6 +14,11 @@ Dernière mise à jour : 2026-10-02.
   - [ ] `vac_familiar-ultimate-cd` — ultimes de familier 30 s + incantation 2 s
   - [ ] `vac_star-curve` — courbe des étoiles lissée
   - [ ] `vac_balance-tools` — scripts d'analyse, tables, ces notes
+  - [ ] `vac_apply-monster-v2` — contient `vac_balance-tools` + `vac_archetype-profiles` + le script
+        `scripts/apply_monster_v2.py` + son résultat (commit `a0cab4b`, GÉNÉRÉ). Au retour : fusionner
+        le travail du bureau (Tanière des loups…), ajouter les nouveaux monstres à `kits_tous.csv`
+        (espèce, stade, archétype, kit), JETER le commit généré et relancer
+        `python scripts/apply_monster_v2.py` puis `--check`. Monter `database_version` (règle CI).
   - [ ] `vac_archetype-profiles` — les 11 profils d'archétypes V2 (`config/monster_scaling_model.json`) ;
         lancer `ctest` (tests `test_monster_scaling_model.cpp` / `test_monster_balance_rules.cpp`)
 - [ ] À chaque fusion data : conflit attendu sur `_meta/version.json` → `git add .` puis
@@ -93,8 +98,12 @@ Dernière mise à jour : 2026-10-02.
 - [ ] Déplacer après le niveau 60 (zones corrompues) les créatures non normales : Corbeau Charognard,
       Hybride Sanglier-Loup, Traqueur de Poussière, Molosse Corrompu, Chacal de la Faille (+ Loup-Garou ?).
 
-- [ ] Appliquer la refonte des monstres à `entities/monsters.json` : archétype, espèce, stade, kit
-      (tableaux dans `scripts/balance/out/`), après relecture.
+- [x] Script d'application écrit et lancé (`vac_apply-monster-v2`) : archétypes, rôles d'IA, espèces,
+      stades, kits, MAG des archétypes magiques, 24 nouvelles compétences, Coup de tête sans
+      étourdissement, araignées et Scarabée de Poussière mis de côté, Homme de main renommé,
+      nouveau fichier `entities/monster_species.json`.
+- [ ] Vérifier en jeu que l'IA du rôle `tank` (utilisée par les gardiens) lance bien les compétences
+      d'alliés (Égide, Bastion) ; sinon un rôle d'IA dédié.
 - [x] Profils des 11 archétypes écrits (branche `vac_archetype-profiles`).
 - [ ] **BLOQUANT avant d'activer les profils V2** : le serveur doit lire `mag` pour `magic_power`
       (`room_manager.cpp` met aujourd'hui `magic_power = atk`). Les archétypes magiques ont ATK 2 :
