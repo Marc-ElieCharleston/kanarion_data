@@ -14,6 +14,8 @@ Dernière mise à jour : 2026-10-02.
   - [ ] `vac_familiar-ultimate-cd` — ultimes de familier 30 s + incantation 2 s
   - [ ] `vac_star-curve` — courbe des étoiles lissée
   - [ ] `vac_balance-tools` — scripts d'analyse, tables, ces notes
+  - [ ] `vac_archetype-profiles` — les 11 profils d'archétypes V2 (`config/monster_scaling_model.json`) ;
+        lancer `ctest` (tests `test_monster_scaling_model.cpp` / `test_monster_balance_rules.cpp`)
 - [ ] À chaque fusion data : conflit attendu sur `_meta/version.json` → `git add .` puis
       `python scripts/hash_content.py` puis `git add _meta/version.json` (voir CLAUDE.md).
 - [ ] Back : compiler et tester chaque branche `vac_*` (jamais compilées, pas de compilateur à la maison) :
@@ -92,7 +94,11 @@ Dernière mise à jour : 2026-10-02.
 
 - [ ] Appliquer la refonte des monstres à `entities/monsters.json` : archétype, espèce, stade, kit
       (tableaux dans `scripts/balance/out/`), après relecture.
-- [ ] Écrire les profils des 4 nouveaux archétypes dans `config/monster_scaling_model.json`.
+- [x] Profils des 11 archétypes écrits (branche `vac_archetype-profiles`).
+- [ ] Serveur : lire `mag` séparément de `atk` (aujourd'hui atk alimente les deux), `parry_chance`,
+      `lifesteal`, `reflect`, et `rate_growth_per_10_levels` du modèle.
+- [ ] Retirer l'alias `support` quand plus aucun monstre ne pointe dessus (et adapter
+      `test_monster_balance_rules.cpp` qui le cite).
 - [ ] Relire les kits des 200 monstres : `_meta/refonte_monstres/kits_tous.csv` (archétype final,
       kit, raisons, anomalies de stats et de compétences) + les 4 rapports `kits_*.md`.
 - [ ] Ajouter les 24 nouvelles compétences (`_meta/refonte_monstres/new_skills.json`, rapport

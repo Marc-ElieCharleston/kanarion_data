@@ -28,7 +28,8 @@ Règles suivies :
 | `vac_koro` | `2ac06d9`, `3ae6682` | Cartes Koro tier 3 : `level_req` 60 (lu dans `config/skill_system.json`). Les compétences de familier sortent des Koro (`systems/koro.json` `excluded_skill_classes`), 2765 → 2100 cartes. À voir : joueurs qui possèdent déjà une carte Koro de familier. |
 | `vac_familiar-ultimate-cd` | `c45ff74` | Les 9 ultimes de familier : recharge 12 → 30 s, incantation 2 s. |
 | `vac_star-curve` | `3bb8a99` | Courbe des étoiles lissée (ATK par monstre 1 / 1.05 / 1.15 / 1.3 / 1.45 / 1.55, PV 5* 1.25, 4* = 5-6 monstres). Relancer le harness de taux de victoire du 2026-09-29. |
-| `vac_balance-tools` | (cette branche) | Scripts d'analyse + cette note. |
+| `vac_balance-tools` | (cette branche) | Scripts d'analyse, tables, revue des 200 monstres (`_meta/refonte_monstres/`), cette note, `TODO_RETOUR.md`. |
+| `vac_archetype-profiles` | voir `git log` | Les 11 profils d'archétypes V2 dans `config/monster_scaling_model.json` (MAG explicite, croissance des stats d'identité). |
 
 ### Back (`kanarion_back`) — NON COMPILÉ
 
