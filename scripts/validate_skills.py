@@ -392,6 +392,7 @@ def validate_effects_array(skill, file_path, valid_effect_ids, canonical_grid, e
                 "cleanse", "purge", "steal_buff",
                 "mana_steal", "mana_restore", "mana_regen",
                 "lifesteal", "resurrect", "interrupt",
+                "shield_shatter",  # monster V2 2026-10-02 (kanarion_back 62ed0472)
             }
             if etype == "utility" and stat in utility_stats:
                 pass  # Valid utility action
