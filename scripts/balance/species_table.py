@@ -5,10 +5,10 @@
 - SPECIES: every monster id grouped into a species (hand-written from names,
   categories and portraits; 2026-10-02). A species carries the identity: a
   golem is tanky whatever its role, a rat is frail.
-- Species multipliers (hp, atk, armor, magic_resist) start from the current
-  hand-made stats: geometric mean of the members' species factors
-  (out/monster_stats_v2.csv) divided by their stage multiplier, then
-  SPECIES_OVERRIDES by hand (starter beasts weaker than the wolf).
+- Species identity (SPECIES_IDENTITY): core multipliers (hp, atk, armor, mr)
+  and rate bonuses, proposed by coherence (name, category, portraits, lore).
+  The CSV also keeps the MEASURED multipliers for reference: geometric mean of
+  the members' current factors (out/monster_stats_v2.csv), stage removed.
 - STAGE: prefix multiplier on every core stat (jeune 0.7 ... geant 1.5).
 - Archetype: from out/monster_review.csv (archetype_proposed).
 
@@ -93,10 +93,62 @@ SPECIES = {
     "demon": ["mob_lesser_demon", "mob_soul_devourer"],
     "archonte_dechu": ["mob_wrathful_archon", "mob_grieving_sentinel", "mob_throne_sentinel"],
 }
-# Starter beasts must stay weaker than the wolf (owner, 2026-10-02).
-SPECIES_OVERRIDES = {
-    "rat": {"hp": 0.6, "atk": 0.8},
-    "scarabee": {"hp": 0.6, "atk": 0.8},
+# Species identity PROPOSED by coherence (name, category, portraits, lore), 2026-10-02.
+# Core multipliers on the archetype profile: (hp, atk, armor, magic_resist), plus flat
+# identity bonuses on rate stats (added to the archetype's value, same caps).
+# The same identity is meant for the familiar of that species (capture a golem for a
+# tank, a high-MR species against mages). Measured values stay in the CSV for reference.
+SPECIES_IDENTITY = {
+    # Bêtes du départ : frêles, vives
+    "rat":              ((0.6, 0.8, 0.8, 0.8),   {"evasion": 5},                       "frêle et vif, toujours en nombre"),
+    "scarabee":         ((0.6, 0.8, 1.3, 0.7),   {"block_chance": 5},                  "carapace : armure, pas de RM"),
+    "serpent":          ((0.8, 1.0, 0.8, 0.9),   {"evasion": 5, "crit": 5},            "venin, esquive"),
+    "chien":            ((0.9, 1.0, 0.8, 0.8),   {"crit": 3},                          "mord vite"),
+    "corbeau":          ((0.7, 0.9, 0.7, 1.0),   {"evasion": 10},                      "volant, insaisissable"),
+    "renard":           ((0.8, 1.0, 0.8, 1.1),   {"evasion": 8},                       "rusé, touche de brume"),
+    "sanglier":         ((1.2, 1.1, 1.1, 0.8),   {"tenacity": 5},                      "charge, encaisse"),
+    "loup":             ((1.0, 1.1, 0.9, 0.9),   {"crit": 5, "crit_damage": 10},       "chasseur de meute"),
+    "hyene":            ((0.9, 1.05, 0.9, 0.9),  {"crit": 3, "armor_pen": 5},          "charognard, déchire"),
+    "scorpion":         ((1.0, 1.0, 1.4, 0.8),   {"armor_pen": 5},                     "carapace et dard"),
+    "ovin_caprin":      ((1.1, 0.9, 1.1, 0.9),   {"tenacity": 5, "block_chance": 3},   "cornes, têtu"),
+    "bovin":            ((1.4, 1.1, 1.1, 0.8),   {"tenacity": 10},                     "masse, inébranlable"),
+    "tortue":           ((1.3, 0.7, 1.6, 0.7),   {"block_chance": 10},                 "carapace de pierre"),
+    "cervide":          ((1.0, 0.9, 0.9, 1.2),   {"evasion": 5},                       "agile, liens avec la forêt"),
+    "tatou":            ((1.1, 0.8, 1.5, 0.8),   {"block_chance": 8},                  "se roule en boule"),
+    "cheval":           ((1.2, 1.0, 0.9, 0.9),   {"evasion": 5},                       "rapide, ruade"),
+    "sanglier_loup":    ((1.2, 1.15, 1.0, 0.8),  {"crit": 3, "tenacity": 5},           "hybride, brutal"),
+    "batracien":        ((0.9, 0.9, 0.8, 1.2),   {"evasion": 5},                       "visqueux, crache"),
+    "loutre":           ((0.9, 1.0, 0.9, 1.0),   {"evasion": 8},                       "joueuse, glissante"),
+    "cochon":           ((1.2, 0.9, 0.9, 0.9),   {"tenacity": 3},                      "solide, lent"),
+    "lievre":           ((0.6, 0.8, 0.6, 0.8),   {"evasion": 15},                      "fuyant"),
+    "blaireau":         ((1.1, 1.0, 1.2, 0.9),   {"tenacity": 5},                      "teigneux"),
+    "araignee":         ((0.8, 1.0, 0.9, 1.0),   {"crit": 5, "evasion": 5},            "toiles et poison"),
+    "loup_garou":       ((1.3, 1.2, 1.0, 0.8),   {"lifesteal": 5, "crit": 5},          "bête maudite, se régénère"),
+    # Humanoïdes
+    "gobelin":          ((0.8, 0.9, 0.9, 0.8),   {"evasion": 5},                       "petits, nombreux, sournois"),
+    "bandit":           ((0.9, 1.0, 0.9, 0.8),   {"crit": 5},                          "coups bas"),
+    "tribal":           ((1.1, 1.05, 0.9, 0.9),  {"tenacity": 5},                      "guerriers endurcis"),
+    "hors_la_loi":      ((1.0, 1.0, 1.0, 0.9),   {"armor_pen": 5},                     "arbalètes, armes lourdes"),
+    "homme_lezard":     ((1.1, 1.0, 1.2, 1.0),   {"tenacity": 5},                      "écailles"),
+    "converti":         ((1.0, 0.95, 1.0, 1.1),  {"tenacity": 5},                      "villageois tenus par la Fissure"),
+    "zelote":           ((1.05, 1.0, 1.05, 1.15), {"tenacity": 10},                    "fanatiques"),
+    "edric":            ((1.15, 1.1, 1.15, 1.1), {"crit": 5, "tenacity": 10},          "élite de la Tour"),
+    "chevalier_dechu":  ((1.2, 1.05, 1.3, 1.0),  {"block_chance": 8, "parry_chance": 3}, "armure lourde"),
+    "culte_obscur":     ((0.8, 0.9, 0.7, 1.4),   {"magic_pen": 5},                     "magie noire"),
+    # Morts-vivants
+    "squelette":        ((0.9, 1.0, 0.9, 1.2),   {"tenacity": 15},                     "ne connaît pas la peur"),
+    "spectre":          ((0.8, 1.0, 0.5, 1.5),   {"evasion": 10},                      "intangible : armure inutile, RM forte"),
+    # Élémentaires
+    "golem":            ((1.3, 0.8, 1.5, 1.0),   {"block_chance": 10, "tenacity": 10}, "pierre : le tank naturel"),
+    "elementaire":      ((1.0, 1.1, 1.0, 1.3),   {"magic_pen": 5},                     "énergie brute"),
+    "esprit_sylvestre": ((1.3, 0.9, 1.1, 1.3),   {"tenacity": 10},                     "gardien ancien"),
+    # Le sud : Faille, Vide, Abîme
+    "faille":           ((1.1, 1.1, 1.0, 1.2),   {"shield_pierce": 5},                 "déchire les protections"),
+    "vide":             ((1.0, 1.15, 0.9, 1.2),  {"magic_pen": 5, "armor_pen": 5},     "le vide traverse tout"),
+    "abyssal":          ((1.15, 1.1, 1.1, 1.15), {"crit_damage": 10},                  "puissance de l'Abîme"),
+    "effroi":           ((0.9, 1.15, 0.8, 1.1),  {"crit": 5, "evasion": 5},            "terreur, frappe dans l'ombre"),
+    "demon":            ((1.2, 1.15, 1.0, 1.4),  {"lifesteal": 5},                     "se nourrit de la vie"),
+    "archonte_dechu":   ((1.25, 1.15, 1.2, 1.25), {"tenacity": 15, "reflect": 5},      "anciens gardiens corrompus"),
 }
 STAGE = {"jeune": 0.7, "larve": 0.7, "tutorial": 0.6, "small": 0.7, "alpha": 1.3, "geant": 1.5,
          "giant": 1.5, "ancient": 1.4, "lesser": 0.8, "corrupted": 1.2, "packleader": 1.3, "chief": 1.3,
@@ -147,14 +199,17 @@ def main():
     species_rows = []
     species_mult = {}
     for sp, ids in SPECIES.items():
-        mult = {stat: round(math.exp(sum(v) / len(v)), 2) if (v := logs[sp][stat]) else 1.0 for stat in CORE}
-        mult.update(SPECIES_OVERRIDES.get(sp, {}))
+        measured = {stat: round(math.exp(sum(v) / len(v)), 2) if (v := logs[sp][stat]) else 1.0 for stat in CORE}
+        core, bonus, note = SPECIES_IDENTITY[sp]
+        mult = dict(zip(CORE, core))
         species_mult[sp] = mult
         members = [m for m in ids if m in review]
         species_rows.append({
             "species": sp, "members": len(members), "category": review[members[0]]["category"] if members else "",
             **{f"x_{s}": mult[s] for s in CORE},
-            "override": "oui" if sp in SPECIES_OVERRIDES else "",
+            "identity_bonus": " ".join(f"{k}+{v}" for k, v in bonus.items()),
+            "identity": note,
+            **{f"measured_{s}": measured[s] for s in CORE},
             "archetypes": " ".join(sorted({review[m]["archetype_proposed"] for m in members})),
             "ids": " ".join(members),
         })

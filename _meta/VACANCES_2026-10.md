@@ -57,6 +57,12 @@ Règles suivies :
 - Les mercenaires sont faibles par design : budget = joueur + familier.
 - Les familiers sont centraux (façon Canaan Online) : on choisit l'espèce à capturer
   selon le rôle voulu (un golem pour un tank).
+- À FAIRE : aujourd'hui les 134 familiers (`entities/familiars.json`) ont un champ
+  `species` (65 espèces fines) mais des stats identiques par rôle. Voulu : le familier
+  hérite de l'identité de son espèce (`SPECIES_IDENTITY` de `species_table.py`) — une
+  espèce à forte RM se capture pour jouer contre des mages. Il faut une table espèce de
+  familier → espèce de monstre et un changement dans le service des familiers.
+- PixelLab est disponible pour créer de nouveaux monstres (archétypes ou espèces manquants).
 
 **Monstres — formule**
 ```
@@ -117,7 +123,7 @@ seulement), enchanteur (buffs, ex-support).
 | `pve_matrix.py` | `out/pve_matrix.csv` | Joueur de base (stats + équipement mal / moyen / ultra) contre monstres du modèle, niveaux 10-100 : temps pour tuer / pour mourir, puissance manquante M, pression de pack. |
 | `monster_stats_v2.py` | `out/monster_stats_v2.csv` | Proposition V2 : stats niveau 1 par espèce (facteur d'espèce vs archétype et palier), croissance des stats d'identité par archétype, ratio par niveau. |
 | `monster_review.py` | `out/monster_review.csv` | Revue des 200 monstres : espèce, stade, rôle, archétype proposé (11), nombre de compétences visé, alertes. Vérifié sur les portraits du client pour 6 cas. |
-| `species_table.py` | `out/species_table.csv`, `out/species_monsters.csv` | 45 espèces (liste écrite à la main), multiplicateurs d'espèce PV / ATK / armure / RM (moyenne des membres, stade retiré, rat et scarabée corrigés à la main), puis stats niveau 1 et PV aux niveaux 1/10/40/70/100 de chaque monstre. Les 4 nouveaux archétypes utilisent provisoirement le profil le plus proche (gardien→tank, berserker→brute, soigneur/enchanteur→support, invocateur→mage). |
+| `species_table.py` | `out/species_table.csv`, `out/species_monsters.csv` | 45 espèces (liste écrite à la main), identité PROPOSÉE par espèce (`SPECIES_IDENTITY` : PV / ATK / armure / RM + bonus d'identité, ex. golem armure x1,5 blocage +10, spectre armure x0,5 RM x1,5), avec les valeurs mesurées sur la data actuelle à côté, puis stats niveau 1 et PV aux niveaux 1/10/40/70/100 de chaque monstre. Les 4 nouveaux archétypes utilisent provisoirement le profil le plus proche (gardien→tank, berserker→brute, soigneur/enchanteur→support, invocateur→mage). |
 
 Démarche : on relit les tableaux, puis un script appliquera les décisions à
 `entities/monsters.json` — relançable après la fusion du travail du bureau, plutôt que
