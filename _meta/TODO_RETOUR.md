@@ -284,6 +284,16 @@ Dernière mise à jour : 2026-10-02.
       boss du sud : Gardien de la Forêt, Champion Maudit, Gueule de l'Abîme, Souverain, Avatar, Héraut,
       Première Fissure.
 
-- [ ] Idées de contenu PvE à proposer (déjà en jeu : coffres, failles, tour infinie ; idée : pages
-      de livre à collectionner qui racontent des histoires).
+- [ ] **Contenu horizontal : les COLLECTIONS** (à discuter cette semaine, 2026-10-02). Base : ~10 livres
+      de X pages qui racontent l'histoire du monde, avec le VRAI texte du lore (le propriétaire pense l'avoir
+      déjà, au bureau) — jamais de pages vides. Autres idées proposées et appréciées :
+      - bestiaire (fiche par espèce = aussi l'affichage des infos en jeu) ;
+      - album des familiers (chaque espèce x chaque rareté) ;
+      - recueil des murmures (`world/whispers.json`) ;
+      - cartographie (lieux remarquables par région) ;
+      - reliques de la Faille (objets uniques des failles refermées, vitrine) ;
+      - trophées de chasse (boss, monstres « champion », groupes 5 étoiles) ;
+      - herbier / atlas des métiers (chaque ressource récoltée ou fabriquée) ;
+      - album des Koro.
+      Récompenses horizontales : titres, cosmétiques, emotes, éventuellement petit bonus de compte (+1 % de drop).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.
