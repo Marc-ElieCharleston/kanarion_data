@@ -29,7 +29,7 @@ Règles suivies :
 | `vac_familiar-ultimate-cd` | `c45ff74` | Les 9 ultimes de familier : recharge 12 → 30 s, incantation 2 s. |
 | `vac_star-curve` | `3bb8a99` | Courbe des étoiles lissée (ATK par monstre 1 / 1.05 / 1.15 / 1.3 / 1.45 / 1.55, PV 5* 1.25, 4* = 5-6 monstres). Relancer le harness de taux de victoire du 2026-09-29. |
 | `vac_balance-tools` | (cette branche) | Scripts d'analyse, tables, revue des 200 monstres (`_meta/refonte_monstres/`), cette note, `TODO_RETOUR.md`. |
-| `vac_archetype-profiles` | voir `git log` | Les 11 profils d'archétypes V2 dans `config/monster_scaling_model.json` (MAG explicite, croissance des stats d'identité). |
+| `vac_archetype-profiles` | voir `git log` | Les 11 profils d'archétypes V2 dans `config/monster_scaling_model.json` : ATK et MAG séparés (le serveur doit lire `mag`), croissance des stats d'identité, défense raide x25 au niv. 100. |
 
 ### Back (`kanarion_back`) — NON COMPILÉ
 
@@ -37,6 +37,7 @@ Règles suivies :
 |---|---|---|---|
 | `vac_familiar-xp-90` | `2feade31` | Familier : 90 % de l'XP de combat du joueur (100 % depuis le 2026-08-03). | ctest combat + familiar |
 | `vac_poison-cap` | `1c45a99f` | Poison sur un MONSTRE plafonné à 50 % de max(ATK, MAG) de la source par stack et par tick (corrige `ks_util_venom_sting` sur les boss). Poison des monstres sur les joueurs inchangé (levier anti-tank). | `combat-tests --gtest_filter="*Poison*"` (nouveau test `PoisonDot_OnMonster_CappedBySourcePower`) |
+| `vac_defense-curve-test` | `06f3a72d` | Seuil du test `DefenseIsDecoupledFromOffense` adapté à la défense raide V2 (x25 au niv. 100). | `ctest -R MonsterScaling` |
 | `vac_koro-shield-rank` | `a696fb9a` | Bouclier d'une carte Koro proportionnel au rang. Les HoT ne bougent pas (leur durée porte déjà le rang). | `combat-tests --gtest_filter="*Koro*"` (nouveau test `KoroCard_ShieldAbsorbScalesWithRank`) |
 
 ## Décisions de design (avec le propriétaire, 2026-10-02)

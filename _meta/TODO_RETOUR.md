@@ -22,6 +22,7 @@ Dernière mise à jour : 2026-10-02.
   - [ ] `vac_familiar-xp-90` — ctest combat + familiar
   - [ ] `vac_poison-cap` — `combat-tests --gtest_filter="*Poison*"`
   - [ ] `vac_koro-shield-rank` — `combat-tests --gtest_filter="*Koro*"`
+  - [ ] `vac_defense-curve-test` — `ctest -R MonsterScaling` avec la data `vac_archetype-profiles`
 - [ ] Mettre à jour le pin de la data (`kanarion-meta`) dans le back et le client après fusion.
 
 ## 2. Tanière des loups (5 nouveaux loups, non poussés)
@@ -226,6 +227,16 @@ Dernière mise à jour : 2026-10-02.
 - [ ] Nouveaux monstres pour les archétypes peu fournis (1 seul invocateur aujourd'hui).
 
 ## 7. Discussions ouvertes (design)
+
+- [ ] **Alpha / playtests** : aucun joueur niveau 100 et aucune stat de dégâts réelle aujourd'hui ;
+      monter niveau 100 est long → prévoir une alpha (et des sessions de playtest payées) pour
+      calibrer. Règle : mieux vaut trop dur que trop facile.
+- [ ] Avec la défense raide (x25 au niv. 100), donner de la valeur à la PÉNÉTRATION : l'équipement
+      ne donne que 1 à 5 % aujourd'hui → revoir les valeurs de pénétration (substats d'arme, passifs,
+      keystones, Koro).
+- [ ] Compétences de SUPPORT OFFENSIF : buffs de pénétration pour le groupe, débuffs de défense ;
+      valoriser les supports offensifs et les débuffeurs.
+- [ ] Consommables de buff (pénétration, dégâts…) dans l'économie / les métiers.
 
 - [ ] Créer les monstres finaux du jeu à partir du lore À JOUR (pousser le lore du bureau d'abord) ;
       boss du sud : Gardien de la Forêt, Champion Maudit, Gueule de l'Abîme, Souverain, Avatar, Héraut,
