@@ -54,21 +54,73 @@ Dernière mise à jour : 2026-10-02.
 - [ ] Test `test_player_reference_curve.cpp` : n'applique jamais les passifs communs (clé `passives`
       au lieu de `common_passives`).
 - [ ] Érosion (optionnel) : mécanique anti-soin qui réduit les PV max pendant le combat.
-- [ ] Mécaniques des nouvelles compétences qui demanderaient du code : voir
-      `new_skills_report.md` du concepteur (téléportation d'un monstre, invocation temporaire…).
-      *(à compléter quand le rapport sera intégré)*
+- [ ] IA des monstres : elle ignore toute compétence de déplacement (`kit_behavior.cpp:435`), donc
+      ni la téléportation de l'assassin (Saut de l'Ombre) ni `skill_mob_assassin_shadow_strike` ne
+      sont jamais lancées. À brancher.
+- [ ] Invocations : ajouter une durée de vie et une option « apparaît près de l'invocateur »
+      (aujourd'hui permanentes, près de la ligne arrière des joueurs, un seul type par compétence).
+- [ ] Un effet qui RETIRE les boucliers (la dissipation retire le premier buff trouvé).
+- [ ] MAG absente d'une fiche monstre → le chargeur prend ATK/2 : soins et sorts de nombreux
+      lanceurs/soigneurs à moitié de puissance. Corriger côté data (voir section 5) ; décider si
+      le repli serveur doit rester.
+- [ ] `target_rule` n'est pas lu (le serveur lit `target`, `content_loader.cpp:728`) :
+      `skill_mob_assassin_shadow_strike` mettrait l'invisibilité sur l'ennemi.
+- [ ] `base_monster` (fiches de boss) n'est lu nulle part dans le back.
 
 ## 5. Data — travail à faire
 
 - [ ] Appliquer la refonte des monstres à `entities/monsters.json` : archétype, espèce, stade, kit
       (tableaux dans `scripts/balance/out/`), après relecture.
 - [ ] Écrire les profils des 4 nouveaux archétypes dans `config/monster_scaling_model.json`.
-- [ ] Ajouter les nouvelles compétences de monstres dans `skills/monster_skills.json` (bloc séparé).
-      *(liste à compléter quand le concepteur aura rendu son travail)*
+- [ ] Relire les kits des 200 monstres : `_meta/refonte_monstres/kits_tous.csv` (archétype final,
+      kit, raisons, anomalies de stats et de compétences) + les 4 rapports `kits_*.md`.
+- [ ] Ajouter les 24 nouvelles compétences (`_meta/refonte_monstres/new_skills.json`, rapport
+      `new_skills_report.md`) dans les VRAIS blocs lus par le serveur : `basic_skills`,
+      `role_basic_skills.<rôle>`, `archetype_skills.<arch>.pool` (`content_loader.cpp:274-311`).
+- [ ] Doublon : `skill_mob_enchanteur_renfort` ≈ `skill_mob_support_bolster`, n'en garder qu'un.
+- [ ] `skill_mob_support_shield_barrier` : bouclier fixe de 100 (le `scaling: mag` est ignoré,
+      `room.cpp:5490`) → passer en `shield_mag` avec un pourcentage.
+- [ ] Compétences encore à concevoir (demandées par les relecteurs) :
+  - [ ] identités d'archétype à ≥ 20 s pour berserker, soigneur (purification de groupe), archer ;
+        plus de variété pour les mages (10 partagent Nova de Givre ; Boule de Feu est à 18 s)
+  - [ ] mécaniques de phase des boss de niveau ≥ 40 (5 boss du sud + Seigneur Cultiste niv. 48) ;
+        le Héraut et la Première Fissure ont aujourd'hui le même kit
+  - [ ] araignée : identité « Toile » (enracinement en zone) et ultime « Cocon »
+  - [ ] attaque d'espèce avec étourdissement court pour sanglier / bovin / ovin (`headbutt` en attendant)
+  - [ ] « Crachat » à distance pour les batraciens, « Fiole pestilente » (Docteur Pestilent),
+        « Ruade » (cheval, facultatif), « Pinces » (scorpion, cosmétique)
+  - [ ] variantes À DISTANCE des attaques d'espèce pour les archers et lanceurs (portée 2 aujourd'hui)
+  - [ ] effet d'espèce pour archonte_dechu, elementaire, esprit_sylvestre
+- [ ] Décider : la compétence d'identité suit-elle le niveau d'APPARITION (≥ 40) ou le niveau de
+      base ? (rats du nid corrompu 40-50, Molosse jusqu'à 100, Renard Brumeux jusqu'à 58…)
+- [ ] Ajouter `mag` aux lanceurs et soigneurs qui n'en ont pas (Biche, Brebis, Grenouille
+      Soigneuse, Cerf Gardien, Crapaud Cracheur, Rat Sorcier, rats/louve/hyène soigneurs, Chien de
+      Braise, Golem Runique, Nécromancien, Ancien Converti, Shaman Lézard, Prêtre Obscur, Ritualiste
+      Zélote…), et MAG > ATK pour les lanceurs.
+- [ ] Doublons à trancher : `mob_edric_warlord` / `boss_edric_tower`, `mob_bandit_warlord` /
+      `boss_bandit_warlord`, deux donjons « Tour d'Asher » (`dungeon_asher_tower` et
+      `dungeon_tower_asher`), deux Reines Araignées (le boss n'a pas de donjon), Cerf Gardien / Biche,
+      Voleur / Coupe-Bourse, Pillard / Bandit, Horreur / Traqueur d'Effroi, Faucheur / Moissonneur
+      d'Âmes, Gueule de la Faille / Gueule de l'Abîme.
+- [ ] Fiches incohérentes : Gardien de la Forêt (copie du loup corrompu : Morsure, tags de bête,
+      butin `wolf_corrupted`), Archonte Courroucé (nom de berserker, kit de mage), Tatou et
+      Grenouille Cornue (stats identiques, 65 d'armure pour une grenouille), Rat du tutoriel (stats
+      ≠ sa `_note`), Loup Alpha (boss non placé, 395 PV), boss gobelins niveau 10-12 pour des troupes
+      niveau 20-23, élites moins solides que des tough (Vache, Gardien de la Cloche, Démon Majeur,
+      Le Défait, Gardien du Trône), boss finaux moins solides que la Gueule de l'Abîme (le modèle V2
+      règle les PV par la courbe).
+- [ ] Identifiants trompeurs : `mob_goblin_witch`, `mob_bandit_hunter`, `mob_bandit_warchief` sont des
+      tribaux ; `mob_goblin_warior` (faute). Renommer = migration (bases de données, butin, quêtes).
+- [ ] Catégories : Tortue de Pierre `elemental` (rangée en tortue), Reines Araignées `humanoid`.
 - [ ] Nettoyer les fiches : clés `mr` et `spd` (une fois chacune), `magic_resist` manquant (1 monstre),
       stats aberrantes du Chien sauvage et du Culte obscur.
 - [ ] 59 monstres actifs ne sont placés nulle part (zones, donjons, tour) : vérifier s'ils viennent
-      de quêtes / événements, sinon les passer en `shelved` ou les placer.
+      de quêtes / événements, sinon les passer en `shelved` ou les placer. Confirmés non placés par
+      les relecteurs : Tortue, Tatou, Cheval, Cerf Obscur, Cerf Gardien, Traqueur de Poussière,
+      Chacal de la Faille, Loup Alpha, boss gobelins.
+- [ ] Placements à comparer avec la NOUVELLE carte du bureau : Renard Brumeux (niv. 33) en
+      expédition 1-10 et étage 1 du Repaire, Petite Araignée (niv. 10) en zone 25-30, Charognard
+      (niv. 27) en zone 9-20, boss Gueule de l'Abîme aussi monstre de zone 60-70 / 85-100.
 - [ ] Familiers : table espèce de familier (65) → espèce de monstre (45).
 - [ ] Descriptions : cartes Koro (le bouclier suit le rang), poison (plafonné sur les monstres),
       boucliers `shield_def` (décrits en % PV max, calculés sur la DEF).
@@ -84,9 +136,19 @@ Dernière mise à jour : 2026-10-02.
       `mob_abyssal_scholar`, `mob_edric_chosen_guard`, `mob_nether_caller`, `mob_hollow_sentinel`,
       `mob_golem_sentinel`, `mob_rift_warden`, `mob_throne_sentinel`, `mob_grieving_sentinel`,
       `boss_forest_guardian`, `mob_abyssal_juggernaut`, `mob_edric_chosen_ritualist`.
-- [ ] Monstres temporaires de l'invocateur : sprites à créer.
-- [ ] Icônes des nouvelles compétences de monstres (identité d'archétype, rôle, attaques d'espèce).
-      *(liste exacte à compléter quand le concepteur aura rendu son travail)*
+- [ ] Aucun portrait dans le dépôt client pour les monstres abyssaux, du Vide et d'Effroi (à vérifier
+      sur le serveur).
+- [ ] Portraits qui ne collent pas à la fiche : Fanatique de la Tour (guerrier hache + bouclier, fiche
+      de lanceur), Hyène Alpha (ressemble à un loup).
+- [ ] Monstres temporaires de l'invocateur : sprites à créer (aujourd'hui le Rejeton du Vide sert d'invocation).
+- [ ] Icônes des 24 nouvelles compétences de monstres (`_meta/refonte_monstres/new_skills.json`) :
+  - identité : Égide, Bastion, Brise-Garde, Saut de l'Ombre, Malédiction, Appel du Néant, Hymne de Guerre
+  - rôle : Coup de bouclier (gardien), Trait (invocateur), Renfort (enchanteur, si gardé)
+  - espèce : morsure infectieuse (rat), morsure venimeuse (serpent), dard et toile (araignée),
+    déchirure (loup), mâchoire putride (hyène), écrasement (golem/tortue/tatou), coup de bec
+    aveuglant (corbeau), taillade (squelette), toucher glacé (spectre), griffe ardente (démon),
+    frappe du vide, frappe maudite (abyssal), hurlement d'effroi, déchirure de faille
+- [ ] Icônes des compétences encore à concevoir (section 5).
 - [ ] Nouveaux monstres pour les archétypes peu fournis (1 seul invocateur aujourd'hui).
 
 ## 7. Discussions ouvertes (design)
