@@ -10,26 +10,32 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def active_skills(node):
+def active_skills(node, in_tier3=False):
+    """Yield (skill, in_tier3). in_tier3: the skill sits under a `tier3` specialization block."""
     if isinstance(node, dict):
         if str(node.get('id', '')).startswith('skill_') and 'target' in node:
-            yield node
+            yield node, in_tier3
             return
         for key, value in node.items():
             if not key.startswith('_'):
-                yield from active_skills(value)
+                yield from active_skills(value, in_tier3 or key == 'tier3')
     elif isinstance(node, list):
         for value in node:
-            yield from active_skills(value)
+            yield from active_skills(value, in_tier3)
 
 
 def generate():
     rules = json.loads((ROOT / 'systems/koro.json').read_text(encoding='utf8'))
     generation = rules['card_generation']
+    # A card cannot lend a skill earlier than its own class gets it: tier 3
+    # (specialization) skills wait for the tier 3 unlock level (config/skill_system.json).
+    categories = json.loads((ROOT / 'config/skill_system.json').read_text(encoding='utf8'))['skill_categories']
+    koro_level = rules['equipment']['slot_unlock_levels'][0]
+    tier3_level = max(koro_level, categories['tier3']['unlock_at_player_level'])
     cards = []
     seen = set()
     for path in sorted((ROOT / 'classes').glob('*/skills.json')):
-        for skill in active_skills(json.loads(path.read_text(encoding='utf8'))):
+        for skill, in_tier3 in active_skills(json.loads(path.read_text(encoding='utf8'))):
             sid = skill['id']
             if sid in seen:
                 raise ValueError(f'duplicate active skill: {sid}')
@@ -40,7 +46,7 @@ def generate():
                 card = dict(id=card_id, name_fr=f"Koro : {skill['name_fr']} ({rank})",
                     name_en=f"Koro: {skill.get('name_en', skill['name_fr'])} ({rank})",
                     base_skill_id=sid, base_class_id=path.parent.name, rank=rank, rank_percent=percent,
-                    level_req=rules['equipment']['slot_unlock_levels'][0], tradeable=True, hdv_listable=True, sell_price=0,
+                    level_req=tier3_level if in_tier3 else koro_level, tradeable=True, hdv_listable=True, sell_price=0,
                     skill_tier=skill.get('tier', 'active'),
                     drop_weight=generation['skill_weight_by_tier'].get(skill.get('tier', ''), 2),
                     icon=f"res://assets/icons/koro/koro_rank_{rank.lower()}.png",
