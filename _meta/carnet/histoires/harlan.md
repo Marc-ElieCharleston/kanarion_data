@@ -35,7 +35,8 @@ trahison plutôt que le sacrifice.**
 
 ## Retrouver Harlan (propriétaire, 2026-10-03 ; combinaison proposée)
 
-1. **Un enfant du hameau arrive à Havreden et demande de l'aide à tout le monde.** Les PNJ l'ignorent
+1. **Un enfant du hameau arrive à Rochebourg** (le hameau est plus proche de Rochebourg que
+   d'Havreden ; corrigé par le propriétaire) **et demande de l'aide à tout le monde.** Les PNJ l'ignorent
    (l'indifférence, sans morale dite). Le joueur le croise et l'aide.
    (Variante du propriétaire : quelqu'un dit avoir vu Harlan parler d'une personne du hameau.)
 2. **Au hameau** : les enfants sont effrayés, quelqu'un a emmené leurs parents de force. **Deux

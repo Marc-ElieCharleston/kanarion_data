@@ -52,4 +52,6 @@ descend, plus les choix humains ont été mauvais, plus le monde est déchiré (
 ## Questions
 
 - [ ] Où est Rochebourg sur la carte (près de Fanatique 45-60 ?)
+- [ ] Le hameau de la forêt (frères Dorn lv ~24, Harlan) est **plus proche de Rochebourg que
+      d'Havreden** (propriétaire) : le placer précisément (bas de la Forêt 12-26 ?), cohérent avec le lv 24.
 - [ ] Le lore d'avril fait tomber la Tour au niveau 20 : à recaler sur 60+.
