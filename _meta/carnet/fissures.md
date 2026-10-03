@@ -29,7 +29,7 @@ Aldric patience, Aelina bonté, Ashel foi, Mara sagesse, Rey courage) en sont le
 - Avec Ezra (lv 10+) : des traces, inexpliquées.
 - Entre Havreden et Rochebourg : des Fissures s'ouvrent pendant des **événements en jeu**, toujours
   sans explication.
-- Le hameau du bas de la Forêt (lv ~24) : la première rumeur d'un lien entre des actes (un sacrifice)
+- Le hameau sous la forêt, à droite des Brigands (lv ~32) : la première rumeur d'un lien entre des actes (un sacrifice)
   et une Fissure qui s'ouvre (voir [les frères Dorn](histoires/freres_dorn.md)).
 - **À Rochebourg (lv ~50) on commence à comprendre.**
 

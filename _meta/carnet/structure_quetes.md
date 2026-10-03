@@ -43,8 +43,8 @@ tard, puis les branches se rejoignent. Aucune branche n'est la bonne.
 | Étape | Type | Porte |
 |---|---|---|
 | Parler aux frères (Prairie) | principale | lv ~12 |
-| Le hameau de la forêt, prévenir ou non | histoire | lv 24 + avoir parlé aux frères |
-| Le corps de Matthis (Brigand) | histoire | lv 38 + avoir prévenu |
+| Le hameau de la forêt, prévenir ou non | histoire | lv 32 + avoir parlé aux frères |
+| Le corps de Matthis (Brigand) | histoire | lv 40 + avoir prévenu |
 | Tobias demande pardon (Rochebourg) | histoire | lv 50 + arrivée à Rochebourg (principale) |
 | La vérité éclate (si on s'est tu) | principale | arrivée à Rochebourg |
 
