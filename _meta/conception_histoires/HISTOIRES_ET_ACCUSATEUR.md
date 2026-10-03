@@ -63,12 +63,9 @@ les murmures, les histoires.
   (propriétaire). La phrase peut changer selon le choix, elle ne juge jamais.
 - **Le verset modifié arrive APRÈS le choix**, en écho, jamais avant comme une consigne.
 
-**Point de vigilance.** Les compteurs cachés existants (`chronology.md` l.189-232) opposent
-**compassion** et **sévérité**, et disent qu'« aucun des deux n'est bon ou mauvais ». Les histoires
-demandées opposent **pardon et amour** à **rancune et vengeance**. Ce sont deux axes différents : la
-sévérité (justice, ordre) n'est pas la vengeance. Proposé : garder les deux compteurs pour les
-factions, et traiter rancune / vengeance comme ce qui **ouvre les portes** (conséquences dans le
-monde), pas comme un compteur de plus.
+**Compteurs cachés : compassion / rancune** (décidé 2026-10-03, remplace compassion / sévérité de
+`chronology.md` l.189-232). Le principe reste : invisibles, jamais affichés, et ils ne font que
+suggérer une faction au niveau 60.
 
 ## 4. Ce qui existe (lore d'avril)
 
@@ -83,40 +80,142 @@ monde), pas comme un compteur de plus.
 Ezra / Harlan sont déjà une paire en miroir (« deux faces de la même pièce » : ce que chacun aime,
 ce que l'Imitateur imite, le piège, l'ancrage).
 
-## 5. Proposition de suite, par niveau
+## 5. La carte par niveaux (propriétaire, 2026-10-03)
 
-Principe : **des paires en miroir** (la même blessure, deux choix opposés), placées dans les trous
-du calendrier, chacune portée par un fruit de l'Esprit d'un côté et une œuvre de la chair de
-l'autre. Les personnages reviennent plus au sud, où leur choix les a menés.
+Elle remplace les niveaux du lore d'avril (où la Tour tombait au niveau 20).
 
-| Niveaux | Lieu / moment | Existant | Nouvelle histoire proposée |
+| Niveaux | Lieu | Ce qu'on y combat | Fissures |
 |---|---|---|---|
-| 1-10 | Havreden, paisible | petits choix | — (le calme avant : on apprend à connaître les gens) |
-| **10** | Donjon des rats | **Ezra découvre la première Fissure** (choix : comprendre / détruire) | — |
-| 11-14 | Route de Rochebourg | voleur, fermier converti | **Les deux frères de la ferme** : une Fissure ouverte par les fouilles de la Tour engloutit la ferme et tue leur mère. Intro dans la quête principale |
-| 14-20 | Rochebourg, la Tour | **Asher → Edric**, Maren et Oren, Zélote prisonnier | **La sœur d'Edric** : même père, même voix, mais elle a quitté la Tour ; elle a pardonné à son père. Miroir d'Edric. *(à vérifier avec le lore du bureau)* |
-| **20** | Chute de la Tour, l'Éveil | choix sur Edric à genoux | conséquence 1 des frères : l'aîné aide à déblayer, le cadet pille les décombres |
-| 20-38 | Après la Fracture | **Harlan** (deuil → colère → proie → chute), Ezra ébranlé | **La chasseuse et la soigneuse** : leur village est ravagé par des bêtes corrompues. L'une organise une chasse d'extermination (même les bêtes saines : la Fissure grandit), l'autre soigne les bêtes (lien avec les familiers) |
-| 30-40 | — | Aldric (patience) | **Le Zélote repenti et la famille qu'il a blessée** : le joueur porte ou non sa lettre ; le pardon n'est pas garanti |
-| 40-60 | La Faille, le sud | Ezra tombé (rencontres 42 / 47 / 52 / 56), **Harlan boss lv 48** | **Le cadet de la ferme parmi les humains touchés par la Faille (~lv 50)** : élite ou boss tragique ; l'aîné vient le chercher. Selon les choix du joueur, il peut être ramené (ancrage : son frère) ou non |
-| 58-60 | Fin de l'acte 3 | **Ezra racheté ou perdu**, choix de faction | toutes les conséquences remontent : qui est vivant, qui est allié, qui est tombé |
-| 60+ | Fin de jeu | Ezra perdu = boss | — |
+| 1-20 | **Havreden** et ses plaines | animaux | très rares (lieu paisible) |
+| 20-50 | **La route du sud**, de Havreden à Rochebourg | animaux (jusqu'à 40), puis humains touchés par les Failles (45-55) | de plus en plus nombreuses |
+| 50+ | **Rochebourg** | humains touchés, fanatiques (55-60) | nombreuses : la Tour, l'orgueil, les bandits |
+| 60+ | **La Tour d'Asher** | contenu volontairement dur (un joueur seul de niveau 60 ne passe pas) | la Fissure majeure |
+| 60+ | au-delà : zones corrompues | créatures (ni animaux ni humains) | la Faille |
+| fin de jeu | **tout en bas de la carte : une ville en guerre permanente** | factions (version simple, sans artiste) | — |
 
-Chaque paire suit le même schéma : **blessure** (quête principale) → **choix** (secondaire) →
-**conséquence visible** (quête principale, acte suivant) → **X** (une phrase, quel que soit le
-choix) → **verset** en écho.
+Conséquence sur l'existant : **Harlan** perdait Mireille dans l'effondrement de la Tour (niveau 20).
+Avec la Tour à 60+, il faut une autre blessure : proposé, Mireille meurt dans une Fissure sur la route
+du sud, et Harlan devient un marchand (ou un paysan) qu'on croise entre Havreden et Rochebourg.
 
-## 6. Incohérence à vérifier
+## 6. Calendrier des histoires
 
-Le placement des monstres décidé pendant la refonte V2 met « les fanatiques ~55-60, la Tour
-d'Asher à 60 », alors que le lore place l'arc de la Tour aux **niveaux 14-20** et son effondrement
-au **niveau 20**. À trancher avec le travail du bureau sur la carte et le leveling.
+| Niveaux | Ezra (fil rouge, 5 phases) | Histoires en miroir |
+|---|---|---|
+| 1-10 | on le rencontre à Havreden | (on apprend à connaître les gens) |
+| **10** | **phase 1** : le donjon des rats, la première Fissure | — |
+| 10-20 | il commence à étudier | **Les frères Dorn** : blessure (lv 15) |
+| 20-35 | **phase 2** : la culpabilité, puis l'obsession | **Harlan** (blessure lv 22, colère lv 28) ; **la chasseuse et la soigneuse** (lv 25-38) ; frères Dorn : choix (lv 28) |
+| 35-50 | **phase 3** : la rupture silencieuse | Harlan descend (lv 40-48, boss tragique) ; frères Dorn : le cadet parmi les humains touchés (lv 48-52) |
+| 50-60 | **phase 4** : Ezra tombé | **Lisa, la sœur d'Edric** (Rochebourg, lv 52-58) ; **le Zélote repenti** (lv 55-60) |
+| 60+ | **phase 5** : racheté ou perdu (boss de fin de jeu) | la Tour d'Asher : toutes les conséquences remontent |
 
-## 7. Questions ouvertes
+## 7. Fiches des histoires (à valider)
 
-- [ ] Ezra : 4 stades (lore d'avril) ou 5 phases (propriétaire) ? Le lore du bureau fait foi.
-- [ ] Les nouvelles paires : lesquelles garder ? (frères de la ferme, sœur d'Edric, chasseuse et
-      soigneuse, Zélote repenti)
-- [ ] Les fruits de l'Esprit (Aldric, Aelina, Ashel, Mara, Rey) : chacun porte-t-il une des paires ?
-- [ ] Compassion / sévérité et rancune / vengeance : deux axes (proposé) ou un seul ?
-- [ ] L'arc de la Tour : niveaux 14-20 (lore) ou ~60 (placement V2 des monstres) ?
+Chaque fiche suit le même schéma : **origine → personnages → arrivée du joueur → choix →
+conséquences → X → verset en écho**. Les noms sont provisoires.
+
+### 7.1 Les frères Dorn (rancune contre pardon)
+
+- **Origine.** La ferme des Dorn est au bord de la route du sud, à la limite d'Havreden. Il y a
+  trois ans, des pèlerins en route vers la Tour ont creusé près de la ferme, « pour suivre les
+  marques » que Sevik leur avait décrites. Une nuit, le sol s'est ouvert. La mère, Hanna, est morte
+  dans la Fissure.
+- **Personnages.**
+  - **Tobias**, l'aîné, 30 ans : il a enterré sa mère et cultive ce qui reste. Il a recueilli un des
+    pèlerins, blessé ce soir-là, sans savoir au début qui il était.
+  - **Matthis**, le cadet, 22 ans : il était absent cette nuit-là et ne se le pardonne pas. Il tient
+    le compte de chaque pèlerin passé sur la route.
+- **Arrivée du joueur (lv 15).** La quête principale passe par la ferme : Tobias offre l'abri, Matthis
+  demande au joueur s'il a croisé « des gens de la Tour ».
+- **Le choix (lv 28, secondaire).** Matthis découvre que le pèlerin recueilli par Tobias était là la
+  nuit de la Fissure. Il veut le livrer aux bandits qui « s'occupent des gens de la Tour ». Le joueur
+  aide Matthis à l'emmener (**rancune +1**), ou cache le pèlerin et laisse Tobias parler à son frère
+  (**compassion +1**).
+- **Conséquences.**
+  - Rancune : le pèlerin disparaît, Matthis rejoint les bandits, une Fissure s'ouvre près de la
+    ferme. Au lv 48-52, Matthis est un **élite parmi les humains touchés par la Faille**. Tobias vient
+    le chercher : si le joueur a gardé le lien (quêtes faites), Matthis peut être ramené ; sinon c'est
+    un combat.
+  - Compassion : Matthis part quand même, mais le pèlerin vit et reconstruit la ferme avec Tobias. Au
+    lv 48-52, Matthis est toujours parmi les bandits, mais il hésite : c'est la ferme reconstruite,
+    avec l'homme qu'il haïssait dedans, qui le fait revenir.
+- **X.** « Ta colère dit combien tu l'aimais. Elle ne la ramènera pas. »
+- **Verset en écho.** Éphésiens 4:26 → « Que le soleil ne se couche pas sur ta colère : la nuit
+  ouvre des portes. »
+
+### 7.2 Harlan (deuil, colère, la voix imitée), reprise de l'existant
+
+- **Origine.** Harlan est marchand ambulant sur la route du sud ; Mireille tient une herboristerie
+  dans un hameau entre Havreden et Rochebourg.
+- **Arrivée du joueur.** On le croise dès Havreden (joyeux, son étal, ses histoires).
+- **Blessure (lv 22).** Une Fissure s'ouvre sous le hameau : Mireille meurt. Remplace l'effondrement
+  de la Tour, qui arrive maintenant au niveau 60+.
+- **Suite.** Inchangée dans l'esprit : colère (lv 28), l'Imitateur imite la voix de Mireille
+  (« descends et tu la retrouveras »), chute, boss tragique (~lv 48). Il ne peut pas être sauvé : il
+  n'a pas d'ancrage vivant. Le contraste avec Ezra est gardé.
+- **X.** « Je ne l'ai pas prise. Je pleure avec toi. »
+- **Verset en écho.** Psaume 34:19 → « Le Créateur est près de ceux qui ont le cœur brisé. »
+
+### 7.3 La chasseuse et la soigneuse (colère contre bonté)
+
+- **Origine.** Le village de Bruyère (route du sud, lv 25-38) a été attaqué par des bêtes rendues
+  folles par le Souffle qui fuit des Fissures. Deux enfants ont été blessés.
+- **Personnages.**
+  - **Sarn**, chasseuse, mère d'un des enfants : elle veut nettoyer la forêt, toutes les bêtes.
+  - **Aelina**, soigneuse (déjà prévue comme fruit de l'Esprit « bonté ») : elle a remarqué que
+    certaines bêtes guérissent quand on les éloigne des Fissures.
+- **Arrivée du joueur (lv 25).** La quête principale le fait passer par Bruyère après l'attaque.
+- **Le choix (lv 32).** Sarn prépare une grande battue avec du poison dans les points d'eau, qui
+  tuera aussi les bêtes saines. Le joueur aide la battue (**rancune +1**), ou aide Aelina à éloigner
+  les bêtes blessées des Fissures (**compassion +1**).
+- **Conséquences.** Battue : la forêt se vide, puis les Fissures s'élargissent (la terre empoisonnée
+  laisse fuir le Souffle) ; plus tard, la zone a plus de bêtes corrompues. Soin : une partie de la
+  forêt reste saine ; Aelina devient une source de **familiers** (lien avec le système existant), et
+  Sarn finit par l'aider.
+- **X.** « Ta peur pour ton enfant est juste. Ce n'est pas la forêt, ton ennemie. »
+- **Verset en écho.** Éphésiens 6:12 → « Ce n'est pas contre la bête que tu luttes, mais contre ce
+  qui l'a tordue. »
+
+### 7.4 Lisa, la sœur d'Edric (même père, même voix)
+
+- **Origine.** Fille d'Asher, cadette d'Edric, elle a grandi dans la Tour. Quand Sevik s'est mis à
+  parler à son père, elle a entendu la promesse : « votre famille prendra la place du Créateur ». Elle
+  a eu peur et est partie à 16 ans, sans un mot à son père.
+- **Arrivée du joueur (lv 52).** Elle vit à Rochebourg et soigne les fanatiques blessés qui désertent
+  la Tour.
+- **Ce qu'elle porte.** La culpabilité d'avoir abandonné son père, et la colère contre Edric, qui a
+  transformé la foi de leur père en folie.
+- **Le choix (lv 56).** Edric lui fait parvenir un message : « Reviens, nous touchons au but. » Elle
+  demande au joueur de l'accompagner à la Tour pour lui parler une dernière fois. Le joueur la
+  convainc de le laisser à son sort (**rancune +1** : « il a choisi »), ou l'accompagne
+  (**compassion +1**).
+- **Conséquences.** Dans la Tour (lv 60+), au moment où Edric est à genoux, vaincu (choix déjà prévu
+  dans le lore), Lisa est là ou non. Si elle est là, elle lui tend la main avant le joueur.
+- **X.** « Tu es partie pour vivre. Tu peux revenir pour aimer. »
+- **Verset en écho.** Genèse 3:5 détourné, dit par la voix de Sevik dans un souvenir de Lisa : « Vous
+  serez comme le Créateur. » Plus tard, Luc 15:20 (le père qui court vers le fils) en écho de son
+  retour.
+
+### 7.5 Le Zélote repenti (demander pardon)
+
+- **Origine.** Bastien a servi Edric à la Tour. Sur son ordre, il a brûlé la maison d'une famille de
+  Rochebourg qui refusait de payer la dîme de la Tour. Le fils de la famille a été défiguré.
+- **Arrivée du joueur (lv 55).** On le trouve parmi les déserteurs que soigne Lisa (lien avec 7.4).
+- **Le choix (lv 58).** Il a écrit une lettre à la famille et demande au joueur de la porter. Le
+  joueur la porte (**compassion +1**), ou la déchire, « certaines choses ne se pardonnent pas »
+  (**rancune +1**).
+- **Conséquences.** Le pardon n'est **pas garanti** : la mère refuse, le fils accepte. Ce n'est pas
+  au joueur de pardonner à la place des victimes. Si la lettre est déchirée, Bastien retourne à la
+  Tour, et on le retrouve parmi les fanatiques.
+- **X.** « Demander pardon, c'est déjà rentrer. »
+- **Verset en écho.** 1 Jean 1:9 → « Celui qui avoue sa faute trouve la porte ouverte. »
+
+## 8. Questions ouvertes
+
+- [ ] Ezra : les 5 phases du lore du bureau remplacent les 4 stades d'avril ; recaler les niveaux
+      du tableau 6.
+- [ ] Garder les 4 nouvelles histoires (Dorn, chasseuse et soigneuse, Lisa, Bastien) ? Les noms ?
+- [ ] Harlan : Mireille meurt dans une Fissure sur la route (proposé) au lieu de l'effondrement de
+      la Tour ?
+- [ ] La ville en guerre tout en bas : quelles factions (Ceux d'en Haut, d'en Bas, les Indécis ?) ?
+- [ ] Les fruits de l'Esprit (Aldric, Aelina, Ashel, Mara, Rey) : Aelina porte déjà 7.3 ; les autres ?

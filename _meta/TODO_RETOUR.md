@@ -326,7 +326,10 @@ Dernière mise à jour : 2026-10-02.
 - [ ] **Histoires et Accusateur** : proposition `_meta/conception_histoires/HISTOIRES_ET_ACCUSATEUR.md`
       (branche data `vac_collections`) — Fissures = portes ouvertes par les œuvres de la chair, plan du Malin =
       l'Accusateur (VALIDÉ), structure quête principale + suites secondaires, X à chaque moment clé, paires
-      d'histoires en miroir par niveau. À FUSIONNER avec le lore et les quêtes du bureau. **Incohérence** : la
-      Tour d'Asher est au niveau 60 dans `DECISIONS.md` (refonte monstres) mais tombe au niveau 20 dans le lore
-      d'avril (`chronology.md`).
+      d'histoires en miroir par niveau, 5 fiches (Dorn, Harlan, chasseuse et soigneuse, Lisa, Bastien). À FUSIONNER
+      avec le lore et les quêtes du bureau. Carte décidée : Havreden 1-20, route du sud 20-50, Rochebourg 50+,
+      Tour d'Asher 60+ (le lore d'avril la faisait tomber au niveau 20 : à recaler), ville en guerre tout en bas.
+      Compteurs cachés : compassion / rancune.
+- [ ] **Rythme du loot** : régler le loot pour qu'on ne soit pas équipé trop vite, idem pour les ressources,
+      surtout les ratios en donjon et en groupes 4 et 5 étoiles (contenu volontairement dur).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.
