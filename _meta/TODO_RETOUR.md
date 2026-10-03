@@ -323,4 +323,10 @@ Dernière mise à jour : 2026-10-02.
       `vac_collections`) : 10 livres / ~70 pages tirés du VRAI lore, 6 contradictions de lore à trancher
       avec le lore du bureau, autres collections classées par effort, 5 questions ouvertes.
 - [ ] Quêtes : prévoir des quêtes liées au lore AVEC DES CHOIX pour le joueur (rappel du propriétaire).
+- [ ] **Histoires et Accusateur** : proposition `_meta/conception_histoires/HISTOIRES_ET_ACCUSATEUR.md`
+      (branche data `vac_collections`) — Fissures = portes ouvertes par les œuvres de la chair, plan du Malin =
+      l'Accusateur (VALIDÉ), structure quête principale + suites secondaires, X à chaque moment clé, paires
+      d'histoires en miroir par niveau. À FUSIONNER avec le lore et les quêtes du bureau. **Incohérence** : la
+      Tour d'Asher est au niveau 60 dans `DECISIONS.md` (refonte monstres) mais tombe au niveau 20 dans le lore
+      d'avril (`chronology.md`).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.
