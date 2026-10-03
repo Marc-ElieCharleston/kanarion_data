@@ -33,20 +33,39 @@ trahison plutôt que le sacrifice.**
   familles, les enfants. Voir [les fruits de l'Esprit](../fruits_de_l_esprit.md).
 - L'Imitateur **imite l'amour** (la voix de Mireille) ; Harlan **détourne sa propre bonté**.
 
-## Le regret (proposé)
+## Retrouver Harlan (propriétaire, 2026-10-03 ; combinaison proposée)
 
-- Pendant le combat, à bas PV, **il recommence à chanter, la voix cassée** : il comprend que la voix
-  n'était pas Mireille. Derniers mots : « Elle n'aurait jamais voulu ça. »
-- Il **ne peut pas être sauvé physiquement** (pas d'ancrage vivant, contrairement à Ezra et son
-  pendentif), mais **il peut se repentir au dernier moment**, comme le larron sur la croix
-  (Luc 23:42-43).
-- X, après le combat : « Souviens-toi de moi, disait-il. Je me souviens de lui. »
+1. **Un enfant du hameau arrive à Havreden et demande de l'aide à tout le monde.** Les PNJ l'ignorent
+   (l'indifférence, sans morale dite). Le joueur le croise et l'aide.
+   (Variante du propriétaire : quelqu'un dit avoir vu Harlan parler d'une personne du hameau.)
+2. **Au hameau** : les enfants sont effrayés, quelqu'un a emmené leurs parents de force. **Deux
+   enfants l'ont suivi discrètement** et donnent l'endroit.
+3. **Sur place** : Harlan a attaché les parents. Il ne les a pas blessés, mais **son intention et son
+   état ont ouvert la Fissure** (Matthieu 5:28 : le mal déjà commis dans le cœur). Règle du monde
+   précisée : ce ne sont pas que les actes, **ce qu'on porte dans le cœur ouvre aussi les portes**.
+4. **Harlan entre dans la Fissure** ; le joueur le suit. Les parents sont libérés.
+
+## Le combat : Harlan et les esprits
+
+Les esprits sont proposés comme des **imitations de Mireille** (simulacres de l'Imitateur).
+**Tous les 20 % de PV, on apprend un peu de la vérité** :
+
+| PV | Ce qu'on apprend |
+|---|---|
+| 80 % | « Elle m'appelle. Elle a besoin de moi. » (la voix de Mireille, douce) |
+| 60 % | le souvenir de sa mort : la Fissure de la Tour à Rochebourg |
+| 40 % | le marché : la voix voulait le hameau ; Harlan commence à douter |
+| 20 % | les esprits changent de forme : ce n'est pas Mireille ; il comprend |
+| 0 % | il chante, voix cassée : « Elle n'aurait jamais voulu ça. » Il se repent (le larron, Luc 23:42-43). X : « Souviens-toi de moi, disait-il. Je me souviens de lui. » |
+
+Il ne peut pas être sauvé physiquement (pas d'ancrage vivant), mais il se repent au dernier moment.
 
 ## Technique
 
 - [ ] PNJ marcheur sur un chemin fixe côté client, avec des bulles de chant.
 - [ ] Phasing par joueur : Harlan marche / assis à Rochebourg / absent, selon l'avancement.
-- [ ] Boss de Faille (événement de fissure ?).
+- [ ] Boss de Faille avec esprits, et **un dialogue tous les 20 % de PV** (le serveur a des phases de boss
+      à 50 % et 20 % ; il faut des seuils de dialogue configurables).
 
 ## Questions
 

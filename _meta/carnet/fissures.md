@@ -6,6 +6,8 @@ Les Fissures sont, en simplifié, des **portes ouvertes par les œuvres de la ch
 5:19-21 : haine, querelles, jalousie, colères, divisions…). Une brèche ouverte attire des monstres
 démoniaques.
 
+- **Ce qu'on porte dans le cœur ouvre aussi les portes**, pas seulement les actes (Harlan : son
+  intention et son état ouvrent la Fissure, sans avoir blessé personne ; Matthieu 5:28).
 - **Havreden** est paisible : peu de Fissures.
 - **Rochebourg** a eu la Tour, l'orgueil, les fanatiques, les bandits : les Fissures sont apparues.
   Ce sont les conséquences de ces mauvais choix.

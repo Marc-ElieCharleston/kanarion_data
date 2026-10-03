@@ -35,6 +35,11 @@ soi.
   **fête** : le feu rallumé, les familles, les enfants.
 - La ferme des Dorn (Prairie), selon les choix.
 
+## À faire
+
+- [ ] **Détailler les quêtes des fruits** (propriétaire, 2026-10-03), avec parfois des choix pour le
+      joueur.
+
 ## Questions
 
 - [ ] Garder ces 4 nouveaux personnages ? Les placer sur la carte (un par région ?).
