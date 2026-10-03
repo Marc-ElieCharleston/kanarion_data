@@ -36,8 +36,8 @@ Dernière mise à jour : 2026-10-02.
         `vac_spell-guard-fix` (`07976d70`) : depuis `74606ec2` (keystones) les sorts instantanés paient avant
         leurs effets, mais `caster_above_mp` retirait encore le coût (compté deux fois) ; testé dans WSL, 48/48
         tests mage / conditionnels verts. Et `ArcherMatrixTest.HeadshotCriticalResistanceAndKillReset`
-        (critique malgré 100 de résistance aux critiques), 3 rangs : **décision de design** — le code rend le
-        critique absolu, la description et le test disent « avant résistance critique ». Choisir et aligner.
+        (critique malgré 100 de résistance aux critiques), 3 rangs : **décidé : critique absolu** (2026-10-03).
+        Description corrigée (data `vac_collections`), test aligné sur la branche back `vac_headshot-absolute-crit`.
 - [ ] Back : relire chaque branche `vac_*` avant fusion (compilées et testées ensemble, voir au-dessus) :
   - [ ] `vac_familiar-xp-90` — ctest combat + familiar
   - [ ] `vac_poison-cap` — `combat-tests --gtest_filter="*Poison*"`
