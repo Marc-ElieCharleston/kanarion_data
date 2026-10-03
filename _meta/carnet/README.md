@@ -32,6 +32,7 @@ foi** : ces notes sont à fusionner avec eux au retour.
 - [Monstres V2](monstres.md)
 - [Loot et ressources](loot.md)
 - [Boutique et financement](boutique.md)
+- [Personnages : genre, apparence, animations](personnages_visuels.md)
 
 ## Documents de conception détaillés
 
