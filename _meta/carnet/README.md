@@ -13,6 +13,7 @@ foi** : ces notes sont à fusionner avec eux au retour.
 - [Thème et message](theme_et_message.md)
 - [L'Accusateur, le plan du Malin](accusateur.md)
 - [Les Fissures](fissures.md)
+- [Structure des quêtes et des histoires](structure_quetes.md)
 - Histoires :
   - [Ezra](histoires/ezra.md)
   - [Asher, Edric et Sevik (la Tour)](histoires/asher_edric.md)

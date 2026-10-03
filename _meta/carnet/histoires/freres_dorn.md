@@ -45,7 +45,7 @@ comprend que ce sont les choix de son frère qui lui ont coûté la vie. Il refu
 cercle de la vengeance et **vient demander pardon au joueur**. Les deux frères vivent la même
 blessure : l'un choisit la vengeance et en meurt, l'autre la refuse et en sort.
 
-Proposé : c'est au joueur de répondre au pardon demandé (accepter / refuser). Après avoir été accusé,
+**Validé (2026-10-03)** : c'est au joueur de répondre au pardon demandé (accepter → compassion +1 / refuser → rancune +1). Après avoir été accusé,
 il se retrouve devant le choix de pardonner : il vit le cercle de l'intérieur.
 
 ## X et versets
