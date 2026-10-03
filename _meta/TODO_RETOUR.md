@@ -305,4 +305,7 @@ Dernière mise à jour : 2026-10-02.
       - herbier / atlas des métiers (chaque ressource récoltée ou fabriquée) ;
       - album des Koro.
       Récompenses horizontales : titres, cosmétiques, emotes, éventuellement petit bonus de compte (+1 % de drop).
+      Pages des livres (décidé 2026-10-03) : combats des événements de fissure, coffres, faible taux dans
+      les groupes 5 étoiles, certaines récompenses de quête ; échangeables (HDV et échange direct).
+- [ ] Quêtes : prévoir des quêtes liées au lore AVEC DES CHOIX pour le joueur (rappel du propriétaire).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.
