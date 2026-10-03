@@ -1,158 +1,195 @@
-# Familiers : livres de passif, déplacements, passifs liés au maître
+# Familiers : livres de passif, déplacements, passifs de lien
 
 Document de CONCEPTION (2026-10-03, vacances). Rien n'est implémenté : à relire et trancher avant
 d'écrire la moindre ligne. Les points à décider sont marqués **[À DÉCIDER]**.
 
-Décisions déjà prises par le propriétaire (2026-10-03) :
+## 0. Décisions du propriétaire
+
+2026-10-03, premier passage :
 - trois types de livres de familier : compétence (existe), **déplacement**, **passif** ;
-- **les passifs fonctionnent exactement comme les compétences actives** : mêmes règles simples, pas de
-  système à part ;
-- des compétences de déplacement pour les monstres (par archétype) et les familiers (par rôle) ;
-- les passifs qui touchent aussi le maître sont très appréciés : en faire davantage.
+- **les passifs fonctionnent exactement comme les compétences actives** : mêmes règles simples ;
+- des compétences de déplacement pour les monstres et les familiers ;
+- les passifs qui touchent aussi le maître sont très appréciés.
+
+2026-10-03, second passage :
+- **rangs de 80 % à 150 %** (au lieu de 100 % → 175 %) ;
+- **déplacements choisis parmi les ~30 qui existent déjà en jeu**, selon ce qui convient au
+  familier : jamais un soigneur qui échange sa place avec le tank et meurt juste après ;
+- **un familier a pour l'instant : 1 passif, 1 passif de lien, 1 déplacement**. Un monstre a
+  1 déplacement au plus ;
+- **passif de lien** = nouvelle catégorie, un effet sur le familier ET son maître pendant le combat.
+  Fonctionnalité pour plus tard ;
+- on peut posséder plusieurs fois le même familier : ce sont ses compétences, son passif, etc. qui
+  le distinguent ;
+- **Célérité** devient une réduction du temps d'incantation ;
+- **Carapace et Épines : 8 %**, comme le dit la description (la data dit 12, à corriger : 12 % était
+  trop fort).
 
 ---
 
-## 1. Rappel : les règles des livres de compétence (déjà en jeu)
+## 1. Rappel : les livres de compétence (déjà en jeu)
 
 Source : `items/pet_books.json` (`_meta`), `config/familiar_balance.json`.
 
 | Règle | Valeur |
 |---|---|
-| Rangs | C 100 %, B 115 %, A 130 %, S 150 %, SS 175 % (`rank_percent`, même échelle que les cartes Koro) |
-| Rareté du livre | C commun, B peu commun, A rare, S épique, SS légendaire |
-| Enseigner | le familier apprend la compétence au rang du livre |
-| Améliorer | s'il la connaît à un rang inférieur, elle monte au rang du livre |
+| Rangs aujourd'hui | C 100 %, B 115 %, A 130 %, S 150 %, SS 175 % (`rank_percent`) |
+| Enseigner / améliorer | le livre enseigne la compétence, ou la monte à son rang si elle est connue plus bas |
 | Emplacements pleins | le joueur choisit la compétence remplacée |
-| Hors rôle | ×0,67 (dégâts, soins, boucliers, valeurs, durées) ; signatures jamais pénalisées |
-| Emplacements | par niveau du familier : 2 (niv. 1), 3 (20), 4 (50), 5 (100) |
-| Acquisition | rang C achetable chez Colette ; B à SS au drop seulement, rang pondéré par le tier du monstre |
+| Hors rôle | ×0,67 ; signatures jamais pénalisées |
+| Acquisition | C chez Colette ; B à SS au drop seulement, rang pondéré par le tier du monstre |
+| Stockage | le serveur garde la LETTRE du rang (migration 073) et relit le pourcentage dans la data : changer l'échelle s'applique à tous les familiers existants, sans migration |
 
-## 2. Les passifs, calqués sur les compétences
+## 2. Nouvelle échelle de rangs : 80 % → 150 %
 
-### 2.1 Ce qui change par rapport à aujourd'hui
-
-Aujourd'hui (`classes/familiar/passives.json`) : au drop, le familier tire 1 passif (2 en légendaire),
-et sa puissance dépend de la rareté (`value_mult` 1,0 / 1,0 / 1,25 / 1,25 / 1,25). Pas de rang, pas de
-livre, pas de remplacement.
-
-Proposition, règle pour règle identique aux compétences :
-
-| Règle | Compétences | Passifs (proposé) |
+| Rang | Aujourd'hui | Proposé |
 |---|---|---|
-| Rang | C → SS, `rank_percent` | **pareil** : C → SS, mêmes pourcentages |
-| Ce que le rang augmente | dégâts, soins, valeurs, durées | les `value` et `hp_percent` du passif ; **chances et seuils fixes** (sinon 25 % de chance → 44 %) |
-| Livre | enseigne ou améliore | **pareil** |
-| Emplacements pleins | le joueur choisit | **pareil** |
-| Hors rôle | ×0,67 | **pareil**, selon le `flavor` du passif (tank / dps / heal / utility) ; `universal` jamais pénalisé |
-| Signature d'espèce | jamais dans un livre | **pareil** (`fp_sig_*`, comme Porteur de Peste) |
-| Au drop | compétences tirées dans le pool du rôle | 1 passif tiré dans le pool, **au rang de la rareté du familier** (commun → C … légendaire → SS) |
+| C | 100 % | **80 %** |
+| B | 115 % | **95 %** |
+| A | 130 % | **110 %** |
+| S | 150 % | **130 %** |
+| SS | 175 % | **150 %** |
 
-Le `value_mult` par rareté disparaît, remplacé par le rang : un seul chiffre à expliquer au joueur.
+**[À DÉCIDER] 1. Et les compétences obtenues sans livre ?** Aujourd'hui une compétence tirée au
+drop agit à 100 %, comme un livre C. Avec C = 80 %, un livre C deviendrait PIRE que la compétence de
+départ. Deux options :
+- **A (recommandée)** : une compétence tirée au drop compte comme rang C (80 %), et on remonte les
+  valeurs de base des compétences de familier de ×1,25. Résultat : un familier sans livre garde sa
+  puissance d'aujourd'hui, et un SS vaut ×1,875 un C (au lieu de ×1,75) ;
+- **B** : la compétence tirée reste à 100 % (≈ entre B et A), les livres C et B ne servent qu'à
+  apprendre une compétence qu'on n'a pas.
 
-### 2.2 Emplacements de passif **[À DÉCIDER]**
+**[À DÉCIDER] 2. Les cartes Koro** utilisent la même échelle (C 100 % → SS 175 %). Les passer aussi à
+80 % → 150 %, ou ne toucher qu'aux familiers ?
 
-- **Option A (calquée sur les compétences, recommandée)** : par niveau, 1 (niv. 1), 2 (niv. 50),
-  3 (niv. 100). La rareté ne donne plus d'emplacement, mais un meilleur rang de départ.
-- **Option B (garde l'existant)** : par rareté, 1 emplacement, 2 en légendaire, plus 1 au niveau 100.
+## 3. Le passif, calqué sur les compétences
 
-L'option A rend chaque familier optimisable au niveau maximum ; la B garde le légendaire comme seul
-moyen d'avoir deux passifs (gros incitatif à la chasse, mais moins de liberté).
+Aujourd'hui (`classes/familiar/passives.json`) : au drop, 1 passif tiré (2 en légendaire), puissance
+selon la rareté (`value_mult` 1,0 / 1,0 / 1,25 / 1,25 / 1,25). Pas de rang, pas de livre.
 
-### 2.3 Acquisition des livres de passif
-
-- **Passifs de base** (stats simples : Vigueur, Férocité, Carapace, Œil vif, Agilité, Sérénité…) :
-  rang C chez Colette, comme les compétences.
-- **Passifs recherchés** (à déclencheur, et tous ceux qui touchent le maître) : **jamais vendus**,
-  drop uniquement, à partir du rang B ; rang pondéré par le tier du monstre comme les grimoires.
-- Volume : 30 passifs hors signature × 5 rangs = **150 livres**, plus les nouveaux passifs (section 4).
-  Générés par un script comme `scripts/gen_pet_books.py` (`book_type: "passive"`).
-
-## 3. Les déplacements
-
-### 3.1 Familiers : un emplacement de déplacement dédié
-
-Comme le déplacement signature des joueurs (la Charge du guerrier, accordée automatiquement), chaque
-familier a **un déplacement de base selon son rôle**, dans un **emplacement à part** (il ne prend pas
-une place de compétence). Un **livre de déplacement** remplace ce déplacement par une variante.
-
-Même échelle de rangs : le rang augmente l'effet secondaire (dégâts, bouclier, soin) ; **portée et
-recharge fixes**. Hors rôle ×0,67 comme le reste.
-
-| Déplacement | Rôle de base | Effet | Portée | Recharge |
-|---|---|---|---|---|
-| **Bond** | Attaque | saute sur un ennemi, petits dégâts | 3 | 12 s |
-| **Interposition** | Tank | se place à côté d'un allié attaqué, prend 20 % de ses dégâts pendant 3 s | 4 | 15 s |
-| **Retour** | Soin | rejoint le maître, petit soin sur lui | 6 | 15 s |
-| **Clignement** | Utilitaire | téléportation sur une case libre | 3 | 12 s |
-| Charge (livre) | — | ligne droite vers un ennemi, ralentit 2 s (jamais de contrôle dur) | 4 | 15 s |
-| Repli (livre) | — | recule de 2 cases, retire un ralentissement | 2 | 12 s |
-| Pas de l'ombre (livre) | — | se place derrière la cible du maître | 4 | 18 s |
-
-L'espèce donne la couleur visuelle et le nom (le loup « bondit », le rat « file », le sanglier
-« fonce »), pas une mécanique différente : une seule règle par déplacement.
-
-**IA du familier** (règles simples) : Interposition quand un allié à portée est frappé ; Bond quand
-la cible est hors de portée ; Retour quand le maître est à plus de 4 cases ou sous 50 % PV ;
-Clignement pour sortir d'une case menacée.
-
-### 3.2 Monstres : par archétype
-
-Pas un déplacement pour tout le monde, sinon s'éloigner ne sert plus à rien.
-
-| Archétype | Déplacement | Recharge |
+| Règle | Compétences | Passif (proposé) |
 |---|---|---|
-| brute, berserker, assassin | rapprochement (Bond / Charge) | 12-15 s |
-| tank, guardian | interposition pour un allié | 15 s |
-| archer, mage | désengagement (Repli, 2-3 cases) | 12 s |
-| healer, controller, enchanter, summoner | aucun (petit repositionnement possible) | — |
+| Nombre | 2 à 5 emplacements selon le niveau | **1 emplacement** (décidé) |
+| Rang | C → SS | **pareil** |
+| Ce que le rang augmente | dégâts, soins, valeurs, durées | `value` et `hp_percent` ; **chances et seuils fixes** (sinon 25 % de chance → 37,5 %) |
+| Livre | enseigne ou améliore | **pareil** ; s'il y a déjà un autre passif, il est remplacé (confirmation demandée) |
+| Hors rôle | ×0,67 | **pareil**, selon le `flavor` (tank / dps / heal / utility) ; `universal` jamais pénalisé |
+| Au drop | tirées dans le pool du rôle | 1 passif tiré dans le pool, **au rang de la rareté** (commun C … légendaire SS) |
 
-Les rapprochements sont **signalés** (court temps d'incantation visible) pour que le joueur puisse
-réagir. Aujourd'hui 15 monstres sur 200 seulement en ont un. Le serveur sait déjà faire lancer un
-déplacement hostile à l'IA (branche back `vac_v2-monster-model`, `4f2ba397`).
+Conséquences :
+- le `value_mult` par rareté disparaît, remplacé par le rang ;
+- le légendaire perd son 2e passif (1 seul emplacement) mais démarre au rang SS ;
+- **[À DÉCIDER] 3.** les légendaires déjà possédés avec 2 passifs : on garde le premier, on laisse
+  le choix au joueur, ou on les laisse tels quels (exception historique) ?
 
-**[À DÉCIDER]** : les monstres de niveau 1-10 (zone facile) en ont-ils ? Proposition : non, à partir
-du niveau 10, pour garder le début simple.
+Acquisition des livres de passif :
+- passifs simples (stats : Vigueur, Férocité, Carapace, Œil vif, Agilité, Sérénité…) : rang C chez
+  Colette, comme les compétences ;
+- passifs à déclencheur : drop uniquement, à partir du rang B ;
+- volume : 30 passifs hors signature × 5 rangs = **150 livres**, générés comme
+  `scripts/gen_pet_books.py` (`book_type: "passive"`).
 
-## 4. Passifs qui touchent le maître (nouveaux, « recherchés »)
+## 4. Le passif de lien (plus tard)
 
-Existants : Lien Vital (25 % des soins du familier soignent aussi le maître), Garde du Corps
-(15 % des dégâts du maître redirigés vers le familier), Meute (+6 % ATK au maître tant que le
-familier vit).
+Emplacement séparé du passif. Un effet sur le familier ET son maître pendant le combat. Les passifs
+existants qui touchent le maître y migreraient : Lien Vital, Garde du Corps, Meute. Idées pour la
+suite :
 
-Propositions (toutes passent par les accroches du lot 3 côté serveur) :
+| Passif de lien | Effet (rang C, avant la nouvelle échelle) |
+|---|---|
+| Écho de soin | quand le familier est soigné, 30 % du soin devient un soin sur la durée (4 s) sur l'allié le plus blessé à 3 cases |
+| Dernier rempart | maître sous 30 % PV : bouclier de 15 % de ses PV max (1 fois par combat) |
+| Fidélité | familier à 2 cases ou moins du maître : +5 % armure et RM pour les deux |
+| Vengeance | le maître subit un critique : la prochaine attaque du familier fait +25 % |
+| Relais de Souffle | 10 % du Souffle dépensé par le familier est rendu au maître |
+| Purification | le maître reçoit un contrôle : le familier le dissipe (recharge 20 s) |
+| Instinct de meute | les deux font +6 % de dégâts sur la même cible |
+| Sacrifice | un coup qui tuerait le maître est pris par le familier (1 fois par combat) |
 
-| Passif | Rôle | Effet (rang C) |
+Mêmes règles que le passif (rang, livre, drop). Côté serveur, ils demandent les accroches du lot 3.
+
+## 5. Le déplacement
+
+### 5.1 Principe
+
+Un emplacement de déplacement **dédié** : il ne prend pas la place d'une compétence. Le
+déplacement est **choisi parmi ceux qui existent déjà en jeu** (32 déplacements de joueur, plus 4 de
+monstre). Un livre de déplacement le remplace. Les règles de rang sont les mêmes que pour les
+compétences.
+
+**La règle de sécurité est par TYPE de déplacement, pas par liste** : le serveur et les scripts
+refusent un déplacement interdit au rôle, ce qui couvre aussi les futurs déplacements.
+
+| Type de déplacement | Exemples | Attaque | Tank | Soin | Utilitaire |
+|---|---|---|---|---|---|
+| Vers un ennemi (`dash_line`, `adjacent_enemy`, arrivée « enemies ») | Charge, Pas de l'Ombre, Percée furieuse, Abordage, Entrée en force, Pas de givre, Pas toxique, Ancrage | ✅ | ✅ | ❌ | ❌ |
+| Échange de place (`swap`) | Relève lumineuse, Permutation | ❌ | ✅ | ❌ | ❌ |
+| Rejoindre un allié (`teleport_adjacent` allié, arrivée « allies ») | Garde, Pas protecteur, Pas de renouveau, Pas cadencé, Service rapide, Pas en mesure | ❌ | ✅ | ✅ | ✅ |
+| Libre / repli (`self_move` libre, `recoil`) | Clignement, Bond en arrière, Porté par le faucon, Carte de repli, Pas de côté, Pas de garde, Double d'ombre, Pas de lame, Pas mécanique, Rebond d'évasion, Tir de recul | ✅ | ✅ | ✅ | ✅ |
+| Zone au départ (`origin_zone`) | Repli piégé (racine), Trace maudite (anti-soin) | ✅ | ❌ | ❌ | ✅ |
+| Attraction (`pull_to_center`) | Treuil gravitationnel | ❌ | ✅ | ❌ | ✅ |
+
+Exclus : Disparition et Voile d'Ombre (furtivité, pas de déplacement).
+
+### 5.2 Déplacement de base par rôle (avant tout livre)
+
+| Rôle | Déplacement de base | Pourquoi |
 |---|---|---|
-| **Écho de soin** | soin | quand le familier est soigné, 30 % du soin devient un soin sur la durée (4 s) sur l'allié le plus blessé à 3 cases |
-| **Dernier rempart** | tank | quand le maître passe sous 30 % PV, il reçoit un bouclier de 15 % de ses PV max (1 fois par combat) |
-| **Fidélité** | universel | tant que le familier est à 2 cases ou moins du maître, le maître gagne +5 % armure et RM |
-| **Vengeance** | attaque | quand le maître subit un coup critique, la prochaine attaque du familier fait +25 % |
-| **Relais de Souffle** | soin | 10 % du Souffle dépensé par le familier est rendu au maître |
-| **Purification** | utilitaire | quand le maître reçoit un contrôle, le familier le dissipe (recharge 20 s) |
-| **Instinct de meute** | attaque | le maître fait +6 % de dégâts sur la cible du familier |
-| **Sacrifice** | tank | un coup qui tuerait le maître est pris par le familier à sa place (le familier tombe ; 1 fois par combat) |
+| Attaque | Charge (`skill_warrior_charge`) | aller au contact |
+| Tank | Pas protecteur (`skill_warrior_guardian_maneuver`) | se placer contre un allié |
+| Soin | Pas de renouveau (`skill_healer_lifewarden_maneuver`) | rejoindre le groupe sans s'exposer |
+| Utilitaire | Clignement (`skill_mage_blink`) | sortir d'une case menacée |
 
-Sacrifice et Dernier rempart sont des candidats « graal » (drop rare uniquement, rang B minimum).
+**[À DÉCIDER] 4.** Le familier utilise la compétence de joueur telle quelle (même recharge,
+20 à 30 s, et même effet), ou une copie adaptée au familier ?
 
-## 5. Ordre d'implémentation (après validation)
+IA du familier : rapprochement quand la cible est hors de portée ; rejoindre le maître quand il est
+à plus de 4 cases ou sous 50 % PV ; repli quand le familier est sur une case menacée.
 
-1. Serveur : finir l'activation des passifs existants (lots 2 et 3, branche back
-   `vac_familiar-passives-combat`, lot 1 fait). Le lot 3 apporte les accroches (après un soin, avant
-   la mort, aura, sur contrôle reçu) dont les passifs de la section 4 ont besoin.
-2. Data + service familier : rang sur les passifs (remplace `value_mult`), emplacements, livres de
-   passif générés.
-3. Déplacements des familiers : 4 de base + 3 en livre, emplacement dédié, IA.
-4. Déplacements des monstres par archétype (data `kits` + IA existante).
-5. Nouveaux passifs liés au maître.
-6. Affichage en jeu : rang, effet exact et valeurs de chaque passif (sinon les joueurs ne le
-   sauront jamais).
+### 5.3 Monstres : 1 déplacement au plus, par archétype
 
-## 6. Questions ouvertes (récapitulatif)
+| Archétype | Type de déplacement | Exemples existants |
+|---|---|---|
+| brute, berserker, assassin | vers un ennemi | Ruée Brutale, Bond, Saut de l'Ombre, Coup de boutoir |
+| tank, guardian | rejoindre un allié | Pas protecteur |
+| archer, mage | repli | Bond en arrière, Clignement |
+| healer, controller, enchanter, summoner | aucun | — |
 
-- [ ] Emplacements de passif : option A (par niveau) ou B (par rareté) ?
-- [ ] Monstres de niveau 1-10 : déplacement ou non ?
-- [ ] Les 8 passifs « liés au maître » : lesquels garder, valeurs ?
-- [ ] Familiers déjà possédés : leur passif actuel devient-il un rang selon leur rareté (proposé) ?
-- [ ] Célérité (+10 % vitesse d'action, sans effet depuis la fin des auto-attaques) : la transformer
-      en −10 % de temps d'incantation (proposé) ?
-- [ ] Carapace et Épines : descriptions « 8 % » mais valeur 12 dans la data ; garder 12 (proposé) ?
+Les rapprochements sont signalés (court temps d'incantation visible). 15 monstres sur 200 en ont un
+aujourd'hui ; le serveur sait déjà faire lancer un déplacement hostile à l'IA (back
+`vac_v2-monster-model`, `4f2ba397`).
+
+**[À DÉCIDER] 5.** Monstres de niveau 1 à 10 : sans déplacement (proposé), pour garder le début
+simple ?
+
+## 6. Ce qui distingue un familier d'un autre
+
+**Entre deux espèces** (fixé par l'espèce) :
+- le rôle ;
+- les stats de base (profil du rôle × identité de l'espèce) ;
+- le passif de race (`species_passives`, croît avec le niveau) ;
+- la signature : un modèle partagé par famille, PAS unique par espèce. Exemples : `bite_bleed`
+  (14 familiers), `charge_stun` (14), `shell_guard` (13). 134 familiers, 65 espèces ;
+- le pool de compétences tirées.
+
+**Entre deux exemplaires de la même espèce** :
+- la rareté (stats ×1,0 à ×1,5, et rang de départ du passif) ;
+- le passif tiré, et son rang ;
+- les compétences apprises, et leurs rangs ;
+- le passif de lien (plus tard) ;
+- le déplacement ;
+- le niveau.
+
+**[À DÉCIDER] 6.** Faut-il une signature unique par espèce, au moins pour les espèces rares ?
+Sinon, deux espèces de la même famille ne se distinguent que par leurs stats et leur passif de race.
+
+## 7. Ordre d'implémentation (après validation)
+
+1. Serveur : finir l'activation des passifs existants (lots 2 et 3, back
+   `vac_familiar-passives-combat`, lot 1 fait).
+2. Data : nouvelle échelle de rangs, Carapace et Épines à 8, Célérité en temps d'incantation.
+3. Service familier : rang du passif (remplace `value_mult`), 1 emplacement, livres de passif.
+4. Déplacement des familiers : emplacement dédié, règle par type, base par rôle, livres, IA.
+5. Déplacement des monstres par archétype.
+6. Passifs de lien (plus tard).
+7. Affichage en jeu : rang, effet exact et valeurs (sinon les joueurs ne le sauront jamais).
