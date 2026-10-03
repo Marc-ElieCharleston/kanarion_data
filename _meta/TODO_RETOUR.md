@@ -337,6 +337,8 @@ Dernière mise à jour : 2026-10-02.
       le monde ouvert (presence) fait aujourd'hui.
 - [ ] **Boss à dialogues** : seuils de dialogue configurables (ex. tous les 20 % de PV) pour les boss
       d'histoire (Harlan). Aujourd'hui : phases fixes à 50 % et 20 %.
+- [ ] **Panthéon** (idée du propriétaire) : les premiers du serveur (niveau 100, par classe, par métier,
+      familier niveau 100, donjons, Tour, collections, histoire…), titres exclusifs. Voir `_meta/carnet/pantheon.md`.
 - [ ] **Rythme du loot** : régler le loot pour qu'on ne soit pas équipé trop vite, idem pour les ressources,
       surtout les ratios en donjon et en groupes 4 et 5 étoiles (contenu volontairement dur).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.

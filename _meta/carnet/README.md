@@ -28,6 +28,7 @@ foi** : ces notes sont à fusionner avec eux au retour.
 
 - [Familiers](familiers.md)
 - [Collections](collections.md)
+- [Le Panthéon (les premiers du serveur)](pantheon.md)
 - [Monstres V2](monstres.md)
 - [Loot et ressources](loot.md)
 - [Boutique et financement](boutique.md)
