@@ -116,6 +116,8 @@ conséquences → X → verset en écho**. Les noms sont provisoires.
 
 ### 7.1 Les frères Dorn (rancune contre pardon)
 
+**Remplacé par la version 2 du propriétaire (2026-10-03)** : Prairie, mère morte dans une « avalanche » qui cachait des sacrifices de la Tour, hameau du lv 24, confirmation à Rochebourg. Voir `_meta/carnet/histoires/freres_dorn.md`. Version 1 ci-dessous, pour mémoire.
+
 - **Origine.** La ferme des Dorn est au bord de la route du sud, à la limite d'Havreden. Il y a
   trois ans, des pèlerins en route vers la Tour ont creusé près de la ferme, « pour suivre les
   marques » que Sevik leur avait décrites. Une nuit, le sol s'est ouvert. La mère, Hanna, est morte

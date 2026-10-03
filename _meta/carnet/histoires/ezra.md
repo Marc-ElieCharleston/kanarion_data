@@ -15,6 +15,9 @@ Statut : existe en jeu (début) et dans le lore. **Le lore du bureau fait foi** 
   là. Pas par mérite, par ancrage.
 - Choix existant (niveau 10) : comprendre d'abord / tout détruire.
 - Fruit de l'Esprit : **fidélité**.
+- **Ce qu'on comprend, et quand (propriétaire, 2026-10-03)** : avec Ezra on découvre des **traces**
+  de Fissure, sans savoir ce que c'est. On ne commence à comprendre **qu'à Rochebourg** (lv ~50).
+  Entre-temps, le joueur **voit des Fissures s'ouvrir** pendant des événements en jeu.
 
 Miroir : [Harlan](harlan.md).
 

@@ -22,6 +22,15 @@ Aldric patience, Aelina bonté, Ashel foi, Mara sagesse, Rey courage) en sont le
   deviennent agressifs.
 - Les premières marques au sol apparaissent au-delà des plaines d'Havreden : c'est le début du jeu.
 
+## Ce que le joueur sait, et quand (propriétaire, 2026-10-03)
+
+- Avec Ezra (lv 10+) : des traces, inexpliquées.
+- Entre Havreden et Rochebourg : des Fissures s'ouvrent pendant des **événements en jeu**, toujours
+  sans explication.
+- Le hameau du bas de la Forêt (lv ~24) : la première rumeur d'un lien entre des actes (un sacrifice)
+  et une Fissure qui s'ouvre (voir [les frères Dorn](histoires/freres_dorn.md)).
+- **À Rochebourg (lv ~50) on commence à comprendre.**
+
 ## Questions
 
 - [ ] Les deux causes (les cœurs corrompus ET les excavations) : garder les deux ? (le lore d'avril
