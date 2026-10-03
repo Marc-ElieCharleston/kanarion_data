@@ -25,6 +25,16 @@ d'écrire la moindre ligne. Les points à décider sont marqués **[À DÉCIDER]
 - **Carapace et Épines : 8 %**, comme le dit la description (la data dit 12, à corriger : 12 % était
   trop fort).
 
+2026-10-03, troisième passage (questions 1, 2, 4, 5, 6 tranchées) :
+- **les compétences obtenues au drop sont aléatoires ET de rang aléatoire** (pas de rang C fixe, pas
+  de remontée ×1,25 des valeurs de base) ;
+- **les cartes Koro passent aussi à 80 % → 150 %** ;
+- **le familier utilise le déplacement de base tel quel** (la compétence de joueur, même recharge) ;
+- **monstres de niveau 1 à 10 : uniquement le déplacement de base d'une case** ;
+- **les gardiens (monstres) peuvent échanger de place pour protéger** ;
+- **signatures uniques par espèce : plus tard** ;
+- le chantier familiers est assez chargé comme ça : on s'arrête là pour la conception.
+
 ---
 
 ## 1. Rappel : les livres de compétence (déjà en jeu)
@@ -50,7 +60,7 @@ Source : `items/pet_books.json` (`_meta`), `config/familiar_balance.json`.
 | S | 150 % | **130 %** |
 | SS | 175 % | **150 %** |
 
-**[À DÉCIDER] 1. Et les compétences obtenues sans livre ?** Aujourd'hui une compétence tirée au
+**[TRANCHÉ : rang aléatoire au drop] 1. Et les compétences obtenues sans livre ?** Aujourd'hui une compétence tirée au
 drop agit à 100 %, comme un livre C. Avec C = 80 %, un livre C deviendrait PIRE que la compétence de
 départ. Deux options :
 - **A (recommandée)** : une compétence tirée au drop compte comme rang C (80 %), et on remonte les
@@ -59,7 +69,7 @@ départ. Deux options :
 - **B** : la compétence tirée reste à 100 % (≈ entre B et A), les livres C et B ne servent qu'à
   apprendre une compétence qu'on n'a pas.
 
-**[À DÉCIDER] 2. Les cartes Koro** utilisent la même échelle (C 100 % → SS 175 %). Les passer aussi à
+**[TRANCHÉ : oui, Koro aussi] 2. Les cartes Koro** utilisent la même échelle (C 100 % → SS 175 %). Les passer aussi à
 80 % → 150 %, ou ne toucher qu'aux familiers ?
 
 ## 3. Le passif, calqué sur les compétences
@@ -74,11 +84,11 @@ selon la rareté (`value_mult` 1,0 / 1,0 / 1,25 / 1,25 / 1,25). Pas de rang, pas
 | Ce que le rang augmente | dégâts, soins, valeurs, durées | `value` et `hp_percent` ; **chances et seuils fixes** (sinon 25 % de chance → 37,5 %) |
 | Livre | enseigne ou améliore | **pareil** ; s'il y a déjà un autre passif, il est remplacé (confirmation demandée) |
 | Hors rôle | ×0,67 | **pareil**, selon le `flavor` (tank / dps / heal / utility) ; `universal` jamais pénalisé |
-| Au drop | tirées dans le pool du rôle | 1 passif tiré dans le pool, **au rang de la rareté** (commun C … légendaire SS) |
+| Au drop | tirées dans le pool du rôle, **rang aléatoire** (décidé) | 1 passif tiré dans le pool, **rang aléatoire** comme les compétences (pondération par la rareté : à décider à l'implémentation) |
 
 Conséquences :
 - le `value_mult` par rareté disparaît, remplacé par le rang ;
-- le légendaire perd son 2e passif (1 seul emplacement) mais démarre au rang SS ;
+- le légendaire perd son 2e passif (1 seul emplacement) ;
 - **[À DÉCIDER] 3.** les légendaires déjà possédés avec 2 passifs : on garde le premier, on laisse
   le choix au joueur, ou on les laisse tels quels (exception historique) ?
 
@@ -140,7 +150,7 @@ Exclus : Disparition et Voile d'Ombre (furtivité, pas de déplacement).
 | Soin | Pas de renouveau (`skill_healer_lifewarden_maneuver`) | rejoindre le groupe sans s'exposer |
 | Utilitaire | Clignement (`skill_mage_blink`) | sortir d'une case menacée |
 
-**[À DÉCIDER] 4.** Le familier utilise la compétence de joueur telle quelle (même recharge,
+**[TRANCHÉ : telle quelle] 4.** Le familier utilise la compétence de joueur telle quelle (même recharge,
 20 à 30 s, et même effet), ou une copie adaptée au familier ?
 
 IA du familier : rapprochement quand la cible est hors de portée ; rejoindre le maître quand il est
@@ -151,7 +161,8 @@ IA du familier : rapprochement quand la cible est hors de portée ; rejoindre le
 | Archétype | Type de déplacement | Exemples existants |
 |---|---|---|
 | brute, berserker, assassin | vers un ennemi | Ruée Brutale, Bond, Saut de l'Ombre, Coup de boutoir |
-| tank, guardian | rejoindre un allié | Pas protecteur |
+| tank | rejoindre un allié | Pas protecteur |
+| guardian | rejoindre un allié OU **échanger de place** pour protéger (décidé) | Pas protecteur, Relève lumineuse, Permutation |
 | archer, mage | repli | Bond en arrière, Clignement |
 | healer, controller, enchanter, summoner | aucun | — |
 
@@ -159,7 +170,7 @@ Les rapprochements sont signalés (court temps d'incantation visible). 15 monstr
 aujourd'hui ; le serveur sait déjà faire lancer un déplacement hostile à l'IA (back
 `vac_v2-monster-model`, `4f2ba397`).
 
-**[À DÉCIDER] 5.** Monstres de niveau 1 à 10 : sans déplacement (proposé), pour garder le début
+**[TRANCHÉ : déplacement de base d'une case seulement] 5.** Monstres de niveau 1 à 10 : sans déplacement (proposé), pour garder le début
 simple ?
 
 ## 6. Ce qui distingue un familier d'un autre
@@ -180,7 +191,7 @@ simple ?
 - le déplacement ;
 - le niveau.
 
-**[À DÉCIDER] 6.** Faut-il une signature unique par espèce, au moins pour les espèces rares ?
+**[TRANCHÉ : plus tard] 6.** Faut-il une signature unique par espèce, au moins pour les espèces rares ?
 Sinon, deux espèces de la même famille ne se distinguent que par leurs stats et leur passif de race.
 
 ## 7. Ordre d'implémentation (après validation)
