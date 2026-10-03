@@ -19,7 +19,7 @@ foi** : ces notes sont à fusionner avec eux au retour.
   - [Asher, Edric et Sevik (la Tour)](histoires/asher_edric.md)
   - [Harlan](histoires/harlan.md)
   - [Les frères Dorn](histoires/freres_dorn.md)
-  - [La chasseuse et la soigneuse](histoires/chasseuse_soigneuse.md)
+  - [Les deux sœurs, la chasseuse et la soigneuse](histoires/chasseuse_soigneuse.md)
   - [Lisa, la sœur d'Edric](histoires/lisa.md)
   - [Bastien, le Zélote repenti](histoires/bastien.md)
 - [Les fruits de l'Esprit (histoires de lumière)](fruits_de_l_esprit.md)

@@ -24,6 +24,13 @@ Aldric patience, Aelina bonté, Ashel foi, Mara sagesse, Rey courage) en sont le
   deviennent agressifs.
 - Les premières marques au sol apparaissent au-delà des plaines d'Havreden : c'est le début du jeu.
 
+## On peut refermer une Fissure par la compassion
+
+Première preuve : [les deux sœurs](histoires/chasseuse_soigneuse.md) (lv ~22-26) — calmer la Grande
+Ourse referme la Fissure de son antre, la tuer ne la referme pas. Idée de jeu pour plus tard : un
+**baume d'apaisement** pendant les événements de Fissure (calmer au lieu de tuer, meilleure chance
+d'empreinte de familier).
+
 ## Ce que le joueur sait, et quand (propriétaire, 2026-10-03)
 
 - Avec Ezra (lv 10+) : des traces, inexpliquées.
@@ -37,4 +44,4 @@ Aldric patience, Aelina bonté, Ashel foi, Mara sagesse, Rey courage) en sont le
 
 - [ ] Les deux causes (les cœurs corrompus ET les excavations) : garder les deux ? (le lore d'avril
       les fait « se nourrir mutuellement »)
-- [ ] Peut-on refermer une Fissure en jeu par un bon choix (événement de fissure) ?
+- [ ] Le baume d'apaisement dans les événements de Fissure : à concevoir.

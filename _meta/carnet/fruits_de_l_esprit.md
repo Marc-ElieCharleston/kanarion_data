@@ -20,7 +20,7 @@ soi.
 |---|---|---|---|
 | Fidélité | **Ezra** | (histoire sombre : il chute) | lore |
 | Patience | **Aldric**, maître de guilde | le pilier qui plie mais ne rompt pas | lore (ébauche) |
-| Bonté | **Aelina**, soigneuse | soigner les bêtes au lieu de les exterminer ([chasseuse et soigneuse](histoires/chasseuse_soigneuse.md)) | lore + proposé |
+| Bonté | **Aelina**, soigneuse | sœur de Sarn ; calmer la Grande Ourse referme une Fissure ([les deux sœurs](histoires/chasseuse_soigneuse.md)) | lore + validé |
 | Foi | **Ashel**, veilleur de l'Abîme | la foi éprouvée par le silence de X | lore (ébauche) |
 | Sagesse | **Mara**, oracle du savoir | la connaissance contre la folie prophétique | lore (ébauche) |
 | Courage | **Rey**, capitaine de la garde | le courage face à l'impossible | lore (ébauche) |

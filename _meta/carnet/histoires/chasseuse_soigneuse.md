@@ -1,59 +1,81 @@
-# La chasseuse et la soigneuse (la peur contre la bonté)
+# Les deux sœurs : la chasseuse et la soigneuse
 
-Statut : proposition v2 (2026-10-03). Noms provisoires.
+Statut : **validé dans les grandes lignes** (2026-10-03, version 3). Noms provisoires.
+
+**Ce que cette histoire apprend au joueur : une Fissure peut se refermer par la compassion, pas
+seulement en tuant ce qui en sort.** C'est la première preuve, bien avant de comprendre les Fissures
+à Rochebourg.
 
 ## Où
 
-**Bruyère**, un village au bord des zones **Ours (20-28)** et **Wolf (25-32)** : là où les bêtes
-deviennent dangereuses. Niveaux **~22-32**. C'est l'histoire des **bêtes** : elle tombe dans la
-tranche des animaux (1-40), avant les humains touchés par la Faille.
+**Un petit camp à droite de la zone Ours (20-28).** La zone autour est une **zone élite** : les
+monstres et les groupes de monstres y sont puissants, **pour tout le monde** (pas de zone qui change
+selon le joueur). L'histoire explique pourquoi.
 
-## Origine
+## Les deux sœurs (la même blessure, deux réponses)
 
-Le Souffle qui fuit des Fissures rend des bêtes folles (« surdose », lore). Un ours corrompu attaque
-Bruyère ; **le fils de Sarn** est grièvement blessé.
+Leur père a été tué par un ours il y a des années.
+- **Sarn** a choisi de **chasser**. Elle ne comprend pas : plus elle chasse, plus les bêtes de la
+  zone deviennent fortes.
+- **Aelina** (fruit de l'Esprit « bonté », déjà prévue dans le lore) a choisi de **soigner**, parce
+  qu'elle n'avait pas pu sauver leur père. Elle soigne les bêtes blessées, et a remarqué qu'elles
+  guérissent loin des Fissures.
 
-## Personnages
+## La vérité
 
-- **Sarn**, chasseuse, mère de l'enfant blessé. Elle n'est pas méchante : **elle a peur**. Elle veut
-  nettoyer la forêt, toutes les bêtes, pour que ça n'arrive plus jamais.
-- **Aelina**, soigneuse (fruit de l'Esprit « bonté », déjà prévue dans le lore). Elle soigne le fils
-  de Sarn, et elle a remarqué une chose : **des bêtes guérissent quand on les éloigne des Fissures**.
+Au cœur de la zone vit une **Grande Ourse**. Sarn a tué ses petits dans ses pièges. **La rage de la
+mère nourrit une Fissure, et c'est elle qui rend toute la zone élite.** La haine de Sarn nourrit le
+danger qu'elle combat : le cercle de l'[Accusateur](../accusateur.md) (la peur pousse à la haine, la
+haine ouvre les portes), sans un mot de morale.
 
 ## Déroulé
 
-1. **lv ~22, quête principale** : le joueur arrive à Bruyère juste après l'attaque. Il aide Aelina à
-   soigner les blessés (une quête de lumière : on aide).
-2. **lv ~25, histoire** : Aelina demande au joueur de ramener une bête blessée pour la soigner. Le
-   joueur voit la bête redevenir calme loin de la Fissure. Sarn, elle, prépare des pièges.
-3. **lv ~28, le choix** : Sarn veut **empoisonner les points d'eau** de la forêt (les bêtes saines
-   mourront aussi). Elle demande au joueur de l'aider, Aelina lui demande de l'en empêcher.
+1. **Arrivée (lv ~22-26)** : le joueur aide les deux sœurs, sans choisir encore : une chasse avec
+   Sarn, une bête blessée ramenée à Aelina (il la voit redevenir calme loin de la Fissure).
+2. **L'enquête** : pourquoi la zone empire ? Le joueur remonte jusqu'à l'antre de la Grande Ourse.
+3. **Le choix, dans l'antre (instance de quête)** :
 
-| | Aider Sarn (rancune +1) | Aider Aelina (compassion +1) |
+| | La tuer (la voie de Sarn) | La calmer (la voie d'Aelina) |
 |---|---|---|
-| tout de suite | la forêt se vide ; Bruyère respire | Aelina et le joueur éloignent les bêtes blessées des Fissures ; Sarn est furieuse |
-| lv ~32 | **le poison a gagné les sources** : le bétail de Bruyère tombe malade, et la terre empoisonnée laisse fuir le Souffle (une Fissure s'élargit, plus de bêtes corrompues dans la zone). **Le choix revient sur ceux qui l'ont fait.** Aelina soigne quand même le village, sans un reproche | la forêt reste en partie saine ; le fils de Sarn guérit ; Aelina offre au joueur **un familier** (une bête soignée) |
-| après | Sarn comprend, et vient aider Aelina : c'est elle qui demande à apprendre | Sarn finit par aider Aelina : elle devient la gardienne de la forêt |
+| Dans l'instance | un boss élite | **plus dur** : protéger Aelina pendant son soin, contre des vagues de bêtes ; **groupe conseillé** |
+| Ensuite | Sarn continue de chasser les bêtes, amère ; Aelina quitte le camp | **la Fissure de l'antre se referme** ; Aelina a sa réponse ; **Sarn change de cible** : elle chasse ce qui passe par les brèches (les démons) |
+| L'ourson | **il reste là, seul, à côté de sa mère.** Personne ne dit rien. Le joueur peut l'emmener à Aelina (action facultative et discrète) | l'ourson devient un **familier** du joueur |
+| Plus tard | Sarn retrouve les notes d'Aelina et finit par comprendre, seule | les deux sœurs sont des alliées (événements de Fissure, Rochebourg) |
+| compteurs | rancune +1 | compassion +1 |
 
-Les deux branches se rejoignent : **Sarn finit aux côtés d'Aelina**. Ce qui change, c'est le prix
-payé avant, et l'état de la forêt (zone plus ou moins corrompue).
+**Tous les chemins mènent subtilement à la compassion pour les bêtes** : celui qui a choisi la
+violence voit ce qu'elle laisse derrière elle (l'ourson), et a une occasion de réparer.
 
-## Pourquoi c'est une histoire de lumière autant que de blessure
+**La compassion coûte plus cher que la violence** (combat plus dur, en groupe) : vrai dans la vie, et
+cohérent avec le PvE de groupe et « mieux vaut trop dur que trop facile ».
 
-- Aelina ne juge jamais Sarn, et soigne même ceux qui ont empoisonné l'eau : la bonté ne dépend pas
-  du mérite.
-- Sarn n'est pas « la méchante » : elle aime son fils. C'est la peur qui la pousse.
-- Lien avec les familiers : **les monstres ne sont pas le mal, ils sont corrompus**. Le joueur le
-  voit de ses yeux.
+## Le lien avec le fond de l'histoire
+
+- La découverte d'Aelina est **un indice de l'intrigue principale** : une Fissure peut se refermer,
+  et ce qu'on porte dans le cœur (la rage) la nourrit.
+- **Aelina est le contrepoint d'Ezra** : lui veut comprendre les Fissures en creusant et s'y perd ;
+  elle les comprend en soignant.
+- **Sarn illustre Éphésiens 6:12** : l'ennemi n'est pas la bête, mais ce qui passe par les brèches.
+- Plus tard, Aelina pourrait **enseigner à refermer les Fissures** pendant les événements de Fissure.
+
+## Idée de jeu pour plus tard
+
+Pendant les événements de Fissure, **une autre façon de refermer que de tout tuer** : un **baume
+d'apaisement** (enseigné par Aelina) qui calme une bête corrompue au lieu de la tuer, avec une
+meilleure chance de drop de son empreinte de familier. Subtil, jamais obligatoire.
+
+## Technique
+
+- [ ] L'antre de la Grande Ourse : **instance de quête** (le serveur sait faire des instances).
+- [ ] PNJ visibles selon le joueur (où sont les sœurs, l'ourson) : même besoin que les frères Dorn.
 
 ## X et versets
 
-- X à Sarn : « Ta peur pour ton enfant est juste. Ce n'est pas la forêt, ton ennemie. »
+- X à Sarn : « Ta peine pour ton père est juste. Ce n'est pas la forêt, ton ennemie. »
 - Échos : Éphésiens 6:12 → « Ce n'est pas contre la bête que tu luttes, mais contre ce qui l'a
   tordue. » ; Proverbes 12:10 → « Le juste connaît le besoin de ses bêtes. »
 
 ## Questions
 
-- [ ] Garder le nom « Bruyère » ? Placer le village entre Ours et Wolf ?
-- [ ] Le familier offert par Aelina : une espèce précise (l'ours soigné ?) ou au choix ?
-- [ ] La zone empoisonnée : plus de monstres corrompus dans la zone (visible), ou seulement narratif ?
+- [ ] Les noms (Sarn, Aelina, le camp).
+- [ ] La zone élite à droite des Ours : niveau exact ?
