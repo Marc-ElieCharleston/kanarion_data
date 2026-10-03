@@ -120,6 +120,11 @@ conséquences → X → verset en écho**. Les noms sont provisoires.
   trois ans, des pèlerins en route vers la Tour ont creusé près de la ferme, « pour suivre les
   marques » que Sevik leur avait décrites. Une nuit, le sol s'est ouvert. La mère, Hanna, est morte
   dans la Fissure.
+- **Ce qu'ils savent (2026-10-03) : rien.** Pour eux c'est un affaissement de terrain, un accident :
+  personne à Havreden ne connaît encore les Fissures. Après la découverte d'Ezra (lv 10), Ezra et le
+  joueur comprennent que c'était une Fissure ouverte par des fouilles, et **c'est le joueur qui
+  rapporte la vérité à la ferme** : elle allume la rancune de Matthis. Ferme placée en bordure sud
+  d'Havreden, entre les zones Loup (13-23) et Ours (20-28). Voir `_meta/carnet/histoires/freres_dorn.md`.
 - **Personnages.**
   - **Tobias**, l'aîné, 30 ans : il a enterré sa mère et cultive ce qui reste. Il a recueilli un des
     pèlerins, blessé ce soir-là, sans savoir au début qui il était.
