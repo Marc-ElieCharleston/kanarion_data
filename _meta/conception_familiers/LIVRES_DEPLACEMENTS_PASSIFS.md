@@ -35,6 +35,16 @@ d'écrire la moindre ligne. Les points à décider sont marqués **[À DÉCIDER]
 - **signatures uniques par espèce : plus tard** ;
 - le chantier familiers est assez chargé comme ça : on s'arrête là pour la conception.
 
+2026-10-03, quatrième passage (précisions) :
+- au drop, le familier a **1 ou 2 compétences, la première est TOUJOURS sa signature** (déjà dans le
+  code) ; la seconde, s'il y en a une, est aléatoire et de rang aléatoire ;
+- **livres de déplacement de familier PLUS RARES que les livres de compétence** ;
+- monstres : un déplacement adapté au style de jeu de l'archétype, **recharge longue** (sinon un
+  corps-à-corps n'attrape jamais un mage ou un archer qui saute) ;
+- **2 emplacements de passif** par familier (le passif + le passif de lien) ; question 3 (légendaires
+  qui ont déjà 2 passifs) : ils les gardent, les deux emplacements les accueillent (interprétation à
+  confirmer).
+
 ---
 
 ## 1. Rappel : les livres de compétence (déjà en jeu)
@@ -79,7 +89,7 @@ selon la rareté (`value_mult` 1,0 / 1,0 / 1,25 / 1,25 / 1,25). Pas de rang, pas
 
 | Règle | Compétences | Passif (proposé) |
 |---|---|---|
-| Nombre | 2 à 5 emplacements selon le niveau | **1 emplacement** (décidé) |
+| Nombre | 2 à 5 emplacements selon le niveau | **2 emplacements** : le passif + le passif de lien (décidé) |
 | Rang | C → SS | **pareil** |
 | Ce que le rang augmente | dégâts, soins, valeurs, durées | `value` et `hp_percent` ; **chances et seuils fixes** (sinon 25 % de chance → 37,5 %) |
 | Livre | enseigne ou améliore | **pareil** ; s'il y a déjà un autre passif, il est remplacé (confirmation demandée) |
@@ -89,7 +99,7 @@ selon la rareté (`value_mult` 1,0 / 1,0 / 1,25 / 1,25 / 1,25). Pas de rang, pas
 Conséquences :
 - le `value_mult` par rareté disparaît, remplacé par le rang ;
 - le légendaire perd son 2e passif (1 seul emplacement) ;
-- **[À DÉCIDER] 3.** les légendaires déjà possédés avec 2 passifs : on garde le premier, on laisse
+- **[TRANCHÉ : ils les gardent, à confirmer] 3.** les légendaires déjà possédés avec 2 passifs : on garde le premier, on laisse
   le choix au joueur, ou on les laisse tels quels (exception historique) ?
 
 Acquisition des livres de passif :
