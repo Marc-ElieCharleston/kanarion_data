@@ -330,6 +330,8 @@ Dernière mise à jour : 2026-10-02.
       avec le lore et les quêtes du bureau. Carte décidée : Havreden 1-20, route du sud 20-50, Rochebourg 50+,
       Tour d'Asher 60+ (le lore d'avril la faisait tomber au niveau 20 : à recaler), ville en guerre tout en bas.
       Compteurs cachés : compassion / rancune.
+- [ ] **Technique quêtes** : PNJ visibles ou non selon l'avancement de chaque joueur (phasing par joueur),
+      nécessaire pour les histoires à choix (ex. un des frères Dorn disparaît). Vérifier client + serveur.
 - [ ] **Rythme du loot** : régler le loot pour qu'on ne soit pas équipé trop vite, idem pour les ressources,
       surtout les ratios en donjon et en groupes 4 et 5 étoiles (contenu volontairement dur).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.

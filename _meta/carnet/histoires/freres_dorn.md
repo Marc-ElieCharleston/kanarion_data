@@ -15,30 +15,37 @@ Les bâtisseurs de la Tour ont **sacrifié beaucoup de monde** et l'ont caché e
 avec l'arc de la Tour (Sevik, Edric) : les sacrifices font partie des actes qui ouvrent les
 Fissures (des portes ouvertes par les œuvres de la chair).
 
-## Déroulé (proposé : les deux options du propriétaire combinées)
+## Déroulé (décidé 2026-10-03 : option B principale, option A en filet)
 
 1. **Prairie, lv ~10-20** : une quête fait simplement parler le joueur aux deux frères. Rien de plus.
-2. **Hameau du bas de la Forêt, lv ~24** (option B) : 2 ou 3 cabanes. Des gens ont quitté Rochebourg
-   parce que « c'était trop bizarre ». L'un d'eux a vu un sacrifice ; peu après, une Fissure s'est
-   ouverte à quelques mètres. Il soupçonne un lien mais **préfère oublier et vivre dans son coin**.
-   - C'est une **troisième attitude** : ni pardon ni rancune, la peur et l'indifférence. Écho
-     possible : le serviteur qui enterre son talent (Matthieu 25:25).
-3. **Le choix (lv ~24)** : rapporter ou non aux frères ce que le joueur a entendu. Dire une vérité qui
-   va blesser, ou se taire : pas de « bonne » réponse.
-   - Il parle : l'un des frères (Matthis) **disparaît**. On le retrouve chez les **Brigands
-     (35-45)**, puis parmi les **humains touchés par la Faille (45-55)**, engouffré dans le mal.
-   - Il se tait : rien ne se passe… jusqu'à Rochebourg.
-4. **Rochebourg, lv ~50** (option A) : une personne soupçonne les bâtisseurs de la Tour d'avoir
-   sacrifié beaucoup de monde et caché ça en avalanche. C'est la **confirmation**, et le lien avec
-   Edric et Sevik.
-   - Si le joueur s'était tu, la quête « annoncer la nouvelle » s'active maintenant, mais trop tard
-     pour l'un des frères : se taire a aussi une conséquence.
-5. **Les retrouvailles** : le frère disparu est un élite ou un boss tragique ; l'autre frère vient le
-   chercher. Le pardon peut le ramener ou non.
+2. **Le hameau, lv ~24** : 2 ou 3 cabanes dans la forêt, **un petit feu**. Des gens ont quitté
+   Rochebourg parce que « c'était trop bizarre ». L'un d'eux a vu un sacrifice ; peu après, une
+   Fissure s'est ouverte à quelques mètres. Il soupçonne un lien mais **préfère oublier et vivre dans
+   son coin** (troisième attitude : la peur, l'indifférence ; écho Matthieu 25:25).
+3. **Le choix** : le hameau demande au joueur s'il veut **prévenir les frères**.
+
+Règle de production : **une histoire = un choix = deux issues** ; chaque issue change une ou deux
+scènes plus tard, puis les branches se rejoignent. Aucune branche n'est la bonne.
+
+| | Prévenir (principale) | Se taire |
+|---|---|---|
+| lv 24 | Matthis part seul vers Rochebourg chercher la vérité ; **il disparaît de la Prairie, dans le client de ce joueur** | rien ne se passe |
+| lv ~38 | on retrouve **son corps** dans la zone Brigand, avec son carnet ; **Tobias en veut au joueur** | — |
+| lv ~50, Rochebourg | Tobias vient à Rochebourg : **il pardonne au joueur** | la vérité éclate quand même (option A : une personne soupçonne les sacrifices cachés en avalanche) ; le joueur doit l'annoncer ; Matthis part et finit **parmi les humains touchés par la Faille (45-55)**, vivant, corrompu |
+| après | — | Tobias vient le chercher et peut le ramener |
+
+**Point de vigilance (message).** Matthis ne meurt pas à cause de la vérité, mais à cause de ce qu'il
+en fait : il part seul, dans la colère, pour se venger. Sinon le jeu dirait « tais-toi, ne te mêle de
+rien », l'inverse du message.
+
+**Le joueur devient celui qu'on pardonne.** Tobias accuse le joueur comme Matthis accusait la Tour
+(chercher un coupable à sa douleur). Son pardon fait vivre au joueur l'épilogue : « être pardonné
+n'efface pas la responsabilité, mais être aimé change tout ».
 
 ## X et versets
 
 - X au frère qui part : « Ta colère dit combien tu l'aimais. Elle ne la ramènera pas. »
+- X au joueur, après la mort de Matthis : « Tu as dit vrai. Ce qu'il en a fait lui appartient. »
 - X au témoin du hameau : à écrire (ne pas juger sa peur).
 - Échos : Éphésiens 4:26 (« que le soleil ne se couche pas sur ta colère ») ; Matthieu 25:25 pour
   le témoin.
@@ -47,4 +54,7 @@ Fissures (des portes ouvertes par les œuvres de la chair).
 
 - [ ] Hanna : pèlerine ou ouvrière de la Tour ?
 - [ ] Lequel des deux frères disparaît, lequel pardonne ?
-- [ ] Compteurs : parler ou se taire au lv 24, est-ce compassion / rancune, ou rien ?
+- [ ] Compteurs : parler ou se taire au lv 24 est un dilemme de vérité ; proposé : hors compteurs.
+- [ ] **Technique** : des PNJ qui apparaissent ou disparaissent selon l'avancement de CHAQUE joueur
+      (Matthis absent de la Prairie dans le client de ce joueur) : vérifier ce que le client et le
+      serveur savent faire.
