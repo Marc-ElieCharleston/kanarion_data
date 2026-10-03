@@ -100,6 +100,21 @@ Probablement déjà réglées dans le lore du bureau : à vérifier là-bas.
 | **Reliques de la Faille** | `mat_relic_r1..r5` du Collectionneur (intermédiaire de fabrication) | les transformer en objets de lore | moyen + texte |
 | **Herbier / atlas des métiers** | 237 matériaux, 15 métiers | la récolte n'est pas branchée | plus tard |
 
+### 2.1 Le bestiaire (décidé 2026-10-03 : descriptions liées au lore)
+
+Modèle : le Journal du Chasseur de Hollow Knight, le Pokédex. Version légère :
+- **une fiche par ESPÈCE** (46), pas par monstre (166) ; une ligne par stade (jeune, adulte,
+  corrompu, alpha…) ;
+- **1 à 3 phrases** de lore par espèce, à partir de `lore.json` `progression_des_ennemis` ;
+- **débloquée par paliers** :
+  1. première rencontre : nom et image ;
+  2. 10 victoires : stats de base, archétype, déplacement ;
+  3. 50 victoires : drops et faiblesses ;
+  4. 100 victoires : le texte de lore ;
+- c'est aussi **l'endroit où afficher les infos en jeu** (stats de base, passif d'espèce) ; la même fiche
+  sert à l'album des familiers ;
+- priorité : après les livres (il faut écrire les 46 textes, et suivre les victoires par espèce).
+
 ## 3. Systèmes sur lesquels bâtir
 
 - **Succès** (data + serveur + client, le plus complet) : `systems/achievements.json` (145 succès,
