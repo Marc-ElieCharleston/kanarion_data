@@ -22,6 +22,7 @@ foi** : ces notes sont à fusionner avec eux au retour.
   - [La chasseuse et la soigneuse](histoires/chasseuse_soigneuse.md)
   - [Lisa, la sœur d'Edric](histoires/lisa.md)
   - [Bastien, le Zélote repenti](histoires/bastien.md)
+- [Les fruits de l'Esprit (histoires de lumière)](fruits_de_l_esprit.md)
 
 ## Systèmes
 

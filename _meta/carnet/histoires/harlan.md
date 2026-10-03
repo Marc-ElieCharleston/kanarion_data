@@ -18,19 +18,20 @@ au niveau 20). Les points marqués « proposé » sont à valider.
    crime** : la voix lui a expliqué comment ouvrir une Faille pour retrouver sa femme.
 5. **En ouvrant la Faille, il est aspiré et devient le boss d'une Faille.**
 
-## Le crime (proposé)
+## Le crime (proposé v2, 2026-10-03)
 
-Règle déjà posée : **les sacrifices ouvrent les Fissures** (l'« avalanche » de la Tour, voir
-[les frères Dorn](freres_dorn.md)). La voix lui apprend ce que savaient les bâtisseurs de la Tour.
+Le propriétaire trouve le massacre du hameau (des enfants seuls) trop sombre. Version 2 : **la
+trahison plutôt que le sacrifice.**
 
-- **Il attire les gens du hameau de la forêt** (2 ou 3 cabanes, un petit feu, ceux qui ont fui
-  Rochebourg). Ils le connaissent, il leur chantait ses chansons, ils lui font confiance. Il se sert
-  de cette confiance pour les mener à la Faille.
-- **Le joueur retourne au hameau : vide, le feu éteint.** Rien n'est expliqué.
-- **Il commet le crime qui a tué sa femme** : la victime devient le bourreau, la pièce à charge
-  parfaite pour l'[Accusateur](../accusateur.md).
-- L'Imitateur **imite l'amour** (la voix de Mireille) ; Harlan **détourne sa propre bonté** (la
-  confiance qu'on lui faisait).
+- La voix promet à Harlan le secret pour ouvrir une Faille, en échange de **l'emplacement du hameau
+  de la forêt**, que les fanatiques de la Tour cherchent (ces gens ont vu leurs sacrifices).
+- **Harlan les vend** : il trahit des gens qui lui faisaient confiance (il leur chantait ses
+  chansons). Le pire crime qu'il puisse commettre, sans tuer de ses mains. Écho : Judas.
+- **Le hameau est attaqué, et le joueur peut arriver à temps** pour le défendre (événement ou quête).
+- **C'est la trahison elle-même qui ouvre la Faille** (une œuvre de la chair ouvre une porte).
+- Si le joueur a défendu le hameau, il y revient plus tard pour **une fête** : le feu rallumé, les
+  familles, les enfants. Voir [les fruits de l'Esprit](../fruits_de_l_esprit.md).
+- L'Imitateur **imite l'amour** (la voix de Mireille) ; Harlan **détourne sa propre bonté**.
 
 ## Le regret (proposé)
 
@@ -49,7 +50,7 @@ Règle déjà posée : **les sacrifices ouvrent les Fissures** (l'« avalanche �
 
 ## Questions
 
-- [ ] Le crime : le hameau de la forêt (proposé), trop sombre ?
+- [ ] Le crime : la trahison du hameau (v2) convient-elle ?
 - [ ] Où les voix lui disent-elles d'aller ?
 - [ ] Les chansons : à écrire (elles peuvent porter des versets reformulés, joyeux au début).
 
