@@ -284,6 +284,15 @@ Dernière mise à jour : 2026-10-02.
       boss du sud : Gardien de la Forêt, Champion Maudit, Gueule de l'Abîme, Souverain, Avatar, Héraut,
       Première Fissure.
 
+- [ ] **Familiers : livres de passif et de déplacement, passifs liés au maître** — document de conception
+      `_meta/conception_familiers/LIVRES_DEPLACEMENTS_PASSIFS.md` (branche data `vac_familiar-books`),
+      6 questions ouvertes à trancher AVANT d'implémenter. Décidé : passifs = mêmes règles que les
+      compétences (rangs C → SS, livre, hors rôle ×0,67) ; déplacements par archétype / par rôle.
+- [ ] Back `vac_familiar-passives-combat` (`4d6a4a46`) : lot 1 des passifs de familier en combat (8 passifs
+      de stats). Compiler et lancer `combat-tests --gtest_filter="FamiliarPassiveStats.*"`. Lots 2 et 3 à faire.
+- [ ] **Boutique / financement** : à discuter (tous les visuels sont des assets IA temporaires ; il faut
+      des revenus pour payer un artiste pour les skins de joueur et de familier). Éviter de vendre de la
+      puissance brute.
 - [ ] **Contenu horizontal : les COLLECTIONS** (à discuter cette semaine, 2026-10-02). Base : ~10 livres
       de X pages qui racontent l'histoire du monde, avec le VRAI texte du lore (le propriétaire pense l'avoir
       déjà, au bureau) — jamais de pages vides. Autres idées proposées et appréciées :
