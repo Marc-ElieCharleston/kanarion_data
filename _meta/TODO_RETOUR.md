@@ -26,7 +26,16 @@ Dernière mise à jour : 2026-10-02.
         lancer `ctest` (tests `test_monster_scaling_model.cpp` / `test_monster_balance_rules.cpp`)
 - [ ] À chaque fusion data : conflit attendu sur `_meta/version.json` → `git add .` puis
       `python scripts/hash_content.py` puis `git add _meta/version.json` (voir CLAUDE.md).
-- [ ] Back : compiler et tester chaque branche `vac_*` (jamais compilées, pas de compilateur à la maison) :
+- [x] **Back compilé et testé dans WSL le 2026-10-03** (toutes les branches `vac_*` fusionnées ensemble,
+      data `vac_familiar-species` + `vac_koro` + `vac_familiar-ultimate-cd` + `vac_star-curve`) :
+      familiers 48/48, présence 100/100, combat **2 118 / 2 126** (2 ignorés).
+      - 3 tests mis à jour pour les nouvelles règles : `e3844780` et `09e5cd4e` (sur `vac_v2-monster-model`),
+        `011c1801` (nouvelle branche `vac_koro-catalog-test`) ; nouveau test `FamiliarPassiveStats.*` vert.
+      - **6 échecs DÉJÀ PRÉSENTS SUR `main`** (vérifié sans aucune branche vac_, data master ET data épinglée) :
+        `MageMatrixTest.ShieldRatiosAndRemainingBreathCondition` (le ×1,3 de Spell Guard au-delà de 7 000 de
+        Souffle ne s'applique pas : 2 000 au lieu de 2 600) et `ArcherMatrixTest.HeadshotCriticalResistanceAndKillReset`
+        (critique malgré 100 de résistance aux critiques), 3 rangs chacun. À corriger sur main, hors vacances.
+- [ ] Back : relire chaque branche `vac_*` avant fusion (compilées et testées ensemble, voir au-dessus) :
   - [ ] `vac_familiar-xp-90` — ctest combat + familiar
   - [ ] `vac_poison-cap` — `combat-tests --gtest_filter="*Poison*"`
   - [ ] `vac_koro-shield-rank` — `combat-tests --gtest_filter="*Koro*"`
