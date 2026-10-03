@@ -31,16 +31,22 @@ scènes plus tard, puis les branches se rejoignent. Aucune branche n'est la bonn
 |---|---|---|
 | lv 24 | Matthis part seul vers Rochebourg chercher la vérité ; **il disparaît de la Prairie, dans le client de ce joueur** | rien ne se passe |
 | lv ~38 | on retrouve **son corps** dans la zone Brigand, avec son carnet ; **Tobias en veut au joueur** | — |
-| lv ~50, Rochebourg | Tobias vient à Rochebourg : **il pardonne au joueur** | la vérité éclate quand même (option A : une personne soupçonne les sacrifices cachés en avalanche) ; le joueur doit l'annoncer ; Matthis part et finit **parmi les humains touchés par la Faille (45-55)**, vivant, corrompu |
+| lv ~50, Rochebourg | Tobias vient à Rochebourg : il a compris que ce sont les actes de Matthis qui lui ont coûté la vie, refuse d'entrer dans le cercle de la vengeance et **demande pardon au joueur** ; le joueur accepte (**compassion +1**) ou refuse (**rancune +1**) | la vérité éclate quand même (option A : une personne soupçonne les sacrifices cachés en avalanche) ; le joueur doit l'annoncer ; Matthis part et finit **parmi les humains touchés par la Faille (45-55)**, vivant, corrompu |
 | après | — | Tobias vient le chercher et peut le ramener |
 
 **Point de vigilance (message).** Matthis ne meurt pas à cause de la vérité, mais à cause de ce qu'il
 en fait : il part seul, dans la colère, pour se venger. Sinon le jeu dirait « tais-toi, ne te mêle de
 rien », l'inverse du message.
 
-**Le joueur devient celui qu'on pardonne.** Tobias accuse le joueur comme Matthis accusait la Tour
-(chercher un coupable à sa douleur). Son pardon fait vivre au joueur l'épilogue : « être pardonné
-n'efface pas la responsabilité, mais être aimé change tout ».
+**Validé par le propriétaire (2026-10-03), branche « prévenir » :** Matthis choisit la rancune,
+sombre dans la colère, et **ses propres actes** le mènent à la mort (en rejoignant les bandits ou
+autre). Tobias en veut d'abord au joueur (il cherche un coupable, comme Matthis avec la Tour), puis
+comprend que ce sont les choix de son frère qui lui ont coûté la vie. Il refuse d'entrer dans le
+cercle de la vengeance et **vient demander pardon au joueur**. Les deux frères vivent la même
+blessure : l'un choisit la vengeance et en meurt, l'autre la refuse et en sort.
+
+Proposé : c'est au joueur de répondre au pardon demandé (accepter / refuser). Après avoir été accusé,
+il se retrouve devant le choix de pardonner : il vit le cercle de l'intérieur.
 
 ## X et versets
 
