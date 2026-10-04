@@ -18,13 +18,33 @@ nombre de **types d'objectifs codés une fois**, le reste n'est que du texte et 
 Déjà en data : `prerequisites` (liste), `chain_next`, `min_level`, `rewards` (xp, or, objets,
 objet au choix), `moral_choice` / `moral_choices`.
 
+## Fait côté serveur (2026-10-04, branche back `vac_quest-moral-choices`)
+
+Briques 1 et 2 : le **choix** et les **drapeaux**.
+- Le client envoie le choix au rendu de la quête (`QuestTurnInRequest.moral_choice`, champ 3) :
+  `"a"` / `"b"`, ou `"<id du choix>:a"` pour la forme `moral_choices`. Pas de choix = rien n'est
+  enregistré (anciens clients).
+- Enregistré **une seule fois**, dans la même transaction que le rendu : le choix, le compteur de sa
+  stat, et ses drapeaux.
+- **Compteurs séparés par stat** (`compassion`, `rancune`, `severite`) : la data dit encore
+  `severite` (la justice) là où le propriétaire parle de `rancune` (la vengeance). Ce n'est pas la
+  même chose : à trancher en réécrivant les 6 choix existants.
+- **Drapeaux** : un drapeau implicite `moral:<quête>:<a|b>` est toujours posé ; un choix peut en
+  poser d'autres avec `"sets_flags": [...]`.
+- **Conditions** : `"requires_flags"` / `"forbids_flags"` sur une quête (pas `flags`, déjà pris par
+  les tags de quête). Vérifiées à l'acceptation, à l'acceptation automatique et à l'annonce de chaîne.
+- **Le client reçoit** les drapeaux et les choix dans l'état des quêtes (champs 7-9) pour montrer ou
+  cacher des PNJ. Les compteurs restent cachés.
+- Migration 111. Reste à faire côté **client** : les boutons de choix, et la visibilité des PNJ
+  selon les drapeaux (+ les constructeurs GDScript du dépôt protocole).
+
 ## Ce qui manque pour les histoires (à coder une fois)
 
-1. **Le choix** : un dialogue à 2 ou 3 réponses qui **pose un drapeau** (ex. `dorn_warned`) et fait
+1. ~~**Le choix**~~ (serveur fait, client à faire) : un dialogue à 2 ou 3 réponses qui **pose un drapeau** (ex. `dorn_warned`) et fait
    bouger **compassion / rancune**. **Les `moral_choice` existent dans `world/quests.json`, mais le
    service de quêtes ne les lit pas** (aucune occurrence côté serveur) : aujourd'hui ces choix n'ont
    aucun effet.
-2. **Des conditions sur les drapeaux** : `requires_flags` / `forbids_flags` sur une quête, et **des
+2. ~~**Des conditions sur les drapeaux**~~ (serveur fait ; visibilité des PNJ côté client à faire) : `requires_flags` / `forbids_flags` sur une quête, et **des
    PNJ visibles ou non selon les drapeaux** (phasing par joueur : Matthis absent, Harlan assis).
 3. **`deliver_item`** : remettre un objet à un PNJ (un `talk_to_npc` qui consomme un objet) : la
    lettre de Bastien, le repas pour Ezra.

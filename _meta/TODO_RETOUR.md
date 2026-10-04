@@ -339,9 +339,11 @@ Dernière mise à jour : 2026-10-02.
       d'histoire (Harlan). Aujourd'hui : phases fixes à 50 % et 20 %.
 - [ ] **Panthéon** (idée du propriétaire) : les premiers du serveur (niveau 100, par classe, par métier,
       familier niveau 100, donjons, Tour, collections, histoire…), titres exclusifs. Voir `_meta/carnet/pantheon.md`.
-- [ ] **Quêtes, briques serveur manquantes** (`_meta/carnet/formats_quetes.md`) : (1) le CHOIX — les
-      `moral_choice` de `world/quests.json` ne sont lus par AUCUN code serveur aujourd'hui ; (2) drapeaux +
-      conditions + PNJ visibles selon le joueur ; (3) `deliver_item` ; (4) `complete_scenario` (instance scénarisée) ;
+- [ ] **Quêtes, briques** (`_meta/carnet/formats_quetes.md`) : (1) le CHOIX et (2) les drapeaux + conditions
+      sont **codés côté serveur** (branche back `vac_quest-moral-choices`, migration 111 — la renuméroter si le
+      bureau a déjà une 111) ; reste le CLIENT (boutons de choix, PNJ visibles selon les drapeaux, constructeurs
+      GDScript du protocole : turn-in champ 3, état champs 7-9) et la réécriture des 6 choix existants
+      (`severite` ≠ `rancune`) ; (3) `deliver_item` ; (4) `complete_scenario` (instance scénarisée) ;
       (5) `take_part_in_event`.
 - [ ] **Rythme du loot** : régler le loot pour qu'on ne soit pas équipé trop vite, idem pour les ressources,
       surtout les ratios en donjon et en groupes 4 et 5 étoiles (contenu volontairement dur).
