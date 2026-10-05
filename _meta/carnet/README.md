@@ -35,7 +35,7 @@ foi** : ces notes sont à fusionner avec eux au retour.
 - [Monstres V2](monstres.md)
 - [Loot et ressources](loot.md)
 - [Équipement : stats, rareté, rang, forge](equipement.md)
-- [Sceaux : effets déclenchés à insérer (idée)](sceaux.md)
+- [Runes : effets déclenchés à insérer (idée)](runes.md)
 - [Boutique et financement](boutique.md)
 - [Personnages : genre, apparence, animations](personnages_visuels.md)
 
