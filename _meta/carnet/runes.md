@@ -28,6 +28,12 @@ grimoires de familier). À garder sous contrôle : une sélection (30-50 au dép
 | critique **reçu** → soin sur la durée | ⚠️ manque le déclencheur « critique reçu » (il y a « dégâts reçus ») : petit ajout |
 | critique → lancer une boule de feu | ❌ manque l'effet **« lancer un sort »** (auto-cast) : à ajouter une fois, il servira à toutes les runes de ce type |
 
+Vérifié le 2026-10-05 sur le back de la maison (`main` du 2026-10-01) : `ProcProcessor::on_damage_resolved`
+ne lance que « dégâts reçus » / blocage / esquive pour le défenseur (le résultat porte pourtant
+`is_crit` : ajout de quelques lignes) ; aucun effet ne lance un autre sort (le plus proche : le
+sort gratuit tous les N sorts de l'arbre de passifs, `free_cast_every_n`). Le propriétaire pense que
+ces déclencheurs existent : **à revérifier sur la version du PC du bureau** (travail non poussé).
+
 ## Visuels : discrets (lisibilité en 10 contre 10)
 
 Le propriétaire a beaucoup d'animations : il ne faut pas en rajouter partout.
