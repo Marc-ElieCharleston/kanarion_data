@@ -1,6 +1,19 @@
 # Équipement : stats, rareté, rang, forge
 
-Statut : inventaire (2026-10-04), **5 décisions à prendre**. Data master `379afb4`, back `main`.
+Statut : **les 5 décisions sont validées** par le propriétaire (2026-10-04) et en cours d'implémentation
+sur les branches `vac_equipment` (data et back). Inventaire fait sur data master `379afb4`, back `main`.
+
+## Avancement (2026-10-04)
+
+| # | Sujet | Data (`vac_equipment`) | Serveur | Test |
+|---|---|---|---|---|
+| 2 | Rareté resserrée (légendaire ~2× commun, ancrée sur l'épique) | `68ec258` | — | à lancer (loot) |
+| 4 | Pénétration (épique T5 14-17 en substat, bijoux, affixes 3-6, panoplies B 8 → SS 20) | `f223a27` | — | à lancer (loot) |
+| 1 | Courbe continue (`tier_system.level_curve`) | `9ba8e02` | `555df005` | `EquipmentLevelCurve.*` |
+| 3 | Forge : or par tentative 50 / 200 / 600 / 1500 / 4000, règle +5 % morte marquée | `b14d04e` | `8bfef8ed` | `EnhancementRules.GoldCost*` |
+| 5 | Artisanat : tirage comme le loot, plancher de rareté par rang de métier | `8543127` | en cours (`vac_craft-rolls`) | à venir |
+| — | Recaler la courbe de référence du joueur | — | à faire | — |
+
 
 ## Ce qui est fait
 
