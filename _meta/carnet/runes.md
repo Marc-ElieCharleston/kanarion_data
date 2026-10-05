@@ -1,0 +1,54 @@
+# Runes : effets déclenchés à insérer dans l'équipement
+
+Statut : idée du propriétaire (2026-10-05), à concevoir. Inspiration : les cartes de monstres de
+Ragnarok Online. **Nom retenu : Runes** (le propriétaire ; simple et compris de tous).
+
+## Principe
+
+Une rune = **déclencheur × chance × effet**. Exemples du propriétaire :
+- 10 % lors d'un critique : double attaque ;
+- 5 % lors d'un critique : lancer une boule de feu ;
+- 5 % lors d'un critique reçu : se lancer un soin sur la durée.
+
+Quasi infini et facile à produire : un **script** peut générer les runes depuis un tableau (comme les
+grimoires de familier). À garder sous contrôle : une sélection (30-50 au départ), pas des milliers.
+
+## Ce que le moteur sait déjà faire (ProcProcessor, uniques et keystones)
+
+- 24 déclencheurs, dont : sur critique, sur coup, sur esquive, sur blocage / parade, dégâts reçus,
+  seuil de PV, sort lancé, tous les N sorts, contrôle reçu…
+- ~30 effets, dont : appliquer un statut (poison, saignement, silence, soin sur la durée…), soin,
+  bouclier, bonus de dégâts du prochain coup, critique garanti au prochain sort, réduction de
+  recharge, vol / restauration de Souffle, purification…
+- Double / triple attaque déjà en combat.
+
+| Exemple | Faisable aujourd'hui ? |
+|---|---|
+| critique → double attaque | ✅ |
+| critique **reçu** → soin sur la durée | ⚠️ manque le déclencheur « critique reçu » (il y a « dégâts reçus ») : petit ajout |
+| critique → lancer une boule de feu | ❌ manque l'effet **« lancer un sort »** (auto-cast) : à ajouter une fois, il servira à toutes les runes de ce type |
+
+## Visuels : discrets (lisibilité en 10 contre 10)
+
+Le propriétaire a beaucoup d'animations : il ne faut pas en rajouter partout.
+- **Une rune n'a jamais sa propre grosse animation.**
+- Un **petit éclat d'icône générique** au-dessus du personnage quand une rune se déclenche (couleur de
+  la rune).
+- Une rune qui lance un sort réutilise **l'animation du sort**, éventuellement réduite.
+- L'agent d'animations n'a donc qu'**un effet générique** à faire.
+
+## Proposition de règles
+
+- Emplacements selon la rareté de l'objet : 0 commun, 1 rare, 2 légendaire.
+- Insertion à la forge ; retrait contre de l'or.
+- **Garde-fous** : chance faible, **délai interne** par rune, pas de cumul illimité de la même rune,
+  plafond de double sort ; attention au PvP.
+- Drop sur les monstres : une espèce = sa rune (rare) ; lien avec le bestiaire et les collections.
+- Il manque les **emplacements** sur l'équipement (aucun aujourd'hui).
+
+## À faire
+
+- [ ] Document de conception : la liste des runes (tableau déclencheur × chance × effet), les garde-fous,
+      les emplacements, les sources de drop.
+- [ ] Serveur : déclencheur « critique reçu », effet « lancer un sort », emplacements + insertion à la
+      forge.
