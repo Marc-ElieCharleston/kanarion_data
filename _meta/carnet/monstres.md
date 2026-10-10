@@ -13,6 +13,11 @@ Détail : `_meta/refonte_monstres/DECISIONS.md`, `kits_tous.csv`, `config/monste
   (sinon un corps-à-corps n'attrape jamais un mage ou un archer qui saute). Les gardiens peuvent
   échanger de place pour protéger. Niveaux 1-10 : seulement le déplacement de base d'une case.
 - Pas de contrôle dur sur les compétences à recharge courte.
+- **Réapparition (respawn)** : pas encore traitée (propriétaire, 2026-10-10). Principe : **rapide** dans les
+  zones de farm (monstres faibles, ressources de bas niveau recherchées par tous), **lente** pour les gros
+  monstres et les élites / boss. Avec la carte non linéaire et le besoin de ressources de bas niveau, éviter
+  que les joueurs avancés vident les zones des débutants (rencontres par joueur ou par groupe, ou réapparition
+  assez rapide).
 - **Agressivité selon l'écart de niveau (propriétaire, 2026-10-03)** : un monstre de **10 niveaux ou
   plus au-dessus du joueur devient agressif** (il attaque de lui-même). Sinon les joueurs se baladent
   partout sans crainte, ce qui casse l'histoire (on ne doit pas atteindre Rochebourg trop tôt). Même si
