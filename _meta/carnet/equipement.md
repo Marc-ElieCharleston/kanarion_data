@@ -7,11 +7,11 @@ sur les branches `vac_equipment` (data et back). Inventaire fait sur data master
 
 | # | Sujet | Data (`vac_equipment`) | Serveur | Test |
 |---|---|---|---|---|
-| 2 | Rareté resserrée (légendaire ~2× commun, ancrée sur l'épique) | `68ec258` | — | à lancer (loot) |
-| 4 | Pénétration (épique T5 14-17 en substat, bijoux, affixes 3-6, panoplies B 8 → SS 20) | `f223a27` | — | à lancer (loot) |
+| 2 | Rareté resserrée (légendaire ~2× commun, ancrée sur l'épique) | `68ec258` | — | loot 39/39 |
+| 4 | Pénétration (épique T5 14-17 en substat, bijoux, affixes 3-6, panoplies B 8 → SS 20) | `f223a27` | — | loot 39/39 |
 | 1 | Courbe continue (`tier_system.level_curve`) | `9ba8e02` | `555df005` | `EquipmentLevelCurve.*` |
-| 3 | Forge : or par tentative 50 / 200 / 600 / 1500 / 4000, règle +5 % morte marquée | `b14d04e` | `8bfef8ed` | `EnhancementRules.GoldCost*` |
-| 5 | Artisanat : tirage comme le loot, plancher de rareté par rang de métier | `8543127` | en cours (`vac_craft-rolls`) | à venir |
+| 3 | Forge : or par tentative 50 / 200 / 600 / 1500 / 4000, règle +5 % morte marquée | `b14d04e` | `8bfef8ed` | forge 17/17 |
+| 5 | Artisanat : tirage comme le loot, plancher de rareté par rang de métier | `8543127` | `vac_craft-rolls` (`1ef05e40` bibliothèque `kanarion-loot`, `06eba317`) | `test_craft_rolls` 12/12 |
 | — | Recaler la courbe de référence du joueur | — | à faire | — |
 
 
