@@ -345,8 +345,9 @@ Dernière mise à jour : 2026-10-02.
       GDScript du protocole : turn-in champ 3, état champs 7-9) et la réécriture des 6 choix existants
       (`severite` ≠ `rancune`) ; (3) `deliver_item` ; (4) `complete_scenario` (instance scénarisée) ;
       (5) `take_part_in_event`.
-- [ ] **Équipement** (`_meta/carnet/equipement.md`) : 5 décisions validées et codées sur `vac_equipment` (data + back)
-      + `vac_craft-rolls` (back, artisanat). À relire, puis recaler `test_player_reference_curve.cpp` (base d'objet,
+- [ ] **Équipement** (`_meta/carnet/equipement.md`) : 5 décisions validées, codées ET TESTÉES dans WSL sur `vac_equipment`
+      (data + back) + `vac_craft-rolls` (back, artisanat : bibliothèque `kanarion-loot` partagée combat / économie)
+      — loot 39/39, forge 17/17, artisanat 12/12. À relire, puis recaler `test_player_reference_curve.cpp` (base d'objet,
       affixes, forge, sets) et la calibration des monstres. Supprimer `upgrade_system` / `substat_upgrade_chance`
       de `equipment_stats.json` après avoir vérifié que le client ne les lit pas.
 - [ ] **Rythme du loot** : régler le loot pour qu'on ne soit pas équipé trop vite, idem pour les ressources,
