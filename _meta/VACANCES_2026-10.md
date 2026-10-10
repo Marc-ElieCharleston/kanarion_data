@@ -12,6 +12,11 @@ Règles suivies :
   `/home/charleston/kb`, compilées (Release, `-j2`) et testées : familiers 48/48, présence 100/100,
   combat **2 118 / 2 126**, puis **0 échec connu** après les corrections ci-dessous (2 tests
   ignorés). Les 6 derniers échecs existaient déjà sur `main` (vérifié sans aucune branche `vac_`).
+- **Mise à jour 2026-10-10 : toutes les branches `vac_*` (back + data) fusionnées ensemble et testées
+  dans WSL : combat 2 135 / 2 137 (2 ignorés), 0 échec ; quêtes 26/26 ; économie (forge 17/17,
+  artisanat 12/12) ; familiers 48/48 ; présence 100/100.**
+- **Les idées et décisions (pas la data de jeu) sont poussées sur GitHub**, branche data `vac_carnet`
+  (carnet, documents de conception, ce TODO, cette note), à la demande du propriétaire.
 - Aucune modification des zones, quêtes, PNJ, carte, histoire, leveling (conflits
   avec le travail du bureau).
 
@@ -39,7 +44,9 @@ Fissures, chaque histoire, familiers, collections, monstres, loot, boutique, Pan
 | `vac_familiar-species` | `bcc7f26` (script), `53ad968` (GÉNÉRÉ) | **Contient `vac_apply-monster-v2`** (branche la plus complète). Familiers par espèce : stats = profil du rôle (`config/familiar_balance.json` `role_profiles`) x identité d'espèce ; passifs d'espèce par palier 1 / 20 / 50 / 100 (`classes/familiar/passives.json` `species_passives`) ; `scripts/apply_familiar_species.py`. Au retour : jeter le commit généré et relancer le script. |
 | `vac_apply-monster-v2` | `e5c43b7` (script), `a0cab4b` (GÉNÉRÉ) | Branche de travail : tools + profils + `scripts/apply_monster_v2.py` et son résultat sur monsters.json / monster_skills.json / monster_species.json. Au retour : jeter le commit généré et relancer le script sur la data fusionnée. |
 | `vac_familiar-books` | `fd275de` → `00978d6` | Conception (rien d'implémenté) : livres de passif et de déplacement, rangs 80 → 150 %, 2 emplacements de passif (passif + passif de lien), déplacement par rôle / archétype. `_meta/conception_familiers/`. Contient aussi la rareté des familiers 1.0 / 1.07 / 1.15 / 1.3 / 1.5 (`4c53e55`, sur `vac_familiar-species`). |
-| `vac_collections` | `551d9ea` → | **Branche data la plus complète.** Conception : collections (`_meta/conception_collections/`), histoires et Accusateur (`_meta/conception_histoires/`), carnet (`_meta/carnet/`). Seule donnée de jeu modifiée : description de Headshot (critique absolu, `7a08458`). |
+| `vac_collections` | `551d9ea` → | **Branche data la plus complète.** Conception : collections (`_meta/conception_collections/`), histoires et Accusateur (`_meta/conception_histoires/`), carnet (`_meta/carnet/`). Données de jeu modifiées : description de Headshot (critique absolu, `7a08458`) ; **ligne de vue des monstres** (`c5d0230` : 8 projectiles exigent la ligne de vue — bug des Rats Sorciers qui tiraient à travers les corps ; `b0e9a37` : entrave, silence, éclair aussi, projectiles portée 7 → 5) ; **cônes orientés** (`6286a9f` : `cone_2x3` / `cone_3x5` `"oriented": true`). |
+| `vac_equipment` | `68ec258` → `8543127` | **Équipement, 5 décisions** (`_meta/carnet/equipement.md`) : rareté resserrée (légendaire ~2× commun, ancrée sur l'épique) ; pénétration (épique T5 14-17 en substat, bijoux, affixes 3-6, panoplies B 8 → SS 20) ; courbe continue (`tier_system.level_curve`) ; forge : or par tentative 50 / 200 / 600 / 1500 / 4000 + règle +5 % morte marquée ; artisanat : rareté tirée (`crafting` dans `equipment_scaling.json`). Branche partie de master, indépendante des autres. |
+| `vac_carnet` | **POUSSÉE** | Docs seulement (carnet, conception, TODO, cette note), partie de `origin/master`. Synchronisée depuis `vac_collections` à chaque mise à jour. |
 | `vac_archetype-profiles` | voir `git log` | Les 11 profils d'archétypes V2 dans `config/monster_scaling_model.json` : ATK et MAG séparés (le serveur doit lire `mag`), croissance des stats d'identité, défense raide x25 au niv. 100. |
 
 ### Back (`kanarion_back`) — compilé et testé dans WSL le 2026-10-03
@@ -56,6 +63,11 @@ Fissures, chaque histoire, familiers, collections, monstres, loot, boutique, Pan
 | `vac_spell-guard-fix` | `07976d70` | Bug existant sur `main` : `caster_above_mp` comptait deux fois le coût en Souffle depuis `74606ec2`, le bonus de Spell Guard ne se déclenchait jamais. | `MageMatrixTest.*` (vert) |
 | `vac_headshot-absolute-crit` | `8ab0017a` | Décision : le critique garanti de Headshot est absolu (la résistance ne l'annule pas) ; test aligné. | `ArcherMatrixTest.*` (vert) |
 | `vac_koro-catalog-test` | `011c1801` | Seuil du test du catalogue Koro (553 → 420 compétences, data `vac_koro`). | `*Koro*` (vert) |
+| `vac_quest-moral-choices` | `7f5e370f` | **Choix moraux des quêtes, côté serveur** (avant : les `moral_choice` de `quests.json` n'étaient lus par aucun code). Choix envoyé au rendu (`QuestTurnInRequest.moral_choice`, champ 3), enregistré une fois dans la transaction ; compteurs cachés par stat (compassion / rancune / sévérité, gardés séparés) ; drapeaux d'histoire (implicite `moral:<quête>:<a|b>` + `sets_flags`) ; conditions `requires_flags` / `forbids_flags` ; état des quêtes champs 7-9. **Migration 111** (la renuméroter si le bureau a une 111). | `test_quest_moral_rules` 10/10 (+ quêtes 16/16) |
+| `vac_equipment` | `555df005`, `8bfef8ed`, `e0840643` | Courbe continue de l'équipement (StatRoller `level_curve`) ; forge : coût en or par tentative (débité avant de brûler la pierre, `INSUFFICIENT_FUNDS` sinon) ; test des taux aligné sur la courbe. | `EquipmentLevelCurve.*`, `EnhancementRules.*` 17/17 |
+| `vac_craft-rolls` | `1ef05e40`, `06eba317` | **Artisanat** : les objets fabriqués tirent leurs stats comme le loot. Bibliothèque `kanarion-loot` extraite de `combat-core`, partagée combat / économie ; `build_for_template`. | `test_craft_rolls` 12/12, loot combat 39/39 |
+| `vac_ai-los-range` | `190c839a`, `d978fee2` | IA : la ligne de vue de l'IA joueur utilisait l'ancien repère (`player_ai.cpp`) ; le coordinateur de groupe des monstres ne propose plus que des cibles valides (portée + ligne de vue). Helper commun `frontline_los.hpp`. | `AiLosRange*`, `PlayerAiLos*` (35/35 avec les tests liés) |
+| `vac_pattern-orientation` | `aa22bbe0` | Zones de sort : un motif `"oriented": true` s'ouvre toujours loin du lanceur (les cônes en cloche sortaient à l'envers pour un camp). | `PatternResolutionTest.Oriented*` |
 | `vac_koro-shield-rank` | `09b388b1` | Bouclier d'une carte Koro proportionnel au rang. Les HoT ne bougent pas (leur durée porte déjà le rang). | `combat-tests --gtest_filter="*Koro*"` (nouveau test `KoroCard_ShieldAbsorbScalesWithRank`) |
 
 ## Décisions de design (avec le propriétaire, 2026-10-02)
@@ -124,6 +136,19 @@ seulement), enchanteur (buffs, ex-support).
 - 90 % de l'XP de combat du joueur, pas l'XP de quête ni de succès, doit être en combat.
 - Ultimes : 30 s de recharge, 2 s d'incantation. Les autres compétences gardent 4-5 s
   (le familier n'a pas d'attaque de base).
+
+## Côté CLIENT, à faire au retour (rien n'a été touché au client pendant les vacances)
+
+- **Choix moraux** : boutons de choix au rendu d'une quête (envoyer `moral_choice`, champ 3 du turn-in),
+  lire les drapeaux (état des quêtes champs 7-9) pour montrer / cacher des PNJ selon le joueur ; les
+  constructeurs GDScript du dépôt protocole (`kanarion-protocole`) écrivent les indices à la main.
+- **Aperçu des zones** : appliquer la même règle que le serveur aux motifs `"oriented": true` (miroir
+  des rangs quand on vise vers les rangs décroissants), sinon l'aperçu montre la cloche à l'envers.
+- **Grille 12×6 (plus tard)** : zoom caméra par grille (1,8 déborde, ~1,6), fonds peints, QA 1280×720.
+- **Forge** : afficher le coût en or d'une tentative et gérer `INSUFFICIENT_FUNDS`.
+- **Artisanat** : la fiche d'un objet fabriqué a maintenant une stat principale, des substats, des
+  affixes et une rareté (même affichage que le loot).
+- Vérifier si le client lit `equipment_stats.json` `upgrade_system` (règle morte, à supprimer ensuite).
 
 ## Bugs et abus repérés, pas encore corrigés
 
