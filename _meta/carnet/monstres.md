@@ -20,3 +20,6 @@ Détail : `_meta/refonte_monstres/DECISIONS.md`, `kits_tous.csv`, `config/monste
   combat a `aggro_range` / `is_aggressive` (`components.hpp:593`) ; à vérifier côté monde ouvert
   (presence).
 - Serveur V2 complet (branche back `vac_v2-monster-model`), compilé et testé dans WSL.
+- **Ligne de vue et portée** (2026-10-10, bug des rats mages) : les projectiles ciblés exigent la ligne de vue,
+  portée 5 (comme l'archer joueur) ; contrôles durs ciblés (entrave, silence) aussi ; malédictions, sorts de zone
+  en cloche, tirs perforants et attaques de rang annoncées gardent leur passe-droit.
