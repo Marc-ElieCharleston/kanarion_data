@@ -10,6 +10,7 @@ foi** : ces notes sont à fusionner avec eux au retour.
 ## Monde et histoire
 
 - [Carte et niveaux](carte.md)
+- [Carte des monstres : proposition par zone](carte_monstres.md)
 - [Thème et message](theme_et_message.md)
 - [L'Accusateur, le plan du Malin](accusateur.md)
 - [Les Fissures](fissures.md)
