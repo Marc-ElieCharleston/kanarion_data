@@ -350,6 +350,11 @@ Dernière mise à jour : 2026-10-02.
       — loot 39/39, forge 17/17, artisanat 12/12. À relire, puis recaler `test_player_reference_curve.cpp` (base d'objet,
       affixes, forge, sets) et la calibration des monstres. Supprimer `upgrade_system` / `substat_upgrade_chance`
       de `equipment_stats.json` après avoir vérifié que le client ne les lit pas.
+- [ ] Grille : passer au moins en 12×6 plus tard (tutoriel en 10×6) → grille par mode (`combat_grids.by_mode`),
+      zoom caméra par grille côté client, fonds peints, portées archer/mage. Voir `_meta/carnet/deplacements_combat.md`.
+- [ ] **Bug signalé par le propriétaire** : dans le donjon des rats, les Rats Sorciers touchent sans ligne de vue et à
+      portée « infinie » (sorts `skill_mob_artillery_bolt` / `fire_bolt` : portée 7, sans ligne de vue). Correctif en
+      cours (branche back `vac_ai-los-range`).
 - [ ] Bug IA (existant) : `server-combat/src/ai/player_ai.cpp:637-646`, la ligne de vue de l'IA joueur utilise
       l'ancien repère (« front = y==0 »), faux sur le plateau unifié.
 - [ ] **Rythme du loot** : régler le loot pour qu'on ne soit pas équipé trop vite, idem pour les ressources,
