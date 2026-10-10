@@ -59,6 +59,8 @@ Garde-fous proposés pour les enracinements longs :
 - **Recommandé** : une grille **par mode** (`combat_grids.by_mode`, ex. 12×6 seulement pour le 10 contre
   10 PvP), le reste en 10×6 ; mesurer avec les bancs (`arena_balance_probe`) ; ajuster les portées ;
   basculer le défaut seulement ensuite.
+- **Décision (propriétaire, 2026-10-10)** : passer **au moins en 12×6**, mais **pas tout de suite** ; **la
+  grille du tutoriel reste comme elle est** (10×6). → la grille par mode sera nécessaire.
 - Bug existant repéré (sans lien) : la ligne de vue de l'IA joueur utilise encore l'ancien repère
   (`ai/player_ai.cpp:637-646`).
 
