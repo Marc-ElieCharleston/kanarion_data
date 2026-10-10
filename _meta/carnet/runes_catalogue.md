@@ -169,6 +169,17 @@ Chaque rune est mesurée **sur ses profils « cœur »**, avec la métrique du p
 | invocateur | dégâts par seconde des invocations + lanceur |
 | enchanteur | gain de dégâts du groupe |
 
+### Runes sans restriction de classe (propriétaire, 2026-10-10)
+
+**N'importe quel personnage peut porter n'importe quelle rune** : c'est le build qui la rend utile. Exemple
+du propriétaire : un **tank qui joue invocateur** (sort d'invocation via une **carte Koro**, rune « Lien des
+invocations », runes d'égide). Koro (sorts empruntés) + runes (orientation du build) + familiers + passifs =
+des combinaisons nombreuses à plafond fixe : **c'est l'horizontal**.
+
+Précaution : le banc mesure aussi les **combinaisons croisées probables** (tank + invocation, soigneur +
+offense, mage + défense), pas seulement chaque rune sur ses profils « cœur ». Garde-fous : pas de cumul de la
+même rune, délai interne, 2 emplacements au plus.
+
 ## Ce qu'il faut ajouter au serveur (une fois)
 
 1. **Emplacements de runes** sur l'équipement (0 / 1 / 2 selon la rareté) + insertion à la forge + retrait
