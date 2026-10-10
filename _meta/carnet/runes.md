@@ -63,6 +63,19 @@ horizontal** (runes, passifs, livres, builds, collections, Panthéon, cosmétiqu
 réponse à l'« alternative horizontale au Paragon ». Garder des objectifs (collections, Panthéon,
 histoires, saisons) pour que l'horizontal ne manque pas de buts.
 
+## Deux sortes de runes (2026-10-10)
+
+| Sorte | Exemple | Rang ? |
+|---|---|---|
+| **Style** (comportement + contrepartie) | +1 portée / −10 % dégâts ; +1 portée au déplacement / +15 % de recharge de ce sort | non (au plus un niveau minimum) : +1 portée vaut pareil au niveau 20 et 100 |
+| **Déclenchement** (chiffres) | 5 % sur critique : boule de feu | oui, **I à V calés sur les bandes**, plafond V : un rang suit le niveau, il ne donne pas plus de puissance relative |
+
+Une rune de style peut modifier la portée d'un déplacement **avec une contrepartie** (propriétaire). Voir
+[déplacements en combat](deplacements_combat.md).
+
+**Règle d'or** : le plafond de puissance est atteint au niveau 100, équipement de rang V au +20, et ne
+bouge plus jamais (pas de rang VI ni de +25) ; les mises à jour ajoutent des alternatives.
+
 ## Proposition de règles
 
 - Emplacements selon la rareté de l'objet : 0 commun, 1 rare, 2 légendaire.

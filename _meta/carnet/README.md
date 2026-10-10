@@ -33,6 +33,7 @@ foi** : ces notes sont à fusionner avec eux au retour.
 - [Collections](collections.md)
 - [Le Panthéon (les premiers du serveur)](pantheon.md)
 - [Monstres V2](monstres.md)
+- [Déplacements en combat (grille, recharge partagée)](deplacements_combat.md)
 - [Loot et ressources](loot.md)
 - [Équipement : stats, rareté, rang, forge](equipement.md)
 - [Runes : effets déclenchés à insérer (idée)](runes.md)
