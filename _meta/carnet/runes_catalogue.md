@@ -12,7 +12,7 @@ Légende faisabilité : ✅ moteur actuel (ProcProcessor, statuts, stats existan
 - Possible avec le moteur : ~25 déclencheurs × ~30 effets → des centaines de combinaisons.
 - Proposé pour démarrer : **40** = 24 runes de **déclenchement** (rangs I à V calés sur les bandes,
   chiffres qui suivent le niveau) + 16 runes de **style** (sans rang, une contrepartie chacune).
-- Faisabilité : **28 ✅, 11 ⚠️, 1 ❌**.
+- Faisabilité : **26 ✅, 13 ⚠️, 1 ❌** (après la matrice : 4 runes en doublon remplacées pour l'invocateur, le contrôleur et l'enchanteur).
 
 ## Runes de déclenchement (24, rangs I à V)
 
@@ -43,7 +43,7 @@ avant).
 | Rémission | **critique reçu**, 5 % | soin sur la durée sur soi | 10 s | ⚠️ déclencheur « critique reçu » (quelques lignes) |
 | Volonté | contrôle reçu | purification | 20 s | ✅ |
 | Peau de pierre | malus reçu | +X % d'armure 4 s | 12 s | ✅ |
-| Second souffle | gros dégâts d'un coup | soin instantané X | 15 s | ✅ |
+| Cri de ralliement | tous les 4 sorts | +X % de dégâts aux alliés proches 4 s | — | ✅ (`every_n_skills` + diffusion) |
 
 ### Soutien (4)
 
@@ -61,7 +61,7 @@ avant).
 | Source | Souffle sous 20 % | rend X Souffle | 20 s | ✅ |
 | Siphon | sur coup, 10 % | vole X Souffle | 8 s | ✅ |
 | Hâte | début du combat | −X % de recharge 6 s | 1 par combat | ✅ |
-| Ouverture | premier sort du combat | +X % de dégâts | 1 par combat | ✅ |
+| Emprise | contrôle appliqué | +X % de dégâts sur la cible contrôlée 4 s | 10 s | ✅ (`on_cc_applied`) |
 
 ## Runes de style (16, sans rang, contrepartie obligatoire)
 
@@ -71,10 +71,10 @@ Une rune de style change la façon de jouer ; elle vaut autant au niveau 20 qu'a
 |---|---|---|---|---|
 | Offense | Longue-vue | +1 portée des sorts mono-cible | −10 % de dégâts | ⚠️ modificateur de portée |
 | Offense | Brutale | +15 % de dégâts | −10 % d'armure et RM | ✅ |
-| Offense | Œil acéré | +8 de chance de critique | −15 dégâts critiques | ✅ |
+| Invocation | Meute | quand une invocation frappe, 10 % : soin du lanceur | délai 8 s | ⚠️ déclencheur « coup d'invocation » |
 | Offense | Patience | +20 % de dégâts des sorts à incantation | +10 % de temps d'incantation | ⚠️ |
 | Défense | Rempart | +15 % d'armure et RM | −10 % de dégâts | ✅ |
-| Défense | Vif | +10 d'esquive | −10 % de PV max | ✅ |
+| Invocation | Lien des invocations | invocations +20 % de PV et de dégâts | −10 % de PV du lanceur | ⚠️ modificateur des invocations |
 | Défense | Tenace | +20 de ténacité | −10 % de soins reçus | ✅ |
 | Défense | Bouclier vivant | +20 % de boucliers reçus | −10 % de soins reçus | ⚠️ stat « boucliers reçus » |
 | Déplacement | Bond | +1 portée des déplacements | +15 % de recharge des déplacements | ⚠️ |
@@ -86,6 +86,89 @@ Une rune de style change la façon de jouer ; elle vaut autant au niveau 20 qu'a
 | Soutien | Économe | −15 % de coût en Souffle | −10 % de puissance | ⚠️ |
 | Soutien | Concentré | +15 % de durée des buffs | −15 % de vitesse d'incantation | ✅ |
 
+## Matrice de puissance : runes × 11 profils (2026-10-10)
+
+Les 11 profils = les **11 archétypes** de la refonte (aussi pertinents comme styles de build joueur) :
+TK tank, GA gardien, BR brute, BE berserker, AS assassin, AR archer, MA mage, CO contrôleur, HE soigneur,
+IN invocateur, EN enchanteur (soutien offensif). ●●● = cœur du profil, ●● = bon, ● = situationnel.
+
+Première version : Archer / mage / assassin sur-servis (Vif, Œil acéré, Ouverture en doublon), invocateur
+(score 12), contrôleur (15) et enchanteur (17) délaissés. **4 runes remplacées** (Vif → Lien des invocations,
+Œil acéré → Meute, Ouverture → Emprise, Second souffle → Cri de ralliement) et quelques notes lissées :
+**chaque profil a maintenant un score de 18 à 25**, au moins 1 rune « cœur » et 4 « bonnes ».
+
+| Rune | TK | GA | BR | BE | AS | AR | MA | CO | HE | IN | EN |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Braise |  |  |  |  |  | ● | ●●● | ●● |  |  |  |
+| Lame sanglante |  |  |  | ●● | ●●● | ●● |  |  |  |  |  |
+| Venin |  |  |  |  | ●● | ●● |  | ●● |  |  |  |
+| Élan |  |  | ●● | ●●● | ●● |  |  |  |  |  |  |
+| Précision |  |  |  |  |  | ●● | ●●● |  |  |  | ● |
+| Achèvement |  |  |  | ●● | ●●● | ● |  |  |  |  |  |
+| Double frappe |  |  | ●● | ●●● | ● |  |  |  |  |  |  |
+| Boule de feu |  |  | ● |  |  | ●● | ●● |  |  |  |  |
+| Écorce | ●●● | ●● | ● |  |  |  |  |  |  |  |  |
+| Dernier rempart | ●● | ● |  | ●●● |  |  |  |  | ● |  |  |
+| Riposte | ●● | ●●● | ● |  |  |  |  |  |  |  |  |
+| Pas léger |  |  |  |  | ●● | ●● | ● |  |  |  |  |
+| Rémission | ●● |  | ●●● | ● |  |  |  |  |  |  |  |
+| Volonté |  |  |  |  |  |  | ●● | ●● | ●● | ● |  |
+| Peau de pierre | ●● | ●● | ● |  |  |  |  |  |  |  |  |
+| Cri de ralliement |  |  |  |  |  |  |  |  | ● | ● | ●●● |
+| Main secourable |  | ●●● |  |  |  |  |  |  | ●● |  | ● |
+| Écho de soin |  |  |  |  |  |  |  |  | ●●● |  | ● |
+| Partage |  |  |  |  |  |  |  |  | ●● |  | ●●● |
+| Grand souffle |  |  |  |  |  |  | ● |  | ●● | ● | ●● |
+| Source |  |  |  |  |  |  | ●● | ● | ●● | ●● |  |
+| Siphon |  |  | ●● |  | ●● |  |  | ●● |  |  |  |
+| Hâte |  |  |  |  |  |  |  | ●●● |  | ●● | ●● |
+| Emprise |  |  |  |  |  |  | ● | ●●● |  | ● |  |
+| Longue-vue |  |  |  |  |  | ●●● | ●● |  | ● |  |  |
+| Brutale |  |  | ●● | ●●● |  |  |  |  |  |  |  |
+| Meute |  |  |  |  |  |  |  |  | ● | ●●● |  |
+| Patience |  |  |  |  |  |  | ●●● |  |  | ●● |  |
+| Rempart | ●●● | ●● |  |  |  |  |  |  |  |  |  |
+| Lien des invocations |  |  |  |  |  |  |  |  |  | ●●● | ● |
+| Tenace | ●● |  | ●● |  |  |  |  | ● |  |  |  |
+| Bouclier vivant | ●● | ●● |  |  |  |  |  |  |  |  |  |
+| Bond |  | ● | ●● | ●● | ●● |  |  |  |  |  |  |
+| Agile |  |  |  |  |  | ●● | ●● |  | ● |  |  |
+| Ancre | ●● | ●●● |  |  |  |  |  |  |  |  |  |
+| Fuyant |  |  |  |  | ●● | ●● | ● |  |  |  |  |
+| Généreux |  |  |  |  |  |  |  |  | ●●● |  | ●● |
+| Martyr |  | ●● |  |  |  |  |  |  | ●● |  |  |
+| Économe |  |  |  |  |  |  | ● |  | ●● | ●● | ●● |
+| Concentré |  |  |  |  |  |  |  | ●● |  | ●● | ●●● |
+
+| Profil | cœur ●●● | bon ●● | situationnel ● | score |
+|---|---|---|---|---|
+| tank (TK) | 2 | 7 | 0 | 20 |
+| gardien (GA) | 3 | 5 | 2 | 21 |
+| brute (BR) | 1 | 6 | 4 | 19 |
+| berserker (BE) | 4 | 3 | 1 | 19 |
+| assassin (AS) | 2 | 6 | 1 | 19 |
+| archer (AR) | 1 | 7 | 2 | 19 |
+| mage (MA) | 3 | 5 | 5 | 24 |
+| contrôleur (CO) | 2 | 5 | 2 | 18 |
+| soigneur (HE) | 2 | 7 | 5 | 25 |
+| invocateur (IN) | 2 | 5 | 4 | 20 |
+| enchanteur (soutien offensif) (EN) | 3 | 4 | 4 | 21 |
+
+### Budget de puissance (à mesurer au banc `item_power_combat_probe`)
+
+Chaque rune est mesurée **sur ses profils « cœur »**, avec la métrique du profil : gain visé **+8 % ±2**
+(une rune) — la même cible pour toutes, c'est ce qui garde le jeu horizontal.
+
+| Profil | Métrique |
+|---|---|
+| tank, gardien | pression supportée (45 s) ; gardien : + dégâts évités aux alliés |
+| brute, berserker | 0,5 × dégâts par seconde + 0,5 × survie |
+| assassin, archer, mage | dégâts par seconde (burst sur 10 s, soutenu sur 45 s) |
+| contrôleur | temps de contrôle + dégâts évités |
+| soigneur | soins + boucliers par seconde |
+| invocateur | dégâts par seconde des invocations + lanceur |
+| enchanteur | gain de dégâts du groupe |
+
 ## Ce qu'il faut ajouter au serveur (une fois)
 
 1. **Emplacements de runes** sur l'équipement (0 / 1 / 2 selon la rareté) + insertion à la forge + retrait
@@ -94,6 +177,8 @@ Une rune de style change la façon de jouer ; elle vaut autant au niveau 20 qu'a
 3. **Déclencheur « critique reçu »** — quelques lignes.
 4. **Modificateurs par catégorie de sort** (portée et recharge des déplacements, des sorts mono-cible, des
    sorts à incantation) — sert aux runes de style.
+6. **Invocations** : déclencheur « coup d'une invocation » et modificateur des stats des invocations (Meute,
+   Lien des invocations).
 5. **Délai interne par rune** et **interdiction de cumuler la même rune** (le ProcProcessor a déjà des
    recharges d'effet).
 
