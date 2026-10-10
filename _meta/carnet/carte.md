@@ -20,7 +20,7 @@ qu'il existe plus fort que lui, et il reviendra.
 - Noms : **naturels autour d'Havreden** (la campagne n'est pas hostile vue du village) ; noms inquiétants
   seulement **après Rochebourg**. Le chemin de la quête principale **serpente** entre les zones.
 
-Propositions de noms (2026-10-10, à valider) : Les Friches (3-8), La Chênaie (Sanglier 8-15), Les Pâtures
+**Noms VALIDÉS par le propriétaire (2026-10-10)** ; Rochebourg et la Tour d'Asher ont déjà leur zone côté client : Les Friches (3-8), La Chênaie (Sanglier 8-15), Les Pâtures
 (Prairie 10-20, ferme des Dorn), La Clairière (6-15), La Lande (Hyène 9-20), Le Val aux Loups (Loup 13-23),
 Le Grand-Bois (Forêt 12-26), Les Herbages (16-25), Les Roselières (Marécage 20-30), Le Bois Sombre (25-30,
 ex-araignées), Les Éboulis (« Ours » 20-28 : plus d'ours, camp des deux sœurs à côté), Les Crêtes (« Wolf »

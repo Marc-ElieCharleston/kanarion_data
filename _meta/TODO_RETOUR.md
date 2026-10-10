@@ -362,6 +362,8 @@ Dernière mise à jour : 2026-10-02.
       (`icon`, `off_role_exempt`…) absents de la liste blanche du validateur. À ajouter à la liste blanche.
 - [ ] Bug IA (existant) : `server-combat/src/ai/player_ai.cpp:637-646`, la ligne de vue de l'IA joueur utilise
       l'ancien repère (« front = y==0 »), faux sur le plateau unifié.
+- [ ] **Réapparition des monstres** (pas encore traitée) : rapide en zone de farm, lente pour les gros monstres,
+      élites et boss ; ne pas laisser les joueurs avancés vider les zones des débutants. Voir `_meta/carnet/monstres.md`.
 - [ ] **Rythme du loot** : régler le loot pour qu'on ne soit pas équipé trop vite, idem pour les ressources,
       surtout les ratios en donjon et en groupes 4 et 5 étoiles (contenu volontairement dur).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.
