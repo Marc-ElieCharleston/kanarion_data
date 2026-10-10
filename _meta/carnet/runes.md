@@ -43,6 +43,26 @@ Le propriétaire a beaucoup d'animations : il ne faut pas en rajouter partout.
 - Une rune qui lance un sort réutilise **l'animation du sort**, éventuellement réduite.
 - L'agent d'animations n'a donc qu'**un effet générique** à faire.
 
+## Horizontal, pas vertical (propriétaire, 2026-10-10 : « que le jeu reste le plus longtemps possible horizontal »)
+
+Ajouter des runes ne suffit pas : si chaque nouvelle rune est un peu plus forte, c'est du vertical
+déguisé (power creep). Règles :
+1. **Budget de puissance fixe par emplacement** : toutes les runes valent à peu près autant ; une
+   nouvelle rune = une autre façon de jouer, jamais une meilleure. Vérifié au banc
+   `item_power_combat_probe` (fourchette, ex. ±10 % de dégâts ou de survie).
+2. **Pas de rangs qui montent sans fin** : une rune peut suivre le niveau du personnage, pas de
+   « +1, +2, +3 ».
+3. **Nombre d'emplacements fixe et bas** (0 / 1 / 2) et **jamais augmenté** par la suite.
+4. **Runes situationnelles** (boss, groupes, soin, PvP) plutôt qu'une « meilleure rune ».
+5. **Compromis** : certaines runes ont un coût (ex. plus fort mais moins d'armure).
+6. **Rareté ≠ puissance** : une rune rare est plus originale, pas plus forte.
+7. Pas de cumul de la même rune ; délai interne.
+
+Le vertical reste la progression 1 → 100 (niveaux, bandes d'équipement). **Après 100, tout est
+horizontal** (runes, passifs, livres, builds, collections, Panthéon, cosmétiques) : c'est aussi la
+réponse à l'« alternative horizontale au Paragon ». Garder des objectifs (collections, Panthéon,
+histoires, saisons) pour que l'horizontal ne manque pas de buts.
+
 ## Proposition de règles
 
 - Emplacements selon la rareté de l'objet : 0 commun, 1 rare, 2 légendaire.
