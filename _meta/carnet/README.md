@@ -37,6 +37,7 @@ foi** : ces notes sont à fusionner avec eux au retour.
 - [Loot et ressources](loot.md)
 - [Équipement : stats, rareté, rang, forge](equipement.md)
 - [Runes : effets déclenchés à insérer (idée)](runes.md)
+- [Runes : premier catalogue (40)](runes_catalogue.md)
 - [Boutique et financement](boutique.md)
 - [Personnages : genre, apparence, animations](personnages_visuels.md)
 
