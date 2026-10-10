@@ -3,6 +3,34 @@
 Carte en jeu en cours de développement (capture du 2026-10-03). Havreden est presque fini,
 Rochebourg pas encore ; le propriétaire cherche un artiste.
 
+## Intention de design : une carte NON linéaire (propriétaire, 2026-10-10)
+
+Des zones plus hautes **volontairement placées au nord, près du village** (Marécage 20-30, Prairie, la
+Forêt entre les deux), pour casser la linéarité, **comme Canaan Online**. Le débutant voit tout de suite
+qu'il existe plus fort que lui, et il reviendra.
+- Ça s'appuie sur la règle d'**agressivité** : un monstre ≥ 10 niveaux au-dessus attaque de lui-même (pas de
+  mur invisible, le danger se sent).
+- Jeu mobile : **XP assez rapide**, mais jeu **difficile**.
+- **Besoin de ressources de monstres de bas niveau** pour les joueurs avancés (artisanat : quelques matériaux
+  de rangs inférieurs dans les recettes de haut rang), pour voir du monde partout **sans empêcher les bas
+  niveaux de farmer**. Précautions :
+  1. rencontres **par joueur ou par groupe** (ou réapparition rapide), sinon les joueurs avancés vident les
+     zones des débutants ;
+  2. pas d'XP pour un joueur avancé sur un monstre faible (écart de niveau), mais **ses ressources oui**.
+- Noms : **naturels autour d'Havreden** (la campagne n'est pas hostile vue du village) ; noms inquiétants
+  seulement **après Rochebourg**. Le chemin de la quête principale **serpente** entre les zones.
+
+Propositions de noms (2026-10-10, à valider) : Les Friches (3-8), La Chênaie (Sanglier 8-15), Les Pâtures
+(Prairie 10-20, ferme des Dorn), La Clairière (6-15), La Lande (Hyène 9-20), Le Val aux Loups (Loup 13-23),
+Le Grand-Bois (Forêt 12-26), Les Herbages (16-25), Les Roselières (Marécage 20-30), Le Bois Sombre (25-30,
+ex-araignées), Les Éboulis (« Ours » 20-28 : plus d'ours, camp des deux sœurs à côté), Les Crêtes (« Wolf »
+25-32), La Route du Sud (Brigand 35-45, hameau à côté) ; puis Rochebourg (~50, à ajouter), Les Bas-Fonds de
+Rochebourg (Rats corrompus 40-50), Le Chemin des Pèlerins (Fanatique 45-60), Les Mines Basses (Gobelins
+50-60), la Tour d'Asher (60+, à ajouter), Le Marais de la Faille (60-70), Les Brèches (61-70), Le Seuil
+(70-80), Les Terres Déchirées (80-100), L'Abîme (85-100).
+
+Pas d'ours (le propriétaire n'est pas fan du rendu PixelLab).
+
 ## Grandes régions (propriétaire)
 
 | Niveaux | Lieu | Ambiance |
