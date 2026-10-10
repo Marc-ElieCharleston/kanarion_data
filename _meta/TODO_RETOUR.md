@@ -355,6 +355,8 @@ Dernière mise à jour : 2026-10-02.
 - [ ] **Bug signalé par le propriétaire** : dans le donjon des rats, les Rats Sorciers touchent sans ligne de vue et à
       portée « infinie » (sorts `skill_mob_artillery_bolt` / `fire_bolt` : portée 7, sans ligne de vue). Correctif en
       cours (branche back `vac_ai-los-range`).
+- [ ] `scripts/validate_skills.py` échoue déjà sur master (129 erreurs) : champs de sorts de familier
+      (`icon`, `off_role_exempt`…) absents de la liste blanche du validateur. À ajouter à la liste blanche.
 - [ ] Bug IA (existant) : `server-combat/src/ai/player_ai.cpp:637-646`, la ligne de vue de l'IA joueur utilise
       l'ancien repère (« front = y==0 »), faux sur le plateau unifié.
 - [ ] **Rythme du loot** : régler le loot pour qu'on ne soit pas équipé trop vite, idem pour les ressources,
