@@ -350,6 +350,8 @@ Dernière mise à jour : 2026-10-02.
       — loot 39/39, forge 17/17, artisanat 12/12. À relire, puis recaler `test_player_reference_curve.cpp` (base d'objet,
       affixes, forge, sets) et la calibration des monstres. Supprimer `upgrade_system` / `substat_upgrade_chance`
       de `equipment_stats.json` après avoir vérifié que le client ne les lit pas.
+- [ ] Bug IA (existant) : `server-combat/src/ai/player_ai.cpp:637-646`, la ligne de vue de l'IA joueur utilise
+      l'ancien repère (« front = y==0 »), faux sur le plateau unifié.
 - [ ] **Rythme du loot** : régler le loot pour qu'on ne soit pas équipé trop vite, idem pour les ressources,
       surtout les ratios en donjon et en groupes 4 et 5 étoiles (contenu volontairement dur).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.

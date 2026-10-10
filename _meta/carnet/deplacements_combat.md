@@ -44,6 +44,24 @@ Garde-fous proposés pour les enracinements longs :
 - **rendements décroissants en PvP** (la stat de ténacité existe déjà) ;
 - durées longues sur les sorts à longue recharge, courtes (4 s) sur les sorts fréquents.
 
+## Étude : grille 12×6 (2026-10-10)
+
+- **Technique : facile.** Serveur et client lisent les dimensions (le client a même déjà un test 12×6) ;
+  **0 test cassé** si on change seulement la data. Data : `game.json` + 2 compétences de monstre « toute la
+  grille » (portée 12 → 16 : `skill_mob_assassin_shadow_strike`, `skill_mob_rongeur_deferlante`).
+- **Client : moyen.** Le zoom caméra (1.8) déborde de l'écran en 12×6 → ~1.6 (personnages ~11 % plus
+  petits) ; les **fonds peints** sont composés pour 10×6 → à recomposer ou vérifier.
+- **Équilibrage : moyen à grand.** Depuis le dernier rang, l'archer (portée 5) ne touche plus le front
+  ennemi, le mage (portée 4) doit avancer ; un déplacement de base coûte 8 s par case ; PvE plus lent ;
+  en PvP à petit effectif, deux joueurs repliés au fond peuvent se fuir (~11 cases).
+- **Une grille par mode n'existe pas encore** (une seule grille globale), mais c'est un petit chantier :
+  chaque type de combat applique déjà la grille à un endroit précis.
+- **Recommandé** : une grille **par mode** (`combat_grids.by_mode`, ex. 12×6 seulement pour le 10 contre
+  10 PvP), le reste en 10×6 ; mesurer avec les bancs (`arena_balance_probe`) ; ajuster les portées ;
+  basculer le défaut seulement ensuite.
+- Bug existant repéré (sans lien) : la ligne de vue de l'IA joueur utilise encore l'ancien repère
+  (`ai/player_ai.cpp:637-646`).
+
 ## À vérifier
 
 - [ ] La téléportation au contact d'un ennemi (« Pas de l'Ombre », portée 20) ignore-t-elle les cases
