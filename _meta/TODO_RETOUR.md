@@ -417,6 +417,10 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       l'ancien repère (« front = y==0 »), faux sur le plateau unifié.
 - [ ] **Réapparition des monstres** (pas encore traitée) : rapide en zone de farm, lente pour les gros monstres,
       élites et boss ; ne pas laisser les joueurs avancés vider les zones des débutants. Voir `_meta/carnet/monstres.md`.
+- [ ] **Or des monstres** (2026-10-12, choix du propriétaire) : base = 1 + 0,05 × niv^1,5 (au lieu de 0,2 × niv),
+      × `gold_weight` de chaque monstre (champ déjà présent sur les 200, enfin lu ; absent = palier de menace),
+      puis étoiles, élite/boss, donjon, groupe. Data `vac_monster-gold` (`rewards.json` base_gold + palier gold) + back
+      `vac_monster-gold` (sur `vac_craft-rolls`). Relire les `gold_weight` écrits à la main (un standard va de 0,4 à 1,8).
 - [ ] **Rythme du loot** : régler le loot pour qu'on ne soit pas équipé trop vite, idem pour les ressources,
       surtout les ratios en donjon et en groupes 4 et 5 étoiles (contenu volontairement dur).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.
