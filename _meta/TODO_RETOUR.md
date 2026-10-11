@@ -100,6 +100,7 @@ Sauvage Roux, Hérisson, Belette, Ragondin, les 5 ours, Biche / Cerf / Blaireau 
 **Réglages de sprite en jeu** (échelle, vitesse) : loups 80 px à ~0,82 ; Scarabée Géant ~1,4 ; Belette ~0,65 ;
 Hérisson ~0,70 ; rats 80 px contre 120 px pour le rat de base ; Vieux Loup joué à ~6-7 images/s. À nettoyer : ligne
 noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
+- **Carte du sud (v3)** : figer les cases (noms et niveaux proposés dans `_meta/carnet/carte_monstres.md`, entrée « Carte v3 »), PUIS tracer chemins, donjons et PNJ d'un trait.
 
 ## 2. Tanière des loups (5 nouveaux loups, non poussés)
 
