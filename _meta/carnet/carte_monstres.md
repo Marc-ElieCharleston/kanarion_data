@@ -23,7 +23,9 @@
 > **Zones validées au 2026-10-11 : Havreden, Prairie, Marais, Forêt, Bois des Loups.**
 > **Sanglier** `mz_sanglier_8_15` (2026-10-11, en cours) : Marcassin (fodder), Sanglier (brute 🟢), Sanglier
 > Enragé (berserker 🟢), **Laie** (soutien, protège les marcassins), **Vieux Sanglier** (tank ; nom choisi par le
-> propriétaire). Les 3 nouveaux sont générés par le propriétaire. Bélier → Taureaux ? (à confirmer).
+> propriétaire). Les 3 nouveaux sont générés par le propriétaire (2026-10-11). **Bélier → Taureaux** (validé).
+> Note : la **taille des monstres** pourra se régler en jeu par un ratio d'échelle (propriétaire) : un même
+> sprite peut servir à une larve ou à un géant.
 > Suite : Scarabées (insectes), Rats.
 
 Statut : **proposition à valider**. Tient compte de la carte **non linéaire** (zones plus hautes près
