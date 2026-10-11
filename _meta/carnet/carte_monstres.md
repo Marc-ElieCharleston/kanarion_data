@@ -71,6 +71,15 @@
 >   walk S yeux rouges) ; Hérisson `3cc0927f` : idle NE cassé (silhouettes noires, animation `182a8fcf` à supprimer,
 >   remplacement « idle_ne_v3 » en 84 px), walk N et S déformés à refaire. Échelle en jeu suggérée : Belette 0,65,
 >   Hérisson 0,70, chats et Ragondin 1,0.
+> - **Carte v2 du propriétaire + proposition sud allongée (2026-10-11)** : page https://claude.ai/artifact/9huzXAsGHhkx2DgjPvvmsG
+>   (privée). Nord : Bocage 9-20, Ours (13-23 sur sa carte, 20-28 proposé), Clairière, Forêt Sud 25-35, zone élite
+>   humanoïde 35-45, Route de Rochebourg (brigands 40-50, nom proposé), Abords de Rochebourg 45-50, Rochebourg ville.
+>   Sud proposé : Chemin des Pèlerins 45-60, Mines Basses 50-60, Tour d'Asher 60+, **biomes de Faille** (Terres de
+>   Givre 60-66, Terres de Braise 63-70, Marais de la Faille 65-72), Nécropole 70-78, Les Brèches 72-80, Le Seuil
+>   78-88, Terres Déchirées 85-95, L'Abîme 90-100 ; **Réserve** (zone de capture façon Parc Safari : Taureau, Bélier,
+>   Cheval Sauvage, Hyène, Tatou, Hyène Alpha). Variantes à générer par « état de personnage » : Loup Fissuré, Ours
+>   Fissuré, Grande Ourse, Chacal de la Faille, Ours et Cerf de Givre, Sanglier et Taureau de Braise.
+>   **Vers 70, repasser sur le lore** : Failles de glace / feu ?, ordre Tour → Failles → Vide → Abîme, archontes déchus.
 > - Taille de carte jugée bonne (~8 500 × 16 700 px, ~1 min 30 du nord au sud à 180 px/s) : on garde 21 zones.
 
 Statut : **proposition à valider**. Tient compte de la carte **non linéaire** (zones plus hautes près
