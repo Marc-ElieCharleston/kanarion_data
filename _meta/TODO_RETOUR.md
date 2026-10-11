@@ -49,6 +49,58 @@ Dernière mise à jour : 2026-10-02.
   - [ ] `vac_defense-curve-test` — `ctest -R MonsterScaling` avec la data `vac_archetype-profiles`
 - [ ] Mettre à jour le pin de la data (`kanarion-meta`) dans le back et le client après fusion.
 
+## 1bis. Carte et monstres : ce qu'il faut faire au retour (décidé le 2026-10-11)
+
+Détails et ids : `_meta/carnet/carte_monstres.md` (encadré du haut). Méthode : zone par zone, le propriétaire
+colore en vert sur la carte ce qui est validé. **Le niveau d'un monstre vient de la ZONE** (stats = base de
+l'archétype × multiplicateurs niveau / étoiles / palier / rareté) : ne pas écrire de niveau par monstre.
+
+**Renommer les zones** (`world/zones.json` `name_fr` / `name_en`, et la carte du client) :
+- [ ] `mz_scarabees_3_8` « Nid de Scarabées » → **Lisière d'Havreden**
+- [ ] `mz_rats_1_8` « Terrier des Rats » → **Abords d'Havreden**
+- [ ] `mz_hyene_9_20` « Territoire des Hyènes » → **Le Bocage**
+- [ ] `mz_wolf_25-32` « Meute Corrompue » → **Forêt du Sud** (pas un nom de lieu ; règle : un PNJ doit pouvoir dire
+      « va vers… »). Le propriétaire parle aussi de « Forêt du Nord » pour `mz_foret_12_26` (Bois Tranquilles) : à confirmer.
+- [ ] `mz_spider_25_30` « Antre des Araignées » → **Bois Flétri**, **niveaux 25-35**
+- [ ] **Nouvelle zone élite** entre le Bois Flétri et l'eau (vers les Brigands) : loups et rats HUMANOÏDES ; nom de
+      lieu à choisir (« Le Ravin », « Les Gorges », « Les Ruines »…). Le Nid des Rats Corrompus (40-50) utilise
+      aujourd'hui ces rats : lui trouver autre chose ou en faire la suite.
+- [ ] Revoir les **niveaux** des zones (le propriétaire le prévoit).
+
+**Rosters par zone** (`world/zones.json` `mobs`) :
+- [ ] Prairie, Marais, Forêt : validés tels quels. Marais : Tortue de Pierre en élite possible.
+- [ ] Bois des Loups : Loup Gris, Loup Enragé, Loup Noir, Loup Blanc, Vieux Loup. **Retirer** `mob_wolf_soigneur` et
+      `mob_wolf_packleader` (les loups humanoïdes vont au donjon et à la zone élite).
+- [ ] Fourrés des Sangliers : Marcassin, Sanglier, Sanglier Enragé, Laie, Vieux Sanglier. **Bélier → Plaine des Taureaux.**
+- [ ] Lisière d'Havreden : Scarabée, Scorpion Rocheux, Scarabée Géant (Larve = petit scarabée, en option).
+- [ ] Abords d'Havreden : Jeune Rat (sprite du rat en petit), Rat, Rat Alpha (nouveau sprite), rat du tutoriel
+      (**rat NORMAL** : il devient le familier ; la contamination passe par le lore).
+- [ ] Le Bocage : Chat Sauvage, Chat Sauvage Roux, Hérisson, Belette, Ragondin. Les hyènes en partent.
+- [ ] Clairière Disputée : zone mixte à tester (Loup Gris, Loup Noir, Sanglier, Laie, Marcassin).
+- [ ] Forêt du Sud : début des espèces existantes et de leurs versions corrompues (à détailler).
+- [ ] Bois Flétri : Cerf Obscur, Renard Brumeux, Biche Flétrie, Cerf Flétri, Blaireau Flétri (+ un 6e ?) ; boss
+      Gardien du Bois Flétri.
+- [ ] Zone des Ours (20-28, pas encore dans `zones.json`) : Ourson, Ours Brun, Ourse, Ours Noir, Ours des Cavernes ;
+      élite plus tard : Grande Ourse (histoire des sœurs) en variante corrompue.
+- [ ] Hyènes → Plaine des Taureaux (proposé ; zone petite, 914 × 820 px : l'agrandir ou peu d'hyènes).
+
+**Nouveaux monstres à créer dans la data** (fiche, compétence unique, stats d'archétype) puis intégrer le sprite :
+Loup Noir, Loup Blanc, Vieux Loup, Marcassin, Laie, Vieux Sanglier, Rat Alpha (sprite propre), Chat Sauvage, Chat
+Sauvage Roux, Hérisson, Belette, Ragondin, les 5 ours, Biche / Cerf / Blaireau Flétris, Gardien du Bois Flétri.
+
+**À supprimer** :
+- [ ] PixelLab, anciens ours (essais, jamais dans le jeu) **si les nouveaux sont bons** : ours des cavernes `c27dd922`
+      (référence de style), oursons `82b50a50` et `6c5e3ffa`.
+- [ ] PixelLab, doublons de loups : `43264e67` (2e Loup Noir), `bdd5ade1`, `97edf87e`, `a5012082` (créés par erreur).
+- [ ] PixelLab : animation cassée du Hérisson (idle nord-est `182a8fcf`, remplacée par « idle_ne_v3 ») ; anciennes
+      walk-4 des loups si les walk-8-v2 conviennent.
+- [ ] Jeu : les araignées (`mob_spider_small`, `mob_spider_queen`, `boss_spider_queen`, leurs `boss_mechanics`,
+      `mat_spider_*`, sprite client `spider_queen`), `mob_dust_beetle`, `mob_serpent`.
+
+**Réglages de sprite en jeu** (échelle, vitesse) : loups 80 px à ~0,82 ; Scarabée Géant ~1,4 ; Belette ~0,65 ;
+Hérisson ~0,70 ; rats 80 px contre 120 px pour le rat de base ; Vieux Loup joué à ~6-7 images/s. À nettoyer : ligne
+noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
+
 ## 2. Tanière des loups (5 nouveaux loups, non poussés)
 
 - [ ] Les intégrer au modèle V2 : pour chacun, espèce (`loup` ou nouvelle), stade (préfixe),
