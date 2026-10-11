@@ -98,6 +98,17 @@
 >   **Ville en ruine** 80-100 (démons « qui pensent » : Érudit, Séraphin, Sorcier Abyssal, Prêtre du Vide ; nom au passage
 >   lore). Logique : ouest froid et mouillé, est brûlant, les deux flancs se referment vers le Vide ; deux chemins par palier.
 >   Agent lancé pour les 8 variantes (état de personnage + walk + idle).
+>   **Résultat (2026-10-12)** : l'agent a calé ; 7 variantes créées par MCP (Taureau de Braise `f65adcc9`, Sanglier de
+>   Braise `b6beb2de`, Cerf de Givre `d2fe9ead`, Chacal de la Faille `42025944`, Ours de Givre `e7e624d9`, Grande Ourse
+>   `d593b9a9`, Ours Fissuré `0d0ad31b`), non vérifiées, sans anims. **Règle du propriétaire : le MCP ne CRÉE plus, il
+>   donne les prompts** (le MCP génère mal). Prompts au format du propriétaire :
+>   - `mob_ours_fissure — Ours Fissuré (brute, template bear)` : Top-down 2D fantasy corrupted brown bear, heavy quadruped body on four thick powerful legs, matted dull brown fur with bald patches, glowing violet Fissure cracks across the back and forelegs, jagged violet crystals growing from the shoulders, glowing violet eyes, aggressive forward stance, pixel art RPG style
+>   - `mob_grande_ourse — Grande Ourse (elite support, template bear)` : Top-down 2D fantasy huge corrupted she-bear matriarch, massive heavy quadruped body on four strong legs, torn golden-brown fur with deep violet Fissure cracks, crown of jagged violet crystals along the back, glowing violet eyes, furious protective stance, pixel art RPG style
+>   - `mob_chacal_faille — Chacal de la Faille (assassin, template dog)` : Top-down 2D fantasy corrupted jackal, thin starved quadruped body on four long lean legs, patchy sandy-grey fur, faint glowing violet cracks along the ribs, narrow muzzle with bared teeth, glowing violet eyes, low skulking stance, pixel art RPG style
+>   - `mob_ours_givre — Ours de Givre (tank, template bear)` : Top-down 2D fantasy huge frost bear, massive heavy quadruped body on four thick legs, frost-covered pale grey-white fur, pale blue ice crystals growing on the back and shoulders, icy breath, glowing pale blue eyes, slow territorial braced stance, pixel art RPG style
+>   - `mob_cerf_givre — Cerf de Givre (guardian, template horse)` : Top-down 2D fantasy frost stag, tall quadruped body on four slender sturdy legs, frosted pale blue-grey coat, broad antlers of clear blue ice, ice crystals on the shoulders, glowing pale blue eyes, proud braced stance, pixel art RPG style
+>   - `mob_sanglier_braise — Sanglier de Braise (berserker, template lion)` : Top-down 2D fantasy ember boar, sturdy quadruped boar body on four short strong legs, charred dark hide with glowing orange ember cracks, smoldering bristles along the back, long blackened tusks, glowing orange eyes, charging stance, pixel art RPG style
+>   - `mob_taureau_braise — Taureau de Braise (elite tank, template horse)` : Top-down 2D fantasy ember bull, massive muscular quadruped body on four thick legs, charred black hide with glowing orange ember cracks, heavy horns glowing red-hot at the tips, smoke from the nostrils, glowing orange eyes, lowered head braced to charge, pixel art RPG style
 
 Statut : **proposition à valider**. Tient compte de la carte **non linéaire** (zones plus hautes près
 d'Havreden, voulu), des **noms validés**, de **pas d'ours**, de **5 monstres par zone** (élites et boss à
