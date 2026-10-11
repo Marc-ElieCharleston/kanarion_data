@@ -88,6 +88,16 @@
 >   faible, marche nord étrange), Gardien du Bois Flétri `6679d33e` (très bon ; échelle 1,6-2,0 obligatoire ; marche
 >   sud-ouest → groupe `2d5061ad`, l'ancien SW est noir).
 > - Taille de carte jugée bonne (~8 500 × 16 700 px, ~1 min 30 du nord au sud à 180 px/s) : on garde 21 zones.
+> - **Carte v3 du sud (propriétaire, 2026-10-11)**, à figer AVANT d'ajouter chemins et donjons (tout se fera d'un trait au
+>   retour). Cases « À trouver » proposées (page, version 3) : **Terres de Givre** 60-66 (sous le Chemin des Pèlerins),
+>   **Le Défilé** 60-68 (couloir étroit, mélange Givre + Braise + patrouilles zélotes, aucune création), **Lac Gelé** 64-70
+>   (mêmes espèces que le Givre, plus haut), bande fine = **rivière + pont** (pas de combat), **Marais de la Faille** 65-72
+>   autour du **petit village** (base 65-85, ponton vers l'île ; Crocodile possible), **Terres de Braise** 63-70 (sous
+>   Rochebourg), « chemin de lave » = **La Coulée** 66-72 (le long du bord est, élite Taureau de Braise), **Les Brèches**
+>   72-80 (au-dessus de la Nécropole), « xxxx 78-88 » = **Le Seuil**, Île mystérieuse 1-100 = **La Réserve** (capture),
+>   **Ville en ruine** 80-100 (démons « qui pensent » : Érudit, Séraphin, Sorcier Abyssal, Prêtre du Vide ; nom au passage
+>   lore). Logique : ouest froid et mouillé, est brûlant, les deux flancs se referment vers le Vide ; deux chemins par palier.
+>   Agent lancé pour les 8 variantes (état de personnage + walk + idle).
 
 Statut : **proposition à valider**. Tient compte de la carte **non linéaire** (zones plus hautes près
 d'Havreden, voulu), des **noms validés**, de **pas d'ours**, de **5 monstres par zone** (élites et boss à
