@@ -80,6 +80,13 @@
 >   Cheval Sauvage, Hyène, Tatou, Hyène Alpha). Variantes à générer par « état de personnage » : Loup Fissuré, Ours
 >   Fissuré, Grande Ourse, Chacal de la Faille, Ours et Cerf de Givre, Sanglier et Taureau de Braise.
 >   **Vers 70, repasser sur le lore** : Failles de glace / feu ?, ordre Tour → Failles → Vide → Abîme, archontes déchus.
+> - **Ours et Bois Flétri, sprites vérifiés (2026-10-11)**, 80 px, walk-6 + idle sur 8 directions : Ours Brun `0a337d99`
+>   (échelle 1,0), Ourse `c3254e70` (~0,95), Ours Noir `1a107867` (1,0), Ours des Cavernes `331a29fe` (~1,25 ; ombre au sol
+>   à nettoyer ; MEILLEUR que l'ancien `c27dd922` → supprimer l'ancien), Ourson `019a01a5` (~0,7 ; idle nord → groupe
+>   « idle_north_v3 » `66c779b0`, l'ancien nord est noir) ; Biche Flétrie `a10e3200` (~0,9 ; idle sud → « idle_south_v3 »
+>   `ff693d28` sans la frame 0), Cerf Flétri `21b5367b` (corruption peu lisible), Blaireau Flétri `f7661fe1` (corruption
+>   faible, marche nord étrange), Gardien du Bois Flétri `6679d33e` (très bon ; échelle 1,6-2,0 obligatoire ; marche
+>   sud-ouest → groupe `2d5061ad`, l'ancien SW est noir).
 > - Taille de carte jugée bonne (~8 500 × 16 700 px, ~1 min 30 du nord au sud à 180 px/s) : on garde 21 zones.
 
 Statut : **proposition à valider**. Tient compte de la carte **non linéaire** (zones plus hautes près
