@@ -46,6 +46,19 @@
 > - Insectes : OK, mais le Scarabée Géant `673fff5b` est à peine plus grand que le Scarabée → échelle ~1,4.
 > - À nettoyer : ligne noire 1 px (x=32) dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
 > - Doublons à supprimer : Loup Noir `43264e67` ; créés par erreur `bdd5ade1`, `97edf87e`, `a5012082`.
+>
+> **Zones du milieu (2026-10-11)** :
+> - `mz_hyene_9_20` → **« Le Bocage »** (validé) : Chat Sauvage, Chat Sauvage Roux, Hérisson, Belette (générés par
+>   le propriétaire), Ragondin (déjà dans PixelLab). Pas de chiens errants (doublon avec les loups).
+> - `mz_sangliers-loups_6_15` **« Clairière Disputée »** (nom gardé) : zone mixte à tester, les loups du bois voisin
+>   chassent les sangliers (Loup Gris, Loup Noir, Sanglier, Laie, Marcassin ; aucune création).
+> - `mz_wolf_25-32` **« Meute Corrompue »** (nom gardé) : loups **corrompus**.
+> - `mz_spider_25_30` (à gauche, le long du bord) : cerfs et biches corrompus + Gardien de la Forêt ; nom à choisir
+>   (« Bois Flétri » ou « Sous-Bois Noirci »).
+> - Hyènes → Plaine des Taureaux (proposé ; la zone est petite, 914 × 820 px, l'agrandir ou peu d'hyènes).
+> - **Idée du propriétaire : après 30, on reprend les mêmes espèces en version CORROMPUE** (variantes PixelLab du même
+>   personnage) jusqu'aux brigands 35-45.
+> - Taille de carte jugée bonne (~8 500 × 16 700 px, ~1 min 30 du nord au sud à 180 px/s) : on garde 21 zones.
 
 Statut : **proposition à valider**. Tient compte de la carte **non linéaire** (zones plus hautes près
 d'Havreden, voulu), des **noms validés**, de **pas d'ours**, de **5 monstres par zone** (élites et boss à
