@@ -58,6 +58,11 @@
 > - Hyènes → Plaine des Taureaux (proposé ; la zone est petite, 914 × 820 px, l'agrandir ou peu d'hyènes).
 > - **Idée du propriétaire : après 30, on reprend les mêmes espèces en version CORROMPUE** (variantes PixelLab du même
 >   personnage) jusqu'aux brigands 35-45.
+> - **Bocage, sprites vérifiés** (80 px, walk-6 + idle sur 8 directions) : Belette `0e247315` OK ; Chat Sauvage Roux
+>   `ad30106c` OK (ombre idle SE f1) ; Chat Sauvage `ac1c4796` OK (à refaire si possible : idle E queue qui clignote,
+>   walk S yeux rouges) ; Hérisson `3cc0927f` : idle NE cassé (silhouettes noires, animation `182a8fcf` à supprimer,
+>   remplacement « idle_ne_v3 » en 84 px), walk N et S déformés à refaire. Échelle en jeu suggérée : Belette 0,65,
+>   Hérisson 0,70, chats et Ragondin 1,0.
 > - Taille de carte jugée bonne (~8 500 × 16 700 px, ~1 min 30 du nord au sud à 180 px/s) : on garde 21 zones.
 
 Statut : **proposition à valider**. Tient compte de la carte **non linéaire** (zones plus hautes près
