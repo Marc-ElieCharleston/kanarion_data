@@ -52,9 +52,17 @@
 >   le propriétaire), Ragondin (déjà dans PixelLab). Pas de chiens errants (doublon avec les loups).
 > - `mz_sangliers-loups_6_15` **« Clairière Disputée »** (nom gardé) : zone mixte à tester, les loups du bois voisin
 >   chassent les sangliers (Loup Gris, Loup Noir, Sanglier, Laie, Marcassin ; aucune création).
-> - `mz_wolf_25-32` **« Meute Corrompue »** (nom gardé) : loups **corrompus**.
-> - `mz_spider_25_30` (à gauche, le long du bord) : cerfs et biches corrompus + Gardien de la Forêt ; nom à choisir
->   (« Bois Flétri » ou « Sous-Bois Noirci »).
+> - `mz_wolf_25-32` → renommée (« Meute Corrompue » n'est pas un nom de LIEU : test du PNJ « va vers… ») ; c'est le
+>   sud de la Forêt, nom du type **« Forêt du Sud »** (à confirmer). Contenu : début des espèces existantes et de leurs
+>   versions corrompues (transition).
+> - **Règle de nommage : un nom de zone doit pouvoir se dire par un PNJ (« va vers le sud de la forêt »).**
+> - `mz_spider_25_30` (à gauche, le long du bord) → **« Bois Flétri », niveaux 25-35** (validé) : cerfs et biches
+>   corrompus + Gardien de la Forêt.
+> - **Ours : on les GARDE** (le propriétaire les aime). Problème : PixelLab garde mal le style d'un ours à l'autre ; le
+>   3e ours du propriétaire est bon, le 1er non. Méthode : un AUTRE ours = `create_character` avec les mêmes réglages
+>   (taille, vue, contour, ombrage, détail) + l'ours réussi en image de référence (v3) ; une VARIANTE du même ours
+>   (corrompu, cuirassé, vieux) = `create_character_state` (garde l'identité et les proportions) ; l'ourson peut être
+>   l'ours réussi en petit (ratio d'échelle). → l'histoire des sœurs peut garder la Grande Ourse.
 > - Hyènes → Plaine des Taureaux (proposé ; la zone est petite, 914 × 820 px, l'agrandir ou peu d'hyènes).
 > - **Idée du propriétaire : après 30, on reprend les mêmes espèces en version CORROMPUE** (variantes PixelLab du même
 >   personnage) jusqu'aux brigands 35-45.
