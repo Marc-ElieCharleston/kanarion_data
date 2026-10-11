@@ -419,4 +419,11 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       élites et boss ; ne pas laisser les joueurs avancés vider les zones des débutants. Voir `_meta/carnet/monstres.md`.
 - [ ] **Rythme du loot** : régler le loot pour qu'on ne soit pas équipé trop vite, idem pour les ressources,
       surtout les ratios en donjon et en groupes 4 et 5 étoiles (contenu volontairement dur).
+- [ ] **Économie de l'or** (audit 2026-10-11) : les contrats répétables étaient la plus grosse source d'or, car
+      chaque kill crédite TOUS les contrats actifs (8 contrats bande 81-100 = 21 120 or pour 12 combats). **Plafond de
+      3 contrats tenus en même temps** : data `vac_contract-limit` (`world/quests.json` `contract_limits`) + back
+      `vac_contract-limit` (refus à l'acceptation, erreur `QUEST_CONTRACT_LIMIT` 0x0A01, test `test_contract_limit`).
+      **NON COMPILÉ** au moment du commit. Côté client : afficher « 3 contrats maximum » sur l'erreur 0x0A01.
+      Reste à décider : partage de l'or en groupe, forge payante (`vac_equipment`), brancher `economy.json`
+      gold_sinks, prix de revente (pierre rang 5 à 10 000), notes `_note_bande` périmées (le serveur filtre bien la bande).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.
