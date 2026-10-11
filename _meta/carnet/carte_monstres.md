@@ -26,7 +26,11 @@
 > propriétaire). Les 3 nouveaux sont générés par le propriétaire (2026-10-11). **Bélier → Taureaux** (validé).
 > Note : la **taille des monstres** pourra se régler en jeu par un ratio d'échelle (propriétaire) : un même
 > sprite peut servir à une larve ou à un géant.
-> Suite : Scarabées (insectes), Rats.
+> **Insectes** `mz_scarabees_3_8` (2026-10-11) : renommée **« Lisière d'Havreden »** (le scorpion n'est pas un
+> scarabée ; noms de zone = lieux dans la lignée du jeu, pas de nom de monstre sauf exceptions type Bois des
+> Loups). Roster VALIDÉ, 3 monstres : Scarabée (brute 🟢), Scorpion Rocheux (tank 🟢), Scarabée Géant (élite 🟢).
+> La Larve peut rester en petit scarabée (ratio d'échelle).
+> Suite : Rats `mz_rats_1_8` (« Terrier des Rats » → « Sortie d'Havreden » ?).
 
 Statut : **proposition à valider**. Tient compte de la carte **non linéaire** (zones plus hautes près
 d'Havreden, voulu), des **noms validés**, de **pas d'ours**, de **5 monstres par zone** (élites et boss à
