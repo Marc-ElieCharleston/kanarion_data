@@ -1,5 +1,16 @@
 # Carte des monstres : répartition par zone (version 2.1, 2026-10-10)
 
+> **Méthode (propriétaire, 2026-10-11) : on travaille ZONE PAR ZONE.** Les noms des zones restent ceux de
+> `world/zones.json` (les renommages de ce document, Roselières, Pâtures, etc., sont des propositions
+> RETIRÉES ; les lire comme « Marécage », « Prairie »…).
+>
+> **Zones VALIDÉES (monstres = la data actuelle) :**
+> - **Marécage** `mz_marecage_20_30` « Marais de Havreden » : Grenouille, Grenouille Cornue, Grenouille
+>   Soigneuse, Crapaud Cracheur, Loutre. Élite possible (pas obligatoire) : **Tortue de Pierre**.
+>   Le Ragondin et le Crocodile proposés plus bas ne sont PAS retenus.
+> - **Prairie** `mz_prairie_10_20` « Pâtures d'Havreden » : Chèvre, Cochon, Brebis, Bouc, Vache.
+>   (Chien Sauvage et Épouvantail proposés plus bas : non retenus.)
+
 Statut : **proposition à valider**. Tient compte de la carte **non linéaire** (zones plus hautes près
 d'Havreden, voulu), des **noms validés**, de **pas d'ours**, de **5 monstres par zone** (élites et boss à
 part) et de l'inventaire des **367 personnages PixelLab** du propriétaire. À recouper avec le travail du

@@ -20,14 +20,9 @@ qu'il existe plus fort que lui, et il reviendra.
 - Noms : **naturels autour d'Havreden** (la campagne n'est pas hostile vue du village) ; noms inquiétants
   seulement **après Rochebourg**. Le chemin de la quête principale **serpente** entre les zones.
 
-**Noms VALIDÉS par le propriétaire (2026-10-10)** ; Rochebourg et la Tour d'Asher ont déjà leur zone côté client : Les Friches (3-8), La Chênaie (Sanglier 8-15), Les Pâtures
-(Prairie 10-20, ferme des Dorn), La Clairière (6-15), La Lande (Hyène 9-20), Le Val aux Loups (Loup 13-23),
-Le Grand-Bois (Forêt 12-26), Les Herbages (16-25), Les Roselières (Marécage 20-30), Le Bois Sombre (25-30,
-ex-araignées), Les Éboulis (« Ours » 20-28 : plus d'ours, camp des deux sœurs à côté), Les Crêtes (« Wolf »
-25-32), La Route du Sud (Brigand 35-45, hameau à côté) ; puis Rochebourg (~50, à ajouter), Les Bas-Fonds de
-Rochebourg (Rats corrompus 40-50), Le Chemin des Pèlerins (Fanatique 45-60), Les Mines Basses (Gobelins
-50-60), la Tour d'Asher (60+, à ajouter), Le Marais de la Faille (60-70), Les Brèches (61-70), Le Seuil
-(70-80), Les Terres Déchirées (80-100), L'Abîme (85-100).
+**Noms : on garde ceux de la data** (`world/zones.json`, ex. Marécage = « Marais de Havreden », Prairie =
+« Pâtures d'Havreden »). Une liste de renommages proposée le 2026-10-10 a été mal lue comme validée :
+**retirée** (propriétaire, 2026-10-11). Rochebourg et la Tour d'Asher ont déjà leur zone côté client.
 
 Pas d'ours (le propriétaire n'est pas fan du rendu PixelLab).
 
