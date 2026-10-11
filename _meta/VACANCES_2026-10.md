@@ -137,6 +137,12 @@ seulement), enchanteur (buffs, ex-support).
 - Ultimes : 30 s de recharge, 2 s d'incantation. Les autres compétences gardent 4-5 s
   (le familier n'a pas d'attaque de base).
 
+## Carte et monstres (2026-10-11)
+
+Carte finalisée zone par zone avec le propriétaire : renommages de zones, rosters, nouveaux sprites PixelLab
+vérifiés, suppressions. **Liste complète à faire : `_meta/TODO_RETOUR.md` section 1bis** ; détails et ids :
+`_meta/carnet/carte_monstres.md`. Rien n'a été modifié dans `world/zones.json` ni `entities/monsters.json`.
+
 ## Côté CLIENT, à faire au retour (rien n'a été touché au client pendant les vacances)
 
 - **Choix moraux** : boutons de choix au rendu d'une quête (envoyer `moral_choice`, champ 3 du turn-in),
