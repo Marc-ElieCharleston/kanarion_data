@@ -21,7 +21,20 @@
 > (walk + idle) le 2026-10-11 ; data (stats, compétence unique) et intégration au bureau.
 >
 > **Zones validées au 2026-10-11 : Havreden, Prairie, Marais, Forêt, Bois des Loups.**
-> Suite : Sanglier, Scarabées (insectes), Rats.
+> **Sanglier** `mz_sanglier_8_15` (2026-10-11, en cours) : Marcassin (fodder), Sanglier (brute 🟢), Sanglier
+> Enragé (berserker 🟢), **Laie** (soutien, protège les marcassins), **Vieux Sanglier** (tank ; nom choisi par le
+> propriétaire). Les 3 nouveaux sont générés par le propriétaire (2026-10-11). **Bélier → Taureaux** (validé).
+> Note : la **taille des monstres** pourra se régler en jeu par un ratio d'échelle (propriétaire) : un même
+> sprite peut servir à une larve ou à un géant.
+> **Insectes** `mz_scarabees_3_8` (2026-10-11) : renommée **« Lisière d'Havreden »** (le scorpion n'est pas un
+> scarabée ; noms de zone = lieux dans la lignée du jeu, pas de nom de monstre sauf exceptions type Bois des
+> Loups). Roster VALIDÉ, 3 monstres : Scarabée (brute 🟢), Scorpion Rocheux (tank 🟢), Scarabée Géant (élite 🟢).
+> La Larve peut rester en petit scarabée (ratio d'échelle).
+> **Rats** `mz_rats_1_8` (2026-10-11) : renommée **« Abords d'Havreden »**. Constat : Rat, Jeune Rat, Rat Alpha et
+> Rat Contaminé affichent TOUS le même sprite (`rat`). Roster : Jeune Rat (sprite du Rat en petit, ratio
+> d'échelle), Rat (🟢), **Rat Alpha** (élite, nouveau sprite généré par le propriétaire), et le rat du tutoriel.
+> **Le rat du tutoriel reste un rat NORMAL** (pas contaminé à l'écran) : il devient le familier du joueur, un
+> familier « contaminé » n'est pas souhaitable ; le propriétaire gérera la contamination dans le lore.
 
 Statut : **proposition à valider**. Tient compte de la carte **non linéaire** (zones plus hautes près
 d'Havreden, voulu), des **noms validés**, de **pas d'ours**, de **5 monstres par zone** (élites et boss à
