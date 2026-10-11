@@ -21,7 +21,10 @@
 > (walk + idle) le 2026-10-11 ; data (stats, compétence unique) et intégration au bureau.
 >
 > **Zones validées au 2026-10-11 : Havreden, Prairie, Marais, Forêt, Bois des Loups.**
-> Suite : Sanglier, Scarabées (insectes), Rats.
+> **Sanglier** `mz_sanglier_8_15` (2026-10-11, en cours) : Marcassin (fodder), Sanglier (brute 🟢), Sanglier
+> Enragé (berserker 🟢), **Laie** (soutien, protège les marcassins), **Vieux Sanglier** (tank ; nom choisi par le
+> propriétaire). Les 3 nouveaux sont générés par le propriétaire. Bélier → Taureaux ? (à confirmer).
+> Suite : Scarabées (insectes), Rats.
 
 Statut : **proposition à valider**. Tient compte de la carte **non linéaire** (zones plus hautes près
 d'Havreden, voulu), des **noms validés**, de **pas d'ours**, de **5 monstres par zone** (élites et boss à
