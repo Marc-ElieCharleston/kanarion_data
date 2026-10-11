@@ -10,6 +10,11 @@
 >   Le Ragondin et le Crocodile proposés plus bas ne sont PAS retenus.
 > - **Prairie** `mz_prairie_10_20` « Pâtures d'Havreden » : Chèvre, Cochon, Brebis, Bouc, Vache.
 >   (Chien Sauvage et Épouvantail proposés plus bas : non retenus.)
+>
+> **Décision Bois des Loups** `mz_loup_13_23` (propriétaire, 2026-10-11) : la zone n'a **que des loups
+> normaux** (ex. loup blanc, loup noir). Les **loups humanoïdes** (Loup Meneur, Louve soigneuse, Loup
+> Corrompu, Loup Alpha) vont dans le **donjon** de la zone (la Tanière). À retirer donc de la zone dans la
+> data : `mob_wolf_soigneur`, `mob_wolf_packleader` (travail du bureau, ne pas toucher ici).
 
 Statut : **proposition à valider**. Tient compte de la carte **non linéaire** (zones plus hautes près
 d'Havreden, voulu), des **noms validés**, de **pas d'ours**, de **5 monstres par zone** (élites et boss à
