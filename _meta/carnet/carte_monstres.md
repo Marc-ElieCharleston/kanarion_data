@@ -30,7 +30,11 @@
 > scarabée ; noms de zone = lieux dans la lignée du jeu, pas de nom de monstre sauf exceptions type Bois des
 > Loups). Roster VALIDÉ, 3 monstres : Scarabée (brute 🟢), Scorpion Rocheux (tank 🟢), Scarabée Géant (élite 🟢).
 > La Larve peut rester en petit scarabée (ratio d'échelle).
-> Suite : Rats `mz_rats_1_8` (« Terrier des Rats » → « Sortie d'Havreden » ?).
+> **Rats** `mz_rats_1_8` (2026-10-11) : renommée **« Abords d'Havreden »**. Constat : Rat, Jeune Rat, Rat Alpha et
+> Rat Contaminé affichent TOUS le même sprite (`rat`). Roster : Jeune Rat (sprite du Rat en petit, ratio
+> d'échelle), Rat (🟢), **Rat Alpha** (élite, nouveau sprite généré par le propriétaire), et le rat du tutoriel.
+> **Le rat du tutoriel reste un rat NORMAL** (pas contaminé à l'écran) : il devient le familier du joueur, un
+> familier « contaminé » n'est pas souhaitable ; le propriétaire gérera la contamination dans le lore.
 
 Statut : **proposition à valider**. Tient compte de la carte **non linéaire** (zones plus hautes près
 d'Havreden, voulu), des **noms validés**, de **pas d'ours**, de **5 monstres par zone** (élites et boss à
