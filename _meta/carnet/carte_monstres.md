@@ -35,6 +35,17 @@
 > d'échelle), Rat (🟢), **Rat Alpha** (élite, nouveau sprite généré par le propriétaire), et le rat du tutoriel.
 > **Le rat du tutoriel reste un rat NORMAL** (pas contaminé à l'écran) : il devient le familier du joueur, un
 > familier « contaminé » n'est pas souhaitable ; le propriétaire gérera la contamination dans le lore.
+>
+> **Sprites PixelLab vérifiés le 2026-10-11** (agent, walk + idle ajoutés si manquants) :
+> - Loups : Loup Noir `56136a94` → garder walk-8-v2 (N/S/diagonales) + « walk-v3-ew » (E/O) ; Loup Blanc
+>   `c10c868b` → walk-8-v2 ; Vieux Loup `42ce2ff0` → walk-8-v2, à jouer à ~6-7 fps pour une démarche lourde.
+>   Anciennes walk-4 gardées (à supprimer si OK). Canevas 80 px : afficher à ~0,82 pour égaler les loups 124 px.
+> - Sangliers : Marcassin `bd9aef6a`, Laie `7e839ea3`, Vieux Sanglier `74d4a2fc` : complets, OK.
+> - Rats : Rat Alpha `0808264a`, rat du tutoriel `05b1b919` (encore nommé « Rat Contaminé » dans PixelLab) :
+>   walk-8 + idle OK ; canevas 80 px contre 120 px pour le rat de base (régler l'échelle).
+> - Insectes : OK, mais le Scarabée Géant `673fff5b` est à peine plus grand que le Scarabée → échelle ~1,4.
+> - À nettoyer : ligne noire 1 px (x=32) dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
+> - Doublons à supprimer : Loup Noir `43264e67` ; créés par erreur `bdd5ade1`, `97edf87e`, `a5012082`.
 
 Statut : **proposition à valider**. Tient compte de la carte **non linéaire** (zones plus hautes près
 d'Havreden, voulu), des **noms validés**, de **pas d'ours**, de **5 monstres par zone** (élites et boss à
