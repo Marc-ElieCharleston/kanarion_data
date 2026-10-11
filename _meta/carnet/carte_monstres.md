@@ -52,12 +52,25 @@
 >   le propriétaire), Ragondin (déjà dans PixelLab). Pas de chiens errants (doublon avec les loups).
 > - `mz_sangliers-loups_6_15` **« Clairière Disputée »** (nom gardé) : zone mixte à tester, les loups du bois voisin
 >   chassent les sangliers (Loup Gris, Loup Noir, Sanglier, Laie, Marcassin ; aucune création).
-> - `mz_wolf_25-32` **« Meute Corrompue »** (nom gardé) : loups **corrompus**.
-> - `mz_spider_25_30` (à gauche, le long du bord) : cerfs et biches corrompus + Gardien de la Forêt ; nom à choisir
->   (« Bois Flétri » ou « Sous-Bois Noirci »).
+> - `mz_wolf_25-32` → renommée (« Meute Corrompue » n'est pas un nom de LIEU : test du PNJ « va vers… ») ; c'est le
+>   sud de la Forêt, nom du type **« Forêt du Sud »** (à confirmer). Contenu : début des espèces existantes et de leurs
+>   versions corrompues (transition).
+> - **Règle de nommage : un nom de zone doit pouvoir se dire par un PNJ (« va vers le sud de la forêt »).**
+> - `mz_spider_25_30` (à gauche, le long du bord) → **« Bois Flétri », niveaux 25-35** (validé) : cerfs et biches
+>   corrompus + Gardien de la Forêt.
+> - **Ours : on les GARDE** (le propriétaire les aime). Problème : PixelLab garde mal le style d'un ours à l'autre ; le
+>   3e ours du propriétaire est bon, le 1er non. Méthode : un AUTRE ours = `create_character` avec les mêmes réglages
+>   (taille, vue, contour, ombrage, détail) + l'ours réussi en image de référence (v3) ; une VARIANTE du même ours
+>   (corrompu, cuirassé, vieux) = `create_character_state` (garde l'identité et les proportions) ; l'ourson peut être
+>   l'ours réussi en petit (ratio d'échelle). → l'histoire des sœurs peut garder la Grande Ourse.
 > - Hyènes → Plaine des Taureaux (proposé ; la zone est petite, 914 × 820 px, l'agrandir ou peu d'hyènes).
 > - **Idée du propriétaire : après 30, on reprend les mêmes espèces en version CORROMPUE** (variantes PixelLab du même
 >   personnage) jusqu'aux brigands 35-45.
+> - **Bocage, sprites vérifiés** (80 px, walk-6 + idle sur 8 directions) : Belette `0e247315` OK ; Chat Sauvage Roux
+>   `ad30106c` OK (ombre idle SE f1) ; Chat Sauvage `ac1c4796` OK (à refaire si possible : idle E queue qui clignote,
+>   walk S yeux rouges) ; Hérisson `3cc0927f` : idle NE cassé (silhouettes noires, animation `182a8fcf` à supprimer,
+>   remplacement « idle_ne_v3 » en 84 px), walk N et S déformés à refaire. Échelle en jeu suggérée : Belette 0,65,
+>   Hérisson 0,70, chats et Ragondin 1,0.
 > - Taille de carte jugée bonne (~8 500 × 16 700 px, ~1 min 30 du nord au sud à 180 px/s) : on garde 21 zones.
 
 Statut : **proposition à valider**. Tient compte de la carte **non linéaire** (zones plus hautes près
