@@ -403,6 +403,11 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       — loot 39/39, forge 17/17, artisanat 12/12. À relire, puis recaler `test_player_reference_curve.cpp` (base d'objet,
       affixes, forge, sets) et la calibration des monstres. Supprimer `upgrade_system` / `substat_upgrade_chance`
       de `equipment_stats.json` après avoir vérifié que le client ne les lit pas.
+- [ ] **Amélioration d'équipement** (2026-10-12) : ajouter une substat (au hasard), changer une substat (au hasard,
+      peu cher), monter la rareté (100 %, or + ressources spécifiques). Coûts fixes par palier T1-T5 dans
+      `systems/equipment_upgrade.json` (data `vac_equipment-upgrade`) ; back `vac_equipment-upgrade` (sur `vac_storage-slots` :
+      `loot/equipment_upgrade`, opcode 0x047D/0x047E, `test_equipment_upgrade`). Ressources de rareté = proposition à relire
+      (éclat de Fissure, cristal du Vide, noyau runique). **Client à faire** : écran d'amélioration à la forge.
 - [ ] Grille : passer au moins en 12×6 plus tard (tutoriel en 10×6) → grille par mode (`combat_grids.by_mode`),
       zoom caméra par grille côté client, fonds peints, portées archer/mage. Voir `_meta/carnet/deplacements_combat.md`.
 - [ ] **Bug signalé par le propriétaire** : dans le donjon des rats, les Rats Sorciers touchent sans ligne de vue et à
