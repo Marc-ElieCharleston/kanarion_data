@@ -415,6 +415,11 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       (`icon`, `off_role_exempt`…) absents de la liste blanche du validateur. À ajouter à la liste blanche.
 - [ ] Bug IA (existant) : `server-combat/src/ai/player_ai.cpp:637-646`, la ligne de vue de l'IA joueur utilise
       l'ancien repère (« front = y==0 »), faux sur le plateau unifié.
+- [ ] **Sac et banque par personnage** (2026-10-12) : sac 100 → 300, banque 200 → 500, +10 places à prix fixe qui
+      saute à chaque centaine (sac 5 000 puis 25 000 ; banque 5 000 / 25 000 / 100 000 or). Les persos existants gardent
+      sac 100 / banque 1000. Data `vac_storage-slots` (`systems/economy.json` `storage`) + back `vac_storage-slots`
+      (migration 112, opcode 0x047B/0x047C, `test_storage_rules`). **Client à faire** : bouton d'achat au PNJ banquier
+      (aperçu `preview_only` puis achat), afficher le prochain prix ; prix en diamants quand la boutique ouvrira.
 - [ ] **Réapparition des monstres** (pas encore traitée) : rapide en zone de farm, lente pour les gros monstres,
       élites et boss ; ne pas laisser les joueurs avancés vider les zones des débutants. Voir `_meta/carnet/monstres.md`.
 - [ ] **Rythme du loot** : régler le loot pour qu'on ne soit pas équipé trop vite, idem pour les ressources,
