@@ -26,7 +26,7 @@ Un passif qui se déclenche **à chaque compétence lancée** par le familier. F
 | Mort | squelettes, nécromanciens | petit soin sur soi |
 | Abysse | abyssal, démons | dégâts supplémentaires |
 
-**Chance par rareté** (validée) : commun 5 %, uncommon 6 %, rare 7 %, epic 8 %, légendaire 10 %.
+**Chance par rareté** (proposée, à valider) : commun 5 %, uncommon 6 %, rare 7 %, epic 8 %, légendaire 10 %.
 Pourquoi pas 1/2/5/10 % : à un GCD de 2 s, 1 % ne se déclenche presque jamais (environ une fois toutes les 3 minutes),
 l'affinité d'un familier commun ne servirait à rien et l'écart de rareté deviendrait trop fort.
 
