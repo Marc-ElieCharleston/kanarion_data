@@ -31,6 +31,7 @@ foi** : ces notes sont à fusionner avec eux au retour.
 ## Systèmes
 
 - [Architecture : tout l'équilibrage dans la data](architecture_data.md)
+- [Audit des valeurs codées en dur (2026-10-13)](audit_valeurs_en_dur.md)
 
 - [Familiers](familiers.md)
 - [Collections](collections.md)
