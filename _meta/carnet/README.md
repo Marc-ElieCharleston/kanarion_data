@@ -36,6 +36,7 @@ foi** : ces notes sont à fusionner avec eux au retour.
 - [Monstres V2](monstres.md)
 - [Déplacements en combat (grille, recharge partagée)](deplacements_combat.md)
 - [Loot et ressources](loot.md)
+- [Clés de donjon et clé de la tour infinie](cles_donjons.md)
 - [Équipement : stats, rareté, rang, forge](equipement.md)
 - [Runes : effets déclenchés à insérer (idée)](runes.md)
 - [Runes : premier catalogue (40)](runes_catalogue.md)
