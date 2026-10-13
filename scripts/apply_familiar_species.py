@@ -45,8 +45,12 @@ FAMILIAR_TO_MONSTER = {
     "taureau": "bovin", "titan_vide": "vide", "tortue_pierre": "tortue",
     "traqueur_effroi": "effroi", "traqueur_faille": "faille", "vache": "bovin",
     # 2026-10-13 (vac_monstres-nouveaux) : faune des vacances.
-    "ours": "ours", "chat_sauvage": "chat_sauvage", "herisson": "herisson", "belette": "belette",
-    "ragondin": "ragondin",
+    "chat_sauvage": "chat_sauvage", "herisson": "herisson", "belette": "belette", "ragondin": "ragondin",
+    # Couche 1 : une famille par nouveau monstre (identité = espèce du monstre).
+    "chat_sauvage_roux": "chat_sauvage", "marcassin": "sanglier", "laie": "sanglier",
+    "vieux_solitaire": "sanglier", "loup_noir": "loup", "loup_blanc": "loup", "vieux_loup": "loup",
+    "ours_brun": "ours", "ourse": "ours", "ours_noir": "ours", "ours_cavernes": "ours", "ourson": "ours",
+    "biche_fletrie": "cervide", "cerf_fletri": "cervide", "blaireau_fletri": "blaireau",
     # Variantes : leur propre famille, identité de l'espèce du monstre (comme loup_cristal -> cristal).
     "ours_fissure": "ours", "grande_ourse": "ours", "ours_givre": "cristal", "cerf_givre": "cristal",
     "sanglier_braise": "braise", "taureau_braise": "braise", "chacal_faille": "hyene",
