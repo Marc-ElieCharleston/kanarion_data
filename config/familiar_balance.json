@@ -333,13 +333,13 @@
       "aile": {
         "name_fr": "Ailé",
         "name_en": "Winged",
-        "target": "ally_adjacent",
+        "target": "enemy",
         "action": "swap",
         "cells": 1,
         "never_on_boss": true,
-        "_engine": "logique MovementKind::SWAP (room.cpp), allie a 1 case ; a confirmer par le proprietaire (avec qui echanger)",
-        "effect_fr": "échange de place avec un allié voisin (1 case)",
-        "effect_en": "swaps places with an adjacent ally (1 cell)"
+        "_engine": "pas encore code : MovementKind::SWAP (room.cpp) n'accepte qu'un allie ; ajouter l'echange avec un ennemi a 1 case (decision proprietaire 2026-10-13)",
+        "effect_fr": "échange de place avec la cible ennemie (1 case)",
+        "effect_en": "swaps places with the enemy target (1 cell)"
       },
       "aquatique": {
         "name_fr": "Aquatique",
@@ -460,6 +460,17 @@
         "effect_fr": "+40 % de dégâts sur ce lancement",
         "effect_en": "+40% damage on this cast"
       },
+      "dechu": {
+        "name_fr": "Déchu",
+        "name_en": "Fallen",
+        "target": "enemy",
+        "status_id": "blind",
+        "duration_sec": 4.0,
+        "pvp_duration_sec": 2.0,
+        "never_on_boss": true,
+        "effect_fr": "Aveuglement (lumière brisée)",
+        "effect_en": "Blind (broken light)"
+      },
       "demon": {
         "name_fr": "Démon",
         "name_en": "Demon",
@@ -513,7 +524,7 @@
       "vide": "vide",
       "squelette": "mort",
       "abyssal": "abysse",
-      "archonte_dechu": "abysse",
+      "archonte_dechu": "dechu",
       "demon": "demon"
     },
     "_species_without_affinity": "Non capturables, donc sans familier : bandit, tribal, hors_la_loi, converti, zelote, edric, chevalier_dechu, culte_obscur.",
@@ -522,7 +533,12 @@
       "ours_fissure": "faille",
       "biche_fletrie": "faille",
       "cerf_fletri": "faille",
-      "blaireau_fletri": "faille"
-    }
+      "blaireau_fletri": "faille",
+      "vache": "troupeau",
+      "cerf_obscur": "ombre",
+      "moissonneur_ames": "mort",
+      "revenant_vide": "vide"
+    },
+    "_decisions_2026_10_13": "Cas douteux tranches : cochon Troupeau, vache Troupeau (les taureaux restent Charge), blaireau Fauve, hybride sanglier-loup Charge, loup-garou et loup noir Meute, cerf obscur Ombre, faucheur d'ames Mort, revenant du vide Vide, devoreur d'ames Demon, rat sorcier Rongeur. Aile echange avec l'ENNEMI cible a 1 case. Nouvelle affinite Dechu (anges dechus, espece archonte_dechu) : Aveuglement. Poison en PvP : appliquer aussi le plafond par charge = max(ATK, MAG) x 0,5 de la source quand la cible est un joueur et la source un joueur ou un familier (aujourd'hui le plafond ne vaut que sur les cibles monstres, vac_poison-cap 1c45a99f)."
   }
 }
