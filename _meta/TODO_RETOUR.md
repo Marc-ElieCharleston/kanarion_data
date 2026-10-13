@@ -26,7 +26,19 @@ Dernière mise à jour : 2026-10-02.
         lancer `ctest` (tests `test_monster_scaling_model.cpp` / `test_monster_balance_rules.cpp`)
 - [ ] À chaque fusion data : conflit attendu sur `_meta/version.json` → `git add .` puis
       `python scripts/hash_content.py` puis `git add _meta/version.json` (voir CLAUDE.md).
-- [ ] Back : compiler et tester chaque branche `vac_*` (jamais compilées, pas de compilateur à la maison) :
+- [x] **Back compilé et testé dans WSL le 2026-10-03** (toutes les branches `vac_*` fusionnées ensemble,
+      data `vac_familiar-species` + `vac_koro` + `vac_familiar-ultimate-cd` + `vac_star-curve`) :
+      familiers 48/48, présence 100/100, combat **2 118 / 2 126** (2 ignorés).
+      - 3 tests mis à jour pour les nouvelles règles : `e3844780` et `09e5cd4e` (sur `vac_v2-monster-model`),
+        `011c1801` (nouvelle branche `vac_koro-catalog-test`) ; nouveau test `FamiliarPassiveStats.*` vert.
+      - **6 échecs DÉJÀ PRÉSENTS SUR `main`** (vérifié sans aucune branche vac_, data master ET data épinglée) :
+        `MageMatrixTest.ShieldRatiosAndRemainingBreathCondition` — **CORRIGÉ** sur la nouvelle branche back
+        `vac_spell-guard-fix` (`07976d70`) : depuis `74606ec2` (keystones) les sorts instantanés paient avant
+        leurs effets, mais `caster_above_mp` retirait encore le coût (compté deux fois) ; testé dans WSL, 48/48
+        tests mage / conditionnels verts. Et `ArcherMatrixTest.HeadshotCriticalResistanceAndKillReset`
+        (critique malgré 100 de résistance aux critiques), 3 rangs : **décidé : critique absolu** (2026-10-03).
+        Description corrigée (data `vac_collections`), test aligné sur la branche back `vac_headshot-absolute-crit`.
+- [ ] Back : relire chaque branche `vac_*` avant fusion (compilées et testées ensemble, voir au-dessus) :
   - [ ] `vac_familiar-xp-90` — ctest combat + familiar
   - [ ] `vac_poison-cap` — `combat-tests --gtest_filter="*Poison*"`
   - [ ] `vac_koro-shield-rank` — `combat-tests --gtest_filter="*Koro*"`
@@ -36,6 +48,59 @@ Dernière mise à jour : 2026-10-02.
         `shield_shatter`. Puis activer `MONSTER_SCALING_MODEL=1` sur un serveur de test avec la data V2.
   - [ ] `vac_defense-curve-test` — `ctest -R MonsterScaling` avec la data `vac_archetype-profiles`
 - [ ] Mettre à jour le pin de la data (`kanarion-meta`) dans le back et le client après fusion.
+
+## 1bis. Carte et monstres : ce qu'il faut faire au retour (décidé le 2026-10-11)
+
+Détails et ids : `_meta/carnet/carte_monstres.md` (encadré du haut). Méthode : zone par zone, le propriétaire
+colore en vert sur la carte ce qui est validé. **Le niveau d'un monstre vient de la ZONE** (stats = base de
+l'archétype × multiplicateurs niveau / étoiles / palier / rareté) : ne pas écrire de niveau par monstre.
+
+**Renommer les zones** (`world/zones.json` `name_fr` / `name_en`, et la carte du client) :
+- [ ] `mz_scarabees_3_8` « Nid de Scarabées » → **Lisière d'Havreden**
+- [ ] `mz_rats_1_8` « Terrier des Rats » → **Abords d'Havreden**
+- [ ] `mz_hyene_9_20` « Territoire des Hyènes » → **Le Bocage**
+- [ ] `mz_wolf_25-32` « Meute Corrompue » → **Forêt du Sud** (pas un nom de lieu ; règle : un PNJ doit pouvoir dire
+      « va vers… »). Le propriétaire parle aussi de « Forêt du Nord » pour `mz_foret_12_26` (Bois Tranquilles) : à confirmer.
+- [ ] `mz_spider_25_30` « Antre des Araignées » → **Bois Flétri**, **niveaux 25-35**
+- [ ] **Nouvelle zone élite** entre le Bois Flétri et l'eau (vers les Brigands) : loups et rats HUMANOÏDES ; nom de
+      lieu à choisir (« Le Ravin », « Les Gorges », « Les Ruines »…). Le Nid des Rats Corrompus (40-50) utilise
+      aujourd'hui ces rats : lui trouver autre chose ou en faire la suite.
+- [ ] Revoir les **niveaux** des zones (le propriétaire le prévoit).
+
+**Rosters par zone** (`world/zones.json` `mobs`) :
+- [ ] Prairie, Marais, Forêt : validés tels quels. Marais : Tortue de Pierre en élite possible.
+- [ ] Bois des Loups : Loup Gris, Loup Enragé, Loup Noir, Loup Blanc, Vieux Loup. **Retirer** `mob_wolf_soigneur` et
+      `mob_wolf_packleader` (les loups humanoïdes vont au donjon et à la zone élite).
+- [ ] Fourrés des Sangliers : Marcassin, Sanglier, Sanglier Enragé, Laie, Vieux Sanglier. **Bélier → Plaine des Taureaux.**
+- [ ] Lisière d'Havreden : Scarabée, Scorpion Rocheux, Scarabée Géant (Larve = petit scarabée, en option).
+- [ ] Abords d'Havreden : Jeune Rat (sprite du rat en petit), Rat, Rat Alpha (nouveau sprite), rat du tutoriel
+      (**rat NORMAL** : il devient le familier ; la contamination passe par le lore).
+- [ ] Le Bocage : Chat Sauvage, Chat Sauvage Roux, Hérisson, Belette, Ragondin. Les hyènes en partent.
+- [ ] Clairière Disputée : zone mixte à tester (Loup Gris, Loup Noir, Sanglier, Laie, Marcassin).
+- [ ] Forêt du Sud : début des espèces existantes et de leurs versions corrompues (à détailler).
+- [ ] Bois Flétri : Cerf Obscur, Renard Brumeux, Biche Flétrie, Cerf Flétri, Blaireau Flétri (+ un 6e ?) ; boss
+      Gardien du Bois Flétri.
+- [ ] Zone des Ours (20-28, pas encore dans `zones.json`) : Ourson, Ours Brun, Ourse, Ours Noir, Ours des Cavernes ;
+      élite plus tard : Grande Ourse (histoire des sœurs) en variante corrompue.
+- [ ] Hyènes → Plaine des Taureaux (proposé ; zone petite, 914 × 820 px : l'agrandir ou peu d'hyènes).
+
+**Nouveaux monstres à créer dans la data** (fiche, compétence unique, stats d'archétype) puis intégrer le sprite :
+Loup Noir, Loup Blanc, Vieux Loup, Marcassin, Laie, Vieux Sanglier, Rat Alpha (sprite propre), Chat Sauvage, Chat
+Sauvage Roux, Hérisson, Belette, Ragondin, les 5 ours, Biche / Cerf / Blaireau Flétris, Gardien du Bois Flétri.
+
+**À supprimer** :
+- [ ] PixelLab, anciens ours (essais, jamais dans le jeu) **si les nouveaux sont bons** : ours des cavernes `c27dd922`
+      (référence de style), oursons `82b50a50` et `6c5e3ffa`.
+- [ ] PixelLab, doublons de loups : `43264e67` (2e Loup Noir), `bdd5ade1`, `97edf87e`, `a5012082` (créés par erreur).
+- [ ] PixelLab : animation cassée du Hérisson (idle nord-est `182a8fcf`, remplacée par « idle_ne_v3 ») ; anciennes
+      walk-4 des loups si les walk-8-v2 conviennent.
+- [ ] Jeu : les araignées (`mob_spider_small`, `mob_spider_queen`, `boss_spider_queen`, leurs `boss_mechanics`,
+      `mat_spider_*`, sprite client `spider_queen`), `mob_dust_beetle`, `mob_serpent`.
+
+**Réglages de sprite en jeu** (échelle, vitesse) : loups 80 px à ~0,82 ; Scarabée Géant ~1,4 ; Belette ~0,65 ;
+Hérisson ~0,70 ; rats 80 px contre 120 px pour le rat de base ; Vieux Loup joué à ~6-7 images/s. À nettoyer : ligne
+noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
+- **Carte du sud (v3)** : figer les cases (noms et niveaux proposés dans `_meta/carnet/carte_monstres.md`, entrée « Carte v3 »), PUIS tracer chemins, donjons et PNJ d'un trait.
 
 ## 2. Tanière des loups (5 nouveaux loups, non poussés)
 
@@ -307,5 +372,58 @@ Dernière mise à jour : 2026-10-02.
       Récompenses horizontales : titres, cosmétiques, emotes, éventuellement petit bonus de compte (+1 % de drop).
       Pages des livres (décidé 2026-10-03) : combats des événements de fissure, coffres, faible taux dans
       les groupes 5 étoiles, certaines récompenses de quête ; échangeables (HDV et échange direct).
+- [ ] Collections : document de conception `_meta/conception_collections/COLLECTIONS.md` (branche data
+      `vac_collections`) : 10 livres / ~70 pages tirés du VRAI lore, 6 contradictions de lore à trancher
+      avec le lore du bureau, autres collections classées par effort, 5 questions ouvertes.
 - [ ] Quêtes : prévoir des quêtes liées au lore AVEC DES CHOIX pour le joueur (rappel du propriétaire).
+- [ ] **Histoires et Accusateur** : proposition `_meta/conception_histoires/HISTOIRES_ET_ACCUSATEUR.md`
+      (branche data `vac_collections`) — Fissures = portes ouvertes par les œuvres de la chair, plan du Malin =
+      l'Accusateur (VALIDÉ), structure quête principale + suites secondaires, X à chaque moment clé, paires
+      d'histoires en miroir par niveau, 5 fiches (Dorn, Harlan, chasseuse et soigneuse, Lisa, Bastien). À FUSIONNER
+      avec le lore et les quêtes du bureau. Carte décidée : Havreden 1-20, route du sud 20-50, Rochebourg 50+,
+      Tour d'Asher 60+ (le lore d'avril la faisait tomber au niveau 20 : à recaler), ville en guerre tout en bas.
+      Compteurs cachés : compassion / rancune.
+- [ ] **Technique quêtes** : PNJ visibles ou non selon l'avancement de chaque joueur (phasing par joueur),
+      nécessaire pour les histoires à choix (ex. un des frères Dorn disparaît). Vérifier client + serveur.
+- [ ] **Monstres agressifs selon le niveau** : un monstre ≥ 10 niveaux au-dessus du joueur l'attaque de lui-même
+      (même accompagné d'un joueur de haut niveau), pour qu'on ne se balade pas partout sans crainte. Vérifier ce que
+      le monde ouvert (presence) fait aujourd'hui.
+- [ ] **Boss à dialogues** : seuils de dialogue configurables (ex. tous les 20 % de PV) pour les boss
+      d'histoire (Harlan). Aujourd'hui : phases fixes à 50 % et 20 %.
+- [ ] **Panthéon** (idée du propriétaire) : les premiers du serveur (niveau 100, par classe, par métier,
+      familier niveau 100, donjons, Tour, collections, histoire…), titres exclusifs. Voir `_meta/carnet/pantheon.md`.
+- [ ] **Quêtes, briques** (`_meta/carnet/formats_quetes.md`) : (1) le CHOIX et (2) les drapeaux + conditions
+      sont **codés côté serveur** (branche back `vac_quest-moral-choices`, migration 111 — la renuméroter si le
+      bureau a déjà une 111) ; reste le CLIENT (boutons de choix, PNJ visibles selon les drapeaux, constructeurs
+      GDScript du protocole : turn-in champ 3, état champs 7-9) et la réécriture des 6 choix existants
+      (`severite` ≠ `rancune`) ; (3) `deliver_item` ; (4) `complete_scenario` (instance scénarisée) ;
+      (5) `take_part_in_event`.
+- [ ] **Équipement** (`_meta/carnet/equipement.md`) : 5 décisions validées, codées ET TESTÉES dans WSL sur `vac_equipment`
+      (data + back) + `vac_craft-rolls` (back, artisanat : bibliothèque `kanarion-loot` partagée combat / économie)
+      — loot 39/39, forge 17/17, artisanat 12/12. À relire, puis recaler `test_player_reference_curve.cpp` (base d'objet,
+      affixes, forge, sets) et la calibration des monstres. Supprimer `upgrade_system` / `substat_upgrade_chance`
+      de `equipment_stats.json` après avoir vérifié que le client ne les lit pas.
+- [ ] Grille : passer au moins en 12×6 plus tard (tutoriel en 10×6) → grille par mode (`combat_grids.by_mode`),
+      zoom caméra par grille côté client, fonds peints, portées archer/mage. Voir `_meta/carnet/deplacements_combat.md`.
+- [ ] **Bug signalé par le propriétaire** : dans le donjon des rats, les Rats Sorciers touchent sans ligne de vue et à
+      portée « infinie » (sorts `skill_mob_artillery_bolt` / `fire_bolt` : portée 7, sans ligne de vue). **CORRIGÉ** :
+      cause = la DATA (les projectiles ignoraient la ligne de vue) ; data `c5d0230` (8 projectiles exigent la ligne de
+      vue) + `b0e9a37` (entrave, silence, éclair : ligne de vue ; projectiles 7 → 5) ; back `vac_ai-los-range`
+      (repère de ligne de vue de l'IA joueur, cibles valides seulement pour le coordinateur de groupe). Suite combat
+      complète avec toutes les branches vac_ : 2 135 / 2 137, 2 ignorés, 0 échec.
+- [ ] `scripts/validate_skills.py` échoue déjà sur master (129 erreurs) : champs de sorts de familier
+      (`icon`, `off_role_exempt`…) absents de la liste blanche du validateur. À ajouter à la liste blanche.
+- [ ] Bug IA (existant) : `server-combat/src/ai/player_ai.cpp:637-646`, la ligne de vue de l'IA joueur utilise
+      l'ancien repère (« front = y==0 »), faux sur le plateau unifié.
+- [ ] **Réapparition des monstres** (pas encore traitée) : rapide en zone de farm, lente pour les gros monstres,
+      élites et boss ; ne pas laisser les joueurs avancés vider les zones des débutants. Voir `_meta/carnet/monstres.md`.
+- [ ] **Rythme du loot** : régler le loot pour qu'on ne soit pas équipé trop vite, idem pour les ressources,
+      surtout les ratios en donjon et en groupes 4 et 5 étoiles (contenu volontairement dur).
+- [ ] **Économie de l'or** (audit 2026-10-11) : les contrats répétables étaient la plus grosse source d'or, car
+      chaque kill crédite TOUS les contrats actifs (8 contrats bande 81-100 = 21 120 or pour 12 combats). **Plafond de
+      3 contrats tenus en même temps** : data `vac_contract-limit` (`world/quests.json` `contract_limits`) + back
+      `vac_contract-limit` (refus à l'acceptation, erreur `QUEST_CONTRACT_LIMIT` 0x0A01, test `test_contract_limit`).
+      **NON COMPILÉ** au moment du commit. Côté client : afficher « 3 contrats maximum » sur l'erreur 0x0A01.
+      Reste à décider : partage de l'or en groupe, forge payante (`vac_equipment`), brancher `economy.json`
+      gold_sinks, prix de revente (pierre rang 5 à 10 000), notes `_note_bande` périmées (le serveur filtre bien la bande).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.
