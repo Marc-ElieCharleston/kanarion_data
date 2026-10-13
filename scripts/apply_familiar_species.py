@@ -51,6 +51,11 @@ FAMILIAR_TO_MONSTER = {
     "vieux_solitaire": "sanglier", "loup_noir": "loup", "loup_blanc": "loup", "vieux_loup": "loup",
     "ours_brun": "ours", "ourse": "ours", "ours_noir": "ours", "ours_cavernes": "ours", "ourson": "ours",
     "biche_fletrie": "cervide", "cerf_fletri": "cervide", "blaireau_fletri": "blaireau",
+    # Couche 2 : familles scindées des anciens monstres (le monstre de base garde la famille).
+    "rat_jeune": "rat", "rat_alpha": "rat", "rat_soigneur": "rat", "rat_sorcier": "rat",
+    "scarabee_larve": "scarabee", "scarabee_geant": "scarabee", "sanglier_enrage": "sanglier",
+    "loup_enrage": "loup", "loup_meneur": "loup", "loup_garou": "loup_garou", "hyene_alpha": "hyene",
+    "guerrier_squelette": "squelette",
     # Variantes : leur propre famille, identité de l'espèce du monstre (comme loup_cristal -> cristal).
     "ours_fissure": "ours", "grande_ourse": "ours", "ours_givre": "cristal", "cerf_givre": "cristal",
     "sanglier_braise": "braise", "taureau_braise": "braise", "chacal_faille": "hyene",
