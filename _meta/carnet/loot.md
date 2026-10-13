@@ -6,6 +6,17 @@
 - Idem pour les **ressources**, surtout les ratios en **donjon** et en groupes **4 et 5 étoiles**.
 - Le contenu est volontairement dur (un joueur seul de niveau 60 ne passe pas la Tour d'Asher).
 
+## Loot partagé, comme Dofus (propriétaire, 2026-10-13)
+
+- **Un butin commun par combat**, puis **partagé**. Avant : loot personnel (un tirage par joueur, chacun
+  garde le sien).
+- Taille du pot : on garde **un tirage par joueur** mis en commun (un groupe n'est pas puni).
+- **Répartition aléatoire** : ordre des joueurs tiré au hasard, objets distribués à tour de rôle
+  (chacun ± 1 objet). Pas de stat de prospection (une stat « chance » plus tard, peut-être).
+- **Seuls les joueurs comptent** : familiers et mercenaires ne prennent pas de part.
+- **XP et or restent personnels** ; seuls les objets passent par le pot.
+- Serveur : branche back `vac_shared-loot` (en cours).
+
 ## Cible
 
 - Niveau maximum en 2 semaines à 1 mois, sans système d'énergie.
