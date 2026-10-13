@@ -228,8 +228,9 @@
         "xp",
         "drop_chance"
       ],
-      "bonus_per_extra_player": 0.055,
-      "cap": 1.5,
+      "bonus_per_extra_player": 0.075,
+      "cap": 1.3,
+      "_owner_2026_10_13": "Rapide jusqu a 5 joueurs puis plafond (proprietaire) : 1 / 1.075 / 1.15 / 1.225 / 1.30, puis 1.30 de 6 a 10 joueurs (etait 0.055 par joueur, plafond 1.5 atteint a 10). Les groupes de 3 a 5 deviennent le point ideal ; un groupe de 10 ne rapporte plus davantage par joueur qu un groupe de 5. S applique a l XP, l or et les chances de drop ; avec le loot partage, le pot commun recoit un tirage par joueur a ce multiplicateur.",
       "_correction": "CORRIGE le 2026-08-14 apres contre-lecture du backend. La v1.0 de ce fichier decrivait '1 + N * 0.05, max 10 joueurs' : c'etait la table de items/loot_tables.json, qui est MORTE. Le moteur applique 1 + (N-1) * 0.055 plafonne a 1.5 (loot_roller.cpp calc_group_mult), depuis des defauts de struct qu'AUCUN fichier ne charge. Le 0.05f ecrit par content_loader.cpp:1527 va dans group_size_bonus_per_player, un champ sans aucun lecteur. Ecart reel a 4 joueurs : live 1.165 contre 1.20 annonce. C'est le meme piege que le reste du chantier, avec une couche de plus : ici la donnee morte avait un chargeur, ce qui la faisait passer pour vivante.",
       "_engine_anchor": "Etape 2 FAITE pour cette famille (audit XP 2026-08-29 F5) : le moteur lit bonus_per_extra_player + cap DEPUIS ce fichier (content_loader.cpp:1465-1471). Changer ces valeurs change le jeu. loot_types.hpp:212-213 = valeurs de repli si absent. (Lancien texte >constantes C++, etape 2 a faire< etait perime.)"
     },
