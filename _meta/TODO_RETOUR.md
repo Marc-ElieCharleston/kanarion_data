@@ -14,6 +14,9 @@ Dernière mise à jour : 2026-10-02.
   - [ ] `vac_familiar-ultimate-cd` — ultimes de familier 30 s + incantation 2 s
   - [ ] `vac_star-curve` — courbe des étoiles lissée
   - [ ] `vac_balance-tools` — scripts d'analyse, tables, ces notes
+  - [ ] `vac_familiar-species` — CONTIENT `vac_apply-monster-v2` (branche data la plus complète). Familiers
+        par espèce + passifs d'espèce, `scripts/apply_familiar_species.py` (commit généré `53ad968` à jeter
+        et relancer au retour, APRÈS `apply_monster_v2.py`).
   - [ ] `vac_apply-monster-v2` — contient `vac_balance-tools` + `vac_archetype-profiles` + le script
         `scripts/apply_monster_v2.py` + son résultat (commit `a0cab4b`, GÉNÉRÉ). Au retour : fusionner
         le travail du bureau (Tanière des loups…), ajouter les nouveaux monstres à `kits_tous.csv`
@@ -27,6 +30,7 @@ Dernière mise à jour : 2026-10-02.
   - [ ] `vac_familiar-xp-90` — ctest combat + familiar
   - [ ] `vac_poison-cap` — `combat-tests --gtest_filter="*Poison*"`
   - [ ] `vac_koro-shield-rank` — `combat-tests --gtest_filter="*Koro*"`
+  - [ ] `vac_familiar-species-passive` — suite unitaire du service familier (`LoadoutRollerTest.*`)
   - [ ] `vac_v2-monster-model` (contient `vac_v2-monster-mag`) — `ctest` complet : MAG séparée, espèces + stades,
         croissance des taux, ténacité / perce-bouclier, IA de téléportation, invocations temporaires,
         `shield_shatter`. Puis activer `MONSTER_SCALING_MODEL=1` sur un serveur de test avec la data V2.
@@ -64,8 +68,12 @@ Dernière mise à jour : 2026-10-02.
       enchanteur + archer/mage séparés).
 - [x] `tenacity` et `shield_pierce` lus dans les `base_stats` (`vac_v2-monster-model`).
 - [x] Croissance des stats d'identité par archétype tous les 10 niveaux (`vac_v2-monster-model`).
-- [ ] Familiers : stats héritées de l'identité de l'espèce ; passif d'espèce qui monte en puissance
-      (par ex. aux niveaux 20 / 50 / 100).
+- [x] Familiers : stats héritées de l'identité d'espèce (data `vac_familiar-species`) ; passif d'espèce
+      aux niveaux 1 / 20 / 50 / 100 (data + serveur `vac_familiar-species-passive`).
+- [ ] **À décider** : le rat de départ (Colette) hérite de l'identité frêle du rat (PV x0,6, ATK x0,8) :
+      garder, ou exempter les familiers de départ ?
+- [ ] Les passifs d'espèce ne touchent que PV / Souffle / ATK / MAG / armure / RM (seules stats
+      appliquées aux familiers en combat) : pour esquive, blocage, ténacité… il faudra du code combat.
 - [ ] Familiers : 21 des 31 passifs sans effet en combat ; compétences sans montée par niveau.
 - [ ] Keystones `ks_support_harmony_*` : boucliers / soins de groupe sans plafond (recharge 0).
 - [ ] Test `test_player_reference_curve.cpp` : n'applique jamais les passifs communs (clé `passives`
@@ -176,7 +184,8 @@ Dernière mise à jour : 2026-10-02.
 - [ ] Placements à comparer avec la NOUVELLE carte du bureau : Renard Brumeux (niv. 33) en
       expédition 1-10 et étage 1 du Repaire, Petite Araignée (niv. 10) en zone 25-30, Charognard
       (niv. 27) en zone 9-20, boss Gueule de l'Abîme aussi monstre de zone 60-70 / 85-100.
-- [ ] Familiers : table espèce de familier (65) → espèce de monstre (45).
+- [x] Familiers : table espèce de familier (65) → espèce de monstre (`FAMILIAR_TO_MONSTER` dans
+      `scripts/apply_familiar_species.py`, champ `monster_species` dans familiars.json).
 - [ ] Descriptions : cartes Koro (le bouclier suit le rang), poison (plafonné sur les monstres),
       boucliers `shield_def` (décrits en % PV max, calculés sur la DEF).
 - [ ] `entities/boss_mechanics.json` n'est lu par aucun serveur : supprimer ou brancher.
@@ -247,6 +256,20 @@ Dernière mise à jour : 2026-10-02.
 
 ## 7. Discussions ouvertes (design)
 
+- [ ] **Afficher ces informations EN JEU**, sinon les joueurs ne les découvriront jamais : stats de
+      base et identité de l'espèce (PV / ATK / armure / RM), passif d'espèce et ses paliers 1 / 20 / 50 /
+      100, effet de la rareté, archétype du monstre (bestiaire, fiche de capture, panneau Colette).
+- [x] **Rareté des familiers** (VALIDÉ et appliqué 2026-10-02, `config/familiar_balance.json`) : multiplicateurs actuels commun 1.0 /
+      peu commun 1.06 / rare 1.12 / épique 1.2 / légendaire 1.3 → proposé 1.0 / 1.07 / 1.15 / 1.3 / 1.5.
+      Avec 1.5, un rat légendaire tank ≈ 70 % des PV et 80 % de l'armure d'un golem commun : l'espèce
+      compte plus que la rareté pour le rôle, la rareté récompense la chasse (drop légendaire 0,2 % : pas de capture, une fois l'empreinte droppée le familier est obtenu).
+- [ ] **Passifs SPÉCIAUX de familier à préparer** (déclencheurs, ce qui rendra certains familiers ultra
+      recherchés) : ex. « quand il est soigné, pose un soin sur la durée sur un allié proche », « quand
+      il bloque, renvoie… », « à la mort d'un ennemi… ». Aujourd'hui le serveur n'implémente que 3
+      passifs spéciaux (poison, saignement, silence, `familiar_passive_processor.cpp`) et 21 des 31
+      passifs sont sans effet : concevoir les déclencheurs (on_healed, on_hit, on_block, on_kill,
+      on_low_hp…) puis les coder.
+
 - [ ] **Alpha / playtests** : aucun joueur niveau 100 et aucune stat de dégâts réelle aujourd'hui ;
       monter niveau 100 est long → prévoir une alpha (et des sessions de playtest payées) pour
       calibrer. Règle : mieux vaut trop dur que trop facile.
@@ -261,6 +284,16 @@ Dernière mise à jour : 2026-10-02.
       boss du sud : Gardien de la Forêt, Champion Maudit, Gueule de l'Abîme, Souverain, Avatar, Héraut,
       Première Fissure.
 
-- [ ] Idées de contenu PvE à proposer (déjà en jeu : coffres, failles, tour infinie ; idée : pages
-      de livre à collectionner qui racontent des histoires).
+- [ ] **Contenu horizontal : les COLLECTIONS** (à discuter cette semaine, 2026-10-02). Base : ~10 livres
+      de X pages qui racontent l'histoire du monde, avec le VRAI texte du lore (le propriétaire pense l'avoir
+      déjà, au bureau) — jamais de pages vides. Autres idées proposées et appréciées :
+      - bestiaire (fiche par espèce = aussi l'affichage des infos en jeu) ;
+      - album des familiers (chaque espèce x chaque rareté) ;
+      - recueil des murmures (`world/whispers.json`) ;
+      - cartographie (lieux remarquables par région) ;
+      - reliques de la Faille (objets uniques des failles refermées, vitrine) ;
+      - trophées de chasse (boss, monstres « champion », groupes 5 étoiles) ;
+      - herbier / atlas des métiers (chaque ressource récoltée ou fabriquée) ;
+      - album des Koro.
+      Récompenses horizontales : titres, cosmétiques, emotes, éventuellement petit bonus de compte (+1 % de drop).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.
