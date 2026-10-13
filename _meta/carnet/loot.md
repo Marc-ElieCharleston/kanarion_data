@@ -11,11 +11,13 @@
 - **Un butin commun par combat**, puis **partagé**. Avant : loot personnel (un tirage par joueur, chacun
   garde le sien).
 - Taille du pot : on garde **un tirage par joueur** mis en commun (un groupe n'est pas puni).
-- **Répartition aléatoire** : ordre des joueurs tiré au hasard, objets distribués à tour de rôle
-  (chacun ± 1 objet). Pas de stat de prospection (une stat « chance » plus tard, peut-être).
+- **Répartition en aléatoire PUR, comme Dofus** : chaque objet (empreintes de familier comprises) va
+  à un joueur tiré au sort, indépendamment des autres. Pas d'équilibrage : un joueur peut avoir 3 objets
+  et un autre 0 (le tour de rôle ± 1 a été refusé). Pas de stat de prospection (une stat « chance »
+  plus tard, peut-être).
 - **Seuls les joueurs comptent** : familiers et mercenaires ne prennent pas de part.
 - **XP et or restent personnels** ; seuls les objets passent par le pot.
-- Serveur : branche back `vac_shared-loot` (en cours).
+- Serveur : branche back `vac_shared-loot` (`418b9273`, pas encore compilée).
 
 ## Cible
 
