@@ -87,6 +87,21 @@
 >   `ff693d28` sans la frame 0), Cerf Flétri `21b5367b` (corruption peu lisible), Blaireau Flétri `f7661fe1` (corruption
 >   faible, marche nord étrange), Gardien du Bois Flétri `6679d33e` (très bon ; échelle 1,6-2,0 obligatoire ; marche
 >   sud-ouest → groupe `2d5061ad`, l'ancien SW est noir).
+> - **Variantes générées par le propriétaire, vérifiées et animées (2026-10-13)**, 80 px, walk-6 + idle : Ours Fissuré
+>   `b1d62b9c` (walk est frame 4 instable), Grande Ourse `5abf4125` (échelle ~1,1), Chacal de la Faille `45df6fac`, Ours de
+>   Givre `7182f803`, Cerf de Givre `b1c79545`, Sanglier de Braise `6587e071` (walk nord frames 2-3-5 et est frame 4 à
+>   refaire si ça gêne), Taureau de Braise `49bc760d` (~1,1). Doublons à supprimer : `424e70df`, `792e25c0`, `b7d077ea`, et
+>   les 7 « états » faits par MCP (`f65adcc9`, `b6beb2de`, `d2fe9ead`, `42025944`, `e7e624d9`, `d593b9a9`, `0d0ad31b`).
+> - **Data des 27 nouveaux monstres** : branche `vac_monstres-nouveaux` (`fa8279b`, `bbc2a59`), une compétence unique chacun.
+> - **Carte v5 (propriétaire, 2026-10-13), noms de LIEUX** (règle : type de lieu concret + ce qu'on y voit ou nom
+>   propre ; jamais une idée de lore ni un nom de monstre) : Route de Rochebourg 40-50, Terres de Givre 60-66, **Col d'Asher**
+>   60-68 (monstres de pierre + Béhémoth), Lac Gelé 64-70 (**donjon des glaces**), La Rivière, Marais de la Faille 65-72
+>   (petit village), Terres de Braise 63-70, Chemin de lave 66-72 (nom à confirmer), **Plaine Fendue** 72-80, Nécropole
+>   70-78, **Chaussée Brisée** 78-88, île = **Anse des Naufragés** 1-100, Terres Déchirées 85-95 (donjon), Ville en ruine
+>   80-100, L'Abîme 90-100 (donjon). Nord : Ours 20-28, Clairière 15-25, hameau dans la Forêt Sud, donjon au Bois Flétri.
+>   Noms validés (jeu anglophone, racine française + forme lisible en anglais, comme Havreden/Rochebourg) : hameau de
+>   la Forêt Sud = **Mournelle**, village sur pilotis du marais = **Lanternfen** (lanternes qui guident les bateaux vers
+>   l'île), Ville en ruine = **Caer Isthrel**. Tiles en jeu : 30 × 30 px.
 > - Taille de carte jugée bonne (~8 500 × 16 700 px, ~1 min 30 du nord au sud à 180 px/s) : on garde 21 zones.
 > - **Carte v3 du sud (propriétaire, 2026-10-11)**, à figer AVANT d'ajouter chemins et donjons (tout se fera d'un trait au
 >   retour). Cases « À trouver » proposées (page, version 3) : **Terres de Givre** 60-66 (sous le Chemin des Pèlerins),
