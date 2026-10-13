@@ -427,6 +427,10 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       l'ancien repère (« front = y==0 »), faux sur le plateau unifié.
 - [ ] **Réapparition des monstres** (pas encore traitée) : rapide en zone de farm, lente pour les gros monstres,
       élites et boss ; ne pas laisser les joueurs avancés vider les zones des débutants. Voir `_meta/carnet/monstres.md`.
+- [ ] **Clés** (`_meta/carnet/cles_donjons.md`) : data `vac_dungeon-keys` + back `vac_dungeon-keys` (drop par tranche
+      de niveau, clé de tour qui monte, 2 % de clé par étage). **Supprimer les 2 anciennes Tours d'Asher**
+      (`dungeon_asher_tower`, `dungeon_tower_asher` + clés `key_asher_tower_*`, refs quêtes / PNJ / monstres /
+      world_map) à la fusion avec le vrai donjon du bureau. Créer les paliers 2-3 des Égouts et leurs clés.
 - [ ] **Rythme du loot** : régler le loot pour qu'on ne soit pas équipé trop vite, idem pour les ressources,
       surtout les ratios en donjon et en groupes 4 et 5 étoiles (contenu volontairement dur).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.
