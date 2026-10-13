@@ -87,6 +87,12 @@
 >   `ff693d28` sans la frame 0), Cerf Flétri `21b5367b` (corruption peu lisible), Blaireau Flétri `f7661fe1` (corruption
 >   faible, marche nord étrange), Gardien du Bois Flétri `6679d33e` (très bon ; échelle 1,6-2,0 obligatoire ; marche
 >   sud-ouest → groupe `2d5061ad`, l'ancien SW est noir).
+> - **Variantes générées par le propriétaire, vérifiées et animées (2026-10-13)**, 80 px, walk-6 + idle : Ours Fissuré
+>   `b1d62b9c` (walk est frame 4 instable), Grande Ourse `5abf4125` (échelle ~1,1), Chacal de la Faille `45df6fac`, Ours de
+>   Givre `7182f803`, Cerf de Givre `b1c79545`, Sanglier de Braise `6587e071` (walk nord frames 2-3-5 et est frame 4 à
+>   refaire si ça gêne), Taureau de Braise `49bc760d` (~1,1). Doublons à supprimer : `424e70df`, `792e25c0`, `b7d077ea`, et
+>   les 7 « états » faits par MCP (`f65adcc9`, `b6beb2de`, `d2fe9ead`, `42025944`, `e7e624d9`, `d593b9a9`, `0d0ad31b`).
+> - **Data des 27 nouveaux monstres** : branche `vac_monstres-nouveaux` (`fa8279b`, `bbc2a59`), une compétence unique chacun.
 > - Taille de carte jugée bonne (~8 500 × 16 700 px, ~1 min 30 du nord au sud à 180 px/s) : on garde 21 zones.
 > - **Carte v3 du sud (propriétaire, 2026-10-11)**, à figer AVANT d'ajouter chemins et donjons (tout se fera d'un trait au
 >   retour). Cases « À trouver » proposées (page, version 3) : **Terres de Givre** 60-66 (sous le Chemin des Pèlerins),
