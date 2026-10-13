@@ -37,7 +37,7 @@ bouclier 4 s. Jamais de déplacement ni d'enracinement sur un boss.
 | Carapace | tortues, tatous, hérissons | bouclier sur soi |
 | Essaim | scarabées, insectes | Précision − |
 | Batracien | grenouilles, crapauds | Attire d'une case |
-| Ailé | corbeaux, volatiles | Échange de place (1 case) |
+| Ailé | corbeaux, volatiles | Échange de place avec l'ENNEMI ciblé (1 case ; pas encore codé) |
 | Aquatique | loutres, crocodiles | Ralentissement |
 | Sylvestre | esprits des bois, créatures végétales | Enracinement |
 | Pierre | golems, gardiens de pierre | Armure + aux alliés de la ligne |
@@ -49,8 +49,19 @@ bouclier 4 s. Jamais de déplacement ni d'enracinement sur un boss.
 | Vide | vide | vol de Souffle |
 | Mort | squelettes, nécromanciens | petit soin sur soi |
 | Abysse | abyssaux | dégâts supplémentaires sur ce lancement |
+| Déchu | anges déchus (archonte_dechu) | Aveuglement (4 s PvE, 2 s PvP) |
 | Démon | démons | Vulnérable |
 
 Le moteur a déjà root, knockback, pull et swap. Un `FamiliarPassiveProcessor` existe déjà en combat (poison, saignement,
 silence) : on l'étend plutôt que le moteur des runes. Plan d'implémentation : `_meta/conception_systemes/AFFINITES_FAMILIERS.md`
 (écrit avec 9 affinités, à mettre à jour). Correspondance espèce → affinité : en cours.
+
+**Cas douteux tranchés (2026-10-13)** : cochon et vache → Troupeau (les taureaux restent Charge) ; blaireau → Fauve ;
+hybride sanglier-loup → Charge ; loup-garou et loup noir → Meute ; cerf obscur → Ombre ; faucheur d'âmes → Mort ;
+revenant du Vide → Vide ; dévoreur d'âmes → Démon ; rat sorcier → Rongeur. 27 affinités en tout (avec Déchu).
+Les anges déchus n'ont pas encore de familier (lot mis de côté pour le passage sur le lore).
+
+**Poison et PvP** : le poison retire 2 % des PV max par charge et par seconde. Sur les cibles MONSTRES, un plafond existe
+déjà (`vac_poison-cap` 1c45a99f : par charge, max(ATK, MAG) × 0,5 de la source). Sur les joueurs, rien : à coder, le même
+plafond quand la cible est un joueur et la source un joueur ou un familier (les monstres contre les joueurs gardent les
+2 % sans plafond, levier anti-tank voulu).
