@@ -93,6 +93,13 @@
 >   refaire si ça gêne), Taureau de Braise `49bc760d` (~1,1). Doublons à supprimer : `424e70df`, `792e25c0`, `b7d077ea`, et
 >   les 7 « états » faits par MCP (`f65adcc9`, `b6beb2de`, `d2fe9ead`, `42025944`, `e7e624d9`, `d593b9a9`, `0d0ad31b`).
 > - **Data des 27 nouveaux monstres** : branche `vac_monstres-nouveaux` (`fa8279b`, `bbc2a59`), une compétence unique chacun.
+> - **Carte v5 (propriétaire, 2026-10-13), noms de LIEUX** (règle : type de lieu concret + ce qu'on y voit ou nom
+>   propre ; jamais une idée de lore ni un nom de monstre) : Route de Rochebourg 40-50, Terres de Givre 60-66, **Col d'Asher**
+>   60-68 (monstres de pierre + Béhémoth), Lac Gelé 64-70 (**donjon des glaces**), La Rivière, Marais de la Faille 65-72
+>   (petit village), Terres de Braise 63-70, Chemin de lave 66-72 (nom à confirmer), **Plaine Fendue** 72-80, Nécropole
+>   70-78, **Chaussée Brisée** 78-88, île = **Anse des Naufragés** 1-100, Terres Déchirées 85-95 (donjon), Ville en ruine
+>   80-100, L'Abîme 90-100 (donjon). Nord : Ours 20-28, Clairière 15-25, hameau dans la Forêt Sud, donjon au Bois Flétri.
+>   À nommer : la Ville en ruine, le petit village du marais, le hameau de la Forêt Sud.
 > - Taille de carte jugée bonne (~8 500 × 16 700 px, ~1 min 30 du nord au sud à 180 px/s) : on garde 21 zones.
 > - **Carte v3 du sud (propriétaire, 2026-10-11)**, à figer AVANT d'ajouter chemins et donjons (tout se fera d'un trait au
 >   retour). Cases « À trouver » proposées (page, version 3) : **Terres de Givre** 60-66 (sous le Chemin des Pèlerins),
