@@ -3698,43 +3698,15 @@
     "_removed_2026_09_28": "star_multiplier (courbe deplacee dans config/rewards.json fight_loot.stars.unique_chance), monster_state_multiplier (remplace par le bonus de presence borne), rank_by_danger (le rang vient du niveau), examples, formula : tous charges ou documentes mais jamais lus."
   },
   "dungeon_key_drops": {
-    "_comment": "Cles de donjon droppees par les mobs de zone. Normal keys sur mobs de la zone correspondante, Hard/Heroic keys sur boss du donjon (voir dungeons.json key_drops).",
-    "zone_drops": [
-      {
-        "key_id": "key_wild_den_normal",
-        "zone": "zone_06",
-        "base_chance": 0.04,
-        "min": 1,
-        "max": 1,
-        "note": "4% sur les mobs de zone_06 (marais). Permet l'acces au donjon Wild Den en Normal."
-      },
-      {
-        "key_id": "key_asher_tower_normal",
-        "zone": "zone_08",
-        "base_chance": 0.035,
-        "min": 1,
-        "max": 1,
-        "note": "3.5% sur les mobs de zone_08 (abords de la tour). Permet l'acces au donjon Asher Tower en Normal."
-      },
-      {
-        "key_id": "key_lvl20_bandit_den_normal",
-        "zone": "village",
-        "base_chance": 0.06,
-        "min": 1,
-        "max": 1,
-        "level_range": [
-          15,
-          20
-        ],
-        "note": "6% sur les mobs lvl 15-20 de la lisiere de Havreden. Permet l'acces au Repaire des Bandits en Normal. Drop rate de depart V1, a ajuster apres mesure."
-      }
-    ],
-    "notes": [
-      "Les cles Hard et Heroic drop UNIQUEMENT sur les boss de donjon (voir dungeons.json loot_tables.key_drops)",
-      "Les cles sont stackables (max 10), tradeable, et vendables",
-      "En mode Facile, aucune cle n'est requise",
-      "Le champ level_range filtre les drops aux mobs dont le base_level est dans la plage (V1: mobs lvl 15-20 seulement pour key_lvl20_bandit_den_normal)"
-    ]
+    "_comment": "2026-10-13 (proprietaire) : une cle de donjon tombe sur des monstres PERTINENTS, jamais en dessous du palier du donjon (la cle d un donjon niveau 100 ne tombe que sur les monstres 81-100). Regle par TRANCHE DE NIVEAU du monstre tue : chaque entree = une cle, une tranche [min_mob_level, max_mob_level], une chance par monstre tue. Les cles sont consommees a l entree, une par joueur (dungeon service), et s echangent (HDV, echange direct). Seconde source prevue : une recette par cle. Lu par server-combat LootRoller (back vac_dungeon-keys). L ancien format zone_drops visait des zones inexistantes (zone_04/06/08) et des donjons retires : remplace.",
+    "level_band_drops": [],
+    "_level_band_drops_example": {
+      "key_id": "key_rat_den_fissure_2",
+      "min_mob_level": 8,
+      "max_mob_level": 20,
+      "chance": 0.03,
+      "_note": "exemple : a activer quand le palier fissure_2 des Egouts existera (contenu de carte, au bureau)"
+    }
   },
   "_notes": {
     "balance": "Ces valeurs sont des bases, Ã  ajuster selon les tests",
