@@ -161,13 +161,13 @@
     "_allocatable_stats_owner": "MIROIR d'une liste en dur cote serveur (services/economy/src/economy_service.cpp handle_stat_allocate, set `valid_stats`). Les cinq concordent aujourd'hui. Ajouter une stat ici sans toucher le C++ donnerait un bouton client rejete par le serveur.",
     "point_values": {
       "hp": 5,
-      "mp": 5,
+      "mp": 3,
       "atk": 1,
       "mag": 1,
       "def": 1
     },
-    "_point_values_owner": "config/game.json `stats_definition.<stat>.point_value` est la SEULE source lue (server-combat/src/combat/combat_host.cpp remplit stat_point_values_, applique dans combat_profile_builder.cpp). Recopie ici pour lecture seule. CORRIGE 2026-09-10 : ce bloc s'appelait `stat_multipliers` et annoncait hp=3 et mp=3 alors que le jeu applique 5 et 5. Ne pas retuner ici, retuner dans game.json.",
-    "point_values_note": "Formule appliquee : total = base_classe + floor(growth * (niveau - 1)) + points_alloues * point_value. 1 pt HP -> +5 HP max. 1 pt ATK -> +1 atk. 1 pt DEF -> +1 armor UNIQUEMENT. Cout fixe : 1 point alloue = 1 point depense.",
+    "_point_values_owner": "MIROIR. config/game.json `stats_definition.<stat>.point_value` est la SEULE source lue, par le combat ET l'economie (kanarion_back shared/gameplay/stat_point_values.hpp, sans valeur par defaut). Recopie ici pour lecture seule ; scripts/validate_cross_references.py exige l'egalite. 2026-10-14 : 1 point de Souffle = 3 (decision owner ; le combat appliquait 5, l'economie 3 ou 5 selon le chemin). CORRIGE 2026-09-10 : ce bloc s'appelait `stat_multipliers` et annoncait hp=3 et mp=3 alors que le jeu applique 5 et 5. Ne pas retuner ici, retuner dans game.json.",
+    "point_values_note": "Formule appliquee : total = base_classe + floor(growth * (niveau - 1)) + points_alloues * point_value. 1 pt HP -> +5 HP max. 1 pt Souffle -> +3 mp max. 1 pt ATK -> +1 atk. 1 pt DEF -> +1 armor UNIQUEMENT. Cout fixe : 1 point alloue = 1 point depense.",
     "magic_resist_note": "La DEF ne donne PLUS de magic_resist, contrairement a ce qu'annoncait la version 3.3. Depuis le modele defensif CTO 2026-07-22 : magic_resist = base_classe + growth + 0.2 * mag_total. Un point de MAG rapporte donc +1 mag ET +0.2 magic_resist, un point de DEF ne touche que l'armure.",
     "total_stat_points_at_max_level": 297,
     "_total_points_note": "3 x (100 - 1). Aucun point de stat n'est donne a la creation, contrairement au point de skill.",

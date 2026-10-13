@@ -16,6 +16,8 @@ Checks:
   8. config/rewards.json is coherent and matches the blocks it replaces
   11. Item display contract: every rollable stat has declared bounds, every
       affix is nameable and described, no socket without gem data
+  13. Single sources of gameplay values: each value the server reads from ONE
+      file is present there, and every client-facing mirror equals it
 
 Exit code 0 = pass, 1 = failures found.
 """
@@ -1652,6 +1654,64 @@ def validate_tower(db: Path, all_item_ids: set) -> list:
     return errors
 
 
+# ---------------------------------------------------------------------------
+# 13. Single sources of gameplay values (refacto vac_refactor-lot1, 2026-10-14).
+# The server reads each of these values from ONE file and refuses to start when
+# it is absent (no C++ default). These checks never pin a number: they check
+# that the owner carries a usable value and that every mirror kept for the
+# client says the same thing.
+# ---------------------------------------------------------------------------
+
+ALLOCATABLE_STATS = ("hp", "mp", "atk", "mag", "def")
+
+
+def _is_pos_int(v) -> bool:
+    return isinstance(v, int) and not isinstance(v, bool) and v > 0
+
+
+def validate_stat_point_values(db: Path) -> list:
+    """config/game.json stats_definition owns the value of one allocated point."""
+    errors = []
+    game = load_json(db / "config" / "game.json")
+    prog = load_json(db / "systems" / "progression.json")
+    sd = game.get("stats_definition")
+    if not isinstance(sd, dict):
+        return ["[game.json] stats_definition absent : le combat et l'economie refusent de demarrer"]
+    owner = {}
+    for stat in ALLOCATABLE_STATS:
+        v = (sd.get(stat) or {}).get("point_value") if isinstance(sd.get(stat), dict) else None
+        if not _is_pos_int(v):
+            errors.append(f"[game.json] stats_definition.{stat}.point_value absent ou non entier > 0 ({v!r})")
+        owner[stat] = v
+    alloc = prog.get("stat_allocation", {})
+    listed = alloc.get("allocatable_stats")
+    if listed is not None and sorted(listed) != sorted(ALLOCATABLE_STATS):
+        errors.append(f"[progression.json] stat_allocation.allocatable_stats={listed} : le serveur "
+                      f"lit exactement {list(ALLOCATABLE_STATS)}")
+    mirror = alloc.get("point_values")
+    if isinstance(mirror, dict):
+        for stat in ALLOCATABLE_STATS:
+            if mirror.get(stat) != owner.get(stat):
+                errors.append(f"[progression.json] DERIVE stat_allocation.point_values.{stat}="
+                              f"{mirror.get(stat)!r}, source game.json={owner.get(stat)!r}")
+    return errors
+
+
+SINGLE_SOURCE_CHECKS = [
+    validate_stat_point_values,
+]
+
+
+def validate_single_sources(db: Path) -> list:
+    errors = []
+    for check in SINGLE_SOURCE_CHECKS:
+        try:
+            errors.extend(check(db))
+        except (OSError, ValueError, KeyError, TypeError, AttributeError) as e:
+            errors.append(f"[{check.__name__}] lecture impossible : {e!r}")
+    return errors
+
+
 def main():
     # Find database root
     db_root = os.environ.get("DB_ROOT", "")
@@ -1797,6 +1857,11 @@ def main():
 
     print("[12/12] Validating achievements (engine sources, grant titles, quests)...")
     errs = validate_achievements(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[13/13] Validating single sources of gameplay values (owner present, mirrors equal)...")
+    errs = validate_single_sources(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
     # Report
