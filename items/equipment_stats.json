@@ -75,7 +75,9 @@
         { "stat": "cast_speed", "weight": 8 },
         { "stat": "cooldown_reduction", "weight": 8 },
         { "stat": "effect_chance", "weight": 8 },
-        { "stat": "buff_duration", "weight": 7 }
+        { "stat": "buff_duration", "weight": 7 },
+        { "stat": "armor_pen", "weight": 5 },
+        { "stat": "magic_pen", "weight": 5 }
       ]
     },
 
@@ -133,32 +135,34 @@
 
   "stat_ranges_by_rarity": {
     "_note": "Valeurs de base au niveau 1, scalent avec le niveau de l'item",
+    "_note_penetration": "2026-10-04 (proprietaire) : budget de penetration face a la defense V2 (x25 au niveau 100). armor_pen / magic_pen ne sont tirees qu en substat (x0.5, puis x1.55 au T5) : epique T5 14-17 (etait 5-6). Bijoux : substat possible, poids 5. Avec l affixe d arme (5-9 au T5) et une panoplie SS (20), un build oriente penetration atteint 30-40 %, ~55 % avec des bijoux bien tires (plafond 70).",
+    "_note_rarity_compression": "2026-10-04 (proprietaire, progression horizontale) : ecart de rarete RESSERRE. Fourchettes calculees depuis l EPIQUE (inchangee : c est la rarete supposee par la courbe de reference aux niveaux 70-100) : commun x0.55, peu commun x0.70, rare x0.85, epique x1.0, legendaire x1.15 du milieu epique. Legendaire ~2x commun au lieu de ~4x ; il garde ses substats et affixes en plus. Substats = ces fourchettes x0.5 (inchange).",
     "main_stats": {
-      "hp": { "common": [20, 30], "uncommon": [30, 45], "rare": [45, 65], "epic": [65, 90], "legendary": [90, 120] },
-      "mp": { "common": [10, 15], "uncommon": [15, 25], "rare": [25, 35], "epic": [35, 50], "legendary": [50, 70] },
-      "atk": { "common": [5, 8], "uncommon": [8, 12], "rare": [12, 18], "epic": [18, 25], "legendary": [25, 35] },
-      "mag": { "common": [5, 8], "uncommon": [8, 12], "rare": [12, 18], "epic": [18, 25], "legendary": [25, 35] },
-      "armor": { "common": [3, 5], "uncommon": [5, 8], "rare": [8, 12], "epic": [12, 18], "legendary": [18, 25] },
-      "magic_resist": { "common": [3, 5], "uncommon": [5, 8], "rare": [8, 12], "epic": [12, 18], "legendary": [18, 25] },
-      "atk_percent": { "common": [2, 4], "uncommon": [4, 6], "rare": [6, 9], "epic": [9, 12], "legendary": [12, 16] },
-      "mag_percent": { "common": [2, 4], "uncommon": [4, 6], "rare": [6, 9], "epic": [9, 12], "legendary": [12, 16] },
-      "crit": { "common": [1, 2], "uncommon": [2, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 12] },
-      "effect_chance": { "common": [1, 2], "uncommon": [2, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] },
-      "cooldown_reduction": { "common": [1, 2], "uncommon": [2, 3], "rare": [3, 5], "epic": [5, 7], "legendary": [7, 10] },
+      "hp": { "common": [36, 50], "uncommon": [46, 63], "rare": [55, 76], "epic": [65, 90], "legendary": [75, 104] },
+      "mp": { "common": [19, 28], "uncommon": [24, 35], "rare": [30, 42], "epic": [35, 50], "legendary": [40, 57] },
+      "atk": { "common": [10, 14], "uncommon": [13, 18], "rare": [15, 21], "epic": [18, 25], "legendary": [21, 29] },
+      "mag": { "common": [10, 14], "uncommon": [13, 18], "rare": [15, 21], "epic": [18, 25], "legendary": [21, 29] },
+      "armor": { "common": [7, 10], "uncommon": [8, 13], "rare": [10, 15], "epic": [12, 18], "legendary": [14, 21] },
+      "magic_resist": { "common": [7, 10], "uncommon": [8, 13], "rare": [10, 15], "epic": [12, 18], "legendary": [14, 21] },
+      "atk_percent": { "common": [5, 7], "uncommon": [6, 8], "rare": [8, 10], "epic": [9, 12], "legendary": [10, 14] },
+      "mag_percent": { "common": [5, 7], "uncommon": [6, 8], "rare": [8, 10], "epic": [9, 12], "legendary": [10, 14] },
+      "crit": { "common": [3, 4], "uncommon": [4, 6], "rare": [5, 7], "epic": [6, 8], "legendary": [7, 9] },
+      "effect_chance": { "common": [3, 4], "uncommon": [4, 6], "rare": [5, 7], "epic": [6, 8], "legendary": [7, 9] },
+      "cooldown_reduction": { "common": [3, 4], "uncommon": [3, 5], "rare": [4, 6], "epic": [5, 7], "legendary": [6, 8] },
       "_note_dr_bd": "damage_reduction et buff_duration roulaient deja comme substats mais tombaient sur le fallback moteur {1,5} (sans le x0.5 substat, sans rarete) et etaient ensuite jetees a l'equipement. Ces ranges sont calibrees pour reproduire la meme magnitude effective apres x0.5 (soit ~[1,5]) tout en devenant rarity-aware. Cap runtime : DR 75%, buff_duration 50%.",
-      "damage_reduction": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] },
-      "buff_duration": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] },
+      "damage_reduction": { "common": [3, 4], "uncommon": [4, 6], "rare": [5, 7], "epic": [6, 8], "legendary": [7, 9] },
+      "buff_duration": { "common": [3, 4], "uncommon": [4, 6], "rare": [5, 7], "epic": [6, 8], "legendary": [7, 9] },
       "_note_substats_sans_range": "Ces 9 stats etaient tirables sans borne declaree : le moteur retombait sur son fallback {1,5}, sans le x0.5 substat ni la rarete. Meme echelle que damage_reduction/buff_duration — la magnitude effective apres x0.5 recouvre l'ancien {1,5}, la valeur devient rarity-aware et ses bornes deviennent affichables dans la fiche d'objet.",
-      "crit_dmg": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] },
-      "armor_pen": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] },
-      "magic_pen": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] },
-      "cast_speed": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] },
-      "lifesteal": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] },
-      "damage_percent": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] },
-      "def_percent": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] },
-      "hp_regen": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] },
-      "mp_regen": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] },
-      "flee": { "common": [2, 3], "uncommon": [3, 4], "rare": [4, 6], "epic": [6, 8], "legendary": [8, 10] }
+      "crit_dmg": { "common": [3, 4], "uncommon": [4, 6], "rare": [5, 7], "epic": [6, 8], "legendary": [7, 9] },
+      "armor_pen": { "common": [10, 12], "uncommon": [13, 15], "rare": [15, 19], "epic": [18, 22], "legendary": [21, 25] },
+      "magic_pen": { "common": [10, 12], "uncommon": [13, 15], "rare": [15, 19], "epic": [18, 22], "legendary": [21, 25] },
+      "cast_speed": { "common": [3, 4], "uncommon": [4, 6], "rare": [5, 7], "epic": [6, 8], "legendary": [7, 9] },
+      "lifesteal": { "common": [3, 4], "uncommon": [4, 6], "rare": [5, 7], "epic": [6, 8], "legendary": [7, 9] },
+      "damage_percent": { "common": [3, 4], "uncommon": [4, 6], "rare": [5, 7], "epic": [6, 8], "legendary": [7, 9] },
+      "def_percent": { "common": [3, 4], "uncommon": [4, 6], "rare": [5, 7], "epic": [6, 8], "legendary": [7, 9] },
+      "hp_regen": { "common": [3, 4], "uncommon": [4, 6], "rare": [5, 7], "epic": [6, 8], "legendary": [7, 9] },
+      "mp_regen": { "common": [3, 4], "uncommon": [4, 6], "rare": [5, 7], "epic": [6, 8], "legendary": [7, 9] },
+      "flee": { "common": [3, 4], "uncommon": [4, 6], "rare": [5, 7], "epic": [6, 8], "legendary": [7, 9] }
     },
     "substats": {
       "_note": "Substats ont des valeurs plus faibles que main stats (~40-60%)",
@@ -167,6 +171,7 @@
   },
 
   "upgrade_system": {
+    "_DEPRECATED": "2026-10-04 : bloc MORT, lu par aucun code serveur ; contredit la regle reelle (systems/enhancement_system.json : +3 % par niveau sur base + stat principale, jamais les substats, decision 2026-09-28). A supprimer apres verification du client (et substat_upgrade_chance de rarity_tiers).",
     "description": "Amelioration des equipements",
     "max_level": 20,
     "stat_growth_per_level": 0.05,
