@@ -416,6 +416,11 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       vue) + `b0e9a37` (entrave, silence, éclair : ligne de vue ; projectiles 7 → 5) ; back `vac_ai-los-range`
       (repère de ligne de vue de l'IA joueur, cibles valides seulement pour le coordinateur de groupe). Suite combat
       complète avec toutes les branches vac_ : 2 135 / 2 137, 2 ignorés, 0 échec.
+- [ ] **Refactor du loot d'équipement** (2026-10-12) : plus aucun modèle d'équipement dans les tables de monstres
+      (golem, loup_humain, brute_tribal lâchaient des pièces niveau 81 à 6 % par pièce ET par kill dès le niveau 28).
+      L'équipement tombe une fois par combat au niveau du monstre le plus haut, dans le modèle de sa tranche ;
+      `equipment_affinity` (loot_tables.json) donne le thème (poids d'armure, types d'arme). Data + back `vac_loot-affinity`
+      (back sur `vac_monster-gold`, tests `LootAffinity_*`). Donner un thème aux autres familles de monstres.
 - [ ] `scripts/validate_skills.py` échoue déjà sur master (129 erreurs) : champs de sorts de familier
       (`icon`, `off_role_exempt`…) absents de la liste blanche du validateur. À ajouter à la liste blanche.
 - [ ] Bug IA (existant) : `server-combat/src/ai/player_ai.cpp:637-646`, la ligne de vue de l'IA joueur utilise
