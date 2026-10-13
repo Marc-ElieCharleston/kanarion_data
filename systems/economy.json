@@ -16,6 +16,7 @@
       "formula": "cost = base * (respec_count + 1)"
     },
     "storage": {
+      "_remplace_par": "Bloc MORT, remplace le 2026-10-12 par le bloc racine `storage` (lu par services/economy). A supprimer.",
       "base_slots": 40,
       "expansion_cost": 5000,
       "slots_per_expansion": 10,
@@ -26,6 +27,31 @@
       "weekly_maintenance": 1000,
       "storage_tab_cost": 10000,
       "max_storage_tabs": 5
+    }
+  },
+
+  "storage": {
+    "_comment": "Places de sac et de banque PAR PERSONNAGE (decide par Charleston le 2026-10-12). Chaque achat donne slots_per_expansion places a un PRIX FIXE, qui ne monte pas a chaque achat mais SAUTE a chaque centaine de places : price_ladder donne le prix selon la capacite APRES l'achat (up_to_slots). Lu par services/economy (StorageRules) ; un champ manquant ou incoherent ferme les achats (jamais de prix devine).",
+    "_existants": "Les personnages crees avant la regle gardent leurs places (sac 100, banque 1000 : migration 112). Une capacite au-dessus de max_slots est gardee, elle ne peut juste plus grandir.",
+    "_boutique": "Une seule echelle pour toutes les monnaies : une extension achetee en diamants (plus tard) avance le MEME compteur qu'une extension achetee en or, donc payer ne coute jamais plus cher que l'or. Le prix en diamants viendra ici, par palier, quand la boutique ouvrira.",
+    "bag": {
+      "base_slots": 100,
+      "slots_per_expansion": 10,
+      "max_slots": 300,
+      "price_ladder": [
+        {"up_to_slots": 200, "gold": 5000},
+        {"up_to_slots": 300, "gold": 25000}
+      ]
+    },
+    "bank": {
+      "base_slots": 200,
+      "slots_per_expansion": 10,
+      "max_slots": 500,
+      "price_ladder": [
+        {"up_to_slots": 300, "gold": 5000},
+        {"up_to_slots": 400, "gold": 25000},
+        {"up_to_slots": 500, "gold": 100000}
+      ]
     }
   },
 
