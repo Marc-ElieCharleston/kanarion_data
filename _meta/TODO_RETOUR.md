@@ -103,6 +103,7 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
 - **Carte du sud (v3)** : figer les cases (noms et niveaux proposés dans `_meta/carnet/carte_monstres.md`, entrée « Carte v3 »), PUIS tracer chemins, donjons et PNJ d'un trait.
 - **Onboarding (review joueur 2026-10-12)** : branche data `vac_onboarding` (`d4e35f2`, non poussée) : Rat Sorcier retiré du tuto, 2e combat plus dur que le 1er, 2e Rat Alpha dans la sortie, « Rat Contaminé » → « Rat du Terrier », succès du début 1 220 → 160 XP (+1 060 au premier donjon). Restent : client (on est perdu après le combat d'onboarding), réécrire le texte de Tobin, vérifier `ach_quest_10` (1 500) et `ach_quest_aldric` (3 000) qui tombent aussi pendant le tuto.
 - **Suite onboarding (2026-10-13)** : `vac_onboarding` jusqu'à `c00615c` : sortie d'Aldric = 2 Rats Alpha + 2 Rats niv. 8 (examen avant le sud, joueur 9-10 doit gagner) ; familiers croissance hp/atk/mag/armor ×1,6 + profil `familiar_v1` ×1,1 (estimations, pas de mesure : VÉRIFIER EN JEU, surtout la plainte « familier trop fort » niv. 5-8) ; Aldric dit qu'on peut sortir s'entraîner et revenir ; 3 répliques de Tobin réécrites. Back : `vac_monster-gcd` (`b13053f7`) GCD monstres 2,5 → 3 s. Client à faire : réplique d'Aldric APRÈS une défaite (aucun déclencheur aujourd'hui).
+- **Dialogues** : passage complet sur le texte de Tobin (et des autres PNJ) avec un agent dédié, ton parlé et court (les 3 répliques réécrites le 13/10 sont validées).
 
 ## 2. Tanière des loups (5 nouveaux loups, non poussés)
 
