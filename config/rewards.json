@@ -10,7 +10,7 @@
   "formula": {
     "_comment": "Formule reelle, relevee dans server-combat/src/loot/loot_roller.cpp:98-122. Elle fait autorite : tout lecteur doit appliquer ces facteurs, dans cet ordre, avec ce cap et cet arrondi.",
     "xp": "round( base_xp_pour_niveau(niveau_mob) * mult_threat_tier * PRODUIT(familles.xp) * (1 - penalite_ecart_niveau) )",
-    "gold": "max(1, or_base_par_niveau(niveau_mob) * variance * PRODUIT(familles.gold) * (1 - penalite_ecart_niveau) )",
+    "gold": "max(1, or_base_par_niveau(niveau_mob) * gold_weight_du_monstre * variance * PRODUIT(familles.gold) * (1 - penalite_ecart_niveau) )   [or_base_par_niveau = curve_base + curve_coef * niveau ^ curve_exponent, voir base_gold]",
     "drop_chance": "chance_de_base_item * PRODUIT(familles.drop_chance)   [PAS de penalite d'ecart de niveau : un mob drop ce qu'il drop, quel que soit le niveau de qui le tue]",
     "rarity_boost": "SOMME(familles.rarity_boost)",
     "product_cap": "Le produit des familles est plafonne a global_cap AVANT l'arrondi final, separement pour xp, gold et drop_chance.",
@@ -34,6 +34,12 @@
       "why": "Derive de la courbe xp_to_next, partagee avec la montee de niveau du joueur. Une copie ici desynchroniserait la progression.",
       "formula": "round( xp_to_next(niveau) / (divisor_base + min(niveau, divisor_cap_level) / divisor_cap_level * divisor_ramp) )"
     },
+    "gold_weight_par_monstre": {
+      "owner": "entities/monsters.json",
+      "why": "Certains monstres donnent plus d'or que d'autres (choix de Charleston, 2026-10-12). Le champ gold_weight existait deja sur les 200 monstres mais aucun moteur ne le lisait : il est lu depuis vac_monster-gold (server-combat content_loader).",
+      "default": "Absent : le gold du palier de menace (multiplier_families.monster_threat_tier.values.<palier>.gold).",
+      "clamp": "[0, 10] ; le plancher de 1 or par monstre de la formule s'applique toujours."
+    },
     "xp_multiplier_par_monstre": {
       "owner": "entities/monsters.json",
       "why": "OPTIONNEL, et override uniquement. Par defaut l'XP d'un monstre vient de son threat_tier via la famille monster_threat_tier. Le champ n'est ecrit sur un monstre que lorsqu'il doit s'ecarter de son palier.",
@@ -48,23 +54,28 @@
   },
   "multiplier_families": {
     "monster_threat_tier": {
-      "description": "Palier de menace du monstre (champ threat_tier de entities/monsters.json). Permanent, inscrit dans la donnee du mob.",
+      "description": "Palier de menace du monstre (champ threat_tier de entities/monsters.json). Permanent, inscrit dans la donnee du mob. La cle gold (2026-10-12) est le DEFAUT du poids d'or d'un monstre qui n'a pas de gold_weight : elle ne se multiplie pas avec lui (le gold_weight du monstre la remplace).",
       "_migrated_from": "config/monster_tiers.json threat_tiers",
       "values": {
         "fodder": {
-          "xp": 0.6
+          "xp": 0.6,
+          "gold": 0.6
         },
         "standard": {
-          "xp": 1.0
+          "xp": 1.0,
+          "gold": 1.0
         },
         "tough": {
-          "xp": 1.6
+          "xp": 1.6,
+          "gold": 1.6
         },
         "elite": {
-          "xp": 2.5
+          "xp": 2.5,
+          "gold": 2.5
         },
         "boss": {
-          "xp": 4.0
+          "xp": 4.0,
+          "gold": 4.0
         }
       },
       "_no_op_note": "Ces valeurs sont DEJA celles appliquees aujourd'hui, mais recopiees a la main dans le xp_multiplier de chacun des 180 monstres : 177 copies exactes, 3 ecarts conserves en overrides. Lire le palier au lieu de la copie donne le meme resultat et supprime 180 duplications."
@@ -320,10 +331,13 @@
     "_migrated_from": "items/loot_tables.json multipliers.level_difference"
   },
   "base_gold": {
-    "_comment": "Or de base d un monstre, par niveau. PROPRIETAIRE UNIQUE de cette valeur. Lue par server-combat/src/content/content_loader.cpp (load_reward_multipliers). La formule complete est le champ `formula.gold` plus haut : or = or_base_par_niveau(niveau) x variance x PRODUIT(familles.gold) x (1 - penalite_ecart).",
+    "_comment": "Or de base d un monstre, par niveau. PROPRIETAIRE UNIQUE de cette valeur. Lue par server-combat/src/content/content_loader.cpp (load_reward_multipliers). La formule complete est le champ `formula.gold` plus haut : or = (curve_base + curve_coef x niveau ^ curve_exponent) x gold_weight du monstre x variance x PRODUIT(familles.gold) x (1 - penalite_ecart).",
     "_why_here": "Elle vivait dans items/loot_tables.json base_drops.gold, alors que CE fichier se declare proprietaire unique des recompenses et ne la nommait que dans une formule, sans dire ou la trouver. Qui la cherchait tombait sur le defaut du membre C++ (2.0f) et le prenait pour la reponse : dix fois la vraie valeur, sans aucune erreur. Un chiffrage complet d economie s est trompe ainsi le 2026-08-31.",
     "_ordre_de_chargement": "load_reward_multipliers() s execute APRES load_loot_tables(), donc ce fichier gagne sur tout reste eventuel. Une cle absente fait journaliser une ERREUR par le loader, jamais un repli silencieux, et le defaut C++ a ete aligne sur 0.2 pour qu un mauvais deploiement reste bruyant sans devenir dix fois trop genereux.",
-    "per_monster_level": 0.2,
+    "_courbe": "2026-10-12 (choix de Charleston, audit or) : la base n'est plus lineaire (0.2 x niveau) mais une courbe qui accelere avec le niveau. Peu d'or au debut, la ou il n'y a presque rien a acheter ; beaucoup plus en fin de jeu, quand forge, relance et extensions coutent cher. Monstre standard (gold_weight 1) : niv 1 = 1.05, 10 = 2.6, 30 = 9.2, 50 = 18.7, 80 = 36.8, 100 = 51. Lue par server-combat (content_loader load_reward_multipliers) ; cles absentes = ERREUR journalisee.",
+    "curve_base": 1.0,
+    "curve_coef": 0.05,
+    "curve_exponent": 1.5,
     "variance": 0.2
   },
   "global_cap": {
