@@ -32,7 +32,7 @@ monstre ni une idée de lore. Jeu anglophone : racine française + forme lisible
 | 65-72 | Marais de la Faille, village de Lanternfen | Riftmire, Lanternfen |
 | 63-70 | Terres de Braise | Emberlands |
 | 66-72 | Chemin des Cendres | Ashen Trail |
-| 70-78 | Nécropole (nom peut-être à changer) | Necropolis |
+| 70-78 | Champ des Ossuaires | Ossuary Fields |
 | 72-80 | Plaine Fendue | Riven Plain |
 | 78-88 | Chaussée Brisée | Broken Causeway |
 | 1-100 | Anse des Naufragés (nom de l'île à trouver) | Castaway Cove |
