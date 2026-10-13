@@ -99,7 +99,9 @@
 >   (petit village), Terres de Braise 63-70, Chemin de lave 66-72 (nom à confirmer), **Plaine Fendue** 72-80, Nécropole
 >   70-78, **Chaussée Brisée** 78-88, île = **Anse des Naufragés** 1-100, Terres Déchirées 85-95 (donjon), Ville en ruine
 >   80-100, L'Abîme 90-100 (donjon). Nord : Ours 20-28, Clairière 15-25, hameau dans la Forêt Sud, donjon au Bois Flétri.
->   À nommer : la Ville en ruine, le petit village du marais, le hameau de la Forêt Sud.
+>   Noms validés (jeu anglophone, racine française + forme lisible en anglais, comme Havreden/Rochebourg) : hameau de
+>   la Forêt Sud = **Mournelle**, village sur pilotis du marais = **Lanternfen** (lanternes qui guident les bateaux vers
+>   l'île), Ville en ruine = **Caer Isthrel**. Tiles en jeu : 30 × 30 px.
 > - Taille de carte jugée bonne (~8 500 × 16 700 px, ~1 min 30 du nord au sud à 180 px/s) : on garde 21 zones.
 > - **Carte v3 du sud (propriétaire, 2026-10-11)**, à figer AVANT d'ajouter chemins et donjons (tout se fera d'un trait au
 >   retour). Cases « À trouver » proposées (page, version 3) : **Terres de Givre** 60-66 (sous le Chemin des Pèlerins),
