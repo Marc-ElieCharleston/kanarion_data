@@ -30,6 +30,8 @@ foi** : ces notes sont à fusionner avec eux au retour.
 
 ## Systèmes
 
+- [Architecture : tout l'équilibrage dans la data](architecture_data.md)
+
 - [Familiers](familiers.md)
 - [Collections](collections.md)
 - [Le Panthéon (les premiers du serveur)](pantheon.md)
