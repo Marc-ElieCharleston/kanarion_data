@@ -70,6 +70,12 @@ SPECIES_FIX = {  # monsters the reviewers left without a valid species
 EXTRA_SPECIES = {  # split of `elementaire` (lot 4)
     "cristal": ((1.0, 1.0, 1.1, 1.3), {"magic_pen": 5}, "glace : résiste à la magie"),
     "braise": ((1.0, 1.15, 0.9, 1.2), {"magic_pen": 5}, "feu : frappe fort, armure fragile"),
+    # 2026-10-13 (vac_monstres-nouveaux) : faune des vacances, mêmes valeurs que entities/monster_species.json.
+    "ours": ((1.3, 1.1, 1.1, 0.9), {"tenacity": 10}, "masse et force, lent à tomber"),
+    "chat_sauvage": ((0.8, 1.1, 0.8, 0.9), {"crit": 5, "evasion": 5}, "griffes vives, bondit"),
+    "herisson": ((0.8, 0.8, 1.4, 0.9), {"block_chance": 5}, "piquants : armure, petit"),
+    "belette": ((0.6, 1.0, 0.7, 0.8), {"evasion": 10}, "minuscule et insaisissable"),
+    "ragondin": ((1.0, 0.9, 1.0, 0.9), {"tenacity": 3}, "rongeur des berges, têtu"),
 }
 HUMANS = {"bandit", "hors_la_loi", "converti", "zelote", "edric", "chevalier_dechu", "culte_obscur"}
 UNDECIDED_CAPTURE = {"tribal"}  # human or not: owner decides on the sprites
