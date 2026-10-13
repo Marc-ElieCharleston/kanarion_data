@@ -44,6 +44,21 @@ FAMILIAR_TO_MONSTER = {
     "squelette": "squelette", "squelette_necromancien": "squelette", "tatou": "tatou",
     "taureau": "bovin", "titan_vide": "vide", "tortue_pierre": "tortue",
     "traqueur_effroi": "effroi", "traqueur_faille": "faille", "vache": "bovin",
+    # 2026-10-13 (vac_monstres-nouveaux) : faune des vacances.
+    "chat_sauvage": "chat_sauvage", "herisson": "herisson", "belette": "belette", "ragondin": "ragondin",
+    # Couche 1 : une famille par nouveau monstre (identité = espèce du monstre).
+    "chat_sauvage_roux": "chat_sauvage", "marcassin": "sanglier", "laie": "sanglier",
+    "vieux_solitaire": "sanglier", "loup_noir": "loup", "loup_blanc": "loup", "vieux_loup": "loup",
+    "ours_brun": "ours", "ourse": "ours", "ours_noir": "ours", "ours_cavernes": "ours", "ourson": "ours",
+    "biche_fletrie": "cervide", "cerf_fletri": "cervide", "blaireau_fletri": "blaireau",
+    # Couche 2 : familles scindées des anciens monstres (le monstre de base garde la famille).
+    "rat_jeune": "rat", "rat_alpha": "rat", "rat_soigneur": "rat", "rat_sorcier": "rat",
+    "scarabee_larve": "scarabee", "scarabee_geant": "scarabee", "sanglier_enrage": "sanglier",
+    "loup_enrage": "loup", "loup_meneur": "loup", "loup_garou": "loup_garou", "hyene_alpha": "hyene",
+    "guerrier_squelette": "squelette",
+    # Variantes : leur propre famille, identité de l'espèce du monstre (comme loup_cristal -> cristal).
+    "ours_fissure": "ours", "grande_ourse": "ours", "ours_givre": "cristal", "cerf_givre": "cristal",
+    "sanglier_braise": "braise", "taureau_braise": "braise", "chacal_faille": "hyene",
 }
 
 # Species passive per MONSTER species: (name_fr, name_en, {stat: weight}). Tier values below are
@@ -86,6 +101,11 @@ SPECIES_PASSIVE = {
     "effroi": ("Terreur", "Dread", {"atk": 1.0}),
     "demon": ("Sang démoniaque", "Demon Blood", {"mag": 0.5, "magic_resist": 0.5}),
     "archonte_dechu": ("Majesté déchue", "Fallen Majesty", {"hp": 0.5, "magic_resist": 0.5}),
+    "ours": ("Force de l'ours", "Bear Strength", {"hp": 0.5, "atk": 0.5}),
+    "chat_sauvage": ("Griffes vives", "Quick Claws", {"atk": 1.0}),
+    "herisson": ("Piquants", "Spines", {"armor": 1.0}),
+    "belette": ("Insaisissable", "Elusive", {"atk": 0.5, "magic_resist": 0.5}),
+    "ragondin": ("Têtu", "Stubborn", {"hp": 0.5, "armor": 0.5}),
 }
 TIERS = [(1, 4.0), (20, 8.0), (50, 12.0), (100, 18.0)]  # (min familiar level, % at weight 1.0)
 STAT_FR = {"hp": "PV max", "atk": "attaque", "mag": "magie", "armor": "armure", "magic_resist": "résistance magique"}

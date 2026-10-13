@@ -333,6 +333,12 @@ def extract_all_skills(data):
     return skills
 
 
+# Champs propres aux signatures de familier (is_signature: true), autorises sur elles seules :
+#   signature_template -> lu par services/familiar (archetype.signature_template -> skill_familiar_sig_<template>)
+#   icon               -> icone de la signature cote client (sig_<template>)
+FAMILIAR_SIGNATURE_FIELDS = {"signature_template", "icon"}
+
+
 def validate_skill_fields(skill, file_path, errors, warnings):
     """Check that every field in a skill is in an allowed whitelist."""
     sid = skill.get("id", "???")
@@ -348,6 +354,8 @@ def validate_skill_fields(skill, file_path, errors, warnings):
         if field in ALLOWED_STANDARD_FIELDS:
             continue
         if field in ALLOWED_METADATA_FIELDS:
+            continue
+        if skill.get("is_signature") and field in FAMILIAR_SIGNATURE_FIELDS:
             continue
         if field in LEGACY_FIELDS_BLOCKED:
             errors.append(f"{file_path}: skill '{sid}' uses LEGACY field '{field}' — must be migrated to effects[]")
