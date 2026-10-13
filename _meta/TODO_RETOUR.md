@@ -101,6 +101,7 @@ Sauvage Roux, Hérisson, Belette, Ragondin, les 5 ours, Biche / Cerf / Blaireau 
 Hérisson ~0,70 ; rats 80 px contre 120 px pour le rat de base ; Vieux Loup joué à ~6-7 images/s. À nettoyer : ligne
 noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
 - **Carte du sud (v3)** : figer les cases (noms et niveaux proposés dans `_meta/carnet/carte_monstres.md`, entrée « Carte v3 »), PUIS tracer chemins, donjons et PNJ d'un trait.
+- **Onboarding (review joueur 2026-10-12)** : branche data `vac_onboarding` (`d4e35f2`, non poussée) : Rat Sorcier retiré du tuto, 2e combat plus dur que le 1er, 2e Rat Alpha dans la sortie, « Rat Contaminé » → « Rat du Terrier », succès du début 1 220 → 160 XP (+1 060 au premier donjon). Restent : client (on est perdu après le combat d'onboarding), réécrire le texte de Tobin, vérifier `ach_quest_10` (1 500) et `ach_quest_aldric` (3 000) qui tombent aussi pendant le tuto.
 
 ## 2. Tanière des loups (5 nouveaux loups, non poussés)
 
