@@ -47,6 +47,9 @@ FAMILIAR_TO_MONSTER = {
     # 2026-10-13 (vac_monstres-nouveaux) : faune des vacances.
     "ours": "ours", "chat_sauvage": "chat_sauvage", "herisson": "herisson", "belette": "belette",
     "ragondin": "ragondin",
+    # Variantes : leur propre famille, identité de l'espèce du monstre (comme loup_cristal -> cristal).
+    "ours_fissure": "ours", "grande_ourse": "ours", "ours_givre": "cristal", "cerf_givre": "cristal",
+    "sanglier_braise": "braise", "taureau_braise": "braise", "chacal_faille": "hyene",
 }
 
 # Species passive per MONSTER species: (name_fr, name_en, {stat: weight}). Tier values below are
