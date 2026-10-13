@@ -1,0 +1,655 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "generated_by": "scripts/apply_monster_v2.py",
+    "description_fr": "Espèces de monstres (modèle V2, décisions du 2026-10-02). Stat d'un monstre = profil d'archétype (config/monster_scaling_model.json) x identité d'espèce x stade x courbe de niveau x palier x étoiles x contenu. 'identity' multiplie hp / atk (et mag) / armor / magic_resist ; 'rate_bonus' s'ajoute aux taux de l'archétype (mêmes plafonds). 'capturable' : les humains ne peuvent pas devenir familiers (null = à décider). Pas encore lu par le serveur (travail V2).",
+    "source": "_meta/refonte_monstres/ (revue validée), scripts/balance/species_table.py"
+  },
+  "archetype_names_fr": {
+    "tank": "tank",
+    "guardian": "gardien",
+    "brute": "brute",
+    "berserker": "berserker",
+    "assassin": "assassin",
+    "archer": "archer",
+    "mage": "mage",
+    "controller": "contrôleur",
+    "healer": "soigneur",
+    "summoner": "invocateur",
+    "enchanter": "enchanteur",
+    "support": "support"
+  },
+  "stages": {
+    "_comment": "Préfixe ou titre (même espèce, plus ou moins puissant) : multiplie toutes les stats principales. Un nom propre avec son propre sprite reste un monstre distinct, mais garde ici son multiplicateur de puissance.",
+    "jeune": 0.7,
+    "larve": 0.7,
+    "tutorial": 0.6,
+    "small": 0.7,
+    "alpha": 1.3,
+    "geant": 1.5,
+    "giant": 1.5,
+    "ancient": 1.4,
+    "lesser": 0.8,
+    "corrupted": 1.2,
+    "packleader": 1.3,
+    "chief": 1.3,
+    "warchief": 1.4,
+    "warlord": 1.5,
+    "king": 1.5,
+    "queen": 1.5,
+    "matron": 1.4
+  },
+  "species": {
+    "rat": {
+      "identity": {
+        "hp": 0.6,
+        "atk": 0.8,
+        "armor": 0.8,
+        "magic_resist": 0.8
+      },
+      "rate_bonus": {
+        "evasion": 5
+      },
+      "capturable": true,
+      "note_fr": "frêle et vif, toujours en nombre"
+    },
+    "scarabee": {
+      "identity": {
+        "hp": 0.6,
+        "atk": 0.8,
+        "armor": 1.3,
+        "magic_resist": 0.7
+      },
+      "rate_bonus": {
+        "block_chance": 5
+      },
+      "capturable": true,
+      "note_fr": "carapace : armure, pas de RM"
+    },
+    "serpent": {
+      "identity": {
+        "hp": 0.8,
+        "atk": 1.0,
+        "armor": 0.8,
+        "magic_resist": 0.9
+      },
+      "rate_bonus": {
+        "evasion": 5,
+        "crit": 5
+      },
+      "capturable": true,
+      "note_fr": "venin, esquive"
+    },
+    "chien": {
+      "identity": {
+        "hp": 0.9,
+        "atk": 1.0,
+        "armor": 0.8,
+        "magic_resist": 0.8
+      },
+      "rate_bonus": {
+        "crit": 3
+      },
+      "capturable": true,
+      "note_fr": "mord vite"
+    },
+    "corbeau": {
+      "identity": {
+        "hp": 0.7,
+        "atk": 0.9,
+        "armor": 0.7,
+        "magic_resist": 1.0
+      },
+      "rate_bonus": {
+        "evasion": 10
+      },
+      "capturable": true,
+      "note_fr": "volant, insaisissable"
+    },
+    "renard": {
+      "identity": {
+        "hp": 0.8,
+        "atk": 1.0,
+        "armor": 0.8,
+        "magic_resist": 1.1
+      },
+      "rate_bonus": {
+        "evasion": 8
+      },
+      "capturable": true,
+      "note_fr": "rusé, touche de brume"
+    },
+    "sanglier": {
+      "identity": {
+        "hp": 1.2,
+        "atk": 1.1,
+        "armor": 1.1,
+        "magic_resist": 0.8
+      },
+      "rate_bonus": {
+        "tenacity": 5
+      },
+      "capturable": true,
+      "note_fr": "charge, encaisse"
+    },
+    "loup": {
+      "identity": {
+        "hp": 1.0,
+        "atk": 1.1,
+        "armor": 0.9,
+        "magic_resist": 0.9
+      },
+      "rate_bonus": {
+        "crit": 5,
+        "crit_damage": 10
+      },
+      "capturable": true,
+      "note_fr": "chasseur de meute"
+    },
+    "hyene": {
+      "identity": {
+        "hp": 0.9,
+        "atk": 1.05,
+        "armor": 0.9,
+        "magic_resist": 0.9
+      },
+      "rate_bonus": {
+        "crit": 3,
+        "armor_pen": 5
+      },
+      "capturable": true,
+      "note_fr": "charognard, déchire"
+    },
+    "scorpion": {
+      "identity": {
+        "hp": 1.0,
+        "atk": 1.0,
+        "armor": 1.4,
+        "magic_resist": 0.8
+      },
+      "rate_bonus": {
+        "armor_pen": 5
+      },
+      "capturable": true,
+      "note_fr": "carapace et dard"
+    },
+    "ovin_caprin": {
+      "identity": {
+        "hp": 1.1,
+        "atk": 0.9,
+        "armor": 1.1,
+        "magic_resist": 0.9
+      },
+      "rate_bonus": {
+        "tenacity": 5,
+        "block_chance": 3
+      },
+      "capturable": true,
+      "note_fr": "cornes, têtu"
+    },
+    "bovin": {
+      "identity": {
+        "hp": 1.4,
+        "atk": 1.1,
+        "armor": 1.1,
+        "magic_resist": 0.8
+      },
+      "rate_bonus": {
+        "tenacity": 10
+      },
+      "capturable": true,
+      "note_fr": "masse, inébranlable"
+    },
+    "tortue": {
+      "identity": {
+        "hp": 1.3,
+        "atk": 0.7,
+        "armor": 1.6,
+        "magic_resist": 0.7
+      },
+      "rate_bonus": {
+        "block_chance": 10
+      },
+      "capturable": true,
+      "note_fr": "carapace de pierre"
+    },
+    "cervide": {
+      "identity": {
+        "hp": 1.0,
+        "atk": 0.9,
+        "armor": 0.9,
+        "magic_resist": 1.2
+      },
+      "rate_bonus": {
+        "evasion": 5
+      },
+      "capturable": true,
+      "note_fr": "agile, liens avec la forêt"
+    },
+    "tatou": {
+      "identity": {
+        "hp": 1.1,
+        "atk": 0.8,
+        "armor": 1.5,
+        "magic_resist": 0.8
+      },
+      "rate_bonus": {
+        "block_chance": 8
+      },
+      "capturable": true,
+      "note_fr": "se roule en boule"
+    },
+    "cheval": {
+      "identity": {
+        "hp": 1.2,
+        "atk": 1.0,
+        "armor": 0.9,
+        "magic_resist": 0.9
+      },
+      "rate_bonus": {
+        "evasion": 5
+      },
+      "capturable": true,
+      "note_fr": "rapide, ruade"
+    },
+    "sanglier_loup": {
+      "identity": {
+        "hp": 1.2,
+        "atk": 1.15,
+        "armor": 1.0,
+        "magic_resist": 0.8
+      },
+      "rate_bonus": {
+        "crit": 3,
+        "tenacity": 5
+      },
+      "capturable": true,
+      "note_fr": "hybride, brutal"
+    },
+    "batracien": {
+      "identity": {
+        "hp": 0.9,
+        "atk": 0.9,
+        "armor": 0.8,
+        "magic_resist": 1.2
+      },
+      "rate_bonus": {
+        "evasion": 5
+      },
+      "capturable": true,
+      "note_fr": "visqueux, crache"
+    },
+    "loutre": {
+      "identity": {
+        "hp": 0.9,
+        "atk": 1.0,
+        "armor": 0.9,
+        "magic_resist": 1.0
+      },
+      "rate_bonus": {
+        "evasion": 8
+      },
+      "capturable": true,
+      "note_fr": "joueuse, glissante"
+    },
+    "cochon": {
+      "identity": {
+        "hp": 1.2,
+        "atk": 0.9,
+        "armor": 0.9,
+        "magic_resist": 0.9
+      },
+      "rate_bonus": {
+        "tenacity": 3
+      },
+      "capturable": true,
+      "note_fr": "solide, lent"
+    },
+    "lievre": {
+      "identity": {
+        "hp": 0.6,
+        "atk": 0.8,
+        "armor": 0.6,
+        "magic_resist": 0.8
+      },
+      "rate_bonus": {
+        "evasion": 15
+      },
+      "capturable": true,
+      "note_fr": "fuyant"
+    },
+    "blaireau": {
+      "identity": {
+        "hp": 1.1,
+        "atk": 1.0,
+        "armor": 1.2,
+        "magic_resist": 0.9
+      },
+      "rate_bonus": {
+        "tenacity": 5
+      },
+      "capturable": true,
+      "note_fr": "teigneux"
+    },
+    "araignee": {
+      "identity": {
+        "hp": 0.8,
+        "atk": 1.0,
+        "armor": 0.9,
+        "magic_resist": 1.0
+      },
+      "rate_bonus": {
+        "crit": 5,
+        "evasion": 5
+      },
+      "capturable": true,
+      "note_fr": "toiles et poison"
+    },
+    "loup_garou": {
+      "identity": {
+        "hp": 1.3,
+        "atk": 1.2,
+        "armor": 1.0,
+        "magic_resist": 0.8
+      },
+      "rate_bonus": {
+        "lifesteal": 5,
+        "crit": 5
+      },
+      "capturable": true,
+      "note_fr": "bête maudite, se régénère"
+    },
+    "gobelin": {
+      "identity": {
+        "hp": 0.8,
+        "atk": 0.9,
+        "armor": 0.9,
+        "magic_resist": 0.8
+      },
+      "rate_bonus": {
+        "evasion": 5
+      },
+      "capturable": true,
+      "note_fr": "petits, nombreux, sournois"
+    },
+    "bandit": {
+      "identity": {
+        "hp": 0.9,
+        "atk": 1.0,
+        "armor": 0.9,
+        "magic_resist": 0.8
+      },
+      "rate_bonus": {
+        "crit": 5
+      },
+      "capturable": false,
+      "note_fr": "coups bas"
+    },
+    "tribal": {
+      "identity": {
+        "hp": 1.1,
+        "atk": 1.05,
+        "armor": 0.9,
+        "magic_resist": 0.9
+      },
+      "rate_bonus": {
+        "tenacity": 5
+      },
+      "capturable": null,
+      "note_fr": "guerriers endurcis"
+    },
+    "hors_la_loi": {
+      "identity": {
+        "hp": 1.0,
+        "atk": 1.0,
+        "armor": 1.0,
+        "magic_resist": 0.9
+      },
+      "rate_bonus": {
+        "armor_pen": 5
+      },
+      "capturable": false,
+      "note_fr": "arbalètes, armes lourdes"
+    },
+    "homme_lezard": {
+      "identity": {
+        "hp": 1.1,
+        "atk": 1.0,
+        "armor": 1.2,
+        "magic_resist": 1.0
+      },
+      "rate_bonus": {
+        "tenacity": 5
+      },
+      "capturable": true,
+      "note_fr": "écailles"
+    },
+    "converti": {
+      "identity": {
+        "hp": 1.0,
+        "atk": 0.95,
+        "armor": 1.0,
+        "magic_resist": 1.1
+      },
+      "rate_bonus": {
+        "tenacity": 5
+      },
+      "capturable": false,
+      "note_fr": "villageois tenus par la Fissure"
+    },
+    "zelote": {
+      "identity": {
+        "hp": 1.05,
+        "atk": 1.0,
+        "armor": 1.05,
+        "magic_resist": 1.15
+      },
+      "rate_bonus": {
+        "tenacity": 10
+      },
+      "capturable": false,
+      "note_fr": "fanatiques"
+    },
+    "edric": {
+      "identity": {
+        "hp": 1.15,
+        "atk": 1.1,
+        "armor": 1.15,
+        "magic_resist": 1.1
+      },
+      "rate_bonus": {
+        "crit": 5,
+        "tenacity": 10
+      },
+      "capturable": false,
+      "note_fr": "élite de la Tour"
+    },
+    "chevalier_dechu": {
+      "identity": {
+        "hp": 1.2,
+        "atk": 1.05,
+        "armor": 1.3,
+        "magic_resist": 1.0
+      },
+      "rate_bonus": {
+        "block_chance": 8,
+        "parry_chance": 3
+      },
+      "capturable": false,
+      "note_fr": "armure lourde"
+    },
+    "culte_obscur": {
+      "identity": {
+        "hp": 0.8,
+        "atk": 0.9,
+        "armor": 0.7,
+        "magic_resist": 1.4
+      },
+      "rate_bonus": {
+        "magic_pen": 5
+      },
+      "capturable": false,
+      "note_fr": "magie noire"
+    },
+    "squelette": {
+      "identity": {
+        "hp": 0.9,
+        "atk": 1.0,
+        "armor": 0.9,
+        "magic_resist": 1.2
+      },
+      "rate_bonus": {
+        "tenacity": 15
+      },
+      "capturable": true,
+      "note_fr": "ne connaît pas la peur"
+    },
+    "spectre": {
+      "identity": {
+        "hp": 0.8,
+        "atk": 1.0,
+        "armor": 0.5,
+        "magic_resist": 1.5
+      },
+      "rate_bonus": {
+        "evasion": 10
+      },
+      "capturable": true,
+      "note_fr": "intangible : armure inutile, RM forte"
+    },
+    "golem": {
+      "identity": {
+        "hp": 1.3,
+        "atk": 0.8,
+        "armor": 1.5,
+        "magic_resist": 1.0
+      },
+      "rate_bonus": {
+        "block_chance": 10,
+        "tenacity": 10
+      },
+      "capturable": true,
+      "note_fr": "pierre : le tank naturel"
+    },
+    "esprit_sylvestre": {
+      "identity": {
+        "hp": 1.3,
+        "atk": 0.9,
+        "armor": 1.1,
+        "magic_resist": 1.3
+      },
+      "rate_bonus": {
+        "tenacity": 10
+      },
+      "capturable": true,
+      "note_fr": "gardien ancien"
+    },
+    "faille": {
+      "identity": {
+        "hp": 1.1,
+        "atk": 1.1,
+        "armor": 1.0,
+        "magic_resist": 1.2
+      },
+      "rate_bonus": {
+        "shield_pierce": 5
+      },
+      "capturable": true,
+      "note_fr": "déchire les protections"
+    },
+    "vide": {
+      "identity": {
+        "hp": 1.0,
+        "atk": 1.15,
+        "armor": 0.9,
+        "magic_resist": 1.2
+      },
+      "rate_bonus": {
+        "magic_pen": 5,
+        "armor_pen": 5
+      },
+      "capturable": true,
+      "note_fr": "le vide traverse tout"
+    },
+    "abyssal": {
+      "identity": {
+        "hp": 1.15,
+        "atk": 1.1,
+        "armor": 1.1,
+        "magic_resist": 1.15
+      },
+      "rate_bonus": {
+        "crit_damage": 10
+      },
+      "capturable": true,
+      "note_fr": "puissance de l'Abîme"
+    },
+    "effroi": {
+      "identity": {
+        "hp": 0.9,
+        "atk": 1.15,
+        "armor": 0.8,
+        "magic_resist": 1.1
+      },
+      "rate_bonus": {
+        "crit": 5,
+        "evasion": 5
+      },
+      "capturable": true,
+      "note_fr": "terreur, frappe dans l'ombre"
+    },
+    "demon": {
+      "identity": {
+        "hp": 1.2,
+        "atk": 1.15,
+        "armor": 1.0,
+        "magic_resist": 1.4
+      },
+      "rate_bonus": {
+        "lifesteal": 5
+      },
+      "capturable": true,
+      "note_fr": "se nourrit de la vie"
+    },
+    "archonte_dechu": {
+      "identity": {
+        "hp": 1.25,
+        "atk": 1.15,
+        "armor": 1.2,
+        "magic_resist": 1.25
+      },
+      "rate_bonus": {
+        "tenacity": 15,
+        "reflect": 5
+      },
+      "capturable": true,
+      "note_fr": "anciens gardiens corrompus"
+    },
+    "cristal": {
+      "identity": {
+        "hp": 1.0,
+        "atk": 1.0,
+        "armor": 1.1,
+        "magic_resist": 1.3
+      },
+      "rate_bonus": {
+        "magic_pen": 5
+      },
+      "capturable": true,
+      "note_fr": "glace : résiste à la magie"
+    },
+    "braise": {
+      "identity": {
+        "hp": 1.0,
+        "atk": 1.15,
+        "armor": 0.9,
+        "magic_resist": 1.2
+      },
+      "rate_bonus": {
+        "magic_pen": 5
+      },
+      "capturable": true,
+      "note_fr": "feu : frappe fort, armure fragile"
+    }
+  }
+}

@@ -14,6 +14,11 @@ Dernière mise à jour : 2026-10-02.
   - [ ] `vac_familiar-ultimate-cd` — ultimes de familier 30 s + incantation 2 s
   - [ ] `vac_star-curve` — courbe des étoiles lissée
   - [ ] `vac_balance-tools` — scripts d'analyse, tables, ces notes
+  - [ ] `vac_apply-monster-v2` — contient `vac_balance-tools` + `vac_archetype-profiles` + le script
+        `scripts/apply_monster_v2.py` + son résultat (commit `a0cab4b`, GÉNÉRÉ). Au retour : fusionner
+        le travail du bureau (Tanière des loups…), ajouter les nouveaux monstres à `kits_tous.csv`
+        (espèce, stade, archétype, kit), JETER le commit généré et relancer
+        `python scripts/apply_monster_v2.py` puis `--check`. Monter `database_version` (règle CI).
   - [ ] `vac_archetype-profiles` — les 11 profils d'archétypes V2 (`config/monster_scaling_model.json`) ;
         lancer `ctest` (tests `test_monster_scaling_model.cpp` / `test_monster_balance_rules.cpp`)
 - [ ] À chaque fusion data : conflit attendu sur `_meta/version.json` → `git add .` puis
@@ -22,6 +27,9 @@ Dernière mise à jour : 2026-10-02.
   - [ ] `vac_familiar-xp-90` — ctest combat + familiar
   - [ ] `vac_poison-cap` — `combat-tests --gtest_filter="*Poison*"`
   - [ ] `vac_koro-shield-rank` — `combat-tests --gtest_filter="*Koro*"`
+  - [ ] `vac_v2-monster-model` (contient `vac_v2-monster-mag`) — `ctest` complet : MAG séparée, espèces + stades,
+        croissance des taux, ténacité / perce-bouclier, IA de téléportation, invocations temporaires,
+        `shield_shatter`. Puis activer `MONSTER_SCALING_MODEL=1` sur un serveur de test avec la data V2.
   - [ ] `vac_defense-curve-test` — `ctest -R MonsterScaling` avec la data `vac_archetype-profiles`
 - [ ] Mettre à jour le pin de la data (`kanarion-meta`) dans le back et le client après fusion.
 
@@ -51,11 +59,11 @@ Dernière mise à jour : 2026-10-02.
 
 ## 4. Serveur (back) — travail à faire
 
-- [ ] Modèle V2 des monstres : lire les stats d'ESPÈCE (base niv. 1) au lieu du seul archétype.
+- [x] Modèle V2 des monstres : espèces + stades (`vac_v2-monster-model`, à compiler).
 - [ ] 11 archétypes dans `monster_scaling_model` (gardien, berserker, soigneur, invocateur,
       enchanteur + archer/mage séparés).
-- [ ] Lire `tenacity` et `shield_pierce` dans les `base_stats` des monstres (aujourd'hui seulement via l'archétype).
-- [ ] Croissance des stats d'identité par archétype tous les 10 niveaux (plafonnées).
+- [x] `tenacity` et `shield_pierce` lus dans les `base_stats` (`vac_v2-monster-model`).
+- [x] Croissance des stats d'identité par archétype tous les 10 niveaux (`vac_v2-monster-model`).
 - [ ] Familiers : stats héritées de l'identité de l'espèce ; passif d'espèce qui monte en puissance
       (par ex. aux niveaux 20 / 50 / 100).
 - [ ] Familiers : 21 des 31 passifs sans effet en combat ; compétences sans montée par niveau.
@@ -63,12 +71,19 @@ Dernière mise à jour : 2026-10-02.
 - [ ] Test `test_player_reference_curve.cpp` : n'applique jamais les passifs communs (clé `passives`
       au lieu de `common_passives`).
 - [ ] Érosion (optionnel) : mécanique anti-soin qui réduit les PV max pendant le combat.
-- [ ] IA des monstres : elle ignore toute compétence de déplacement (`kit_behavior.cpp:435`), donc
+- [x] IA : téléportation hostile (TELEPORT_ADJACENT) autorisée (`vac_v2-monster-model` 4f2ba397) ; Saut de
+      l'Ombre est une vraie téléportation, INSTANTANÉE (le chemin « incantation puis déplacement »
+      n'est pas testé côté serveur : à vérifier avant de donner un temps d'incantation à un déplacement).
+- [ ] (ancien) IA des monstres : elle ignorait toute compétence de déplacement (`kit_behavior.cpp:435`), donc
       ni la téléportation de l'assassin (Saut de l'Ombre) ni `skill_mob_assassin_shadow_strike` ne
       sont jamais lancées. À brancher.
-- [ ] Invocations : ajouter une durée de vie et une option « apparaît près de l'invocateur »
+- [x] Invocations temporaires (`lifetime`, `placement: near_caster`, `vac_v2-monster-model` 87ddfdef) ;
+      Appel du Néant : 15 s à côté de l'invocateur. Une expiration ne rapporte ni XP ni butin.
+- [ ] (ancien) Invocations : ajouter une durée de vie et une option « apparaît près de l'invocateur »
       (aujourd'hui permanentes, près de la ligne arrière des joueurs, un seul type par compétence).
-- [ ] Un effet qui RETIRE les boucliers (la dissipation retire le premier buff trouvé).
+- [x] Effet `shield_shatter` qui détruit tous les boucliers (`vac_v2-monster-model` 62ed0472), utilisé par Brise-Garde.
+- [ ] Vérifier en jeu que l'IA lance bien Brise-Garde sur une cible protégée (le scoreur ne valorise pas
+      encore explicitement la destruction de bouclier).
 - [ ] MAG absente d'une fiche monstre → le chargeur prend ATK/2 : soins et sorts de nombreux
       lanceurs/soigneurs à moitié de puissance. Corriger côté data (voir section 5) ; décider si
       le repli serveur doit rester.
@@ -93,10 +108,14 @@ Dernière mise à jour : 2026-10-02.
 - [ ] Déplacer après le niveau 60 (zones corrompues) les créatures non normales : Corbeau Charognard,
       Hybride Sanglier-Loup, Traqueur de Poussière, Molosse Corrompu, Chacal de la Faille (+ Loup-Garou ?).
 
-- [ ] Appliquer la refonte des monstres à `entities/monsters.json` : archétype, espèce, stade, kit
-      (tableaux dans `scripts/balance/out/`), après relecture.
+- [x] Script d'application écrit et lancé (`vac_apply-monster-v2`) : archétypes, rôles d'IA, espèces,
+      stades, kits, MAG des archétypes magiques, 24 nouvelles compétences, Coup de tête sans
+      étourdissement, araignées et Scarabée de Poussière mis de côté, Homme de main renommé,
+      nouveau fichier `entities/monster_species.json`.
+- [ ] Vérifier en jeu que l'IA du rôle `tank` (utilisée par les gardiens) lance bien les compétences
+      d'alliés (Égide, Bastion) ; sinon un rôle d'IA dédié.
 - [x] Profils des 11 archétypes écrits (branche `vac_archetype-profiles`).
-- [ ] **BLOQUANT avant d'activer les profils V2** : le serveur doit lire `mag` pour `magic_power`
+- [x] **BLOQUANT avant d'activer les profils V2** (fait sur `vac_v2-monster-mag`, à compiler) : le serveur doit lire `mag` pour `magic_power`
       (`room_manager.cpp` met aujourd'hui `magic_power = atk`). Les archétypes magiques ont ATK 2 :
       sans ce changement ils lanceraient à 2 de puissance.
 - [ ] Serveur : lire aussi `parry_chance`,

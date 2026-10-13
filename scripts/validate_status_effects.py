@@ -13,7 +13,7 @@ import sys
 
 
 # Utility effect types that are NOT status effects (handled by SkillExecutor)
-UTILITY_STATS = {"cleanse", "purge", "mana_steal", "mana_restore"}
+UTILITY_STATS = {"cleanse", "purge", "mana_steal", "mana_restore", "shield_shatter"}
 
 
 def load_json(path):
