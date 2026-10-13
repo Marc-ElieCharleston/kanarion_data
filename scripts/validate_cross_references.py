@@ -223,6 +223,36 @@ def validate_loot_table_refs(db: Path, all_item_ids: set) -> list:
     return errors
 
 
+def validate_every_monster_has_loot_table(db: Path) -> list:
+    """Every monster resolves to ITS OWN loot table (owner 2026-10-13: no 'default' fallback).
+
+    Resolution mirrors server-combat LootRoller: `loot_table_id`, else the template id
+    without its mob_ / boss_ prefix. An explicit empty list is allowed (training dummy).
+    """
+    errors = []
+    lt_path = db / "items" / "loot_tables.json"
+    mon_path = db / "entities" / "monsters.json"
+    if not lt_path.exists() or not mon_path.exists():
+        return errors
+    tables = load_json(lt_path).get("monster_loot_tables", {})
+    if "default" in tables:
+        errors.append("[loot_tables.json] monster_loot_tables.default est revenue : plus de table "
+                      "par defaut, chaque monstre a la sienne (decision 2026-10-13)")
+    mons = load_json(mon_path)
+    mons = mons.get("monsters", mons)
+    entries = mons.items() if isinstance(mons, dict) else [(m.get("id"), m) for m in mons]
+    for mid, m in entries:
+        if not isinstance(m, dict) or not isinstance(mid, str) or mid.startswith("_"):
+            continue
+        tid = m.get("loot_table_id") or next(
+            (mid[len(p):] for p in ("mob_", "boss_") if mid.startswith(p)), mid)
+        if tid not in tables:
+            errors.append(f"[loot_tables.json] le monstre '{mid}' n'a pas de table de loot "
+                          f"(cherche '{tid}') : en ajouter une dans monster_loot_tables "
+                          f"(liste vide explicite si le monstre ne donne rien)")
+    return errors
+
+
 def validate_set_ids(db: Path) -> list:
     """Check set_id references against panoplies.json."""
     errors = []
@@ -1670,6 +1700,8 @@ def main():
     all_item_ids = collect_all_item_ids(db)
     print(f"  Collected {len(all_item_ids)} item IDs from database")
     errs = validate_loot_table_refs(db, all_item_ids)
+    all_errors.extend(errs)
+    errs = validate_every_monster_has_loot_table(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
