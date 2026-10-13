@@ -657,22 +657,22 @@ def validate_rewards(db: Path) -> list:
     # ecart reel : 1.165 contre 1.20 a quatre joueurs. Attrape par une contre-lecture du
     # backend le 2026-08-14, pas par cette garde — d'ou la reecriture.
     #
-    # Tant que le moteur ne lit pas ces deux valeurs depuis la donnee (etape 2), l'ancre est
-    # manuelle : elle fige ce que le C++ applique, pour qu'une edition de la donnee seule ne
-    # puisse pas se croire effective.
-    ENGINE_GROUP_BONUS_PER_EXTRA = 0.055   # loot_types.hpp:209
-    ENGINE_GROUP_CAP = 1.5                 # loot_types.hpp:210
+    # Etape 2 FAITE (2026-08-29) : le moteur lit bonus_per_extra_player + cap DEPUIS
+    # config/rewards.json (server-combat content_loader.cpp:1571-1572 ; loot_types.hpp ne
+    # garde que des valeurs de repli). L'ancre sur les constantes C++ empechait donc tout
+    # reglage (2026-10-13 : courbe rapide jusqu'a 5 joueurs, 0.075 / 1.3). Le check verifie
+    # desormais la presence et la coherence des deux valeurs, pas leur egalite au repli.
     gs = families.get("group_size", {})
-    for field, engine, where in (("bonus_per_extra_player", ENGINE_GROUP_BONUS_PER_EXTRA,
-                                  "loot_types.hpp:209"),
-                                 ("cap", ENGINE_GROUP_CAP, "loot_types.hpp:210")):
+    for field in ("bonus_per_extra_player", "cap"):
         if field not in gs:
-            errors.append(f"[rewards] group_size.{field} est absent — le moteur applique "
-                          f"{engine} ({where}), la donnee doit le dire")
-        elif abs(float(gs[field]) - engine) > 1e-9:
-            errors.append(f"[rewards] group_size.{field}={gs[field]} alors que le moteur "
-                          f"applique {engine} ({where}). Changer la donnee seule ne change "
-                          f"rien au jeu : ces valeurs sont encore des constantes C++.")
+            errors.append(f"[rewards] group_size.{field} est absent : le moteur retombe sur sa "
+                          f"valeur de repli (loot_types.hpp), la donnee doit le dire")
+    per = gs.get("bonus_per_extra_player")
+    cap = gs.get("cap")
+    if isinstance(per, (int, float)) and not (0 <= per <= 0.5):
+        errors.append(f"[rewards] group_size.bonus_per_extra_player={per} hors de [0, 0.5]")
+    if isinstance(cap, (int, float)) and not (1.0 <= cap <= 3.0):
+        errors.append(f"[rewards] group_size.cap={cap} hors de [1, 3]")
     if "bonus_per_player" in gs or "max_players" in gs:
         errors.append("[rewards] group_size porte bonus_per_player/max_players : c'est la "
                       "forme de la table MORTE de loot_tables (1 + N * 0.05). Le moteur "
