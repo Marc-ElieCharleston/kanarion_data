@@ -1986,6 +1986,29 @@ def validate_gcd(db: Path) -> list:
     return errors
 
 
+def validate_combat_mirrors(db: Path) -> list:
+    """config/combat.json keeps a few values the client reads; each must equal its owner."""
+    combat = load_json(db / "config" / "combat.json")
+    defs = load_json(db / "stats" / "definitions.json")
+    mirror = combat.get("settings", {}).get("damage", {}).get("damage_reduction_cap")
+    owner = defs.get("stats", {}).get("defensive", {}).get("damage_reduction", {}).get("cap")
+    if mirror != owner:
+        return [f"[combat.json] DERIVE settings.damage.damage_reduction_cap={mirror!r}, "
+                f"source definitions.json defensive.damage_reduction.cap={owner!r}"]
+    return []
+
+
+def validate_social_limits(db: Path) -> list:
+    """systems/social.json owns the friend / block limits; the social service refuses to start without them."""
+    social = load_json(db / "systems" / "social.json")
+    errors = []
+    for section, key in (("friends", "max_friends"), ("block_ignore", "max_blocked")):
+        v = social.get(section, {}).get(key)
+        if not (isinstance(v, int) and not isinstance(v, bool) and 1 <= v <= 10000):
+            errors.append(f"[social.json] {section}.{key} absent ou hors [1, 10000] ({v!r})")
+    return errors
+
+
 SINGLE_SOURCE_CHECKS = [
     validate_stat_point_values,
     validate_level_grants,
@@ -1997,6 +2020,8 @@ SINGLE_SOURCE_CHECKS = [
     validate_party_size,
     validate_stat_caps,
     validate_gcd,
+    validate_combat_mirrors,
+    validate_social_limits,
 ]
 
 

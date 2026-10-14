@@ -4,13 +4,10 @@
     "last_updated": "2026-01-10",
     "description": "Configuration combat - formules, constantes, settings"
   },
-
   "settings": {
     "_comment": "Constantes utilisees par combat_system.gd",
     "min_damage_percent": 0.1,
     "armor_effectiveness": 100,
-    "default_crit_chance": 5,
-    "default_crit_dmg": 150,
     "gcd_duration": 2.0,
     "familiar_gcd_duration": 3.0,
     "monster_gcd_duration": 3.0,
@@ -19,251 +16,18 @@
     "monster_first_gcd_bonus": 1.0,
     "_gcd_owner": "Source unique des GCD (secondes), lue par le serveur (shared/gameplay/gcd_rules.hpp) ; gcd_duration aussi par le client. Joueurs et mercenaires 2 s, familiers 3 s, monstres 3 s (+0..jitter apres chaque sort, premier sort +bonus +0..first_jitter). Proprietaire 2026-10-14 : les grosses attaques de boss passent par leurs propres recharges.",
     "_regen_note": "In-combat and out-of-combat regen now uses entity mp_regen stat (flat). No global constant.",
-
-    "hit_flee": {
-      "base_hit_chance": 80,
-      "hit_chance_min": 5,
-      "hit_chance_max": 95,
-      "default_hit": 100,
-      "default_flee": 0
-    },
-
-    "effects": {
-      "default_effect_chance": 0,
-      "default_effect_resist": 0,
-      "effect_apply_minimum": 5,
-      "effect_resist_cap": 80
-    },
-
     "damage": {
-      "default_damage_percent": 0,
-      "default_damage_reduction": 0,
       "damage_reduction_cap": 75,
-      "default_armor_pen": 0,
-      "default_magic_pen": 0,
       "flat_defense_effectiveness": 0.5,
-      "flat_defense_effectiveness_note": "Flat DR/magic_defense multiplied by this before subtraction",
       "min_damage_ratio": 0.1,
-      "min_damage_ratio_note": "Minimum damage = pre-reduction * this ratio (prevents flat DR from nullifying)"
+      "_damage_reduction_cap_owner": "MIROIR lu par le client (damage_resolver.gd). Source : stats/definitions.json defensive.damage_reduction.cap ; le validateur verifie l'egalite."
     },
-
-    "double_hit": {
-      "_portee_reelle_2026_09_02": "PORTEE REELLE 2026-09-02 : l'attaque de base n'est atteignable que par les MONSTRES (repli de leur IA). Le client n'expose aucun moyen de la lancer : le helper build_basic_attack_request du protocole n'a aucun appelant. Pour un joueur, tout ce qui est conditionne a l'attaque de base est donc sans effet aujourd'hui.",
-      "_audit_2026_09_02": "damage_mult valait 0.75 et decrivait un moteur qui n'a jamais fait cela : chaque frappe supplementaire compte pour 100%. Valeur alignee sur le runtime. Le proc ne se declenche QUE sur l'attaque de base, jamais sur une competence.",
-      "default_chance": 0,
-      "damage_mult": 1.0,
-      "cap": 50
-    },
-
     "sustain": {
-      "default_lifesteal": 0,
-      "default_spell_vamp": 0,
-      "lifesteal_cap": 30,
-      "spell_vamp_aoe_effectiveness": 0.33,
-      "_audit_2026_09_02": "lifesteal_cap, lifesteal_auto_rate et lifesteal_skill_rate ne sont lus par AUCUN code : les taux 0.5 et 1.0 sont en dur dans damage_calculator.cpp et le cap n'est pas applique. Conserves a titre documentaire ; les modifier ici n'a aucun effet en jeu.",
       "lifesteal_auto_rate": 0.5,
-      "lifesteal_auto_rate_note": "Attaque de base : vol de vie a 50% d'efficacite (evite le sustain passif)",
       "lifesteal_skill_rate": 1.0,
-      "lifesteal_skill_rate_note": "Competences : vol de vie a 100% (recompense le jeu actif)"
-    },
-
-
-    "abilities": {
-      "cooldown_reduction_cap": 40,
-      "cast_speed_cap": 50
-    },
-
-    "defensive": {
-      "block_damage_reduction": 0.5,
-      "block_chance_cap": 75,
-      "parry_chance_cap": 30,
-      "riposte_damage_mult": 0.5,
-      "riposte_damage_mult_note": "Counter-attack on parry deals this % of target ATK"
-    },
-
-    "ellipse": {
-      "_comment": "Ellipse isométrique - ratio 2:1 strict (recommandation CTO)",
-      "base_radius_x": 36,
-      "base_radius_y": 18,
-      "ratio": 2.0,
-      "thickness": {
-        "default": 1.5,
-        "hover": 2.0,
-        "selected": 3.0,
-        "targeted": 3.0,
-        "drag_target": 4.0,
-        "aoe_preview": 2.5
-      },
-      "colors": {
-        "empty": {"r": 1.0, "g": 1.0, "b": 1.0, "a": 0.25},
-        "player": {"r": 0.2, "g": 0.8, "b": 0.2, "a": 0.4},
-        "ally": {"r": 0.2, "g": 0.6, "b": 1.0, "a": 0.4},
-        "enemy": {"r": 0.9, "g": 0.2, "b": 0.2, "a": 0.4},
-        "targeted": {"r": 1.0, "g": 0.8, "b": 0.0, "a": 0.6}
-      },
-      "scale_by_entity_size": true,
-      "z_sorting": {
-        "base_offset": -1,
-        "use_y_position": true
-      }
+      "_owner": "Lu par le client. Le serveur a encore ces taux en dur (damage_calculator.cpp, 0.5 auto / 1.0 competence) : a brancher sur cette cle (lot 2)."
     }
   },
-
-  "formulas": {
-    "_comment": "Formules EXACTES - v2.0 avec hit/flee, penetration, effect system",
-    "_implementation_file": "scripts/combat/combat_system.gd",
-
-    "damage_pipeline": {
-      "order_of_operations": [
-        "1. HIT CHECK: hit_chance = 80 + (attacker.hit - target.flee), clamp(5, 95)",
-        "2. Si MISS: skip tout, afficher 'MISS'",
-        "3. EVASION CHECK: if randf() * 100 < target.evasion_chance: DODGE",
-        "4. BLOCK CHECK: if randf() * 100 < target.block_chance: damage *= 0.5",
-        "5. PARRY CHECK: if randf() * 100 < target.parry_chance: damage = 0, riposte",
-        "6. CALCULATE DAMAGE: voir physical_damage ou magic_damage",
-        "7. DAMAGE REDUCTION: damage *= (1 - target.damage_reduction / 100)",
-        "8. SHIELD PIERCE: pierce_damage = damage * (shield_pierce / 100); shield_damage = damage - pierce_damage",
-        "9. SHIELD BREAK: shield_damage *= (1 + shield_break / 100)",
-        "10. SHIELD ABSORB: if target.shield > 0: target.shield -= shield_damage (clamp 0)",
-        "11. APPLY HP DAMAGE: target.hp -= (pierce_damage + overflow_from_shield)",
-        "12. THORNS/REFLECT: if melee, attacker takes thorns + reflect damage",
-        "13. LIFESTEAL/SPELLVAMP: attacker heals",
-        "14. DOUBLE HIT: if randf() * 100 < double_hit_chance: repeat at 75% damage"
-      ]
-    },
-
-    "hit_flee_system": {
-      "formula": "hit_chance = BASE_HIT + (attacker.hit - target.flee)",
-      "constants": {"BASE_HIT": 80},
-      "clamp": {"min": 5, "max": 95},
-      "examples": {
-        "equal_hit_flee": "80 + (100 - 100) = 80% hit",
-        "high_hit_vs_low_flee": "80 + (150 - 50) = 180 -> 95% hit (capped)",
-        "low_hit_vs_high_flee": "80 + (80 - 150) = 10% hit"
-      }
-    },
-
-    "physical_damage": {
-      "order_of_operations": [
-        "1. raw_damage = base_power (ou atk pour l attaque de base)",
-        "2. Si crit: raw_damage *= (crit_dmg / 100)",
-        "3. raw_damage *= (1 + damage_percent / 100)",
-        "4. effective_armor = target.armor * (1 - clamp(attacker.armor_pen, 0, 70) / 100)",
-        "5. raw_damage -= target.def * 0.5 (flat defense reduction, min 1)",
-        "6. raw_damage *= (100 / (100 + effective_armor))",
-        "7. raw_damage *= (1 - target.damage_reduction / 100)",
-        "8. actual_damage = max(1, int(raw_damage))"
-      ],
-      "formula_complete": "damage = (raw - def*0.5) * (100/(100 + armor*(1-pen/100))) * (1-dr%)"
-    },
-
-    "magic_damage": {
-      "order_of_operations": [
-        "1. raw_damage = base_power",
-        "2. Si crit: raw_damage *= (crit_dmg / 100)",
-        "3. raw_damage *= (1 + damage_percent / 100)",
-        "4. effective_mr = target.magic_resist * (1 - clamp(attacker.magic_pen, 0, 70) / 100)",
-        "5. raw_damage -= target.magic_def * 0.5 (flat magic defense reduction, min 1)",
-        "6. raw_damage *= (100 / (100 + effective_mr))",
-        "7. raw_damage *= (1 - target.damage_reduction / 100)",
-        "8. actual_damage = max(1, int(raw_damage))"
-      ],
-      "formula_complete": "damage = (raw - mdef*0.5) * (100/(100 + mr*(1-pen/100))) * (1-dr%)"
-    },
-
-    "critical_hit": {
-      "formula": "if randf() * 100 < crit_chance: damage *= (crit_dmg / 100)",
-      "defaults": {"crit_chance": 5, "crit_dmg": 150},
-      "luck_bonus": "crit_chance += luck * 0.05"
-    },
-
-    "double_hit": {
-      "formula": "if randf() * 100 < double_hit_chance: trigger second hit",
-      "second_hit_damage": 1.0,
-      "can_crit": true,
-      "applies_to": ["basic_attack"]
-    },
-
-    "effect_application": {
-      "formula": "final_chance = (skill.base_chance * (1 + caster.effect_chance/100)) - target.effect_resist",
-      "minimum_chance": 5,
-      "luck_bonus": "effect_resist += luck * 0.1"
-    },
-
-    "healing": {
-      "formula": "heal = (base_power + heal_power) * (1 + mag * scaling_ratio)",
-      "healing_received_bonus": "actual_heal = heal * (1 + target.healing_received / 100)"
-    },
-
-    "lifesteal_spellvamp": {
-      "lifesteal_formula": "hp_gained = physical_damage_dealt * (lifesteal / 100)",
-      "spellvamp_formula": "hp_gained = magic_damage_dealt * (spell_vamp / 100)",
-      "aoe_effectiveness": 0.33
-    },
-
-    "shield_mechanics": {
-      "shield_pierce": {
-        "formula": "pierce_damage = total_damage * (shield_pierce / 100)",
-        "examples": {
-          "0_pierce": "0 direct HP, 100 to shield",
-          "30_pierce": "30 direct HP, 70 to shield"
-        }
-      },
-      "shield_break": {
-        "formula": "effective_shield_damage = shield_damage * (1 + shield_break / 100)"
-      }
-    }
-  },
-
-  "skill_balance": {
-    "scaling_ratios": {
-      "weak": 0.7,
-      "normal": 1.0,
-      "strong": 1.2,
-      "ultimate": 1.5
-    },
-    "cooldown_tiers": {
-      "filler": "4-5.5 sec",
-      "spam": "6-8 sec",
-      "normal": "10-14 sec",
-      "strong": "16-20 sec",
-      "ultimate": "25-35 sec",
-      "resurrection": "120 sec"
-    },
-    "mp_cost_guidelines": {
-      "filler": "5-8 MP",
-      "basic": "10-15 MP",
-      "normal": "15-22 MP",
-      "strong": "25-35 MP",
-      "ultimate": "40-60 MP"
-    },
-    "filler_skills_by_class": {
-      "_comment": "Skill de base spammable pour chaque classe",
-      "warrior": {"skill": "heavy_strike", "cd": 4.5, "power": 22, "ratio": 1.0},
-      "archer": {"skill": "quickshot", "cd": 3.0, "power": 20, "ratio": 1.0},
-      "mage": {"skill": "magic_bolt", "cd": 3.5, "power": 15, "ratio": 1.0},
-      "artisan": {"skill": "tool_strike", "cd": 5.0, "power": 18, "ratio": 0.9},
-      "healer": {"skill": "smite", "cd": 4.5, "power": 15, "ratio": 0.7},
-      "rogue": {"skill": "quick_stab", "cd": 4.5, "power": 22, "ratio": 1.0}
-    },
-    "pattern_balance": {
-      "_comment": "Guidelines MP/Power par pattern",
-      "single_target": {"mp": "8-15", "power": "18-30", "ratio": "1.0-1.2"},
-      "row_5_tiles": {"mp": "15-20", "power": "15-22", "ratio": "0.8-0.9"},
-      "column_2_tiles": {"mp": "12-18", "power": "20-26", "ratio": "0.9-1.0"},
-      "full_aoe": {"mp": "18-25", "power": "12-20", "ratio": "0.7-0.8"}
-    }
-  },
-
-  "flee_system": {
-    "base_flee_chance": 80,
-    "per_monster_resist": 10,
-    "per_star_resist": 5,
-    "elite_resist_bonus": 20,
-    "boss_flee_allowed": false,
-    "flee_cooldown_seconds": 3
-  },
-
   "monster_scaling": {
     "_comment": "Stats bonus par niveau de monstre (multiplicatif avec base_stats)",
     "hp_per_level": 12.0,
@@ -271,11 +35,8 @@
     "def_per_level": 1.5,
     "mag_per_level": 3.5,
     "mr_per_level": 1.2,
-    "def_pen_per_level": 0.3,
-    "magic_pen_per_level": 0.2,
     "notes": "monster_stat = base_stat + (level x per_level)"
   },
-
   "regen": {
     "_comment": "Out-of-combat regeneration — flat rates from class stats (hp_regen, mp_regen). HP: out-of-combat only. Souffle: always (in + out of combat).",
     "player": {
@@ -283,12 +44,9 @@
     },
     "pnj": {
       "delay_after_combat": 3.0,
-      "hp_regen_flat": 3.0,
-      "hp_regen_flat_note": "3 HP per second"
-    },
-    "_in_combat_mp_regen_note": "In-combat souffle regen now uses entity mp_regen stat directly"
+      "hp_regen_flat": 3.0
+    }
   },
-
   "respawn": {
     "_comment": "Player death respawn costs and revive mechanics",
     "base_cost": 20,
@@ -298,37 +56,21 @@
     "revive_mp_percent": 0.25,
     "post_combat_heal_percent": 0.5
   },
-
-  "defeat_rewards": {
-    "_comment": "XP retained per mob actually killed on defeat (anti-abuse: only dead mobs count)",
-    "xp_retention": 0.1,
-    "gold_retention": 0.0,
-    "loot_retention": 0.0,
-    "xp_retention_note": "10% XP from killed mobs only — prevents farming by intentional loss",
-    "gold_retention_note": "No gold on defeat",
-    "loot_retention_note": "No loot on defeat"
-  },
-
   "world": {
     "_comment": "World/exploration constants",
     "nearby_pnj_radius": 800.0,
     "combat_join_radius": 400.0
   },
-
   "melee": {
     "_comment": "Melee combat constants",
     "attack_distance": 35.0,
     "dash_duration": 0.15,
-    "return_duration": 0.1,
     "hit_delay_between_targets": 0.2
   },
-
   "aoe": {
     "_comment": "Area of effect defaults",
-    "default_radius": 100.0,
-    "pulse_duration": 0.3
+    "default_radius": 100.0
   },
-
   "network": {
     "_comment": "Multiplayer constants",
     "default_port": 7777,
@@ -337,11 +79,9 @@
     "interpolation_speed": 15.0,
     "timeout_duration": 30.0
   },
-
   "coordination": {
     "_comment": "Monster group coordination rules",
     "max_attackers_per_target": 3,
-    "combo_window": 2.0,
-    "combo_window_note": "Seconds to chain combo attacks"
+    "combo_window": 2.0
   }
 }
