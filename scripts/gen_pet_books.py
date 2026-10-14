@@ -54,15 +54,21 @@ OUT = ROOT / "items" / "pet_books.json"
 
 SKILL_PREFIX = "skill_familiar_"
 
-# Rang -> (suffixe d'id, % de puissance, rarete, prix d'achat, prix de vente)
-# UN RANG = UNE RARETE. Prix de vente = 40% du prix d'achat, comme les consommables.
+# Rang -> (suffixe d'id, % de puissance, rarete, prix d'achat). UN RANG = UNE RARETE.
+# Le prix de revente n'est PAS ici : il vient de systems/npc_resale.json (pet_books).
 RANKS = [
-    ("C",  "c",  100, "common",      150,   60),
-    ("B",  "b",  115, "uncommon",    450,  180),
-    ("A",  "a",  130, "rare",       1250,  500),
-    ("S",  "s",  150, "epic",       3500, 1400),
-    ("SS", "ss", 175, "legendary", 10000, 4000),
+    ("C",  "c",  100, "common",      150),
+    ("B",  "b",  115, "uncommon",    450),
+    ("A",  "a",  130, "rare",       1250),
+    ("S",  "s",  150, "epic",       3500),
+    ("SS", "ss", 175, "legendary", 10000),
 ]
+with open(ROOT / "systems" / "npc_resale.json", encoding="utf-8") as _fh:
+    SELL_RATIO = json.load(_fh)["pet_books"]["sell_ratio_of_buy"]
+
+
+def sell_price(buy):
+    return max(1, round(SELL_RATIO * buy))
 
 # role du skill -> (libelle FR du nom, libelle EN du nom, adjectif EN de la description)
 ROLES = {
@@ -150,7 +156,7 @@ def build_books(skills):
         name_en = skill["name_en"]
         role_fr, role_en, role_adj = ROLES[role]
 
-        for rank, suffix, pct, rarity, buy, sell in RANKS:
+        for rank, suffix, pct, rarity, buy in RANKS:
             desc_fr = (
                 f"Enseigne « {name_fr} » au rang {rank} à un familier de rôle {role_fr}. "
                 f"Puissance {pct}% de la compétence de base."
@@ -175,7 +181,7 @@ def build_books(skills):
                 "description_fr": desc_fr,
                 "description_en": desc_en,
                 "buy_price": buy,
-                "sell_price": sell,
+                "sell_price": sell_price(buy),
                 "tradeable": True,
                 "stackable": False,
                 "acquisition": ["loot", "vendor"] if (legacy and rank == "C") else ["loot"],

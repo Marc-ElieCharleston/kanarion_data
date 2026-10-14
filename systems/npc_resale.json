@@ -1,0 +1,62 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-10-14",
+    "description": "Prix de revente aux PNJ. Le PNJ est un prix plancher : il rachete peu, pour que l hotel des ventes reste le vrai debouche et que la revente ne cree pas plus d or que les combats (audit des drops 2026-10-12 : revente = 4.6x l or des kills aux niv 1-10).",
+    "_courbe": "g(L) = curve_base + curve_coef x L^curve_exponent, la MEME courbe que l or des monstres (config/rewards.json base_gold). L = niveau de l objet.",
+    "_serveur": "Seul le bloc `equipment` est lu par le serveur (services/economy, sell_value_rules.hpp). Tout le reste est CUIT dans le sell_price de chaque objet par scripts/reprice_npc_resale.py : relancer le script apres avoir ajoute des monstres ou des materiaux.",
+    "_invendable": "sell_price 0 (ou absent) sur un objet qui n est pas un equipement = le PNJ refuse de l acheter (cartes koro, cles de tour). Avant, le serveur inventait un prix (une carte koro se revendait 176 a 320 or)."
+  },
+
+  "curve": {"curve_base": 1.0, "curve_coef": 0.05, "curve_exponent": 1.5},
+
+  "equipment": {
+    "_comment": "Equipement (classique, panoplie, unique) : factor x g(niveau de l objet) x rarity[rarete REELLE de l objet] x (1 + enhancement_per_level x niveau de forge). Niveau de l objet = item_level de l instance, sinon level_req. Avant : 4 x level_req du MODELE, rarete du modele (toujours commun) : un legendaire valait un commun, et panoplies et uniques etaient invendables.",
+    "factor": 2.0,
+    "rarity": {"common": 1.0, "uncommon": 1.5, "rare": 2.5, "epic": 4.0, "legendary": 6.0},
+    "enhancement_per_level": 0.05,
+    "_exemples": "niv 5 commun 3 / niv 30 rare 46 / niv 50 legendaire 224 / niv 100 legendaire 612"
+  },
+
+  "materials": {
+    "_comment": "factor x g(L), L = niveau du monstre le plus bas qui le lache (loot_tables.json, sinon `sources`). Plancher `min`.",
+    "common":   {"factor": 0.3, "min": 1},
+    "uncommon": {"factor": 0.8, "min": 2},
+    "rare":     {"factor": 1.5, "min": 4},
+    "no_drop_level": {
+      "_comment": "Materiau qu aucun monstre actif ne lache : niveau ecrit ici, en clair, au lieu d etre devine. Le script refuse un materiau sans niveau, et refuse aussi une entree ici si un monstre le lache (elle serait morte).",
+      "mat_monster_fang": 1,
+      "_mat_monster_fang": "Etait dans la table default, supprimee le 2026-10-13 (a7f4013). Toujours demande par recipe_bone_acc_necklace_b1 (x3) : recette impossible a fabriquer, a revoir par l agent des metiers."
+    }
+  },
+
+  "enhancement_stones": {
+    "_comment": "Prix fixe par rang. Rang V ramene de 10000 a 2500 : a 10000 la recette de rune qui la fabrique rapportait ~5650 net.",
+    "rank_1": 10, "rank_2": 40, "rank_3": 150, "rank_4": 600, "rank_5": 2500
+  },
+
+  "shop_items": {
+    "_comment": "Potions, nourriture, gemmes vendues en boutique : sell_price = sell_ratio_of_buy x buy_price (etait 0.25 a 0.40).",
+    "sell_ratio_of_buy": 0.2
+  },
+
+  "pet_books": {
+    "_comment": "Livres de familier : sell_ratio_of_buy x buy_price (etait 0.40). Repris par scripts/gen_pet_books.py.",
+    "sell_ratio_of_buy": 0.1
+  },
+
+  "familiar_traces": {
+    "_comment": "Empreintes, par rarete (etait 40/70/120/400/1200). Repris par scripts/gen_familiar_traces.py.",
+    "common": 5, "uncommon": 10, "rare": 20, "epic": 60, "legendary": 150
+  },
+
+  "crafted": {
+    "_comment": "Objet fabrique (items/profession_recipes.json) : revente plafonnee a cap_of_inputs x (or de la recette + revente des ingredients) / quantite produite. Fabriquer pour revendre au PNJ ne rapporte jamais (avant : une fiole r5 se revendait 3000 pour 690 d ingredients). Ne fait que baisser un prix.",
+    "cap_of_inputs": 0.8
+  },
+
+  "keystones": {
+    "_comment": "Stigmates, par rang. N avaient pas de prix (le serveur inventait 4 x niveau x rarete).",
+    "C": 10, "B": 40, "A": 120, "S": 300, "SS": 800
+  }
+}

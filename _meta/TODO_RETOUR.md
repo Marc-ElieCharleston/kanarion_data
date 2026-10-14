@@ -438,6 +438,11 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       L'équipement tombe une fois par combat au niveau du monstre le plus haut, dans le modèle de sa tranche ;
       `equipment_affinity` (loot_tables.json) donne le thème (poids d'armure, types d'arme). Data + back `vac_loot-affinity`
       (back sur `vac_monster-gold`, tests `LootAffinity_*`). Donner un thème aux autres familles de monstres.
+- [ ] **Revente aux PNJ** (2026-10-14) : `systems/npc_resale.json` + `scripts/reprice_npc_resale.py` (cuit les prix,
+      `--check` pour vérifier). Matériaux selon le niveau du monstre, pierres 10/40/150/600/2500, boutique 20 % de l'achat,
+      livres 10 %, objets fabriqués ≤ 80 % de leurs ingrédients. Équipement calculé par le serveur (rareté réelle, niveau
+      de l'objet), panoplies et uniques revendables, koro et clés de tour invendables. Data + back `vac_npc-resale`.
+      Relancer le script après chaque ajout de monstres. Matériaux de récolte des métiers non touchés.
 - [ ] `scripts/validate_skills.py` échoue déjà sur master (129 erreurs) : champs de sorts de familier
       (`icon`, `off_role_exempt`…) absents de la liste blanche du validateur. À ajouter à la liste blanche.
 - [ ] Bug IA (existant) : `server-combat/src/ai/player_ai.cpp:637-646`, la ligne de vue de l'IA joueur utilise
