@@ -59,7 +59,7 @@ def generate():
                     card['buy_price'] = generation['merchant_prices'][rank]
                 cards.append(card)
     return {'_meta': {'version': '2.0', 'generated_by': 'scripts/generate_koro_catalog.py',
-        'slot_type': 'koro', 'max_equipped': 2, 'active_skill_count': len(seen),
+        'slot_type': 'koro', 'max_equipped': rules['equipment']['max_equipped'], 'active_skill_count': len(seen),
         'description': 'One active skill per removable card; every skill exists at C/B/A/S/SS. Rules: systems/koro.json.'}, 'koro_cards': cards}
 
 

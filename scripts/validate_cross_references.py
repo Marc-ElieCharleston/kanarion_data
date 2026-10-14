@@ -1809,12 +1809,35 @@ def validate_respec_cost(db: Path) -> list:
     return errors
 
 
+def validate_koro_equipment(db: Path) -> list:
+    """systems/koro.json equipment owns the number of Koro cards and their unlock levels."""
+    eq = load_json(db / "systems" / "koro.json").get("equipment")
+    if not isinstance(eq, dict):
+        return ["[koro.json] equipment absent : le combat refuse de demarrer, l'economie ferme les cartes"]
+    errors = []
+    n = eq.get("max_equipped")
+    if not _is_pos_int(n):
+        return [f"[koro.json] equipment.max_equipped={n!r} : entier >= 1 attendu"]
+    levels = eq.get("slot_unlock_levels")
+    if (not isinstance(levels, list) or len(levels) != n
+            or not all(_is_pos_int(v) for v in levels)
+            or any(b <= a for a, b in zip(levels, levels[1:]))):
+        errors.append(f"[koro.json] equipment.slot_unlock_levels={levels!r} : {n} niveaux >= 1 strictement "
+                      f"croissants attendus (un par emplacement)")
+    cards_meta = load_json(db / "items" / "koro_cards.json").get("_meta", {})
+    if "max_equipped" in cards_meta and cards_meta["max_equipped"] != n:
+        errors.append(f"[koro_cards.json] DERIVE _meta.max_equipped={cards_meta['max_equipped']}, "
+                      f"source koro.json equipment.max_equipped={n} (relancer generate_koro_catalog.py)")
+    return errors
+
+
 SINGLE_SOURCE_CHECKS = [
     validate_stat_point_values,
     validate_level_grants,
     validate_rarity_power,
     validate_star_roll_weights,
     validate_respec_cost,
+    validate_koro_equipment,
 ]
 
 
