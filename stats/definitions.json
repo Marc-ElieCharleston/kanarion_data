@@ -579,11 +579,11 @@
     "apply_formula": {
       "step1": "resist_chance = target.effect_resist - attacker.effect_chance",
       "step2": "apply_chance = 100 - max(0, resist_chance)",
-      "step3": "apply_chance = clamp(apply_chance, apply_chance_min, apply_chance_max)",
-      "apply_chance_min": 15,
-      "apply_chance_max": 85,
-      "explanation": "Les sorts ont 100% de chance de base. La difference effect_resist - effect_chance determine la resistance. Minimum 15% pour toujours avoir une chance, maximum 85% pour pouvoir toujours resister.",
-      "explanation_en": "Spells have 100% base chance. The difference effect_resist - effect_chance determines resistance. Minimum 15% to always have a chance, maximum 85% to always be able to resist."
+      "step3": "apply_chance = clamp(apply_chance, apply_chance_min, apply_chance_max) pour les controles durs (stun, silence, root, disarm, confusion) ; clamp(apply_chance, apply_chance_min, 100) pour le reste (DoT, debuffs, slow, provocation)",
+      "apply_chance_min": 10,
+      "apply_chance_max": 90,
+      "explanation": "Les sorts ont 100% de chance de base. La difference effect_resist - effect_chance determine la resistance. Minimum 10% pour toujours avoir une chance. Maximum 90% pour les seuls controles durs (on peut toujours y resister) ; un DoT ou un debuff sans resistance nette passe toujours.",
+      "explanation_en": "Spells have 100% base chance. The difference effect_resist - effect_chance determines resistance. Minimum 10% to always have a chance. Maximum 90% for hard CC only (always resistable); a DoT or debuff with no net resistance always lands."
     },
     "duration_formula": {
       "base": "Les debuffs/CC ont une duree de base en secondes",
