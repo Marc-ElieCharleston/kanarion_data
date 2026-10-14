@@ -1913,6 +1913,11 @@ def validate_stat_caps(db: Path) -> list:
         v = (stats.get(cat, {}).get(stat) or {}).get("cap")
         if not (isinstance(v, int) and not isinstance(v, bool) and 0 <= v <= hi):
             errors.append(f"[definitions.json] stats.{cat}.{stat}.cap absent ou hors [0, {hi}] ({v!r})")
+    refl = stats.get("special", {}).get("reflect") or {}
+    if not (isinstance(refl.get("cap_permanent"), int) and isinstance(refl.get("cap"), int)
+            and 0 <= refl["cap_permanent"] <= refl["cap"]):
+        errors.append(f"[definitions.json] stats.special.reflect.cap_permanent absent ou > cap "
+                      f"({refl.get('cap_permanent')!r} / {refl.get('cap')!r})")
     asp = (stats.get("offensive", {}).get("attack_speed") or {}).get("cap")
     if not (isinstance(asp, (int, float)) and 1 <= asp <= 10):
         errors.append(f"[definitions.json] stats.offensive.attack_speed.cap absent ou hors [1, 10] ({asp!r})")
