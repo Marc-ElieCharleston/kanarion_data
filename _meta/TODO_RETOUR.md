@@ -60,7 +60,7 @@ Dernière mise à jour : 2026-10-02.
 - [ ] Morceau D (data morte) : `config/combat.json` élagué (37 clés), `systems/social.json` réduit aux limites
       d'amis / blocages, lues par le service social (back `9d1198b3`, non compilé). Audit complet en cours.
 - [ ] Niveaux de compétence de familier par doublons (max 5) : scaling à concevoir (`carnet/familiers.md`).
-- [ ] Changements de comportement à vérifier en jeu : les contrôles peuvent rater (application 15-85 %),
+- [ ] Changements de comportement à vérifier en jeu : les contrôles durs peuvent rater (application 10-90 %, DoT et débuffs garantis sans résistance),
       familiers à 3 s de GCD, parade / blocage / vol de vie plafonnés au jet, durée des buffs par type.
 
 ## 1bis. Carte et monstres : ce qu'il faut faire au retour (décidé le 2026-10-11)
@@ -204,7 +204,7 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
 
 - [ ] Refactor « tout dans la data », morceau B (plafonds de stats lus dans `stats/definitions.json`) :
       décisions du 2026-10-14 dans `carnet/plafonds_stats.md` (buffs 100 / boucliers 50, parade 30,
-      ténacité 50 (durée divisée au plus par 2, DoT compris), application des effets 15-85, GCD 2 / 3 / 3). Plus tard : parade avec riposte,
+      ténacité 50 (durée divisée au plus par 2, DoT compris), application des effets 10-90 (plafond haut : contrôles durs seulement), GCD 2 / 3 / 3). Plus tard : parade avec riposte,
       contre-stat de la ténacité.
 
 ## 5. Data — travail à faire
