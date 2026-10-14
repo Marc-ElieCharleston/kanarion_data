@@ -29,6 +29,18 @@ Détail : `_meta/conception_familiers/LIVRES_DEPLACEMENTS_PASSIFS.md`.
   livre ; règle par type (jamais d'échange de place ni de saut vers l'ennemi pour un soigneur).
 - Célérité → réduction du temps d'incantation ; Carapace et Épines à 8 %.
 
+## Niveaux de compétence par doublons (propriétaire, 2026-10-14 ; à concevoir)
+
+- Aujourd'hui une compétence de familier ne monte **pas** de niveau : seul le rang du livre compte
+  (80 → 150 %). Les ~530 champs « par niveau » de `classes/familiar/skills.json` sont donc sans effet.
+- Validé : un **livre en double** (peu importe son rang) fait monter la compétence, **niveau max 5**,
+  coût croissant (1, 1, 2, 2 doublons = 6 livres). Donne un usage aux doublons et de la durée de vie.
+- Les niveaux portent sur **l'utilité** (durée, recharge, effet secondaire au niveau 5) plutôt que sur
+  la puissance brute, pour ne pas doubler l'axe du rang (progression horizontale).
+- À faire : le **scaling** des compétences de familier (revoir les champs « par niveau », écrits pour
+  20 niveaux, pour 5), puis le serveur (niveau stocké par compétence) et le client.
+- Bastion : recharge 8 → 15 s (2026-10-14), l'immunité aux contrôles n'est plus permanente.
+
 ## Passifs en combat
 
 Seuls 6 sur 31 marchaient. Lot 1 fait (8 passifs de stats, back `vac_familiar-passives-combat`,
