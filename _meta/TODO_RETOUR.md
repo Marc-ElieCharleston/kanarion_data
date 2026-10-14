@@ -49,6 +49,16 @@ Dernière mise à jour : 2026-10-02.
   - [ ] `vac_defense-curve-test` — `ctest -R MonsterScaling` avec la data `vac_archetype-profiles`
 - [ ] Mettre à jour le pin de la data (`kanarion-meta`) dans le back et le client après fusion.
 
+### Refactor « tout dans la data », lot 1 (branches `vac_refactor-lot1`, back ET data) — à compiler au bureau
+
+- [ ] **Compiler et tester** back `vac_refactor-lot1` (`24d7cf37`) avec data `vac_refactor-lot1` (`21ffe94`),
+      puis fusionner dans main / master. Morceau A compilé et vert (2026-10-14) ; B1 (plafonds) en cours
+      de compilation à la maison ; **B2 (GCD) jamais compilé**.
+- [ ] Le validateur refuse **Bastion** (familier : immunité CC 5 s, recharge 8 s) : recharge à décider avant
+      la fusion. Plafond du **renvoi de dégâts** à décider (voir `carnet/plafonds_stats.md`).
+- [ ] Changements de comportement à vérifier en jeu : les contrôles peuvent rater (application 15-85 %),
+      familiers à 3 s de GCD, parade / blocage / vol de vie plafonnés au jet, durée des buffs par type.
+
 ## 1bis. Carte et monstres : ce qu'il faut faire au retour (décidé le 2026-10-11)
 
 Détails et ids : `_meta/carnet/carte_monstres.md` (encadré du haut). Méthode : zone par zone, le propriétaire
