@@ -1739,9 +1739,41 @@ def validate_level_grants(db: Path) -> list:
     return errors
 
 
+ITEM_RARITIES = ("common", "uncommon", "rare", "epic", "legendary")
+
+
+def validate_rarity_power(db: Path) -> list:
+    """items/equipment_scaling.json rarity_system.rarities.<r>.power_mult owns the item power."""
+    errors = []
+    rarities = load_json(db / "items" / "equipment_scaling.json").get("rarity_system", {}).get("rarities")
+    if not isinstance(rarities, dict):
+        return ["[equipment_scaling.json] rarity_system.rarities absent : l'economie refuse de demarrer"]
+    for r in ITEM_RARITIES:
+        if r not in rarities:
+            errors.append(f"[equipment_scaling.json] rarete '{r}' absente de rarity_system.rarities "
+                          f"(le serveur exige les cinq)")
+    power = {}
+    for r, entry in rarities.items():
+        if r.startswith("_"):
+            continue
+        v = entry.get("power_mult") if isinstance(entry, dict) else None
+        if not isinstance(v, (int, float)) or isinstance(v, bool) or v <= 0:
+            errors.append(f"[equipment_scaling.json] rarity_system.rarities.{r}.power_mult absent "
+                          f"ou <= 0 ({v!r}) : le fichier est refuse")
+            continue
+        power[r] = v
+    ordered = [(r, power[r]) for r in ITEM_RARITIES if r in power]
+    for (lo, a), (hi, b) in zip(ordered, ordered[1:]):
+        if b < a:
+            errors.append(f"[equipment_scaling.json] power_mult de '{hi}' ({b}) inferieur a celui de "
+                          f"'{lo}' ({a}) : une rarete superieure ne peut pas valoir moins")
+    return errors
+
+
 SINGLE_SOURCE_CHECKS = [
     validate_stat_point_values,
     validate_level_grants,
+    validate_rarity_power,
 ]
 
 
