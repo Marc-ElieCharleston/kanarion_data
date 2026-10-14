@@ -711,20 +711,9 @@ def validate_rewards(db: Path) -> list:
                       "applique 1 + (N-1) * 0.055 plafonne. Utiliser "
                       "bonus_per_extra_player + cap.")
 
-    mt_path = db / "config" / "monster_tiers.json"
-    tier_xp = {}
-    if mt_path.exists():
-        for name, body in load_json(mt_path).get("threat_tiers", {}).items():
-            if isinstance(body, dict) and "xp_multiplier" in body:
-                tier_xp[name] = float(body["xp_multiplier"])
-        for name, live in tier_xp.items():
-            new = fam_values("monster_threat_tier").get(name, {}).get("xp")
-            if new is None or abs(live - float(new)) > 1e-6:
-                errors.append(f"[rewards] DERIVE monster_threat_tier.{name}.xp : "
-                              f"origine={live} rewards.json={new}")
-    if not tier_xp:
-        tier_xp = {n: float(v.get("xp", 1.0))
-                   for n, v in fam_values("monster_threat_tier").items()}
+    # config/monster_tiers.json (copie morte) supprime le 2026-10-14 : rewards.json seul.
+    tier_xp = {n: float(v.get("xp", 1.0))
+               for n, v in fam_values("monster_threat_tier").items()}
 
     # --- 3. Derivation de l'XP par monstre ----------------------------------
     overrides = (rw.get("inputs_declared_elsewhere", {})
