@@ -63,7 +63,9 @@ Dernière mise à jour : 2026-10-02.
       retiré, `percent_per_level: 0` sur les 2 maneuvers à dégâts, 4 empreintes alignées sur 3,5 % (rats soigneur
       / mage, marcassin, ourson), copie morte `rarity_drop_weights` retirée. Rareté 60/25/10/4/1 côté serveur =
       back `vac_capture-rarity` (autre session). Client : `save_manager.gd:1816` doit lire `storage.bank.base_slots`
-      (bloc `gold_sinks.storage` supprimé). En attente : `curse_dot` (explosion 50 % des dégâts infligés ?).
+      (bloc `gold_sinks.storage` supprimé). `curse_dot` : explosion = 50 % des dégâts bruts des ticks, fin naturelle
+      seulement, sans propagation (back `vac_audit-lot1` `3f20164e`, NON COMPILÉ, part de `vac_refactor-lot1`) ;
+      client : `status_engine.gd:316` (console de debug) garde l'ancienne formule.
 - [ ] Niveaux de compétence de familier par doublons (max 5) : scaling à concevoir (`carnet/familiers.md`).
 - [ ] Changements de comportement à vérifier en jeu : les contrôles durs peuvent rater (application 10-90 %, DoT et débuffs garantis sans résistance),
       familiers à 3 s de GCD, parade / blocage / vol de vie plafonnés au jet, durée des buffs par type.
