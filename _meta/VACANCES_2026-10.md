@@ -181,3 +181,7 @@ vérifiés, suppressions. **Liste complète à faire : `_meta/TODO_RETOUR.md` se
 Démarche : on relit les tableaux, puis un script appliquera les décisions à
 `entities/monsters.json` — relançable après la fusion du travail du bureau, plutôt que
 de fusionner 200 monstres à la main.
+
+## Plafonds des stats (2026-10-14)
+
+Décisions du propriétaire pour le morceau B du refactor : voir `carnet/plafonds_stats.md`.
