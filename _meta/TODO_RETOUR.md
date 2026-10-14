@@ -450,6 +450,13 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
 - [ ] **Pass premium : régénération du familier x2 hors combat** (PV et souffle, rien en combat). Écrit dans
       `_meta/conception_systemes/PASS_PREMIUM.md` (1.2, 2.2, 3.1 `familiar_out_of_combat_regen_multiplier`, lot 3) ;
       le pass n'existe pas encore côté serveur.
+- [ ] **Revue du code économie** (2026-10-14) : corrections sur `vac_economy-fixes` (data + back, depuis master / main).
+      Amélioration qui effaçait les verrous d'un objet, plafond de contrats contournable, sac qui rétrécissait sur
+      erreur, une seule liste des raretés, plus aucune valeur de secours compilée : une donnée manquante empêche le
+      service de démarrer. À compiler et tester à la maison. Reste : enchaînement de paiement commun au sac et à
+      l'amélioration, client 0x0A01. À trancher : `gold_weight` 0 donne 1 or (plancher) ou 0.
+- [ ] `mat_monster_fang` n'est plus lâché par aucun monstre (table `default` supprimée, a7f4013) mais
+      `recipe_bone_acc_necklace_b1` en demande 3 : recette impossible. À revoir par l'agent des métiers.
 - [ ] `scripts/validate_skills.py` échoue déjà sur master (129 erreurs) : champs de sorts de familier
       (`icon`, `off_role_exempt`…) absents de la liste blanche du validateur. À ajouter à la liste blanche.
 - [ ] Bug IA (existant) : `server-combat/src/ai/player_ai.cpp:637-646`, la ligne de vue de l'IA joueur utilise
