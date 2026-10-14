@@ -59,6 +59,11 @@ Dernière mise à jour : 2026-10-02.
       en combat (`carnet/plafonds_stats.md`).
 - [ ] Morceau D (data morte) : `config/combat.json` élagué (37 clés), `systems/social.json` réduit aux limites
       d'amis / blocages, lues par le service social (back `9d1198b3`, non compilé). Audit complet en cours.
+- [ ] Audit data morte, lot 1 (data `vac_audit-lot1`, part de `vac_refactor-lot1`, poussée) : bloc mort de la banque
+      retiré, `percent_per_level: 0` sur les 2 maneuvers à dégâts, 4 empreintes alignées sur 3,5 % (rats soigneur
+      / mage, marcassin, ourson), copie morte `rarity_drop_weights` retirée. Rareté 60/25/10/4/1 côté serveur =
+      back `vac_capture-rarity` (autre session). Client : `save_manager.gd:1816` doit lire `storage.bank.base_slots`
+      (bloc `gold_sinks.storage` supprimé). En attente : `curse_dot` (explosion 50 % des dégâts infligés ?).
 - [ ] Niveaux de compétence de familier par doublons (max 5) : scaling à concevoir (`carnet/familiers.md`).
 - [ ] Changements de comportement à vérifier en jeu : les contrôles durs peuvent rater (application 10-90 %, DoT et débuffs garantis sans résistance),
       familiers à 3 s de GCD, parade / blocage / vol de vie plafonnés au jet, durée des buffs par type.
