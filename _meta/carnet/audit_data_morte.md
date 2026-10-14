@@ -60,7 +60,8 @@ Métiers (`professions*`, `profession_recipes`, `gather_nodes`) : conception, é
 
 **Avancement (2026-10-14)** : lot 1, C1, C20 et C13 faits (data `vac_audit-lot1`) ; C13 : pas de jet de capture,
 une empreinte lootée = le familier ; ce qui compte = % de loot du monstre + tirage de rareté. C17 fait : explosion de la malédiction =
-50 % des dégâts infligés par ses ticks, à la fin naturelle (proprietaire).
+50 % des dégâts infligés par ses ticks, à la fin naturelle (proprietaire). Lot 9 fait : 8 fichiers supprimés ;
+restent `boss_mechanics` (client) et `currencies` (à décider).
 
 Chaque lot se revérifie avant d'agir (lecteurs serveur + client) : les emplacements exacts sont dans le
 rapport d'audit de la session du 2026-10-14.

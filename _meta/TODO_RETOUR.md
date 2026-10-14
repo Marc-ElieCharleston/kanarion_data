@@ -66,6 +66,9 @@ Dernière mise à jour : 2026-10-02.
       (bloc `gold_sinks.storage` supprimé). `curse_dot` : explosion = 50 % des dégâts bruts des ticks, fin naturelle
       seulement, sans propagation (back `vac_audit-lot1` `3f20164e`, NON COMPILÉ, part de `vac_refactor-lot1`) ;
       client : `status_engine.gd:316` (console de debug) garde l'ancienne formule.
+- [ ] Audit lot 9 fait (data `vac_audit-lot1` `0db6b30`) : 8 fichiers morts supprimés. Gardés : `entities/boss_mechanics.json`
+      (client `data_db.gd:194` le charge sans l'utiliser : retirer la ligne, puis le fichier) et `items/currencies.json`
+      (catalogue tenu à jour, à décider). `scripts/validate_skills.py` échoue déjà en CI (89 erreurs, avant ce lot).
 - [ ] Niveaux de compétence de familier par doublons (max 5) : scaling à concevoir (`carnet/familiers.md`).
 - [ ] Changements de comportement à vérifier en jeu : les contrôles durs peuvent rater (application 10-90 %, DoT et débuffs garantis sans résistance),
       familiers à 3 s de GCD, parade / blocage / vol de vie plafonnés au jet, durée des buffs par type.
