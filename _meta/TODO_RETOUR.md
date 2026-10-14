@@ -190,7 +190,7 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
 
 - [ ] Refactor « tout dans la data », morceau B (plafonds de stats lus dans `stats/definitions.json`) :
       décisions du 2026-10-14 dans `carnet/plafonds_stats.md` (buffs 100 / boucliers 50, parade 30,
-      ténacité joueurs 90, application des effets 15-85, GCD 2 / 3 / 3). Plus tard : parade avec riposte,
+      ténacité 50 (durée divisée au plus par 2, DoT compris), application des effets 15-85, GCD 2 / 3 / 3). Plus tard : parade avec riposte,
       contre-stat de la ténacité.
 
 ## 5. Data — travail à faire
