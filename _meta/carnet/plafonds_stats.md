@@ -29,5 +29,5 @@ Inchangés, simplement déplacés dans la data : pénétration 70, CDR 40, incan
       lot à part).
 - [ ] **Renvoi de dégâts (reflect)** : la data annonçait 30, le serveur n'a jamais plafonné (100) ; un unique donne
       jusqu'à 52 au rang SS. Plafond à décider (gardé à 100 en attendant).
-- [ ] **Bastion** (familier tank) : immunité aux contrôles 5 s (+0,15 s / niveau) pour une recharge de **8 s**,
-      presque permanente même sans bonus ; le validateur le refuse. Recharge à revoir (proposé : 20 s).
+- [x] **Bastion** (familier tank) : immunité aux contrôles 5 s pour une recharge de 8 s, presque permanente.
+      Recharge passée à **15 s** (propriétaire, 2026-10-14).
