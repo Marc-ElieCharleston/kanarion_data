@@ -1792,11 +1792,29 @@ def validate_star_roll_weights(db: Path) -> list:
     return errors
 
 
+def validate_respec_cost(db: Path) -> list:
+    """systems/economy.json gold_sinks.respec owns the stat / skill / passive reset price."""
+    r = load_json(db / "systems" / "economy.json").get("gold_sinks", {}).get("respec")
+    if not isinstance(r, dict):
+        return ["[economy.json] gold_sinks.respec absent : les trois resets sont fermes"]
+    errors = []
+    for k in ("free_until_level", "gold_per_level_above"):
+        if not _is_nonneg_int(r.get(k)):
+            errors.append(f"[economy.json] gold_sinks.respec.{k} absent ou non entier >= 0 ({r.get(k)!r}) : "
+                          f"les trois resets sont fermes")
+    for dead in ("base_cost",):
+        if dead in r:
+            errors.append(f"[economy.json] gold_sinks.respec.{dead} est revenu : la regle est par niveau "
+                          f"(free_until_level / gold_per_level_above), pas par nombre de resets")
+    return errors
+
+
 SINGLE_SOURCE_CHECKS = [
     validate_stat_point_values,
     validate_level_grants,
     validate_rarity_power,
     validate_star_roll_weights,
+    validate_respec_cost,
 ]
 
 
