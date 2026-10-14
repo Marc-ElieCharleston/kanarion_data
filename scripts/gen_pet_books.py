@@ -57,11 +57,12 @@ SKILL_PREFIX = "skill_familiar_"
 # Rang -> (suffixe d'id, % de puissance, rarete, prix d'achat, prix de vente)
 # UN RANG = UNE RARETE. Prix de vente = 40% du prix d'achat, comme les consommables.
 RANKS = [
-    ("C",  "c",  100, "common",      150,   60),
-    ("B",  "b",  115, "uncommon",    450,  180),
-    ("A",  "a",  130, "rare",       1250,  500),
-    ("S",  "s",  150, "epic",       3500, 1400),
-    ("SS", "ss", 175, "legendary", 10000, 4000),
+    # revente = 10 % de l'achat (systems/npc_resale.json pet_books, 2026-10-14 ; etait 40 %)
+    ("C",  "c",  100, "common",      150,   15),
+    ("B",  "b",  115, "uncommon",    450,   45),
+    ("A",  "a",  130, "rare",       1250,  125),
+    ("S",  "s",  150, "epic",       3500,  350),
+    ("SS", "ss", 175, "legendary", 10000, 1000),
 ]
 
 # role du skill -> (libelle FR du nom, libelle EN du nom, adjectif EN de la description)

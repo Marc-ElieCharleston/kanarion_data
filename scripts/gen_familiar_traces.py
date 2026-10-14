@@ -47,12 +47,13 @@ import sys
 import unicodedata
 
 # rarete -> (libelle FR, libelle EN, prix de vente)
+# Prix de vente = systems/npc_resale.json familiar_traces (2026-10-14 ; etait 40/70/120/400/1200).
 RARITIES = [
-    ("common", "Commun", "Common", 40),
-    ("uncommon", "Peu Commun", "Uncommon", 70),
-    ("rare", "Rare", "Rare", 120),
-    ("epic", "Épique", "Epic", 400),
-    ("legendary", "Légendaire", "Legendary", 1200),
+    ("common", "Commun", "Common", 5),
+    ("uncommon", "Peu Commun", "Uncommon", 10),
+    ("rare", "Rare", "Rare", 20),
+    ("epic", "Épique", "Epic", 60),
+    ("legendary", "Légendaire", "Legendary", 150),
 ]
 
 # role de familier -> (libelle FR, libelle EN)

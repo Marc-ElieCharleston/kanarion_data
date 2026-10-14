@@ -440,6 +440,11 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       vue) + `b0e9a37` (entrave, silence, éclair : ligne de vue ; projectiles 7 → 5) ; back `vac_ai-los-range`
       (repère de ligne de vue de l'IA joueur, cibles valides seulement pour le coordinateur de groupe). Suite combat
       complète avec toutes les branches vac_ : 2 135 / 2 137, 2 ignorés, 0 échec.
+- [ ] **Revente aux PNJ** (2026-10-14) : `systems/npc_resale.json` + `scripts/reprice_npc_resale.py` (cuit les prix,
+      `--check` pour vérifier). Matériaux selon le niveau du monstre, pierres 10/40/150/600/2500, boutique 20 % de l'achat,
+      livres 10 %, objets fabriqués ≤ 80 % de leurs ingrédients. Équipement calculé par le serveur (rareté réelle, niveau
+      de l'objet), panoplies et uniques revendables, koro et clés de tour invendables. Data + back `vac_npc-resale`.
+      Relancer le script après chaque ajout de monstres. Matériaux de récolte des métiers non touchés.
 - [ ] `scripts/validate_skills.py` échoue déjà sur master (129 erreurs) : champs de sorts de familier
       (`icon`, `off_role_exempt`…) absents de la liste blanche du validateur. À ajouter à la liste blanche.
 - [ ] Bug IA (existant) : `server-combat/src/ai/player_ai.cpp:637-646`, la ligne de vue de l'IA joueur utilise
