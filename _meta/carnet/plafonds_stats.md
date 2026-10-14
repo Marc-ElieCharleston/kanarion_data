@@ -27,7 +27,13 @@ Inchangés, simplement déplacés dans la data : pénétration 70, CDR 40, incan
 
 - [ ] **Parade avec riposte** : réduit les dégâts et en renvoie une partie, plafond 50 (nouvelle mécanique,
       lot à part).
-- [ ] **Renvoi de dégâts (reflect)** : la data annonçait 30, le serveur n'a jamais plafonné (100) ; un unique donne
-      jusqu'à 52 au rang SS. Plafond à décider (gardé à 100 en attendant).
+- [x] **Renvoi de dégâts** (propriétaire, 2026-10-14) : **25 % permanent** (équipement, passifs : un renvoi permanent
+      ne se dissipe pas ; un tank à 10k PV contre un joueur à 3k PV gagnerait à coup sûr), **50 % au total** avec
+      les buffs et procs, appliqué au coup. Tzinat Refleks (26-52 % pendant 4 s après blocage / parade, recharge
+      10 s) reste un pic temporaire. Le renvoi réduit aussi les dégâts reçus. À tester en jeu.
+- [ ] **Bug** : la sous-stat d'artisanat « Reflet » (2-8 %, `items/substat_crafting_system.json`) n'arrive jamais
+      en combat (l'équipement ne transmet pas `reflect`). À brancher ou retirer.
+- [ ] Idée gardée : renvoi en **stacks dissipables** réappliqués par l'objet (ex. toutes les 20 s pendant 10 s) ;
+      le modèle « proc + recharge » existant suffit pour l'instant (viser ≤ 50 % du temps actif).
 - [x] **Bastion** (familier tank) : immunité aux contrôles 5 s pour une recharge de 8 s, presque permanente.
       Recharge passée à **15 s** (propriétaire, 2026-10-14).

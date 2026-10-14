@@ -55,7 +55,8 @@ Dernière mise à jour : 2026-10-02.
       puis fusionner dans main / master. Morceau A compilé et vert (2026-10-14) ; B1 (plafonds) en cours
       de compilation à la maison ; **B2 (GCD) jamais compilé**.
 - [x] Bastion : recharge 8 → 15 s (propriétaire, 2026-10-14).
-- [ ] Plafond du **renvoi de dégâts** à décider (voir `carnet/plafonds_stats.md`).
+- [x] Renvoi de dégâts : 25 % permanent / 50 % total (2026-10-14). **Bug** : la sous-stat « Reflet » n'arrive pas
+      en combat (`carnet/plafonds_stats.md`).
 - [ ] Morceau D (data morte) : `config/combat.json` élagué (37 clés), `systems/social.json` réduit aux limites
       d'amis / blocages, lues par le service social (back `9d1198b3`, non compilé). Audit complet en cours.
 - [ ] Niveaux de compétence de familier par doublons (max 5) : scaling à concevoir (`carnet/familiers.md`).
