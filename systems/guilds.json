@@ -6,12 +6,15 @@
   },
 
   "config": {
-    "base_max_members": 20,
-    "max_guild_level": 20,
+    "max_members_source": "guild/levels.json levels[].max_members",
+    "_max_members_note": "La capacite d'une guilde suit son NIVEAU : guild/levels.json levels[].max_members (lu par services/guild via GuildProgression::max_members, decision owner 2026-10-14). Il n'y a plus de plafond fixe : l'ancien base_max_members (20) et le max_guild_members de guild.yaml (30) sont supprimes.",
+    "max_guild_level": 50,
+    "_max_guild_level_note": "MIROIR de guild/config.json max_level (seule valeur lue par le serveur), egalite controlee par scripts/validate_cross_references.py. Le niveau maximum definitif (50 ou 100) n'est pas encore decide : voir _meta/TODO_RETOUR.md.",
     "max_name_length": 24,
     "max_tag_length": 4,
     "min_level_to_create": 10,
-    "creation_cost": 1000
+    "creation_cost": 50,
+    "_creation_cost_owner": "SOURCE UNIQUE du prix de creation d'une guilde (or), lue par services/guild (progression/guild_rules.hpp) sans valeur par defaut : absente = le service refuse de demarrer. Valeur du jeu conservee (50, etait dans guild.yaml) ; systems/economy.json gold_sinks.guild.creation_cost est un MIROIR controle."
   },
 
   "ranks": [
@@ -22,11 +25,12 @@
   ],
 
   "level_data": {
+    "_note": "NON LU par le serveur. max_members y est un MIROIR de guild/levels.json (egalite controlee par scripts/validate_cross_references.py) ; xp_required et les perks sont d'anciennes valeurs de design, la courbe d'XP reelle est guild/levels.json xp_to_next.",
     "1":  {"xp_required": 0,      "max_members": 20},
-    "5":  {"xp_required": 10000,  "max_members": 32, "perk": "guild_bank"},
-    "10": {"xp_required": 70000,  "max_members": 55, "perk": "guild_xp_bonus", "perk_desc_fr": "+2% XP pour tous les membres", "perk_desc_en": "+2% XP for all members"},
-    "15": {"xp_required": 250000, "max_members": 85, "perk": "guild_drop_bonus", "perk_desc_fr": "+5% de taux de drop", "perk_desc_en": "+5% drop rate"},
-    "20": {"xp_required": 650000, "max_members": 150, "perk": "guild_hall"}
+    "5":  {"xp_required": 10000,  "max_members": 20, "perk": "guild_bank"},
+    "10": {"xp_required": 70000,  "max_members": 25, "perk": "guild_xp_bonus", "perk_desc_fr": "+2% XP pour tous les membres", "perk_desc_en": "+2% XP for all members"},
+    "15": {"xp_required": 250000, "max_members": 25, "perk": "guild_drop_bonus", "perk_desc_fr": "+5% de taux de drop", "perk_desc_en": "+5% drop rate"},
+    "20": {"xp_required": 650000, "max_members": 30, "perk": "guild_hall"}
   },
 
   "xp_rewards": {

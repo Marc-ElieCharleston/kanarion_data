@@ -1831,6 +1831,50 @@ def validate_koro_equipment(db: Path) -> list:
     return errors
 
 
+def validate_guild_rules(db: Path) -> list:
+    """guild/levels.json owns the capacity by level, systems/guilds.json the creation cost."""
+    errors = []
+    gcfg = load_json(db / "guild" / "config.json")
+    levels = load_json(db / "guild" / "levels.json").get("levels", [])
+    max_level = gcfg.get("max_level")
+    capacity = {}
+    for row in levels:
+        lvl, cap = row.get("level"), row.get("max_members")
+        if not _is_pos_int(cap):
+            errors.append(f"[guild/levels.json] niveau {lvl} : max_members={cap!r}, entier >= 1 attendu "
+                          f"(capacite de la guilde a ce niveau)")
+            continue
+        capacity[lvl] = cap
+    for lvl in sorted(capacity):
+        if lvl - 1 in capacity and capacity[lvl] < capacity[lvl - 1]:
+            errors.append(f"[guild/levels.json] la capacite baisse au niveau {lvl} "
+                          f"({capacity[lvl - 1]} -> {capacity[lvl]}) : une guilde qui monte perdrait des places")
+    guilds = load_json(db / "systems" / "guilds.json")
+    cfg = guilds.get("config", {})
+    cost = cfg.get("creation_cost")
+    if not _is_nonneg_int(cost):
+        errors.append(f"[guilds.json] config.creation_cost={cost!r} : entier >= 0 attendu, sinon le service "
+                      f"de guilde refuse de demarrer")
+    for dead in ("base_max_members",):
+        if dead in cfg:
+            errors.append(f"[guilds.json] config.{dead} est revenu : la capacite suit le niveau (guild/levels.json)")
+    if "max_guild_level" in cfg and cfg["max_guild_level"] != max_level:
+        errors.append(f"[guilds.json] DERIVE config.max_guild_level={cfg['max_guild_level']}, "
+                      f"source guild/config.json max_level={max_level}")
+    for key, row in guilds.get("level_data", {}).items():
+        if key.startswith("_") or not isinstance(row, dict) or "max_members" not in row:
+            continue
+        lvl = int(key)
+        if capacity.get(lvl) != row["max_members"]:
+            errors.append(f"[guilds.json] DERIVE level_data.{key}.max_members={row['max_members']}, "
+                          f"source guild/levels.json={capacity.get(lvl)!r}")
+    eco = load_json(db / "systems" / "economy.json").get("gold_sinks", {}).get("guild", {})
+    if "creation_cost" in eco and eco["creation_cost"] != cost:
+        errors.append(f"[economy.json] DERIVE gold_sinks.guild.creation_cost={eco['creation_cost']}, "
+                      f"source guilds.json config.creation_cost={cost!r}")
+    return errors
+
+
 SINGLE_SOURCE_CHECKS = [
     validate_stat_point_values,
     validate_level_grants,
@@ -1838,6 +1882,7 @@ SINGLE_SOURCE_CHECKS = [
     validate_star_roll_weights,
     validate_respec_cost,
     validate_koro_equipment,
+    validate_guild_rules,
 ]
 
 
