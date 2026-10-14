@@ -1899,6 +1899,7 @@ STAT_CAPS = [  # (category, stat, max allowed) — read by shared/gameplay/stat_
     ("defensive", "block_chance", 100), ("defensive", "parry_chance", 100), ("defensive", "effect_resist", 100),
     ("defensive", "tenacity", 100), ("precision", "flee", 100), ("support", "healing_received", 1000),
     ("special", "lifesteal", 100), ("special", "spell_vamp", 100), ("special", "reflect", 100),
+    ("special", "thorns", 100),
     ("special", "cast_speed", 100), ("special", "cooldown_reduction", 100),
 ]
 BUFF_DURATION_TYPES = ("buff", "hot", "immunity", "shield")
