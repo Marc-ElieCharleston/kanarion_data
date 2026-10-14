@@ -31,7 +31,7 @@ def load(db, f):
 
 
 def g(L, c):
-    """Courbe de l or des monstres (config/rewards.json), recopiee dans npc_resale.json `curve`."""
+    """Courbe de l or des monstres, lue dans config/rewards.json base_gold."""
     return c['curve_base'] + c['curve_coef'] * max(1, L) ** c['curve_exponent']
 
 
@@ -63,6 +63,7 @@ def material_levels(db):
 
 def compute(db):
     R = load(db, 'systems/npc_resale.json')
+    curve = load(db, 'config/rewards.json')['base_gold']
     lv, level_of = material_levels(db)
     no_drop = {k: v for k, v in R['materials']['no_drop_level'].items() if not k.startswith('_')}
     out = {}
@@ -82,7 +83,7 @@ def compute(db):
             else:
                 nolvl.append(x['id'])
                 continue
-            out[x['id']] = max(k['min'], round(k['factor'] * g(lvl, R['curve'])))
+            out[x['id']] = max(k['min'], round(k['factor'] * g(lvl, curve)))
     for x in mat['enhancement_stones']:
         out[x['id']] = R['enhancement_stones'][x['stone_rank']]
     ratio = R['shop_items']['sell_ratio_of_buy']
