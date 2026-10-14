@@ -98,7 +98,7 @@
       7.0,
       3.0
     ],
-    "roll_weights_comment": "0*=15% 1*=32% 2*=28% 3*=15% 4*=7% 5*=3% (poids, pas des pourcentages : normalises a la somme). Valeurs VIVANTES, reprises de config/game.json spawner.star_roll_weights le 2026-08-14. L'ancienne table de ce fichier ([25,25,20,15,10,5]) n'etait lue par personne et annoncait une distribution fausse ; le C++ portait en plus la meme table morte en dur comme dernier recours.",
+    "roll_weights_comment": "0*=15% 1*=32% 2*=28% 3*=15% 4*=7% 5*=3% (poids, pas des pourcentages : normalises a la somme). SOURCE UNIQUE lue par presence (services/presence/src/world/star_roll.hpp) depuis la refacto 2026-10-14, sans repli C++ : exactement 6 poids >= 0 de somme > 0, sinon presence refuse de demarrer. config/game.json spawner.star_roll_weights reste un MIROIR client controle par scripts/validate_cross_references.py.",
     "max_elites_per_pack": 2,
     "max_bosses_per_pack": 1,
     "packs": {
@@ -358,7 +358,7 @@
       "owns": "Ce que la rencontre etoilee EST : stats (hp/atk/def), IA, crit/tenacite, composition, nombre de mobs, chances elite/boss, poids de tirage, respawn.",
       "does_not_own": "Ce qu'elle RAPPORTE. Tout multiplicateur d'XP, d'or ou de drop vit dans config/rewards.json, famille encounter_stars.",
       "runtime_owner": "Presence tire le star_level au spawn (presence_service.cpp roll_star_level) et le tamponne sur le pack. Combat le LIT via origin_monster_mappings et ne le recalcule jamais. Le client l'affiche, rien de plus.",
-      "migration_status": "ETAPE 1/2 — ce bloc est desormais complet et suffit a lui seul. systems/encounter_stars.json et config/game.json spawner.star_roll_weights restent en place, marques deplaces, jusqu'a la bascule backend."
+      "migration_status": "ETAPE 2 faite pour les poids de tirage (2026-10-14) : presence lit roll_weights ici et nulle part ailleurs. Restent a migrer : les star_tiers (taille de pack, chances elite/boss) toujours lues dans systems/encounter_stars.json par presence (sans repli C++ desormais) ; config/game.json spawner.star_roll_weights est garde comme miroir client."
     },
     "_xp_mult_deprecated": "ATTENTION: les packs[].xp_mult ci-dessous (1.0->14.0) NE SONT PAS lus / PAS lautorite. Le multiplicateur dXP par etoile appartient a config/rewards.json multiplier_families.encounter_stars (migration single-owner). Ces valeurs trainent et divergent (rewards ~1.0->2.3). A supprimer une fois zero lecteur. Le star_system reste vivant pour roll_weights + composition, seul xp_mult est mort."
   },

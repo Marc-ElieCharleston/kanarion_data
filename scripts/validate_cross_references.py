@@ -1770,10 +1770,33 @@ def validate_rarity_power(db: Path) -> list:
     return errors
 
 
+def validate_star_roll_weights(db: Path) -> list:
+    """entities/monster_variants.json star_system.roll_weights owns the pack star draw."""
+    errors = []
+    w = load_json(db / "entities" / "monster_variants.json").get("star_system", {}).get("roll_weights")
+    ok = (isinstance(w, list) and len(w) == 6
+          and all(isinstance(x, (int, float)) and not isinstance(x, bool) and x >= 0 for x in w)
+          and sum(w) > 0)
+    if not ok:
+        return [f"[monster_variants.json] star_system.roll_weights={w!r} : 6 poids >= 0 de somme > 0 "
+                f"attendus (etoiles 0..5), sinon presence refuse de demarrer"]
+    mirror = load_json(db / "config" / "game.json").get("spawner", {}).get("star_roll_weights")
+    if mirror is not None and [float(x) for x in mirror] != [float(x) for x in w]:
+        errors.append(f"[game.json] DERIVE spawner.star_roll_weights={mirror}, "
+                      f"source monster_variants.json star_system.roll_weights={w}")
+    tiers = load_json(db / "systems" / "encounter_stars.json").get("star_tiers", {})
+    for s in range(6):
+        if str(s) not in tiers:
+            errors.append(f"[encounter_stars.json] star_tiers.{s} absent : presence refuse de demarrer "
+                          f"(plus de table de repli C++)")
+    return errors
+
+
 SINGLE_SOURCE_CHECKS = [
     validate_stat_point_values,
     validate_level_grants,
     validate_rarity_power,
+    validate_star_roll_weights,
 ]
 
 
