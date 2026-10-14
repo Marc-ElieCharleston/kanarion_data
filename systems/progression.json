@@ -150,7 +150,7 @@
     "skill_points_per_level": 1,
     "passive_points_per_level": 1,
     "starting_skill_points": 1,
-    "_grants_owner": "MIROIRS : ces quatre champs ne pilotent rien. Les grants de level-up sont EN DUR a trois endroits du serveur (services/economy/src/rewards/reward_processor.cpp, services/quest/src/db/quest_queries.cpp, services/character/src/character/character_manager.cpp : levels_gained * 3 stat / * 1 skill / * 1 passif). Le client lit config/game.json `game_constants.stat_points_per_level` et config/skill_system.json `skill_points`. passive_points_per_level est AJOUTE ici le 2026-09-10 : le serveur le donnait depuis toujours mais aucun fichier data ne le documentait.",
+    "_grants_owner": "SOURCE UNIQUE des points donnes par niveau gagne (points_per_level = stat, skill_points_per_level, passive_points_per_level) et des points de skill de depart (starting_skill_points). Lus par kanarion_back shared/gameplay/level_calc (load_progression_from_file) pour l'economie (recompenses de combat), la quete (rendu, succes, arene) et le personnage (creation, personnage de tournoi). Aucune valeur par defaut cote serveur : un champ absent fait refuser le fichier et le service refuse de demarrer. MIROIRS client controles par scripts/validate_cross_references.py (egalite exigee) : config/game.json game_constants.stat_points_per_level / skill_points_per_level et config/skill_system.json skill_points.points_per_level / starting_points / total_points_available. Refacto 2026-10-14 : ces valeurs etaient en dur a cinq endroits du serveur.",
     "allocatable_stats": [
       "hp",
       "mp",

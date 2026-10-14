@@ -1697,8 +1697,51 @@ def validate_stat_point_values(db: Path) -> list:
     return errors
 
 
+def _is_nonneg_int(v) -> bool:
+    return isinstance(v, int) and not isinstance(v, bool) and v >= 0
+
+
+def validate_level_grants(db: Path) -> list:
+    """systems/progression.json stat_allocation owns the level-up grants."""
+    errors = []
+    prog = load_json(db / "systems" / "progression.json")
+    sa = prog.get("stat_allocation", {})
+    keys = ("points_per_level", "skill_points_per_level", "passive_points_per_level", "starting_skill_points")
+    for k in keys:
+        if not _is_nonneg_int(sa.get(k)):
+            errors.append(f"[progression.json] stat_allocation.{k} absent ou non entier >= 0 "
+                          f"({sa.get(k)!r}) : economie, quete et personnage refusent de demarrer")
+    if errors:
+        return errors
+    max_level = prog.get("leveling", {}).get("max_level")
+    total = sa.get("total_stat_points_at_max_level")
+    if isinstance(max_level, int) and total is not None and total != sa["points_per_level"] * (max_level - 1):
+        errors.append(f"[progression.json] stat_allocation.total_stat_points_at_max_level={total}, "
+                      f"attendu points_per_level x (max_level - 1) = {sa['points_per_level'] * (max_level - 1)}")
+    gc = load_json(db / "config" / "game.json").get("game_constants", {})
+    for mirror, owner in (("stat_points_per_level", "points_per_level"),
+                          ("skill_points_per_level", "skill_points_per_level")):
+        if mirror in gc and gc[mirror] != sa[owner]:
+            errors.append(f"[game.json] DERIVE game_constants.{mirror}={gc[mirror]!r}, "
+                          f"source progression.json stat_allocation.{owner}={sa[owner]!r}")
+    sp = load_json(db / "config" / "skill_system.json").get("skill_points", {})
+    for mirror, owner in (("points_per_level", "skill_points_per_level"),
+                          ("starting_points", "starting_skill_points")):
+        if mirror in sp and sp[mirror] != sa[owner]:
+            errors.append(f"[skill_system.json] DERIVE skill_points.{mirror}={sp[mirror]!r}, "
+                          f"source progression.json stat_allocation.{owner}={sa[owner]!r}")
+    top = sp.get("max_player_level")
+    if "total_points_available" in sp and isinstance(top, int):
+        expected = sa["starting_skill_points"] + sa["skill_points_per_level"] * (top - 1)
+        if sp["total_points_available"] != expected:
+            errors.append(f"[skill_system.json] skill_points.total_points_available="
+                          f"{sp['total_points_available']}, attendu {expected} (depart + par niveau x {top - 1})")
+    return errors
+
+
 SINGLE_SOURCE_CHECKS = [
     validate_stat_point_values,
+    validate_level_grants,
 ]
 
 
