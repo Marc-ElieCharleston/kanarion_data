@@ -445,8 +445,11 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       Relancer le script après chaque ajout de monstres. Matériaux de récolte des métiers non touchés.
 - [ ] **Potions** (2026-10-14) : une potion par rang au niveau du monstre (I 1-20 à 0.10/kill, II 21-40, III 41-60,
       IV 61-80, V 81-100, de moins en moins pour laisser la place à l'apothicaire). Boutique : potions par lots de 10
-      (`lot_size`, npcs.json). Data `vac_potions`, back `vac_potion-lots`. Client : acheter par 10. À décider : quels rangs
-      Milo vend (aujourd'hui t1/t3/t5 aux niveaux 1/10/25).
+      (`lot_size`, npcs.json). Data `vac_potions`, back `vac_potion-lots`. Client : acheter par 10. Milo vend les rangs I à III
+      dès le niveau 1. À faire : un vendeur de rang IV à Rochebourg (Tomas ?), rang V dans la dernière ville (à décider).
+- [ ] **Pass premium : régénération du familier x2 hors combat** (PV et souffle, rien en combat). Écrit dans
+      `_meta/conception_systemes/PASS_PREMIUM.md` (1.2, 2.2, 3.1 `familiar_out_of_combat_regen_multiplier`, lot 3) ;
+      le pass n'existe pas encore côté serveur.
 - [ ] `scripts/validate_skills.py` échoue déjà sur master (129 erreurs) : champs de sorts de familier
       (`icon`, `off_role_exempt`…) absents de la liste blanche du validateur. À ajouter à la liste blanche.
 - [ ] Bug IA (existant) : `server-combat/src/ai/player_ai.cpp:637-646`, la ligne de vue de l'IA joueur utilise
