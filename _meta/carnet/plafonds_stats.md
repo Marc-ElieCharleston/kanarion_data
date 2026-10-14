@@ -12,7 +12,7 @@ dans le code.
 | Durée des débuffs lancés | 50 % (inchangé) | |
 | Parade | **30** | spé du Duelliste (passifs jusqu'à +14 %, Riposte) ; la parade **annule** le coup, elle ne renvoie rien |
 | Ténacité | **50** : la durée est **divisée au plus par 2** | joueurs et monstres ; **DoT compris** (symétrie avec la durée des débuffs, qui les allonge) ; plancher 0,5 s ; stat rare (objets tank / support, jets faibles) |
-| Résistance aux effets | application toujours entre **15 et 85 %** | jamais d'immunité totale aux contrôles, jamais de contrôle garanti |
+| Résistance aux effets | application jamais sous **10 %** ; plafond **90 %** pour les **seuls contrôles durs** (stun, silence, root, disarm, confusion) | jamais d'immunité totale ; un contrôle n'est jamais garanti ; un DoT, un débuff, un ralentissement ou une provocation sans résistance nette passe toujours (sinon une classe à DoT perd ses dégâts au hasard), 2026-10-14 |
 | GCD | joueurs **2 s**, familiers **3 s**, monstres **3 s** | l'IA lit le vrai GCD ; les grosses attaques de boss passent par leurs propres recharges |
 
 Résistance = chance de ne pas subir (contrée par la chance d'effet) ; ténacité = durée réduite de ce qu'on
