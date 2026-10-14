@@ -149,6 +149,20 @@
         "cap": 50,
         "formula": "Si proc: attaque 2x, chaque hit = 100% damage"
       },
+      "triple_hit_chance": {
+        "name": "Chance Triple Frappe",
+        "name_fr": "Chance Triple Frappe",
+        "name_en": "Triple Hit Chance",
+        "description": "Chance de frapper trois fois (attaque de base uniquement), tiree avant la double frappe.",
+        "description_fr": "Chance de frapper trois fois (attaque de base uniquement), tiree avant la double frappe.",
+        "description_en": "Chance to strike three times (basic attack only), rolled before the double hit.",
+        "tooltip_fr": "Chance que l'attaque de base frappe trois fois.",
+        "tooltip_en": "Chance for the basic attack to strike three times.",
+        "bonus_type": "flat",
+        "default": 0,
+        "cap": 30,
+        "formula": "Si proc: attaque 3x, chaque hit = 100% damage"
+      },
       "attack_speed": {
         "name": "Vitesse d'Attaque",
         "name_fr": "Vitesse d'Attaque",
@@ -216,7 +230,7 @@
         "tooltip_en": "Increases duration of debuffs applied to enemies.",
         "bonus_type": "flat",
         "default": 0,
-        "cap": 100,
+        "cap": 50,
         "formula": "debuff_duration_final = base_duration \u00d7 (1 + debuff_duration/100)"
       },
       "shield_pierce": {
@@ -357,6 +371,7 @@
         "bonus_type": "flat",
         "default": 0,
         "cap": 50,
+        "_cap_2026_10_14": "Proprietaire : la tenacite divise la duree au plus par 2 (plafond 50, joueurs et monstres) CC, debuffs et degats sur la duree compris (symetrie avec debuff_duration, qui les allonge). Contre : debuff_duration de l'attaquant.",
         "formula": "duration_received = base_duration \u00d7 (1 - tenacity/100)"
       }
     },
@@ -446,6 +461,8 @@
         "bonus_type": "flat",
         "default": 0,
         "cap": 100,
+        "cap_by_effect_type": {"buff": 100, "hot": 100, "immunity": 100, "shield": 50},
+        "_cap_2026_10_14": "Plafond par type d'effet lance (proprietaire) : buffs, soins sur la duree et immunites 100, boucliers 50. Le validateur refuse une immunite dont la duree x 2 atteint sa recharge (pas d'immunite permanente).",
         "formula": "buff_duration_final = base_duration \u00d7 (1 + buff_duration/100)"
       }
     },
@@ -504,7 +521,8 @@
         "tooltip_en": "Reflects part of the damage received back to the attacker.",
         "bonus_type": "flat",
         "default": 0,
-        "cap": 30,
+        "cap": 100,
+        "_cap_2026_10_14": "Le code n'a jamais applique 30 (seule borne : 100). Un unique donne jusqu'a 52 au rang SS. Plafond de jeu a decider par le proprietaire.",
         "formula": "reflected_damage = damage_received \u00d7 (reflect/100)"
       },
       "shield": {
@@ -558,7 +576,9 @@
     "apply_formula": {
       "step1": "resist_chance = target.effect_resist - attacker.effect_chance",
       "step2": "apply_chance = 100 - max(0, resist_chance)",
-      "step3": "apply_chance = clamp(apply_chance, 15, 85)",
+      "step3": "apply_chance = clamp(apply_chance, apply_chance_min, apply_chance_max)",
+      "apply_chance_min": 15,
+      "apply_chance_max": 85,
       "explanation": "Les sorts ont 100% de chance de base. La difference effect_resist - effect_chance determine la resistance. Minimum 15% pour toujours avoir une chance, maximum 85% pour pouvoir toujours resister.",
       "explanation_en": "Spells have 100% base chance. The difference effect_resist - effect_chance determines resistance. Minimum 15% to always have a chance, maximum 85% to always be able to resist."
     },

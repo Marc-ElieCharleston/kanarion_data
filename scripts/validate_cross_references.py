@@ -1891,6 +1891,86 @@ def validate_party_size(db: Path) -> list:
     return errors
 
 
+STAT_CAPS = [  # (category, stat, max allowed) — read by shared/gameplay/stat_caps.hpp
+    ("offensive", "crit", 100), ("offensive", "crit_dmg", 1000), ("offensive", "damage_percent", 1000),
+    ("offensive", "double_hit_chance", 100), ("offensive", "triple_hit_chance", 100),
+    ("offensive", "armor_pen", 100), ("offensive", "magic_pen", 100), ("offensive", "debuff_duration", 1000),
+    ("offensive", "shield_pierce", 100), ("defensive", "damage_reduction", 100),
+    ("defensive", "block_chance", 100), ("defensive", "parry_chance", 100), ("defensive", "effect_resist", 100),
+    ("defensive", "tenacity", 100), ("precision", "flee", 100), ("support", "healing_received", 1000),
+    ("special", "lifesteal", 100), ("special", "spell_vamp", 100), ("special", "reflect", 100),
+    ("special", "cast_speed", 100), ("special", "cooldown_reduction", 100),
+]
+BUFF_DURATION_TYPES = ("buff", "hot", "immunity", "shield")
+
+
+def validate_stat_caps(db: Path) -> list:
+    """stats/definitions.json owns every stat cap; combat and economy refuse to start without them."""
+    errors = []
+    defs = load_json(db / "stats" / "definitions.json")
+    stats = defs.get("stats", {})
+    for cat, stat, hi in STAT_CAPS:
+        v = (stats.get(cat, {}).get(stat) or {}).get("cap")
+        if not (isinstance(v, int) and not isinstance(v, bool) and 0 <= v <= hi):
+            errors.append(f"[definitions.json] stats.{cat}.{stat}.cap absent ou hors [0, {hi}] ({v!r})")
+    asp = (stats.get("offensive", {}).get("attack_speed") or {}).get("cap")
+    if not (isinstance(asp, (int, float)) and 1 <= asp <= 10):
+        errors.append(f"[definitions.json] stats.offensive.attack_speed.cap absent ou hors [1, 10] ({asp!r})")
+    by = (stats.get("support", {}).get("buff_duration") or {}).get("cap_by_effect_type")
+    if not isinstance(by, dict):
+        errors.append("[definitions.json] stats.support.buff_duration.cap_by_effect_type absent")
+        by = {}
+    for t in BUFF_DURATION_TYPES:
+        if not (isinstance(by.get(t), int) and 0 <= by[t] <= 1000):
+            errors.append(f"[definitions.json] buff_duration.cap_by_effect_type.{t} absent ou invalide ({by.get(t)!r})")
+    af = defs.get("effect_system", {}).get("apply_formula", {})
+    lo, hi = af.get("apply_chance_min"), af.get("apply_chance_max")
+    if not (isinstance(lo, int) and isinstance(hi, int) and 0 <= lo <= hi <= 100):
+        errors.append(f"[definitions.json] effect_system.apply_formula.apply_chance_min/max invalides ({lo!r}, {hi!r})")
+    md = defs.get("effect_system", {}).get("duration_formula", {}).get("minimum_duration")
+    if not (isinstance(md, (int, float)) and 0 <= md <= 10):
+        errors.append(f"[definitions.json] effect_system.duration_formula.minimum_duration invalide ({md!r})")
+    clamp = (stats.get("precision", {}).get("hit") or {}).get("clamp", {})
+    if not (isinstance(clamp.get("min"), int) and isinstance(clamp.get("max"), int)
+            and 0 <= clamp["min"] <= clamp["max"] <= 100):
+        errors.append(f"[definitions.json] stats.precision.hit.clamp invalide ({clamp!r})")
+
+    # No permanent immunity: an immunity extended by the buff duration cap must end before
+    # the skill comes back (owner, 2026-10-14).
+    imm_cap = by.get("immunity") if isinstance(by.get("immunity"), int) else 0
+    effects = load_json(db / "stats" / "status_effects.json").get("effects", {})
+    immunity_ids = {k for k in effects.get("immunity", {}) if not k.startswith("_")}
+    def skill_dicts(node):
+        if isinstance(node, dict):
+            if "id" in node and isinstance(node.get("effects"), list):
+                yield node
+            for v in node.values():
+                yield from skill_dicts(v)
+        elif isinstance(node, list):
+            for v in node:
+                yield from skill_dicts(v)
+
+    for path in sorted((db / "classes").glob("*/*skills*.json")) + sorted((db / "skills").glob("*.json")):
+        for sk in skill_dicts(load_json(path)):
+            if not isinstance(sk.get("cooldown"), (int, float)):
+                continue
+            cd = float(sk["cooldown"])
+            max_lv = sk.get("max_level", 1) if isinstance(sk.get("max_level"), int) else 1
+            for eff in sk.get("effects", []) or []:
+                if not isinstance(eff, dict):
+                    continue
+                eid = eff.get("stat") or eff.get("status") or eff.get("effect_id") or eff.get("id")
+                if eid not in immunity_ids or not isinstance(eff.get("duration"), (int, float)):
+                    continue
+                dur = float(eff["duration"]) + float(eff.get("duration_per_level", 0) or 0) * (max_lv - 1)
+                longest = dur * (1 + imm_cap / 100)
+                if cd > 0 and longest >= cd:
+                    errors.append(f"[{path.relative_to(db).as_posix()}] {sk.get('id')} : {eid} {dur:g} s "
+                                  f"x {1 + imm_cap / 100:g} (duree des buffs max) = {longest:g} s >= recharge "
+                                  f"{cd:g} s : immunite permanente")
+    return errors
+
+
 SINGLE_SOURCE_CHECKS = [
     validate_stat_point_values,
     validate_level_grants,
@@ -1900,6 +1980,7 @@ SINGLE_SOURCE_CHECKS = [
     validate_koro_equipment,
     validate_guild_rules,
     validate_party_size,
+    validate_stat_caps,
 ]
 
 
