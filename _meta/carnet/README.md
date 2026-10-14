@@ -32,6 +32,7 @@ foi** : ces notes sont à fusionner avec eux au retour.
 
 - [Architecture : tout l'équilibrage dans la data](architecture_data.md)
 - [Audit des valeurs codées en dur (2026-10-13)](audit_valeurs_en_dur.md)
+- [Plafonds des stats (2026-10-14)](plafonds_stats.md)
 
 - [Familiers](familiers.md)
 - [Collections](collections.md)
