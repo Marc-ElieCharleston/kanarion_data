@@ -2015,6 +2015,53 @@ def validate_social_limits(db: Path) -> list:
     return errors
 
 
+def validate_familiar_imprints(db: Path) -> list:
+    """config/familiar_balance.json owns the imprint rarity roll (read by server-combat) and the
+    per-tier drop chance that every capturable monster must carry (owner 2026-10-14, no exception)."""
+    bal = load_json(db / "config" / "familiar_balance.json")
+    errors = []
+    rm = bal.get("rarity_multipliers", {})
+    total = 0
+    for rarity in ("common", "uncommon", "rare", "epic", "legendary"):
+        w = (rm.get(rarity) or {}).get("drop_weight")
+        if not (isinstance(w, int) and not isinstance(w, bool) and 0 <= w <= 1000000):
+            errors.append(f"[familiar_balance.json] rarity_multipliers.{rarity}.drop_weight absent ou invalide ({w!r}) : "
+                          "le serveur de combat refuse de demarrer")
+        else:
+            total += w
+    if not errors and total <= 0:
+        errors.append("[familiar_balance.json] rarity_multipliers.*.drop_weight tous a 0")
+    inc = load_json(db / "config" / "familiar_incubation.json")
+    if "rarity_drop_weights" in inc:
+        errors.append("[familiar_incubation.json] rarity_drop_weights est revenu : la source unique est "
+                      "familiar_balance.json rarity_multipliers.*.drop_weight")
+    table = bal.get("imprint_drop_chance_by_tier")
+    if not isinstance(table, dict):
+        return errors + ["[familiar_balance.json] imprint_drop_chance_by_tier absent"]
+
+    def walk(o):
+        if isinstance(o, dict):
+            if isinstance(o.get("familiar_capture"), dict):
+                yield o.get("id", "?"), o["familiar_capture"]
+            for v in o.values():
+                yield from walk(v)
+        elif isinstance(o, list):
+            for v in o:
+                yield from walk(v)
+
+    for mid, fc in walk(load_json(db / "entities" / "monsters.json")):
+        if not fc.get("enabled"):
+            continue
+        tier, dc = fc.get("growth_tier"), fc.get("drop_chance")
+        if not isinstance(table.get(tier), (int, float)):
+            errors.append(f"[monsters.json] {mid}: familiar_capture.growth_tier {tier!r} absent de "
+                          "familiar_balance.json imprint_drop_chance_by_tier")
+        elif not isinstance(dc, (int, float)) or abs(dc - table[tier]) > 1e-9:
+            errors.append(f"[monsters.json] DERIVE {mid}: familiar_capture.drop_chance={dc!r}, "
+                          f"palier {tier} = {table[tier]} (familiar_balance.json imprint_drop_chance_by_tier)")
+    return errors
+
+
 SINGLE_SOURCE_CHECKS = [
     validate_stat_point_values,
     validate_level_grants,
@@ -2028,6 +2075,7 @@ SINGLE_SOURCE_CHECKS = [
     validate_gcd,
     validate_combat_mirrors,
     validate_social_limits,
+    validate_familiar_imprints,
 ]
 
 
