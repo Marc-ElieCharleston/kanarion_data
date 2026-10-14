@@ -443,6 +443,10 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       livres 10 %, objets fabriqués ≤ 80 % de leurs ingrédients. Équipement calculé par le serveur (rareté réelle, niveau
       de l'objet), panoplies et uniques revendables, koro et clés de tour invendables. Data + back `vac_npc-resale`.
       Relancer le script après chaque ajout de monstres. Matériaux de récolte des métiers non touchés.
+- [ ] **Potions** (2026-10-14) : une potion par rang au niveau du monstre (I 1-20 à 0.10/kill, II 21-40, III 41-60,
+      IV 61-80, V 81-100, de moins en moins pour laisser la place à l'apothicaire). Boutique : potions par lots de 10
+      (`lot_size`, npcs.json). Data `vac_potions`, back `vac_potion-lots`. Client : acheter par 10. À décider : quels rangs
+      Milo vend (aujourd'hui t1/t3/t5 aux niveaux 1/10/25).
 - [ ] `scripts/validate_skills.py` échoue déjà sur master (129 erreurs) : champs de sorts de familier
       (`icon`, `off_role_exempt`…) absents de la liste blanche du validateur. À ajouter à la liste blanche.
 - [ ] Bug IA (existant) : `server-combat/src/ai/player_ai.cpp:637-646`, la ligne de vue de l'IA joueur utilise
