@@ -1971,6 +1971,21 @@ def validate_stat_caps(db: Path) -> list:
     return errors
 
 
+GCD_KEYS = (("gcd_duration", 0.1), ("familiar_gcd_duration", 0.1), ("monster_gcd_duration", 0.1),
+            ("monster_gcd_jitter", 0.0), ("monster_first_gcd_jitter", 0.0), ("monster_first_gcd_bonus", 0.0))
+
+
+def validate_gcd(db: Path) -> list:
+    """config/combat.json settings owns every GCD; the combat service refuses to start without them."""
+    s = load_json(db / "config" / "combat.json").get("settings", {})
+    errors = []
+    for key, lo in GCD_KEYS:
+        v = s.get(key)
+        if not (isinstance(v, (int, float)) and not isinstance(v, bool) and lo <= v <= 30):
+            errors.append(f"[combat.json] settings.{key} absent ou hors [{lo}, 30] secondes ({v!r})")
+    return errors
+
+
 SINGLE_SOURCE_CHECKS = [
     validate_stat_point_values,
     validate_level_grants,
@@ -1981,6 +1996,7 @@ SINGLE_SOURCE_CHECKS = [
     validate_guild_rules,
     validate_party_size,
     validate_stat_caps,
+    validate_gcd,
 ]
 
 
