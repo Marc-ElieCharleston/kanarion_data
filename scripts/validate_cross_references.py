@@ -1875,6 +1875,22 @@ def validate_guild_rules(db: Path) -> list:
     return errors
 
 
+def validate_party_size(db: Path) -> list:
+    """config/game.json game_constants.max_party_size owns the party / team size."""
+    n = load_json(db / "config" / "game.json").get("game_constants", {}).get("max_party_size")
+    if not _is_pos_int(n):
+        return [f"[game.json] game_constants.max_party_size={n!r} : entier >= 1 attendu, sinon groupe, "
+                f"combat, presence, pvp et donjon refusent de demarrer"]
+    errors = []
+    access = load_json(db / "systems" / "tower.json").get("access", {})
+    for k in ("max_allies", "max_players"):
+        v = access.get(k)
+        if v is not None and (not _is_pos_int(v) or v > n):
+            errors.append(f"[tower.json] access.{k}={v!r} : entier entre 1 et max_party_size={n} attendu "
+                          f"(le service de donjon refuse la tour sinon)")
+    return errors
+
+
 SINGLE_SOURCE_CHECKS = [
     validate_stat_point_values,
     validate_level_grants,
@@ -1883,6 +1899,7 @@ SINGLE_SOURCE_CHECKS = [
     validate_respec_cost,
     validate_koro_equipment,
     validate_guild_rules,
+    validate_party_size,
 ]
 
 

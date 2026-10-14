@@ -474,3 +474,7 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       La capacite suit desormais le niveau (`levels[].max_members`) : une guilde niveau 1 tient 20 membres
       (avant : 30 fixes pour toutes). Les guildes existantes au-dela de leur nouvelle capacite gardent leurs
       membres mais ne peuvent plus en accueillir avant de monter de niveau.
+- [ ] **Invocations et taille d'equipe** (refacto `vac_refactor-lot1`, 2026-10-14) : la limite de 10 par camp
+      (`config/game.json` `game_constants.max_party_size`) compte joueurs + familiers + mercenaires, PAS les
+      invocations ni les leurres. Le traitement des invocations (plafond propre, `entities/summons.json`
+      max_summons_per_team, faut-il les compter dans les 10 ?) reste a decider.
