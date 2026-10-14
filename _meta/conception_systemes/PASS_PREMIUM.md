@@ -46,6 +46,10 @@ le socle est bon : portefeuille au niveau du compte, `audit_log` idempotent, web
 - **Point d'accroche** : l'UPDATE de `apply_regen_tick`, ligne 782-783. Multiplier le gain par 2 quand le compte du
   personnage a `premium_until > NOW()`. Ne JAMAIS modifier `stats_profile_snapshot.hp_regen` (il sert l'affichage
   et alimente le profil de combat).
+- **Familier (ajout du propriétaire, 2026-10-14)** : ses PV et son Souffle remontent eux aussi ×2 hors combat. Autre
+  service, autre minuterie : `FamiliarService::schedule_regen` / `do_regen_tick` (`services/familiar/src/familiar_service.cpp`,
+  tick de 5 s, taux par classe lus dans `class_regen_loader`), écriture `PgStore::apply_regen(instance_id, hp_delta,
+  mp_delta)`. Le familier est lié au COMPTE : le droit se lit sur le compte du propriétaire de la ligne de loadout.
 
 ### 1.3 Téléportation
 
@@ -124,6 +128,7 @@ le socle est bon : portefeuille au niveau du compte, `audit_log` idempotent, web
 | Bonus | Service | Changement |
 |---|---|---|
 | Régénération ×2 hors combat | economy, `HealthCoordinator::apply_regen_tick` | `UPDATE characters c SET hp_current = LEAST(hp_current + regen * CASE WHEN a.premium_until > NOW() THEN $2 ELSE 1 END, hp_max) … FROM accounts a WHERE a.id = c.account_id AND …` ; `$2` = multiplicateur lu dans `systems/premium.json` (2). Même chose pour le Souffle. Rien dans `server-combat`. |
+| Régénération ×2 hors combat du familier | familiar, `FamiliarService::do_regen_tick` | `hp_delta` et `mp_delta` multipliés par `familiar_out_of_combat_regen_multiplier` quand le compte du propriétaire a `premium_until > NOW()`. Lire les comptes abonnés en UNE requête par tick (`SELECT id FROM accounts WHERE premium_until > NOW() AND id = ANY($1)`), jamais une requête par familier. Ne pas toucher aux taux par classe (affichage, combat). |
 | Téléportation gratuite | economy, `handle_teleport` | `cost = is_premium(character_id) ? 0 : 50` ; pas d'appel à `currency_->modify` si 0 ; `gold_deducted = 0` dans la réponse. Profiter du passage pour lire le coût de base dans la data au lieu du `50` en dur (et le client ne l'affiche plus en dur). |
 | −10 % marchands PNJ | economy, `handle_buy_item` | `total_cost = premium ? max(1, ceil(unit_price*qty*(100-pct)/100)) : unit_price*qty`. Le −10 % ne touche QUE les PNJ (pas l'hôtel des ventes, ni la forge, ni le repos à la taverne, ni le comptoir de Milo en cristaux de Souffle). Pas de bonus à la revente (écarté par la spec : création d'or). |
 | Clé hebdomadaire | economy (réclamation) + dungeon (consommation) | Voir 2.3. |
@@ -249,6 +254,7 @@ serveur (config de `marketing`), jamais dans la data publique (même règle que 
   },
   "benefits": {
     "out_of_combat_regen_multiplier": 2,
+    "familiar_out_of_combat_regen_multiplier": 2,
     "teleport_free": true,
     "npc_buy_discount_percent": 10,
     "weekly_key": {
@@ -371,7 +377,7 @@ HTTP (`services/marketing/app.py`, Bearer JWT du jeu, invités refusés) :
 |---|---|---|---|
 | 1 | Data | `systems/premium.json` (nouveau), `items/consumables.json` (`key_pass_weekly`), `systems/boutique.json` (retrait `battle_pass`, `gems` → `diamonds`), validateur dans `scripts/` | 0,5 j |
 | 2 | Migration + registre | `tools/db-migrate/113_premium_pass.sql` ; module `services/economy/src/premium/premium_store.{hpp,cpp}` (`is_premium(character_id)`, `recompute_premium_until`, `grant`, `revoke`) ; même fonction de recalcul en SQL (fonction PL/pgSQL `recompute_premium_until(uuid)`) pour que Python et C++ partagent UNE règle | 1,5 j |
-| 3 | Bonus en jeu | `health_coordinator.cpp:780-797` (UPDATE … FROM accounts), `economy_service.cpp:5902` (téléportation), `economy_service.cpp:4921` (remise), chargement de `premium.json` au démarrage d'economy | 1 j |
+| 3 | Bonus en jeu | `health_coordinator.cpp:780-797` (UPDATE … FROM accounts), `economy_service.cpp:5902` (téléportation), `economy_service.cpp:4921` (remise), chargement de `premium.json` au démarrage d'economy ; `familiar_service.cpp` `do_regen_tick` (familier) + chargement de `premium.json` au démarrage de familiar | 1,5 j |
 | 4 | Clé hebdomadaire | handler de réclamation dans economy (transaction : vérif abonné + insert `premium_weekly_claims` + `inventory_->add_item`) ; `dungeon_service.cpp:166-233` + `run_store.cpp:94` (repli sur `key_pass_weekly`, exclusion Tour) ; `dungeon.fbs` | 1 j |
 | 5 | Protocole + état | `shared/protocol/messages.hpp`, `economy.fbs`, `character.fbs` (champ 11), dispatch `economy_service.cpp:~850`, `character_service.cpp:~373` ; push sur expiration dans `do_cleanup` ; commande admin `premium grant/revoke` (`admin_queries.cpp`) | 1 j |
 | 6 | Achat aux diamants | handler sur le modèle de `handle_buy_rename_token` | 0,5 j |
@@ -394,7 +400,7 @@ Ordre conseillé : lots 1-5 derrière `premium_enabled = FALSE` (testables avec 
   quantité 1 et 99) ; téléportation gratuite sans écriture d'or ; recalcul de `premium_until` (abonnement seul,
   diamants seuls, cumul, remboursement au milieu, jours chaînés qui reculent, plafond 365) ; calcul de la semaine
   (lundi 04:59 / 05:00 Paris, passage heure d'été et heure d'hiver, réveillon).
-- Intégration (`tests/integration`, Python) : régénération ×2 pour un abonné et ×1 pour un autre dans le même tick ;
+- Intégration (`tests/integration`, Python) : régénération ×2 pour un abonné et ×1 pour un autre dans le même tick, pour le personnage ET pour son familier ;
   réclamation deux fois dans la même semaine refusée ; plafond de 4 ; abonnement expiré entre ouverture du panneau
   et réclamation refusé ; entrée de donjon avec clé de passage, avec vraie clé, avec les deux et `use_pass_key` ;
   Tour refuse la clé de passage ; rejouer la même `idempotency_key` ne débite pas deux fois.
