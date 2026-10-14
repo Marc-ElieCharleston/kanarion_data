@@ -27,10 +27,12 @@ Inchangés, simplement déplacés dans la data : pénétration 70, CDR 40, incan
 
 - [ ] **Parade avec riposte** : réduit les dégâts et en renvoie une partie, plafond 50 (nouvelle mécanique,
       lot à part).
-- [x] **Renvoi de dégâts** (propriétaire, 2026-10-14) : **25 % permanent** (équipement, passifs : un renvoi permanent
-      ne se dissipe pas ; un tank à 10k PV contre un joueur à 3k PV gagnerait à coup sûr), **50 % au total** avec
-      les buffs et procs, appliqué au coup. Tzinat Refleks (26-52 % pendant 4 s après blocage / parade, recharge
-      10 s) reste un pic temporaire. Le renvoi réduit aussi les dégâts reçus. À tester en jeu.
+- [x] **Épines et renvoi** (propriétaire, 2026-10-14) : deux identités.
+      - **Épines = le renvoi permanent** (équipement, passifs) : % du coup renvoyé, le porteur subit le coup en
+        entier. **Plafond 30 %** au coup. (Le code traitait « épines > 100 » comme des dégâts fixes : retiré.)
+      - **Renvoi = uniquement temporaire** (procs, buffs dissipables), plafond 50 % au coup. La part renvoyée est
+        retirée du coup : c'est une réduction finale, elle **compte dans le plafond de réduction de dégâts**
+        (réduction + renvoi ≤ 75 %). Renvoi permanent = 0. Tzinat Refleks garde son pic temporaire.
 - [ ] **Bug** : la sous-stat d'artisanat « Reflet » (2-8 %, `items/substat_crafting_system.json`) n'arrive jamais
       en combat (l'équipement ne transmet pas `reflect`). À brancher ou retirer.
 - [ ] Idée gardée : renvoi en **stacks dissipables** réappliqués par l'objet (ex. toutes les 20 s pendant 10 s) ;
