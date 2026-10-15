@@ -1,0 +1,45 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-10-15",
+    "owner": "Pass premium (abonnement). Seul endroit ou l on regle un pass, ses avantages et le bonus des preinscrits. Lu par economy (regeneration, teleportation, remise PNJ, cle de la semaine, etat du pass), familiar (regeneration du familier), dungeon (cle de passage) et auth (bonus des preinscrits). Validateur : scripts/validate_premium_pass.py (CI).",
+    "rule": "Modele Dofus (proprietaire 2026-10-13) : jeu ouvert et illimite pour tous. Le pass fait gagner du temps et du confort : AUCUNE stat, AUCUN bonus en combat, AUCUN contenu ferme aux non-abonnes. Le validateur refuse un avantage inconnu du serveur.",
+    "private": "Prix en euros et identifiants de produits des magasins (Google Play, App Store, Stripe) : JAMAIS ici (data publique, rendue dans le wiki). Ils vivent dans la config du service marketing.",
+    "design": "Conception technique : _meta/conception_systemes/PASS_PREMIUM.md. Decisions : _meta/carnet/pass_premium.md."
+  },
+  "rules": {
+    "_stacking": "Un pass rachete pendant qu il est actif prolonge sa date de fin (les jours s ajoutent a la suite). Plusieurs pass differents actifs en meme temps : chaque avantage prend la MEILLEURE valeur parmi eux (jamais la somme). Plafond de jours en reserve par pass : max_banked_days.",
+    "max_banked_days": 365
+  },
+  "passes": [
+    {
+      "id": "kanarion_pass",
+      "name_fr": "Pass Kanarion",
+      "name_en": "Kanarion Pass",
+      "description_fr": "Du confort et du temps gagné, jamais de puissance en combat.",
+      "description_en": "Comfort and time saved, never combat power.",
+      "duration_days": 30,
+      "benefits": {
+        "out_of_combat_regen_multiplier": 2,
+        "familiar_out_of_combat_regen_multiplier": 2,
+        "teleport_free": true,
+        "npc_buy_discount_percent": 10,
+        "weekly_keys": 1
+      },
+      "_benefits_note": "out_of_combat_regen_multiplier : vie et Souffle hors combat (le combat n est jamais touche). npc_buy_discount_percent : achats chez les marchands PNJ seulement (pas l hotel des ventes, pas la revente : creer de l or est ecarte). weekly_keys : nombre de Cles de passage reclamables par compte et par semaine."
+    }
+  ],
+  "weekly_key": {
+    "item_id": "key_pass_weekly",
+    "reset": {"weekday": "monday", "hour": 5, "timezone": "Europe/Paris"},
+    "max_held": 4,
+    "_rule": "Une reclamation par compte et par semaine (lundi 05:00, heure de Paris), pour le personnage connecte. Une semaine non reclamee est perdue. Refus si le personnage a deja max_held Cles de passage. La cle remplace la cle de n importe quel donjon a cle, jamais celle de la Tour infinie (la Tour a son propre chemin de cles). Liee au personnage, ni echangeable ni revendable : sinon le pass deviendrait une source d or."
+  },
+  "preregistration_bonus": {
+    "diamonds": 1000,
+    "pass_id": "kanarion_pass",
+    "pass_days": 30,
+    "release_at": null,
+    "_rule": "Proprietaire 2026-10-15. Les DIAMANTS sont donnes une fois, des qu un email preinscrit et confirme est rattache a un compte (comme avant : c etait 1000 en dur dans auth). Les JOURS DE PASS ne sont donnes qu a partir de release_at (date ISO 8601 en UTC, ex. \"2026-12-01T10:00:00Z\") : a la premiere connexion apres la sortie, sur le compte qui porte l email preinscrit, une seule fois par preinscription. release_at null = la sortie n est pas encore fixee, aucun jour n est donne."
+  }
+}

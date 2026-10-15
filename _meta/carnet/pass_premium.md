@@ -3,6 +3,21 @@
 Modèle **Dofus** : jeu ouvert et illimité pour tous, **un seul pass** mensuel (prix de l'abonnement Dofus, ~5-6 €/mois).
 Règle : **aucune stat, aucun bonus en combat, aucun contenu fermé aux non-abonnés**. Le pass fait gagner du temps et du confort.
 
+## Décisions du 2026-10-15 (codé, branches `vac_premium-pass`)
+
+- **Plusieurs pass possibles** (formule pas encore décidée) : chaque pass déclare sa durée et ses avantages dans
+  `systems/premium_pass.json`. Un compte qui en a plusieurs prend la meilleure valeur de chaque avantage, jamais la somme.
+- **Clé de la semaine = « Clé de passage »** (`key_pass_weekly`) : ouvre n'importe quel donjon à clé sauf la Tour, liée au
+  personnage, ni échangeable ni revendable (sinon le pass deviendrait une source d'or). Une par compte et par semaine,
+  lundi 05:00 heure de Paris ; 4 au maximum en poche.
+- **Familier** : sa régénération hors combat est aussi ×2 (ajout du 2026-10-14).
+- **Préinscrits** : les diamants (1000) comme avant, plus **30 jours de pass** offerts à la première connexion après la
+  date de sortie (`preregistration_bonus.release_at`, vide tant que la sortie n'est pas fixée).
+- **Téléportation** : son prix vient maintenant de `systems/economy.json` (c'était 50 en dur côté serveur).
+- Sans paiement réel pour l'instant : un admin donne un pass avec `/admin premium <joueur> <pass> [jours]`.
+  Stripe, Google Play et App Store viendront se brancher sur le même registre.
+- Détail serveur : `kanarion_back` `docs/premium-pass-2026-10-15.md`.
+
 ## Contenu validé
 
 | Bonus | Détail | Pourquoi ce n'est pas pay to win |

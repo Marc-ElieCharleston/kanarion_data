@@ -1,5 +1,14 @@
 # Pass Kanarion (abonnement mensuel) : conception technique
 
+> **Mise à jour 2026-10-15 (codé, branches `vac_premium-pass`).** Écarts avec ce document :
+> plusieurs pass possibles (`systems/premium_pass.json` `passes[]`, au lieu de `systems/premium.json` à un seul pass) ;
+> état `account_passes (account_id, pass_id, active_until)` au lieu de la colonne `accounts.premium_until` ;
+> seul écrivain la fonction SQL `premium_grant()` (migration **114**, la 113 est prise) ; messages **0x047F-0x0482**
+> (état, clé de la semaine) ; pas encore d'achat aux diamants ni de magasins ; pas de `use_pass_key` (la vraie clé
+> d'abord, la Clé de passage en secours) ; bonus des préinscrits dans `preregistration_bonus`. Le reste (régénération
+> ×2 personnage et familier, téléportation gratuite, −10 % PNJ arrondi au supérieur, Clé de passage liée et exclue de
+> la Tour, reset lundi 05:00 Paris, plafond de 4) est codé comme décrit. Bilan : back `docs/premium-pass-2026-10-15.md`.
+
 Date : 2026-10-13. Passe en LECTURE SEULE (rien d'édité, commité, buildé ni poussé).
 Spec de référence : `kanarion_database` `vac_collections:_meta/carnet/pass_premium.md` (décisions du 2026-10-13).
 Références de code : back `main` sauf mention contraire (`vac_integration-all` décale les numéros de ligne

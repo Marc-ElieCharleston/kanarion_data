@@ -113,7 +113,7 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
 - **Tour d'Asher** : plus de système d'actes côté jeu (les actes servent au propriétaire pour son lore) ; quêtes de la tour et « La Fracture » passées à 60 (`vac_tour-asher` `197e12f`).
 - **Rareté tirée à la capture** : décidé 2026-10-13 de GARDER la data (1,0 / 1,06 / 1,12 / 1,2 / 1,3 ; légendaire +30 %), pas de bonus par rareté de famille.
 - **Branches** : toutes les branches `vac_*` (data et back) sont poussées sur GitHub depuis le 2026-10-13, à la demande du propriétaire.
-- **Pass premium** : fiche `_meta/carnet/pass_premium.md` (un seul pass façon Dofus : régén hors combat ×2, téléportation gratuite, −10 % achat PNJ, 1 clé de donjon/semaine) ; retirer les élixirs exclusifs du battle pass ; **câbler le drop des clés de donjon sur les monstres** (data morte aujourd'hui).
+- **Pass premium** : fiche `_meta/carnet/pass_premium.md` (façon Dofus : régén hors combat ×2, téléportation gratuite, −10 % achat PNJ, 1 Clé de passage/semaine). Codé le 2026-10-15 sur `vac_premium-pass` (data, back, client), plusieurs pass possibles, jours de pass offerts aux préinscrits à la sortie. Battle pass retiré. Drop des clés de donjon : `vac_dungeon-keys2`. Reste : le paiement réel (Stripe, Google Play, App Store), l'achat aux diamants.
 - **Donjons, taille des salles** (2026-10-13) : les salles générées (688×384, ~500×250 px de sol, ~19 personnages de large) sont trop petites pour 10 joueurs ; le propriétaire générera plus grand lui-même (ou channels), en gardant le style Dofus. Fissures dessinées par script (repaire étages 4-5) rejetées. Sceau de Kanarion (tour, étage 2) : forme OK, motif central à redessiner.
 - **Tour d'Asher, lore** : la tour a été bâtie pour monter jusqu'à Dieu et prendre sa place (façon Babel) : monter est le sens du donjon, on garde les escaliers. Pas de croix ni de symbole sataniste : un sceau propre à Kanarion (proposé : escalier en spirale qui monte vers une couronne brisée). Niveau passé à 60-100 sur `vac_tour-asher` (`3ae35de`) ; plus on monte, plus les monstres sont particuliers (zélotes en bas, puis Golem Runique, Gardien de la Cloche, Paladin Corrompu, Sentinelles).
 - **Tour d'Asher = tour infinie** : les numéros d'étage (1, 5, 12, 15) ne sont que des noms de cartes ; il faut un jeu de salles par palier, réutilisées. Au premier passage, on croise Edric (l'homme qui a repris la tour après son père). La data a DEUX entrées `dungeon_asher_tower` (16-20) et `dungeon_tower_asher` (18-20), à fusionner, et la carte dit 60+.
@@ -447,9 +447,8 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       IV 61-80, V 81-100, de moins en moins pour laisser la place à l'apothicaire). Boutique : potions par lots de 10
       (`lot_size`, npcs.json). Data `vac_potions`, back `vac_potion-lots`. Client : acheter par 10. Milo vend les rangs I à III
       dès le niveau 1. À faire : un vendeur de rang IV à Rochebourg (Tomas ?), rang V dans la dernière ville (à décider).
-- [ ] **Pass premium : régénération du familier x2 hors combat** (PV et souffle, rien en combat). Écrit dans
-      `_meta/conception_systemes/PASS_PREMIUM.md` (1.2, 2.2, 3.1 `familiar_out_of_combat_regen_multiplier`, lot 3) ;
-      le pass n'existe pas encore côté serveur.
+- [x] **Pass premium : régénération du familier x2 hors combat** (PV et souffle, rien en combat). Codé le 2026-10-15
+      (`systems/premium_pass.json` `familiar_out_of_combat_regen_multiplier`, back `vac_premium-pass`).
 - [ ] **Revue du code économie** (2026-10-14) : corrections sur `vac_economy-fixes` (data + back, depuis master / main).
       Amélioration qui effaçait les verrous d'un objet, plafond de contrats contournable, sac qui rétrécissait sur
       erreur, une seule liste des raretés, plus aucune valeur de secours compilée : une donnée manquante empêche le
