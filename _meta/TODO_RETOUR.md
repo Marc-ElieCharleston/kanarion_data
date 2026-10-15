@@ -438,6 +438,25 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       L'équipement tombe une fois par combat au niveau du monstre le plus haut, dans le modèle de sa tranche ;
       `equipment_affinity` (loot_tables.json) donne le thème (poids d'armure, types d'arme). Data + back `vac_loot-affinity`
       (back sur `vac_monster-gold`, tests `LootAffinity_*`). Donner un thème aux autres familles de monstres.
+- [ ] **Revente aux PNJ** (2026-10-14) : `systems/npc_resale.json` + `scripts/reprice_npc_resale.py` (cuit les prix,
+      `--check` pour vérifier). Matériaux selon le niveau du monstre, pierres 10/40/150/600/2500, boutique 20 % de l'achat,
+      livres 10 %, objets fabriqués ≤ 80 % de leurs ingrédients. Équipement calculé par le serveur (rareté réelle, niveau
+      de l'objet), panoplies et uniques revendables, koro et clés de tour invendables. Data + back `vac_npc-resale`.
+      Relancer le script après chaque ajout de monstres. Matériaux de récolte des métiers non touchés.
+- [ ] **Potions** (2026-10-14) : une potion par rang au niveau du monstre (I 1-20 à 0.10/kill, II 21-40, III 41-60,
+      IV 61-80, V 81-100, de moins en moins pour laisser la place à l'apothicaire). Boutique : potions par lots de 10
+      (`lot_size`, npcs.json). Data `vac_potions`, back `vac_potion-lots`. Client : acheter par 10. Milo vend les rangs I à III
+      dès le niveau 1. À faire : un vendeur de rang IV à Rochebourg (Tomas ?), rang V dans la dernière ville (à décider).
+- [ ] **Pass premium : régénération du familier x2 hors combat** (PV et souffle, rien en combat). Écrit dans
+      `_meta/conception_systemes/PASS_PREMIUM.md` (1.2, 2.2, 3.1 `familiar_out_of_combat_regen_multiplier`, lot 3) ;
+      le pass n'existe pas encore côté serveur.
+- [ ] **Revue du code économie** (2026-10-14) : corrections sur `vac_economy-fixes` (data + back, depuis master / main).
+      Amélioration qui effaçait les verrous d'un objet, plafond de contrats contournable, sac qui rétrécissait sur
+      erreur, une seule liste des raretés, plus aucune valeur de secours compilée : une donnée manquante empêche le
+      service de démarrer. À compiler et tester à la maison. Reste : enchaînement de paiement commun au sac et à
+      l'amélioration, client 0x0A01. À trancher : `gold_weight` 0 donne 1 or (plancher) ou 0.
+- [ ] `mat_monster_fang` n'est plus lâché par aucun monstre (table `default` supprimée, a7f4013) mais
+      `recipe_bone_acc_necklace_b1` en demande 3 : recette impossible. À revoir par l'agent des métiers.
 - [ ] `scripts/validate_skills.py` échoue déjà sur master (129 erreurs) : champs de sorts de familier
       (`icon`, `off_role_exempt`…) absents de la liste blanche du validateur. À ajouter à la liste blanche.
 - [ ] Bug IA (existant) : `server-combat/src/ai/player_ai.cpp:637-646`, la ligne de vue de l'IA joueur utilise
