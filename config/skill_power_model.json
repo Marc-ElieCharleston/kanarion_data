@@ -183,6 +183,114 @@
     }
   },
 
+  "timing": {
+    "_comment": "Phase 2 : cooldown et temps d'incantation de chaque sort de classe, tires de la matrice (puissance nette au rang 1, role, dominante). Applique par scripts/balance/skill_timing.py (--check en CI, --report). Ici et seulement ici : un sort ne porte que le resultat (cooldown, cast_time). Pourquoi ce fichier et pas skill_system.json : la regle lit la puissance, les roles et les dominantes que ce fichier definit deja ; la mettre ailleurs couperait un meme modele en deux proprietaires. Decisions du proprietaire (2026-10-15) : allonger le cooldown d'un sort trop fort plutot que baisser sa puissance ; jamais de raccourcissement sauf cooldown hors des bornes ; les cooldowns repartent a zero a chaque combat (une room neuve par rencontre), un ultime de 2-3 minutes se lance donc une fois par combat, au bon moment ; pas de moule unique, la puissance, l'effet et l'identite de la classe font la valeur.",
+    "cooldown": {
+      "_comment": "cible = puissance nette r1 / (densite du role x facteur d'identite), bornee par le role, arrondie vers le haut au pas de l'echelle. Valeur ecrite = max(cooldown actuel, cible) : la regle n'allonge que les sorts trop denses pour leur role. Un cooldown au-dessus de la borne haute de son role est ramene a cette borne (seul raccourcissement admis, cooldown manifestement hors role).",
+      "density_points_per_second": {
+        "remplissage": 30,
+        "courant": 6,
+        "signature": 4,
+        "defensif": 4,
+        "utilitaire": 4,
+        "ultime": 10
+      },
+      "_density_note": "Points de puissance nette admis par seconde de cooldown. Remplissage 30 : un remplissage ordinaire (100 a 150 points) reste a 4-5 s, un remplissage qui frappe fort prend 1 a 2 s de plus. Courant 6 et ultime 10 : proposition de la phase 1. Signature, defensif, utilitaire 4 : un effet de soutien n'a pas le debit d'un coup.",
+      "bounds_seconds": {
+        "remplissage": [4, 40],
+        "courant": [15, 90],
+        "signature": [30, 120],
+        "defensif": [12, 120],
+        "utilitaire": [15, 120],
+        "ultime": [120, 180]
+      },
+      "_bounds_note": "Garde-fous larges, pas un moule : entre les bornes, la puissance decide. Ultime 120-180 s (une fois par combat, au bon moment). Signature 30-120 s : selon la classe un gros sort ou un outil frequent. Remplissage 4-40 s : le remplissage de specialisation varie avec la classe et l'effet (9 a 36 s aujourd'hui). Defensif des 12 s : le soin de base d'un soigneur reste un outil frequent.",
+      "identity": {
+        "_comment": "Un sort dont la dominante (matrice) porte le role de sa classe ou sous-classe (config/roles.json role) admet une densite x factor : le soigneur soigne plus souvent qu'un guerrier, le tank protege plus souvent qu'un mage. Remplissage et ultime ne sont pas concernes.",
+        "factor": 2.0,
+        "dominants_by_class_role": {
+          "tank": ["defense", "controle"],
+          "healer": ["defense", "soutien"],
+          "dps": ["offense"],
+          "support": ["soutien", "defense"]
+        },
+        "roles": ["courant", "signature", "defensif", "utilitaire"]
+      },
+      "rounding": [
+        {"below": 10, "step": 0.5},
+        {"below": 30, "step": 1},
+        {"below": null, "step": 5}
+      ],
+      "_rounding_note": "Valeurs lisibles : demi-secondes sous 10 s (un remplissage ne saute pas d'une seconde entiere), secondes jusqu'a 30 s, multiples de 5 au-dela."
+    },
+    "kit_load": {
+      "_comment": "Charge d'un kit = somme de max(GCD, cast) / cooldown sur la barre (config/game.json skill_bar : les sorts hors remplissage au cooldown le plus court, le pire cas), sans reduction de recharge. Au-dela de 1, un sort hors remplissage est toujours pret. Un kit (et une tranche de niveau, skill_power_matrix.LEVEL_BARS) au-dessus du budget baisse la densite admise de toute sa barre (facteur k, entre min_density_scale et 1) : ce sont les sorts forts pour leur role qui s'allongent, les faibles restent sur la borne basse de leur role. Un sort partage par plusieurs kits prend le k le plus bas.",
+      "budget": 0.8,
+      "min_density_scale": 0.5,
+      "_budget_note": "0,40 propose en phase 1 renvoyait 60 % des GCD au remplissage, le jeu 'spam skill 1' que le proprietaire refuse, et n'etait tenable qu'en doublant tous les cooldowns. 0,8 : sur la pire barre, au moins un GCD sur cinq revient au remplissage sans reduction de recharge, et les gros sorts reviennent assez rarement pour qu'un combat long oblige a choisir leur moment. min_density_scale 0,5 : un kit ne divise jamais par plus de deux la densite admise ; un kit qui reste au-dessus est liste par --report."
+    },
+    "cdr_options": {
+      "_comment": "Reduction de recharge (config/combat.json abilities.cooldown_reduction_cap, 40 %, non tranchee) : options que le rapport chiffre a cote du plafond actuel. Aucune n'est appliquee, le plafond ne change pas ici.",
+      "options": [
+        {"label": "plafond 20 %", "cap_percent": 20},
+        {"label": "40 % hors ultimes et signatures", "cap_percent": 40, "excluded_roles": ["ultime", "signature"]},
+        {"label": "20 % hors ultimes et signatures", "cap_percent": 20, "excluded_roles": ["ultime", "signature"]}
+      ]
+    },
+    "cast": {
+      "_comment": "Temps d'incantation : un outil de jeu, pas un cout cache. Decision du proprietaire (2026-10-15) : 'il faut beaucoup de sorts avec des temps de cast, surtout les sorts puissants, comme la resurrection avec 8 secondes de cast ; le jeu etant en temps reel sur grille, il faut pouvoir interrompre, ou attendre un buff d'immunite pour lancer son gros CD'. Le cast croit avec la puissance nette au rang 1 (grille), pour tous les types de sorts (degats, soins, controles, soutiens), sauf les sorts reflexes. Point fixe : on retient le plus long palier c tel que grille(puissance brute - cout d'incantation(c)) >= c, ce qui ne depend pas de la valeur actuelle. Valeur ecrite : un sort qui incante au-dela du GCD garde max(actuel, c) ; un sort sous le GCD ou instantane prend c, porte a min_real_cast_seconds s'il incantait deja (le concepteur voulait une incantation, elle devient reelle).",
+      "grid": [
+        {"max_net_power": 250, "cast": 0},
+        {"max_net_power": 600, "cast": 2.5},
+        {"max_net_power": 1200, "cast": 3.0},
+        {"max_net_power": 2000, "cast": 4.0},
+        {"max_net_power": null, "cast": 5.0}
+      ],
+      "_grid_note": "Paliers en points de matrice (un coup courant vaut 120, un ultime 800 a 3500). Sous 250 points : instantane. L'ancienne grille de balance_model.json avait 1 a 2 s sous 500 points, des paliers cosmetiques (sous le GCD).",
+      "min_real_cast_seconds": 2.5,
+      "_sub_gcd_note": "'On a le GCD, donc un temps de cast inferieur a 2 s est un peu gratuit' (proprietaire), verifie cote serveur (room.cpp, vac_doublons-lot2) : au debut de l'incantation le serveur debite Souffle, GCD et cooldown ensemble ; l'incantation court PENDANT le GCD et l'action suivante attend les deux. Un cast <= GCD ne retarde aucune action ; il interdit seulement de se deplacer (validate_move -> ACTOR_CASTING, deplacement deja limite a une case toutes les 8 s), il peut etre interrompu et sa zone est re-resolue a la fin. Aucune valeur entre 0 et le GCD n'est donc produite : 0, ou au moins 2,5 s (0,5 s au-dela du GCD : 30 points de debit, 19 % de risque d'interruption a 0,03/s).",
+      "floor_by_role": {"ultime": 2.5},
+      "floor_by_effect": {"resurrect": 8.0},
+      "_floor_note": "Un ultime offre toujours une fenetre d'interruption, classes physiques comprises (preparation). Une resurrection incante 8 s (proprietaire). Le plancher passe avant le plafond de contact.",
+      "reflex": {
+        "_comment": "Sorts reflexes, jamais incantes (cast 0) : le remplissage (role), les ripostes et rapprochements (tags), et le defensif d'urgence sur soi (role defensif, target self). Un reflexe qui incante aujourd'hui passe a 0.",
+        "roles": ["remplissage"],
+        "tags": ["counter", "gap_closer"],
+        "self_target_roles": ["defensif"]
+      },
+      "melee_cap": {
+        "_comment": "Classes physiques de contact (config/roles.json role_tags) : l'incantation est une PREPARATION lisible (le serveur ne connait qu'un mecanisme, cast_time : CastingComponent, interrompue par un stun ou le verbe interrupt ; is_channeled existe mais n'est jamais vrai, pas de canalisation). Plafond pour ne pas rester plante au contact, sauf plancher d'effet (resurrection). Reprend balance_model.json plafond_melee sans liste de lignes.",
+        "role_tags": ["melee", "melee_dps"],
+        "seconds": 2.5
+      }
+    },
+    "description_copies": {
+      "_comment": "Phrases de description qui recopient le cast_time ou le cooldown du sort (formes ancrees : une phrase d'effet comme 'reduit la recharge de 2 s' n'est pas une copie). sync : le script aligne le nombre sur le champ (le champ fait foi), en gardant le separateur decimal trouve, a defaut celui de la langue, et l'article anglais (groupe art : 'an' devant un nombre qui commence par article_an) ; --check echoue si une copie diverge. drop_when_zero : quand le champ passe a 0 (sort devenu instantane), la mention disparait ; un groupe 'next' est la lettre qui suit, remise en majuscule en debut de phrase. Aucune description de sort de classe ne cite son cooldown au 2026-10-15 ; les motifs gardent la regle si une copie apparait.",
+      "sync": {
+        "cast_time": [
+          {"field": "description_fr", "pattern": "(?i)après (?P<n>\\d+(?:[.,]\\d+)?) ?s d’incantation", "decimal": ","},
+          {"field": "description_fr", "pattern": "Incantation (?P<n>\\d+(?:[.,]\\d+)?) ?s", "decimal": ","},
+          {"field": "description_en", "pattern": "(?i)after (?P<art>an?) (?P<n>\\d+(?:\\.\\d+)?) ?s (?:interruptible )?cast", "decimal": ".", "article_an": ["8", "11", "18"]},
+          {"field": "description_en", "pattern": "Cast time (?P<n>\\d+(?:\\.\\d+)?) ?s", "decimal": "."}
+        ],
+        "cooldown": [
+          {"field": "description_fr", "pattern": "Recharge(?: :)? (?P<n>\\d+(?:[.,]\\d+)?) ?s\\b", "decimal": ","},
+          {"field": "description_en", "pattern": "Cooldown(?: :)? (?P<n>\\d+(?:\\.\\d+)?) ?s\\b", "decimal": "."}
+        ]
+      },
+      "drop_when_zero": {
+        "cast_time": [
+          {"field": "description_fr", "pattern": "Apr\u00e8s (?P<n>\\d+(?:[.,]\\d+)?) ?s d’incantation(?: interruptible)?, (?P<next>\\w)"},
+          {"field": "description_fr", "pattern": ",? après (?P<n>\\d+(?:[.,]\\d+)?) ?s d’incantation(?: interruptible)?"},
+          {"field": "description_fr", "pattern": " ?Incantation (?P<n>\\d+(?:[.,]\\d+)?) ?s\\."},
+          {"field": "description_en", "pattern": "After an? (?P<n>\\d+(?:\\.\\d+)?) ?s (?:interruptible )?cast, (?P<next>\\w)"},
+          {"field": "description_en", "pattern": ",? after an? (?P<n>\\d+(?:\\.\\d+)?) ?s (?:interruptible )?cast"},
+          {"field": "description_en", "pattern": " ?Cast time (?P<n>\\d+(?:\\.\\d+)?) ?s\\."}
+        ]
+      }
+    }
+  },
+
   "server_dead_fields": {
     "_comment": "Champs de skills.json qu'aucun code serveur vivant ne lit (git grep sur server-combat/src, branche vac_doublons-lot2, 2026-10-15). Le modele ne les compte pas ; le rapport les recense.",
     "fields": ["power_per_level", "effect_power_per_level", "cooldown_per_level", "cast_interruptible", "heal_scaling_stat"]
@@ -199,6 +307,7 @@
     "cost_per_power_band": [0.5, 2.0],
     "cooldown_thresholds_seconds": [6, 10, 20],
     "spam_duration_seconds": 300,
+    "long_cast_seconds": 4,
     "top_n": 15
   }
 }
