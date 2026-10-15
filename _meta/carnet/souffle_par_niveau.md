@@ -24,7 +24,7 @@ valeur de la room, donc ce tick ne compte pas pendant un combat.
 | Croissance | `class_growth.json` `mp_regen` (0) | oui, × (niveau − 1) depuis le 2026-10-15 (avant : ignorée) | oui, × (niveau − 1) (avant : une seule fois) |
 | Équipement : sous-stats, stat principale, affixes | `equipment_stats.json` plage `mp_regen`, `affixes.json` | oui (`room.cpp:7055`, `mp_regen_bonus`) | oui (même total) |
 | Équipement : stat fixe des modèles (ceintures légères 1 à 2) et uniques (3 à 5) | `equipment.json`, `uniques.json` | oui | oui |
-| Panoplies | `panoplies.json` (Nefesh +5, Neshamah +35, Refuah +3, tournoi +1) | oui | oui |
+| Panoplies | `panoplies.json` (Nefesh +1, Neshamah +7, Refuah +3, tournoi +1) | oui | oui |
 | Passifs | Souffle profond 0,05/rang, Respiration (arbre) 0,1/rang, Mélodie inspirante 0,4/rang, Voix harmonique 0,3/rang | oui, valeur exacte (`combat_profile_builder.cpp:326`) | oui, mais la part plate est **arrondie à l'entier inférieur** (`passive_materializer.hpp`) : Souffle profond et Respiration valent 0 hors combat |
 | Keystones | `systems/keystones.json` : rendre un % du Souffle au kill ou à la cible d'un soin, prochain sort gratuit | oui (procs) | non |
 | Familiers | Sérénité +2/s : Souffle **du familier** ; sorts de familier « Régen Souffle » sur les alliés (statut) | oui | non (le tick du familier ne remplit que sa propre réserve, `familiar_service.cpp:2528`) |
@@ -163,8 +163,8 @@ Ce que dit le budget :
 ### Hors combat et panoplie (`--budget`, 2026-10-15)
 
 « Plein » : temps pour remplir le Souffle à vide hors combat, sans puis avec le pass (×2). « Panoplie » : la
-panoplie de Souffle la plus forte que le niveau permet de porter, set complet (Nefesh +5/s jusqu'au niveau 80,
-Neshamah +35/s ensuite), ajoutée à la régénération : régénération, à sec (0 pt), tient un pack.
+panoplie de Souffle la plus forte que le niveau permet de porter, set complet (Nefesh +1/s jusqu'au niveau 80,
+Neshamah +7/s ensuite), ajoutée à la régénération : régénération, à sec (0 pt), tient un pack.
 
 | classe | plein, niv 20 | plein, niv 60 | plein, niv 100 | panoplie niv 40 | panoplie niv 60 | panoplie niv 100 |
 |---|---|---|---|---|---|---|
@@ -320,3 +320,7 @@ copie des champs de coût, que le client affiche déjà ; `--check` refuse une t
 9. **Potions en combat** : il faudrait une action objet côté serveur de combat (avec une recharge).
 10. **Plus gros sort / réserve** : 29 à 45 % chez le guerrier, jusqu'à 31 % chez le voleur et l'archer
     au niveau 1. Lié à la question 1.
+
+**Révision du 2026-10-15 (propriétaire)** : 35/s pour une panoplie était trop. Valeurs « par 5 s » : Nefesh 5 par 5 s = **1/s**,
+Neshamah 35 par 5 s = **7/s** (3 au palier 4, 4 au palier 8). Au niveau 100, le mage en Neshamah régénère 20/s pour une rotation
+de 19,4/s (encore à la limite) ; le guerrier passe de 26 à 65 s avant d'être à sec.
