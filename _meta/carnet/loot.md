@@ -25,7 +25,9 @@
   ou en milliers d'or, même au niveau 100.
 - Donc l'or gagné par heure ne doit pas exploser avec le niveau : courbe plate, et les prix se pensent en
   heures de jeu (ex. reset de l'arbre des passifs ≈ 1 h de farm à son niveau).
-- Pas encore de calcul de l'or gagné par heure selon le niveau : à faire avant de fixer les prix.
+- Calcul de l'or par heure fait le 2026-10-15 : 1 200 à 4 900 or/h, dont 60 à 95 % par les contrats, et deux
+  abus de contrats dans le code. Refonte des contrats proposée : `_meta/conception_contrats/CONTRATS_V2.md`
+  (3 familles Entraînement / Expédition / Vague, groupes 3★ minimum, moitié moins d'or, potions et pierres).
 
 ## Tables de loot (2026-10-13)
 
