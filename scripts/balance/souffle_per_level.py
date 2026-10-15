@@ -23,6 +23,8 @@ Usage (from the repo root):
     python -X utf8 scripts/balance/souffle_per_level.py --check    # exit 1 if a rule fails
     python -X utf8 scripts/balance/souffle_per_level.py --report   # per-skill and per-tier tables
     python -X utf8 scripts/balance/souffle_per_level.py --budget   # Souffle budget model, levels 1-100
+                    (out of combat: mp_regen_out_of_combat with and without the Pass, systems/premium.json;
+                    the best Breath-regen set a character of the level can wear, items/panoplies.json)
 
 Edits are textual (one number per field, one inserted line for a missing field, one
 sentence removed), so formatting and line endings are preserved.
@@ -449,8 +451,34 @@ def demand(sp, dur=120.0):
     return spent / dur
 
 
+def souffle_sets():
+    """[(level_min, set id, mp_regen of the full set)]: lootable sets that give Breath regen,
+    with the first level of their band (items/panoplies.json rank_system)."""
+    pano = load("items/panoplies.json")
+    band_min = {v["rank_label"]: v["level_range"][0]
+                for k, v in pano["_meta"]["rank_system"].items() if k.startswith("rang_")}
+    out = []
+    for sid, s in pano["sets"].items():
+        if not isinstance(s, dict) or s.get("band") not in band_min:
+            continue
+        regen = sum(b.get("mp_regen", 0) for b in s["bonuses"].values())
+        if regen:
+            out.append((band_min[s["band"]], sid, regen))
+    return sorted(out)
+
+
+def best_set(sets, level):
+    """The Breath-regen set with the most regen a character of this level can wear."""
+    ok = [(regen, sid) for lmin, sid, regen in sets if lmin <= level]
+    return max(ok) if ok else (0, "")
+
+
 def budget():
     P, Gear = _budget_tools()
+    # Out of combat: the snapshot's mp_regen_out_of_combat = mp_regen without bonus
+    # (no out-of-combat buff in the model), times the Pass benefit (systems/premium.json).
+    pass_mult = load("systems/premium.json")["benefits"]["out_of_combat_regen_multiplier"]
+    sets = souffle_sets()
     base, growth = load("stats/class_base_stats.json"), load("stats/class_growth.json")
     pv = load("config/game.json")["stats_definition"]["mp"]["point_value"]
     gears = {}
@@ -460,9 +488,12 @@ def budget():
         print(f"\n### Niveau {level}  (sorts de base rang {RANKS[level][0]}, tier 2 rang {RANKS[level][1]}, "
               f"tier 3 rang {RANKS[level][2]} ; equipement {GEAR_AT[level]})")
         print("Durees (s) : " + ", ".join(f"{k} {v:.0f}" for k, v in fd.items()))
+        set_regen, set_id = best_set(sets, level)
+        print(f"Panoplie de Souffle portable : {set_id or 'aucune'} (+{set_regen}/s, set complet)")
         print("| classe | Souffle max (0 pt / 1 pt par niv) | regen /s (equipement) | rotation /s "
-              "| a sec (0 pt / 1 pt) | tient un pack | a sec sur un combat long | plein hors combat | plus gros sort / max |")
-        print("|---|---|---|---|---|---|---|---|---|")
+              "| a sec (0 pt / 1 pt) | tient un pack | a sec sur un combat long | plein hors combat (sans / avec pass) "
+              "| avec la panoplie : regen, a sec (0 pt), tient un pack | plus gros sort / max |")
+        print("|---|---|---|---|---|---|---|---|---|---|")
         for cls in CLASSES:
             w = ARMOR[cls]
             gears.setdefault(w, Gear(w))
@@ -475,13 +506,17 @@ def budget():
             d = st.median(demand(spells(k, level)) for k in ks)
             big = st.median(max(x[0] for x in spells(k, level)) for k in ks)
 
-            def tte(pool):
-                return math.inf if d <= regen else pool / (d - regen)
+            def tte(pool, r=regen):
+                return math.inf if d <= r else pool / (d - r)
             t0, t1 = tte(pool0), tte(pool1)
+            ts = tte(pool0, regen + set_regen)
             fmt = lambda t: "jamais" if t == math.inf else f"{t:.0f} s"
+            set_col = (f"{regen + set_regen:.0f}, {fmt(ts)}, {'oui' if ts >= fd['pack'] else 'non'}"
+                       if set_regen else "")
             print(f"| {cls} | {pool0:.0f} / {pool1:.0f} | {regen:.0f} ({round(g.get('mp_regen', 0))}) | {d:.1f} | "
                   f"{fmt(t0)} / {fmt(t1)} | {'oui' if t0 >= fd['pack'] else 'non'} | "
-                  f"{'oui' if t0 < long_fight else 'non'} | {pool0 / regen:.0f} s | {big / pool0:.0%} |")
+                  f"{'oui' if t0 < long_fight else 'non'} | {pool0 / regen:.0f} s / {pool0 / (regen * pass_mult):.0f} s | "
+                  f"{set_col} | {big / pool0:.0%} |")
 
 
 def main():

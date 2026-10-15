@@ -7,6 +7,8 @@ combat ?) » ; « les skills de base coûtent forcément moins que les skills de
 Règles : `config/skill_system.json` `mana_cost_scaling` (coûts), `items/equipment_scaling.json`
 `tier_system.rate_stats_no_tier_scaling` (régénération d'équipement).
 Outil : `scripts/balance/souffle_per_level.py` (`--check` en CI, `--report`, `--budget`).
+Régénération hors combat et pass : `stats/definitions.json` (`hp_regen_out_of_combat`, `mp_regen_out_of_combat`),
+`systems/premium.json` `benefits.out_of_combat_regen_multiplier` (section 1 bis).
 
 ## 1. Les sources de régénération, en combat et hors combat
 
@@ -19,10 +21,10 @@ valeur de la room, donc ce tick ne compte pas pendant un combat.
 | source | data | en combat | hors combat |
 |---|---|---|---|
 | Base de classe | `class_base_stats.json` `mp_regen` (1/s, six classes) | oui (`combat_profile_builder.cpp:221`) | oui (`combat_stat_snapshot_builder.hpp:74`) |
-| Croissance | `class_growth.json` `mp_regen` (0) | **non** : le combat ne lit pas ce champ | oui (sans effet tant qu'il vaut 0) |
+| Croissance | `class_growth.json` `mp_regen` (0) | oui, × (niveau − 1) depuis le 2026-10-15 (avant : ignorée) | oui, × (niveau − 1) (avant : une seule fois) |
 | Équipement : sous-stats, stat principale, affixes | `equipment_stats.json` plage `mp_regen`, `affixes.json` | oui (`room.cpp:7055`, `mp_regen_bonus`) | oui (même total) |
 | Équipement : stat fixe des modèles (ceintures légères 1 à 2) et uniques (3 à 5) | `equipment.json`, `uniques.json` | oui | oui |
-| Panoplies | `panoplies.json` (Nefesh +15, Neshamah +35, Refuah +3, tournoi +1) | oui | oui |
+| Panoplies | `panoplies.json` (Nefesh +5, Neshamah +35, Refuah +3, tournoi +1) | oui | oui |
 | Passifs | Souffle profond 0,05/rang, Respiration (arbre) 0,1/rang, Mélodie inspirante 0,4/rang, Voix harmonique 0,3/rang | oui, valeur exacte (`combat_profile_builder.cpp:326`) | oui, mais la part plate est **arrondie à l'entier inférieur** (`passive_materializer.hpp`) : Souffle profond et Respiration valent 0 hors combat |
 | Keystones | `systems/keystones.json` : rendre un % du Souffle au kill ou à la cible d'un soin, prochain sort gratuit | oui (procs) | non |
 | Familiers | Sérénité +2/s : Souffle **du familier** ; sorts de familier « Régen Souffle » sur les alliés (statut) | oui | non (le tick du familier ne remplit que sa propre réserve, `familiar_service.cpp:2528`) |
@@ -36,13 +38,30 @@ régénération de Souffle en combat allonge donc aussi l'attente entre deux com
 hors combat » plus bas : 44 s → 107 s pour un mage niveau 100). Les potions servent justement à couper
 cette attente.
 
-**Solution propre (code serveur, non écrit) :** une régénération hors combat qui ne dépend pas de la
-stat de combat, en pourcentage du Souffle max, définie une fois en data (par exemple
-`config/game.json` `regeneration.out_of_combat.mp_percent_of_max_per_sec`, clé obligatoire). Dans
-`health_coordinator.cpp`, lignes 783 et 791 : remplacer `COALESCE((stats_profile_snapshot->'stats'->>'mp_regen')::int, 0)`
-par `GREATEST(<mp_regen du profil>, CEIL(mp_max * $2 / 100.0))`, `$2` lu au démarrage depuis la data
-(refus si absente). `mp_regen` devient alors la stat de combat seule, et le repos garde un temps de
-remplissage constant à tous les niveaux.
+## 1 bis. Régénération hors combat (décision du 2026-10-15, appliquée)
+
+Le propriétaire : « de base c'est la même stat, mais si j'ajoute des buffs hors combat […] créer une stat
+dédiée qui aura la regen souffle + la regen hors combat souffle ». `mp_regen` reste **la** stat de
+régénération, en combat comme hors combat. Hors combat seulement, une stat dédiée par ressource s'y ajoute :
+
+    regen hors combat = (regen + bonus plat hors combat) × (1 + bonus % hors combat / 100)
+    gain par seconde  = regen hors combat × multiplicateur du pass (abonné seulement)
+
+- Stats (`stats/definitions.json`, catégorie `resources`) : `hp_regen_out_of_combat` et
+  `mp_regen_out_of_combat`, `bonus_type: both`. Le bonus plat et le bonus % sont les deux modes d'un buff
+  monde sur cette stat (`stats/world_buffs.json`, `mode: flat | percent`) : nourriture, buffs futurs. Aucune
+  source n'en donne encore ; sans bonus, la stat vaut `hp_regen` / `mp_regen`.
+- Pass Kanarion : `systems/premium.json` `benefits.out_of_combat_regen_multiplier` = **2**, PV et Souffle
+  (décision du carnet `pass_premium.md`, confirmée le 2026-10-15). Le fichier suit le schéma de
+  `_meta/conception_systemes/PASS_PREMIUM.md` 3.1, réduit aux avantages qui ont une valeur décidée.
+- Serveur (back `vac_doublons-lot2`) : la formule vit une fois dans `shared/gameplay/out_of_combat_regen.hpp`
+  (lecture stricte de `premium.json`, refus au démarrage si la clé manque) ; le builder de stats l'écrit dans
+  le profil (`stats.mp_regen_out_of_combat`) ; `HealthCoordinator::apply_regen_tick` lit ces deux clés
+  (obligatoires, `health/regen_tick.hpp`) et applique le pass. Le combat ne lit rien de tout cela.
+- **Le droit au pass n'existe pas encore côté serveur** (pas de `accounts.premium_until`) : la règle prend un
+  booléen par personnage, et personne n'a le bonus tant que le droit n'est pas branché.
+- Rejeté : un plancher de régénération en % du Souffle max (ancienne proposition de cette note) ; le
+  propriétaire garde une seule stat.
 
 ## 2. La régénération corrigée
 
@@ -68,7 +87,8 @@ Le modèle de budget lisait les paliers en escalier ; il suit maintenant `level_
 ## 3. Le budget, avant et après
 
 Souffle max = base de classe + croissance + équipement attendu ; régénération = base de classe +
-équipement (sans passif, sans panoplie, sans unique). Points de stats : 0 en Souffle ou 1 point sur 3
+équipement (sans passif, sans panoplie, sans unique). « Plein hors combat » = Souffle max divisé par
+`mp_regen_out_of_combat` (sans buff hors combat, donc égal à la régénération), sans puis avec le pass. Points de stats : 0 en Souffle ou 1 point sur 3
 par niveau (+5 par point). Rangs de sorts : niv 20 = base 4 ; niv 40 = base 6, tier 2 rang 2 ;
 niv 60 = base 8, tier 2 rang 4 ; niv 100 = base 8, tier 2 et tier 3 rang 6.
 Durées : PV des monstres (`monster_scaling_model.json`, médiane des 7 archétypes) divisés par les
@@ -139,6 +159,21 @@ Ce que dit le budget :
   96 % de sa rotation. Voir la question 1.
 - Le pack du niveau 100 dure 260 s en solo (52 GCD par monstre standard) : à ce niveau, toute classe
   est à sec avant la fin d'un pack, quelle que soit la réserve. Voir la question 2.
+
+### Hors combat et panoplie (`--budget`, 2026-10-15)
+
+« Plein » : temps pour remplir le Souffle à vide hors combat, sans puis avec le pass (×2). « Panoplie » : la
+panoplie de Souffle la plus forte que le niveau permet de porter, set complet (Nefesh +5/s jusqu'au niveau 80,
+Neshamah +35/s ensuite), ajoutée à la régénération : régénération, à sec (0 pt), tient un pack.
+
+| classe | plein, niv 20 | plein, niv 60 | plein, niv 100 | panoplie niv 40 | panoplie niv 60 | panoplie niv 100 |
+|---|---|---|---|---|---|---|
+| Guerrier | 26 s / 13 s | 31 s / 16 s | 51 s / 25 s | 10/s, 75 s, non | 11/s, 108 s, oui | 41/s, jamais, oui |
+| Mage | 76 s / 38 s | 71 s / 36 s | 107 s / 54 s | 13/s, 484 s, oui | 16/s, jamais, oui | 48/s, jamais, oui |
+| Soigneur | 74 s / 37 s | 71 s / 35 s | 107 s / 53 s | 13/s, 97 s, oui | 16/s, 169 s, oui | 48/s, jamais, oui |
+| Archer | 67 s / 34 s | 64 s / 32 s | 93 s / 47 s | 10/s, 100 s, oui | 10/s, 101 s, oui | 41/s, jamais, oui |
+| Voleur | 55 s / 28 s | 52 s / 26 s | 76 s / 38 s | 10/s, 62 s, non | 10/s, 61 s, non | 41/s, jamais, oui |
+| Artisan | 67 s / 34 s | 64 s / 32 s | 93 s / 47 s | 10/s, 96 s, oui | 10/s, 89 s, non | 41/s, jamais, oui |
 
 ## 4. Le coût des sorts
 
@@ -231,19 +266,23 @@ copie des champs de coût, que le client affiche déjà ; `--check` refuse une t
 
 ## 5. Ce qui demande du code (non écrit)
 
-- **Serveur, régénération hors combat** : section 1, `health_coordinator.cpp` lignes 783 et 791, plus
-  une clé de data obligatoire.
+- ~~Serveur, régénération hors combat~~ : fait le 2026-10-15 (section 1 bis).
 - **Serveur, `rank_scaling_enabled` devenu redondant** : tous les sorts de classe qui portent
   `percent_per_level` l'ont. Supprimer la porte (`room.cpp` `effective_scaling` ligne 8064,
   `content_loader.cpp:451`, `skill.hpp:152`, `BE1_PER_LEVEL_SCALING`) pour que `percent_per_level`
   s'applique toujours ; puis retirer le champ de la data et de la règle du script.
-- **Serveur, croissance de régénération** : le combat ignore `class_growth.mp_regen`
-  (`combat_profile_builder.cpp:221` ne lit que la base) quand l'économie l'ajoute
-  (`combat_stat_snapshot_builder.hpp:74`). Sans effet à 0 ; lire la croissance au combat, ou retirer
-  le champ.
+- ~~Serveur, croissance de régénération~~ : fait le 2026-10-15. Le combat lit `class_growth.mp_regen` et
+  `hp_regen` (clés obligatoires) × (niveau − 1) ; l'économie multiplie aussi `mp_regen` par (niveau − 1)
+  (`CombatStatSnapshotBuilder::scale_growth`, une seule copie au lieu de trois). Reste : l'économie arrondit
+  chaque croissance à l'entier au chargement (`stat_block_json.hpp`, 0,06 → 0, 0,8 → 1) quand le combat
+  garde le flottant.
 - **Économie, passifs de régénération** : la part plate est arrondie à l'entier inférieur hors combat
   (`passive_materializer.hpp`, `flat()`), puis le profil est stocké en entiers : Souffle profond
-  (0,5/s au rang 10) et Respiration (0,5/s au rang 5) ne régénèrent rien hors combat.
+  (0,5/s au rang 10) et Respiration (0,5/s au rang 5) ne régénèrent rien hors combat. **Toujours ouvert**
+  (pas local) : tout le profil est en entiers (`CombatStatSnapshot`, JSON, tick). Correction : porter
+  `hp_regen`, `mp_regen` et leurs variantes hors combat en centièmes (comme `attack_speed`, ×100), sans
+  arrondi dans `passive_materializer.hpp`, et faire garder au tick le reste fractionnaire de chaque
+  personnage (accumulateur en mémoire dans `HealthCoordinator`).
 - **Objets déjà tirés** : ils gardent leur `mp_regen` au multiplicateur ×4,6. Migration ou non.
 
 ## 6. Questions ouvertes
@@ -257,13 +296,18 @@ copie des champs de coût, que le client affiche déjà ; `--check` refuse une t
 2. **Durée des combats au niveau 100** : 260 s pour un pack solo, 52 GCD par monstre standard. Si c'est
    voulu, aucune réserve ne tient un pack ; sinon c'est la calibration (`player_ref_equilibre`) qui
    est à revoir avant d'ajuster le Souffle de haut niveau.
-3. **Régénération hors combat** : valeur du plancher en % du Souffle max (par exemple 3 %/s, environ
-   30 s pour remplir à tous les niveaux), si la solution de la section 1 est retenue.
-4. **Panoplies de Souffle** : Nefesh (bande C, 2 pièces) donne +15/s dès le niveau 1 et Neshamah
-   (SS) +35/s : avec l'une ou l'autre, toute classe redevient inépuisable. Nefesh a gardé ses valeurs
-   de passe 1 parce que « le Souffle n'est jamais limitant en combat réel » (`panoplies.json`
-   `power_budget`) : ce n'est plus vrai. Remesurer son facteur k, et passer `mp_regen` des panoplies
-   sur la courbe douce des taux (Neshamah 14 + 21 → 7 + 10) ?
+3. ~~Régénération hors combat~~ : tranché le 2026-10-15, section 1 bis (une stat, bonus hors combat
+   dédiés, pass ×2).
+4. **Panoplies de Souffle** (décision du 2026-10-15) : progression régulière du rang I au rang V, Nefesh
+   5 → 15/s (I 5, II 7,5, III 10, IV 12,5, V 15), Neshamah 7 → 35/s (7, 14, 21, 28, 35). Mais une
+   panoplie ne vit que dans **une** bande (`band`, modèle du 2026-09-28) : chaque set prend la valeur de
+   sa bande, Nefesh (C, rang I) **15 → 5**, Neshamah (SS, rang V) **35** (inchangé, 14 au palier 4 et 21
+   au palier 8). Les autres valeurs n'ont pas de porteur. Si Nefesh doit exister à chaque rang, c'est un
+   changement de modèle (un set par bande, ou des bonus par bande lus par `PanoplieRegistry`). Budget
+   (`--budget`, colonne panoplie) : Nefesh suffit à rendre le mage inépuisable au niveau 60 et fait tenir
+   un pack à presque toutes les classes jusqu'au niveau 60 ; Neshamah (+35/s) rend **toutes** les classes
+   inépuisables au niveau 100 (41 à 48/s de régénération pour 18 à 23/s de rotation). À revoir si ce
+   n'est pas voulu.
 5. **`hp_regen`** prend aussi le ×4,6 des stats brutes. Elle ne joue que hors combat ; la passer en
    taux aussi ?
 6. **Sorts de spécialisation sans gain par rang** (Forteresse Sylvestre, Forge Vivante, etc.) : ils
