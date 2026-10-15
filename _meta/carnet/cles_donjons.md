@@ -3,6 +3,23 @@
 Statut : décisions du propriétaire (2026-10-13), en cours d'implémentation (data `vac_dungeon-keys`
 `334e634`, serveur `vac_dungeon-keys` en cours).
 
+## Décisions du 2026-10-15
+
+- **Une seule clé par donjon**, valable pour les paliers fissure 2 et 3 (pas une clé par palier : la
+  difficulté vient des monstres ; des clés par palier éclateraient le marché et la règle « jamais sous
+  le palier » obligerait à faire tomber la clé fissure 3 sur des monstres qui n'existent que dedans).
+- **Un palier s'ouvre quand le joueur a fini le palier d'avant** (`requires_cleared`).
+- **3 % par monstre** de la tranche. Un groupe des Égouts compte 8 monstres : environ une clé tous les
+  4 à 5 combats dans le donjon, une tous les 11 combats dehors (packs de 3).
+- **Recette de clé** (seconde source) : chez le Runiste, avec des ressources de la tranche.
+- Repaire des Bandits (ancien donjon 1-20) : **on n'y touche pas** (ses clés restent sans source).
+- Fait (branches `vac_dungeon-keys2`) : `key_rat_den`, sa règle de drop en attente du palier 2
+  (`_pending_level_band_drops`), `recipe_rune_key_rat_den`, gardes dans `scripts/dungeon_content.py`,
+  porte `requires_cleared` dans le dungeon service.
+- Reste : les paliers 2 et 3 des Égouts (cartes, au bureau) ; la clé hebdomadaire du pass premium
+  (aucun système d'abonnement côté serveur aujourd'hui) ; les métiers ne sont pas encore branchés,
+  donc la recette n'est pas encore utilisable.
+
 ## Décisions du 2026-10-13 (second passage)
 
 - **Tour infinie : seule la clé utilisée monte de niveau** (les clés hautes restent rares et élitistes,

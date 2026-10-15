@@ -1640,7 +1640,7 @@
         }
       },
       "_comment_difficulties": "MVP: fissure_1 SEULE. La difficulte vient des MONSTRES (max_stars + level_range + poids de mobs par zone d etage), pas d un multiplicateur d instance : le modele hp_mult/dmg_mult a ete abandonne, rien ne le lisait au runtime. Chaque palier aura ses PROPRES zones instanciees (dungeon_rat_den_f<N>_fissure_<M>) avec son propre jeu de spawns. Ne pas declarer fissure_2/3 ici tant que leurs zones n existent pas : le popup client est data-driven, il afficherait des paliers qui servent les monstres de fissure_1.",
-      "_comment_keys": "MVP: les 3 paliers sont ouverts (key_required null). Le drop de cle n'est lu par aucun .cpp au runtime (dungeon_key_drops/zone_drops dans loot_tables.json sont de la data morte), donc gater fissure_2/3 sur une cle les rendrait inatteignables. Allumer le gate quand le drop de cle sera cable.",
+      "_comment_keys": "Paliers et cle (proprietaire 2026-10-15) : fissure_1 reste libre. fissure_2 et fissure_3 demanderont la MEME cle, key_rat_den (key_required), consommee a l entree, une par joueur, et chacune s ouvre quand le joueur a fini le palier d avant (requires_cleared: fissure_1, puis fissure_2 ; verifie par le dungeon service sur last_completed_at). Le drop est pret dans items/loot_tables.json dungeon_key_drops._pending_level_band_drops, la recette dans items/profession_recipes.json (recipe_rune_key_rat_den). Le jour ou fissure_2 est declare : passer la regle de drop dans level_band_drops. scripts/dungeon_content.py refuse une cle qui tombe sans qu un palier la demande.",
       "floors": [
         {
           "floor": 1,

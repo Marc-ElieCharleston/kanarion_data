@@ -17,10 +17,11 @@ Plus tard : auras, ailes, cosmétiques faits par un vrai artiste (aujourd'hui le
 
 ## À corriger / à brancher
 
-- `systems/boutique.json` `battle_pass` : il existe un battle pass (45 jours, piste premium `exclusive_elixirs: true`).
-  Décision : **un seul pass** → retirer ou fusionner le battle pass ; pas d'élixirs réservés aux payants.
+- ~~`systems/boutique.json` `battle_pass`~~ : **retiré** (2026-10-15, propriétaire : pas prévu pour le moment). Le
+  fichier entier, mort, est supprimé sur `vac_audit-lot1` (`0db6b30`), battle pass compris.
 - `qol_shop` (inventaire, banque, emplacements de personnage, changement de nom) : achats ponctuels, compatibles.
 - **Clés de donjon** : la data existe (`key_drops` dans `world/dungeons.json`, `dungeon_key_drops` / `zone_drops` dans
   `loot_tables.json`, `keys` dans `systems/tower.json`) mais **aucun code serveur ne lit le drop de clé** (data morte, voir
   `_comment_keys` du donjon des égouts). À câbler : drop des clés sur les monstres, puis porte de donjon qui consomme la clé,
-  puis la clé hebdomadaire du pass.
+  puis la clé hebdomadaire du pass. Drop et porte faits le 2026-10-15 (voir `cles_donjons.md`) ; la clé
+  hebdomadaire attend un système d'abonnement, qui n'existe pas encore côté serveur.

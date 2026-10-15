@@ -4251,14 +4251,17 @@
   },
   "dungeon_key_drops": {
     "_comment": "2026-10-13 (proprietaire) : une cle de donjon tombe sur des monstres PERTINENTS, jamais en dessous du palier du donjon (la cle d un donjon niveau 100 ne tombe que sur les monstres 81-100). Regle par TRANCHE DE NIVEAU du monstre tue : chaque entree = une cle, une tranche [min_mob_level, max_mob_level], une chance par monstre tue. Les cles sont consommees a l entree, une par joueur (dungeon service), et s echangent (HDV, echange direct). Seconde source prevue : une recette par cle. Lu par server-combat LootRoller (back vac_dungeon-keys). L ancien format zone_drops visait des zones inexistantes (zone_04/06/08) et des donjons retires : remplace.",
+    "_rule_one_key": "2026-10-15 (proprietaire) : UNE cle par donjon, valable pour tous ses paliers a cle (fissure_2, fissure_3). La difficulte vient des monstres, pas de la cle. Un palier s ouvre quand le joueur a fini le palier d avant (world/dungeons.json difficulties.<palier>.requires_cleared). Garde : scripts/dungeon_content.py (la cle existe, un palier la demande, la tranche ne descend pas sous le niveau du donjon).",
     "level_band_drops": [],
-    "_level_band_drops_example": {
-      "key_id": "key_rat_den_fissure_2",
-      "min_mob_level": 8,
-      "max_mob_level": 20,
-      "chance": 0.03,
-      "_note": "exemple : a activer quand le palier fissure_2 des Egouts existera (contenu de carte, au bureau)"
-    }
+    "_pending_level_band_drops": [
+      {
+        "key_id": "key_rat_den",
+        "min_mob_level": 8,
+        "max_mob_level": 20,
+        "chance": 0.03,
+        "_note": "En attente du palier fissure_2 des Egouts (contenu de carte, au bureau). A deplacer dans level_band_drops le jour ou fissure_2 est declare avec key_required key_rat_den : avant, la cle tomberait sans rien ouvrir. 3 % par monstre (proprietaire 2026-10-15) : un groupe des Egouts compte 8 monstres, soit environ une cle tous les 4 a 5 combats dans le donjon ; un pack de 3 dehors, une tous les 11 combats."
+      }
+    ]
   },
   "_notes": {
     "balance": "Ces valeurs sont des bases, Ã  ajuster selon les tests",

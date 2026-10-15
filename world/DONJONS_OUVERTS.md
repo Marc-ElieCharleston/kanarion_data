@@ -25,7 +25,19 @@ Un donjon ouvert est une suite de zones d'étage **partagées** (plusieurs joueu
 | Déconnexion | Progression conservée. Au retour, entrer à nouveau reprend l'étage atteint. |
 | Joueur hors du combat, spectateur | Rien. |
 
-Toute nouvelle règle (durée de conservation après déconnexion, clés d'entrée, verrouillage) se décide avec Charleston avant d'être codée.
+### Paliers et clés (Charleston, 2026-10-15)
+
+| Règle | Où |
+|---|---|
+| **Une seule clé par donjon**, valable pour tous ses paliers à clé. La difficulté vient des monstres, pas de la clé. | `difficulties.<palier>.key_required`, la même sur chaque palier à clé |
+| Une clé par joueur, consommée à l'entrée d'un nouveau parcours (pas à la reprise). | dungeon service |
+| **Un palier s'ouvre quand le joueur a fini le palier d'avant** (boss tué au moins une fois). | `difficulties.<palier>.requires_cleared: "<palier d'avant>"` |
+| La clé tombe sur les monstres d'une tranche de niveau, **jamais sous le niveau du donjon**. | `items/loot_tables.json` `dungeon_key_drops.level_band_drops` |
+| Seconde source : une recette par clé, avec les ressources de la tranche. | `items/profession_recipes.json` |
+
+Une règle de drop dont aucun palier déclaré ne demande la clé attend dans `_pending_level_band_drops` : sinon la clé tomberait sans rien ouvrir. `scripts/dungeon_content.py` vérifie tout ça.
+
+Toute nouvelle règle (durée de conservation après déconnexion, verrouillage) se décide avec Charleston avant d'être codée.
 
 ## Où vit chaque donnée
 
@@ -50,7 +62,10 @@ Toute nouvelle règle (durée de conservation après déconnexion, clés d'entr�
     "spawn_model": "fixed_groups",     // active le contrat décrit ici
     "star_weights": {"3": 30, "4": 40, "5": 30}  // tirage de l'étoile de chaque groupe
   },
-  "difficulties": { "fissure_1": { "key_required": null } },
+  "difficulties": {
+    "fissure_1": { "key_required": null },
+    "fissure_2": { "key_required": "key_xxx", "requires_cleared": "fissure_1" }
+  },
   "floors": [
     {
       "floor": 1,
@@ -93,7 +108,9 @@ Toute nouvelle règle (durée de conservation après déconnexion, clés d'entr�
    - des `spawn_areas` dans une zone d'étage ;
    - un point d'arrivée ou un groupe hors du contour de la salle ;
    - un monstre inconnu ;
-   - une scène manquante.
+   - une scène manquante ;
+   - deux clés différentes dans un même donjon, une clé qui n'ouvre pas ce donjon, un `requires_cleared` qui boucle ;
+   - une règle de drop de clé active sans palier qui la demande, ou une tranche sous le niveau du donjon.
 
    La CI le relance à chaque push.
 3. **Hash** puis commit (voir `CLAUDE.md`, section Windows).
