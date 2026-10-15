@@ -69,6 +69,15 @@ Dernière mise à jour : 2026-10-02.
 - [ ] Audit lot 9 fait (data `vac_audit-lot1` `0db6b30`) : 8 fichiers morts supprimés. Gardés : `entities/boss_mechanics.json`
       (client `data_db.gd:194` le charge sans l'utiliser : retirer la ligne, puis le fichier) et `items/currencies.json`
       (catalogue tenu à jour, à décider). `scripts/validate_skills.py` échoue déjà en CI (89 erreurs, avant ce lot).
+- [ ] Audit des doublons (`carnet/audit_doublons.md`, autre session), lot 1, fait le 2026-10-15, non compilé :
+      S1 PV/Souffle de départ = table de classe (back `vac_doublons-lot1` `b7d0a40b`, part de `vac_economy-fixes`) ;
+      S7 retour d'arène / room perso dans la zone de chaque joueur, champ 16 de `ArenaRoomSlot` (back `vac_doublons-arena`
+      `ccd75b6c`) ; reste le tournoi (`tournament_loop.cpp` envoie `arena_tournament`) et `desert_playtest` encore accepté par
+      la téléportation (`economy_service.cpp:6334`) et par le déblocage admin (`admin_service.cpp:528`) ;
+      client C3 (règle des voleurs inventée), C4 (sceptre du soigneur), C7 (grille = capacité serveur), C8 (RM suit la MAG)
+      (client `vac_doublons-lot1` `3001c1fd`). S2 canaux : pas de bug visible (la passerelle reroute les MP), `chat_channels` mort.
+      S3 : réglé par `vac_capture-rarity`. S9/C2 Souffle par niveau : 152 sorts (base + tier 2) à 0, règle confiée à un agent
+      (data `vac_souffle-scaling`, propriétaire : « éviter le spam infini sans qu'un sort vide le Souffle »).
 - [ ] Niveaux de compétence de familier par doublons (max 5) : scaling à concevoir (`carnet/familiers.md`).
 - [ ] Changements de comportement à vérifier en jeu : les contrôles durs peuvent rater (application 10-90 %, DoT et débuffs garantis sans résistance),
       familiers à 3 s de GCD, parade / blocage / vol de vie plafonnés au jet, durée des buffs par type.
