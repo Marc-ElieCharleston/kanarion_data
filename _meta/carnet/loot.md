@@ -27,7 +27,8 @@
   heures de jeu (ex. reset de l'arbre des passifs ≈ 1 h de farm à son niveau).
 - Calcul de l'or par heure fait le 2026-10-15 : 1 200 à 4 900 or/h, dont 60 à 95 % par les contrats, et deux
   abus de contrats dans le code. Refonte des contrats proposée : `_meta/conception_contrats/CONTRATS_V2.md`
-  (3 familles Entraînement / Expédition / Vague, groupes 3★ minimum, moitié moins d'or, potions et pierres).
+  (6 familles : Expédition par zone, Vague, Récupération, Prime, Donjon, Arène ; donneurs Hestia, Aldric, Varn, Dargo ;
+  groupes 3★ minimum, moitié moins d'or, potions et pierres).
 
 ## Tables de loot (2026-10-13)
 

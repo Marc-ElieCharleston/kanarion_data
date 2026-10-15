@@ -37,30 +37,48 @@ Abus trouvés (vérifiés dans le code serveur) :
 - Les contrats ont un sens : **entraîner les gens du village**, **partir en expédition**, **nettoyer des
   vagues de monstres**. On simplifie, c'est un jeu.
 
-## Les trois familles
+## Les familles (révision du 2026-10-15)
+
+Les contrats restent affichés sur **le tableau**, mais chacun a un **donneur** : quelqu'un qui en sait un
+peu plus que les gens du village.
 
 | Famille | Donneur | Sens | Ce qu'on fait (simplifié) |
 |---|---|---|---|
-| **Entraînement** | Dargo (arène, Rochebourg) | former les combattants du village | gagner des matchs d'arène **avec appariement** (pas de duel, pas de salle perso) |
-| **Expédition** | Varn (Havreden) | aller loin du village, rapporter des nouvelles | disperser des groupes **3 étoiles et plus** de la bande de niveau (zone nommée possible plus tard) |
-| **Vague** | Varn, ou la garde | une vague de créatures menace les abords | abattre des créatures **dans des groupes 3 étoiles et plus** de la bande ; rang S = refermer une invasion de Fissure |
+| **Expédition** | Hestia (ancienne exploratrice, connaît chaque recoin) | aller voir un lieu précis | disperser des groupes **3★ et plus dans une zone nommée** (« Expédition au Marais de Havreden ») |
+| **Vague** | Aldric (forme les volontaires) | une vague déborde sur les abords, ses volontaires ne suffisent pas | abattre des créatures **dans des groupes 3★ et plus** de la bande ; rang S = refermer une invasion de Fissure |
+| **Récupération** | Aldric | équiper les volontaires | rapporter des ressources lâchées par les monstres de la bande (peaux, carapaces…) |
+| **Prime** | Varn (chasseur de primes) | un monstre dangereux est repéré | abattre un **élite nommé** de la bande (Rat Alpha, Tortue de Pierre, Scarabée Géant…), qui n'apparaît que dans les groupes 3★ et plus |
+| **Donjon** | Varn (connaît chaque vieille porte) | un donjon vaut la descente | terminer un donjon de la bande, difficulté normale ou plus |
+| **Arène** | Dargo (Rochebourg) | se mesurer aux autres | gagner des matchs d'**arène classique ou classée** (pas l'entraînement contre des recrues, pas la salle perso, pas le duel) |
 
 Règles :
-- 3 contrats au plus, **un par famille** : un joueur tient au plus un Entraînement, une Expédition et une Vague.
-- La **bande de niveau s'applique partout**, à chaque monstre et à chaque groupe.
-- Un groupe de moins de 3 étoiles ne compte pour rien.
-- Expédition et Vague peuvent avancer sur le même combat (deux familles différentes), jamais plus.
+- 3 contrats au plus, **un par famille** : avec 6 familles, chacun choisit ses 3.
+- La **bande de niveau s'applique partout**. Une expédition prend la bande de sa zone (les zones ont déjà la
+  leur) : un niveau 100 qui fait l'expédition du Terrier des Rats touche la récompense de 1-8, pas plus.
+- Un groupe de moins de 3★ ne compte pour rien.
+- Un même combat peut faire avancer plusieurs familles (Expédition, Vague, Prime), jamais deux contrats d'une même famille.
+- Récupération : seulement des ressources **qui ne se vendent pas chez un PNJ** (sinon : acheter au PNJ, rendre
+  au contrat = or gratuit). L'objet est retiré du sac au rendu. La récompense dépasse un peu sa revente.
 
 ## Rangs
 
-| Rang | Entraînement | Expédition | Vague |
-|---|---|---|---|
-| C | 1 victoire d'arène | 2 groupes 3★+ | 10 créatures dans des groupes 3★+ |
-| B | 2 victoires | 4 groupes 3★+ | 20 créatures |
-| A | 3 victoires | 3 groupes 4★+ | 35 créatures |
-| S | 5 victoires | 1 groupe 5★ | refermer 1 invasion de Fissure de la bande |
+| Rang | Expédition (par zone) | Vague | Récupération | Prime | Donjon | Arène |
+|---|---|---|---|---|---|---|
+| C | 2 groupes 3★ | 10 créatures | 5 ressources | — | — | 1 victoire |
+| B | 4 groupes 3★ | 20 créatures | 10 ressources | — | normal | 2 victoires |
+| A | 3 groupes 4★ | 35 créatures | 20 ressources | 1 élite nommé | difficile | 3 victoires |
+| S | 1 groupe 5★ | 1 invasion de Fissure | — | 1 boss de zone | cauchemar | 5 victoires |
 
-5 bandes (1-20, 21-40, 41-60, 61-80, 81-100) × 3 familles × 4 rangs = **60 contrats** (80 aujourd'hui).
+Volume : 21 zones × 4 rangs d'expédition, plus Vague, Récupération et Arène par bande, plus une prime par élite
+ou boss nommé, plus un contrat par donjon et par difficulté. Les contrats seront **générés par un script**
+à partir des zones, des monstres et des donjons, pas écrits à la main.
+
+## Autres idées (non retenues pour l'instant)
+
+- **Capture** (le dresseur veut un familier de la zone) : l'objectif `capture_familiar` existe déjà.
+- **Commande d'artisan** (fabriquer un objet pour un PNJ) : `craft_item` existe ; pour les métiers.
+- **Escorte d'un volontaire** (Aldric : emmener un mercenaire en combat) : colle au lore, mais le combat ne
+  dit pas encore au service des quêtes qu'un mercenaire était là.
 
 ## Récompenses
 
@@ -104,14 +122,16 @@ monstres, au lieu de 3 à 15 fois. Tout dépend de la durée réelle des combats
   « créatures abattues dans des groupes N★+ de la bande » (`kill_mobs` + `min_star`) ; objectif « refermer
   une invasion de Fissure » (l'événement existe déjà pour l'XP, `quest_arena_rewards.cpp`) ; récompense
   « pierre de rang R, type au hasard » (même mécanisme que la réserve des coffres).
-- Serveur (pvp) : ne publier la victoire pour les contrats que pour l'arène avec appariement.
+- Serveur (pvp) : ne publier la victoire pour les contrats que pour `PvPRoomKind::ArenaTeam` (classique et classée).
+- Serveur (quest) : objectif « rapporter N ressources » (retirées du sac au rendu), « terminer un donjon de la bande à la difficulté D », « abattre l'élite X dans la bande », expédition filtrée par `origin_zone_id`.
+- Script de génération des contrats à partir de `world/zones.json`, des monstres et des donjons.
 - Client : panneau des contrats (familles, rangs), message du refus « déjà un contrat de cette famille ».
 
 ## Questions ouvertes
 
-1. Entraînement = arène : ça te va, ou tu préfères « faire des combats avec une recrue du village »
-   (mercenaire) ? Plus proche du lore, mais plus de code.
-2. L'arène comblée par des recrues (bot-fill) compte-t-elle pour l'Entraînement ? Proposé : oui, comme
-   elle paie déjà (à 50 %).
-3. Expéditions dans une **zone nommée** (« Expédition au Marais ») plutôt que « n'importe où dans la bande » ?
-   Plus de saveur, plus de contrats à écrire.
+Réglé le 2026-10-15 : donneurs Hestia, Aldric, Varn (et Dargo pour l'arène) ; l'arène compte seulement
+classique et classée ; expéditions par zone nommée (les zones ont leur bande).
+
+1. Récupération : quelles ressources ? Proposé : les matériaux lâchés par les monstres de la bande qui ne se
+   vendent pas chez un PNJ.
+2. Les autres idées (capture, commande d'artisan, escorte) : plus tard, ou une tout de suite ?
