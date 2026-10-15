@@ -363,7 +363,7 @@
       "bonuses_cumulative": "Les bonus 2p/4p/6p/8p s'additionnent",
       "armor_types": "armor_type du set = poids d armure REEL des pieces qui tombent (light/medium/heavy, lu par le serveur depuis le 2026-09-28). Sets mixed : pieces.<slot>.weight donne le poids de chaque piece (sans lui, poids aleatoire). L arme d un set porte pieces.weapon.weapon_type (groupe d arme de equipment.json).",
       "reloot": "Chaque rang doit etre farm separement. Le joueur garde l'ancien stuff en attendant de completer le rang suivant.",
-      "power_budget": "BUDGET DE PUISSANCE (2026-09-28, modele Dofus) : une piece seule tire en legendaire x0.85 (loot_tables.json panoplie_drops.piece_rarity / piece_stat_scale), un peu en dessous d un classique legendaire ; la force du set vient du set COMPLET. Passe 1 : bonus x3.5 (4-8 pieces) / x5 (mini-sets). Passe 3 (mesure en COMBAT REEL, server-combat tests/item_power_combat_probe.cpp, remplace la passe 2 au modele AEP) : valeur = passe 1 x k par set, k mesure pour qu un set complet vaille 1.05-1.15 x le classique legendaire MOYEN des memes emplacements dans son role (DPS : 0.75 x degats par seconde + 0.25 x survie ; tank : pression supportee 45 s ; soin : soins + boucliers par seconde). k va de 0.02 (Oz) a 1.5 (Chayim) : la passe 1 surpayait massivement les pourcentages. Plafonds par set sur le total : atk_percent / mag_percent / def_percent / hp_percent 40 chacun, crit_dmg 60 (plafond de jeu 300, DamageCalculator::kCritDamageCap), et ~la moitie du plafond runtime pour le reste (crit 40, cooldown_reduction 20, buff/debuff_duration 25, block_chance 30, healing_received 50, flee 30, armor_pen / magic_pen 35, damage_reduction 37, effect_chance 42, thorns 50, cast_speed 25, spell_vamp 25, lifesteal 25, effect_resist 42, damage_percent 50), le surplus retire au prorata des paliers ; garde par test (server-combat FightLootTest.PowerBudget_NoSetReachesAGameCapAlone). Nefesh (Souffle seul) garde la passe 1 : le Souffle n est jamais limitant en combat reel avec un equipement legendaire. def plat remplace par armor. Sets de tournoi (set_tournoi_*) inchanges."
+      "power_budget": "BUDGET DE PUISSANCE (2026-09-28, modele Dofus) : une piece seule tire en legendaire x0.85 (loot_tables.json panoplie_drops.piece_rarity / piece_stat_scale), un peu en dessous d un classique legendaire ; la force du set vient du set COMPLET. Passe 1 : bonus x3.5 (4-8 pieces) / x5 (mini-sets). Passe 3 (mesure en COMBAT REEL, server-combat tests/item_power_combat_probe.cpp, remplace la passe 2 au modele AEP) : valeur = passe 1 x k par set, k mesure pour qu un set complet vaille 1.05-1.15 x le classique legendaire MOYEN des memes emplacements dans son role (DPS : 0.75 x degats par seconde + 0.25 x survie ; tank : pression supportee 45 s ; soin : soins + boucliers par seconde). k va de 0.02 (Oz) a 1.5 (Chayim) : la passe 1 surpayait massivement les pourcentages. Plafonds par set sur le total : atk_percent / mag_percent / def_percent / hp_percent 40 chacun, crit_dmg 60 (plafond de jeu 300, DamageCalculator::kCritDamageCap), et ~la moitie du plafond runtime pour le reste (crit 40, cooldown_reduction 20, buff/debuff_duration 25, block_chance 30, healing_received 50, flee 30, armor_pen / magic_pen 35, damage_reduction 37, effect_chance 42, thorns 50, cast_speed 25, spell_vamp 25, lifesteal 25, effect_resist 42, damage_percent 50), le surplus retire au prorata des paliers ; garde par test (server-combat FightLootTest.PowerBudget_NoSetReachesAGameCapAlone). Regen de Souffle des sets (2026-10-15) : depuis que le cout des sorts suit leur puissance, le Souffle limite le combat reel (_meta/carnet/souffle_par_niveau.md, scripts/balance/souffle_per_level.py --budget) ; la regen de Souffle d un set suit une progression reguliere du rang I au rang V, de 5 a 15 /s pour Nefesh et de 7 a 35 /s pour Neshamah, et chaque set porte la valeur de sa bande : Nefesh (C, rang I) 5, Neshamah (SS, rang V) 35. Le Souffle max de Nefesh (mp 250) garde la passe 1. def plat remplace par armor. Sets de tournoi (set_tournoi_*) inchanges."
     }
   },
   "piece_base_stats": {
@@ -783,12 +783,12 @@
       "bonuses": {
         "2": {
           "mp": 250,
-          "mp_regen": 15
+          "mp_regen": 5
         }
       },
       "total_at_max": {
         "mp": 250,
-        "mp_regen": 15
+        "mp_regen": 5
       }
     },
     "_comment_4p": "========== SETS MOYENS (4 PIÈCES) ==========",
