@@ -1,7 +1,8 @@
 # Matrice de puissance des sorts
 
-Statut : phases 1 (mesure) et 2 (cooldowns, incantations, section 6) appliquées ; phase 3 (coût en
-Souffle) à venir (2026-10-15, branche `vac_skill-matrix`).
+Statut : phases 1 (mesure) et 2 (cooldowns, incantations, section 6) appliquées, cas particuliers
+de la phase 2 traités (section 8, corrections du modèle) ; phase 3 (coût en Souffle) à venir
+(2026-10-15, branche `vac_skill-matrix`). Les chiffres des sections 2 à 4 sont ceux de la phase 1.
 Demande du propriétaire : « si deux sorts ont le même coût alors que l'un fait beaucoup de dégâts avec
 beaucoup de temps de cast et que l'autre est un simple coup, c'est étrange de mettre la même valeur »,
 « je ne veux pas qu'on lance un ulti toutes les 10 secondes, mais plutôt toutes les 2-3 minutes », et
@@ -201,13 +202,15 @@ sont prêts au premier tick : un ultime de 120 à 180 s se lance une fois par co
 | remplissage | 30 | 4-40 s |
 | courant | 6 | 15-90 s |
 | signature | 4 | 30-120 s |
-| défensif | 4 | 12-120 s |
+| défensif | 4 → **6** (§8) | 12 → **8**-120 s (§8) |
 | utilitaire | 4 | 15-120 s |
 | ultime | 10 | 120-180 s |
 
 - **Identité** : un sort dont la dominante porte le rôle de sa classe (`roles.json` : tank → défense et
   contrôle, soigneur → défense et soutien, DPS → offense, soutien → soutien et défense) admet une
-  densité ×2. Le soin d'un soigneur revient plus souvent que celui d'un guerrier.
+  densité ×2. Le soin d'un soigneur revient plus souvent que celui d'un guerrier. **Revu en §8** :
+  le facteur suit la part de la puissance du sort dans l'identité, et l'identité lit aussi les
+  `role_tags`, le tronc commun de la classe et la dominante du kit.
 - **Arrondi** : demi-secondes sous 10 s, secondes jusqu'à 30 s, multiples de 5 au-delà.
 - **Budget de charge** : Σ max(GCD, cast) / cooldown sur la barre (12 sorts hors remplissage au
   cooldown le plus court) ≤ **0,8** sans réduction de recharge. Un kit au-dessus baisse la densité
@@ -215,7 +218,9 @@ sont prêts au premier tick : un ultime de 120 à 180 s se lance une fois par co
   les faibles restent sur leur plancher. 0,40 (phase 1) renvoyait 60 % des GCD au remplissage, et
   n'était tenable qu'en doublant tous les cooldowns. 9 kits restent au-dessus au niveau 60 (0,82 à
   0,95 : arcane dealer, fate gambler, covenant, sharpshooter, skirmisher, nightstalker, assassin,
-  blade dancer, countermaster), listés par `--report`.
+  blade dancer, countermaster), listés par `--report`. **Revu en §8** : la base n'est plus allongée
+  par le budget, seuls les sorts forts pour leur rôle le sont, ultimes exclus, et les sorts
+  défensifs pèsent 0,5 dans la charge.
 - Aucun cooldown n'a été raccourci : aucun n'était au-dessus de la borne haute de son rôle.
 
 ### La règle des incantations
@@ -246,7 +251,8 @@ raccourcit le cast.
 
 - Planchers : ultime 2,5 s ; résurrection 8 s (par effet `resurrect`).
 - **Réflexes**, toujours instantanés : remplissage, ripostes et rapprochements (tags `counter`,
-  `gap_closer`), défensif d'urgence sur soi. 66 sorts, dont 13 qui incantaient.
+  `gap_closer`), défensif d'urgence sur soi. 66 sorts, dont 13 qui incantaient. Depuis le §8,
+  aussi les provocations et interruptions (tags `taunt`, `interrupt`) : 70 sorts.
 - **Préparation des classes physiques** : le serveur ne connaît qu'un mécanisme, `cast_time`. Pour les
   sous-classes de contact (`roles.json` tags `melee`, `melee_dps`), le cast est une préparation
   lisible, interruptible, plafonnée à 2,5 s (ne pas rester planté au contact) : 57 sorts, dont 29
@@ -352,3 +358,160 @@ change dans `combat.json` **et** dans `room.cpp` (plafond en dur).
 7. **Classes physiques** : sans incantation, quel coût pour leurs ultimes (télégraphe, immobilisation) ?
 8. **Champs morts** (`power_per_level`, `effect_power_per_level`, `cooldown_per_level`,
    `heal_scaling_stat`, `cast_interruptible`) : les supprimer de la data ?
+
+## 8. Cas particuliers de la phase 2
+
+Revue du 2026-10-15 (branche `vac_skill-matrix`). Demande du propriétaire : traiter les sorts où la
+règle générale abîme l'identité de la classe ou le rôle du sort (Purification 12 → 95 s, Soin 8 → 23 s,
+Vague Purificatrice 12 → 65 s, Hymne de Vigueur 20 → 105 s, Siphon Arcanique 21 → 120 s, Lancer de
+Dague 8 → 35 s, des remplissages de spécialisation), en corrigeant la cause plutôt que le symptôme.
+Ses mots : « je ne veux pas que le jeu soit un spam de skill 1 ; chaque sort a son importance, et on
+l'utilise au meilleur moment », « selon la classe, ça diffère », allonger les sorts trop forts plutôt
+que nerfer les faibles ; ultimes 120-180 s, préparation de 2,5 s au contact, plafond de réduction de
+recharge à 40 % : validés.
+
+**Méthode.** La règle part toujours de l'état d'avant la phase 2 (`max(actuel, cible)` ne raccourcit
+rien) : rejouée depuis `5b35100^` avec le modèle de la phase 2, elle redonne la phase 2 à l'octet près
+(vérifié). Chaque écart ci-dessous vient donc d'une correction du modèle. Aucun cooldown n'est sous sa
+valeur d'avant la phase 2. 174 sorts changent par rapport à la phase 2 (120 cooldowns plus courts,
+52 plus longs, 5 incantations) ; par rapport à l'avant-phase 2 : 204 cooldowns et 165 incantations.
+
+### Corrections du modèle
+
+Toutes dans `config/skill_power_model.json` (raisons écrites à côté de chaque clé), lues par
+`skill_power_matrix.py` et `skill_timing.py`. Aucune liste d'ids.
+
+| # | cause trouvée | correction | sorts touchés (exemples) |
+|---|---|---|---|
+| 1 | Budget : un sort de base, partagé par les 8 kits de la classe, prenait le k le plus bas de toutes les barres de niveau 60 (Soin ×0,5 à cause de Covenant, Lancer de Dague à cause de l'Assassin) | `kit_load.scaled_tiers` : la tranche 20-59 fait payer la sous-classe, la tranche 60 la sous-classe et la spécialisation ; le tronc commun (base, tout le kit des niveaux 1-19) n'est jamais allongé par le budget | Soin, Purification, Siphon, Lancer de Dague, Clivage, Bombe Fumigène |
+| 2 | Budget : k allongeait tout sort au-dessus de son plancher, faibles compris (Saut de Phase 68 points 9 → 35 s) | `kit_load.strong_role_quantile` 0,5 : seuls les sorts à la médiane de leur rôle ou au-dessus s'allongent | Saut de Phase, Préméditation, Crachat de Rhum, Marque du Faucon, Grande Arnaque |
+| 3 | Budget : des ultimes moyens poussés à 180 s par des barres qui débordent par leurs sorts faibles, alors qu'un ultime pèse 2,5/120 dans la charge | `kit_load.unscaled_roles` : remplissage et ultime ; l'ultime suit sa seule puissance (densité 10, 120-180 s) | Assaut de Guérilla, Annihilation, Exorcisme, Phalange : 160-180 → 120 s |
+| 4 | Charge : un soin prêt mais pas lancé comptait comme du spam ; les kits de soigneur, faits de soins, débordaient tous | `kit_load.reactive_roles` / `reactive_weight` : un sort défensif pèse 0,5 dans la charge (convention, comme le débordement de soin) | kits de soigneur, de tank |
+| 5 | Densité défensive 4 : retirait le débordement une deuxième fois (l'unité compte déjà 1 PV rendu = 1 PV infligé, ×0,7) ; plancher 12 s au-dessus du Soin conçu à 8 s | défensif 6 comme courant ; plancher défensif 8 s (aucun autre sort défensif n'avait moins de 12 s) | Soin, Soin Naturel, Impulsion de Lumière |
+| 6 | Dissipation rangée en utilitaire : hors de l'identité du soigneur, densité d'utilitaire | `cleanse` → `buff_defensif` (retirer un affaiblissement protège l'allié) | Purification, Vague Purificatrice, Repousse, Réparation Rapide |
+| 7 | Verbes comptés sur toute la zone, alors que `room.cpp` n'applique cleanse, purge et steal_buff qu'à la cible principale sans `target: allies/enemies` | `special_effects.per_cast_area_targets` | Réparation Rapide (3 dissipations comptées pour une), Hymne de Bannissement |
+| 8 | Souffle rendu compté plein et toujours en utilitaire : Siphon (30 Souffle volés) valait 227 points | `souffle_value_factor` 0,5 (le Souffle ne vaut que quand on est à sec : 0 pour le mage à 0,77 pour le voleur au niveau 60, médiane 0,69 avant la baisse de dépense de la phase 2) ; `souffle_component` : au lanceur utilitaire, aux alliés `buff_offensif` (il finance leurs sorts) | Siphon Arcanique, Hymne de Vigueur, Partage de Souffle, Pillage |
+| 9 | Aveuglement prix d'un contrôle mou (24/s par ennemi) alors que le serveur n'applique que −value % de précision | un contrôle dont les `stat_mods` sont pricés est pricé par sa stat (précision ×0,5) | Bombe Fumigène 176 → 44 points de contrôle, Raid Pirate |
+| 10 | Provocation rangée en contrôle : la protection du tank sortait de son identité (Cri de Provocation 26 → 60 s) | `control.component_by_category` : aggro → `debuff_defensif` (prix inchangé) | Cri de Provocation, Présence Massive, Cri du Martyr |
+| 11 | Une provocation ou une interruption préparée 2,5 s arrive trop tard | tags `taunt`, `interrupt` ajoutés aux réflexes | Cri de Provocation, Présence Massive, Cri du Martyr (2,5 → 0 s) |
+| 12 | Identité tout ou rien sur la seule dominante du sort, depuis le seul rôle de la sous-classe : égalité tranchée par l'ordre alphabétique (Rugissement Affaiblissant), sorts mixtes, spécialisations sans identité (Maître des Épices et Brasseur de Pestes sous un « soutien », Briseur sous un « tank », Runeknight sous un « DPS »), tronc commun du guerrier vu comme « tank » seulement | facteur proportionnel à la part de puissance dans l'identité ; identité = rôle et `role_tags` (support → soutien, control → contrôle, sustain → utilitaire) de la sous-classe, de la classe et de toutes ses sous-classes pour la base, plus la dominante du kit auquel le sort appartient | Cri de Commandement, Coordination, Tromperie, Ricochet, Pillage, Fracas en Colonne, Aura Runique, Clivage |
+
+### Dérogations
+
+Aucune. Chaque cas s'explique par une correction qui vaut pour tous les sorts du même type ; aucun
+sort ne s'est révélé assez unique pour justifier un bloc de dérogation (la résurrection a déjà son
+plancher par effet).
+
+### Cas traités
+
+Cooldown et incantation : avant la phase 2 / phase 2 / final. « ×id » : facteur d'identité appliqué.
+
+| sort | classe | rôle | cooldown (s) | cast (s) | décision et raison |
+|---|---|---|---|---|---|
+| Purification | soigneur, base | défensif | 12 / 95 / 16 | 0 / 0 / 0 | dissipation = défense du soigneur (6), ×2, base hors budget (1) |
+| Soin | soigneur, base | défensif | 8 / 23 / 8 | 0 | densité défensive et plancher (5), base hors budget (1) : le soin du soigneur garde sa cadence |
+| Vague Purificatrice | lightbringer | défensif | 12 / 65 / 13 | 0 | dissipation (6), poids réactif (4) |
+| Hymne de Vigueur | cantor | utilitaire | 20 / 105 / 26 | 0 / 2,5 / 0 | Souffle aux alliés = soutien du chantre, à 0,5 (8) : 327 → 162 points, sous le seuil d'incantation (250) |
+| Siphon Arcanique | mage, base | courant | 21 / 120 / 25 | 1,5 / 2,5 / 2,5 | Souffle à 0,5 (8) : 385 → 271 points, la dominante redevient l'offense (×1,59), base hors budget (1) |
+| Lancer de Dague | voleur, base | courant | 8 / 35 / 16 | 0 | base hors budget (1) ; 16 s reste la densité d'un sort de 187 points (55 % ATQ + saignement) |
+| Impulsion de Lumière | soigneur, base | défensif | 10 / 24 / 10 | 1,5 / 2,5 / 2,5 | (1), (5) |
+| Soin Naturel | lifewarden | défensif | 8 / 16 / 8 | 0 | (5) |
+| Repousse | lifewarden | défensif | 14 / 45 / 14 | 1,5 / 2,5 / 2,5 | dissipation (6) |
+| Cri de Provocation | guerrier, base | défensif | 26 / 60 / 28 | 0 / 2,5 / 0 | provocation = protection du tank (10), réflexe (11) |
+| Présence Massive | bulwark | défensif | 36 / 45 / 36 | 0 / 2,5 / 0 | (10), (11) |
+| Bombe Fumigène | voleur, base | courant | 24 / 95 / 24 | 1 / 2,5 / 2,5 | aveuglement pricé par sa stat (9) : 225 → 93 points bruts |
+| Réparation Rapide | artisan, base | défensif | 24 / 85 / 24 | 1 / 2,5 / 2,5 | une seule dissipation sur le serveur (7), dissipation (6) |
+| Partage de Souffle | artisan, base | utilitaire | 20 / 40 / 20 | 1 / 2,5 / 2,5 | Souffle aux alliés (8) |
+| Pillage | corsair | utilitaire | 18 / 70 / 40 | 0 | tag `sustain` du corsaire (12), Souffle (8) ; 40 s = k 0,5 des barres de corsaire |
+| Ricochet | ballmaster | utilitaire | 10 / 35 / 15 | 0 | tag `control` du ballmaster (12), sort faible (2) |
+| Cri de Commandement | warlord | utilitaire | 24 / 60 / 30 | 0 | tag `support` du chef de guerre (12) |
+| Coordination | commander | utilitaire | 36 / 120 / 85 | 0 / 3 / 3 | dominante soutien du Commander (12) ; 644 points, reste long |
+| Tromperie | trickster | courant | 20 / 60 / 20 | 1 / 2,5 / 2,5 | tag `control` (12), sort faible (2) |
+| Grande Arnaque | trickster | signature | 40 / 85 / 40 | 2 / 2,5 / 2,5 | dominante utilitaire du trickster (12), sous la médiane des signatures (2) |
+| Saut de Phase | blinker | utilitaire | 9 / 25 / 17 | 0 | sort faible (2) |
+| Préméditation | assassin | utilitaire | 12 / 45 / 21 | 0 | sort faible (2) |
+| Crachat de Rhum | cutthroat | courant | 9 / 30 / 19 | 0 | sort faible (2) |
+| Marque du Faucon | falcon striker | courant | 12 / 35 / 17 | 0 | sort faible (2) |
+| Clivage | guerrier, base | courant | 12 / 35 / 15 | 0 | tronc commun aussi berserker et weaponmaster (12), base hors budget (1) |
+| Coup de Bouclier | guerrier, base | utilitaire | 28 / 45 / 28 | 0 | (1), (12) |
+| Aura Sylvestre | grove warden | défensif | 54 / 120 / 55 | 0 / 2,5 / 2,5 | (4), (5) |
+| Aura Runique | runeknight | défensif | 48 / 120 / 110 | 0 / 2,5 / 2,5 | identité défensive du Runeknight (12), mais 634 points et kit au-dessus du budget : reste long |
+| Fracas en Colonne | breaker | courant | 36 / 90 / 80 | 0 / 2,5 / 2,5 | le Briseur frappe (12) |
+| Assaut de Guérilla, Annihilation | skirmisher, sorcerer | ultime | 84, 78 / 180 / 120 | 4 | puissance seule (3) : 879 et 1070 points |
+| Hymne de Bannissement | requiem | courant | 36 / 90 / 90 | 1 / 3 / 2,5 | purge sur la seule cible principale (7) : 716 → 668 points bruts |
+| Cri du Martyr | intercessor | courant | 36 / 90 / 90 | 0 / 2,5 / 0 | réflexe de provocation (11) ; 783 points, cooldown inchangé |
+
+**Revus et gardés** (la règle tombe juste, ou le sort est trop fort pour son rôle) :
+- Déchirure d'Âme (occultist) 26 → 120 s : silence de zone, purge et blocage du Souffle, 401 points ;
+  utilitaire, pas le cœur d'un occultiste (DoT, affaiblissements) ; trop fort pour 26 s.
+- Carnage 24 → 90 s, Rugissement Affaiblissant 20 → 75 s (deux affaiblissements forts et une purge,
+  37 % de défense : ×1,38), Tempête Élémentaire 32 → 120 s, Raid Pirate 36 → 120 s : forts pour leur rôle.
+- Buffs personnels des DPS (Trance Guerrière 36 → 120 s, Posture de Lame, Transe de Poudre, Esquive Tactique…) : des
+  fenêtres de burst de 8 à 10 s, à caler sur l'ultime ; pas le cœur d'un rôle de dégâts.
+- Signatures de sous-classe (Frappe Souveraine 40 → 100 s, Clouer au Sol 40 → 110 s, Fracture
+  44 → 120 s) : densité de signature 4, en attente de la question 3 de la section 7.
+- **Remplissages de spécialisation** : inchangés (la règle ne les touche pas). Le gabarit de 9 à 15 s
+  (130-150 %) et les cadences propres (Coupe Épicée 36 s, Plongeon Vif et Coup Net 30 s) sont
+  ceux de chaque spécialisation, à densité de sort courant (382 points / 36 s) : « selon la classe, ça
+  diffère ». Trait Élémentaire 3,5 → 9,5 s gardé : il pose Brûlure et Gel (8 s, cumulables) ; lancé
+  toutes les 3,5 s il valait 81 points/s, près de trois remplissages. Châtiment 3 → 5,5 s gardé
+  (158 points, Feu Sacré compris).
+
+### Budget de charge après la revue
+
+| barre (CDR 0) | avant phase 2 | phase 2 | final |
+|---|---|---|---|
+| niv 20-59, charge brute médiane | 0,87 | 0,61 | 0,79 |
+| niv 20-59, charge pondérée (défensifs ×0,5) | | 0,56 | 0,71 (12 kits > 0,8) |
+| niv 20-59, charge des sorts forts | | 0,04 | 0,07 |
+| niv 20-59, part du temps hors remplissage | 76 % | 58 % | 72 % |
+| niv 60, charge brute médiane | 1,12 | 0,76 | 0,96 |
+| niv 60, charge pondérée | | 0,71 | 0,83 (30 kits > 0,8, max 1,10) |
+| niv 60, charge des sorts forts | | 0,13 | 0,13 |
+| niv 60, part du temps hors remplissage | 91 % | 71 % | 84 % |
+
+**Décision sur les kits au-dessus du budget : acceptés.** Au-dessus de 0,8 restent les kits de voleur
+(les huit, 0,80-0,89 au niveau 20-59, 0,95-1,08 au niveau 60), de cardmaster (0,88 ; 1,06-1,10), de
+ballmaster (0,86 ; 0,96-0,97), et au niveau 60 la plupart des kits d'archer et de mage, quatre
+d'artisan, frenzied, hammer lord, covenant. Tous débordent par des sorts faibles posés sur le plancher
+de leur rôle (coups légers de 50 à 100 points à 15-16 s, incantations de 2,5 s sur des sorts de moins
+de 150 points) : la charge de leurs sorts forts est celle de la phase 2 (0,13 au niveau 60), et ces
+sorts forts sont déjà au k minimal ou à leur borne. Les allonger encore serait nerfer les faibles. Le
+voleur enchaîne des coups légers : c'est son identité, pas du spam de gros sorts. La phase 2 tenait
+0,8 en étirant le tronc commun et les sorts de cœur ; c'est précisément ce que cette revue défait.
+Leviers si le propriétaire veut moins de boutons prêts (chiffrés au niveau 60, charge brute / pondérée
+/ part du temps) : budget appliqué aux sorts faibles aussi (`strong_role_quantile` 0 : 0,91 / 0,80 /
+81 %, mais Saut de Phase 35 s, Crachat de Rhum 40 s) ; plancher courant 15 → 20 s (0,91 / 0,80 / 81 %,
+nerf des coups légers : Lancer de Dague 20 s) ; ou réduire le nombre de sorts courts des kits de
+voleur (design).
+
+Ultimes : 120 à 180 s, médiane 120 (phase 2 : 167,5), aucun sous 120 ; les plus forts restent à 180
+(Curée Sanglante, Frappe Synchronisée, Appel à la Gloire).
+
+### Écarts serveur et data relevés
+
+- `room.cpp` n'applique cleanse, purge et steal_buff qu'à la cible principale quand l'effet ne porte
+  pas `target: allies/enemies`. Onze sorts de zone le décrivent pourtant sur toute la zone (Réveil
+  Naturel, Floraison du Cœur du Monde, Onde Purificatrice, Exorcisme, Hymne de Bannissement, Jugement
+  Divin, Tir de Suppression, Réparation Rapide, Épice Purifiante, Banquet Synchronisé, Chœur Clair). La matrice
+  compte ce que fait le serveur ; corriger la data (ajouter `target`) les rendrait plus forts, et la
+  règle les rallongerait.
+- Trait de Lumière (sanctifier) : `cleanse` avec `target: self` sur un sort hostile ; le serveur
+  dissipe la cible principale, donc l'ennemi.
+- `mana_steal` : le serveur lit une valeur de 1 à 100 comme un % du Souffle actuel de la cible (le
+  modèle la lit en Souffle plat ; Siphon : 30 % d'un monstre à 150 de Souffle ≈ 45).
+
+### Questions qui restent au propriétaire
+
+1. **Charge au niveau 60** : 0,96 brute (0,83 pondérée), 84 % du temps hors remplissage, contre 0,76 et
+   71 % en phase 2. Accepter (les sorts forts restent rares, les faibles s'enchaînent), ou un des
+   leviers ci-dessus ?
+2. **Poids réactif 0,5** des sorts défensifs dans la charge : convention à valider.
+3. **Valeur du Souffle 0,5** : à remesurer en phase 3 avec les nouveaux cooldowns.
+4. **Remplissages des mages** : la phase 2 les a rendus instantanés (13 sorts de 1 à 2 s
+   d'incantation, gratuite sous le GCD). C'était de l'identité de lanceur (immobile, interruptible) :
+   les rendre, ou garder « un cast sous le GCD est gratuit » ?
+5. **Les onze sorts de zone** dont la dissipation ou la purge ne touche que la cible principale :
+   corriger la data, ou les descriptions ?
+6. **Signatures de sous-classe** (section 7, question 3) : leur densité de 4 les met à 85-120 s
+   quand elles dépassent la médiane.
