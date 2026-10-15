@@ -6145,6 +6145,13 @@
         "_max_active_note": "0 = pas de plafond. Bloc absent ou mal forme : le service des quetes refuse de demarrer (aucun plafond ni liste de tableaux ecrit dans le code). `boards` est la SEULE liste des tableaux de contrats : les coffres de contrats (contract_chests) comptent ces memes tableaux. Les contrats deja tenus au-dela du plafond sont gardes (pas d'abandon force), ils bloquent seulement les nouvelles acceptations.",
         "boards": ["havreden_contracts", "rochebourg_contracts"]
     },
+    "quest_sharing": {
+        "_comment": "Partage de quete en groupe (decide par Charleston le 2026-10-15). Un joueur qui tient une quete active la propose aux membres humains de son groupe ; chacun recoit une fenetre et l'accepte comme s'il l'avait prise au PNJ (memes verifications : niveau, prerequis, drapeaux d'histoire, plafond de contrats). Lu par services/quest (load_quest_sharing), message QUEST_SHARE_REQUEST 0x0A10.",
+        "excluded_flags": ["tutorial", "onboarding", "tournament"],
+        "_excluded_flags_note": "Une quete portant un de ces tags (cle flags) ne se partage pas : le tutoriel et l'onboarding se jouent seul, le tournoi a ses propres personnages.",
+        "_main_rule": "Regle du serveur, pas un reglage : une quete principale (type main) ne se partage qu'a un joueur qui a fini l'etape d'avant, c'est-a-dire une des quetes dont chain_next la designe. Le debut d'une chaine se partage a tous ceux qui ont le niveau.",
+        "offer_seconds": 60
+    },
     "contract_chests": {
         "_comment": "Coffres des contrats (valide par Charleston le 2026-10-01). Aucune nouvelle quete et aucun tirage : les contrats de Varn et de Dargo restent repetables a volonte, et chaque contrat RENDU compte pour le coffre du jour et celui de la semaine. Lu par services/quest.",
         "counts": "Tout contrat rendu : quete dont quest_board vaut havreden_contracts ou rochebourg_contracts, tout rang, toute bande. Par PERSONNAGE.",
