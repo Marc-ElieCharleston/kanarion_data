@@ -1,7 +1,7 @@
 # Matrice de puissance des sorts
 
-Statut : phase 1 sur 3, mesure seulement, aucune valeur de sort modifiée (2026-10-15, branche
-`vac_skill-matrix`).
+Statut : phases 1 (mesure) et 2 (cooldowns, incantations, section 6) appliquées ; phase 3 (coût en
+Souffle) à venir (2026-10-15, branche `vac_skill-matrix`).
 Demande du propriétaire : « si deux sorts ont le même coût alors que l'un fait beaucoup de dégâts avec
 beaucoup de temps de cast et que l'autre est un simple coup, c'est étrange de mettre la même valeur »,
 « je ne veux pas qu'on lance un ulti toutes les 10 secondes, mais plutôt toutes les 2-3 minutes », et
@@ -143,39 +143,18 @@ Chiffres au rang 1 (`--report` donne les listes complètes).
 7. **Souffle par 100 points** : 67 sorts hors de ×0,5-×2 de la médiane de leur palier et rôle. Le
    tier 3 courant paie 8,6 Souffle / 100 points, la sous-classe 20,4 : à rôle égal, la spécialisation
    est 2,4 fois plus rentable.
-8. **5 novas posées à 5 cases** : `target: self_and_enemies` sans `range: 0` (Tempête de Lames,
+8. **5 novas posées à 5 cases** (corrigé en phase 2 : `range: 0`) : `target: self_and_enemies` sans `range: 0` (Tempête de Lames,
    Présence Suffocante, Déchaînement, Tornade d'Acier, Choc Sismique). La règle nova du
    `CLAUDE.md` n'est pas appliquée, et un guerrier à portée 2 frappe « autour de lui » à 5 cases.
 9. **Remplissages de spécialisation** : 40 sorts, cooldown 9 à 36 s (médiane 12 s), contre 3 à 5 s en
    base. La Coupe Épicée (Spice Master) fait 382 points pour 15 Souffle avec 36 s de recharge : un remplissage à 36 s n'en est plus un.
 
-## 5. Règles proposées (non appliquées)
+## 5. Règles proposées (phase 3 non appliquée)
 
 ### Phase 2 : cooldowns et incantations
 
-Le spam est un problème de **charge du kit**, pas de sort isolé : c'est la règle à poser en premier.
-
-1. **Budget de charge** : Σ max(GCD, cast) / cooldown sur les sorts hors remplissage d'un kit
-   ≤ 0,40 à CDR 0, soit ≤ 0,67 à CDR 40 % : au moins un GCD sur trois revient au remplissage, même
-   avec la réduction maximale. Aujourd'hui : 1,12 et 1,86 de médiane.
-2. **Cooldown par rôle, fonction de la puissance** : CD = clamp(puissance r1 / D, min, max).
-
-   | rôle | D (points/s) | fourchette |
-   |---|---|---|
-   | ultime | 10 | **120-180 s** (demande du propriétaire) |
-   | signature | 4 | 75-120 s |
-   | courant | 6 | 30-90 s |
-   | défensif, utilitaire | 4 | 45-120 s |
-   | remplissage | inchangé | 3-6 s, et le tag `filler` réservé aux sorts sous 6 s |
-
-   Simulé sur la data actuelle : courant 44 s de médiane, ultime 128 s ; charge 0,55 à CDR 0
-   (54 % du temps hors remplissage) mais encore 0,91 au plafond de CDR (80 %). **Le budget du point 1
-   n'est tenable qu'avec une réponse à la question 1** (plafond de CDR).
-3. **Cast fonction de la puissance nette** (grille de `balance_model.json`, gardée) : ≤ 2 s sous
-   300 points, 2,5 s à 300-700, 3 à 4 s au-delà, pour les lanceurs. Ultimes : ≥ 2,5 s pour toutes les
-   classes, ou un autre contre-jeu (télégraphe) pour les classes physiques.
-4. Garder les contrôles de `balance_model.json` : pas deux sorts au même cooldown dans un kit, au moins
-   un sort sous 20 s par kit (hors remplissage).
+Appliquée, voir la section 6 (règle ajustée aux décisions du propriétaire : budget de charge 0,8,
+bornes larges, identité de classe, incantations nombreuses).
 
 ### Phase 3 : coût en Souffle
 
@@ -188,7 +167,174 @@ Le spam est un problème de **charge du kit**, pas de sort isolé : c'est la rè
    de puissance), qui existent déjà dans `skill_system.json mana_cost_scaling` ; remplacer les familles
    de `tier_order` par les rôles de la matrice, une seule classification.
 
-## 6. Questions au propriétaire
+## 6. Phase 2 appliquée : cooldowns et incantations
+
+Appliqué le 2026-10-15 (branche `vac_skill-matrix`). Règle : `config/skill_power_model.json` `timing`,
+seul propriétaire (la règle lit la puissance, les rôles et les dominantes de ce même fichier ; la
+mettre dans `skill_system.json` couperait le modèle en deux). Outil : `scripts/balance/skill_timing.py`
+(application, `--check` en CI, `--report` pour les chiffres ci-dessous), qui réutilise la matrice
+(`build`, `bar`, `kit_load`, `spam_fraction`) et l'écriture textuelle de `souffle_per_level.py`
+(`set_fields`, `rewrite_skills`). Les sorts ne portent que le résultat (`cooldown`, `cast_time`).
+
+Décisions du propriétaire : allonger le cooldown d'un sort trop fort plutôt que baisser sa
+puissance ; « pas de spam skill 1 », chaque sort a son moment ; des combats de 40 s plutôt que 10 s ;
+les cooldowns repartent à zéro à chaque combat ; pas de moule unique entre les classes ; beaucoup de
+sorts incantés, surtout les puissants, pour pouvoir interrompre ou attendre une immunité.
+
+### Remise à zéro des cooldowns par combat (serveur vérifié)
+
+Chaque rencontre crée une `Room` neuve (`combat_host.cpp handle_create_room` → `room_manager.cpp`
+`std::make_shared<Room>`), avec des entités neuves : `SkillsComponent.cooldowns` (id → tick de
+disponibilité, en ticks de la room) part vide, rien ne le recharge depuis le profil. Tous les sorts
+sont prêts au premier tick : un ultime de 120 à 180 s se lance une fois par combat, au moment choisi.
+À noter : le plafond de réduction de recharge est **écrit en dur** dans `room.cpp`
+`apply_cooldown_reduction` (`std::clamp(cdr, 0, 40)`), copie de `combat.json`
+`cooldown_reduction_cap` : changer la data ne suffirait pas.
+
+### La règle des cooldowns
+
+    cible = puissance nette r1 / (densité du rôle × identité), bornée par le rôle, arrondie vers le haut
+    cooldown = max(actuel, cible)        (seul raccourcissement : au-dessus de la borne haute du rôle)
+
+| rôle | densité (pts/s) | bornes |
+|---|---|---|
+| remplissage | 30 | 4-40 s |
+| courant | 6 | 15-90 s |
+| signature | 4 | 30-120 s |
+| défensif | 4 | 12-120 s |
+| utilitaire | 4 | 15-120 s |
+| ultime | 10 | 120-180 s |
+
+- **Identité** : un sort dont la dominante porte le rôle de sa classe (`roles.json` : tank → défense et
+  contrôle, soigneur → défense et soutien, DPS → offense, soutien → soutien et défense) admet une
+  densité ×2. Le soin d'un soigneur revient plus souvent que celui d'un guerrier.
+- **Arrondi** : demi-secondes sous 10 s, secondes jusqu'à 30 s, multiples de 5 au-delà.
+- **Budget de charge** : Σ max(GCD, cast) / cooldown sur la barre (12 sorts hors remplissage au
+  cooldown le plus court) ≤ **0,8** sans réduction de recharge. Un kit au-dessus baisse la densité
+  admise de toute sa barre (facteur k ≥ 0,5) : ce sont les sorts forts pour leur rôle qui s'allongent,
+  les faibles restent sur leur plancher. 0,40 (phase 1) renvoyait 60 % des GCD au remplissage, et
+  n'était tenable qu'en doublant tous les cooldowns. 9 kits restent au-dessus au niveau 60 (0,82 à
+  0,95 : arcane dealer, fate gambler, covenant, sharpshooter, skirmisher, nightstalker, assassin,
+  blade dancer, countermaster), listés par `--report`.
+- Aucun cooldown n'a été raccourci : aucun n'était au-dessus de la borne haute de son rôle.
+
+### La règle des incantations
+
+Constat serveur (`room.cpp`) : au début d'une incantation, Souffle, GCD et cooldown partent
+ensemble ; l'incantation court **pendant** le GCD et l'action suivante attend les deux. Un cast ≤ 2 s
+ne retarde donc rien ; il interdit seulement de se déplacer (`validate_move` → `ACTOR_CASTING`, le
+déplacement ayant déjà 8 s de recharge), il peut être interrompu, et sa zone est re-résolue à la fin.
+Au-delà du GCD, chaque seconde est une action perdue : c'est ce que la matrice compte
+(`(cast − GCD)⁺ × 60`), cohérent avec le serveur.
+
+**Interruption, côté serveur** : un stun (`cc_type` stun : étourdissement, gel, peur) pendant le cast
+l'annule, cooldown et Souffle remboursés, GCD perdu (`process_casting`) ; le verbe `interrupt` (2 sorts
+d'archer) l'annule **sans** rembourser. `silence` ne l'interrompt pas (`interrupts_cast` n'est pas lu),
+`cast_interruptible` non plus (champ mort : tout cast est interruptible). Pas de canalisation :
+`CastingComponent.is_channeled` existe mais n'est jamais vrai. La vitesse d'incantation (plafond 50 %)
+raccourcit le cast.
+
+    c = le plus long palier tel que grille(puissance brute r1 − coût d'incantation(c)) ≥ c   (point fixe)
+
+| puissance nette r1 | cast |
+|---|---|
+| < 250 | 0 |
+| 250-600 | 2,5 s |
+| 600-1200 | 3 s |
+| 1200-2000 | 4 s |
+| ≥ 2000 | 5 s |
+
+- Planchers : ultime 2,5 s ; résurrection 8 s (par effet `resurrect`).
+- **Réflexes**, toujours instantanés : remplissage, ripostes et rapprochements (tags `counter`,
+  `gap_closer`), défensif d'urgence sur soi. 66 sorts, dont 13 qui incantaient.
+- **Préparation des classes physiques** : le serveur ne connaît qu'un mécanisme, `cast_time`. Pour les
+  sous-classes de contact (`roles.json` tags `melee`, `melee_dps`), le cast est une préparation
+  lisible, interruptible, plafonnée à 2,5 s (ne pas rester planté au contact) : 57 sorts, dont 29
+  instantanés avant, ultimes du guerrier et du voleur compris.
+- Un cast au-dessus du GCD ne fait que s'allonger. Un cast ≤ 2 s (gratuit) prend la valeur de la
+  grille, au moins 2,5 s : aucune valeur n'est plus produite entre 0 et 2 s.
+- Les descriptions qui recopient le cast (« Après 2s d'incantation », « Cast time 4s ») suivent le
+  champ (`timing.description_copies`) ; aucune ne cite son cooldown.
+
+### Avant / après
+
+Répartition des temps d'incantation (390 sorts) :
+
+| | instantané | ≤ 2 s | 2-4 s | ≥ 4 s |
+|---|---|---|---|---|
+| avant | 235 | 98 | 41 | 16 |
+| après | 191 | 0 | 173 | 26 |
+
+Cooldowns par rôle (médiane) : ultime 84 → 167,5 s (120 à 180) ; signature 40 → 57,5 s ; courant
+32 → 40 s ; utilitaire 28 → 46,5 s ; défensif 36 → 40 s ; remplissage 12 → 12 s (les remplissages de
+base et de sous-classe prennent 0,5 à 2 s, un remplissage fort davantage : Trait Élémentaire 3,5 → 9,5 s).
+250 cooldowns et 169 incantations changent, 290 sorts au total.
+
+Part du temps de combat passée à lancer des sorts hors remplissage (barre de 12, Souffle illimité) :
+
+| barre | réduction | charge méd (min-max) avant → après | part du temps méd avant → après |
+|---|---|---|---|
+| niveau 20-59 | 0 % | 0,87 (0,63-1,25) → 0,61 (0,47-0,74) | 76 % → 58 % |
+| niveau 60+ | 0 % | 1,12 (0,78-1,55) → 0,76 (0,63-0,95) | 91 % → 71 % |
+| niveau 20-59 | 40 % (plafond) | 1,46 → 1,02 | 100 % → 85 % |
+| niveau 60+ | 40 % (plafond) | 1,86 → 1,27 | 100 % → 96 % |
+
+Durées de combat (`souffle_par_niveau.md`) : pack 46 s, élite 77 s, 5★ 120 s au niveau 20 ; 98, 164
+et 254 s au niveau 60. Un pack se joue en enchaînant ; un élite ou un 5★ voit chaque ultime une fois
+et oblige à choisir le moment des sorts à 60-120 s.
+
+Les plus gros changements (rapport des cooldowns) :
+
+| sort | rôle | cooldown | cast |
+|---|---|---|---|
+| Purification (soigneur, base) | utilitaire | 12 → 95 s | |
+| Siphon Arcanique (mage, base) | utilitaire | 21 → 120 s | 1,5 → 2,5 s |
+| Vague Purificatrice (lightbringer) | utilitaire | 12 → 65 s | |
+| Hymne de Vigueur (cantor) | utilitaire | 20 → 105 s | 0 → 2,5 s |
+| Déchirure d'Âme (occultist) | utilitaire | 26 → 120 s | 2 → 2,5 s |
+| Rugissement Affaiblissant (warlord) | courant | 20 → 90 s | 0 → 2,5 s |
+| Lancer de Dague (voleur, base) | courant | 8 → 35 s | |
+| Émergence (summoner) | ultime | 42 → 180 s | |
+| Bordée (gunslasher) | ultime | 42 → 180 s | 0 → 2,5 s |
+| Choc de Poivre (spice master) | courant | 15 → 60 s | 0 → 2,5 s |
+
+Liste complète : `python -X utf8 scripts/balance/skill_timing.py --report` avant application, ou le
+diff des `skills.json`.
+
+### Réduction de recharge (non tranchée, plafond inchangé)
+
+Au plafond de 40 %, la charge au niveau 60 repasse à 1,27 de médiane (96 % du temps hors
+remplissage, 8 kits à 100 %) : la réduction annule l'essentiel de la passe. Options chiffrées par
+`--report` (`timing.cdr_options`) sur les cooldowns de la règle, niveau 60 :
+
+| option | charge méd | part du temps |
+|---|---|---|
+| sans réduction | 0,76 | 71 % |
+| plafond 40 % (actuel) | 1,27 | 96 % |
+| plafond 20 % | 0,95 | 83 % |
+| 40 % hors ultimes et signatures | 1,23 | 95 % |
+| 20 % hors ultimes et signatures | 0,94 | 81 % |
+
+Exclure ultimes et signatures ne change presque rien à la charge (ils pèsent peu) mais garde « un
+ultime par combat ». **Option proposée : plafond 20 %, ultimes et signatures exclus** ; elle se
+change dans `combat.json` **et** dans `room.cpp` (plafond en dur).
+
+### Points à trancher
+
+1. Plafond de réduction de recharge (ci-dessus).
+2. 9 kits au-dessus du budget au niveau 60 (barres de 12 sorts courts, voleur et archer surtout) :
+   accepter, ou baisser `min_density_scale`.
+3. Préparation de 2,5 s pour les sorts forts des sous-classes de contact, ultimes physiques compris :
+   la garder, ou un autre contre-jeu. Contre-jeux possibles avec le serveur actuel : le cast lui-même
+   (interruptible par stun), un télégraphe (la zone est re-résolue à la fin, une cible peut sortir) ;
+   la canalisation demanderait du code (`is_channeled`).
+4. Riposte parfaite (countermaster), ultime réflexe : reste instantanée.
+5. Le plafond de CDR en dur dans `room.cpp`, et `silence` qui n'interrompt pas malgré
+   `interrupts_cast`.
+6. Les tableaux de `souffle_par_niveau.md` (rotation, « à sec ») ont été calculés avec les anciens
+   cooldowns : la phase 3 les refera.
+
+## 7. Questions au propriétaire
 
 1. **Réduction de recharge** : au plafond de 40 %, toute règle de cooldown est divisée par 1,67 et le
    spam revient. Baisser le plafond (20-25 %), ou exclure ultimes et signatures de la CDR ?
@@ -200,7 +346,9 @@ Le spam est un problème de **charge du kit**, pas de sort isolé : c'est la rè
 4. **Remplissage de spécialisation** (40 sorts, 9 à 36 s) : vrais remplissages (sous 6 s, faibles),
    ou sorts courants légers ?
 5. **Charge cible** : combien de GCD sur trois doivent revenir au remplissage en combat soutenu ?
-6. **Novas à 5 cases** (point 8) : corriger les `range` (une donnée, pas une valeur d'équilibrage) ?
+6. **Novas à 5 cases** (point 8) : corrigé (phase 2). Le serveur recentre `self_and_enemies` sur le
+   lanceur seulement sans cible ; avec une cible, il pose la zone sur elle jusqu'à `max(base_range, 5)`
+   (`grid_distance.hpp aoe_placement_range`), et l'IA ne les traite en nova qu'à `range` 0-1.
 7. **Classes physiques** : sans incantation, quel coût pour leurs ultimes (télégraphe, immobilisation) ?
 8. **Champs morts** (`power_per_level`, `effect_power_per_level`, `cooldown_per_level`,
    `heal_scaling_stat`, `cast_interruptible`) : les supprimer de la data ?
