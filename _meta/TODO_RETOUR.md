@@ -56,6 +56,11 @@ Dernière mise à jour : 2026-10-02.
       refuse de démarrer (le bloc `quest_sharing` est obligatoire). Le client cache le bouton tant que sa data
       n'a pas le bloc. Godot réimporte `translations/messages.csv` à l'ouverture (6 clés ajoutées). À tester à
       deux comptes : quête secondaire, contrat (plafond de 3), quête principale à la même étape et une étape derrière.
+      Limites et points non vérifiés : back `docs/quest-share-2026-10-15.md`, client `NOTE_PARTAGE_QUETE.md`.
+      Data : rien de bloquant ; la liste des tags exclus (`excluded_flags`) est à relire si de nouveaux tags arrivent.
+- [ ] **Prime des contrats du jour** (2026-10-15) : le propriétaire veut une prime sur les 3 premiers contrats
+      de chaque jour, une fois par jour. Elle EXISTE déjà : coffre du jour de `contract_chests` (3 contrats rendus,
+      remise à 5 h). À décider : garder ou retirer le coffre de la semaine (15 contrats), qui pénalise les jours manqués.
 
 ## 1bis. Carte et monstres : ce qu'il faut faire au retour (décidé le 2026-10-11)
 
