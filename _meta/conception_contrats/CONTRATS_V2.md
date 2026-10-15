@@ -137,7 +137,8 @@ monstres, au lieu de 3 à 15 fois. Tout dépend de la durée réelle des combats
   « pierre de rang R, type au hasard » (même mécanisme que la réserve des coffres).
 - Serveur (pvp) : ne publier la victoire pour les contrats que pour `PvPRoomKind::ArenaTeam` (classique et classée).
 - Serveur (quest) : objectif « rapporter N ressources » (retirées du sac au rendu), « terminer un donjon de la bande à la difficulté D », « abattre l'élite X dans la bande », expédition filtrée par `origin_zone_id`.
-- Script de génération des contrats à partir de `world/zones.json`, des monstres et des donjons.
+- Serveur (quest) : modèles de contrats (famille × rang) dans la data ; tirage de 3 offres par joueur selon son niveau et le tableau (Havreden : sa bande ; Rochebourg : rang IV et plus), relance payante, relance gratuite du pass, renouvellement ; table des offres en base.
+- Client : tableau à 3 offres, bouton Relancer.
 - Client : panneau des contrats (familles, rangs), message du refus « déjà un contrat de cette famille ».
 
 ## Questions ouvertes
