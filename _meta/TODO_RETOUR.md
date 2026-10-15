@@ -78,6 +78,16 @@ Dernière mise à jour : 2026-10-02.
       (client `vac_doublons-lot1` `3001c1fd`). S2 canaux : pas de bug visible (la passerelle reroute les MP), `chat_channels` mort.
       S3 : réglé par `vac_capture-rarity`. S9/C2 Souffle par niveau : 152 sorts (base + tier 2) à 0, règle confiée à un agent
       (data `vac_souffle-scaling`, propriétaire : « éviter le spam infini sans qu'un sort vide le Souffle »).
+- [ ] Audit des doublons, lot 2 (back `vac_doublons-lot2`, part de `vac_doublons-lot1`, poussé, NON COMPILÉ) : bonus de groupe,
+      écart de niveau et plafond global obligatoires (`df2380ba`) ; niveaux de déblocage lus par un helper partagé
+      `class_unlock_levels.hpp` (`e1ea6961`) ; une seule formule de Souffle (`1531f00d`) ; `mana_cost_per_level` obligatoire
+      sur les sorts de classe, interdit sur les monstres (`1add79a5`). **À fusionner AVEC la data `vac_souffle-scaling`**
+      (`59bbf97`, 131 sorts chiffrés, note `carnet/souffle_par_niveau.md`), puis avancer le sous-module `kanarion-meta`.
+      Questions Souffle ouvertes : regen d'équipement ×4 au palier 5 (mages jamais à sec dès niv 60), réserve guerrier/voleur,
+      fillers à 0, passe tier 3 (179 sorts sans `rank_scaling_enabled`), potions en combat.
+      Data à corriger : exemples de `rewards.json level_difference` calculés avec 3, `min_drop_rate` non lu,
+      `default_mana_cost_per_level` mort. En dur repérés : RM 0.2×MAG, coût de respec `(niv-20)*10` ×3, tranches 20/40/60
+      de `equipment_template_selector.cpp`, défauts des sorts dans `content_loader.cpp` (cooldown 1 s, percent_per_level 0…).
 - [ ] Niveaux de compétence de familier par doublons (max 5) : scaling à concevoir (`carnet/familiers.md`).
 - [ ] Changements de comportement à vérifier en jeu : les contrôles durs peuvent rater (application 10-90 %, DoT et débuffs garantis sans résistance),
       familiers à 3 s de GCD, parade / blocage / vol de vie plafonnés au jet, durée des buffs par type.
