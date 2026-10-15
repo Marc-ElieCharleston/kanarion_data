@@ -54,7 +54,7 @@ règle du GCD (une incantation sous 2 s ne coûte rien), la densité puissance/c
 
 **Champs morts côté serveur encore en data** (le modèle les ignore) : `power_per_level` et
 `effect_power_per_level` (150 sorts), `cooldown_per_level` (25), `heal_scaling_stat` (28 : le soin suit
-toujours MAG), `cast_interruptible` (1). `scaling_stat: atk/mag` est aussi sans effet : c'est
+toujours MAG). `cast_interruptible` a été supprimé le 2026-10-15. `scaling_stat: atk/mag` est aussi sans effet : c'est
 `damage_type` qui choisit le stat. Trou de data : `exposed` n'a pas de `runtime.stat_mods` dans
 `status_effects.json` (comblé dans le modèle, `implicit_stat_mods`).
 
@@ -351,4 +351,4 @@ change dans `combat.json` **et** dans `room.cpp` (plafond en dur).
    (`grid_distance.hpp aoe_placement_range`), et l'IA ne les traite en nova qu'à `range` 0-1.
 7. **Classes physiques** : sans incantation, quel coût pour leurs ultimes (télégraphe, immobilisation) ?
 8. **Champs morts** (`power_per_level`, `effect_power_per_level`, `cooldown_per_level`,
-   `heal_scaling_stat`, `cast_interruptible`) : les supprimer de la data ?
+   `heal_scaling_stat`) : les supprimer de la data ? (`cast_interruptible` : supprimé le 2026-10-15.)
