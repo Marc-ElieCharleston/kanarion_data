@@ -11,6 +11,7 @@ Règle : **aucune stat, aucun bonus en combat, aucun contenu fermé aux non-abon
 | Téléportation gratuite | entre les points de téléportation | gain de temps, pas d'accès en plus |
 | −10 % à l'achat chez les marchands PNJ | | petit confort ; reste un puits d'or |
 | 1 clé de donjon par semaine | façon clés Bouftou | les clés se lootent aussi sur les monstres pour tout le monde |
+| 1 reset gratuit de l'arbre des passifs par semaine | idée du 2026-10-15, non cumulable | le reset reste achetable en or par tout le monde ; voir [arbre des passifs](arbre_passifs.md) |
 
 Écarté : **+10 % à la revente** (chaque revente crée de l'or : les abonnés feraient entrer plus d'or dans l'économie).
 Plus tard : auras, ailes, cosmétiques faits par un vrai artiste (aujourd'hui les skins sont faits par IA).

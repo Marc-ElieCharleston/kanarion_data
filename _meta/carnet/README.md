@@ -43,6 +43,7 @@ foi** : ces notes sont à fusionner avec eux au retour.
 - [Loot et ressources](loot.md)
 - [Clés de donjon et clé de la tour infinie](cles_donjons.md)
 - [Équipement : stats, rareté, rang, forge](equipement.md)
+- [Arbre des passifs V2 : all-in ou hybride](arbre_passifs.md)
 - [Runes : effets déclenchés à insérer (idée)](runes.md)
 - [Runes : premier catalogue (40)](runes_catalogue.md)
 - [Boutique et financement](boutique.md)
@@ -53,5 +54,6 @@ foi** : ces notes sont à fusionner avec eux au retour.
 - `_meta/conception_histoires/HISTOIRES_ET_ACCUSATEUR.md`
 - `_meta/conception_collections/COLLECTIONS.md`
 - `_meta/conception_familiers/LIVRES_DEPLACEMENTS_PASSIFS.md`
+- `_meta/conception_passifs/ARBRE_PASSIFS_V2.md`
 - `_meta/refonte_monstres/DECISIONS.md`
 - `_meta/TODO_RETOUR.md` (tout ce qu'il reste à faire au retour)
