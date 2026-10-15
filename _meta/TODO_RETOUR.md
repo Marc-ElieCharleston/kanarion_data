@@ -4,7 +4,7 @@ Liste de TOUT ce qu'il reste à faire après le travail fait depuis la maison (o
 Tenue à jour à chaque ajout. Le détail des décisions et des branches est dans
 `_meta/VACANCES_2026-10.md`. Cocher au fur et à mesure.
 
-Dernière mise à jour : 2026-10-02.
+Dernière mise à jour : 2026-10-15.
 
 ## 1. Intégration (dans cet ordre)
 
@@ -48,6 +48,71 @@ Dernière mise à jour : 2026-10-02.
         `shield_shatter`. Puis activer `MONSTER_SCALING_MODEL=1` sur un serveur de test avec la data V2.
   - [ ] `vac_defense-curve-test` — `ctest -R MonsterScaling` avec la data `vac_archetype-profiles`
 - [ ] Mettre à jour le pin de la data (`kanarion-meta`) dans le back et le client après fusion.
+
+### Contrats V2 + partage de quêtes (branches `vac_contracts-v2`, 4 dépôts, POUSSÉES le 2026-10-15)
+
+Pour l'agent qui compile au retour. Doc : `_meta/conception_contrats/CONTRATS_V2.md`. Rien de cela n'a été
+compilé en entier : à la maison, le build WSL a été tué faute de mémoire (seuls `router.cpp` et
+`presence_service.cpp` ont compilé ; `test_contract_board` 9/9 compilé à part).
+`vac_contracts-v2` part de `vac_quest-share` (partage de quêtes du 2026-10-15) : les deux arrivent ensemble.
+
+**Branches et commits**
+
+| Dépôt | Branche | Commits |
+|---|---|---|
+| data (`kanarion_database`, renommé `kanarion_data` sur GitHub) | `vac_contracts-v2` | `a1fab5a` contrats V2 ; dessous `fe93f4f` partage de quêtes |
+| back (`kanarion_back`) | `vac_contracts-v2` | `e7c72131` contrats V2, pin `kanarion-meta` → `a1fab5a` ; dessous `29f1578f` partage |
+| protocole (`kanarion-protocole`) | `vac_contracts-v2` | `4ea1382` messages 0x0A13-0x0A16 ; dessous `96d3032` partage |
+| client (`Mmobile_godot`) | `vac_contracts-v2` | `9cab6734` tableau, pin `protocol` → `4ea1382` ; dessous `ef9e25d2` partage |
+
+**Data**
+- [ ] `git fetch && git checkout vac_contracts-v2`. Vérifier `world/quests.json` : bloc `contract_board`,
+      `contract_limits.max_per_family`, `quest_sharing`, plus aucun `q_contract_*`.
+- [ ] Si le bureau a touché `world/quests.json` ou `entities/monsters.json` : fusionner, puis
+      `python scripts/hash_content.py` et monter `database_version` (règle CI). Les validateurs de quêtes
+      peuvent se plaindre de l'absence des `q_contract_*` : c'est voulu.
+- [ ] Nouvelles zones (carte du 11-13 octobre) : quand elles entrent dans `world/zones.json`, chaque aire
+      doit avoir `level_range`, `max_stars` et `mobs` ; le tirage des contrats les prend tout seul.
+
+**Back**
+- [ ] `git fetch && git checkout vac_contracts-v2 && git submodule update --init kanarion-meta`
+      (pin sur la data `a1fab5a` : le service de quêtes refuse de démarrer sans `quest_sharing`).
+- [ ] Compiler en priorité ce qui ne l'a jamais été : `quest-core`, `test_contract_board`,
+      `test_contract_limit`, `test_quest_share`, `combat-core` (`combat_host.cpp`), `dungeon-core`,
+      `pvp-core`, puis le reste. Corriger les erreurs de compilation éventuelles.
+- [ ] `ctest -L quest` (dont `test_contract_board` sur la vraie data) puis la suite combat complète
+      (`combat.fbs` a deux champs de plus : `MonsterMapping.area_id`, `StoreCombatResultsRequest.origin_area_id`).
+- [ ] Migration `tools/db-migrate/113_contract_board.sql` (tables `contract_offers`, `contract_rerolls`) :
+      la renuméroter si le bureau a déjà une 113. Le partage de quêtes n'a pas de migration.
+- [ ] Vérifier en jeu (serveur de test) :
+  - [ ] tableau de Havreden : 3 offres de familles différentes, à la bande du joueur ; Rochebourg : rien
+        sous le niveau 61 ;
+  - [ ] accepter une offre bloque son emplacement ; on ne peut pas tenir deux contrats de la même famille
+        (erreur 0x0A01) ; rendre ou abandonner libère l'emplacement et une nouvelle offre arrive ;
+  - [ ] relance : la gratuite du jour, puis l'or (refus si pas assez d'or) ;
+  - [ ] expédition créditée seulement dans l'aire nommée et pour un groupe d'assez d'étoiles ; vague
+        (créatures en groupe 3★+) ; prime (élite nommé) ; donjon (difficulté demandée ou plus) ; invasion
+        de Fissure (rang S) ; récupération (les ressources quittent le sac au rendu) ; arène classique ou
+        classée (un duel ne compte plus pour rien, la quête de Dargo accepte aussi l'arène contre recrues) ;
+  - [ ] partage de quêtes : voir les notes de `vac_quest-share` (QUEST_SHARE 0x0A10-0x0A12).
+- [ ] Après validation : fusionner `vac_contracts-v2` dans `main` (back) et `master` (data), puis mettre le
+      pin `kanarion-meta` du back et du client sur le commit fusionné de la data.
+
+**Client**
+- [ ] `git fetch && git checkout vac_contracts-v2 && git submodule update --init protocol`
+      (pin protocole `4ea1382`) ; `kanarion-meta` du client à mettre sur la data `a1fab5a` (le journal
+      reconstruit les contrats `ct_*` depuis `contract_board`).
+- [ ] Ouvrir le projet dans Godot : le GDScript n'a jamais tourné (`scripts/systems/quest_manager.gd`,
+      `scripts/ui/popups/contract_board_popup.gd`). Corriger les erreurs d'analyse.
+- [ ] Réimporter `translations/messages.csv` (7 clés `CONTRACT_BOARD_*` nouvelles) pour régénérer les
+      `.translation`.
+- [ ] Tester : ouvrir le tableau, accepter, relancer, rendre au tableau (choix de la pierre aux rangs A et
+      S), journal des quêtes (titre « Expédition (rang B) », nom de la cible).
+- [ ] Fusionner `vac_contracts-v2` du protocole dans sa branche principale, puis le client.
+
+**Pas encore fait (décisions ou travail à venir)**
+- [ ] Pass premium côté serveur : la relance du pass est câblée (`has_premium_pass` renvoie toujours faux).
+- [ ] Prix réel de la relance (provisoire 20 / 40 / 80 / 160 / 320 selon la bande), une fois l'échelle de l'or fixée.
 
 ### Refactor « tout dans la data », lot 1 (branches `vac_refactor-lot1`, back ET data) — à compiler au bureau
 
@@ -497,4 +562,4 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       surtout les ratios en donjon et en groupes 4 et 5 étoiles (contenu volontairement dur).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.
 - [ ] **Arbre des passifs V2** (2026-10-15) : bras Attaque en brouillon dans `_meta/conception_passifs/` (all-in ~75 pts + capstone, ou hybride sans capstone). À faire : valider le ressenti, décliner les 4 autres bras et les hybrides, puis serveur/client (seuils de palier, choix à N options, 1 capstone, hybrides, reset payant progressif, 1 point au niveau 1). Note : [carnet/arbre_passifs.md](carnet/arbre_passifs.md).
-- [ ] **Contrats V2** (2026-10-15) : CODÉ sur `vac_contracts-v2` (data a1fab5a, back e7c72131, protocole 4ea1382, client 9cab6734). À faire : compiler quest-core, combat_host, dungeon_service, pvp_service (build WSL tué faute de mémoire), lancer test_contract_board dans le build, tester en jeu (Godot), bumper le pin protocol du client, migration 113 (renuméroter si le bureau a une 113), pass premium côté serveur, prix de la relance. Doc : `_meta/conception_contrats/CONTRATS_V2.md`.
+- [ ] **Contrats V2** (2026-10-15) : voir la section « Contrats V2 + partage de quêtes » au point 1 (étapes back, data, client).
