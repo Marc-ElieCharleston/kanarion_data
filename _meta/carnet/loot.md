@@ -19,6 +19,14 @@
 - **XP et or restent personnels** ; seuls les objets passent par le pot.
 - Serveur : branche back `vac_shared-loot` (`418b9273`, pas encore compilée).
 
+## Échelle de l'or (propriétaire, 2026-10-15)
+
+- **Pas de prix à plusieurs millions** : trop de zéros. Les objets et les resets doivent rester en centaines
+  ou en milliers d'or, même au niveau 100.
+- Donc l'or gagné par heure ne doit pas exploser avec le niveau : courbe plate, et les prix se pensent en
+  heures de jeu (ex. reset de l'arbre des passifs ≈ 1 h de farm à son niveau).
+- Pas encore de calcul de l'or gagné par heure selon le niveau : à faire avant de fixer les prix.
+
 ## Tables de loot (2026-10-13)
 
 - **Commun à tous les monstres** (`loot_tables.json` `base_drops` + catégories globales) : or, XP,
