@@ -48,6 +48,14 @@ Dernière mise à jour : 2026-10-02.
         `shield_shatter`. Puis activer `MONSTER_SCALING_MODEL=1` sur un serveur de test avec la data V2.
   - [ ] `vac_defense-curve-test` — `ctest -R MonsterScaling` avec la data `vac_archetype-profiles`
 - [ ] Mettre à jour le pin de la data (`kanarion-meta`) dans le back et le client après fusion.
+- [ ] **Partage de quête en groupe** (2026-10-15), branche `vac_quest-share` dans les 4 dépôts : data (bloc
+      `quest_sharing` de `world/quests.json`, sur `vac_economy-fixes`), back (sur `vac_economy-fixes`, opcodes
+      0x0A10-0x0A12, `test_quest_share` 5/5 vert dans WSL, syntaxe de `quest_service.cpp` et du routeur vérifiée,
+      pas de build complet), protocole client (`96d3032`), client (`ef9e25d2`, sous-module protocol pointé dessus).
+      **Ordre** : fusionner la data AVANT de remonter le pin `kanarion-meta` du back, sinon le service de quêtes
+      refuse de démarrer (le bloc `quest_sharing` est obligatoire). Le client cache le bouton tant que sa data
+      n'a pas le bloc. Godot réimporte `translations/messages.csv` à l'ouverture (6 clés ajoutées). À tester à
+      deux comptes : quête secondaire, contrat (plafond de 3), quête principale à la même étape et une étape derrière.
 
 ## 1bis. Carte et monstres : ce qu'il faut faire au retour (décidé le 2026-10-11)
 
@@ -486,3 +494,13 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       Reste à décider : partage de l'or en groupe, forge payante (`vac_equipment`), brancher `economy.json`
       gold_sinks, prix de revente (pierre rang 5 à 10 000), notes `_note_bande` périmées (le serveur filtre bien la bande).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.
+
+## 8. Client — confort (demandé le 2026-10-15)
+
+- [ ] **Tri automatique du sac** (priorité) : aujourd'hui l'inventaire n'a qu'un tri d'AFFICHAGE (défaut, rareté,
+      type, A-Z) qui revient à « défaut » à chaque ouverture. À faire : un bouton « Ranger » qui réordonne vraiment
+      le sac côté serveur (équipement, consommables, ressources, puis rareté et niveau), fusionne les piles
+      incomplètes, ne touche pas aux objets verrouillés ; et garder le dernier tri choisi. Utile avec un sac de 100 à 300 places.
+- [ ] **Journal de butin** : un historique court de ce qui a été obtenu (combat, coffre, quête, achat), avec
+      l'heure et la source, pour répondre à « qu'est-ce que j'ai looté ? ». Côté client d'abord (les gains arrivent
+      déjà dans les récaps de combat et de quête), sans stockage serveur au départ.
