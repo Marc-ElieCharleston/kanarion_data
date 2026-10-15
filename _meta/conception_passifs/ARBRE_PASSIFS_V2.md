@@ -2,7 +2,8 @@
 
 Statut : **proposition, bras Attaque seul**. Rien n'est branché : la V1 (`classes/passive_tree.json`)
 reste celle que lisent le serveur et le client. Data du brouillon : `arbre_v2_attaque.json`.
-Simulation : `python -I sim_arbre_v2.py arbre_v2_attaque.json`.
+Simulation : `python -I sim_arbre_v2.py arbre_v2_attaque.json` (les bras voisins sont clonés depuis
+Attaque pour tester la géométrie).
 
 ## Pourquoi une V2
 
@@ -13,78 +14,67 @@ d'un 3e : environ 40 variantes, et une seule vraiment bonne par rôle. Le all-in
 ## Intention du propriétaire
 
 - 100 points : 1 au niveau 1, puis 1 par niveau.
-- **All-in** : environ 75 points dans un bras, et au bout un capstone extrêmement puissant.
-- **Hybride** : pas de capstone, les points répartis sur 2 ou 3 bras pour un **gameplay différent**,
-  pas plus faible. Complexe à équilibrer, mais ça pousse à réfléchir.
-- Un all-in ne peut pas être hybride.
-- Les doublons de stats entre bras ne gênent pas.
-- Mélanger stats flat et stats en % (le % s'applique sur le flat, les deux restent intéressants).
+- Les notables sont placés **à distance du centre** : petits à 15 points, petits moyens à 30, moyens à
+  50, **méga à 75**.
+- **All-in** : le méga au bout d'un bras (75), il reste 25 points.
+- **Hybride** : pas de méga, mais deux moyens à 50 ; et si les bras sont voisins, deux à 50 **et** un
+  à 30. Gameplay différent, pas plus faible. Un all-in ne peut pas être hybride.
+- Les doublons de stats entre bras ne gênent pas. Flat et % mélangés.
 - Le reset coûte de plus en plus cher ; le pass peut offrir un reset gratuit par semaine.
 
-## Règles
+## Règles (modèle à distance)
 
 | Règle | Valeur |
 |---|---|
 | Points | 1 au niveau 1 + 1 par niveau = 100 |
-| Coûts | petit 1/rang, moyen 3, gros 5, capstone 12, hybride 8 |
-| Seuils de palier (points dans le bras) | palier 0 : 0, palier 1 : 6, palier 2 : 18, palier 3 : 36, capstone : 62 |
-| Choix | dans un groupe de choix, prendre une option ferme les autres (fourche à N options) |
-| Capstone | 1 seul par personnage |
-| Hybride | 25 points dans chacun des deux bras, interdit si on a un capstone |
+| Coûts | petit nœud 1/rang ; notable 15 : 3 ; notable 30 : 5 ; notable 50 : 6 ; méga : 10 ; détour : 5 ; hybride : 6 |
+| Chemin | un nœud s'achète s'il touche un nœud acquis ; un petit nœud ne laisse passer qu'**à son rang max** |
+| Choix | à chaque notable, 1 option sur 2 ou 3 ; les deux routes entre deux notables ne sont pas exclusives (la 2e coûte ses points) |
+| Méga | 1 seul ; avoir un méga **ferme les ponts** |
+| Ponts | entre bras voisins, au niveau des notables 30 : petit (2) + hybride (6) + petit (2) = 10 points |
 
-Les seuils remplacent les « slots de grands nœuds par niveau » de la V1. Le niveau limite déjà
-naturellement : avec 1 point par niveau, un capstone arrive au plus tôt vers le niveau 74.
-
-Le capstone et l'hybride s'excluent deux fois : par les maths (62 + 12 + 25 + 8 = 107 > 100) et par
-une règle explicite, pour le jour où des points bonus apparaîtraient.
+Il n'y a plus de seuils ni de slots : la profondeur se paie avec le chemin, et le niveau limite
+naturellement (méga au plus tôt vers le niveau 75).
 
 ## Bras Attaque
 
-| Palier | Seuil | Contenu | Type |
-|---|---|---|---|
-| 0 Entrée | 0 | Force (+2 atk et +2 mag), Œil vif (+1 % crit), Tranchant (+5 dégâts crit), Visée (+3 précision) ; 3 rangs | flat |
-| 1 Style | 6 | **1 voie sur 3**, chacune 3 petits à 3 rangs + 1 moyen | mixte |
-| | | Lame : crit, dégâts crit, dégâts % → *Instinct du tueur* (après un crit, +10 % crit 3 s) | |
-| | | Brute : atk/mag %, pénétration, dégâts % → *Exécution* (+15 % sous 30 % PV) | |
-| | | Cadence : vitesse d'incantation, recharge, dégâts % → *Élan* (+2 % dégâts par sort, 5 cumuls, 6 s) | |
-| 2 Spécialisation | 18 | Férocité, Vigueur, Létalité (5 rangs, %) + **1 gros sur 2** : *Allonge* (+1 portée) ou *Acharnement* (+3 % par coup sur la même cible, 5 cumuls) | % |
-| 3 Maîtrise | 36 | 4 petits à 5 rangs (dégâts %, pénétration, crit, atk/mag %) + **1 gros sur 2** : *Soif de sang* (+15 % dégâts 5 s après un kill) ou *Brise-garde* (les crits ignorent 25 % armure/RM) | % |
-| Capstone | 62 | **1 sur 2**, 12 points, avec contrepartie | |
-| | | *Coup Fatal* : crits +50 dégâts crit et −1 s de recharge du sort lancé ; les coups non critiques font −15 % | |
-| | | *Déchaînement* : +35 % de dégâts ; −30 % de soins reçus et −15 % de PV max | |
+| Distance | Contenu |
+|---|---|
+| 0 → 12 | Force, Œil vif, Tranchant, Visée (3 rangs, flat) |
+| **15** | *Exécution* (+15 % sous 30 % PV) **ou** *Premier sang* (+20 % au-dessus de 90 % PV). Détour à 20 : *Allonge* (+1 portée) |
+| 15 → 30 | 2 routes de 10 : flat (Poigne +atk/mag, Œil de lynx +crit) ou % (Vigueur +atk/mag %, Férocité +dégâts %) |
+| **30** | Le style, 1 sur 3 : *Lame* (instinct du tueur), *Brute* (+10 pénétrations), *Cadence* (élan : +2 % par sort, 5 cumuls) |
+| 30 → 50 | 2 routes de 14 : critique (Létalité, Point faible, Main sûre) ou puissance (Carnage, Puissance brute, Perforation) |
+| **50** | *Acharnement* (+4 % par coup sur la même cible, 5 cumuls) **ou** *Brise-garde* (les crits ignorent 30 % armure/RM). Détour à 55 : *Soif de sang* |
+| 50 → 75 | La route du all-in : 3 maîtrises en % (15) |
+| **75 méga** | *Coup Fatal* : crits +50 dégâts crit et −1 s de recharge ; non-crits −15 %. **Ou** *Déchaînement* : +35 % de dégâts ; −30 % soins reçus, −15 % PV max |
 
-Résultats de la simulation :
+Ponts côté Attaque :
+- Attaque ↔ Défense : *Riposte* (sur le chemin, +40 % après blocage/parade), *Garde de fer* (à côté).
+- Attaque ↔ Affaiblissement : *Opportuniste* (sur le chemin, +20 % crit sous contrôle), *Curée* (à côté).
 
-- 24 variantes all-in rien que pour Attaque (3 voies × 2 × 2 × 2 capstones). Sur 5 bras : ~120.
-- Chemin choisi hors capstone : 69 points, seuil 62 : **7 points de marge** à répartir dans le bras.
-- All-in : **74 à 81 points**, il reste 19 à 26 points pour picorer l'entrée et une voie d'un autre bras.
-- Chaque seuil de palier est atteignable quelle que soit la combinaison choisie.
+## Ce que donne la simulation (100 points)
 
-## Hybrides
-
-Nœuds entre deux bras voisins, rattachés au tronc du palier 2 de chaque bras (ils ne dépendent pas de
-la voie). Puissance visée : environ 60 à 70 % d'un capstone chacun, avec une mécanique qu'on ne
-trouve pas ailleurs. Proposés côté Attaque :
-
-- Attaque + Défense : *Riposte* (+40 % sur l'attaque après blocage/parade), *Garde de fer* (au-dessus
-  de 70 % PV : +12 % dégâts, −8 % dégâts reçus).
-- Affaiblissement + Attaque : *Opportuniste* (+20 % crit contre une cible sous contrôle), *Curée*
-  (+20 % dégâts contre une cible avec 3 affaiblissements ou plus).
-
-Formes possibles avec 100 points :
-
-| Forme | Répartition | Coût |
+| Build | Coût | Notables |
 |---|---|---|
-| 2 bras | 42 + 42 + 2 hybrides | 100 |
-| 3 bras | 25 + 30 + 25 + 2 hybrides | 96 |
+| All-in Attaque | 75 (reste 25) | 15, 30, 50, méga |
+| All-in + notable 15 d'un voisin | 90 | + 1 petit notable |
+| All-in + notable 30 d'un voisin | 105 | **impossible** (et les ponts sont fermés) |
+| Hybride éloigné : Attaque 50 + Soutien 50 | 100 | 2 × (15, 30, 50) |
+| Hybride voisin : Attaque 50 + Défense 50 + Affaiblissement 30 | 100 | 15, 30, 50 + 30, 50 + 30 + 2 hybrides |
+| Hybride voisin : Attaque 50 + Défense 50 + les 2 hybrides du pont | 91 | 15, 30, 50 + 30, 50 + 2 hybrides |
+
+Chaque notable tombe exactement à sa distance cible (15 / 30 / 50 / 75).
+
+Nombre de variantes : par bras, 2 × 3 × 2 × 2 = 24 all-in (sans compter les routes et les 25 points
+restants) ; hybrides : 10 paires de bras, 5 paires voisines avec ponts, et les formes à 3 bras.
 
 ## Budget de puissance (à vérifier en jeu)
 
-Un all-in a : 3 gros/moyens de son bras + le capstone + ~25 points (≈ un moyen d'un autre bras).
-Un hybride à 2 bras a : 6 gros/moyens + 2 hybrides, sans capstone.
-Cible : **capstone ≈ 2 gros + 2 hybrides**. Si les hybrides dominent, on monte le capstone ; si le
-all-in domine, on monte les hybrides. Les contreparties des capstones servent à ce qu'il reste un
-vrai choix de style, pas juste « plus fort ».
+- All-in : 4 notables dont le méga, + 25 points (un petit notable ailleurs, ou un détour).
+- Hybride voisin : 8 notables (dont 2 hybrides), pas de méga.
+- Cible : **méga ≈ 4 notables moyens**. Si les hybrides dominent, on monte les mégas ; sinon on monte
+  les hybrides. Les contreparties des mégas gardent un vrai choix de style.
 
 ## Reset des points (proposition)
 
@@ -95,19 +85,18 @@ vrai choix de style, pas juste « plus fort ».
 
 ## Ce que la V2 demande au code (après validation de la data)
 
-- Serveur (economy + `passive_draft`) et client (`passive_tree_rules.gd`) : seuils par points dans le
-  bras au lieu des slots par niveau ; groupes de choix à N options ; 1 capstone max ; hybrides
-  (2 bras à 25, exclus par capstone) ; reset payant progressif.
+- Serveur (economy + `passive_draft`) et client (`passive_tree_rules.gd`) : passage seulement au rang
+  max, groupes de choix à N options, 1 méga, ponts fermés par le méga, plus de slots par niveau, reset
+  payant progressif.
 - `systems/progression.json` : `starting_passive_points: 1`, lu par `level_calc`.
-- Nouvelles mécaniques de combat : `stacking_stat_on_event` (Élan), `consecutive_hit_stacks`
-  (Acharnement), `crit_ignores_defense` (Brise-garde), `non_crit_damage_modifier` (Coup Fatal),
-  `stats_while_hp_above` (Garde de fer), `damage_vs_target_debuff_count` (Curée), événement `kill`
-  pour `stat_window_after_event`. Les autres existent déjà (V1, phase 3).
+- Nouvelles mécaniques de combat : `damage_vs_target_hp_above` (Premier sang), `stacking_stat_on_event`
+  (Élan), `consecutive_hit_stacks` (Acharnement), `crit_ignores_defense` (Brise-garde),
+  `non_crit_damage_modifier` (Coup Fatal), `stats_while_hp_above` (Garde de fer),
+  `damage_vs_target_debuff_count` (Curée), événement `kill` pour `stat_window_after_event`.
 - Migration : rembourser tous les points de l'arbre V1 au passage en V2.
 
 ## Questions ouvertes
 
-1. Les 7 points de marge dans le bras all-in : assez, ou faut-il plus de liberté (seuil 58) ?
-2. Valeurs des capstones : Déchaînement +35 % est-il « extrêmement puissant » assez ?
-3. Un hybride peut-il prendre les 2 hybrides de la même paire (proposé : oui) ?
-4. Prix de base du reset.
+1. Valeurs des mégas : Déchaînement +35 % est-il « extrêmement puissant » assez ?
+2. Ponts à 10 points : l'hybride voisin tombe pile à 100. On garde, ou on laisse un peu de marge ?
+3. Prix de base du reset.
