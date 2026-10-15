@@ -62,8 +62,7 @@
     "hard_efficiency": 1.0,
     "soft_efficiency": 0.4,
     "_soft_note": "Un controle mou ne supprime pas l'action, il la degrade ou la detourne : 40 % d'un controle dur, 24/s, comme les 25/s de balance_model.json.",
-    "interrupts_cast_cc_type": "stun",
-    "_interrupt_note": "Le serveur n'interrompt une incantation que sur flags.stunned (room.cpp process_casting) : effets de cc_type stun (stun, freeze, fear). silence porte interrupts_cast dans la data mais le serveur ne le lit pas."
+    "_interrupt_note": "Les statuts qui interrompent une incantation portent runtime.interrupts_cast dans stats/status_effects.json ; ce que l'interruption fait perdre est dans config/combat.json settings.cast_interrupt."
   },
 
   "modifiers": {
@@ -138,7 +137,7 @@
       "cover": {"points": 120, "component": "buff_defensif"},
       "riposte_active": {"points": 60, "component": "buff_defensif"}
     },
-    "_per_cast_note": "cleanse/purge : retire un effet adverse, environ une seconde d'action (60). steal_buff : retire ET gagne. interrupt : annule une incantation ennemie sans remboursement. cover (runtime charges 1) : intercepte UN coup mono-cible, la valeur d'un coup de reference (120). riposte_active : renvoie une partie du prochain coup puis se consomme (60).",
+    "_per_cast_note": "cleanse/purge : retire un effet adverse, environ une seconde d'action (60). steal_buff : retire ET gagne. interrupt : annule une incantation ennemie (pertes : config/combat.json settings.cast_interrupt). cover (runtime charges 1) : intercepte UN coup mono-cible, la valeur d'un coup de reference (120). riposte_active : renvoie une partie du prochain coup puis se consomme (60).",
     "resurrect_points_at_full_hp": 600,
     "_resurrect_note": "Conventionnel : un allie releve a 100 % des PV = 10 s de son debit (60/s), au prorata du % de PV rendu. balance_model.json disait 1500, sans base.",
     "lifesteal_component": "soin",
@@ -147,10 +146,10 @@
   },
 
   "casting": {
-    "_comment": "Incantation (room.cpp : Souffle, GCD et cooldown debites au debut, pas de canalisation). Ce qui depasse le GCD est du temps de rotation perdu (balance_model.json _regle_du_GCD, toujours vrai). Une interruption (stun seulement) rembourse cooldown et Souffle : seule l'action est perdue.",
+    "_comment": "Incantation (room.cpp : Souffle, GCD et cooldown debites au debut, pas de canalisation). Ce qui depasse le GCD est du temps de rotation perdu (balance_model.json _regle_du_GCD, toujours vrai). Une interruption (statuts runtime.interrupts_cast, verbe interrupt) fait perdre ce que dit config/combat.json settings.cast_interrupt ; le modele ne compte encore que l'action perdue.",
     "time_cost_per_second": 60,
     "interrupt_rate_per_second": 0.03,
-    "_interrupt_note": "Chance par seconde d'incantation qu'un stun ennemi tombe, PvE de groupe (monstres controller et elites). Perte esperee = rate x cast (probabilite) x cast (temps perdu) x debit."
+    "_interrupt_note": "Chance par seconde d'incantation qu'un controle ennemi qui interrompt tombe, PvE de groupe (monstres controller et elites). Perte esperee = rate x cast (probabilite) x cast (temps perdu) x debit."
   },
 
   "reach": {

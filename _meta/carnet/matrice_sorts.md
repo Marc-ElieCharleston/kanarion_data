@@ -32,7 +32,7 @@ Ce que la matrice compte, tel que le serveur l'applique (`room.cpp`, lu sur `vac
 | Souffle rendu | converti au rendement médian mesuré : **7,6 points par Souffle** | mesuré, pas écrit |
 | résurrection | 600 points à 100 % des PV (10 s de débit d'un allié) | |
 | portée, LdV | (cases ennemies atteintes / cases au `base_range`)^0,25 ; × 0,85 si ligne de vue requise ; ×1 pour un sort bénéfique | `reach` |
-| incantation | coût = (cast − GCD)⁺ × 60 + 0,03/s × cast² × 60 (interruption par étourdissement seulement, Souffle et cooldown remboursés) | `casting` |
+| incantation | coût = (cast − GCD)⁺ × 60 + 0,03/s × cast² × 60 (interruption : statuts `interrupts_cast` et verbe `interrupt` ; pertes : `config/combat.json settings.cast_interrupt`) | `casting` |
 
 Puissance brute = somme des composantes ; puissance nette = brute − coût d'incantation. Tout est calculé
 aux rangs 1 à 10. Aucun id de sort dans le modèle : un effet est rangé par sa catégorie et son
@@ -227,10 +227,11 @@ déplacement ayant déjà 8 s de recharge), il peut être interrompu, et sa zone
 Au-delà du GCD, chaque seconde est une action perdue : c'est ce que la matrice compte
 (`(cast − GCD)⁺ × 60`), cohérent avec le serveur.
 
-**Interruption, côté serveur** : un stun (`cc_type` stun : étourdissement, gel, peur) pendant le cast
-l'annule, cooldown et Souffle remboursés, GCD perdu (`process_casting`) ; le verbe `interrupt` (2 sorts
-d'archer) l'annule **sans** rembourser. `silence` ne l'interrompt pas (`interrupts_cast` n'est pas lu),
-`cast_interruptible` non plus (champ mort : tout cast est interruptible). Pas de canalisation :
+**Interruption, côté serveur** (2026-10-15) : un statut qui porte `runtime.interrupts_cast` (étourdissement,
+gel, peur, silence, désarmement, confusion ; pas l'entrave) annule le cast s'il tombe pendant celui-ci, comme
+le verbe `interrupt` (2 sorts d'archer) et la mort du lanceur. Une seule fonction (`Room::break_cast`) applique
+alors `config/combat.json settings.cast_interrupt` : aujourd'hui ni cooldown ni Souffle rendus, GCD perdu.
+Tout cast est interruptible. Pas de canalisation :
 `CastingComponent.is_channeled` existe mais n'est jamais vrai. La vitesse d'incantation (plafond 50 %)
 raccourcit le cast.
 
@@ -326,11 +327,10 @@ change dans `combat.json` **et** dans `room.cpp` (plafond en dur).
    accepter, ou baisser `min_density_scale`.
 3. Préparation de 2,5 s pour les sorts forts des sous-classes de contact, ultimes physiques compris :
    la garder, ou un autre contre-jeu. Contre-jeux possibles avec le serveur actuel : le cast lui-même
-   (interruptible par stun), un télégraphe (la zone est re-résolue à la fin, une cible peut sortir) ;
+   (interruptible par contrôle dur), un télégraphe (la zone est re-résolue à la fin, une cible peut sortir) ;
    la canalisation demanderait du code (`is_channeled`).
 4. Riposte parfaite (countermaster), ultime réflexe : reste instantanée.
-5. Le plafond de CDR en dur dans `room.cpp`, et `silence` qui n'interrompt pas malgré
-   `interrupts_cast`.
+5. Le plafond de CDR en dur dans `room.cpp`. (`silence` interrompt depuis le 2026-10-15.)
 6. Les tableaux de `souffle_par_niveau.md` (rotation, « à sec ») ont été calculés avec les anciens
    cooldowns : la phase 3 les refera.
 

@@ -110,7 +110,7 @@
   },
   "temps_incantation": {
     "_comment": "Le temps d'incantation suit la puissance. C'est la contrepartie du Mage : il frappe plus fort mais il s'expose. Depuis le retrait des auto-attaques (2026-07-30), sans cette contrepartie les classes physiques sont perdantes.",
-    "_contre_jeu": "Un cast est interrompu par un STUN (room.cpp process_casting, flags.stunned). Cooldown et Souffle sont REMBOURSES a l'interruption. Allonger un cast cree donc une vraie fenetre de contre-jeu, pas une simple punition.",
+    "_contre_jeu": "Un cast est interrompu quand un statut qui porte runtime.interrupts_cast (stats/status_effects.json) le touche, ou par le verbe interrupt. Ce qu'il fait perdre est dans config/combat.json settings.cast_interrupt. Allonger un cast cree donc une vraie fenetre de contre-jeu.",
     "grille": [
       {
         "puissance_max": 150,
@@ -331,7 +331,7 @@
         "statut mana_regen : 2% du MP max par proc et par charge, via le chemin HOT",
         "keystones restore_souffle et convert_hp_to_souffle (proc_processor.cpp)",
         "bonus mp_regen de l'equipement (room.cpp, correctement divise par le tick rate)",
-        "remboursement integral si une incantation est interrompue"
+        "remboursement d'une incantation interrompue, selon config/combat.json settings.cast_interrupt.refund_souffle"
       ],
       "mort_ou_absent": [
         "les 5 nourritures wbuff_food_mp_regen : StatModType::MANA_REGEN n'est jamais assigne par le loader, elles ne font RIEN (ticket BE-S2)",
