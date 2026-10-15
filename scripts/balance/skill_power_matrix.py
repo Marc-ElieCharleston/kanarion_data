@@ -534,9 +534,11 @@ def bar(kit, tiers):
     return sorted(sk, key=lambda r: r["cooldown"])[:SKILL_BAR]
 
 
-def kit_load(rows, cdr=0.0):
-    """Sum of max(GCD, cast) / cooldown: above 1, a non-filler skill is always ready."""
-    return sum(max(GCD, r["cast_time"]) / (r["cooldown"] * (1 - cdr)) for r in rows)
+def kit_load(rows, cdr=0.0, weight=None):
+    """Sum of max(GCD, cast) / cooldown: above 1, a non-filler skill is always ready.
+    weight(row), when given, scales each skill's share (skill_timing: reactive skills)."""
+    return sum(max(GCD, r["cast_time"]) / (r["cooldown"] * (1 - cdr)) * (weight(r) if weight else 1.0)
+               for r in rows)
 
 
 def fmt_dist(v, thresholds):

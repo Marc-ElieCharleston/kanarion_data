@@ -191,33 +191,40 @@
   "timing": {
     "_comment": "Phase 2 : cooldown et temps d'incantation de chaque sort de classe, tires de la matrice (puissance nette au rang 1, role, dominante). Applique par scripts/balance/skill_timing.py (--check en CI, --report). Ici et seulement ici : un sort ne porte que le resultat (cooldown, cast_time). Pourquoi ce fichier et pas skill_system.json : la regle lit la puissance, les roles et les dominantes que ce fichier definit deja ; la mettre ailleurs couperait un meme modele en deux proprietaires. Decisions du proprietaire (2026-10-15) : allonger le cooldown d'un sort trop fort plutot que baisser sa puissance ; jamais de raccourcissement sauf cooldown hors des bornes ; les cooldowns repartent a zero a chaque combat (une room neuve par rencontre), un ultime de 2-3 minutes se lance donc une fois par combat, au bon moment ; pas de moule unique, la puissance, l'effet et l'identite de la classe font la valeur.",
     "cooldown": {
-      "_comment": "cible = puissance nette r1 / (densite du role x facteur d'identite), bornee par le role, arrondie vers le haut au pas de l'echelle. Valeur ecrite = max(cooldown actuel, cible) : la regle n'allonge que les sorts trop denses pour leur role. Un cooldown au-dessus de la borne haute de son role est ramene a cette borne (seul raccourcissement admis, cooldown manifestement hors role).",
+      "_comment": "cible = puissance nette r1 / (densite du role x facteur d'identite x k du budget de kit), bornee par le role, arrondie vers le haut au pas de l'echelle. Valeur ecrite = max(cooldown actuel, cible) : la regle n'allonge que les sorts trop denses pour leur role. Un cooldown au-dessus de la borne haute de son role est ramene a cette borne (seul raccourcissement admis, cooldown manifestement hors role).",
       "density_points_per_second": {
         "remplissage": 30,
         "courant": 6,
         "signature": 4,
-        "defensif": 4,
+        "defensif": 6,
         "utilitaire": 4,
         "ultime": 10
       },
-      "_density_note": "Points de puissance nette admis par seconde de cooldown. Remplissage 30 : un remplissage ordinaire (100 a 150 points) reste a 4-5 s, un remplissage qui frappe fort prend 1 a 2 s de plus. Courant 6 et ultime 10 : proposition de la phase 1. Signature, defensif, utilitaire 4 : un effet de soutien n'a pas le debit d'un coup.",
+      "_density_note": "Points de puissance nette admis par seconde de cooldown. Remplissage 30 : un remplissage ordinaire (100 a 150 points) reste a 4-5 s, un remplissage qui frappe fort prend 1 a 2 s de plus. Courant 6 et ultime 10 : proposition de la phase 1. Signature, utilitaire 4 : un effet de soutien n'a pas le debit d'un coup. Defensif 6 comme courant (cas particuliers, 2026-10-15) : l'unite compte deja 1 PV rendu ou absorbe = 1 PV inflige, et le debordement (overheal_factor 0,7) est deja retire ; 4 retirait le debordement une deuxieme fois (Soin 8 -> 23 s).",
       "bounds_seconds": {
         "remplissage": [4, 40],
         "courant": [15, 90],
         "signature": [30, 120],
-        "defensif": [12, 120],
+        "defensif": [8, 120],
         "utilitaire": [15, 120],
         "ultime": [120, 180]
       },
-      "_bounds_note": "Garde-fous larges, pas un moule : entre les bornes, la puissance decide. Ultime 120-180 s (une fois par combat, au bon moment). Signature 30-120 s : selon la classe un gros sort ou un outil frequent. Remplissage 4-40 s : le remplissage de specialisation varie avec la classe et l'effet (9 a 36 s aujourd'hui). Defensif des 12 s : le soin de base d'un soigneur reste un outil frequent.",
+      "_bounds_note": "Garde-fous larges, pas un moule : entre les bornes, la puissance decide. Ultime 120-180 s (une fois par combat, au bon moment). Signature 30-120 s : selon la classe un gros sort ou un outil frequent. Remplissage 4-40 s : le remplissage de specialisation varie avec la classe et l'effet (9 a 36 s aujourd'hui). Defensif des 8 s (12 en phase 2) : le soin de base d'un soigneur (Soin, Soin de la Nature, 8 s par conception) reste un outil frequent ; aucun autre sort defensif n'avait moins de 12 s.",
       "identity": {
-        "_comment": "Un sort dont la dominante (matrice) porte le role de sa classe ou sous-classe (config/roles.json role) admet une densite x factor : le soigneur soigne plus souvent qu'un guerrier, le tank protege plus souvent qu'un mage. Remplissage et ultime ne sont pas concernes.",
+        "_comment": "Un sort qui sert l'identite de sa classe admet une densite x (1 + (factor - 1) x part), part = part de sa puissance positive (rang 1) dans les groupes de dominante de cette identite : le soigneur soigne plus souvent qu'un guerrier, le tank protege plus souvent qu'un mage. Identite = role (dominants_by_class_role) et role_tags (dominants_by_role_tag) de la sous-classe dans config/roles.json ; pour un sort de base, ceux de la classe et de toutes ses sous-classes (le tronc commun : le guerrier de base sert aussi le berserker) ; plus la dominante du kit auquel le sort appartient (somme des sorts que la base, la sous-classe ou la specialisation ajoute, hors kit_dominant_excluded_roles) : une specialisation de soutien qui frappe (Maitre des Epices, Brasseur de Pestes), un tank qui frappe (Briseur), un Runeknight qui protege. Cas particuliers (2026-10-15) : avant, tout ou rien sur la seule dominante du sort, depuis le seul role de la sous-classe ; une egalite tranchee par l'ordre alphabetique ou un sort mixte perdaient toute l'identite, la dissipation et le Souffle n'entraient dans aucune, les specialisations n'avaient pas d'identite propre. Remplissage et ultime ne sont pas concernes.",
         "factor": 2.0,
         "dominants_by_class_role": {
           "tank": ["defense", "controle"],
           "healer": ["defense", "soutien"],
           "dps": ["offense"],
           "support": ["soutien", "defense"]
+        },
+        "kit_dominant_excluded_roles": ["remplissage", "ultime"],
+        "_role_tag_note": "support : les buffs du chef de guerre, du chantre, de l'artisan ; control : les controles du trickster et du ballmaster ; sustain : le corsaire se nourrit de ce qu'il vole (Souffle, buffs).",
+        "dominants_by_role_tag": {
+          "support": ["soutien"],
+          "control": ["controle"],
+          "sustain": ["utilitaire"]
         },
         "roles": ["courant", "signature", "defensif", "utilitaire"]
       },
@@ -229,10 +236,19 @@
       "_rounding_note": "Valeurs lisibles : demi-secondes sous 10 s (un remplissage ne saute pas d'une seconde entiere), secondes jusqu'a 30 s, multiples de 5 au-dela."
     },
     "kit_load": {
-      "_comment": "Charge d'un kit = somme de max(GCD, cast) / cooldown sur la barre (config/game.json skill_bar : les sorts hors remplissage au cooldown le plus court, le pire cas), sans reduction de recharge. Au-dela de 1, un sort hors remplissage est toujours pret. Un kit (et une tranche de niveau, skill_power_matrix.LEVEL_BARS) au-dessus du budget baisse la densite admise de toute sa barre (facteur k, entre min_density_scale et 1) : ce sont les sorts forts pour leur role qui s'allongent, les faibles restent sur la borne basse de leur role. Un sort partage par plusieurs kits prend le k le plus bas.",
+      "_comment": "Charge d'un kit = somme de max(GCD, cast) / cooldown x poids sur la barre (config/game.json skill_bar : les sorts hors remplissage au cooldown le plus court, le pire cas), sans reduction de recharge. Au-dela de 1, un sort hors remplissage est toujours pret. Un kit (et une tranche de niveau, skill_power_matrix.LEVEL_BARS) au-dessus du budget baisse la densite admise (facteur k, entre min_density_scale et 1) des sorts que la tranche lui fait payer (scaled_tiers) et qui sont forts pour leur role (strong_role_quantile) : les faibles gardent le cooldown que leur puissance leur donne. Un sort partage par plusieurs kits prend le k le plus bas.",
       "budget": 0.8,
       "min_density_scale": 0.5,
-      "_budget_note": "0,40 propose en phase 1 renvoyait 60 % des GCD au remplissage, le jeu 'spam skill 1' que le proprietaire refuse, et n'etait tenable qu'en doublant tous les cooldowns. 0,8 : sur la pire barre, au moins un GCD sur cinq revient au remplissage sans reduction de recharge, et les gros sorts reviennent assez rarement pour qu'un combat long oblige a choisir leur moment. min_density_scale 0,5 : un kit ne divise jamais par plus de deux la densite admise ; un kit qui reste au-dessus est liste par --report."
+      "scaled_tiers": [["subclass"], ["subclass", "tier3"]],
+      "_scaled_tiers_note": "Cas particuliers (2026-10-15), une liste par tranche de LEVEL_BARS, traitees dans l'ordre (la tranche 60 part des cooldowns fixes par la tranche 20-59). Le tronc commun (base) n'est jamais allonge par le budget : il appartient aux huit kits de la classe et c'est tout le kit des niveaux 1 a 19 ; la sous-classe paie ce qu'elle ajoute, la specialisation aussi (avec sa sous-classe, que seuls ses deux kits partagent). Avant, un sort de base prenait le k le plus bas des huit barres de niveau 60 : Soin 8 -> 23 s parce que la barre de Covenant debordait, Lancer de Dague 8 -> 35 s a cause de l'Assassin, Purification 12 -> 95 s.",
+      "unscaled_roles": ["remplissage", "ultime"],
+      "_unscaled_roles_note": "Jamais allonges par le budget. Remplissage : hors de la charge (il est ce qui reste). Ultime (cas particuliers, 2026-10-15) : il pese 2,5/120 dans une barre, l'allonger ne soulage pas la charge ; sa recharge suit sa seule puissance (densite 10, 120 a 180 s). Avant, le k des barres de niveau 60 qui debordaient par leurs sorts faibles poussait des ultimes moyens a 180 s (Assaut de Guerilla 879 points, Annihilation 1070).",
+      "strong_role_quantile": 0.5,
+      "_strong_note": "Cas particuliers (2026-10-15). Seuls les sorts dont la puissance nette r1 atteint la mediane de leur role sont allonges par le budget (proprietaire : allonger les sorts trop forts plutot que nerfer les faibles). Avant, k s'appliquait a tout sort au-dessus du plancher : Pas de Phase (68 points) 9 -> 35 s, Premeditation (81) 12 -> 45 s, Crachat de Rhum 9 -> 40 s.",
+      "reactive_roles": ["defensif"],
+      "reactive_weight": 0.5,
+      "_reactive_note": "Cas particuliers (2026-10-15). Un sort defensif (soin, bouclier, dissipation, provocation, buff defensif) se lance quand un allie encaisse, pas des qu'il est pret : pret sans etre lance, il n'est pas du spam. Il pese 0,5 dans la charge (convention, comme overheal_factor : sur un pack le groupe encaisse peu, sur un boss beaucoup). Sans ce poids, les kits de soigneur, faits de soins, debordaient tous et allongeaient leurs sorts de coeur.",
+      "_budget_note": "0,40 propose en phase 1 renvoyait 60 % des GCD au remplissage, le jeu 'spam skill 1' que le proprietaire refuse, et n'etait tenable qu'en doublant tous les cooldowns. 0,8 : sur la pire barre, au moins un GCD sur cinq revient au remplissage sans reduction de recharge, et les gros sorts reviennent assez rarement pour qu'un combat long oblige a choisir leur moment. min_density_scale 0,5 : un kit ne divise jamais par plus de deux la densite admise ; un kit qui reste au-dessus est liste par --report. Revue des cas particuliers (2026-10-15) : un kit qui reste au-dessus ne deborde que par des sorts faibles (sous la mediane de leur role) poses sur le plancher de leur role, ses sorts forts etant deja au k minimal ou a leur borne ; la charge des sorts forts reste celle de la phase 2. Accepte : les allonger serait les nerfer (_meta/carnet/matrice_sorts.md section 8)."
     },
     "cdr_options": {
       "_comment": "Reduction de recharge (config/combat.json abilities.cooldown_reduction_cap, 40 %, non tranchee) : options que le rapport chiffre a cote du plafond actuel. Aucune n'est appliquee, le plafond ne change pas ici.",
@@ -258,9 +274,9 @@
       "floor_by_effect": {"resurrect": 8.0},
       "_floor_note": "Un ultime offre toujours une fenetre d'interruption, classes physiques comprises (preparation). Une resurrection incante 8 s (proprietaire). Le plancher passe avant le plafond de contact.",
       "reflex": {
-        "_comment": "Sorts reflexes, jamais incantes (cast 0) : le remplissage (role), les ripostes et rapprochements (tags), et le defensif d'urgence sur soi (role defensif, target self). Un reflexe qui incante aujourd'hui passe a 0.",
+        "_comment": "Sorts reflexes, jamais incantes (cast 0) : le remplissage (role), les ripostes et rapprochements (tags), les provocations et interruptions (tags : une reponse a l'instant, une preparation de 2,5 s laisserait l'ennemi tuer l'allie ou finir son incantation ; ajoute 2026-10-15) et le defensif d'urgence sur soi (role defensif, target self). Un reflexe qui incante aujourd'hui passe a 0.",
         "roles": ["remplissage"],
-        "tags": ["counter", "gap_closer"],
+        "tags": ["counter", "gap_closer", "taunt", "interrupt"],
         "self_target_roles": ["defensif"]
       },
       "melee_cap": {

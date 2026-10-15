@@ -10,11 +10,15 @@ Rules (owner: config/skill_power_model.json timing; note: _meta/carnet/matrice_s
              the GCD) and becomes c, at least min_real_cast_seconds when it cast already.
   cooldown   target = net power r1 / (role density x identity factor), within the role
              bounds, rounded up to the scale step; cooldown = max(current, target), or the
-             role's upper bound when above it (the only shortening).
-  kit load   per kit and level band, sum of max(GCD, cast) / cooldown over the bar, no
-             cooldown reduction, <= budget; otherwise the kit lowers the admitted density
-             of its bar (scale k >= min_density_scale): the skills strong for their role
-             lengthen, the weak ones stay on their floor. A shared skill takes the lowest k.
+             role's upper bound when above it (the only shortening). The identity factor
+             grows with the share of the skill's power in its class's identity (roles.json
+             role and role_tags, the dominant of the kit the skill belongs to).
+  kit load   per kit and level band, sum of max(GCD, cast) / cooldown x weight over the
+             bar (reactive skills weigh less), no cooldown reduction, <= budget; otherwise
+             the kit lowers the admitted density (scale k >= min_density_scale) of the
+             skills the band makes it pay for (the subclass, then the specialization; never
+             the base kit every kit shares) that are strong for their role: the weak ones
+             keep their cooldown. A shared skill takes the lowest k.
   copies     description sentences restating cast_time or cooldown follow the field.
 
 Every number comes from the model; the matrix (skill_power_matrix.py) gives power, role
@@ -63,17 +67,62 @@ def class_entry(row):
     return P.ROLES_CFG[row["subclass"] or row["class"]]
 
 
-def is_identity(row):
-    """The skill's dominant carries its class's role (config/roles.json)."""
+SUBCLASSES = {cls: sorted({sub for sub, _, _ in S.kits(cls)}) for cls in S.CLASSES}
+
+
+KIT_DOMINANT = {}   # (class, subclass, spec) -> dominant group of that kit's own skills; set by plan()
+
+
+def kit_dominants(rows):
+    """Dominant group of the summed positive power (rank 1) of the skills each kit adds (base,
+    a subclass, a specialization), roles of identity.kit_dominant_excluded_roles left out."""
+    groups = P.pub(P.M["roles"]["components"])
+    excl = set(CD["identity"]["kit_dominant_excluded_roles"])
+    acc = {}
+    for r in rows:
+        if r["role"] in excl:
+            continue
+        g = acc.setdefault((r["class"], r["subclass"], r["spec"]), dict.fromkeys(groups, 0.0))
+        for name, ks in groups.items():
+            g[name] += sum(max(0.0, r["components_r1"].get(k, 0.0)) for k in ks)
+    return {k: max(v, key=lambda n: (v[n], n)) for k, v in acc.items() if any(v.values())}
+
+
+def identity_dominants(row):
+    """Dominant groups that carry the identity of the skill's class: the role and role_tags of
+    its subclass in config/roles.json (for a base skill, of its class and of every subclass that
+    inherits it: the base kit is their common trunk), plus the dominant of the kit the skill
+    belongs to (a specialization's own skills, a subclass's, the base kit's): a support whose
+    specialization deals damage, a tank whose specialization strikes, read from the data."""
     idt = CD["identity"]
-    return row["role"] in idt["roles"] and \
-        row["dominant"] in idt["dominants_by_class_role"].get(class_entry(row)["role"], [])
+    keys = [row["subclass"]] if row["subclass"] else [row["class"]] + SUBCLASSES[row["class"]]
+    out = set()
+    for k in keys:
+        e = P.ROLES_CFG[k]
+        out |= set(idt["dominants_by_class_role"].get(e["role"], []))
+        for tag in e.get("role_tags", []):
+            out |= set(idt["dominants_by_role_tag"].get(tag, []))
+    kd = KIT_DOMINANT.get((row["class"], row["subclass"], row["spec"]))
+    return out | ({kd} if kd else set())
+
+
+def identity_share(row):
+    """Share of the skill's positive power (rank 1) carried by the dominants of its class."""
+    idt = CD["identity"]
+    if row["role"] not in idt["roles"]:
+        return 0.0
+    doms = identity_dominants(row)
+    groups = P.pub(P.M["roles"]["components"])
+    pos = {k: max(0.0, v) for k, v in row["components_r1"].items()}
+    total = sum(pos.values())
+    return sum(pos.get(k, 0.0) for g in doms for k in groups[g]) / total if total else 0.0
 
 
 def density(row):
-    """Points of net power allowed per second of cooldown."""
+    """Points of net power allowed per second of cooldown: the role's density, times up to the
+    identity factor in proportion to the power the skill puts into its class's role."""
     d = CD["density_points_per_second"][row["role"]]
-    return d * CD["identity"]["factor"] if is_identity(row) else d
+    return d * (1 + (CD["identity"]["factor"] - 1) * identity_share(row))
 
 
 def bounds(row):
@@ -128,13 +177,31 @@ def cooldown_rule(row, net, scale=1.0):
     return hi if row["cooldown"] > hi else max(row["cooldown"], cooldown_target(row, net, scale))
 
 
-def kit_scale(kit, tiers):
+def load_weight(row):
+    """Share of a skill in its kit's load: a reactive skill (kit_load.reactive_roles: a heal,
+    a shield, a cleanse, a defensive buff) is cast when someone takes damage, not as soon as it
+    is ready; it weighs reactive_weight."""
+    return LOAD["reactive_weight"] if row["role"] in LOAD["reactive_roles"] else 1.0
+
+
+ROLE_STRONG = {}   # role -> net power r1 from which a skill is strong for its role; set by plan()
+
+
+def strong(row):
+    """A skill the kit budget may lengthen: not of kit_load.unscaled_roles, and net power r1 at
+    least the role's kit_load.strong_role_quantile (a weak skill keeps the cooldown its power
+    gives it)."""
+    return row["role"] not in LOAD["unscaled_roles"] and row["net_power_r1"] >= ROLE_STRONG.get(row["role"], 0.0)
+
+
+def kit_scale(kit, tiers, scaled_tiers):
     """Largest density scale k in [min_density_scale, 1] whose cooldowns fit the kit's bar in
-    the budget: lowering the admitted density lengthens the skills strong for their role,
-    never the weak ones (they sit on their role's floor)."""
+    the budget, k lowering the admitted density of the skills of `scaled_tiers` only: it
+    lengthens the skills strong for their role (strong()), never the weak ones."""
     def load(k):
-        scaled = {t: [dict(r, cooldown=cooldown_rule(r, r["net_power_r1"], k)) for r in kit[t]] for t in tiers}
-        return P.kit_load(P.bar(scaled, tiers))
+        scaled = {t: [dict(r, cooldown=cooldown_rule(r, r["net_power_r1"], k)) if t in scaled_tiers and strong(r) else r
+                      for r in kit[t]] for t in tiers}
+        return P.kit_load(P.bar(scaled, tiers), weight=load_weight)
     if load(1.0) <= LOAD["budget"] + 1e-9:
         return 1.0
     lo, hi = LOAD["min_density_scale"], 1.0
@@ -147,19 +214,22 @@ def kit_scale(kit, tiers):
 
 
 def enforce_budget(rows):
-    """Each kit and level band over budget lowers the admitted density of its bar; a skill
-    shared by several kits takes the lowest scale."""
-    scale = {}
-    for _, _, _, kit in P.kit_rows(list(rows.values())):
-        for _, tiers in P.LEVEL_BARS:
-            k = kit_scale(kit, tiers)
-            for t in tiers:
+    """Level bands in order, each on the cooldowns the earlier ones set. In a band, each kit over
+    budget lowers the admitted density of its strong skills of the tiers the band makes it pay
+    for (kit_load.scaled_tiers): the subclass at level 20-59, the subclass and specialization
+    at 60, never the base kit all eight kits of the class share. A skill shared by several kits
+    takes the lowest scale."""
+    for (_, tiers), scaled_tiers in zip(P.LEVEL_BARS, LOAD["scaled_tiers"]):
+        scale = {}
+        for *_, kit in P.kit_rows(list(rows.values())):
+            k = kit_scale(kit, tiers, scaled_tiers)
+            for t in scaled_tiers:
                 for r in kit[t]:
-                    if r["role"] != "remplissage":   # fillers stay off the bar's load
+                    if strong(r):
                         scale[r["id"]] = min(scale.get(r["id"], 1.0), k)
-    for sid, k in scale.items():
-        if k < 1.0:
-            rows[sid]["cooldown"] = cooldown_rule(rows[sid], rows[sid]["net_power_r1"], k)
+        for sid, k in scale.items():
+            if k < 1.0:
+                rows[sid]["cooldown"] = cooldown_rule(rows[sid], rows[sid]["net_power_r1"], k)
 
 
 def plan():
@@ -168,12 +238,17 @@ def plan():
     data = P.build()
     skills = {s["id"]: s for *_, s in P.all_skills()}
     cur = {r["id"]: r for r in data["skills"]}
+    KIT_DOMINANT.clear()
+    KIT_DOMINANT.update(kit_dominants(data["skills"]))
     new = {}
     for sid, r in cur.items():
         s = skills[sid]
         cast = cast_rule(s, r)
         net = r["power"][0] - P.cast_cost(s, cast)
         new[sid] = dict(r, cast_time=cast, net_power_r1=net, cooldown=cooldown_rule(r, net))
+    ROLE_STRONG.clear()
+    for rl in {r["role"] for r in new.values()}:
+        ROLE_STRONG[rl] = P.q([r["net_power_r1"] for r in new.values() if r["role"] == rl], LOAD["strong_role_quantile"])
     enforce_budget(new)
     return cur, new, skills
 
@@ -275,7 +350,7 @@ def bands(rows, cdr_of):
         loads, share = [], []
         for *_, kit in P.kit_rows(list(scaled.values())):
             b = P.bar(kit, tiers)
-            loads.append(P.kit_load(b))
+            loads.append(P.kit_load(b, weight=load_weight))
             share.append(P.spam_fraction([(r["cooldown"], r["cast_time"], r["power"][0]) for r in b], 0.0, dur))
         out[label] = (loads, share)
     return out
@@ -368,10 +443,13 @@ def report():
     over = []
     for cls, sub, spec, kit in P.kit_rows(list(new.values())):
         for band, tiers in P.LEVEL_BARS:
-            ld = P.kit_load(P.bar(kit, tiers))
+            b = P.bar(kit, tiers)
+            ld = P.kit_load(b, weight=load_weight)
             if ld > LOAD["budget"] + 1e-9:
-                over.append(f"{spec} ({band}) {ld:.2f}")
-    print(f"\n## Kits au-dessus du budget apres la regle : {len(over)}")
+                over.append(f"{spec} ({band}) {ld:.2f}, dont sorts forts "
+                            f"{P.kit_load([r for r in b if strong(r)], weight=load_weight):.2f}")
+    print(f"\n## Kits au-dessus du budget apres la regle : {len(over)} (charge ponderee, sorts reactifs "
+          f"x{LOAD['reactive_weight']:g} ; le reste vient de sorts faibles, que le budget n'allonge pas)")
     for o in over:
         print("- " + o)
     if copies:
