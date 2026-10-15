@@ -40,6 +40,31 @@ def collect_status_effect_ids(status_effects_data):
     return result
 
 
+# Flags every status declares in its runtime block (single owner of each fact, read by the
+# combat server, which refuses to load a status that omits one):
+#   is_hard_cc      : a hard crowd control (stun, freeze, fear, silence, disarm, confusion, root)
+#   interrupts_cast : landing this status breaks the target's cast in progress
+REQUIRED_RUNTIME_FLAGS = ("is_hard_cc", "interrupts_cast")
+
+
+def check_runtime_flags(status_effects_data):
+    """Every status must declare each REQUIRED_RUNTIME_FLAGS as a boolean in runtime."""
+    violations = []
+    for category, category_data in status_effects_data.get("effects", {}).items():
+        if category.startswith("_") or not isinstance(category_data, dict):
+            continue
+        for effect_id, effect_def in category_data.items():
+            if effect_id.startswith("_") or not isinstance(effect_def, dict):
+                continue
+            runtime = effect_def.get("runtime")
+            for flag in REQUIRED_RUNTIME_FLAGS:
+                if not isinstance(runtime, dict) or not isinstance(runtime.get(flag), bool):
+                    violations.append(
+                        f"  FLAG: status '{effect_id}' must declare runtime.{flag} (true or false)"
+                    )
+    return violations
+
+
 def extract_effect_refs_from_skill(skill):
     """Extract non-utility effect stat references from a single skill."""
     refs = []
@@ -119,7 +144,7 @@ def main():
     print(f"Loaded {len(known_effects)} status effect IDs from {status_effects_path}")
 
     # Collect all skills and their effect references
-    violations = []
+    violations = check_runtime_flags(status_data)
     total_skills = 0
     total_refs = 0
 
