@@ -385,8 +385,9 @@ def components(s, cls, rank):
     return comp, unpriced
 
 
-def cast_cost(s):
-    c = s.get("cast_time") or 0
+def cast_cost(s, cast=None):
+    """Points lost to casting; `cast` overrides the skill's cast_time (what-if)."""
+    c = (s.get("cast_time") or 0) if cast is None else cast
     C = M["casting"]
     return max(0.0, c - GCD) * C["time_cost_per_second"] + C["interrupt_rate_per_second"] * c * c * REF_DPS
 
@@ -512,6 +513,22 @@ def kit_rows(rows):
     return out
 
 
+# Skill bars by level band: the tiers unlocked (config/skill_system.json skill_categories).
+LEVEL_BARS = (("niv 20-59 (base + sous-classe)", S.TIERS[:2]), ("niv 60+ (15 sorts)", S.TIERS))
+
+
+def bar(kit, tiers):
+    """Non-filler skills of the kit's unlocked tiers that fill the skill bar, shortest
+    cooldowns first (the worst case for spam)."""
+    sk = [r for t in tiers for r in kit[t] if r["role"] != "remplissage"]
+    return sorted(sk, key=lambda r: r["cooldown"])[:SKILL_BAR]
+
+
+def kit_load(rows, cdr=0.0):
+    """Sum of max(GCD, cast) / cooldown: above 1, a non-filler skill is always ready."""
+    return sum(max(GCD, r["cast_time"]) / (r["cooldown"] * (1 - cdr)) for r in rows)
+
+
 def fmt_dist(v, thresholds):
     return (f"{len(v)} | {q(v, .25):g} | {q(v, .5):g} | {q(v, .75):g} | "
             + " | ".join(f"{sum(x < th for x in v) / len(v):.0%}" for th in thresholds))
@@ -566,15 +583,13 @@ def report(data):
     kits = kit_rows(rows)
     dur = R["spam_duration_seconds"]
     spam_detail = {}
-    for label, tiers in (("niv 20-59 (base + sous-classe)", S.TIERS[:2]), ("niv 60+ (15 sorts)", S.TIERS)):
+    for label, tiers in LEVEL_BARS:
         for cdr in (0.0, CDR_CAP):
             fr, ch = [], []
             for cls, sub, spec, kit in kits:
-                sk = [r for t in tiers for r in kit[t] if r["role"] != "remplissage"]
-                sk = sorted(sk, key=lambda r: r["cooldown"])[:SKILL_BAR]
-                k = [(r["cooldown"], r["cast_time"], p1(r)) for r in sk]
-                ch.append(sum(max(GCD, c) / (cd * (1 - cdr)) for cd, c, _ in k))
-                fr.append(spam_fraction(k, cdr, dur))
+                sk = bar(kit, tiers)
+                ch.append(kit_load(sk, cdr))
+                fr.append(spam_fraction([(r["cooldown"], r["cast_time"], p1(r)) for r in sk], cdr, dur))
                 spam_detail[(label, cdr, spec)] = fr[-1]
             print(f"| {label} | {cdr:.0%} | {q(ch, .5):.2f} ({min(ch):.2f}-{max(ch):.2f}) | {q(fr, .5):.0%} | "
                   f"{q(fr, .25):.0%} | {q(fr, .75):.0%} | {sum(f >= 0.999 for f in fr)}/{len(fr)} |")

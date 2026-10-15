@@ -217,10 +217,11 @@ def object_span(text, idx):
 COST_SENTENCE = re.compile(r" ?(?:Coût : \d+ Souffle|Cost: \d+ Breath)[^.\"]*\.")
 
 
-def top_level_field(block, key):
-    """Match of `"key": value` at the skill's own indentation (not inside an effect)."""
+def top_level_field(block, key, value=r'([^,\r\n]+)'):
+    """Match of `"key": value` at the skill's own indentation (not inside an effect).
+    Group 1 is the value; `value` overrides its pattern (a string holds commas)."""
     first = re.search(r'^([ \t]*)"id"\s*:', block, re.M)
-    return re.search(r'^' + re.escape(first.group(1)) + r'"' + re.escape(key) + r'"\s*:\s*([^,\r\n]+)', block, re.M)
+    return re.search(r'^' + re.escape(first.group(1)) + r'"' + re.escape(key) + r'"\s*:\s*' + value, block, re.M)
 
 
 def set_fields(block, want, nl, anchors):
