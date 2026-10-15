@@ -253,12 +253,24 @@
     "total_sets": 38,
     "rank_system": {
       "_comment": "Bandes de niveau C->SS (lv1-20 ... 81-100), alignees sur equipment_scaling tier_system et uniques.json. MODELE PAR BANDE (2026-09-28) : chaque set porte un champ `band` ; ses pieces ne tombent que dans les combats de cette bande et portent le rang de la bande (level_req = debut de bande) ; ses bonus sont des valeurs FIXES, deja calculees (base x multiplicateur de la bande, courbe douce 1/1.25/1.5/1.75/2 pour toute stat en pourcentage, courbe 1/1.5/2/2.8/4 pour les stats plates). Plus aucune mise a l'echelle au niveau du joueur : stat_multiplier, percent_bonus_multiplier et percent_bonus_stats ont ete retires (plus de lecteur).",
+      "regen_forms": {
+        "_comment": "REGLE DE REGENERATION DES PANOPLIES (proprietaire, 2026-10-15) : « Les panoplies seraient en flat de rang I a III et en % de rang IV a V. » Chaque rang porte sa forme (rang_N.regen_form) ; une panoplie de ce rang qui donne de la regeneration la donne avec les stats de cette forme, par ressource. flat : points par seconde (hp_regen, mp_regen). percent : pourcentage du maximum par seconde (hp_regen_percent, mp_regen_percent, stats/definitions.json). Repartition par palier inchangee (Neshamah : 3/7 au palier 4, 4/7 au palier 8). Valeur en % : scripts/balance/souffle_per_level.py --budget (plafond par classe au niveau 100 : aucune classe inepuisable sur un combat long, 0 ou 1 point de Souffle par niveau). Verifiee par ce meme script (--budget, liste des ecarts a trancher).",
+        "flat": {
+          "hp": "hp_regen",
+          "mp": "mp_regen"
+        },
+        "percent": {
+          "hp": "hp_regen_percent",
+          "mp": "mp_regen_percent"
+        }
+      },
       "rang_1": {
         "level_range": [
           1,
           20
         ],
         "rank_label": "C",
+        "regen_form": "flat",
         "name_fr": "Rang 1 — Apprenti",
         "name_en": "Rank 1 — Apprentice"
       },
@@ -268,6 +280,7 @@
           40
         ],
         "rank_label": "B",
+        "regen_form": "flat",
         "name_fr": "Rang 2 — Confirmé",
         "name_en": "Rank 2 — Adept"
       },
@@ -277,6 +290,7 @@
           60
         ],
         "rank_label": "A",
+        "regen_form": "flat",
         "name_fr": "Rang 3 — Expert",
         "name_en": "Rank 3 — Expert"
       },
@@ -286,6 +300,7 @@
           80
         ],
         "rank_label": "S",
+        "regen_form": "percent",
         "name_fr": "Rang 4 — Maître",
         "name_en": "Rank 4 — Master"
       },
@@ -295,6 +310,7 @@
           100
         ],
         "rank_label": "SS",
+        "regen_form": "percent",
         "name_fr": "Rang 5 — Grand Maître",
         "name_en": "Rank 5 — Grandmaster"
       }
@@ -363,7 +379,7 @@
       "bonuses_cumulative": "Les bonus 2p/4p/6p/8p s'additionnent",
       "armor_types": "armor_type du set = poids d armure REEL des pieces qui tombent (light/medium/heavy, lu par le serveur depuis le 2026-09-28). Sets mixed : pieces.<slot>.weight donne le poids de chaque piece (sans lui, poids aleatoire). L arme d un set porte pieces.weapon.weapon_type (groupe d arme de equipment.json).",
       "reloot": "Chaque rang doit etre farm separement. Le joueur garde l'ancien stuff en attendant de completer le rang suivant.",
-      "power_budget": "BUDGET DE PUISSANCE (2026-09-28, modele Dofus) : une piece seule tire en legendaire x0.85 (loot_tables.json panoplie_drops.piece_rarity / piece_stat_scale), un peu en dessous d un classique legendaire ; la force du set vient du set COMPLET. Passe 1 : bonus x3.5 (4-8 pieces) / x5 (mini-sets). Passe 3 (mesure en COMBAT REEL, server-combat tests/item_power_combat_probe.cpp, remplace la passe 2 au modele AEP) : valeur = passe 1 x k par set, k mesure pour qu un set complet vaille 1.05-1.15 x le classique legendaire MOYEN des memes emplacements dans son role (DPS : 0.75 x degats par seconde + 0.25 x survie ; tank : pression supportee 45 s ; soin : soins + boucliers par seconde). k va de 0.02 (Oz) a 1.5 (Chayim) : la passe 1 surpayait massivement les pourcentages. Plafonds par set sur le total : atk_percent / mag_percent / def_percent / hp_percent 40 chacun, crit_dmg 60 (plafond de jeu 300, DamageCalculator::kCritDamageCap), et ~la moitie du plafond runtime pour le reste (crit 40, cooldown_reduction 20, buff/debuff_duration 25, block_chance 30, healing_received 50, flee 30, armor_pen / magic_pen 35, damage_reduction 37, effect_chance 42, thorns 50, cast_speed 25, spell_vamp 25, lifesteal 25, effect_resist 42, damage_percent 50), le surplus retire au prorata des paliers ; garde par test (server-combat FightLootTest.PowerBudget_NoSetReachesAGameCapAlone). Regen de Souffle des sets (2026-10-15) : depuis que le cout des sorts suit leur puissance, le Souffle limite le combat reel (_meta/carnet/souffle_par_niveau.md, scripts/balance/souffle_per_level.py --budget) ; la regen de Souffle d un set complet est 1 /s pour Nefesh (C, rang I, 5 par 5 s) et 7 /s pour Neshamah (SS, rang V, 35 par 5 s : 3 au palier 4, 4 au palier 8), decision du proprietaire 2026-10-15 (35 /s rendait toute classe inepuisable). Le Souffle max de Nefesh (mp 250) garde la passe 1. def plat remplace par armor. Sets de tournoi (set_tournoi_*) inchanges."
+      "power_budget": "BUDGET DE PUISSANCE (2026-09-28, modele Dofus) : une piece seule tire en legendaire x0.85 (loot_tables.json panoplie_drops.piece_rarity / piece_stat_scale), un peu en dessous d un classique legendaire ; la force du set vient du set COMPLET. Passe 1 : bonus x3.5 (4-8 pieces) / x5 (mini-sets). Passe 3 (mesure en COMBAT REEL, server-combat tests/item_power_combat_probe.cpp, remplace la passe 2 au modele AEP) : valeur = passe 1 x k par set, k mesure pour qu un set complet vaille 1.05-1.15 x le classique legendaire MOYEN des memes emplacements dans son role (DPS : 0.75 x degats par seconde + 0.25 x survie ; tank : pression supportee 45 s ; soin : soins + boucliers par seconde). k va de 0.02 (Oz) a 1.5 (Chayim) : la passe 1 surpayait massivement les pourcentages. Plafonds par set sur le total : atk_percent / mag_percent / def_percent / hp_percent 40 chacun, crit_dmg 60 (plafond de jeu 300, DamageCalculator::kCritDamageCap), et ~la moitie du plafond runtime pour le reste (crit 40, cooldown_reduction 20, buff/debuff_duration 25, block_chance 30, healing_received 50, flee 30, armor_pen / magic_pen 35, damage_reduction 37, effect_chance 42, thorns 50, cast_speed 25, spell_vamp 25, lifesteal 25, effect_resist 42, damage_percent 50), le surplus retire au prorata des paliers ; garde par test (server-combat FightLootTest.PowerBudget_NoSetReachesAGameCapAlone). Regen de Souffle des sets (2026-10-15) : depuis que le cout des sorts suit leur puissance, le Souffle limite le combat reel (_meta/carnet/souffle_par_niveau.md, scripts/balance/souffle_per_level.py --budget) ; la regen de Souffle d un set complet est 1 /s pour Nefesh (C, rang I, 5 par 5 s) et, pour Neshamah (SS, rang V), 0,175 % du Souffle max par seconde (mp_regen_percent : 0,075 au palier 4, 0,1 au palier 8, la repartition 3/7 - 4/7 des 7 /s qu il donnait) : regle de forme des rangs (rank_system.regen_forms, plat de rang I a III, % de rang IV a V), decisions du proprietaire 2026-10-15 (35 /s puis 7 /s rendaient le mage inepuisable). Le Souffle max de Nefesh (mp 250) garde la passe 1. def plat remplace par armor. Sets de tournoi (set_tournoi_*) inchanges."
     }
   },
   "piece_base_stats": {
@@ -1820,7 +1836,7 @@
         },
         "4": {
           "hp": 357,
-          "mp_regen": 3
+          "mp_regen_percent": 0.075
         },
         "6": {
           "healing_received": 50,
@@ -1830,14 +1846,14 @@
           "hp": 571,
           "hp_regen": 29,
           "lifesteal": 18,
-          "mp_regen": 4,
+          "mp_regen_percent": 0.1,
           "spell_vamp": 18
         }
       },
       "total_at_max": {
         "hp_regen": 43,
         "hp": 928,
-        "mp_regen": 35,
+        "mp_regen_percent": 0.175,
         "healing_received": 50,
         "mp": 286,
         "lifesteal": 18,

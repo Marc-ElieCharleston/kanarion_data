@@ -65,6 +65,33 @@
         "default": 2.0,
         "formula": "mp_regen_final = (base + growth + flat_bonus) \u00d7 (1 + percent_bonus/100)"
       },
+      "hp_regen_percent": {
+        "name": "Regen PV en %",
+        "name_fr": "Regen PV en %",
+        "name_en": "HP Regeneration (%)",
+        "description": "Pourcentage des PV max regeneres par seconde, en plus de la regen PV plate. Meme regle que la regen PV : ne joue que hors combat. Jusqu'a 3 decimales (0,075 = 0,075 % par seconde).",
+        "description_fr": "Pourcentage des PV max regeneres par seconde, en plus de la regen PV plate. Meme regle que la regen PV : ne joue que hors combat. Jusqu'a 3 decimales (0,075 = 0,075 % par seconde).",
+        "description_en": "Percentage of max HP regenerated per second, on top of the flat HP regen. Same rule as HP regen: out of combat only. Up to 3 decimals (0.075 = 0.075% per second).",
+        "tooltip_fr": "Pourcentage des PV max r\u00e9cup\u00e9r\u00e9 chaque seconde hors combat.",
+        "tooltip_en": "Share of max health regenerated every second outside combat.",
+        "bonus_type": "flat",
+        "default": 0,
+        "formula": "hp_gained_per_second = hp_regen + hp_max \u00d7 hp_regen_percent/100"
+      },
+      "mp_regen_percent": {
+        "name": "Regen Souffle en %",
+        "name_fr": "Regen Souffle en %",
+        "name_en": "Breath Regeneration (%)",
+        "description": "Pourcentage du Souffle max regenere par seconde, en combat et hors combat, en plus de la regen Souffle plate. Forme des panoplies de rang IV et V (items/panoplies.json rank_system), ouverte aux buffs, sorts, passifs et keystones. Jusqu'a 3 decimales (0,075 = 0,075 % par seconde). Plafond : au-dela, la plus grande reserve du jeu (mage niveau 100, un point par niveau en Souffle) ne s'epuise plus (scripts/balance/souffle_per_level.py --budget).",
+        "description_fr": "Pourcentage du Souffle max regenere par seconde, en combat et hors combat, en plus de la regen Souffle plate. Forme des panoplies de rang IV et V (items/panoplies.json rank_system), ouverte aux buffs, sorts, passifs et keystones. Jusqu'a 3 decimales (0,075 = 0,075 % par seconde). Plafond : au-dela, la plus grande reserve du jeu (mage niveau 100, un point par niveau en Souffle) ne s'epuise plus (scripts/balance/souffle_per_level.py --budget).",
+        "description_en": "Percentage of max Breath regenerated per second, in and out of combat, on top of the flat Breath regen. The form of rank IV and V sets (items/panoplies.json rank_system), open to buffs, skills, passives and keystones. Up to 3 decimals (0.075 = 0.075% per second). Cap: above it, the largest pool of the game (level 100 mage, one point per level in Breath) never runs dry (scripts/balance/souffle_per_level.py --budget).",
+        "tooltip_fr": "Pourcentage du Souffle max r\u00e9cup\u00e9r\u00e9 chaque seconde, en combat et hors combat.",
+        "tooltip_en": "Share of max Breath regenerated every second, in and out of combat.",
+        "bonus_type": "flat",
+        "default": 0,
+        "cap": 0.33,
+        "formula": "mp_gained_per_second = mp_regen + mp_max \u00d7 mp_regen_percent/100"
+      },
       "hp_regen_out_of_combat": {
         "name": "Regen PV hors combat",
         "name_fr": "Regen PV hors combat",
@@ -75,7 +102,7 @@
         "tooltip_fr": "Points de vie r\u00e9cup\u00e9r\u00e9s chaque seconde hors combat, bonus de nourriture et de buffs compris.",
         "tooltip_en": "Health regenerated every second outside combat, food and buff bonuses included.",
         "bonus_type": "both",
-        "formula": "hp_regen_out_of_combat_final = (hp_regen + flat_bonus) \u00d7 (1 + percent_bonus/100)"
+        "formula": "hp_regen_out_of_combat_final = (hp_regen + hp_max \u00d7 hp_regen_percent/100 + flat_bonus) \u00d7 (1 + percent_bonus/100)"
       },
       "mp_regen_out_of_combat": {
         "name": "Regen Souffle hors combat",
@@ -87,7 +114,7 @@
         "tooltip_fr": "Souffle r\u00e9cup\u00e9r\u00e9 chaque seconde hors combat, bonus de nourriture et de buffs compris.",
         "tooltip_en": "Breath regenerated every second outside combat, food and buff bonuses included.",
         "bonus_type": "both",
-        "formula": "mp_regen_out_of_combat_final = (mp_regen + flat_bonus) \u00d7 (1 + percent_bonus/100)"
+        "formula": "mp_regen_out_of_combat_final = (mp_regen + mp_max \u00d7 mp_regen_percent/100 + flat_bonus) \u00d7 (1 + percent_bonus/100)"
       }
     },
 
