@@ -477,3 +477,4 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
 - [ ] **Rythme du loot** : régler le loot pour qu'on ne soit pas équipé trop vite, idem pour les ressources,
       surtout les ratios en donjon et en groupes 4 et 5 étoiles (contenu volontairement dur).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.
+- [ ] **Arbre des passifs V2** (2026-10-15) : bras Attaque en brouillon dans `_meta/conception_passifs/` (all-in ~75 pts + capstone, ou hybride sans capstone). À faire : valider le ressenti, décliner les 4 autres bras et les hybrides, puis serveur/client (seuils de palier, choix à N options, 1 capstone, hybrides, reset payant progressif, 1 point au niveau 1). Note : [carnet/arbre_passifs.md](carnet/arbre_passifs.md).
