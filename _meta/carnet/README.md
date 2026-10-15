@@ -42,6 +42,7 @@ foi** : ces notes sont à fusionner avec eux au retour.
 - [Runes : premier catalogue (40)](runes_catalogue.md)
 - [Boutique et financement](boutique.md)
 - [Personnages : genre, apparence, animations](personnages_visuels.md)
+- [Audit des doublons : un fait, un seul endroit](audit_doublons.md)
 
 ## Documents de conception détaillés
 
