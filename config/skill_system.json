@@ -50,10 +50,20 @@
   },
 
   "mana_cost_scaling": {
-    "_comment": "Skill cost increases with level. Forces souffle investment to sustain high-level skills.",
-    "default_mana_cost_per_level": 4,
+    "_comment": "Bareme du cout en Souffle des sorts de classe, proprietaire unique de la regle. scripts/balance/souffle_per_level.py l'applique a classes/<classe>/skills.json (mana_cost, mana_cost_per_level, rank_scaling_enabled) et la verifie (--check, en CI). Chaque sort payant porte mana_cost_per_level, champ obligatoire cote serveur : il n'y a pas de valeur par defaut. Note : _meta/carnet/souffle_par_niveau.md.",
     "formula": "mana_at_level = mana_cost + mana_cost_per_level * (level - 1)",
-    "design_note": "Bread-and-butter skills: +3/lvl. Signatures: +6/lvl. Ultimates: +7-8/lvl."
+    "per_rank_rule": "mana_cost_per_level = arrondi(mana_cost x (G - 1) / (skill_levels.max_level - 1)). G = gain de puissance du sort du rang 1 au rang max, lu dans ses propres champs par rang : percent_per_level sur scaling_percent ou heal_scaling_percent, et pour chaque effet pct/value/duration_per_level (multiplies entre eux) ; on garde le plus fort. Au rang max le sort coute mana_cost x G : le Souffle paye par unite d'effet est le meme a tous les rangs. Un sort qui porte percent_per_level porte rank_scaling_enabled, sans quoi le serveur ignore ce gain alors qu'il fait payer le rang.",
+    "tier_order": {
+      "_rule": "Au rang 1, dans un meme kit (base + sous-classe + specialisation), un sort coute strictement moins que le sort le plus cher de sa famille au tier superieur le plus proche qui en a un. Au-dessus, son mana_cost est ramene a ce plafond moins 1 ; son cout par rang suit ensuite per_rank_rule. Verifie en plus : la mediane de chaque famille croit strictement d'un tier a l'autre, au rang 1 et au rang max.",
+      "tiers": ["base", "subclass", "tier3"],
+      "families": {
+        "_comment": "Famille d'un sort : la premiere qui le reconnait, par son champ tier ou un de ses tags ; une famille vide prend le reste.",
+        "signature": {"tier": ["signature"]},
+        "remplissage": {"tier": ["filler"], "tag": ["filler"]},
+        "courant": {}
+      }
+    },
+    "design_note": "Le role porte le prix de base du sort (remplissage, courant, signature) ; a role egal, le tier le releve (tier_order : base < sous-classe < specialisation) ; le rang le fait suivre la puissance (per_rank_rule). Un remplissage qui gagne peu par rang ne coute rien de plus ; une specialisation, qui gagne le plus par rang, paie le plus par rang. Les chiffres se lisent avec scripts/balance/souffle_per_level.py --report, jamais recopies ici."
   },
 
   "scaling": {
@@ -61,7 +71,6 @@
     "type": "pure_percent",
     "formula_scaling_percent": "percent_at_level = scaling_percent + (skill_level - 1) * percent_per_level",
     "formula_final_damage": "final = percent_at_level% * scaling_stat",
-    "formula_mana": "mana_at_level = base_mana + (skill_level - 1) * mana_per_level",
     "formula_duration": "duration_at_level = base_duration + (skill_level - 1) * duration_per_level",
     "effect_chance": "fixed - geree par stats (effect_precision, tenacity, resist_debuff)",
     "cooldown": "fixed - vient de l'equipement/CDR",

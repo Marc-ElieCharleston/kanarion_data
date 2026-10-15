@@ -253,6 +253,12 @@ jobs:
       - name: Validate skill schema (Bloc 0)
         run: python3 scripts/validate_skills.py
 
+      # 3b'. Cout en Souffle des sorts de classe (2026-10-15) : regles de
+      # config/skill_system.json mana_cost_scaling (cout par rang selon la puissance,
+      # base < sous-classe < specialisation a role egal, aucun cout recopie en description).
+      - name: Verify Breath cost rules
+        run: python3 scripts/balance/souffle_per_level.py --check
+
       # 3c. Passive validation (2026-08-02). Jusqu'ici AUCUN validateur ne regardait
       # les 126 passifs repartis dans 31 fichiers : stats inconnues, effect_id casses
       # ou stats mortes passaient sans bruit. Des le premier passage il a trouve
