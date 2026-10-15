@@ -25,7 +25,7 @@ valeur de la room, donc ce tick ne compte pas pendant un combat.
 | Croissance | `class_growth.json` `mp_regen` (0) | oui, × (niveau − 1) depuis le 2026-10-15 (avant : ignorée) | oui, × (niveau − 1) (avant : une seule fois) |
 | Équipement : sous-stats, stat principale, affixes | `equipment_stats.json` plage `mp_regen`, `affixes.json` | oui (`room.cpp:7055`, `mp_regen_bonus`) | oui (même total) |
 | Équipement : stat fixe des modèles (ceintures légères 1 à 2) et uniques (3 à 5) | `equipment.json`, `uniques.json` | oui | oui |
-| Panoplies | `panoplies.json` (Nefesh +1, Neshamah +0,175 % du max, Refuah +3, tournoi +1) | oui | oui |
+| Panoplies | `panoplies.json` (Nefesh +1, Neshamah +0,175 % du max, Refuah +2, tournoi +1) | oui | oui |
 | Passifs | Souffle profond 0,05/rang, Respiration (arbre) 0,1/rang, Mélodie inspirante 0,4/rang, Voix harmonique 0,3/rang | oui, valeur exacte (`combat_profile_builder.cpp:326`) | oui, mais la part plate est **arrondie à l'entier inférieur** (`passive_materializer.hpp`) : Souffle profond et Respiration valent 0 hors combat |
 | Keystones | `systems/keystones.json` : rendre un % du Souffle au kill ou à la cible d'un soin, prochain sort gratuit | oui (procs) | non |
 | Familiers | Sérénité +2/s : Souffle **du familier** ; sorts de familier « Régen Souffle » sur les alliés (statut) | oui | non (le tick du familier ne remplit que sa propre réserve, `familiar_service.cpp:2528`) |
@@ -81,7 +81,12 @@ regen en %, et ça ouvrira des buffs ou des effets sur des sorts, keystones ou a
   `power_budget`). Pas de plafond pour `hp_regen_percent` : elle n'agit pas en combat.
 - **Règle des panoplies** (`items/panoplies.json` `_meta.rank_system`) : chaque rang porte `regen_form` (`flat`
   aux rangs C, B, A ; `percent` aux rangs S, SS) et `regen_forms` nomme les stats de chaque forme par ressource.
-  `--budget` liste les écarts. Nefesh (C) garde +1/s plat. **Neshamah (SS) : 0,175 %/s** (`mp_regen_percent`
+  La règle vaut pour les PV comme pour le Souffle. `--check` (CI) la vérifie, `--budget` liste les écarts.
+- **Valeur par rang, sets plats** (décision du 2026-10-15) : chaque rang plat porte la regen d'un set complet
+  (`rang_N.flat_regen`, par ressource), vérifiée par `--check`. Souffle : rang I **1/s** (Nefesh, sets de
+  tournoi), rang II **2/s** (Refuah, 3 avant, toujours au palier 4), rang III 3/s (aucun set de Souffle à ce rang
+  aujourd'hui). Pas de valeur décidée pour les PV plates (Even, B, `hp_regen` 1 : non vérifiée).
+- Nefesh (C) garde +1/s plat. **Neshamah (SS) : 0,175 %/s** (`mp_regen_percent`
   0,075 au palier 4 et 0,1 au palier 8 : la répartition 3/7 - 4/7 des 7/s d'avant).
 - **Choix de la valeur** (`--budget`, niveau 100, combat long = 5★ de 676 s) : au-dessus de 0,191 %/s, le mage à
   1 point par niveau n'est plus à sec avant la fin d'un 5★ ; au-dessus de 0,339, il ne l'est plus jamais. 0,175
@@ -99,11 +104,31 @@ regen en %, et ça ouvrira des buffs ou des effets sur des sorts, keystones ou a
   Avant (7/s plat), le mage régénérait 20/s pour une rotation de 19,4/s : inépuisable. En %, la panoplie est un
   vrai choix pour les lanceurs (+61 % à +107 % d'autonomie pour le mage, +31 % à +48 % pour le soigneur), mais
   presque nul pour les classes martiales (+4 % à +19 %) : un % suit la réserve, et les petites réserves sont
-  martiales. Neshamah garde ses autres bonus (PV, vol de vie, vampirisme, soins reçus). Refuah (B, +3/s plat)
-  rend plus de Souffle que Neshamah à toutes les classes à 0 point (mage : 3 contre 2,4/s).
-- **Écarts à trancher** (rangs IV-V, regen plate) : Chayim (S) `hp_regen` 60 au palier 2 ; Neshamah `hp_regen`
-  14 (palier 2) et 29 (palier 8). Aucune valeur en % n'a été décidée pour les PV. Refuah (B) et les sets de
-  tournoi (C) sont aux rangs I-II : hors règle.
+  martiales. Neshamah garde ses autres bonus (PV, vol de vie, vampirisme, soins reçus). Refuah (B, +2/s plat)
+  rend moins de Souffle que Neshamah au mage et au soigneur (2 contre 2,4/s à 0 point), plus aux autres classes.
+- **Regen de PV en % (décision du 2026-10-15)** : Chayim (S) **2 %** des PV max par seconde (`hp_regen_percent`,
+  palier 2 ; 60/s plat avant), Neshamah (SS) **1,2 %** (0,391 au palier 2, 0,809 au palier 8 : la répartition
+  14/43 - 29/43 des 14 + 29 /s d'avant). Hors combat seulement.
+- **Choix de la valeur** (`--budget`, section « Regen de PV ») : temps pour remplir les PV à vide hors combat, au
+  niveau de port du set (premier niveau de sa bande : 61 pour Chayim, 81 pour Neshamah), PV max set compris. Point
+  de départ : ne pas dépasser l'ancienne valeur plate. Le % équivalent à l'ancienne valeur est plus bas pour la
+  plus grande réserve (guerrier à 1 point par niveau : 2,04 % pour Chayim, 1,22 % pour Neshamah) ; on prend la
+  valeur ronde juste en dessous, donc **aucune classe ne régénère plus qu'avant** au niveau de port. Le gain se
+  rapproche de l'ancien pour les grosses réserves (martiaux, 80 à 98 % de l'ancien gain) et reste plus bas pour les
+  petites (lanceurs, 53 à 70 %).
+
+| classe | Chayim niv 61, plat 60/s (0 pt / 1 pt) | Chayim 2 % (0 pt / 1 pt) | Neshamah niv 81, plat 43/s | Neshamah 1,2 % |
+|---|---|---|---|---|
+| Guerrier | 30 / 15 s ; 34 / 17 s | 33 / 17 s ; 34 / 17 s | 40 / 20 s ; 45 / 23 s | 43 / 22 s ; 46 / 23 s |
+| Mage | 22 / 11 s ; 25 / 13 s | 31 / 15 s ; 33 / 16 s | 26 / 13 s ; 32 / 16 s | 37 / 18 s ; 41 / 20 s |
+| Soigneur | 22 / 11 s ; 25 / 13 s | 31 / 15 s ; 33 / 16 s | 27 / 13 s ; 32 / 16 s | 37 / 18 s ; 41 / 20 s |
+| Archer | 30 / 15 s ; 33 / 17 s | 34 / 17 s ; 35 / 18 s | 40 / 20 s ; 45 / 23 s | 45 / 23 s ; 48 / 24 s |
+| Voleur | 30 / 15 s ; 33 / 17 s | 34 / 17 s ; 35 / 18 s | 40 / 20 s ; 45 / 23 s | 45 / 23 s ; 48 / 24 s |
+| Artisan | 31 / 15 s ; 34 / 17 s | 34 / 17 s ; 36 / 18 s | 42 / 21 s ; 47 / 24 s | 46 / 23 s ; 49 / 24 s |
+
+  Cellule : plein sans pass / avec pass (×2), à 0 point puis à 1 point par niveau en PV. Sans le set, au même niveau :
+  59 à 71 s pour les martiaux, 33 à 34 s pour les lanceurs. Un % suit la réserve : au niveau 100, Neshamah rend
+  au guerrier à 1 point 49/s, au-dessus des 43/s d'avant (mage à 0 point : 27/s). À revoir si ce n'est pas voulu.
 - **Serveur** (back `vac_doublons-lot2`) : formule unique dans `shared/gameplay/resource_regen.hpp`, appelée par
   la room (`process_cooldowns`, tick de combat) et par `out_of_combat_regen.hpp` (snapshot hors combat).
 
@@ -234,17 +259,21 @@ Ce que dit le budget :
 
 « Plein » : temps pour remplir le Souffle à vide hors combat, sans puis avec le pass (×2). « Panoplie » : la
 panoplie de Souffle la plus utile à la classe parmi celles que le niveau permet de porter, set complet, ajoutée à
-la régénération (régénération, à sec à 0 pt, tient un pack). Depuis la règle de forme (section 1 ter), c'est
-Refuah (B, +3/s) aux niveaux 40 à 100 : Neshamah en % donne moins de 3/s à toutes les classes à 0 pt.
+la régénération (régénération, à sec à 0 pt, tient un pack). Depuis Refuah à 2/s (valeur du rang II, section 1 ter),
+c'est Refuah (B, +2/s) aux niveaux 40 à 100, sauf le mage et le soigneur au niveau 100 : Neshamah en % leur rend
+2,4/s à 0 pt.
 
 | classe | plein, niv 20 | plein, niv 60 | plein, niv 100 | panoplie niv 40 | panoplie niv 60 | panoplie niv 100 |
 |---|---|---|---|---|---|---|
-| Guerrier | 26 s / 13 s | 31 s / 16 s | 51 s / 25 s | 8/s, 37 s, non | 9/s, 50 s, non | 9/s, 35 s, non |
-| Mage | 76 s / 38 s | 71 s / 36 s | 107 s / 54 s | 11/s, 183 s, oui | 14/s, 773 s, oui | 16/s, 410 s, oui |
-| Soigneur | 74 s / 37 s | 71 s / 35 s | 107 s / 53 s | 11/s, 73 s, non | 14/s, 118 s, oui | 16/s, 191 s, non |
-| Archer | 67 s / 34 s | 64 s / 32 s | 93 s / 47 s | 8/s, 55 s, non | 8/s, 62 s, non | 9/s, 65 s, non |
-| Voleur | 55 s / 28 s | 52 s / 26 s | 76 s / 38 s | 8/s, 38 s, non | 8/s, 42 s, non | 9/s, 52 s, non |
-| Artisan | 67 s / 34 s | 64 s / 32 s | 93 s / 47 s | 8/s, 54 s, non | 8/s, 57 s, non | 9/s, 62 s, non |
+| Guerrier | 26 s / 13 s | 31 s / 16 s | 51 s / 25 s | 7/s, 30 s, non | 8/s, 40 s, non | 8/s, 31 s, non |
+| Mage | 76 s / 38 s | 71 s / 36 s | 107 s / 54 s | 10/s, 139 s, oui | 13/s, 390 s, oui | 15,4/s (Neshamah), 352 s, oui |
+| Soigneur | 74 s / 37 s | 71 s / 35 s | 107 s / 53 s | 10/s, 65 s, non | 13/s, 102 s, oui | 15,4/s (Neshamah), 177 s, non |
+| Archer | 67 s / 34 s | 64 s / 32 s | 93 s / 47 s | 7/s, 45 s, non | 7/s, 52 s, non | 8/s, 58 s, non |
+| Voleur | 55 s / 28 s | 52 s / 26 s | 76 s / 38 s | 7/s, 32 s, non | 7/s, 36 s, non | 8/s, 47 s, non |
+| Artisan | 67 s / 34 s | 64 s / 32 s | 93 s / 47 s | 7/s, 44 s, non | 7/s, 49 s, non | 8/s, 55 s, non |
+
+« Regen de PV » (`--budget`) : pour chaque panoplie qui en donne, au premier niveau de sa bande, le temps pour
+remplir les PV à vide hors combat par classe, sans le set et avec, sans puis avec le pass (section 1 ter).
 
 ## 4. Le coût des sorts
 
@@ -380,7 +409,7 @@ copie des champs de coût, que le client affiche déjà ; `--check` refuse une t
    inépuisables au niveau 100 (41 à 48/s de régénération pour 18 à 23/s de rotation). À revoir si ce
    n'est pas voulu. Révisé deux fois depuis : 7/s, puis forme en % aux rangs IV-V (section 1 ter).
 5. **`hp_regen`** prend aussi le ×4,6 des stats brutes. Elle ne joue que hors combat ; la passer en
-   taux aussi ?
+   taux aussi ? Pour les panoplies de rang IV-V, c'est fait le 2026-10-15 (`hp_regen_percent`, section 1 ter).
 6. **Sorts de spécialisation sans gain par rang** (Forteresse Sylvestre, Forge Vivante, etc.) : ils
    coûtent maintenant le même prix à tous les rangs, et des sorts de base les dépassent au rang 10.
    Leur donner un gain par rang est un choix d'effet.
@@ -399,3 +428,8 @@ de 19,4/s (encore à la limite) ; le guerrier passe de 26 à 65 s avant d'être 
 **Révision du 2026-10-15, bis (propriétaire)** : forme des panoplies par rang (plat I-III, % IV-V). Neshamah passe à
 **0,175 % du Souffle max par seconde** (section 1 ter) : le mage niveau 100 n'est plus inépuisable (à sec en 352 s à
 0 point, 610 s à 1 point, pour un 5★ de 676 s).
+
+**Révision du 2026-10-15, ter (propriétaire)** : regen de PV des panoplies en % aux rangs IV-V, comme le Souffle : Chayim
+**2 %** des PV max par seconde (60/s avant), Neshamah **1,2 %** (14 + 29 /s avant) ; Refuah passe de 3 à **2/s** de Souffle et la
+valeur des sets plats devient une règle par rang (`rang_N.flat_regen`, vérifiée par `--check`). `total_at_max` retiré des
+panoplies : aucun lecteur (serveur, client, scripts), copie des paliers déjà fausse (Nefesh 5 pour un bonus de 1).

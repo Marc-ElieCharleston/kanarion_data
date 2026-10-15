@@ -14,6 +14,9 @@ Rules (owner: config/skill_system.json mana_cost_scaling; note: _meta/carnet/sou
                   ceiling minus 1. Checked as well: the median of each family rises strictly
                   from tier to tier, at rank 1 and at max rank.
   no copy         a description never restates the cost (the client shows mana fields).
+  set regen       items/panoplies.json _meta.rank_system: a set gives regen in the form of its
+                  rank (regen_form: flat at ranks I-III, percent at IV-V, stats per resource in
+                  regen_forms), and a full flat set gives the value of its rank (flat_regen).
 
 Scope: classes/<6 classes>/skills.json, base, subclass and tier-3 skills, mana_cost > 0,
 max_level != 1.
@@ -27,6 +30,7 @@ Usage (from the repo root):
                     the most useful Breath-regen set a character of the level can wear, items/panoplies.json;
                     regen in % of max (mp_regen_percent) and the rank rule rank_system.regen_forms: per-class
                     ceilings at level 100, the percent sets against them, the deviations to settle;
+                    HP regen of the sets, out of combat: time to fill HP per class at the set's level;
                     phase 3 autonomy by range, config/skill_system.json mana_cost_scaling.autonomy_by_range)
 
 Edits are textual (one number per field, one inserted line for a missing field, one
@@ -455,9 +459,10 @@ def demand(sp, dur=120.0):
 
 
 def regen_rule():
-    """items/panoplies.json _meta.rank_system: ({band label: (first level, regen form)},
-    {form: {resource: stat}}). Owner rule (2026-10-15): flat regen at ranks I-III, percent
-    of the maximum at ranks IV-V; each rank carries its form, regen_forms names the stats."""
+    """items/panoplies.json _meta.rank_system: ({band label: (first level, regen form, {resource:
+    flat regen /s of a full set})}, {form: {resource: stat}}). Owner rule (2026-10-15): flat
+    regen at ranks I-III, percent of the maximum at ranks IV-V; each rank carries its form,
+    regen_forms names the stats; a flat rank carries the flat value of its sets (flat_regen)."""
     rs = load("items/panoplies.json")["_meta"]["rank_system"]
     forms = {k: v for k, v in rs["regen_forms"].items() if not k.startswith("_")}
     bands = {}
@@ -465,38 +470,46 @@ def regen_rule():
         if k.startswith("rang_"):
             if v["regen_form"] not in forms:
                 raise ValueError(f"rank_system.{k}.regen_form {v['regen_form']!r} is not a regen_forms key")
-            bands[v["rank_label"]] = (v["level_range"][0], v["regen_form"])
+            if v.get("flat_regen") and v["regen_form"] != "flat":
+                raise ValueError(f"rank_system.{k}.flat_regen on a {v['regen_form']!r} rank")
+            bands[v["rank_label"]] = (v["level_range"][0], v["regen_form"], v.get("flat_regen", {}))
     return bands, forms
 
 
 def regen_rule_deviations():
-    """[(set id, band, threshold, stat, form of the band)]: a regen stat of a set that is not
-    of the form of the set's band."""
+    """[(set id, band, threshold, stat, what the rank asks)]: a regen stat of a set that is not
+    of the form of the set's band, or a full flat set whose regen is not the value of its rank
+    (rank_system.rang_N.flat_regen)."""
     bands, forms = regen_rule()
     stat_form = {stat: form for form, by_res in forms.items() for stat in by_res.values()}
     out = []
     for sid, s in load("items/panoplies.json")["sets"].items():
         if not isinstance(s, dict) or s.get("band") not in bands:
             continue
-        want = bands[s["band"]][1]
+        _, want, values = bands[s["band"]]
         for thr, b in s["bonuses"].items():
-            out += [(sid, s["band"], thr, k, want) for k in b if k in stat_form and stat_form[k] != want]
+            out += [(sid, s["band"], thr, k, f"la forme {want}") for k in b if k in stat_form and stat_form[k] != want]
+        for res, value in values.items():
+            stat = forms["flat"][res]
+            total = sum(b.get(stat, 0) for b in s["bonuses"].values())
+            if total and total != value:
+                out.append((sid, s["band"], "complet", f"{stat} {total:g}", f"{value:g} /s"))
     return out
 
 
-def souffle_sets():
-    """[(level_min, set id, flat Breath regen /s, Breath regen in % of max /s)] of the full
-    lootable sets that give Breath regen, with the first level of their band."""
+def regen_sets(res="mp"):
+    """[(level_min, set id, flat regen /s, regen in % of max /s, max bonus)] of the full sets
+    that give regen of the resource (res: 'mp' Breath, 'hp' HP), with the first level of their
+    band; the max bonus is the set's own bonus to the resource maximum."""
     bands, forms = regen_rule()
-    flat, pct = forms["flat"]["mp"], forms["percent"]["mp"]
+    flat, pct = forms["flat"][res], forms["percent"][res]
     out = []
     for sid, s in load("items/panoplies.json")["sets"].items():
         if not isinstance(s, dict) or s.get("band") not in bands:
             continue
-        f = sum(b.get(flat, 0) for b in s["bonuses"].values())
-        p = sum(b.get(pct, 0) for b in s["bonuses"].values())
+        f, p, m = (sum(b.get(k, 0) for b in s["bonuses"].values()) for k in (flat, pct, res))
         if f or p:
-            out.append((bands[s["band"]][0], sid, f, p))
+            out.append((bands[s["band"]][0], sid, f, p, m))
     return sorted(out)
 
 
@@ -509,7 +522,7 @@ def set_regen(flat, pct, pool):
 def best_set(sets, level, pool):
     """(regen /s, set id, flat, %) of the Breath-regen set worth the most for this pool, among
     the sets a character of this level can wear."""
-    ok = [(set_regen(f, p, pool), sid, f, p) for lmin, sid, f, p in sets if lmin <= level]
+    ok = [(set_regen(f, p, pool), sid, f, p) for lmin, sid, f, p, _ in sets if lmin <= level]
     return max(ok) if ok else (0, "", 0, 0)
 
 
@@ -522,27 +535,35 @@ def fmt_s(t):
     return "jamais" if t == math.inf else f"{t:.0f} s"
 
 
-def class_budgets(P, Gear, level, _gears={}):
+def resource(Gear, cls, level, res, _gears={}):
+    """{pool0, pool1, regen, gear_regen} of a resource (res: 'mp' Breath, 'hp' HP) for a class
+    at any level: max with 0 / 1 point per level, flat regen /s (class + growth + expected
+    gear, the gear of the nearest modelled level at or below). The regen stat is the flat
+    one of rank_system.regen_forms."""
+    base, growth = load("stats/class_base_stats.json")[cls], load("stats/class_growth.json")[cls]
+    pv = load("config/game.json")["stats_definition"][res]["point_value"]
+    regen = regen_rule()[1]["flat"][res]
+    w = ARMOR[cls]
+    _gears.setdefault(w, Gear(w))
+    g = _gears[w].expected(w, OFF[cls], GEAR_AT[max(x for x in GEAR_AT if x <= level)], level, WEAPON[cls], n=200)
+    pool0 = base[res] + math.floor(growth[res] * (level - 1)) + g.get(res, 0)
+    return {
+        "pool0": pool0, "pool1": pool0 + (level - 1) * pv,
+        "regen": base[regen] + growth.get(regen, 0) * (level - 1) + round(g.get(regen, 0)),
+        "gear_regen": round(g.get(regen, 0)),
+    }
+
+
+def class_budgets(P, Gear, level):
     """{class: {pool0, pool1, regen, gear_regen, demand, big}} at this level: Souffle max with
     0 / 1 point per level, flat regen (class + growth + expected gear), rotation demand /s
     and biggest spell (medians over the 8 specializations)."""
-    base, growth = load("stats/class_base_stats.json"), load("stats/class_growth.json")
-    pv = load("config/game.json")["stats_definition"]["mp"]["point_value"]
     out = {}
     for cls in CLASSES:
-        w = ARMOR[cls]
-        _gears.setdefault(w, Gear(w))
-        g = _gears[w].expected(w, OFF[cls], GEAR_AT[level], level, WEAPON[cls], n=200)
-        b, gr = base[cls], growth[cls]
-        pool0 = b["mp"] + math.floor(gr["mp"] * (level - 1)) + g.get("mp", 0)
         ks = [k for _, _, k in kits(cls)]
-        out[cls] = {
-            "pool0": pool0, "pool1": pool0 + (level - 1) * pv,
-            "regen": b["mp_regen"] + gr.get("mp_regen", 0) * (level - 1) + round(g.get("mp_regen", 0)),
-            "gear_regen": round(g.get("mp_regen", 0)),
-            "demand": st.median(demand(spells(k, level)) for k in ks),
-            "big": st.median(max(x[0] for x in spells(k, level)) for k in ks),
-        }
+        out[cls] = dict(resource(Gear, cls, level, "mp"),
+                        demand=st.median(demand(spells(k, level)) for k in ks),
+                        big=st.median(max(x[0] for x in spells(k, level)) for k in ks))
     return out
 
 
@@ -551,7 +572,7 @@ def budget():
     # Out of combat: the snapshot's mp_regen_out_of_combat = mp_regen without bonus
     # (no out-of-combat buff in the model), times the Pass benefit (systems/premium.json).
     pass_mult = load("systems/premium.json")["benefits"]["out_of_combat_regen_multiplier"]
-    sets = souffle_sets()
+    sets = regen_sets("mp")
     budgets, durations = {}, {}
     for level in LEVELS:
         fd = durations[level] = fight_durations(P, level)
@@ -574,7 +595,30 @@ def budget():
                   f"{'oui' if t0 < max(fd['elite'], fd['5star']) else 'non'} | "
                   f"{pool0 / regen:.0f} s / {pool0 / (regen * pass_mult):.0f} s | {set_col} | {c['big'] / pool0:.0%} |")
     percent_sets(sets, budgets, durations)
+    hp_sets(Gear, pass_mult)
     autonomy(budgets)
+
+
+def hp_sets(Gear, pass_mult):
+    """HP regen of the sets (out of combat only: the room never regenerates HP): for each set
+    that gives some, at the first level of its band, per class, HP max with the set (0 / 1
+    point per level), the set's regen /s and the time to fill HP from empty, without the set
+    and with it, without / with the Pass (systems/premium.json)."""
+    for lmin, sid, f, p, m in regen_sets("hp"):
+        print(f"\n### Regen de PV de {sid}, niveau {lmin} (hors combat) : {f:g} /s + {p:g} % des PV max /s, "
+              f"PV max +{m:g}")
+        print("| classe | PV max avec le set (0 pt / 1 pt) | regen sans set | regen du set (0 pt / 1 pt) "
+              "| plein sans set, sans / avec pass (0 pt) | plein avec le set, sans / avec pass (0 pt / 1 pt) |")
+        print("|---|---|---|---|---|---|")
+        for cls in CLASSES:
+            r = resource(Gear, cls, lmin, "hp")
+            pools = [r["pool0"] + m, r["pool1"] + m]
+            gains = [set_regen(f, p, pool) for pool in pools]
+            full = [f"{pool / (r['regen'] + g):.0f} / {pool / ((r['regen'] + g) * pass_mult):.0f} s"
+                    for pool, g in zip(pools, gains)]
+            print(f"| {cls} | {pools[0]:.0f} / {pools[1]:.0f} | {r['regen']:.1f} | {gains[0]:.1f} / {gains[1]:.1f} | "
+                  f"{r['pool0'] / r['regen']:.0f} / {r['pool0'] / (r['regen'] * pass_mult):.0f} s | "
+                  f"{full[0]} ; {full[1]} |")
 
 
 def percent_sets(sets, budgets, durations, level=100):
@@ -600,7 +644,7 @@ def percent_sets(sets, budgets, durations, level=100):
         print(f"| {cls} | {row[0][0]:.3f} / {row[1][0]:.3f} | {row[0][1]:.3f} / {row[1][1]:.3f} |")
     print(f"Plafond commun : sec {min(dry):.3f} %/s, inepuisable {min(never):.3f} %/s ; "
           f"plafond de jeu mp_regen_percent {cap:g} ({'sous' if cap < min(never) else 'AU-DESSUS de'} l'inepuisable).")
-    for lmin, sid, f, p in sets:
+    for lmin, sid, f, p, _ in sets:
         if not p:
             continue
         verdict = "respecte" if p < min(dry) else "DEPASSE"
@@ -618,7 +662,7 @@ def percent_sets(sets, budgets, durations, level=100):
     dev = regen_rule_deviations()
     print(f"\nRegle de forme des panoplies (rank_system.regen_forms) : {len(dev)} ecart(s) a trancher")
     for sid, band, thr, stat, want in dev:
-        print(f"- {sid} ({band}, palier {thr}) : {stat}, la bande demande la forme {want}")
+        print(f"- {sid} ({band}, palier {thr}) : {stat}, la bande demande {want}")
 
 
 def autonomy(budgets):
@@ -670,9 +714,13 @@ def main():
     bad = tier_order_violations()
     for b in bad:
         print("tier_order: " + b)
+    regen = regen_rule_deviations()
+    for sid, band, thr, stat, want in regen:
+        print(f"set regen rule: {sid} ({band}, {thr}) {stat}, the rank asks {want}")
     n = sum(len(v) for v in targets().values())
-    print(f"{len(diffs)} difference(s) {'found' if a.check else 'applied'}, {len(bad)} tier_order failure(s), {n} skills in scope.")
-    if diffs and a.check or bad:
+    print(f"{len(diffs)} difference(s) {'found' if a.check else 'applied'}, {len(bad)} tier_order failure(s), "
+          f"{len(regen)} set regen rule failure(s), {n} skills in scope.")
+    if diffs and a.check or bad or regen:
         sys.exit(1)
 
 
