@@ -63,7 +63,13 @@
         "courant": {}
       }
     },
-    "design_note": "Le role porte le prix de base du sort (remplissage, courant, signature) ; a role egal, le tier le releve (tier_order : base < sous-classe < specialisation) ; le rang le fait suivre la puissance (per_rank_rule). Un remplissage qui gagne peu par rang ne coute rien de plus ; une specialisation, qui gagne le plus par rang, paie le plus par rang. Les chiffres se lisent avec scripts/balance/souffle_per_level.py --report, jamais recopies ici."
+    "design_note": "Le role porte le prix de base du sort (remplissage, courant, signature) ; a role egal, le tier le releve (tier_order : base < sous-classe < specialisation) ; le rang le fait suivre la puissance (per_rank_rule). Un remplissage qui gagne peu par rang ne coute rien de plus ; une specialisation, qui gagne le plus par rang, paie le plus par rang. Les chiffres se lisent avec scripts/balance/souffle_per_level.py --report, jamais recopies ici.",
+    "autonomy_by_range": {
+      "_comment": "Contrainte pour la phase 3 (cout en Souffle selon la puissance), PAS ENCORE APPLIQUEE : aucun cout n'en depend aujourd'hui. Decision du proprietaire (2026-10-15) : « Le Souffle doit etre plus eleve en consommation chez un mage que chez un guerrier, sinon les mages mettront tout en PV et les guerriers devront mettre en Souffle ; et connaissant l'avantage du range sur le melee, c'est bancal. » Mesure (scripts/balance/souffle_per_level.py --budget, tableau autonomie) : autonomie = secondes de rotation soutenue avant d'etre a sec, avec points_in_souffle_per_level points de Souffle par niveau, l'equipement attendu, sans panoplie ; part depensee = Souffle depense par seconde / Souffle max. Regle : a chaque niveau de measure_levels, la mediane d'autonomie des classes d'une portee (config/roles.json base_range) ne depasse pas max_ratio_to_shorter_range fois celle de la portee inferieure la plus proche. La phase 3 la fait respecter (couts des sorts de portee longue releves, ou reserves revues) et la passe dans --check.",
+      "measure_levels": [40, 60, 100],
+      "points_in_souffle_per_level": 0,
+      "max_ratio_to_shorter_range": 1.0
+    }
   },
 
   "scaling": {

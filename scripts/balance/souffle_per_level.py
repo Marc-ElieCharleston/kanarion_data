@@ -24,7 +24,10 @@ Usage (from the repo root):
     python -X utf8 scripts/balance/souffle_per_level.py --report   # per-skill and per-tier tables
     python -X utf8 scripts/balance/souffle_per_level.py --budget   # Souffle budget model, levels 1-100
                     (out of combat: mp_regen_out_of_combat with and without the Pass, systems/premium.json;
-                    the best Breath-regen set a character of the level can wear, items/panoplies.json)
+                    the most useful Breath-regen set a character of the level can wear, items/panoplies.json;
+                    regen in % of max (mp_regen_percent) and the rank rule rank_system.regen_forms: per-class
+                    ceilings at level 100, the percent sets against them, the deviations to settle;
+                    phase 3 autonomy by range, config/skill_system.json mana_cost_scaling.autonomy_by_range)
 
 Edits are textual (one number per field, one inserted line for a missing field, one
 sentence removed), so formatting and line endings are preserved.
@@ -451,26 +454,96 @@ def demand(sp, dur=120.0):
     return spent / dur
 
 
-def souffle_sets():
-    """[(level_min, set id, mp_regen of the full set)]: lootable sets that give Breath regen,
-    with the first level of their band (items/panoplies.json rank_system)."""
-    pano = load("items/panoplies.json")
-    band_min = {v["rank_label"]: v["level_range"][0]
-                for k, v in pano["_meta"]["rank_system"].items() if k.startswith("rang_")}
+def regen_rule():
+    """items/panoplies.json _meta.rank_system: ({band label: (first level, regen form)},
+    {form: {resource: stat}}). Owner rule (2026-10-15): flat regen at ranks I-III, percent
+    of the maximum at ranks IV-V; each rank carries its form, regen_forms names the stats."""
+    rs = load("items/panoplies.json")["_meta"]["rank_system"]
+    forms = {k: v for k, v in rs["regen_forms"].items() if not k.startswith("_")}
+    bands = {}
+    for k, v in rs.items():
+        if k.startswith("rang_"):
+            if v["regen_form"] not in forms:
+                raise ValueError(f"rank_system.{k}.regen_form {v['regen_form']!r} is not a regen_forms key")
+            bands[v["rank_label"]] = (v["level_range"][0], v["regen_form"])
+    return bands, forms
+
+
+def regen_rule_deviations():
+    """[(set id, band, threshold, stat, form of the band)]: a regen stat of a set that is not
+    of the form of the set's band."""
+    bands, forms = regen_rule()
+    stat_form = {stat: form for form, by_res in forms.items() for stat in by_res.values()}
     out = []
-    for sid, s in pano["sets"].items():
-        if not isinstance(s, dict) or s.get("band") not in band_min:
+    for sid, s in load("items/panoplies.json")["sets"].items():
+        if not isinstance(s, dict) or s.get("band") not in bands:
             continue
-        regen = sum(b.get("mp_regen", 0) for b in s["bonuses"].values())
-        if regen:
-            out.append((band_min[s["band"]], sid, regen))
+        want = bands[s["band"]][1]
+        for thr, b in s["bonuses"].items():
+            out += [(sid, s["band"], thr, k, want) for k in b if k in stat_form and stat_form[k] != want]
+    return out
+
+
+def souffle_sets():
+    """[(level_min, set id, flat Breath regen /s, Breath regen in % of max /s)] of the full
+    lootable sets that give Breath regen, with the first level of their band."""
+    bands, forms = regen_rule()
+    flat, pct = forms["flat"]["mp"], forms["percent"]["mp"]
+    out = []
+    for sid, s in load("items/panoplies.json")["sets"].items():
+        if not isinstance(s, dict) or s.get("band") not in bands:
+            continue
+        f = sum(b.get(flat, 0) for b in s["bonuses"].values())
+        p = sum(b.get(pct, 0) for b in s["bonuses"].values())
+        if f or p:
+            out.append((bands[s["band"]][0], sid, f, p))
     return sorted(out)
 
 
-def best_set(sets, level):
-    """The Breath-regen set with the most regen a character of this level can wear."""
-    ok = [(regen, sid) for lmin, sid, regen in sets if lmin <= level]
-    return max(ok) if ok else (0, "")
+def set_regen(flat, pct, pool):
+    """Breath per second of a set for a pool: flat + pool x % / 100 (the server formula,
+    shared/gameplay/resource_regen.hpp)."""
+    return flat + pool * pct / 100
+
+
+def best_set(sets, level, pool):
+    """(regen /s, set id, flat, %) of the Breath-regen set worth the most for this pool, among
+    the sets a character of this level can wear."""
+    ok = [(set_regen(f, p, pool), sid, f, p) for lmin, sid, f, p in sets if lmin <= level]
+    return max(ok) if ok else (0, "", 0, 0)
+
+
+def tte(pool, demand_s, regen):
+    """Seconds of sustained rotation before the pool runs dry (inf: never)."""
+    return math.inf if demand_s <= regen else pool / (demand_s - regen)
+
+
+def fmt_s(t):
+    return "jamais" if t == math.inf else f"{t:.0f} s"
+
+
+def class_budgets(P, Gear, level, _gears={}):
+    """{class: {pool0, pool1, regen, gear_regen, demand, big}} at this level: Souffle max with
+    0 / 1 point per level, flat regen (class + growth + expected gear), rotation demand /s
+    and biggest spell (medians over the 8 specializations)."""
+    base, growth = load("stats/class_base_stats.json"), load("stats/class_growth.json")
+    pv = load("config/game.json")["stats_definition"]["mp"]["point_value"]
+    out = {}
+    for cls in CLASSES:
+        w = ARMOR[cls]
+        _gears.setdefault(w, Gear(w))
+        g = _gears[w].expected(w, OFF[cls], GEAR_AT[level], level, WEAPON[cls], n=200)
+        b, gr = base[cls], growth[cls]
+        pool0 = b["mp"] + math.floor(gr["mp"] * (level - 1)) + g.get("mp", 0)
+        ks = [k for _, _, k in kits(cls)]
+        out[cls] = {
+            "pool0": pool0, "pool1": pool0 + (level - 1) * pv,
+            "regen": b["mp_regen"] + gr.get("mp_regen", 0) * (level - 1) + round(g.get("mp_regen", 0)),
+            "gear_regen": round(g.get("mp_regen", 0)),
+            "demand": st.median(demand(spells(k, level)) for k in ks),
+            "big": st.median(max(x[0] for x in spells(k, level)) for k in ks),
+        }
+    return out
 
 
 def budget():
@@ -479,44 +552,104 @@ def budget():
     # (no out-of-combat buff in the model), times the Pass benefit (systems/premium.json).
     pass_mult = load("systems/premium.json")["benefits"]["out_of_combat_regen_multiplier"]
     sets = souffle_sets()
-    base, growth = load("stats/class_base_stats.json"), load("stats/class_growth.json")
-    pv = load("config/game.json")["stats_definition"]["mp"]["point_value"]
-    gears = {}
+    budgets, durations = {}, {}
     for level in LEVELS:
-        fd = fight_durations(P, level)
-        long_fight = max(fd["elite"], fd["5star"])
+        fd = durations[level] = fight_durations(P, level)
+        cb = budgets[level] = class_budgets(P, Gear, level)
         print(f"\n### Niveau {level}  (sorts de base rang {RANKS[level][0]}, tier 2 rang {RANKS[level][1]}, "
               f"tier 3 rang {RANKS[level][2]} ; equipement {GEAR_AT[level]})")
         print("Durees (s) : " + ", ".join(f"{k} {v:.0f}" for k, v in fd.items()))
-        set_regen, set_id = best_set(sets, level)
-        print(f"Panoplie de Souffle portable : {set_id or 'aucune'} (+{set_regen}/s, set complet)")
         print("| classe | Souffle max (0 pt / 1 pt par niv) | regen /s (equipement) | rotation /s "
               "| a sec (0 pt / 1 pt) | tient un pack | a sec sur un combat long | plein hors combat (sans / avec pass) "
-              "| avec la panoplie : regen, a sec (0 pt), tient un pack | plus gros sort / max |")
+              "| avec la panoplie de Souffle la plus utile : set, regen, a sec (0 pt), tient un pack | plus gros sort / max |")
         print("|---|---|---|---|---|---|---|---|---|---|")
-        for cls in CLASSES:
-            w = ARMOR[cls]
-            gears.setdefault(w, Gear(w))
-            g = gears[w].expected(w, OFF[cls], GEAR_AT[level], level, WEAPON[cls], n=200)
-            b, gr = base[cls], growth[cls]
-            pool0 = b["mp"] + math.floor(gr["mp"] * (level - 1)) + g.get("mp", 0)
-            pool1 = pool0 + (level - 1) * pv
-            regen = b["mp_regen"] + gr.get("mp_regen", 0) * (level - 1) + round(g.get("mp_regen", 0))
-            ks = [k for _, _, k in kits(cls)]
-            d = st.median(demand(spells(k, level)) for k in ks)
-            big = st.median(max(x[0] for x in spells(k, level)) for k in ks)
+        for cls, c in cb.items():
+            d, regen, pool0 = c["demand"], c["regen"], c["pool0"]
+            t0, t1 = tte(pool0, d, regen), tte(c["pool1"], d, regen)
+            sr, sid, _, _ = best_set(sets, level, pool0)
+            ts = tte(pool0, d, regen + sr)
+            set_col = f"{sid}, {regen + sr:.1f}, {fmt_s(ts)}, {'oui' if ts >= fd['pack'] else 'non'}" if sid else ""
+            print(f"| {cls} | {pool0:.0f} / {c['pool1']:.0f} | {regen:.0f} ({c['gear_regen']}) | {d:.1f} | "
+                  f"{fmt_s(t0)} / {fmt_s(t1)} | {'oui' if t0 >= fd['pack'] else 'non'} | "
+                  f"{'oui' if t0 < max(fd['elite'], fd['5star']) else 'non'} | "
+                  f"{pool0 / regen:.0f} s / {pool0 / (regen * pass_mult):.0f} s | {set_col} | {c['big'] / pool0:.0%} |")
+    percent_sets(sets, budgets, durations)
+    autonomy(budgets)
 
-            def tte(pool, r=regen):
-                return math.inf if d <= r else pool / (d - r)
-            t0, t1 = tte(pool0), tte(pool1)
-            ts = tte(pool0, regen + set_regen)
-            fmt = lambda t: "jamais" if t == math.inf else f"{t:.0f} s"
-            set_col = (f"{regen + set_regen:.0f}, {fmt(ts)}, {'oui' if ts >= fd['pack'] else 'non'}"
-                       if set_regen else "")
-            print(f"| {cls} | {pool0:.0f} / {pool1:.0f} | {regen:.0f} ({round(g.get('mp_regen', 0))}) | {d:.1f} | "
-                  f"{fmt(t0)} / {fmt(t1)} | {'oui' if t0 >= fd['pack'] else 'non'} | "
-                  f"{'oui' if t0 < long_fight else 'non'} | {pool0 / regen:.0f} s / {pool0 / (regen * pass_mult):.0f} s | "
-                  f"{set_col} | {big / pool0:.0%} |")
+
+def percent_sets(sets, budgets, durations, level=100):
+    """Breath regen in % (rank IV-V sets): per class at `level`, the % above which the class no
+    longer runs dry before the end of a long fight (elite or 5 star), and above which it never
+    runs dry; the full percent sets and the game cap of mp_regen_percent (stats/definitions.json)
+    against them; then the deviations from the rank rule."""
+    cb, fd = budgets[level], durations[level]
+    long_fight = max(fd["elite"], fd["5star"])
+    cap = load("stats/definitions.json")["stats"]["resources"]["mp_regen_percent"]["cap"]
+    print(f"\n### Regen de Souffle en %, niveau {level} (combat long {long_fight:.0f} s)")
+    print("Plafond par classe = % du Souffle max par seconde au-dessus duquel la classe n'est plus a sec avant la fin "
+          "du combat long (sec), ou plus jamais a sec (inepuisable).")
+    print("| classe | plafond sec (0 pt / 1 pt) | plafond inepuisable (0 pt / 1 pt) |")
+    print("|---|---|---|")
+    dry, never = [], []
+    for cls, c in cb.items():
+        row = []
+        for pool in (c["pool0"], c["pool1"]):
+            dry.append(100 * (c["demand"] - c["regen"] - pool / long_fight) / pool)
+            never.append(100 * (c["demand"] - c["regen"]) / pool)
+            row.append((dry[-1], never[-1]))
+        print(f"| {cls} | {row[0][0]:.3f} / {row[1][0]:.3f} | {row[0][1]:.3f} / {row[1][1]:.3f} |")
+    print(f"Plafond commun : sec {min(dry):.3f} %/s, inepuisable {min(never):.3f} %/s ; "
+          f"plafond de jeu mp_regen_percent {cap:g} ({'sous' if cap < min(never) else 'AU-DESSUS de'} l'inepuisable).")
+    for lmin, sid, f, p in sets:
+        if not p:
+            continue
+        verdict = "respecte" if p < min(dry) else "DEPASSE"
+        print(f"\n{sid} (des le niveau {lmin}) : {f:g} /s + {p:g} % du Souffle max /s, {verdict} le plafond sec ; "
+              f"{p / cap:.0%} du plafond de jeu.")
+        print("| classe | regen sans / avec (0 pt) | a sec sans / avec (0 pt) | regen sans / avec (1 pt) | a sec sans / avec (1 pt) |")
+        print("|---|---|---|---|---|")
+        for cls, c in cb.items():
+            cells = []
+            for pool in (c["pool0"], c["pool1"]):
+                r = c["regen"] + set_regen(f, p, pool)
+                cells += [f"{c['regen']:.0f} / {r:.1f}",
+                          f"{fmt_s(tte(pool, c['demand'], c['regen']))} / {fmt_s(tte(pool, c['demand'], r))}"]
+            print(f"| {cls} | " + " | ".join(cells) + " |")
+    dev = regen_rule_deviations()
+    print(f"\nRegle de forme des panoplies (rank_system.regen_forms) : {len(dev)} ecart(s) a trancher")
+    for sid, band, thr, stat, want in dev:
+        print(f"- {sid} ({band}, palier {thr}) : {stat}, la bande demande la forme {want}")
+
+
+def autonomy(budgets):
+    """Phase 3 constraint (config/skill_system.json mana_cost_scaling.autonomy_by_range): per
+    class, autonomy (seconds of sustained rotation before running dry) and share of the pool
+    spent per second; per base_range (config/roles.json), the median autonomy against the
+    nearest shorter range. Information: costs are not changed here."""
+    rule = SKILL_SYSTEM["mana_cost_scaling"]["autonomy_by_range"]
+    roles = load("config/roles.json")
+    pv = load("config/game.json")["stats_definition"]["mp"]["point_value"]
+    rng = {cls: roles[cls]["base_range"] for cls in CLASSES}
+    print(f"\n### Autonomie par classe et par portee (phase 3, {rule['points_in_souffle_per_level']} pt de Souffle "
+          f"par niveau, sans panoplie ; regle : mediane d'une portee <= {rule['max_ratio_to_shorter_range']:g} x "
+          f"celle de la portee inferieure)")
+    print("Cellule : a sec apres, part du Souffle max depensee par seconde.")
+    print("| niveau | " + " | ".join(f"{c} (portee {rng[c]})" for c in CLASSES) + " | ecarts |")
+    print("|---|" + "---|" * (len(CLASSES) + 1))
+    for level in rule["measure_levels"]:
+        cb = budgets[level]
+        auto, cells = {}, []
+        for cls, c in cb.items():
+            pool = c["pool0"] + (level - 1) * pv * rule["points_in_souffle_per_level"]
+            auto[cls] = tte(pool, c["demand"], c["regen"])
+            cells.append(f"{fmt_s(auto[cls])}, {c['demand'] / pool:.1%}/s")
+        by_range = {}
+        for cls, t in auto.items():
+            by_range.setdefault(rng[cls], []).append(t)
+        med = sorted((r, st.median(v)) for r, v in by_range.items())
+        bad = [f"portee {r1} {fmt_s(m1)} > {rule['max_ratio_to_shorter_range']:g} x portee {r0} {fmt_s(m0)}"
+               for (r0, m0), (r1, m1) in zip(med, med[1:]) if m1 > rule["max_ratio_to_shorter_range"] * m0]
+        print(f"| {level} | " + " | ".join(cells) + f" | {'; '.join(bad) or 'aucun'} |")
 
 
 def main():
