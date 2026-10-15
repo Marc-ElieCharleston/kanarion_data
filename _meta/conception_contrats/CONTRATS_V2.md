@@ -46,7 +46,7 @@ peu plus que les gens du village.
 |---|---|---|---|
 | **Expédition** | Hestia (ancienne exploratrice, connaît chaque recoin) | aller voir un lieu précis | disperser des groupes **3★ et plus dans une zone nommée** (« Expédition au Marais de Havreden ») |
 | **Vague** | Aldric (forme les volontaires) | une vague déborde sur les abords, ses volontaires ne suffisent pas | abattre des créatures **dans des groupes 3★ et plus** de la bande ; rang S = refermer une invasion de Fissure |
-| **Récupération** | Aldric | équiper les volontaires | rapporter des ressources lâchées par les monstres de la bande (peaux, carapaces…) |
+| **Récupération** | celui à qui la ressource sert : forgeron (minerais, carapaces), marchand (peaux, cuirs), alchimiste (herbes, essences)… | une commande à remplir | rapporter des ressources lâchées par les monstres de la bande |
 | **Prime** | Varn (chasseur de primes) | un monstre dangereux est repéré | abattre un **élite nommé** de la bande (Rat Alpha, Tortue de Pierre, Scarabée Géant…), qui n'apparaît que dans les groupes 3★ et plus |
 | **Donjon** | Varn (connaît chaque vieille porte) | un donjon vaut la descente | terminer un donjon de la bande, difficulté normale ou plus |
 | **Arène** | Dargo (Rochebourg) | se mesurer aux autres | gagner des matchs d'**arène classique ou classée** (pas l'entraînement contre des recrues, pas la salle perso, pas le duel) |
@@ -69,9 +69,22 @@ Règles :
 | A | 3 groupes 4★ | 35 créatures | 20 ressources | 1 élite nommé | difficile | 3 victoires |
 | S | 1 groupe 5★ | 1 invasion de Fissure | — | 1 boss de zone | cauchemar | 5 victoires |
 
-Volume : 21 zones × 4 rangs d'expédition, plus Vague, Récupération et Arène par bande, plus une prime par élite
-ou boss nommé, plus un contrat par donjon et par difficulté. Les contrats seront **générés par un script**
-à partir des zones, des monstres et des donjons, pas écrits à la main.
+## Le tableau : 3 offres, tirées selon le niveau (décidé le 2026-10-15)
+
+- Le tableau **affiche 3 contrats**, tirés pour le joueur. On accepte ceux qu'on veut (toujours 3 tenus au plus,
+  un par famille).
+- **Relance** : on peut relancer une offre du tableau (prix en or modeste, à fixer avec l'économie). Le
+  **pass premium** donne **1 relance gratuite par offre**.
+- Les offres suivent **le niveau du joueur** : un niveau 10 ne voit pas de contrat dans une zone de rang III.
+  - Tableau de **Havreden** : la bande du joueur.
+  - Tableau de **Rochebourg** : contrats de rang **IV minimum** (bandes 61-100).
+- Une expédition tire une **zone qui couvre le niveau du joueur** ; une prime tire un élite de ces zones ;
+  un donjon, un donjon de la bande.
+
+**Pas de liste de centaines de contrats écrits ou générés à l'avance** : la data décrit des **modèles**
+(famille × rang : objectif, quantité, récompense par bande) et le serveur fabrique l'offre au tirage, avec la
+zone, l'élite ou la ressource qui correspondent au niveau du joueur. Une nouvelle zone entre dans les tirages
+dès qu'elle a sa bande, sans toucher aux contrats.
 
 ## Autres idées (non retenues pour l'instant)
 
@@ -129,9 +142,11 @@ monstres, au lieu de 3 à 15 fois. Tout dépend de la durée réelle des combats
 
 ## Questions ouvertes
 
-Réglé le 2026-10-15 : donneurs Hestia, Aldric, Varn (et Dargo pour l'arène) ; l'arène compte seulement
-classique et classée ; expéditions par zone nommée (les zones ont leur bande).
+Réglé le 2026-10-15 : donneurs Hestia, Aldric, Varn, Dargo ; Récupération donnée par le métier qui en a
+besoin ; arène classique et classée seulement ; expéditions par zone nommée ; tableau à 3 offres tirées selon
+le niveau, relance payante, 1 relance gratuite par offre avec le pass ; on garde les 6 familles (escorte et
+commande d'artisan : bonnes idées pour plus tard).
 
-1. Récupération : quelles ressources ? Proposé : les matériaux lâchés par les monstres de la bande qui ne se
-   vendent pas chez un PNJ.
-2. Les autres idées (capture, commande d'artisan, escorte) : plus tard, ou une tout de suite ?
+1. Prix de la relance (en attente de l'échelle de l'or).
+2. Les offres se renouvellent quand ? Proposé : une offre acceptée est remplacée tout de suite par une
+   nouvelle ; sinon le tableau se renouvelle chaque jour à 5 h (même heure que les coffres de contrats).
