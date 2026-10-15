@@ -79,8 +79,11 @@ restants) ; hybrides : 10 paires de bras, 5 paires voisines avec ponts, et les f
 ## Reset des points (proposition)
 
 - Gratuit jusqu'au niveau 20.
-- Ensuite : `base_gold × niveau × (1 + 0,5 × resets payants récents)` ; le compteur baisse de 1 toutes
-  les 2 semaines sans reset payant. `base_gold` à chiffrer avec l'économie.
+- Ensuite, le prix se pense **en temps de jeu**, pas en or : environ 1 heure de farm à son niveau pour
+  le premier reset, puis +50 % par reset payant récent (le compteur baisse de 1 toutes les 2 semaines
+  sans reset payant). Le prix en or = ces heures × l'or gagné par heure au niveau du joueur, une fois
+  qu'on aura le calcul de l'or par heure (pas encore fait : 10 or durs à gagner ou 10 000, ça change
+  tout).
 - Pass : 1 reset gratuit par semaine, non cumulable.
 
 ## Ce que la V2 demande au code (après validation de la data)
@@ -100,7 +103,7 @@ restants) ; hybrides : 10 paires de bras, 5 paires voisines avec ponts, et les f
 Réglé le 2026-10-15 : Déchaînement garde +35 % **avec** sa contrepartie (−30 % soins reçus, −15 % PV
 max) ; ponts passés de 10 à 8 points pour laisser 4 points de marge à l'hybride voisin.
 
-1. Prix de base du reset.
+1. Prix du reset : en attente du calcul de l'or gagné par heure selon le niveau.
 2. **Bonus de points façon parchemins Dofus** (pas décidé). Si des objets donnent des points d'arbre
    en plus, l'all-in gagne vite le notable 30 d'un voisin par le centre (105 points aujourd'hui, donc
    5 points bonus suffisent). Les ponts restent fermés par le méga. Recommandation : les parchemins
