@@ -31,7 +31,7 @@ d'un 3e : environ 40 variantes, et une seule vraiment bonne par rôle. Le all-in
 | Chemin | un nœud s'achète s'il touche un nœud acquis ; un petit nœud ne laisse passer qu'**à son rang max** |
 | Choix | à chaque notable, 1 option sur 2 ou 3 ; les deux routes entre deux notables ne sont pas exclusives (la 2e coûte ses points) |
 | Méga | 1 seul ; avoir un méga **ferme les ponts** |
-| Ponts | entre bras voisins, au niveau des notables 30 : petit (2) + hybride (6) + petit (2) = 10 points |
+| Ponts | entre bras voisins, au niveau des notables 30 : petit (1) + hybride (6) + petit (1) = 8 points |
 
 Il n'y a plus de seuils ni de slots : la profondeur se paie avec le chemin, et le niveau limite
 naturellement (méga au plus tôt vers le niveau 75).
@@ -61,8 +61,8 @@ Ponts côté Attaque :
 | All-in + notable 15 d'un voisin | 90 | + 1 petit notable |
 | All-in + notable 30 d'un voisin | 105 | **impossible** (et les ponts sont fermés) |
 | Hybride éloigné : Attaque 50 + Soutien 50 | 100 | 2 × (15, 30, 50) |
-| Hybride voisin : Attaque 50 + Défense 50 + Affaiblissement 30 | 100 | 15, 30, 50 + 30, 50 + 30 + 2 hybrides |
-| Hybride voisin : Attaque 50 + Défense 50 + les 2 hybrides du pont | 91 | 15, 30, 50 + 30, 50 + 2 hybrides |
+| Hybride voisin : Attaque 50 + Défense 50 + Affaiblissement 30 | 96 (reste 4) | 15, 30, 50 + 30, 50 + 30 + 2 hybrides |
+| Hybride voisin : Attaque 50 + Défense 50 + les 2 hybrides du pont | 89 | 15, 30, 50 + 30, 50 + 2 hybrides |
 
 Chaque notable tombe exactement à sa distance cible (15 / 30 / 50 / 75).
 
@@ -97,6 +97,11 @@ restants) ; hybrides : 10 paires de bras, 5 paires voisines avec ponts, et les f
 
 ## Questions ouvertes
 
-1. Valeurs des mégas : Déchaînement +35 % est-il « extrêmement puissant » assez ?
-2. Ponts à 10 points : l'hybride voisin tombe pile à 100. On garde, ou on laisse un peu de marge ?
-3. Prix de base du reset.
+Réglé le 2026-10-15 : Déchaînement garde +35 % **avec** sa contrepartie (−30 % soins reçus, −15 % PV
+max) ; ponts passés de 10 à 8 points pour laisser 4 points de marge à l'hybride voisin.
+
+1. Prix de base du reset.
+2. **Bonus de points façon parchemins Dofus** (pas décidé). Si des objets donnent des points d'arbre
+   en plus, l'all-in gagne vite le notable 30 d'un voisin par le centre (105 points aujourd'hui, donc
+   5 points bonus suffisent). Les ponts restent fermés par le méga. Recommandation : les parchemins
+   donnent des **stats** (comme dans Dofus), pas des points d'arbre ; sinon les plafonner à 3.
