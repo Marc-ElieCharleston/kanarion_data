@@ -62,6 +62,8 @@
     "hard_efficiency": 1.0,
     "soft_efficiency": 0.4,
     "_soft_note": "Un controle mou ne supprime pas l'action, il la degrade ou la detourne : 40 % d'un controle dur, 24/s, comme les 25/s de balance_model.json.",
+    "component_by_category": {"aggro": "debuff_defensif"},
+    "_component_by_category_note": "Cas particuliers (2026-10-15). Une provocation (categorie aggro de status_effects.json : taunt) n'empeche aucune action : elle detourne les coups des allies fragiles vers le tank qui les encaisse le mieux. Prix inchange (controle mou, 24/s par ennemi, comparable a damage_transfer : 100 % des degats d'un ennemi rediriges = 20/s), mais rangee en debuff_defensif (l'ennemi blesse moins le groupe) : c'est la protection du tank, son identite. Rangee en controle, la Provocation du guerrier sortait du role du tank et passait de 26 a 60 s.",
     "interrupts_cast_cc_type": "stun",
     "_interrupt_note": "Le serveur n'interrompt une incantation que sur flags.stunned (room.cpp process_casting) : effets de cc_type stun (stun, freeze, fear). silence porte interrupts_cast dans la data mais le serveur ne le lit pas."
   },
@@ -130,7 +132,7 @@
     },
     "_per_second_note": "invulnerable = debit ennemi entierement annule (60/s) ; untargetable 3/4, invisible 1/2. cc_immune : assurance contre un controle (un stun de 2 s toutes les 8 s = 15/s). en garde : une parade par fenetre. damage_transfer : value % des degats d'un allie rediriges vers le lanceur, qui les encaisse quand meme avec sa propre mitigation (environ deux fois celle de l'allie) : 1 % redirige = 0.2/s. mana_drain : les monstres dependent peu du Souffle. double/triple_attack_chance : attaque de base seulement, 0.",
     "per_cast": {
-      "cleanse": {"points": 60, "component": "utilitaire"},
+      "cleanse": {"points": 60, "component": "buff_defensif"},
       "purge": {"points": 60, "component": "utilitaire"},
       "steal_buff": {"points": 80, "component": "utilitaire"},
       "interrupt": {"points": 60, "component": "controle"},
@@ -138,12 +140,15 @@
       "cover": {"points": 120, "component": "buff_defensif"},
       "riposte_active": {"points": 60, "component": "buff_defensif"}
     },
-    "_per_cast_note": "cleanse/purge : retire un effet adverse, environ une seconde d'action (60). steal_buff : retire ET gagne. interrupt : annule une incantation ennemie sans remboursement. cover (runtime charges 1) : intercepte UN coup mono-cible, la valeur d'un coup de reference (120). riposte_active : renvoie une partie du prochain coup puis se consomme (60).",
+    "_per_cast_note": "cleanse/purge : retire un effet adverse, environ une seconde d'action (60). steal_buff : retire ET gagne. interrupt : annule une incantation ennemie sans remboursement. cover (runtime charges 1) : intercepte UN coup mono-cible, la valeur d'un coup de reference (120). riposte_active : renvoie une partie du prochain coup puis se consomme (60). cleanse range en buff_defensif (cas particuliers, 2026-10-15) : retirer un affaiblissement d'un allie le protege, c'est le coeur du role de soigneur (roles.json lightbringer cleanse) ; range en utilitaire, la dissipation sortait de l'identite du soigneur et prenait la densite d'un utilitaire (Purification 12 -> 95 s).",
+    "per_cast_area_targets": ["allies", "enemies"],
+    "_per_cast_area_targets_note": "room.cpp (cleanse, purge, steal_buff) : un verbe ne touche toutes les cibles de la zone que si son effet porte target allies ou enemies ; sinon la cible principale seule, quel que soit le motif. Les autres sont comptes une fois (x portee pour un ennemi). Corrige 2026-10-15 : Rafistolage (artisan) comptait trois dissipations pour une.",
     "resurrect_points_at_full_hp": 600,
     "_resurrect_note": "Conventionnel : un allie releve a 100 % des PV = 10 s de son debit (60/s), au prorata du % de PV rendu. balance_model.json disait 1500, sans base.",
     "lifesteal_component": "soin",
-    "souffle_component": "utilitaire",
-    "_souffle_note": "mana_restore, mana_steal, mana_regen : le Souffle rendu est converti en points au rendement MEDIAN des sorts de classe (points au rang 1 par Souffle paye au rang 1), mesure par le script a chaque passe. Aucun chiffre en dur."
+    "souffle_component": {"self": "utilitaire", "ally": "buff_offensif"},
+    "souffle_value_factor": 0.5,
+    "_souffle_note": "mana_restore, mana_steal, mana_regen : le Souffle rendu est converti en points au rendement MEDIAN des sorts de classe (points au rang 1 par Souffle paye au rang 1), mesure par le script a chaque passe, x souffle_value_factor. Composante selon qui le recoit : le lanceur (mana_steal, ressource propre) = utilitaire ; des allies (mana_restore, mana_regen sur allies) = buff_offensif, il finance leurs sorts comme un buff amplifie leur debit (soutien). souffle_value_factor (2026-10-15) : un Souffle rendu ne vaut des points que s'il paie un sort qu'on n'aurait pas pu lancer, donc quand on est a sec ; souffle_par_niveau.md (niveau 60, pack et elite) donne une part du combat passee a sec de 0 (mage) a 0,77 (guerrier, voleur), mediane 0,69 avec les cooldowns d'avant la phase 2, qui ont baisse la depense ; 0,5 jusqu'a la remesure de la phase 3. Compte plein, Siphon Arcanique (30 Souffle voles) valait 227 points et passait de 21 a 120 s."
   },
 
   "casting": {

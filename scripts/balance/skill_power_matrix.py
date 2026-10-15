@@ -49,6 +49,7 @@ RANKS = range(1, S.MAX_RANK + 1)
 COMPONENTS = ["degats", "dot", "soin", "hot", "bouclier", "controle", "buff_offensif",
               "buff_defensif", "debuff_offensif", "debuff_defensif", "utilitaire"]
 HOSTILE_TYPES = ("physical", "magical", "magic")
+SOUFFLE_KEYS = ["_souffle_self", "_souffle_ally"]   # Souffle given, by receiver, before conversion
 ALLY_TARGETS = ("ally", "allies", "all", "self")
 
 
@@ -247,6 +248,8 @@ def price_effect(s, e, cls, rank, comp, unpriced, damage_points):
     if e["type"] == "utility" or stat in pub(sp["per_cast"]):
         if stat in pub(sp["per_cast"]):
             c = sp["per_cast"][stat]
+            if e.get("target") not in sp["per_cast_area_targets"]:   # room.cpp: primary target only
+                n = reach_factor(s) if who == "enemy" else 1.0
             comp[c["component"]] += c["points"] * n
         elif stat == "resurrect":
             comp["soin"] += sp["resurrect_points_at_full_hp"] * min(at_rank(e, "value", rank), 100) / 100
@@ -258,7 +261,8 @@ def price_effect(s, e, cls, rank, comp, unpriced, damage_points):
                 v = v / 100 * class_stats(cls)["mp"]
             elif e.get("scaling") in ("mag", "atk"):
                 v = v / 100 * class_stats(cls)[e["scaling"]]
-            comp["_souffle"] += v * (n if stat == "mana_restore" else 1)
+            comp["_souffle_" + ("ally" if stat == "mana_restore" and who == "ally" else "self")] += \
+                v * (n if stat == "mana_restore" else 1)
         else:
             unpriced.append(stat)
         return
@@ -299,14 +303,16 @@ def price_effect(s, e, cls, rank, comp, unpriced, damage_points):
         comp["bouclier"] += pts * n * ovh
         return
 
-    if cat in ("control", "aggro") and (rt.get("cc_type") or cat == "aggro"):
+    priced_mods = set(rt.get("stat_mods") or {}) & set(pub(M["modifiers"]["by_stat_mod"]))
+    if cat in ("control", "aggro") and (rt.get("cc_type") or cat == "aggro") and not priced_mods:
+        # a control that only moves a priced stat (blind: accuracy - value %) is a debuff, below
         C = M["control"]
         if rt.get("gcd_penalty_seconds_per_stack"):
             frac = rt["gcd_penalty_seconds_per_stack"] * stacks(e, d) / GCD
             comp["controle"] += frac * dur * REF_DPS * n
         else:
             eff = C["hard_efficiency"] if rt.get("blocks_skills") else C["soft_efficiency"]
-            comp["controle"] += eff * dur * REF_DPS * n
+            comp[C["component_by_category"].get(cat, "controle")] += eff * dur * REF_DPS * n
         return
 
     if stat in pub(sp["per_second"]):
@@ -317,7 +323,8 @@ def price_effect(s, e, cls, rank, comp, unpriced, damage_points):
 
     if stat == "mana_regen":
         coef, _ = tick_coef(d)
-        comp["_souffle"] += coef / 100 * class_stats(cls)["mp"] * stacks(e, d) * dur * n
+        comp["_souffle_" + ("ally" if who == "ally" else "self")] += \
+            coef / 100 * class_stats(cls)["mp"] * stacks(e, d) * dur * n
         return
 
     mods = rt.get("stat_mods") or M["modifiers"]["implicit_stat_mods"].get(stat) or {}
@@ -370,7 +377,7 @@ def direct_damage(s, cls, rank):
 
 
 def components(s, cls, rank):
-    comp = dict.fromkeys(COMPONENTS + ["_souffle"], 0.0)
+    comp = dict.fromkeys(COMPONENTS + SOUFFLE_KEYS, 0.0)
     unpriced = []
     comp["degats"] = direct_damage(s, cls, rank)
     if "heal_scaling_percent" in s:
@@ -441,7 +448,10 @@ def build():
     for sid, (cls, palier, sub, spec, s, per_rank) in raw.items():
         powers, comp1 = [], None
         for comp, _ in per_rank:
-            comp[M["special_effects"]["souffle_component"]] += comp.pop("_souffle") * pts_per_souffle
+            sp = M["special_effects"]
+            for key in SOUFFLE_KEYS:
+                comp[sp["souffle_component"][key.rsplit("_", 1)[1]]] += \
+                    comp.pop(key) * pts_per_souffle * sp["souffle_value_factor"]
             powers.append(sum(comp.values()))
             comp1 = comp1 or comp
         dom = dominant(comp1)
