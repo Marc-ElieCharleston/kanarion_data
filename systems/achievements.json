@@ -9,6 +9,7 @@
     "shapes": "premier | echelle | detour (voir la Matrice). Pas de compteur pur.",
     "not_in_wave_1": "Competence montee au maximum (aucun niveau max de competence fiable dans la data) ; elites, zones visitees, detours de combat (aucune source aujourd'hui).",
     "early_pace": "Debut de partie retune le 2026-10-01 (Charleston) : la premiere quete rendue mene vers le niveau 3,5 et le premier point de caracteristique + la premiere competence vers 5 (avant : 6 puis 9). Raison : un joueur monte trop haut avant son premier combat subit la penalite d ecart de niveau sur les monstres du tutoriel. ach_quest_first 750 -> 260, ach_prog_first_stat et ach_prog_first_skill 750 -> 180, ach_level_5 250 -> 100. Sans aucun combat, la chaine des succes plafonne au niveau 4 a 5.",
+    "early_pace_2026_10_16": "Retour du proprietaire (16/10, niveau 7 a la sortie de la lecon d'arene, build sur des valeurs d'avant le 13/10). Avec les valeurs du 13/10 la lecon mene au niveau 3 et l'onboarding (forces + Tobin) au niveau 4, mais la CASCADE continuait plus loin : au dernier combat d'Aldric (meute_sortie, niveau 9), ach_prog_skills_10 (800) puis ach_level_10 (2000) poussaient au niveau 13, fin de chaine 14 (cible 9-10) ; dans le tour, ach_familiar_first_hatch (1000) faisait passer 15, ach_level_15 (3850) puis ach_prog_stats_50 (2100) et ach_level_20 (4750) menaient au niveau 22 a la fin du tour (cible 15). Proposition (A VALIDER par Charleston) : forme de la vague 2 x cout du niveau ou le succes tombe REELLEMENT sur ce parcours (joueur qui depense tous ses points), et x0.1 pour ce qui tombe pendant la chaine d'Aldric (meme facteur que ach_quest_10 et ach_quest_aldric le 13/10). ach_prog_skills_10 800 -> 50 (echelle, niveau 9 : 518 x 0.1), ach_level_10 2000 -> 60 (echelle, 600 x 0.1), ach_familiar_first_hatch 1000 -> 390 (premier, niveau 12 : 0.5 x 788), ach_level_15 3850 -> 1155 (echelle, cout du niveau 15 ; annule le report du 13/10), ach_prog_stats_50 2100 -> 1650 (echelle, tombe au niveau 18), ach_level_20 4750 -> 2100 (echelle, cout du niveau 20 ; etait au-dessus de ach_level_25 = 3300). Parcours simule (quetes + combats du tuto, groupe 1 etoile estime) : creation 1, fin de lecon 3, fin onboarding 4, fin d'Aldric 11 (10 sans aucun succes : l'XP de quete seule depasse deja 9), fin du tour 14. Chaine autoalimentee (niveau + points seuls, rien d'encaisse) : +0 jusqu'au niveau 14, +1 a 15, +2 a 19-20 (avant : 9 -> 12, 13 -> 19, 15 -> 22). XP retiree (~10 000) NON reportee : a trancher. Constat back : ach_prog_first_skill se debloque a la CREATION (la competence de depart vaut 1 dans skill_allocations et la source la compte comme un point depense).",
     "reward_cap_levels": 0,
     "reward_cap_rule": "Plafond serveur DESACTIVE (0) le 2026-09-30, choix de Charleston : on regle l'XP des succes eux-memes, et de gros sauts de niveau restent acceptables (esprit Dofus). Les succes de CHANCE (premier familier eclos, rare, epique, legendaire) sont bas : les trois premiers d'un coup au niveau 2 menent vers le niveau 12, pas 25. Le mecanisme reste dans le code : reward_cap_levels > 0 le rallume.",
     "wave_2": "Vague 2 (2026-09-30) : ~100 succes, 14 sources nouvelles (migr 103). XP = forme x cout du niveau ou le succes tombe normalement (premier 0.5, echelle 1, detour 2 niveaux)."
@@ -292,7 +293,7 @@
       "source": "char_level",
       "threshold": 10,
       "reward": {
-        "xp": 2000
+        "xp": 60
       }
     },
     {
@@ -306,7 +307,7 @@
       "source": "char_level",
       "threshold": 20,
       "reward": {
-        "xp": 4750,
+        "xp": 2100,
         "title_id": "title_aguerri"
       }
     },
@@ -677,7 +678,7 @@
       "source": "familiar_hatched",
       "threshold": 1,
       "reward": {
-        "xp": 1000
+        "xp": 390
       }
     },
     {
@@ -805,7 +806,7 @@
       "source": "char_level",
       "threshold": 15,
       "reward": {
-        "xp": 3850
+        "xp": 1155
       }
     },
     {
@@ -1001,7 +1002,7 @@
       "source": "char_stat_points_spent",
       "threshold": 50,
       "reward": {
-        "xp": 2100
+        "xp": 1650
       }
     },
     {
@@ -1029,7 +1030,7 @@
       "source": "char_skill_points_spent",
       "threshold": 10,
       "reward": {
-        "xp": 800
+        "xp": 50
       }
     },
     {
