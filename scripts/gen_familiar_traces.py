@@ -46,13 +46,14 @@ import os
 import sys
 import unicodedata
 
-# rarete -> (libelle FR, libelle EN, prix de vente)
+# rarete -> (libelle FR, libelle EN). Le prix de revente vient de
+# systems/npc_resale.json (familiar_traces), lu dans main().
 RARITIES = [
-    ("common", "Commun", "Common", 40),
-    ("uncommon", "Peu Commun", "Uncommon", 70),
-    ("rare", "Rare", "Rare", 120),
-    ("epic", "Épique", "Epic", 400),
-    ("legendary", "Légendaire", "Legendary", 1200),
+    ("common", "Commun", "Common"),
+    ("uncommon", "Peu Commun", "Uncommon"),
+    ("rare", "Rare", "Rare"),
+    ("epic", "Épique", "Epic"),
+    ("legendary", "Légendaire", "Legendary"),
 ]
 
 # role de familier -> (libelle FR, libelle EN)
@@ -75,6 +76,7 @@ SHOP_BUY_PRICES = {
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MONSTERS = os.path.join(REPO, "entities", "monsters.json")
 CONSUMABLES = os.path.join(REPO, "items", "consumables.json")
+RESALE = os.path.join(REPO, "systems", "npc_resale.json")
 
 
 def sans_accents(s):
@@ -177,6 +179,8 @@ def main():
 
     with open(CONSUMABLES, "r", encoding="utf-8") as fh:
         data = json.load(fh)
+    with open(RESALE, "r", encoding="utf-8") as fh:
+        prix_par_rarete = json.load(fh)["familiar_traces"]
     actuelles = data.get("familiar_traces", [])
     par_id = {t["id"]: t for t in actuelles if "id" in t}
 
@@ -192,8 +196,8 @@ def main():
             ffr, fen = info["fr"], info["en"]
             nouvelles_familles.append((fam, ffr, fen))
         for role in info["roles"]:
-            for rar_id, rar_fr, rar_en, prix in RARITIES:
-                t = empreinte(fam, ffr, fen, role, rar_id, rar_fr, rar_en, prix)
+            for rar_id, rar_fr, rar_en in RARITIES:
+                t = empreinte(fam, ffr, fen, role, rar_id, rar_fr, rar_en, prix_par_rarete[rar_id])
                 voulues[t["id"]] = t
 
     a_ajouter = [t for i, t in voulues.items() if i not in par_id]
