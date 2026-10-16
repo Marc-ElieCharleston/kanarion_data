@@ -136,6 +136,10 @@ class Gear:
                        v.get("rate_stat_multiplier", 1.0))
                       for k, v in sc["tier_system"]["tiers"].items() if isinstance(v, dict)]
         self.rate_stats = set(sc["tier_system"].get("rate_stats_no_tier_scaling", []))
+        # Continuous level curve (StatRoller::interpolate_curve), in place of the tier steps
+        # when present, as on the server.
+        curve = sc["tier_system"].get("level_curve") or {}
+        self.curves = {k: curve[k] for k in ("stat", "rate") if k in curve}
         self.rarity = {k: v for k, v in sc["rarity_system"]["rarities"].items() if isinstance(v, dict)}
         self.ranges = {}
         for stat, by_rarity in self.stats["stat_ranges_by_rarity"]["main_stats"].items():
@@ -150,6 +154,9 @@ class Gear:
         self.cache = {}
 
     def tier_mult(self, level, stat):
+        kind = "rate" if stat in self.rate_stats else "stat"
+        if kind in self.curves:
+            return interpolate({str(lv): m for lv, m in self.curves[kind]}, level)
         for lo, hi, m, rm in self.tiers:
             if lo <= level <= hi:
                 return rm if stat in self.rate_stats else m

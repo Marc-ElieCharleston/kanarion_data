@@ -232,7 +232,7 @@
       "cap": 1.5,
       "_owner_2026_10_13": "Rapide jusqu a 5 joueurs puis plafond (proprietaire, 2026-10-13) : 1 / 1.125 / 1.25 / 1.375 / 1.5, puis 1.5 de 6 a 10 joueurs (etait 0.055 par joueur, plafond 1.5 atteint a 10). JOUEURS UNIQUEMENT : ni familiers (un par joueur, ce serait un bonus meme en solo) ni mercenaires. S applique a l XP, l or et les chances de drop ; avec le loot partage, le pot commun recoit un tirage par joueur a ce multiplicateur.",
       "_correction": "CORRIGE le 2026-08-14 apres contre-lecture du backend. La v1.0 de ce fichier decrivait '1 + N * 0.05, max 10 joueurs' : c'etait la table de items/loot_tables.json, qui est MORTE. Le moteur applique 1 + (N-1) * 0.055 plafonne a 1.5 (loot_roller.cpp calc_group_mult), depuis des defauts de struct qu'AUCUN fichier ne charge. Le 0.05f ecrit par content_loader.cpp:1527 va dans group_size_bonus_per_player, un champ sans aucun lecteur. Ecart reel a 4 joueurs : live 1.165 contre 1.20 annonce. C'est le meme piege que le reste du chantier, avec une couche de plus : ici la donnee morte avait un chargeur, ce qui la faisait passer pour vivante.",
-      "_engine_anchor": "Etape 2 FAITE pour cette famille (audit XP 2026-08-29 F5) : le moteur lit bonus_per_extra_player + cap DEPUIS ce fichier (content_loader.cpp:1465-1471). Changer ces valeurs change le jeu. loot_types.hpp:212-213 = valeurs de repli si absent. (Lancien texte >constantes C++, etape 2 a faire< etait perime.)"
+      "_engine_anchor": "Le moteur lit bonus_per_extra_player et cap DEPUIS ce fichier (server-combat drop_config_parser.cpp parse_reward_scaling) : changer ces valeurs change le jeu. Les deux cles sont obligatoires, une cle absente ou hors bornes arrete le chargement ; il n'y a plus de valeur de repli (les initialiseurs de loot_types.hpp valent l'element neutre 0 / 1, pour les donnees construites a la main des tests unitaires)."
     },
     "guild_level": {
       "description": "Niveau de la guilde du personnage (guild/levels.json, deblocages bonus_tier_N). Le palier le plus haut atteint s'applique ; sans guilde, ou sous le niveau 10, la famille vaut 1.0.",
@@ -301,32 +301,37 @@
     "no_penalty_range": 5,
     "penalty_per_level": 0.2,
     "max_penalty": 0.95,
-    "min_drop_rate": 0.05,
     "formula": "Si (player_level - mob_level) > no_penalty_range: penalty = min(max_penalty, (diff - no_penalty_range) × penalty_per_level)",
     "examples": [
       {
         "player": 5,
         "mob": 1,
-        "penalty": 0.2,
-        "note": "4 niveaux d'écart, -20% (1 au-delà de la range)"
-      },
-      {
-        "player": 7,
-        "mob": 1,
-        "penalty": 0.6,
-        "note": "6 niveaux, diff-3=3 × 0.2 = -60%"
-      },
-      {
-        "player": 9,
-        "mob": 1,
-        "penalty": 0.95,
-        "note": "8+ niveaux, pénalité max -95% (quasi rien)"
+        "penalty": 0,
+        "note": "4 niveaux d'écart, dans la marge de 5 : aucune pénalité"
       },
       {
         "player": 20,
         "mob": 15,
-        "penalty": 0.4,
-        "note": "5 niveaux, diff-3=2 × 0.2 = -40%"
+        "penalty": 0,
+        "note": "5 niveaux, limite de la marge : aucune pénalité"
+      },
+      {
+        "player": 7,
+        "mob": 1,
+        "penalty": 0.2,
+        "note": "6 niveaux, diff-5=1 × 0.2 = -20%"
+      },
+      {
+        "player": 9,
+        "mob": 1,
+        "penalty": 0.6,
+        "note": "8 niveaux, diff-5=3 × 0.2 = -60%"
+      },
+      {
+        "player": 11,
+        "mob": 1,
+        "penalty": 0.95,
+        "note": "10 niveaux et plus, diff-5=5 × 0.2 = 1.0 plafonné à max_penalty : -95% (quasi rien)"
       }
     ],
     "_migrated_from": "items/loot_tables.json multipliers.level_difference"

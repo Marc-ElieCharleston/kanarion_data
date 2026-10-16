@@ -64,6 +64,57 @@
         "bonus_type": "both",
         "default": 2.0,
         "formula": "mp_regen_final = (base + growth + flat_bonus) \u00d7 (1 + percent_bonus/100)"
+      },
+      "hp_regen_percent": {
+        "name": "Regen PV en %",
+        "name_fr": "Regen PV en %",
+        "name_en": "HP Regeneration (%)",
+        "description": "Pourcentage des PV max regeneres par seconde, en plus de la regen PV plate. Meme regle que la regen PV : ne joue que hors combat. Jusqu'a 3 decimales (0,075 = 0,075 % par seconde).",
+        "description_fr": "Pourcentage des PV max regeneres par seconde, en plus de la regen PV plate. Meme regle que la regen PV : ne joue que hors combat. Jusqu'a 3 decimales (0,075 = 0,075 % par seconde).",
+        "description_en": "Percentage of max HP regenerated per second, on top of the flat HP regen. Same rule as HP regen: out of combat only. Up to 3 decimals (0.075 = 0.075% per second).",
+        "tooltip_fr": "Pourcentage des PV max r\u00e9cup\u00e9r\u00e9 chaque seconde hors combat.",
+        "tooltip_en": "Share of max health regenerated every second outside combat.",
+        "bonus_type": "flat",
+        "default": 0,
+        "formula": "hp_gained_per_second = hp_regen + hp_max \u00d7 hp_regen_percent/100"
+      },
+      "mp_regen_percent": {
+        "name": "Regen Souffle en %",
+        "name_fr": "Regen Souffle en %",
+        "name_en": "Breath Regeneration (%)",
+        "description": "Pourcentage du Souffle max regenere par seconde, en combat et hors combat, en plus de la regen Souffle plate. Forme des panoplies de rang IV et V (items/panoplies.json rank_system), ouverte aux buffs, sorts, passifs et keystones. Jusqu'a 3 decimales (0,075 = 0,075 % par seconde). Plafond : au-dela, la plus grande reserve du jeu (mage niveau 100, un point par niveau en Souffle) ne s'epuise plus (scripts/balance/souffle_per_level.py --budget).",
+        "description_fr": "Pourcentage du Souffle max regenere par seconde, en combat et hors combat, en plus de la regen Souffle plate. Forme des panoplies de rang IV et V (items/panoplies.json rank_system), ouverte aux buffs, sorts, passifs et keystones. Jusqu'a 3 decimales (0,075 = 0,075 % par seconde). Plafond : au-dela, la plus grande reserve du jeu (mage niveau 100, un point par niveau en Souffle) ne s'epuise plus (scripts/balance/souffle_per_level.py --budget).",
+        "description_en": "Percentage of max Breath regenerated per second, in and out of combat, on top of the flat Breath regen. The form of rank IV and V sets (items/panoplies.json rank_system), open to buffs, skills, passives and keystones. Up to 3 decimals (0.075 = 0.075% per second). Cap: above it, the largest pool of the game (level 100 mage, one point per level in Breath) never runs dry (scripts/balance/souffle_per_level.py --budget).",
+        "tooltip_fr": "Pourcentage du Souffle max r\u00e9cup\u00e9r\u00e9 chaque seconde, en combat et hors combat.",
+        "tooltip_en": "Share of max Breath regenerated every second, in and out of combat.",
+        "bonus_type": "flat",
+        "default": 0,
+        "cap": 0.33,
+        "formula": "mp_gained_per_second = mp_regen + mp_max \u00d7 mp_regen_percent/100"
+      },
+      "hp_regen_out_of_combat": {
+        "name": "Regen PV hors combat",
+        "name_fr": "Regen PV hors combat",
+        "name_en": "Out-of-combat HP Regeneration",
+        "description": "Points de vie regeneres par seconde hors combat : la regen PV plus les bonus reserves au hors combat (nourriture, buffs). Sans bonus, egale a la regen PV. Le Pass Kanarion la multiplie (systems/premium.json).",
+        "description_fr": "Points de vie regeneres par seconde hors combat : la regen PV plus les bonus reserves au hors combat (nourriture, buffs). Sans bonus, egale a la regen PV. Le Pass Kanarion la multiplie (systems/premium.json).",
+        "description_en": "Health points regenerated per second out of combat: HP regen plus the bonuses reserved to out of combat (food, buffs). Without bonus, equal to HP regen. The Kanarion Pass multiplies it (systems/premium.json).",
+        "tooltip_fr": "Points de vie r\u00e9cup\u00e9r\u00e9s chaque seconde hors combat, bonus de nourriture et de buffs compris.",
+        "tooltip_en": "Health regenerated every second outside combat, food and buff bonuses included.",
+        "bonus_type": "both",
+        "formula": "hp_regen_out_of_combat_final = (hp_regen + hp_max \u00d7 hp_regen_percent/100 + flat_bonus) \u00d7 (1 + percent_bonus/100)"
+      },
+      "mp_regen_out_of_combat": {
+        "name": "Regen Souffle hors combat",
+        "name_fr": "Regen Souffle hors combat",
+        "name_en": "Out-of-combat Breath Regeneration",
+        "description": "Points de souffle regeneres par seconde hors combat : la regen Souffle plus les bonus reserves au hors combat (nourriture, buffs). Sans bonus, egale a la regen Souffle. Le Pass Kanarion la multiplie (systems/premium.json). Utile pour enchainer les combats.",
+        "description_fr": "Points de souffle regeneres par seconde hors combat : la regen Souffle plus les bonus reserves au hors combat (nourriture, buffs). Sans bonus, egale a la regen Souffle. Le Pass Kanarion la multiplie (systems/premium.json). Utile pour enchainer les combats.",
+        "description_en": "Breath points regenerated per second out of combat: Breath regen plus the bonuses reserved to out of combat (food, buffs). Without bonus, equal to Breath regen. The Kanarion Pass multiplies it (systems/premium.json). Useful to chain fights.",
+        "tooltip_fr": "Souffle r\u00e9cup\u00e9r\u00e9 chaque seconde hors combat, bonus de nourriture et de buffs compris.",
+        "tooltip_en": "Breath regenerated every second outside combat, food and buff bonuses included.",
+        "bonus_type": "both",
+        "formula": "mp_regen_out_of_combat_final = (mp_regen + mp_max \u00d7 mp_regen_percent/100 + flat_bonus) \u00d7 (1 + percent_bonus/100)"
       }
     },
 
@@ -623,7 +674,7 @@
         "examples": ["atk_down", "def_down", "poison", "burn", "bleed"],
         "can_resist": true,
         "affected_by_tenacity": true,
-        "stacking": "Voir stacking_system"
+        "stacking": "Voir stats/status_effects.json (_meta.stacking_system, _meta.canonical_grid)"
       },
       "buff": {
         "name": "Buff",
@@ -632,21 +683,9 @@
         "examples": ["atk_up", "def_up", "haste", "regen", "shield"],
         "can_resist": false,
         "affected_by_buff_duration": true,
-        "stacking": "Voir stacking_system"
+        "stacking": "Voir stats/status_effects.json (_meta.stacking_system, _meta.canonical_grid)"
       }
     }
-  },
-
-  "stacking_system": {
-    "description": "Systeme de stacking pour buffs/debuffs",
-    "description_fr": "Systeme de stacking pour buffs/debuffs",
-    "description_en": "Stacking system for buffs/debuffs",
-    "value_per_stack": 10,
-    "max_stacks": 10,
-    "max_total_bonus": 100,
-    "formula": "final_value = base_value \u00d7 (1 + stacks \u00d7 10/100)",
-    "refresh_on_reapply": true,
-    "applies_to": ["atk_up", "atk_down", "def_up", "def_down", "mag_up", "mag_down", "speed_up", "speed_down", "poison", "burn", "bleed", "regen"]
   },
 
   "damage_pipeline": {
