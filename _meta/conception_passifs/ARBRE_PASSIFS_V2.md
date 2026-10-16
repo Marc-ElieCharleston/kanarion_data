@@ -159,6 +159,32 @@ de 100 par le centre : les ponts servent aussi aux hybrides éloignés, et rappo
 - Cible : **méga ≈ 4 notables moyens**. Si les hybrides dominent, on monte les mégas ; sinon on monte
   les hybrides. Les contreparties des mégas gardent un vrai choix de style.
 
+## Interface : ordinateur ET mobile (2026-10-17)
+
+Constat sur l'écran actuel (arbre V1, `passive_tree_view.gd`) : il est pensé souris. Sur mobile, un
+appui achète directement (+1), le retrait (clic droit) n'existe pas, le détail d'un nœud ne s'ouvre
+jamais (le survol est coupé au tactile) et le zoom ne se fait qu'aux boutons (pas de pincement). À
+corriger dès la V1, la V2 en hérite.
+
+Règles proposées, identiques sur les deux supports :
+
+- **Appui = sélection, jamais achat.** Le nœud choisi ouvre une fiche (panneau bas sur mobile,
+  bulle sur ordinateur) : icône, effet, rang, coût, raison du refus éventuel, et deux gros boutons
+  **+** / **−** (au moins 64 px). Sur ordinateur, clic gauche / clic droit restent des raccourcis.
+- **Le chemin s'affiche** dès qu'un nœud est sélectionné (ou survolé à la souris) : la route la moins
+  chère depuis ce que le joueur possède, surlignée, avec son coût total (« +13 pts par Riposte »). Pur
+  affichage, le serveur reste seul juge.
+- **Pincer pour zoomer, glisser pour déplacer**, double appui pour zoomer sur un point ; boutons de
+  zoom gardés.
+- **Niveaux de détail** : dézoomé, seuls les notables, les mégas et les noms des bras (lisible sur
+  téléphone) ; zoomé, les petits nœuds et leurs rangs. Toute cible tactile fait au moins 44 px à
+  l'écran au zoom où elle est cliquable.
+- **Ponts lisibles** : un arc sur l'anneau 30, aux couleurs des deux bras, avec le coût écrit dessus.
+  Anneaux 15 / 30 / 50 / 75 visibles en fond.
+- **Barre fixe en bas** : points restants, Annuler, Appliquer ; le panneau Impact se replie.
+- **Icônes** : chaque nœud a son champ `icon` ; les 40 manquantes sont commandées dans `ICONES_V2.md`
+  avec une contrainte de lisibilité à 30 px.
+
 ## Reset des points (proposition)
 
 - Gratuit jusqu'au niveau 20.

@@ -391,9 +391,48 @@ out["arms"] = [{"id": a, "name_fr": NAMES[a][0], "name_en": NAMES[a][1], "color"
 out["nodes"] = nodes
 out["edges"] = edges
 
+# Icones : celles qui existent deja dans le client (kanarion_front/assets/icons/passives/) sont reprises,
+# les autres recoivent le nom du fichier a produire (tree/v2_<cle>.png), liste dans ICONES_V2.md.
+V1_ICON = {"execution": "tree/execution", "reach": "tree/reach", "killer_instinct": "tree/killer_instinct",
+           "mega_fatal": "tree/fatal_strike", "iron_skin": "tree/iron_skin", "hold_position": "tree/hold_position",
+           "composure": "tree/composure", "unshakable": "tree/unshakable", "helping_hand": "tree/helping_hand",
+           "extended_heal": "tree/extended_heal", "transfusion": "tree/transfusion", "last_breath": "tree/last_breath",
+           "inspiration": "tree/inspiration", "extended_aura": "tree/extended_aura", "rhythm": "tree/rhythm",
+           "conductor": "tree/conductor", "grip": "tree/grip", "contagion": "tree/contagion",
+           "control_zone": "tree/control_zone", "tempo_master": "tree/tempo_master", "atk_def": "tree/riposte",
+           "def_heal": "tree/living_rampart", "heal_sup": "tree/war_chant", "sup_deb": "tree/coordination",
+           "atk_deb": "tree/opportunist"}
+STAT_ICON = {"crit": "common/critical_instinct", "crit_dmg": "tree/crit_damage", "hit": "common/precision",
+             "atk": "common/strength", "mag": "common/intellect", "armor": "common/resistance",
+             "magic_resist": "tree/magic_resist", "hp": "common/vitality", "flee": "common/agility",
+             "damage_percent": "common/breakthrough", "armor_pen": "tree/penetration", "magic_pen": "common/arcane_piercing",
+             "cast_speed": "tree/cast_speed", "damage_reduction": "tree/damage_reduction", "lifesteal": "common/vampirism",
+             "parry_chance": "tree/parry", "block_chance": "tree/parry", "thorns": "tree/thorns",
+             "healing_received": "tree/healing_received", "heal_power": "tree/heal_power", "spell_vamp": "tree/spell_vamp",
+             "shield_power": "tree/shield_power", "mp": "common/deep_breath", "mp_regen": "tree/mp_regen",
+             "buff_duration": "tree/buff_duration", "cooldown_reduction": "tree/cooldown_reduction",
+             "tenacity": "common/tenacity", "effect_resist": "common/warding", "effect_chance": "tree/effect_chance",
+             "debuff_duration": "tree/debuff_duration", "hp_regen": "common/restoration"}
+TO_CREATE = []
+for i, n in enumerate(nodes):
+    if n["kind"] == "center":
+        icon = "tree/tree_center"
+    elif n["kind"] in ("small", "bridge_small"):
+        icon = STAT_ICON[n["effects"][0]["stat"]]
+    else:
+        key = n["id"].split("_", 2)[2] if not n["id"].startswith("pt2_hyb_") else n["id"][len("pt2_hyb_"):]
+        icon = V1_ICON.get(key)
+        if icon is None:
+            icon = f"tree/v2_{n['id'][len('pt2_'):]}"  # une seule regle : v2_ + id du noeud sans pt2_
+            TO_CREATE.append((n["arm"] or "pont", n["kind"], n["name_fr"], icon, n["description_fr"]))
+    nodes[i] = dict(n, icon=icon)
+
 ids = {n["id"] for n in nodes}
 missing = [e for e in edges if e[0] not in ids or e[1] not in ids]
 assert not missing, missing
 assert len(ids) == len(nodes), "id en double"
 json.dump(out, open(os.path.join(HERE, "arbre_v2.json"), "w", encoding="utf-8", newline="\n"), ensure_ascii=False, indent=2)
+json.dump(TO_CREATE, open(os.path.join(HERE, "icones_v2_a_creer.json"), "w", encoding="utf-8", newline="\n"),
+          ensure_ascii=False, indent=1)
+print(f"{len(TO_CREATE)} icones a creer (icones_v2_a_creer.json)")
 print(f"arbre_v2.json : {len(nodes)} noeuds, {len(edges)} aretes, {len(NEW_MECHANICS)} mecaniques nouvelles")
