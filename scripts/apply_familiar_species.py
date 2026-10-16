@@ -194,7 +194,11 @@ def main():
         ROOT / "config/familiar_balance.json": dump(balance),
         ROOT / "classes/familiar/passives.json": dump(passives),
     }
-    changed = [p for p, b in outputs.items() if p.read_bytes() != b]
+    # Compared without CR: git stores these files with LF (Linux CI checkout) while dump()
+    # writes CRLF (Windows working tree). A line-ending difference is not a data change.
+    def same(p, b):
+        return p.read_bytes().replace(b"\r\n", b"\n") == b.replace(b"\r\n", b"\n")
+    changed = [p for p, b in outputs.items() if not same(p, b)]
     if args.check:
         print("à jour" if not changed else "à appliquer : " + ", ".join(str(p.relative_to(ROOT)) for p in changed))
         sys.exit(1 if changed else 0)
