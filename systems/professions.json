@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "version": "0.4",
-    "status": "CONCEPTION V2 (2026-10-01), rien n'est encore branche. Regles validees avec Charleston : Herboriste, rang + rarete des ressources, points de recolte (world/gather_nodes.json), intermediaires et liens entre metiers, courbe d'XP chiffree (systems/profession_xp.json).",
+    "version": "1.0",
+    "status": "Metiers V1 branches cote serveur (2026-10-01) : economy (niveaux, XP, Experts, fabrication et fabrication automatique, plans, glanage), presence (points de recolte), quest (succes de metier). Le client est le lot suivant.",
     "why": "Les monstres lachent 215 materiaux differents et la forge n'en utilise que 39 : les 176 autres ne servent qu'a etre revendus. Les metiers les rendent utiles, autour des trois piliers du jeu : la chasse, le Souffle et les familiers.",
     "reuse": "Fabrication = le flux du forgeron (economy handle_craft_item, CRAFT_ITEM 0x041D/0x041E : or + materiaux consommes atomiquement, idempotent, ITEM_CRAFTED publie). A etendre : station + niveau de metier dans Recipe, XP de metier dans la meme transaction, rang tire et pose dans custom_data. Client : forge_window.gd, ouvert avec un id de station.",
     "roster": "15 metiers (2026-10-01) : 6 de recolte (Glaneur, Chasseur de Failles, Mineur, Bucheron, Pecheur, Herboriste) et 9 de fabrication."
@@ -10,7 +10,7 @@
     "level_max": 100,
     "specialties": 2,
     "non_specialty_level_cap": 50,
-    "_specialties": "Tous les metiers sont accessibles a tous les personnages. Deux seulement, les specialites, montent jusqu'au niveau 100 ; les autres plafonnent a 50 pour FABRIQUER. Le haut de gamme demande un specialiste, ce qui cree un marche entre joueurs.",
+    "_specialties": "EXPERT (remplace le choix libre de deux specialites, 2026-10-01). Jusqu'au niveau 50, tout le monde monte tous les metiers. Au niveau 50, le joueur va voir le maitre du metier pour passer Expert ; seuls les metiers Expert montent de 51 a 100. specialties = nombre maximum de metiers Expert par personnage. non_specialty_level_cap = plafond d'un metier non Expert (XP et fabrication). Les cles gardent leur nom historique.",
     "specialty_change": {
       "allowed": true,
       "gold_costs": [
@@ -19,10 +19,21 @@
         60000,
         150000
       ],
-      "_rule": "Le metier quitte GARDE son niveau mais fabrique de nouveau au plafond 50 ; le metier choisi retrouve son niveau reel. Cout croissant par changement (le dernier palier se repete).",
-      "npc": "npc_class_artisan"
+      "_rule": "Changement d'Expert (renoncer a un Expert pour en prendre un autre), chez le maitre du nouveau metier. Le metier quitte garde son niveau mais fabrique de nouveau au plafond 50 ; redevenu Expert plus tard, il retrouve son niveau reel. Cout croissant par changement (le dernier palier se repete).",
+      "npc": "master_of_the_profession"
     },
-    "scope": "character"
+    "scope": "character",
+    "start_level": 0,
+    "_start_level": "Chaque personnage possede les 15 metiers des sa creation, au niveau 0. Toute regle a seuil fonctionne a partir de 0 : les recettes et ressources de rang I demandent le niveau 0.",
+    "expert": {
+      "unlock_level": 50,
+      "max_experts": 2,
+      "free_promotions": 2,
+      "npc": "master_of_the_profession",
+      "name_fr": "Expert",
+      "name_en": "Expert",
+      "_rule": "Passer Expert se fait chez le maitre du metier, au niveau 50 ou plus. Les deux premieres promotions sont gratuites. Au-dela, devenir Expert d'un autre metier oblige a renoncer a un des deux : le metier quitte garde son niveau mais refabrique au plafond 50 et ne gagne plus d'XP au-dela. Ce changement coute specialty_change.gold_costs[n] (n = nombre de changements deja faits, le dernier palier se repete)."
+    }
   },
   "quality": {
     "_rule": "Chaque objet fabrique sort avec un rang de qualite C, B, A, S ou SS, tire par le serveur. Le niveau du metier et la rarete des materiaux deplacent les chances vers le haut ; un rang ne depasse jamais le plafond de la recette. Stocke dans item_instances.custom_data.rank (1..5), comme le butin. Les objets a rang deja porte par l'id (grimoires, stigmates, Koro) gardent ce modele : la recette vise un id par rang.",
@@ -50,7 +61,15 @@
     },
     "_material_rarity_shift": "Remplace l'ancien rare_material_shift (0.05, un seul palier). Decalage de la recette = moyenne, ponderee par les quantites, du decalage de rarete de chaque ressource recoltee ou intermediaire consommee (les materiaux de monstre comptent pour 0). Toutes en legendaire = +0.25.",
     "rank_effect": "Le rang multiplie les statistiques ou la puissance de l'objet selon items/equipment_scaling.json (equipement) ; pour un consommable, il multiplie son effet (duree ou valeur).",
-    "_shift_rule": "Decalage total d = per_10_levels_above_recipe_shift x floor((niveau du metier - niveau de la recette) / 10) + decalage de rarete des materiaux. Application : en partant du rang SS vers C, chaque rang cede d x son poids au rang du dessus (SS garde le sien), puis on tire ; un resultat au-dessus de quality_cap est ramene a quality_cap. d est borne a 0.9."
+    "_shift_rule": "Decalage total d = per_10_levels_above_recipe_shift x floor((niveau du metier - niveau de la recette) / 10) + decalage de rarete des materiaux. Application : en partant du rang SS vers C, chaque rang cede d x son poids au rang du dessus (SS garde le sien), puis on tire ; un resultat au-dessus de quality_cap est ramene a quality_cap. d est borne a 0.9.",
+    "consumable_multipliers": {
+      "C": 1.0,
+      "B": 1.08,
+      "A": 1.16,
+      "S": 1.24,
+      "SS": 1.32
+    },
+    "_crafted_storage": "Equipement (non empilable) : la qualite tiree devient la rarete de la piece (C=common, B=uncommon, A=rare, S=epic, SS=legendary) et ses stats sont tirees par le meme constructeur que le butin, au niveau d'entree de son rang ; custom_data porte quality (C..SS), rank (rang de l'objet I..V, comme le butin) et crafted_by. Consommable empilable a quality_cap > C : la qualite donne une variante generee (id + suffixe de resource_rarity) dont l'effet en valeur (soin, Souffle) est multiplie par consumable_multipliers ; une pile par qualite. Les effets de buff (status_id) gardent leur duree en V1."
   },
   "xp": {
     "_rule": "L'XP de metier vient de la fabrication (une recette executee) et de la recolte (un coup sur un point, un jet de glanage, une braise de Faille). Une recette ou un point trop bas pour le niveau du metier rapporte de moins en moins, puis rien : on monte en travaillant a son niveau.",
@@ -91,7 +110,15 @@
         "runist",
         "scribe",
         "tanner"
-      ]
+      ],
+      "gleaning": {
+        "chance_base": 0.08,
+        "chance_per_level": 0.004,
+        "chance_max": 0.5,
+        "extra_qty_every_levels": 40,
+        "tool_required": true,
+        "_rule": "Un jet par monstre vaincu dans un combat PvE gagne. Chance = min(chance_max, chance_base + chance_per_level x niveau de Glaneur). Le jet reprend un materiau de la table de butin du monstre (tirage uniforme parmi ses materiaux mat_*), quantite 1 + floor(niveau / extra_qty_every_levels). Rang du jet = ceil(niveau du monstre / 20) ; il faut une besace (tool_satchel_r<n>) de rang >= ce rang, chaque jet reussi use une utilisation. XP = profession_xp gather_xp du rang, regle grise comprise (niveau de recolte 0, 20, 40, 60, 80). Calcule par economy a la fin du combat, transaction idempotente par combat et personnage."
+      }
     },
     {
       "id": "fissure_hunter",
@@ -149,7 +176,8 @@
         "collector",
         "runist",
         "tanner"
-      ]
+      ],
+      "_v1": "V1 serveur : niveau, XP et outil existent ; les Braises de Faille a recueillir pendant une invasion et le pressentiment (forecast) ne sont pas encore branches."
     },
     {
       "id": "miner",
@@ -593,7 +621,6 @@
     "_rule": "Chaque materiau recoit un ou plusieurs metiers dans une liste EXPLICITE (items/materials.json, champ professions), relue a la main. Un premier classement automatique par nom a montre ses limites (Lame Rouillee classee chez le Distillateur).",
     "material_uses": {
       "mat_rat_tail": [
-        "cook",
         "apothecary"
       ],
       "mat_rat_fur": [
@@ -631,7 +658,8 @@
         "tanner"
       ],
       "mat_bone": [
-        "bone_carver"
+        "bone_carver",
+        "tanner"
       ],
       "mat_old_arrow": [
         "bone_carver"
@@ -650,7 +678,6 @@
         "apothecary"
       ],
       "mat_bull_horn": [
-        "bone_carver",
         "brewer"
       ],
       "mat_tough_hide": [
@@ -664,7 +691,8 @@
       ],
       "mat_spider_silk": [
         "tanner",
-        "scribe"
+        "scribe",
+        "collector"
       ],
       "mat_spider_fang": [
         "bone_carver"
@@ -734,7 +762,6 @@
         "apothecary"
       ],
       "mat_tower_sigil": [
-        "runist",
         "scribe"
       ],
       "mat_fanatic_focus": [
@@ -784,12 +811,12 @@
         "tanner"
       ],
       "mat_dried_herbs": [
-        "apothecary",
         "brewer",
         "cook"
       ],
       "mat_healing_salve": [
-        "apothecary"
+        "apothecary",
+        "breeder"
       ],
       "mat_torn_cloth": [
         "tanner"
@@ -810,7 +837,6 @@
         "runist"
       ],
       "mat_frog_skin": [
-        "tanner",
         "apothecary"
       ],
       "mat_otter_fur": [
@@ -832,7 +858,6 @@
         "brewer"
       ],
       "mat_hare_foot": [
-        "collector",
         "breeder"
       ],
       "mat_fox_pelt": [
@@ -848,8 +873,7 @@
         "bone_carver"
       ],
       "mat_iron_blade": [
-        "bone_carver",
-        "runist"
+        "bone_carver"
       ],
       "mat_goblin_token": [
         "collector"
@@ -867,8 +891,7 @@
         "bone_carver"
       ],
       "mat_cursed_bone": [
-        "bone_carver",
-        "runist"
+        "bone_carver"
       ],
       "mat_rusted_armor": [
         "runist"
@@ -926,8 +949,7 @@
         "runist"
       ],
       "mat_elder_staff": [
-        "bone_carver",
-        "scribe"
+        "bone_carver"
       ],
       "mat_village_seal": [
         "scribe"
@@ -937,7 +959,8 @@
       ],
       "mat_misty_essence": [
         "apothecary",
-        "brewer"
+        "brewer",
+        "breeder"
       ],
       "mat_crow_feather": [
         "scribe",
@@ -950,16 +973,14 @@
         "runist"
       ],
       "mat_silver_coin": [
-        "collector",
-        "runist"
+        "collector"
       ],
       "mat_witch_herb": [
         "apothecary",
         "brewer"
       ],
       "mat_bone_charm": [
-        "collector",
-        "runist"
+        "collector"
       ],
       "mat_chief_token": [
         "collector"
@@ -972,8 +993,7 @@
         "runist"
       ],
       "mat_ritual_candle": [
-        "scribe",
-        "runist"
+        "scribe"
       ],
       "mat_corrupted_relic": [
         "collector",
@@ -1053,7 +1073,7 @@
       ],
       "mat_fissure_shard": [
         "collector",
-        "runist"
+        "breeder"
       ],
       "mat_magic_crystal": [
         "runist",
@@ -1073,8 +1093,7 @@
         "tanner"
       ],
       "mat_shadow_horsehair": [
-        "tanner",
-        "scribe"
+        "tanner"
       ],
       "mat_nightmare_essence": [
         "apothecary"
@@ -1116,7 +1135,6 @@
         "bone_carver"
       ],
       "mat_infernal_shard": [
-        "runist",
         "apothecary"
       ],
       "mat_warlord_seal": [
@@ -1228,7 +1246,8 @@
         "scribe"
       ],
       "mat_corrupted_ink": [
-        "scribe"
+        "scribe",
+        "apothecary"
       ],
       "mat_executioner_axe": [
         "bone_carver",
@@ -1269,12 +1288,10 @@
         "runist"
       ],
       "mat_void_thread": [
-        "tanner",
-        "scribe"
+        "tanner"
       ],
       "mat_war_banner": [
-        "tanner",
-        "collector"
+        "tanner"
       ],
       "mat_rift_ember": [
         "apothecary",
@@ -1581,18 +1598,22 @@
         "brewer"
       ],
       "mat_solvent_r1": [
-        "collector"
+        "collector",
+        "apothecary"
       ],
       "mat_solvent_r2": [
-        "collector"
+        "collector",
+        "apothecary"
       ],
       "mat_solvent_r3": [
-        "collector"
+        "collector",
+        "apothecary"
       ],
       "mat_solvent_r4": [
         "breeder",
         "collector",
-        "runist"
+        "runist",
+        "apothecary"
       ],
       "mat_solvent_r5": [
         "breeder",
@@ -1600,19 +1621,23 @@
         "runist"
       ],
       "mat_ink_r1": [
-        "scribe"
+        "scribe",
+        "apothecary"
       ],
       "mat_ink_r2": [
-        "collector"
+        "collector",
+        "apothecary"
       ],
       "mat_ink_r3": [
         "breeder",
         "collector",
-        "scribe"
+        "scribe",
+        "apothecary"
       ],
       "mat_ink_r4": [
         "collector",
-        "scribe"
+        "scribe",
+        "apothecary"
       ],
       "mat_ink_r5": [
         "breeder",
@@ -1623,7 +1648,8 @@
         "scribe"
       ],
       "mat_paper_r2": [
-        "runist"
+        "runist",
+        "scribe"
       ],
       "mat_paper_r3": [
         "collector",
@@ -1659,59 +1685,73 @@
       ],
       "mat_flour_r1": [
         "breeder",
-        "brewer"
+        "brewer",
+        "cook"
       ],
       "mat_flour_r2": [
-        "brewer"
+        "brewer",
+        "cook"
       ],
       "mat_flour_r3": [
         "breeder",
-        "brewer"
+        "brewer",
+        "cook"
       ],
       "mat_flour_r4": [
         "breeder",
-        "brewer"
+        "brewer",
+        "cook"
       ],
       "mat_flour_r5": [
         "brewer"
       ],
       "mat_needle_r1": [
-        "tanner"
+        "tanner",
+        "bone_carver"
       ],
       "mat_needle_r2": [
-        "tanner"
+        "tanner",
+        "bone_carver"
       ],
       "mat_needle_r3": [
-        "tanner"
+        "tanner",
+        "bone_carver"
       ],
       "mat_needle_r4": [
-        "tanner"
+        "tanner",
+        "bone_carver"
       ],
       "mat_needle_r5": [
         "tanner"
       ],
       "mat_spirit_r1": [
-        "apothecary"
+        "apothecary",
+        "brewer"
       ],
       "mat_spirit_r2": [
-        "apothecary"
+        "apothecary",
+        "brewer"
       ],
       "mat_spirit_r3": [
-        "apothecary"
+        "apothecary",
+        "brewer"
       ],
       "mat_spirit_r4": [
         "apothecary",
-        "cook"
+        "cook",
+        "brewer"
       ],
       "mat_spirit_r5": [
         "apothecary",
         "cook"
       ],
       "mat_quill_r1": [
-        "scribe"
+        "scribe",
+        "breeder"
       ],
       "mat_quill_r2": [
-        "collector"
+        "collector",
+        "breeder"
       ],
       "mat_quill_r3": [
         "breeder",
@@ -1720,25 +1760,30 @@
       ],
       "mat_quill_r4": [
         "collector",
-        "scribe"
+        "scribe",
+        "breeder"
       ],
       "mat_quill_r5": [
         "breeder",
         "collector"
       ],
       "mat_relic_r1": [
-        "scribe"
+        "scribe",
+        "collector"
       ],
       "mat_relic_r2": [
-        "runist"
+        "runist",
+        "collector"
       ],
       "mat_relic_r3": [
         "runist",
-        "scribe"
+        "scribe",
+        "collector"
       ],
       "mat_relic_r4": [
         "runist",
-        "scribe"
+        "scribe",
+        "collector"
       ],
       "mat_relic_r5": [
         "runist"
@@ -1749,7 +1794,7 @@
     "_material_uses_v2": "Depuis la V2, material_uses liste aussi les ressources recoltees et les intermediaires (items/profession_recipes.json new_items) : pour eux la liste est DERIVEE des recettes par le generateur et verifiee par le validateur (aucune ressource sans usage)."
   },
   "achievements": {
-    "_rule": "Succes de METIER (Charleston, 2026-10-01) : ECRITS mais EN ATTENTE. systems/achievements.json n'accepte que des sources relues en base, et les tables de metier n'existent pas encore : ces succes y seront deplaces, avec leur categorie, le jour du branchement serveur, pas avant (un succes sans ecrivain mentirait au joueur). Vise ~300 succes au total avec les vagues 1 et 2 (145).",
+    "_rule": "Succes de metier : 71 deplaces dans systems/achievements.json (categorie metiers) le 2026-10-01, avec le branchement serveur (migration 111, sources relues par le moteur de succes). Restent ici les 7 dont la source n'a pas encore d'ecrivain : objets fabriques vendus a l'HDV, Braises de Faille, fusions et revelations Koro.",
     "category": {
       "id": "metiers",
       "name_fr": "Métiers",
@@ -1757,1074 +1802,12 @@
     },
     "xp_rule": "Meme regle que la vague 2 : XP FIXE = forme x cout du niveau de PERSONNAGE ou le succes tombe normalement (_expected_char_level), premier 0.5 / echelle 1 / detour 2 niveaux. Textes sans lettre de rang ni de rarete : leur affichage passe de C..SS a D..S.",
     "sources_pending": {
-      "profession_level:<id>": "niveau du metier <id> du personnage (table de niveaux de metier, a creer)",
-      "crafts_total": "nombre d'objets fabriques (journal de fabrication)",
-      "gathers_total": "nombre de recoltes terminees (journal de recolte)",
-      "recipes_distinct": "nombre de recettes differentes deja fabriquees (le meme registre sert au bonus de premiere fabrication)",
-      "crafts_quality_top": "objets fabriques a la qualite interne ss (affichee S apres la bascule D-S)",
-      "crafts_quality_second": "objets fabriques a la qualite interne s",
-      "gathers_rarity_top": "ressources recoltees a la rarete interne SS",
-      "gathers_rarity_second": "ressources recoltees a la rarete interne S",
-      "profession_specialties_at_100": "nombre de specialites au niveau 100",
-      "professions_at_or_above:<n>": "nombre de metiers au niveau n ou plus",
-      "intermediates_crafted": "produits intermediaires fabriques (category intermediate)",
       "crafted_items_sold": "ventes HDV dont l'objet porte custom_data.crafted_by = ce personnage",
       "rift_embers_gathered": "Braises de Faille recueillies",
       "koro_fusions": "fusions Koro reussies (rule_koro_fuse_*)",
-      "koro_reveals": "revelations Koro (rule_koro_reveal_*)",
-      "max_tool_rank_used": "rang le plus haut d'outil de recolte utilise"
+      "koro_reveals": "revelations Koro (rule_koro_reveal_*)"
     },
     "pending": [
-      {
-        "id": "ach_prof_gleaner_10",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Apprenti glaneur",
-        "name_en": "Apprentice Gleaner",
-        "desc_fr": "Atteins le niveau 10 en glaneur.",
-        "desc_en": "Reach level 10 as a Gleaner.",
-        "source": "profession_level:gleaner",
-        "threshold": 10,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_prof_gleaner_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Compagnon glaneur",
-        "name_en": "Journeyman Gleaner",
-        "desc_fr": "Atteins le niveau 50 en glaneur.",
-        "desc_en": "Reach level 50 as a Gleaner.",
-        "source": "profession_level:gleaner",
-        "threshold": 50,
-        "reward": {
-          "xp": 9210
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_prof_gleaner_100",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Maître glaneur",
-        "name_en": "Master Gleaner",
-        "desc_fr": "Atteins le niveau 100 en glaneur.",
-        "desc_en": "Reach level 100 as a Gleaner.",
-        "source": "profession_level:gleaner",
-        "threshold": 100,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_prof_fissure_hunter_10",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Apprenti chasseur de Failles",
-        "name_en": "Apprentice Rift Hunter",
-        "desc_fr": "Atteins le niveau 10 en chasseur de Failles.",
-        "desc_en": "Reach level 10 as a Rift Hunter.",
-        "source": "profession_level:fissure_hunter",
-        "threshold": 10,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_prof_fissure_hunter_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Compagnon chasseur de Failles",
-        "name_en": "Journeyman Rift Hunter",
-        "desc_fr": "Atteins le niveau 50 en chasseur de Failles.",
-        "desc_en": "Reach level 50 as a Rift Hunter.",
-        "source": "profession_level:fissure_hunter",
-        "threshold": 50,
-        "reward": {
-          "xp": 9210
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_prof_fissure_hunter_100",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Maître chasseur de Failles",
-        "name_en": "Master Rift Hunter",
-        "desc_fr": "Atteins le niveau 100 en chasseur de Failles.",
-        "desc_en": "Reach level 100 as a Rift Hunter.",
-        "source": "profession_level:fissure_hunter",
-        "threshold": 100,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_prof_miner_10",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Apprenti mineur",
-        "name_en": "Apprentice Miner",
-        "desc_fr": "Atteins le niveau 10 en mineur.",
-        "desc_en": "Reach level 10 as a Miner.",
-        "source": "profession_level:miner",
-        "threshold": 10,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_prof_miner_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Compagnon mineur",
-        "name_en": "Journeyman Miner",
-        "desc_fr": "Atteins le niveau 50 en mineur.",
-        "desc_en": "Reach level 50 as a Miner.",
-        "source": "profession_level:miner",
-        "threshold": 50,
-        "reward": {
-          "xp": 9210
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_prof_miner_100",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Maître mineur",
-        "name_en": "Master Miner",
-        "desc_fr": "Atteins le niveau 100 en mineur.",
-        "desc_en": "Reach level 100 as a Miner.",
-        "source": "profession_level:miner",
-        "threshold": 100,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_prof_lumberjack_10",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Apprenti bûcheron",
-        "name_en": "Apprentice Lumberjack",
-        "desc_fr": "Atteins le niveau 10 en bûcheron.",
-        "desc_en": "Reach level 10 as a Lumberjack.",
-        "source": "profession_level:lumberjack",
-        "threshold": 10,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_prof_lumberjack_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Compagnon bûcheron",
-        "name_en": "Journeyman Lumberjack",
-        "desc_fr": "Atteins le niveau 50 en bûcheron.",
-        "desc_en": "Reach level 50 as a Lumberjack.",
-        "source": "profession_level:lumberjack",
-        "threshold": 50,
-        "reward": {
-          "xp": 9210
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_prof_lumberjack_100",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Maître bûcheron",
-        "name_en": "Master Lumberjack",
-        "desc_fr": "Atteins le niveau 100 en bûcheron.",
-        "desc_en": "Reach level 100 as a Lumberjack.",
-        "source": "profession_level:lumberjack",
-        "threshold": 100,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_prof_fisher_10",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Apprenti pêcheur",
-        "name_en": "Apprentice Fisher",
-        "desc_fr": "Atteins le niveau 10 en pêcheur.",
-        "desc_en": "Reach level 10 as a Fisher.",
-        "source": "profession_level:fisher",
-        "threshold": 10,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_prof_fisher_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Compagnon pêcheur",
-        "name_en": "Journeyman Fisher",
-        "desc_fr": "Atteins le niveau 50 en pêcheur.",
-        "desc_en": "Reach level 50 as a Fisher.",
-        "source": "profession_level:fisher",
-        "threshold": 50,
-        "reward": {
-          "xp": 9210
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_prof_fisher_100",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Maître pêcheur",
-        "name_en": "Master Fisher",
-        "desc_fr": "Atteins le niveau 100 en pêcheur.",
-        "desc_en": "Reach level 100 as a Fisher.",
-        "source": "profession_level:fisher",
-        "threshold": 100,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_prof_herbalist_10",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Apprenti herboriste",
-        "name_en": "Apprentice Herbalist",
-        "desc_fr": "Atteins le niveau 10 en herboriste.",
-        "desc_en": "Reach level 10 as a Herbalist.",
-        "source": "profession_level:herbalist",
-        "threshold": 10,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_prof_herbalist_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Compagnon herboriste",
-        "name_en": "Journeyman Herbalist",
-        "desc_fr": "Atteins le niveau 50 en herboriste.",
-        "desc_en": "Reach level 50 as a Herbalist.",
-        "source": "profession_level:herbalist",
-        "threshold": 50,
-        "reward": {
-          "xp": 9210
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_prof_herbalist_100",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Maître herboriste",
-        "name_en": "Master Herbalist",
-        "desc_fr": "Atteins le niveau 100 en herboriste.",
-        "desc_en": "Reach level 100 as a Herbalist.",
-        "source": "profession_level:herbalist",
-        "threshold": 100,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_prof_tanner_10",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Apprenti tanneur",
-        "name_en": "Apprentice Tanner",
-        "desc_fr": "Atteins le niveau 10 en tanneur.",
-        "desc_en": "Reach level 10 as a Tanner.",
-        "source": "profession_level:tanner",
-        "threshold": 10,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_prof_tanner_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Compagnon tanneur",
-        "name_en": "Journeyman Tanner",
-        "desc_fr": "Atteins le niveau 50 en tanneur.",
-        "desc_en": "Reach level 50 as a Tanner.",
-        "source": "profession_level:tanner",
-        "threshold": 50,
-        "reward": {
-          "xp": 9210
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_prof_tanner_100",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Maître tanneur",
-        "name_en": "Master Tanner",
-        "desc_fr": "Atteins le niveau 100 en tanneur.",
-        "desc_en": "Reach level 100 as a Tanner.",
-        "source": "profession_level:tanner",
-        "threshold": 100,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_prof_bone_carver_10",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Apprenti sculpteur d'os",
-        "name_en": "Apprentice Bone Carver",
-        "desc_fr": "Atteins le niveau 10 en sculpteur d'os.",
-        "desc_en": "Reach level 10 as a Bone Carver.",
-        "source": "profession_level:bone_carver",
-        "threshold": 10,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_prof_bone_carver_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Compagnon sculpteur d'os",
-        "name_en": "Journeyman Bone Carver",
-        "desc_fr": "Atteins le niveau 50 en sculpteur d'os.",
-        "desc_en": "Reach level 50 as a Bone Carver.",
-        "source": "profession_level:bone_carver",
-        "threshold": 50,
-        "reward": {
-          "xp": 9210
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_prof_bone_carver_100",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Maître sculpteur d'os",
-        "name_en": "Master Bone Carver",
-        "desc_fr": "Atteins le niveau 100 en sculpteur d'os.",
-        "desc_en": "Reach level 100 as a Bone Carver.",
-        "source": "profession_level:bone_carver",
-        "threshold": 100,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_prof_apothecary_10",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Apprenti apothicaire",
-        "name_en": "Apprentice Apothecary",
-        "desc_fr": "Atteins le niveau 10 en apothicaire.",
-        "desc_en": "Reach level 10 as a Apothecary.",
-        "source": "profession_level:apothecary",
-        "threshold": 10,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_prof_apothecary_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Compagnon apothicaire",
-        "name_en": "Journeyman Apothecary",
-        "desc_fr": "Atteins le niveau 50 en apothicaire.",
-        "desc_en": "Reach level 50 as a Apothecary.",
-        "source": "profession_level:apothecary",
-        "threshold": 50,
-        "reward": {
-          "xp": 9210
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_prof_apothecary_100",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Maître apothicaire",
-        "name_en": "Master Apothecary",
-        "desc_fr": "Atteins le niveau 100 en apothicaire.",
-        "desc_en": "Reach level 100 as a Apothecary.",
-        "source": "profession_level:apothecary",
-        "threshold": 100,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_prof_cook_10",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Apprenti cuisinier",
-        "name_en": "Apprentice Cook",
-        "desc_fr": "Atteins le niveau 10 en cuisinier.",
-        "desc_en": "Reach level 10 as a Cook.",
-        "source": "profession_level:cook",
-        "threshold": 10,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_prof_cook_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Compagnon cuisinier",
-        "name_en": "Journeyman Cook",
-        "desc_fr": "Atteins le niveau 50 en cuisinier.",
-        "desc_en": "Reach level 50 as a Cook.",
-        "source": "profession_level:cook",
-        "threshold": 50,
-        "reward": {
-          "xp": 9210
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_prof_cook_100",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Maître cuisinier",
-        "name_en": "Master Cook",
-        "desc_fr": "Atteins le niveau 100 en cuisinier.",
-        "desc_en": "Reach level 100 as a Cook.",
-        "source": "profession_level:cook",
-        "threshold": 100,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_prof_brewer_10",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Apprenti brasseur",
-        "name_en": "Apprentice Brewer",
-        "desc_fr": "Atteins le niveau 10 en brasseur.",
-        "desc_en": "Reach level 10 as a Brewer.",
-        "source": "profession_level:brewer",
-        "threshold": 10,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_prof_brewer_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Compagnon brasseur",
-        "name_en": "Journeyman Brewer",
-        "desc_fr": "Atteins le niveau 50 en brasseur.",
-        "desc_en": "Reach level 50 as a Brewer.",
-        "source": "profession_level:brewer",
-        "threshold": 50,
-        "reward": {
-          "xp": 9210
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_prof_brewer_100",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Maître brasseur",
-        "name_en": "Master Brewer",
-        "desc_fr": "Atteins le niveau 100 en brasseur.",
-        "desc_en": "Reach level 100 as a Brewer.",
-        "source": "profession_level:brewer",
-        "threshold": 100,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_prof_scribe_10",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Apprenti scribe",
-        "name_en": "Apprentice Scribe",
-        "desc_fr": "Atteins le niveau 10 en scribe.",
-        "desc_en": "Reach level 10 as a Scribe.",
-        "source": "profession_level:scribe",
-        "threshold": 10,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_prof_scribe_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Compagnon scribe",
-        "name_en": "Journeyman Scribe",
-        "desc_fr": "Atteins le niveau 50 en scribe.",
-        "desc_en": "Reach level 50 as a Scribe.",
-        "source": "profession_level:scribe",
-        "threshold": 50,
-        "reward": {
-          "xp": 9210
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_prof_scribe_100",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Maître scribe",
-        "name_en": "Master Scribe",
-        "desc_fr": "Atteins le niveau 100 en scribe.",
-        "desc_en": "Reach level 100 as a Scribe.",
-        "source": "profession_level:scribe",
-        "threshold": 100,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_prof_breeder_10",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Apprenti éleveur",
-        "name_en": "Apprentice Breeder",
-        "desc_fr": "Atteins le niveau 10 en éleveur.",
-        "desc_en": "Reach level 10 as a Breeder.",
-        "source": "profession_level:breeder",
-        "threshold": 10,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_prof_breeder_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Compagnon éleveur",
-        "name_en": "Journeyman Breeder",
-        "desc_fr": "Atteins le niveau 50 en éleveur.",
-        "desc_en": "Reach level 50 as a Breeder.",
-        "source": "profession_level:breeder",
-        "threshold": 50,
-        "reward": {
-          "xp": 9210
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_prof_breeder_100",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Maître éleveur",
-        "name_en": "Master Breeder",
-        "desc_fr": "Atteins le niveau 100 en éleveur.",
-        "desc_en": "Reach level 100 as a Breeder.",
-        "source": "profession_level:breeder",
-        "threshold": 100,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_prof_runist_10",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Apprenti runiste",
-        "name_en": "Apprentice Runist",
-        "desc_fr": "Atteins le niveau 10 en runiste.",
-        "desc_en": "Reach level 10 as a Runist.",
-        "source": "profession_level:runist",
-        "threshold": 10,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_prof_runist_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Compagnon runiste",
-        "name_en": "Journeyman Runist",
-        "desc_fr": "Atteins le niveau 50 en runiste.",
-        "desc_en": "Reach level 50 as a Runist.",
-        "source": "profession_level:runist",
-        "threshold": 50,
-        "reward": {
-          "xp": 9210
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_prof_runist_100",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Maître runiste",
-        "name_en": "Master Runist",
-        "desc_fr": "Atteins le niveau 100 en runiste.",
-        "desc_en": "Reach level 100 as a Runist.",
-        "source": "profession_level:runist",
-        "threshold": 100,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_prof_collector_10",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Apprenti collectionneur",
-        "name_en": "Apprentice Collector",
-        "desc_fr": "Atteins le niveau 10 en collectionneur.",
-        "desc_en": "Reach level 10 as a Collector.",
-        "source": "profession_level:collector",
-        "threshold": 10,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_prof_collector_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Compagnon collectionneur",
-        "name_en": "Journeyman Collector",
-        "desc_fr": "Atteins le niveau 50 en collectionneur.",
-        "desc_en": "Reach level 50 as a Collector.",
-        "source": "profession_level:collector",
-        "threshold": 50,
-        "reward": {
-          "xp": 9210
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_prof_collector_100",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Maître collectionneur",
-        "name_en": "Master Collector",
-        "desc_fr": "Atteins le niveau 100 en collectionneur.",
-        "desc_en": "Reach level 100 as a Collector.",
-        "source": "profession_level:collector",
-        "threshold": 100,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_craft_total_1",
-        "category": "metiers",
-        "shape": "premier",
-        "name_fr": "De mes mains",
-        "name_en": "With My Own Hands",
-        "desc_fr": "Fabrique 1 objet dans un atelier.",
-        "desc_en": "Craft 1 item at a workshop.",
-        "source": "crafts_total",
-        "threshold": 1,
-        "reward": {
-          "xp": 160
-        },
-        "_expected_char_level": 5
-      },
-      {
-        "id": "ach_craft_total_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Établi familier",
-        "name_en": "A Familiar Workbench",
-        "desc_fr": "Fabrique 50 objets dans un atelier.",
-        "desc_en": "Craft 50 items at a workshop.",
-        "source": "crafts_total",
-        "threshold": 50,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_craft_total_250",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Atelier qui tourne",
-        "name_en": "A Busy Workshop",
-        "desc_fr": "Fabrique 250 objets dans un atelier.",
-        "desc_en": "Craft 250 items at a workshop.",
-        "source": "crafts_total",
-        "threshold": 250,
-        "reward": {
-          "xp": 5160
-        },
-        "_expected_char_level": 30
-      },
-      {
-        "id": "ach_craft_total_1000",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Mille ouvrages",
-        "name_en": "A Thousand Works",
-        "desc_fr": "Fabrique 1000 objets dans un atelier.",
-        "desc_en": "Craft 1000 items at a workshop.",
-        "source": "crafts_total",
-        "threshold": 1000,
-        "reward": {
-          "xp": 15000
-        },
-        "_expected_char_level": 50
-      },
-      {
-        "id": "ach_craft_total_5000",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Mains d'or",
-        "name_en": "Golden Hands",
-        "desc_fr": "Fabrique 5000 objets dans un atelier.",
-        "desc_en": "Craft 5000 items at a workshop.",
-        "source": "crafts_total",
-        "threshold": 5000,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_gather_total_1",
-        "category": "metiers",
-        "shape": "premier",
-        "name_fr": "Première cueillette",
-        "name_en": "First Harvest",
-        "desc_fr": "Récolte 1 fois sur un point de récolte.",
-        "desc_en": "Gather 1 time from a gathering point.",
-        "source": "gathers_total",
-        "threshold": 1,
-        "reward": {
-          "xp": 160
-        },
-        "_expected_char_level": 5
-      },
-      {
-        "id": "ach_gather_total_100",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Panier plein",
-        "name_en": "A Full Basket",
-        "desc_fr": "Récolte 100 fois sur un point de récolte.",
-        "desc_en": "Gather 100 times from a gathering point.",
-        "source": "gathers_total",
-        "threshold": 100,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_gather_total_500",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Pas de côté",
-        "name_en": "Off the Beaten Path",
-        "desc_fr": "Récolte 500 fois sur un point de récolte.",
-        "desc_en": "Gather 500 times from a gathering point.",
-        "source": "gathers_total",
-        "threshold": 500,
-        "reward": {
-          "xp": 5160
-        },
-        "_expected_char_level": 30
-      },
-      {
-        "id": "ach_gather_total_2500",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "La terre le rend bien",
-        "name_en": "The Land Gives Back",
-        "desc_fr": "Récolte 2500 fois sur un point de récolte.",
-        "desc_en": "Gather 2500 times from a gathering point.",
-        "source": "gathers_total",
-        "threshold": 2500,
-        "reward": {
-          "xp": 15000
-        },
-        "_expected_char_level": 50
-      },
-      {
-        "id": "ach_gather_total_10000",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Enfant de la terre",
-        "name_en": "Child of the Land",
-        "desc_fr": "Récolte 10000 fois sur un point de récolte.",
-        "desc_en": "Gather 10000 times from a gathering point.",
-        "source": "gathers_total",
-        "threshold": 10000,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_recipes_distinct_10",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Curieux de tout",
-        "name_en": "Curious Mind",
-        "desc_fr": "Fabrique 10 recettes différentes.",
-        "desc_en": "Craft 10 different recipes.",
-        "source": "recipes_distinct",
-        "threshold": 10,
-        "reward": {
-          "xp": 1300
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_recipes_distinct_50",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Carnet de recettes",
-        "name_en": "Recipe Book",
-        "desc_fr": "Fabrique 50 recettes différentes.",
-        "desc_en": "Craft 50 different recipes.",
-        "source": "recipes_distinct",
-        "threshold": 50,
-        "reward": {
-          "xp": 5160
-        },
-        "_expected_char_level": 30
-      },
-      {
-        "id": "ach_recipes_distinct_150",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Encyclopédiste",
-        "name_en": "Encyclopedist",
-        "desc_fr": "Fabrique 150 recettes différentes.",
-        "desc_en": "Craft 150 different recipes.",
-        "source": "recipes_distinct",
-        "threshold": 150,
-        "reward": {
-          "xp": 15000
-        },
-        "_expected_char_level": 50
-      },
-      {
-        "id": "ach_recipes_distinct_300",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Rien ne m'échappe",
-        "name_en": "Nothing Escapes Me",
-        "desc_fr": "Fabrique 300 recettes différentes.",
-        "desc_en": "Craft 300 different recipes.",
-        "source": "recipes_distinct",
-        "threshold": 300,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_craft_quality_top_1",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Le geste parfait",
-        "name_en": "The Perfect Touch",
-        "desc_fr": "Fabrique un objet de la meilleure qualité possible.",
-        "desc_en": "Craft an item of the highest possible quality.",
-        "source": "crafts_quality_top",
-        "threshold": 1,
-        "reward": {
-          "xp": 18420
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_craft_quality_top_10",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Signature d'artisan",
-        "name_en": "Artisan's Signature",
-        "desc_fr": "Fabrique 10 objets de la meilleure qualité possible.",
-        "desc_en": "Craft 10 items of the highest possible quality.",
-        "source": "crafts_quality_top",
-        "threshold": 10,
-        "reward": {
-          "xp": 48000
-        },
-        "_expected_char_level": 60
-      },
-      {
-        "id": "ach_craft_quality_second_1",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Belle facture",
-        "name_en": "Fine Craftsmanship",
-        "desc_fr": "Fabrique un objet de la deuxième meilleure qualité.",
-        "desc_en": "Craft an item of the second best quality.",
-        "source": "crafts_quality_second",
-        "threshold": 1,
-        "reward": {
-          "xp": 5160
-        },
-        "_expected_char_level": 30
-      },
-      {
-        "id": "ach_gather_rarity_top_1",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Coup de chance",
-        "name_en": "Stroke of Luck",
-        "desc_fr": "Récolte une ressource de la rareté la plus haute.",
-        "desc_en": "Gather a resource of the highest rarity.",
-        "source": "gathers_rarity_top",
-        "threshold": 1,
-        "reward": {
-          "xp": 10320
-        },
-        "_expected_char_level": 30
-      },
-      {
-        "id": "ach_gather_rarity_top_25",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Œil de lynx",
-        "name_en": "Eagle Eye",
-        "desc_fr": "Récolte 25 ressources de la rareté la plus haute.",
-        "desc_en": "Gather 25 resources of the highest rarity.",
-        "source": "gathers_rarity_top",
-        "threshold": 25,
-        "reward": {
-          "xp": 48000
-        },
-        "_expected_char_level": 60
-      },
-      {
-        "id": "ach_gather_rarity_second_1",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Ça brille",
-        "name_en": "Something Shiny",
-        "desc_fr": "Récolte une ressource de la deuxième rareté la plus haute.",
-        "desc_en": "Gather a resource of the second highest rarity.",
-        "source": "gathers_rarity_second",
-        "threshold": 1,
-        "reward": {
-          "xp": 2340
-        },
-        "_expected_char_level": 20
-      },
-      {
-        "id": "ach_prof_specialist_100",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Double maîtrise",
-        "name_en": "Double Mastery",
-        "desc_fr": "Monte tes deux spécialités au niveau 100.",
-        "desc_en": "Raise both your specialties to level 100.",
-        "source": "profession_specialties_at_100",
-        "threshold": 2,
-        "reward": {
-          "xp": 177000
-        },
-        "_expected_char_level": 80
-      },
-      {
-        "id": "ach_prof_all_25",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Touche-à-tout",
-        "name_en": "Jack of All Trades",
-        "desc_fr": "Atteins le niveau 25 dans les 15 métiers.",
-        "desc_en": "Reach level 25 in all 15 professions.",
-        "source": "professions_at_or_above:25",
-        "threshold": 15,
-        "reward": {
-          "xp": 9210
-        },
-        "_expected_char_level": 40
-      },
-      {
-        "id": "ach_prof_all_50",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Artisan de Havreden",
-        "name_en": "Artisan of Havreden",
-        "desc_fr": "Atteins le niveau 50 dans les 15 métiers.",
-        "desc_en": "Reach level 50 in all 15 professions.",
-        "source": "professions_at_or_above:50",
-        "threshold": 15,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
-      },
-      {
-        "id": "ach_intermediate_10",
-        "category": "metiers",
-        "shape": "premier",
-        "name_fr": "Maillon de la chaîne",
-        "name_en": "Link in the Chain",
-        "desc_fr": "Fabrique 10 produits intermédiaires (cuir tanné, lingot, fiole...).",
-        "desc_en": "Craft 10 intermediate goods (tanned leather, ingot, vial...).",
-        "source": "intermediates_crafted",
-        "threshold": 10,
-        "reward": {
-          "xp": 650
-        },
-        "_expected_char_level": 15
-      },
-      {
-        "id": "ach_intermediate_500",
-        "category": "metiers",
-        "shape": "echelle",
-        "name_fr": "Fournisseur attitré",
-        "name_en": "Trusted Supplier",
-        "desc_fr": "Fabrique 500 produits intermédiaires.",
-        "desc_en": "Craft 500 intermediate goods.",
-        "source": "intermediates_crafted",
-        "threshold": 500,
-        "reward": {
-          "xp": 15000
-        },
-        "_expected_char_level": 50
-      },
       {
         "id": "ach_crafted_sold_10",
         "category": "metiers",
@@ -2929,21 +1912,6 @@
           "xp": 15000
         },
         "_expected_char_level": 50
-      },
-      {
-        "id": "ach_tool_rank_5",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Le bon outil",
-        "name_en": "The Right Tool",
-        "desc_fr": "Utilise un outil de récolte de rang V.",
-        "desc_en": "Use a rank V gathering tool.",
-        "source": "max_tool_rank_used",
-        "threshold": 5,
-        "reward": {
-          "xp": 91200
-        },
-        "_expected_char_level": 70
       }
     ]
   },
@@ -3027,5 +1995,47 @@
     "tools": "Outils de recolte (kind 'tool', id tool_<type>_r<rang>) : il faut un outil de rang >= au rang du point pour recolter. L'outil de rang N se fabrique avec des materiaux de rang N-1 (sinon il faudrait l'outil pour recolter de quoi le fabriquer) ; le rang 1 est offert par le maitre du metier (starter). Chaque recolte use une utilisation. Ils lient les metiers de recolte aux artisans : Pioche, Hache, Faucille = Sculpteur d'os ; Canne a peche, Besace de glaneur = Tanneur ; Lanterne de Faille = Runiste.",
     "producer": "Producteur d'un objet : gathered_by (ressource recoltee) ou crafted_by (intermediaire, outil) dans items/profession_recipes.json new_items. Les materiaux de monstre ont pour producteur le combat ; le Glaneur en ajoute (feeds) mais ils ne comptent pas comme apport d'un autre metier.",
     "_feeds": "Les champs feeds / consumes_from de chaque metier sont DERIVES des recettes et des outils par le generateur ; le validateur verifie qu'ils correspondent et qu'aucun metier n'est isole."
+  },
+  "tools": {
+    "_rule": "Un outil (kind tool, id tool_<type>_r<rang>) porte uses utilisations. Le serveur prend dans le sac l'outil du bon type de rang le plus bas qui suffit (rang >= rang du point), puis celui qui a le moins d'utilisations restantes. Usure dans custom_data.uses_left ; a 0 l'outil se brise et disparait. Starter : les outils de rang I et II s'achetent chez le maitre du metier de recolte ; les rangs III a V se fabriquent.",
+    "by_profession": {
+      "miner": "pickaxe",
+      "lumberjack": "axe",
+      "herbalist": "sickle",
+      "fisher": "fishing_rod",
+      "gleaner": "satchel",
+      "fissure_hunter": "lantern"
+    }
+  },
+  "recipe_plans": {
+    "known_by_default_max_rank": 3,
+    "expert_required_from_rank": 4,
+    "price_by_rank": {
+      "4": 5000,
+      "5": 20000
+    },
+    "id_rule": "plan_<id de recette>",
+    "sold_by": "master_of_the_profession",
+    "_rule": "Les recettes de rang I a III sont connues de tous. Une recette de rang IV ou V (recettes et rule_recipes) doit etre apprise : on achete son plan chez le maitre de son metier (flux d'achat PNJ habituel, BUY_ITEM). L'achat apprend la recette tout de suite (table des recettes apprises), aucun objet n'entre dans le sac. Refuse si le joueur n'est pas Expert du metier ou connait deja la recette. Les objets plan_* sont generes par le serveur au chargement, jamais ecrits a la main."
+  },
+  "masters": {
+    "_rule": "Maitre de chaque metier : passer Expert, changer d'Expert, acheter outils, materiaux de base et plans. Entrees PNJ dans entities/npcs.json (tableau profession_masters, plus Tobin et Yuki).",
+    "by_profession": {
+      "gleaner": "npc_master_gleaner",
+      "fissure_hunter": "npc_master_fissure_hunter",
+      "miner": "npc_master_miner",
+      "lumberjack": "npc_master_lumberjack",
+      "fisher": "npc_fisher_tobin",
+      "herbalist": "npc_master_herbalist",
+      "tanner": "npc_master_tanner",
+      "bone_carver": "npc_master_bone_carver",
+      "apothecary": "npc_master_apothecary",
+      "cook": "npc_master_cook",
+      "brewer": "npc_master_brewer",
+      "scribe": "npc_master_scribe",
+      "breeder": "npc_master_breeder",
+      "runist": "npc_master_runist",
+      "collector": "npc_koro_collector_yuki"
+    }
   }
 }

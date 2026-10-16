@@ -4,7 +4,7 @@
     "last_updated": "2026-10-01",
     "description": "Points de recolte (Metiers V2, valide par Charleston le 2026-10-01). Le SERVEUR pose des points (arbres, rochers, berges de sable, carres d'herbes, buissons, coins de peche) dans des AIRES de recolte dessinees par zone, sur le modele des coffres de zone (world/zone_chests.json, presence ChestWorld). Le joueur clique, une barre d'extraction se remplit pendant gather_ms (envoye par le serveur), la ressource tombe a la fin. Bouger, entrer en combat ou prendre un coup annule la recolte.",
     "owner": "services/presence (apparition, rang, rarete, verrou de recolte, duree, tirage) + services/economy (ajout en inventaire, usure de l'outil et XP de metier dans la meme transaction). Le client lit ce fichier pour l'AFFICHAGE seulement (sprite par type et rang, cadre de rarete).",
-    "status": "CONCEPTION : rien n'est branche. Les aires sont a dessiner par Charleston (areas vide par zone, voir _example_area).",
+    "status": "LU PAR LE SERVEUR (presence, metiers V1, 2026-10-01) : placement par decouverte sur les aires de monstres des zones listees dans placement.zones. Aucune aire tracee a la main.",
     "lore": "On ne prend que ce que la terre redonne : bois mort, ecorce, resine, herbes coupees au-dessus de la racine. Les points reviennent : la vie reprend sa place."
   },
   "rules": {
@@ -776,7 +776,33 @@
     "_rule": "Choix de Charleston (2026-10-01) : AUCUNE aire tracee a la main, la recolte est une DECOUVERTE. Le serveur pose les points sur toute la surface jouable de la zone, en tirant des positions dans les aires d'apparition deja connues de la zone (celles des monstres et des coffres de zone), sans en creer de nouvelles. Les points bougent a chaque reapparition : on explore pour les trouver.",
     "water_edges": "Coins de peche et bancs de sable : sur les RIVES uniquement. Les points de rive sont EXTRAITS automatiquement des tuiles d'eau de chaque carte par un outil d'export (a ecrire avec le branchement), jamais places a la main.",
     "density": "Nombre de points par type et par zone : a regler en jeu au branchement (pas encore de champ dedie).",
-    "areas_optional": "Les listes 'areas' par zone et areas_schema restent un REGLAGE OPTIONNEL pour plus tard (forcer une rive ou un bosquet precis). Vides, la zone entiere sert ; leurs _todo sont des pistes, pas du travail a faire."
+    "areas_optional": "Les listes 'areas' par zone et areas_schema restent un REGLAGE OPTIONNEL pour plus tard (forcer une rive ou un bosquet precis). Vides, la zone entiere sert ; leurs _todo sont des pistes, pas du travail a faire.",
+    "zones": [
+      "village",
+      "expedition_lv_01_10",
+      "expedition_lv_11_20",
+      "expedition_lv_21_30"
+    ],
+    "nodes_per_area": 3,
+    "ground_types_weights": {
+      "tree": 3,
+      "rock": 3,
+      "herb_patch": 2,
+      "wild_bush": 2
+    },
+    "water_types_weights": {
+      "fishing_spot": 3,
+      "sand_bank": 1
+    },
+    "water_nodes_per_zone": 3,
+    "_discovery_v1": "V1 serveur : chaque aire d'apparition de monstres (world/zones.json spawn_areas) d'une zone de zones recoit nodes_per_area points au sol, types tires par ground_types_weights, positions tirees dans les bornes de l'aire hors sanctuaire et dans la zone jouable (meme regle que les coffres de zone). Rang = rank_from_area sur le niveau max de l'aire. A chaque reapparition le point est retire ailleurs dans son aire. Les types de rive (fishing_spot, sand_bank) ne sont poses QUE sur water_edge_points : une zone sans point de rive n'en a aucun (jamais de position inventee).",
+    "water_edge_points": {
+      "village": [],
+      "expedition_lv_01_10": [],
+      "expedition_lv_11_20": [],
+      "expedition_lv_21_30": []
+    },
+    "_water_edge_points": "Points de rive par zone : [{x, y, facing, level}] en px monde, facing = direction de l'eau (north, south, east, west), level = niveau de la rive (donne le rang). A REMPLIR par l'outil d'export des tuiles d'eau (a ecrire cote client). Vide = aucun coin de peche ni banc de sable dans la zone."
   },
   "_visuals": "Kit graphique livre le 2026-10-01 (kanarion_front assets/world/resources/gathering, README.md) : SpriteFrames idle / hit (4 images, 12 fps) / depleted par point ; outils animes dans ../tools (harvest_motion.json). L'animation ne decide de rien : l'impact declenche seulement la reaction visuelle, le serveur decide gains, duree et epuisement."
 }

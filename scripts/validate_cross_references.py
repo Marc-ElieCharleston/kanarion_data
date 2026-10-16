@@ -1005,7 +1005,28 @@ KNOWN_ACHIEVEMENT_SOURCES = {
     "dungeon_floors_cleared", "dungeon_runs_completed", "fissures_closed",
     "friends_count", "guild_joined", "auction_items_sold", "max_enhancement_level",
     "koro_cards_owned", "keystones_equipped", "gold_held",
+    # Metiers V1 (2026-10-01, back migr 111). Sources parametrees : voir
+    # PARAMETERIZED_ACHIEVEMENT_SOURCES.
+    "crafts_total", "gathers_total", "recipes_distinct", "crafts_quality_top",
+    "crafts_quality_second", "gathers_rarity_top", "gathers_rarity_second",
+    "profession_specialties_at_100", "intermediates_crafted", "max_tool_rank_used",
 }
+# Prefixe -> le parametre doit etre un id de metier (profession_level) ou un niveau 1..100.
+PARAMETERIZED_ACHIEVEMENT_SOURCES = ("profession_level:", "professions_at_or_above:")
+
+
+def _known_achievement_source(db: Path, source) -> bool:
+    if source in KNOWN_ACHIEVEMENT_SOURCES:
+        return True
+    if not isinstance(source, str):
+        return False
+    if source.startswith("profession_level:"):
+        ids = {p["id"] for p in load_json(db / "systems" / "professions.json").get("professions", [])}
+        return source.split(":", 1)[1] in ids
+    if source.startswith("professions_at_or_above:"):
+        n = source.split(":", 1)[1]
+        return n.isdigit() and 1 <= int(n) <= 100
+    return False
 
 
 def validate_achievements(db: Path) -> list:
@@ -1026,7 +1047,7 @@ def validate_achievements(db: Path) -> list:
         if aid in seen:
             errors.append(f"[achievements.json] id en double '{aid}'")
         seen.add(aid)
-        if a.get("source") not in KNOWN_ACHIEVEMENT_SOURCES:
+        if not _known_achievement_source(db, a.get("source")):
             errors.append(f"[achievements.json] '{aid}' : source '{a.get('source')}' inconnue du moteur")
         if a.get("category") not in categories:
             errors.append(f"[achievements.json] '{aid}' : categorie '{a.get('category')}' absente")
@@ -1122,6 +1143,8 @@ def _rank_of_level(level: int) -> int:
     for i, (lo, hi) in enumerate(RANK_BANDS):
         if lo <= level <= hi:
             return i + 1
+    if level == 0:
+        return 1  # metiers V1 : le rang I s'ouvre au niveau 0
     return 0
 
 
@@ -1254,8 +1277,9 @@ def validate_profession_recipes(db: Path, all_item_ids: set) -> list:
         if p not in profs:
             errors.append(f"[profession_recipes.json] '{rid}' : metier inconnu '{p}'")
         lvl = int(r.get("profession_level", 0))
-        if not 1 <= lvl <= 100:
-            errors.append(f"[profession_recipes.json] '{rid}' : profession_level hors 1..100")
+        # Metiers V1 (2026-10-01) : les metiers commencent au niveau 0, rang I = 0..19.
+        if not 0 <= lvl <= 100:
+            errors.append(f"[profession_recipes.json] '{rid}' : profession_level hors 0..100")
         rank = r.get("rank")
         if rank != _rank_of_level(lvl):
             errors.append(f"[profession_recipes.json] '{rid}' : rank {rank} != rang du niveau {lvl} "
@@ -1528,7 +1552,7 @@ def validate_profession_xp(db: Path) -> list:
     d = load_json(path)
     t = d.get("xp_table", {})
     prev = 0
-    for lvl in range(2, 101):
+    for lvl in range(1, 101):  # xp_table['1'] = pas 0 -> 1 (metiers au niveau 0, 2026-10-01)
         v = t.get(str(lvl))
         if not isinstance(v, int) or v <= 0:
             errors.append(f"[profession_xp.json] xp_table[{lvl}] manquant ou <= 0")
@@ -1564,6 +1588,39 @@ def validate_contract_chests(db: Path, all_item_ids: set) -> list:
         for i in ids:
             if i not in all_item_ids:
                 errors.append(f"[quests.json contract_chests.{kind}] objet inconnu '{i}'")
+    return errors
+
+
+def validate_recipe_chain(db: Path) -> list:
+    """Chainage des rangs (Albion sur les intermediaires, 2/2/1/1 sur l'equipement) et lots de fabrication."""
+    import re as _re
+    errors = []
+    path = db / "items" / "profession_recipes.json"
+    if not path.exists():
+        return errors
+    d = load_json(path)
+    inter = {i["id"] for i in d.get("new_items", []) if i.get("category") == "intermediate"}
+    k_equip = {5: 2, 4: 2, 3: 1, 2: 1}
+    batches = [(r"^cons_(hp|mp)_potion_(pet_)?t[1-5]$", 50), (r"^food_", 10), (r"^elix_", 10),
+               (r"^scroll_", 10), (r"^pet_treat_", 10), (r"^cons_recall_potion$", 10)]
+    eq = _re.compile(r"^((?:wpn|head|chest|legs|feet|belt|cape|acc)_[a-z_]+_b)([1-5])$")
+    for r in d.get("recipes", []):
+        rid, out = r.get("id", "?"), r.get("output_item", "")
+        mats = {m["id"]: m["qty"] for m in r.get("materials", [])}
+        m = _re.match(r"^mat_([a-z]+)_r([1-5])$", out)
+        if out in inter and m and int(m.group(2)) >= 2:
+            prev = f"mat_{m.group(1)}_r{int(m.group(2)) - 1}"
+            if mats.get(prev, 0) < 1:
+                errors.append(f"[profession_recipes.json] '{rid}' : intermediaire de rang {m.group(2)} sans '{prev}' (regle Albion)")
+        m = eq.match(out)
+        if m and int(m.group(2)) >= 2:
+            n = int(m.group(2))
+            prev = m.group(1) + str(n - 1)
+            if mats.get(prev, 0) < k_equip[n]:
+                errors.append(f"[profession_recipes.json] '{rid}' : piece de rang {n} sans {k_equip[n]} x '{prev}'")
+        for pat, size in batches:
+            if _re.match(pat, out) and r.get("output_qty") != size:
+                errors.append(f"[profession_recipes.json] '{rid}' : lot de {r.get('output_qty')} au lieu de {size}")
     return errors
 
 
@@ -2155,6 +2212,11 @@ def main():
 
     print("[12k/12] Validating profession XP curve (table, gray rule, time model)...")
     errs = validate_profession_xp(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12l/12] Validating rank chaining and craft batches...")
+    errs = validate_recipe_chain(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
