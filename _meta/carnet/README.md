@@ -58,3 +58,4 @@ foi** : ces notes sont à fusionner avec eux au retour.
 - `_meta/conception_contrats/CONTRATS_V2.md`
 - `_meta/refonte_monstres/DECISIONS.md`
 - `_meta/TODO_RETOUR.md` (tout ce qu'il reste à faire au retour)
+- [reprise_2026-10-16.md](reprise_2026-10-16.md) : état des branches audits / Souffle / cooldowns / scaling, ordre d'intégration.

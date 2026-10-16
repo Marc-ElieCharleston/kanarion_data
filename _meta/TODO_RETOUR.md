@@ -153,6 +153,8 @@ compilé en entier : à la maison, le build WSL a été tué faute de mémoire (
       Data à corriger : exemples de `rewards.json level_difference` calculés avec 3, `min_drop_rate` non lu,
       `default_mana_cost_per_level` mort. En dur repérés : RM 0.2×MAG, coût de respec `(niv-20)*10` ×3, tranches 20/40/60
       de `equipment_template_selector.cpp`, défauts des sorts dans `content_loader.cpp` (cooldown 1 s, percent_per_level 0…).
+- [ ] **REPRISE 2026-10-16 : lire `carnet/reprise_2026-10-16.md`** (toutes les branches audits / Souffle / cooldowns /
+      scaling / interruption, ordre d'intégration `vac_integration`, ce qui bloque le démarrage, questions ouvertes).
 - [ ] Niveaux de compétence de familier par doublons (max 5) : scaling à concevoir (`carnet/familiers.md`).
 - [ ] Changements de comportement à vérifier en jeu : les contrôles durs peuvent rater (application 10-90 %, DoT et débuffs garantis sans résistance),
       familiers à 3 s de GCD, parade / blocage / vol de vie plafonnés au jet, durée des buffs par type.
