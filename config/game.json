@@ -59,6 +59,12 @@
     "skill_points_per_level": 1
   },
   "_stats_definition_owner": "SOURCE UNIQUE de la valeur d'un point alloue (hp, mp, atk, mag, def). Lue par le combat ET l'economie via kanarion_back shared/gameplay/stat_point_values.hpp, sans valeur par defaut : une valeur absente fait refuser le fichier au demarrage. 1 point de Souffle = 3 (decision owner 2026-10-14, etait 5 en combat). systems/progression.json stat_allocation.point_values est un MIROIR controle par scripts/validate_cross_references.py.",
+  "stat_scaling": {
+    "_comment": "Lu par shared/gameplay/stat_scaling.hpp (combat, economie, personnage, PNJ). Valeur de classe au niveau L = base + croissance x (L-1), arrondie par `rounding` (floor : ce que le combat appliquait deja). `allocation` : stat du profil que nourrit chaque point alloue (point_value dans stats_definition). `derived` : stats calculees depuis une autre (RM = 0,2 x MAG, auparavant en dur dans combat_profile_builder.cpp).",
+    "rounding": "floor",
+    "allocation": {"hp": "hp", "mp": "mp", "atk": "atk", "mag": "mag", "def": "armor"},
+    "derived": [{"target": "magic_resist", "source": "mag", "ratio": 0.2}]
+  },
   "stats_definition": {
     "hp": {
       "point_value": 5
