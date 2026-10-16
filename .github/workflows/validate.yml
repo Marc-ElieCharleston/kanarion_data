@@ -259,6 +259,18 @@ jobs:
       - name: Verify Breath cost rules
         run: python3 scripts/balance/souffle_per_level.py --check
 
+      # 3b''. Matrice de puissance des sorts (2026-10-15) : modele config/skill_power_model.json,
+      # sortie scripts/balance/out/skill_power_matrix.json. Echoue si la matrice est perimee
+      # (un sort, un statut ou un poids a change sans regenerer).
+      - name: Verify skill power matrix is up to date
+        run: python3 scripts/balance/skill_power_matrix.py --check
+
+      # 3b'''. Cooldowns et temps d'incantation des sorts de classe (2026-10-15) : regle de
+      # config/skill_power_model.json timing (cooldown selon la puissance par role, budget de
+      # charge par kit, incantation selon la puissance nette, copies en description).
+      - name: Verify skill cooldown and cast-time rules
+        run: python3 scripts/balance/skill_timing.py --check
+
       # 3c. Passive validation (2026-08-02). Jusqu'ici AUCUN validateur ne regardait
       # les 126 passifs repartis dans 31 fichiers : stats inconnues, effect_id casses
       # ou stats mortes passaient sans bruit. Des le premier passage il a trouve

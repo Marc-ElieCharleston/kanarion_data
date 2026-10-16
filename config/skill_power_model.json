@@ -1,0 +1,334 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-10-15",
+    "description": "Modele de puissance des sorts de classe : PROPRIETAIRE UNIQUE des poids et baremes de la matrice de sorts. scripts/balance/skill_power_matrix.py le lit, n'a aucun poids en dur, et ecrit scripts/balance/out/skill_power_matrix.json (--check en CI : la matrice ne doit pas etre perimee ; --report : incoherences). Note : _meta/carnet/matrice_sorts.md.",
+    "unit": "1 point = 1 % de la stat offensive du lanceur infligee en degats a UNE cible. Un coup a 100 % ATK sur un monstre vaut 100. Tout le reste est converti dans cette unite : en PV (1 PV rendu ou absorbe = 1 PV inflige) ou en debit d'actions par seconde (reference.reference_hit_percent / gcd).",
+    "reads": "config/combat.json settings (gcd_duration, abilities.cooldown_reduction_cap, abilities.cast_speed_cap) ; config/game.json combat_grids et skill_bar ; config/roles.json base_range ; combat/targeting.json patterns ; stats/status_effects.json (categorie, runtime, formula, value_per_stack, max_stacks, tick_interval) ; stats/class_base_stats.json + stats/class_growth.json ; config/skill_system.json (skill_levels, skill_categories, mana_cost_scaling.tier_order.families).",
+    "server_read": "Ce que le serveur fait vraiment (kanarion_back vac_doublons-lot2, 2026-10-15) : room.cpp apply_skill_effects est le seul chemin vivant, skill_executor.cpp n'est instancie que par les tests. Le stat de degats suit damage_type (physical -> ATK, sinon MAG), scaling_stat atk/mag est ignore. Le soin suit toujours MAG et n'existe que si heal_scaling_percent est present. percent_per_level ne s'ajoute que si rank_scaling_enabled. Les coefficients de DoT sont codes en dur dans status_manager.cpp et recopies dans stats/status_effects.json formula, que le script lit.",
+    "heritage": "Reprend la forme de config/balance_model.json puissance_effective (2026-08-01) : unite en % de stat, surface en racine plafonnee, controle en points par seconde. Ce qui y etait perime est liste dans la note."
+  },
+
+  "reference": {
+    "_comment": "Ancrage de toutes les conversions. reference_hit_percent / gcd = le debit d'une action ordinaire : 120 % / 2 s = 60 points par seconde. Ce debit chiffre une seconde de controle (actions ennemies empechees), un buff (debit allie amplifie), une seconde perdue a incanter.",
+    "reference_hit_percent": 120,
+    "_reference_hit_source": "Coup moyen d'un sort courant, celui du banc de reference serveur (server-combat/tests/unit/test_player_reference_curve.cpp) et de scripts/balance/pve_matrix.py.",
+    "reference_level": 60,
+    "_reference_level_note": "Niveau ou l'on lit les stats de classe (base + croissance) pour convertir PV, DEF, Souffle et le stat d'un damage_type en % de la stat offensive de la classe. 60 = deblocage du tier 3."
+  },
+
+  "targets": {
+    "_comment": "Nombre de cibles reellement touchees. ZONE (cases) : une zone de 16 cases ne touche jamais 16 monstres, racine(min(cases, area_cell_cap)) comme balance_model.json : 1 case = x1, 4 = x2, 9 et plus = x3. ENTITES (chaine, rebond, aleatoire) : min(N, entity_cap), le meme plafond de 3 ; un rebond qui peut revenir sur la meme cible (can_repeat_targets) compte chaque coup pour les degats directs, mais ses effets (DoT, debuffs) ne comptent que les cibles distinctes, une charge plafonnee ne se cumulant pas.",
+    "area_cell_cap": 9,
+    "entity_cap": 3,
+    "ally_group_size": 5,
+    "_ally_group_size_note": "Groupe PvE type (tank, soigneur, 3 degats). Un sort allie en pattern 'all' touche tout le groupe ; une zone alliee suit la racine.",
+    "nova_enemy_rows": 1,
+    "_nova_note": "Sort hostile a range 0, centre sur le lanceur (regle nova) : le lanceur etant au front, seules les cases du pattern sur la premiere rangee devant lui touchent l'ennemi."
+  },
+
+  "damage": {
+    "_comment": "Degats directs = (base_power ramene en % + scaling_percent au rang) x stat(damage_type) / stat offensive de la classe x coups x cibles x bonus conditionnels. percent_per_level x (rang-1) ne s'ajoute que si rank_scaling_enabled (room.cpp effective_scaling). damage_per_hit_bonus : rampe de +x % par coup. damage_percent_per_bounce : +x % par rebond.",
+    "execute_uptime": 0.25,
+    "_execute_note": "Part du combat ou la cible est sous le seuil d'execution : le bonus vaut execute_bonus_percent x execute_uptime.",
+    "conditional_bonus_uptime": {
+      "_comment": "Champs racine de bonus de degats conditionnels (en %), comptes a leur esperance : bonus x uptime.",
+      "marked_bonus_percent": 0.5,
+      "boss_bonus_percent": 0.3,
+      "bonus_if_armor_broken": 0.3,
+      "stealth_bonus_damage": 0.3,
+      "bonus_damage_vs_challenged": 0.5
+    }
+  },
+
+  "dot": {
+    "_comment": "DoT et HoT : coefficient par tick lu dans stats/status_effects.json (runtime.scaling_percent, sinon le facteur 'STAT * x' de formula), tick lu au meme endroit (tick_interval, runtime.tick_rate). Valeur = coefficient x charges (plafonnees a max_stacks) x duree / tick. Un DoT plafonne : relancer rafraichit sans cumuler, la valeur mesure UN lancer.",
+    "percent_of_target_max_hp_to_points": 0.5,
+    "_target_hp_note": "poison (2 % PV max de la cible, plafonne par le serveur contre les monstres) : 1 % des PV max d'un monstre standard au niveau de reference vaut environ 0.5 % de la stat du joueur. Volontairement grossier.",
+    "default_duration_by_category": {
+      "_comment": "Duree appliquee par le serveur quand l'effet porte duration 0 (status_manager.cpp:518-540, codee en dur cote serveur, recopiee ici pour le modele).",
+      "control": 3, "dot": 6, "hot": 6, "stat_modifiers": 10, "tempo": 10, "defensive": 5, "immunity": 3, "aggro": 3, "special": 5
+    }
+  },
+
+  "heal_and_shield": {
+    "_comment": "1 PV rendu ou absorbe = 1 PV inflige. En % de MAG : converti par MAG / stat offensive de la classe. En % de PV max, DEF ou Souffle max : converti par le rapport stat / stat offensive de la CLASSE au niveau de reference.",
+    "overheal_factor": 0.7,
+    "_overheal_note": "Part d'un soin, HoT ou bouclier reellement utilisee (le reste deborde ou expire)."
+  },
+
+  "control": {
+    "_comment": "Une seconde de controle sur un ennemi = la part de son action empechee, au debit de reference (60/s). Classement par le runtime de stats/status_effects.json : blocks_skills = dur ; tout autre controle ou aggro (racine, desarmement, provocation, redirection, confusion, aveuglement) = mou. Duree plafonnee par le 'max Ns' de formula. slow : gcd_penalty_seconds_per_stack x charges / gcd = part d'actions perdues.",
+    "hard_efficiency": 1.0,
+    "soft_efficiency": 0.4,
+    "_soft_note": "Un controle mou ne supprime pas l'action, il la degrade ou la detourne : 40 % d'un controle dur, 24/s, comme les 25/s de balance_model.json.",
+    "component_by_category": {"aggro": "debuff_defensif"},
+    "_component_by_category_note": "Cas particuliers (2026-10-15). Une provocation (categorie aggro de status_effects.json : taunt) n'empeche aucune action : elle detourne les coups des allies fragiles vers le tank qui les encaisse le mieux. Prix inchange (controle mou, 24/s par ennemi, comparable a damage_transfer : 100 % des degats d'un ennemi rediriges = 20/s), mais rangee en debuff_defensif (l'ennemi blesse moins le groupe) : c'est la protection du tank, son identite. Rangee en controle, la Provocation du guerrier sortait du role du tank et passait de 26 a 60 s.",
+    "interrupts_cast_cc_type": "stun",
+    "_interrupt_note": "Le serveur n'interrompt une incantation que sur flags.stunned (room.cpp process_casting) : effets de cc_type stun (stun, freeze, fear). silence porte interrupts_cast dans la data mais le serveur ne le lit pas."
+  },
+
+  "modifiers": {
+    "_comment": "Buffs et debuffs de stat : magnitude (charges x value_per_stack plafonnees a max_stacks ; value + value_per_level quand l'effet n'est pas canonique ; litteral du runtime sinon) x duree x cibles x efficacite x debit de reference / 100. Tout vient de la CLE runtime.stat_mods de l'effet dans stats/status_effects.json, jamais de son id : un nouvel effet branche sur une cle connue est price sans toucher ce fichier. axis = ce que la cle sert chez celui qui la recoit : elle range la valeur en buff_offensif / buff_defensif (allie) ou debuff_offensif / debuff_defensif (ennemi).",
+    "by_stat_mod": {
+      "_comment": "Offensif (ATK/MAG/degats infliges) et degats subis : 1.0, le debit est amplifie a plein. Armure/RM/DEF% : 0.5, la courbe 100/(100+armure) amortit. Reduction des degats : 1.0. Chance critique : 0.5 (un crit ajoute +50 %). Degats critiques : 0.2 (chance critique moyenne). Precision, esquive : 0.5. Puissance de soin, soins recus : 0.5 (seulement en presence de soins). Vitesse d'incantation : 0.3 (seule la part au-dela du GCD compte). Penetration magique : 0.3. def plat : 0.2 (morte depuis le modele de defense B). atk_speed : 0, elle ne sert qu'a l'attaque de base dont la boucle est coupee depuis le 2026-07-30.",
+      "atk_percent": {"efficiency": 1.0, "axis": "offense"},
+      "attack_percent": {"efficiency": 1.0, "axis": "offense"},
+      "mag_percent": {"efficiency": 1.0, "axis": "offense"},
+      "damage_dealt_percent": {"efficiency": 1.0, "axis": "offense"},
+      "crit_chance_percent": {"efficiency": 0.5, "axis": "offense"},
+      "crit_damage_percent": {"efficiency": 0.2, "axis": "offense"},
+      "crit_damage": {"efficiency": 0.2, "axis": "offense"},
+      "accuracy_percent": {"efficiency": 0.5, "axis": "offense"},
+      "cast_speed_percent": {"efficiency": 0.3, "axis": "offense"},
+      "lifesteal_percent": {"efficiency": 0.5, "axis": "offense"},
+      "bonus_magic_flat": {"efficiency": 1.0, "axis": "offense"},
+      "magic_pen": {"efficiency": 0.3, "axis": "offense"},
+      "atk_speed_percent": {"efficiency": 0.0, "axis": "offense"},
+      "heal_power_percent": {"efficiency": 0.5, "axis": "offense"},
+      "damage_taken_percent": {"efficiency": 1.0, "axis": "defense"},
+      "def_percent": {"efficiency": 0.5, "axis": "defense"},
+      "armor_percent": {"efficiency": 0.5, "axis": "defense"},
+      "magic_resist_percent": {"efficiency": 0.5, "axis": "defense"},
+      "damage_reduction_percent": {"efficiency": 1.0, "axis": "defense"},
+      "crit_resistance_percent": {"efficiency": 0.2, "axis": "defense"},
+      "evasion_percent": {"efficiency": 0.5, "axis": "defense"},
+      "heal_received_percent": {"efficiency": 0.5, "axis": "defense"},
+      "def": {"efficiency": 0.2, "axis": "defense"}
+    },
+    "implicit_stat_mods": {
+      "_comment": "Effets canoniques dont stats/status_effects.json ne declare PAS runtime.stat_mods alors que le serveur applique la stat (trou de data, a corriger la-bas puis a retirer d'ici). La forme est celle de runtime.stat_mods.",
+      "exposed": {"damage_taken_percent": "value/100"}
+    },
+    "harmful_when_positive": ["damage_taken_percent"],
+    "_harmful_note": "Cles dont une valeur POSITIVE nuit a celui qui la recoit (degats subis). Les autres l'aident quand elles sont positives.",
+    "flat_reference_stat": {
+      "_comment": "Cles plates : la magnitude est ramenee en % de cette stat de la classe au niveau de reference. null = deja en points de %.",
+      "def": "def",
+      "bonus_magic_flat": "mag",
+      "magic_pen": null,
+      "crit_damage": null
+    }
+  },
+
+  "special_effects": {
+    "_comment": "Effets sans stat_mods chiffrables ni tick : prix au debit de reference, par seconde ou par lancer, et composante de rangement. Clef = id d'effet de stats/status_effects.json ou verbe moteur (room.cpp, type utility : cleanse, resurrect, shield_shatter, purge, lifesteal, interrupt, mana_steal, steal_buff, mana_restore). Un effet absent d'ici et sans stat_mods sort dans le rapport comme non price.",
+    "per_second": {
+      "invulnerable": {"points": 60, "component": "buff_defensif"},
+      "untargetable": {"points": 45, "component": "buff_defensif"},
+      "invisible": {"points": 30, "component": "buff_defensif"},
+      "cc_immune": {"points": 15, "component": "buff_defensif"},
+      "cc_immune_zone": {"points": 15, "component": "buff_defensif"},
+      "en_garde_stance": {"points": 10, "component": "buff_defensif"},
+      "damage_transfer": {"points_per_value": 0.2, "component": "buff_defensif"},
+      "revealed": {"points": 5, "component": "utilitaire"},
+      "heal_block": {"points": 20, "component": "debuff_defensif"},
+      "shield_block": {"points": 10, "component": "debuff_defensif"},
+      "mana_lock": {"points": 10, "component": "utilitaire"},
+      "mana_drain": {"points": 5, "component": "utilitaire"},
+      "amplify": {"points": 10, "component": "buff_defensif"},
+      "double_attack_chance": {"points": 0, "component": "buff_offensif"},
+      "triple_attack_chance": {"points": 0, "component": "buff_offensif"}
+    },
+    "_per_second_note": "invulnerable = debit ennemi entierement annule (60/s) ; untargetable 3/4, invisible 1/2. cc_immune : assurance contre un controle (un stun de 2 s toutes les 8 s = 15/s). en garde : une parade par fenetre. damage_transfer : value % des degats d'un allie rediriges vers le lanceur, qui les encaisse quand meme avec sa propre mitigation (environ deux fois celle de l'allie) : 1 % redirige = 0.2/s. mana_drain : les monstres dependent peu du Souffle. double/triple_attack_chance : attaque de base seulement, 0.",
+    "per_cast": {
+      "cleanse": {"points": 60, "component": "buff_defensif"},
+      "purge": {"points": 60, "component": "utilitaire"},
+      "steal_buff": {"points": 80, "component": "utilitaire"},
+      "interrupt": {"points": 60, "component": "controle"},
+      "shield_shatter": {"points": 60, "component": "debuff_offensif"},
+      "cover": {"points": 120, "component": "buff_defensif"},
+      "riposte_active": {"points": 60, "component": "buff_defensif"}
+    },
+    "_per_cast_note": "cleanse/purge : retire un effet adverse, environ une seconde d'action (60). steal_buff : retire ET gagne. interrupt : annule une incantation ennemie sans remboursement. cover (runtime charges 1) : intercepte UN coup mono-cible, la valeur d'un coup de reference (120). riposte_active : renvoie une partie du prochain coup puis se consomme (60). cleanse range en buff_defensif (cas particuliers, 2026-10-15) : retirer un affaiblissement d'un allie le protege, c'est le coeur du role de soigneur (roles.json lightbringer cleanse) ; range en utilitaire, la dissipation sortait de l'identite du soigneur et prenait la densite d'un utilitaire (Purification 12 -> 95 s).",
+    "per_cast_area_targets": ["allies", "enemies"],
+    "_per_cast_area_targets_note": "room.cpp (cleanse, purge, steal_buff) : un verbe ne touche toutes les cibles de la zone que si son effet porte target allies ou enemies ; sinon la cible principale seule, quel que soit le motif. Les autres sont comptes une fois (x portee pour un ennemi). Corrige 2026-10-15 : Rafistolage (artisan) comptait trois dissipations pour une.",
+    "resurrect_points_at_full_hp": 600,
+    "_resurrect_note": "Conventionnel : un allie releve a 100 % des PV = 10 s de son debit (60/s), au prorata du % de PV rendu. balance_model.json disait 1500, sans base.",
+    "lifesteal_component": "soin",
+    "souffle_component": {"self": "utilitaire", "ally": "buff_offensif"},
+    "souffle_value_factor": 0.5,
+    "_souffle_note": "mana_restore, mana_steal, mana_regen : le Souffle rendu est converti en points au rendement MEDIAN des sorts de classe (points au rang 1 par Souffle paye au rang 1), mesure par le script a chaque passe, x souffle_value_factor. Composante selon qui le recoit : le lanceur (mana_steal, ressource propre) = utilitaire ; des allies (mana_restore, mana_regen sur allies) = buff_offensif, il finance leurs sorts comme un buff amplifie leur debit (soutien). souffle_value_factor (2026-10-15) : un Souffle rendu ne vaut des points que s'il paie un sort qu'on n'aurait pas pu lancer, donc quand on est a sec ; souffle_par_niveau.md (niveau 60, pack et elite) donne une part du combat passee a sec de 0 (mage) a 0,77 (guerrier, voleur), mediane 0,69 avec les cooldowns d'avant la phase 2, qui ont baisse la depense ; 0,5 jusqu'a la remesure de la phase 3. Compte plein, Siphon Arcanique (30 Souffle voles) valait 227 points et passait de 21 a 120 s."
+  },
+
+  "casting": {
+    "_comment": "Incantation (room.cpp : Souffle, GCD et cooldown debites au debut, pas de canalisation). Ce qui depasse le GCD est du temps de rotation perdu (balance_model.json _regle_du_GCD, toujours vrai). Une interruption (stun seulement) rembourse cooldown et Souffle : seule l'action est perdue.",
+    "time_cost_per_second": 60,
+    "interrupt_rate_per_second": 0.03,
+    "_interrupt_note": "Chance par seconde d'incantation qu'un stun ennemi tombe, PvE de groupe (monstres controller et elites). Perte esperee = rate x cast (probabilite) x cast (temps perdu) x debit."
+  },
+
+  "reach": {
+    "_comment": "Portee et ligne de vue, sorts hostiles seulement (un sort benefique sur allie saute le test de portee). La portee est celle du PERSONNAGE (config/roles.json base_range) : un sort qui en herite vaut x1, seules les derogations comptent (range explicite, plancher des zones max(base_range, aoe_range_floor)). Facteur = (cases ennemies atteintes / cases atteintes au base_range) ^ exponent, cases comptees sur la grille du serveur (config/game.json combat_grids), lanceur au front, colonne centrale. range 0 = nova, traitee par targets.",
+    "aoe_range_floor": 5,
+    "exponent": 0.25,
+    "_exponent_note": "Amorti : passer de 4 a 21 cases atteintes vaut x1.5, pas x5. Une case de plus a portee n'est pas une cible de plus.",
+    "line_of_sight_factor": 0.85,
+    "_los_note": "Sort hostile avec targeting.requires_line_of_sight (sans bypasses_los), ou pattern needs_los hors 'single' (room.cpp skill_needs_los) : la cible arriere est cachee environ 15 % du temps."
+  },
+
+  "roles": {
+    "_comment": "Role d'un sort : la premiere regle qui le reconnait, dans l'ordre. Criteres : champs de la data (tier, tag, palier du kit : base / subclass / tier3 de config/skill_system.json skill_categories) ou composante dominante de la matrice (dominant). Aucun id de sort. Dans une regle, les criteres de champ se combinent en OU, palier et dominant en ET.",
+    "order": ["remplissage", "ultime", "signature", "defensif", "utilitaire", "courant"],
+    "rules": {
+      "remplissage": {"tier": ["filler"], "tag": ["filler"]},
+      "ultime": {"tier": ["signature"], "palier": ["tier3"]},
+      "signature": {"tier": ["signature"]},
+      "defensif": {"dominant": ["defense"]},
+      "utilitaire": {"dominant": ["controle", "soutien", "utilitaire"]},
+      "courant": {}
+    },
+    "components": {
+      "_comment": "Regroupement des composantes de puissance pour trouver la dominante (valeurs positives, rang 1).",
+      "offense": ["degats", "dot", "debuff_offensif"],
+      "defense": ["soin", "hot", "bouclier", "buff_defensif", "debuff_defensif"],
+      "controle": ["controle"],
+      "soutien": ["buff_offensif"],
+      "utilitaire": ["utilitaire"]
+    }
+  },
+
+  "timing": {
+    "_comment": "Phase 2 : cooldown et temps d'incantation de chaque sort de classe, tires de la matrice (puissance nette au rang 1, role, dominante). Applique par scripts/balance/skill_timing.py (--check en CI, --report). Ici et seulement ici : un sort ne porte que le resultat (cooldown, cast_time). Pourquoi ce fichier et pas skill_system.json : la regle lit la puissance, les roles et les dominantes que ce fichier definit deja ; la mettre ailleurs couperait un meme modele en deux proprietaires. Decisions du proprietaire (2026-10-15) : allonger le cooldown d'un sort trop fort plutot que baisser sa puissance ; jamais de raccourcissement sauf cooldown hors des bornes ; les cooldowns repartent a zero a chaque combat (une room neuve par rencontre), un ultime de 2-3 minutes se lance donc une fois par combat, au bon moment ; pas de moule unique, la puissance, l'effet et l'identite de la classe font la valeur.",
+    "cooldown": {
+      "_comment": "cible = puissance nette r1 / (densite du role x facteur d'identite x k du budget de kit), bornee par le role, arrondie vers le haut au pas de l'echelle. Valeur ecrite = max(cooldown actuel, cible) : la regle n'allonge que les sorts trop denses pour leur role. Un cooldown au-dessus de la borne haute de son role est ramene a cette borne (seul raccourcissement admis, cooldown manifestement hors role).",
+      "density_points_per_second": {
+        "remplissage": 30,
+        "courant": 6,
+        "signature": 4,
+        "defensif": 6,
+        "utilitaire": 4,
+        "ultime": 10
+      },
+      "_density_note": "Points de puissance nette admis par seconde de cooldown. Remplissage 30 : un remplissage ordinaire (100 a 150 points) reste a 4-5 s, un remplissage qui frappe fort prend 1 a 2 s de plus. Courant 6 et ultime 10 : proposition de la phase 1. Signature, utilitaire 4 : un effet de soutien n'a pas le debit d'un coup. Defensif 6 comme courant (cas particuliers, 2026-10-15) : l'unite compte deja 1 PV rendu ou absorbe = 1 PV inflige, et le debordement (overheal_factor 0,7) est deja retire ; 4 retirait le debordement une deuxieme fois (Soin 8 -> 23 s).",
+      "bounds_seconds": {
+        "remplissage": [4, 40],
+        "courant": [15, 90],
+        "signature": [30, 120],
+        "defensif": [8, 120],
+        "utilitaire": [15, 120],
+        "ultime": [120, 180]
+      },
+      "_bounds_note": "Garde-fous larges, pas un moule : entre les bornes, la puissance decide. Ultime 120-180 s (une fois par combat, au bon moment). Signature 30-120 s : selon la classe un gros sort ou un outil frequent. Remplissage 4-40 s : le remplissage de specialisation varie avec la classe et l'effet (9 a 36 s aujourd'hui). Defensif des 8 s (12 en phase 2) : le soin de base d'un soigneur (Soin, Soin de la Nature, 8 s par conception) reste un outil frequent ; aucun autre sort defensif n'avait moins de 12 s.",
+      "identity": {
+        "_comment": "Un sort qui sert l'identite de sa classe admet une densite x (1 + (factor - 1) x part), part = part de sa puissance positive (rang 1) dans les groupes de dominante de cette identite : le soigneur soigne plus souvent qu'un guerrier, le tank protege plus souvent qu'un mage. Identite = role (dominants_by_class_role) et role_tags (dominants_by_role_tag) de la sous-classe dans config/roles.json ; pour un sort de base, ceux de la classe et de toutes ses sous-classes (le tronc commun : le guerrier de base sert aussi le berserker) ; plus la dominante du kit auquel le sort appartient (somme des sorts que la base, la sous-classe ou la specialisation ajoute, hors kit_dominant_excluded_roles) : une specialisation de soutien qui frappe (Maitre des Epices, Brasseur de Pestes), un tank qui frappe (Briseur), un Runeknight qui protege. Cas particuliers (2026-10-15) : avant, tout ou rien sur la seule dominante du sort, depuis le seul role de la sous-classe ; une egalite tranchee par l'ordre alphabetique ou un sort mixte perdaient toute l'identite, la dissipation et le Souffle n'entraient dans aucune, les specialisations n'avaient pas d'identite propre. Remplissage et ultime ne sont pas concernes.",
+        "factor": 2.0,
+        "dominants_by_class_role": {
+          "tank": ["defense", "controle"],
+          "healer": ["defense", "soutien"],
+          "dps": ["offense"],
+          "support": ["soutien", "defense"]
+        },
+        "kit_dominant_excluded_roles": ["remplissage", "ultime"],
+        "_role_tag_note": "support : les buffs du chef de guerre, du chantre, de l'artisan ; control : les controles du trickster et du ballmaster ; sustain : le corsaire se nourrit de ce qu'il vole (Souffle, buffs).",
+        "dominants_by_role_tag": {
+          "support": ["soutien"],
+          "control": ["controle"],
+          "sustain": ["utilitaire"]
+        },
+        "roles": ["courant", "signature", "defensif", "utilitaire"]
+      },
+      "rounding": [
+        {"below": 10, "step": 0.5},
+        {"below": 30, "step": 1},
+        {"below": null, "step": 5}
+      ],
+      "_rounding_note": "Valeurs lisibles : demi-secondes sous 10 s (un remplissage ne saute pas d'une seconde entiere), secondes jusqu'a 30 s, multiples de 5 au-dela."
+    },
+    "kit_load": {
+      "_comment": "Charge d'un kit = somme de max(GCD, cast) / cooldown x poids sur la barre (config/game.json skill_bar : les sorts hors remplissage au cooldown le plus court, le pire cas), sans reduction de recharge. Au-dela de 1, un sort hors remplissage est toujours pret. Un kit (et une tranche de niveau, skill_power_matrix.LEVEL_BARS) au-dessus du budget baisse la densite admise (facteur k, entre min_density_scale et 1) des sorts que la tranche lui fait payer (scaled_tiers) et qui sont forts pour leur role (strong_role_quantile) : les faibles gardent le cooldown que leur puissance leur donne. Un sort partage par plusieurs kits prend le k le plus bas.",
+      "budget": 0.8,
+      "min_density_scale": 0.5,
+      "scaled_tiers": [["subclass"], ["subclass", "tier3"]],
+      "_scaled_tiers_note": "Cas particuliers (2026-10-15), une liste par tranche de LEVEL_BARS, traitees dans l'ordre (la tranche 60 part des cooldowns fixes par la tranche 20-59). Le tronc commun (base) n'est jamais allonge par le budget : il appartient aux huit kits de la classe et c'est tout le kit des niveaux 1 a 19 ; la sous-classe paie ce qu'elle ajoute, la specialisation aussi (avec sa sous-classe, que seuls ses deux kits partagent). Avant, un sort de base prenait le k le plus bas des huit barres de niveau 60 : Soin 8 -> 23 s parce que la barre de Covenant debordait, Lancer de Dague 8 -> 35 s a cause de l'Assassin, Purification 12 -> 95 s.",
+      "unscaled_roles": ["remplissage", "ultime"],
+      "_unscaled_roles_note": "Jamais allonges par le budget. Remplissage : hors de la charge (il est ce qui reste). Ultime (cas particuliers, 2026-10-15) : il pese 2,5/120 dans une barre, l'allonger ne soulage pas la charge ; sa recharge suit sa seule puissance (densite 10, 120 a 180 s). Avant, le k des barres de niveau 60 qui debordaient par leurs sorts faibles poussait des ultimes moyens a 180 s (Assaut de Guerilla 879 points, Annihilation 1070).",
+      "strong_role_quantile": 0.5,
+      "_strong_note": "Cas particuliers (2026-10-15). Seuls les sorts dont la puissance nette r1 atteint la mediane de leur role sont allonges par le budget (proprietaire : allonger les sorts trop forts plutot que nerfer les faibles). Avant, k s'appliquait a tout sort au-dessus du plancher : Pas de Phase (68 points) 9 -> 35 s, Premeditation (81) 12 -> 45 s, Crachat de Rhum 9 -> 40 s.",
+      "reactive_roles": ["defensif"],
+      "reactive_weight": 0.5,
+      "_reactive_note": "Cas particuliers (2026-10-15). Un sort defensif (soin, bouclier, dissipation, provocation, buff defensif) se lance quand un allie encaisse, pas des qu'il est pret : pret sans etre lance, il n'est pas du spam. Il pese 0,5 dans la charge (convention, comme overheal_factor : sur un pack le groupe encaisse peu, sur un boss beaucoup). Sans ce poids, les kits de soigneur, faits de soins, debordaient tous et allongeaient leurs sorts de coeur.",
+      "_budget_note": "0,40 propose en phase 1 renvoyait 60 % des GCD au remplissage, le jeu 'spam skill 1' que le proprietaire refuse, et n'etait tenable qu'en doublant tous les cooldowns. 0,8 : sur la pire barre, au moins un GCD sur cinq revient au remplissage sans reduction de recharge, et les gros sorts reviennent assez rarement pour qu'un combat long oblige a choisir leur moment. min_density_scale 0,5 : un kit ne divise jamais par plus de deux la densite admise ; un kit qui reste au-dessus est liste par --report. Revue des cas particuliers (2026-10-15) : un kit qui reste au-dessus ne deborde que par des sorts faibles (sous la mediane de leur role) poses sur le plancher de leur role, ses sorts forts etant deja au k minimal ou a leur borne ; la charge des sorts forts reste celle de la phase 2. Accepte : les allonger serait les nerfer (_meta/carnet/matrice_sorts.md section 8)."
+    },
+    "cdr_options": {
+      "_comment": "Reduction de recharge (config/combat.json abilities.cooldown_reduction_cap, 40 %, non tranchee) : options que le rapport chiffre a cote du plafond actuel. Aucune n'est appliquee, le plafond ne change pas ici.",
+      "options": [
+        {"label": "plafond 20 %", "cap_percent": 20},
+        {"label": "40 % hors ultimes et signatures", "cap_percent": 40, "excluded_roles": ["ultime", "signature"]},
+        {"label": "20 % hors ultimes et signatures", "cap_percent": 20, "excluded_roles": ["ultime", "signature"]}
+      ]
+    },
+    "cast": {
+      "_comment": "Temps d'incantation : un outil de jeu, pas un cout cache. Decision du proprietaire (2026-10-15) : 'il faut beaucoup de sorts avec des temps de cast, surtout les sorts puissants, comme la resurrection avec 8 secondes de cast ; le jeu etant en temps reel sur grille, il faut pouvoir interrompre, ou attendre un buff d'immunite pour lancer son gros CD'. Le cast croit avec la puissance nette au rang 1 (grille), pour tous les types de sorts (degats, soins, controles, soutiens), sauf les sorts reflexes. Point fixe : on retient le plus long palier c tel que grille(puissance brute - cout d'incantation(c)) >= c, ce qui ne depend pas de la valeur actuelle. Valeur ecrite : un sort qui incante au-dela du GCD garde max(actuel, c) ; un sort sous le GCD ou instantane prend c, porte a min_real_cast_seconds s'il incantait deja (le concepteur voulait une incantation, elle devient reelle).",
+      "grid": [
+        {"max_net_power": 250, "cast": 0},
+        {"max_net_power": 600, "cast": 2.5},
+        {"max_net_power": 1200, "cast": 3.0},
+        {"max_net_power": 2000, "cast": 4.0},
+        {"max_net_power": null, "cast": 5.0}
+      ],
+      "_grid_note": "Paliers en points de matrice (un coup courant vaut 120, un ultime 800 a 3500). Sous 250 points : instantane. L'ancienne grille de balance_model.json avait 1 a 2 s sous 500 points, des paliers cosmetiques (sous le GCD).",
+      "min_real_cast_seconds": 2.5,
+      "_sub_gcd_note": "'On a le GCD, donc un temps de cast inferieur a 2 s est un peu gratuit' (proprietaire), verifie cote serveur (room.cpp, vac_doublons-lot2) : au debut de l'incantation le serveur debite Souffle, GCD et cooldown ensemble ; l'incantation court PENDANT le GCD et l'action suivante attend les deux. Un cast <= GCD ne retarde aucune action ; il interdit seulement de se deplacer (validate_move -> ACTOR_CASTING, deplacement deja limite a une case toutes les 8 s), il peut etre interrompu et sa zone est re-resolue a la fin. Aucune valeur entre 0 et le GCD n'est donc produite : 0, ou au moins 2,5 s (0,5 s au-dela du GCD : 30 points de debit, 19 % de risque d'interruption a 0,03/s).",
+      "floor_by_role": {"ultime": 2.5},
+      "floor_by_effect": {"resurrect": 8.0},
+      "_floor_note": "Un ultime offre toujours une fenetre d'interruption, classes physiques comprises (preparation). Une resurrection incante 8 s (proprietaire). Le plancher passe avant le plafond de contact.",
+      "reflex": {
+        "_comment": "Sorts reflexes, jamais incantes (cast 0) : le remplissage (role), les ripostes et rapprochements (tags), les provocations et interruptions (tags : une reponse a l'instant, une preparation de 2,5 s laisserait l'ennemi tuer l'allie ou finir son incantation ; ajoute 2026-10-15) et le defensif d'urgence sur soi (role defensif, target self). Un reflexe qui incante aujourd'hui passe a 0.",
+        "roles": ["remplissage"],
+        "tags": ["counter", "gap_closer", "taunt", "interrupt"],
+        "self_target_roles": ["defensif"]
+      },
+      "melee_cap": {
+        "_comment": "Classes physiques de contact (config/roles.json role_tags) : l'incantation est une PREPARATION lisible (le serveur ne connait qu'un mecanisme, cast_time : CastingComponent, interrompue par un stun ou le verbe interrupt ; is_channeled existe mais n'est jamais vrai, pas de canalisation). Plafond pour ne pas rester plante au contact, sauf plancher d'effet (resurrection). Reprend balance_model.json plafond_melee sans liste de lignes.",
+        "role_tags": ["melee", "melee_dps"],
+        "seconds": 2.5
+      }
+    },
+    "description_copies": {
+      "_comment": "Phrases de description qui recopient le cast_time ou le cooldown du sort (formes ancrees : une phrase d'effet comme 'reduit la recharge de 2 s' n'est pas une copie). sync : le script aligne le nombre sur le champ (le champ fait foi), en gardant le separateur decimal trouve, a defaut celui de la langue, et l'article anglais (groupe art : 'an' devant un nombre qui commence par article_an) ; --check echoue si une copie diverge. drop_when_zero : quand le champ passe a 0 (sort devenu instantane), la mention disparait ; un groupe 'next' est la lettre qui suit, remise en majuscule en debut de phrase. Aucune description de sort de classe ne cite son cooldown au 2026-10-15 ; les motifs gardent la regle si une copie apparait.",
+      "sync": {
+        "cast_time": [
+          {"field": "description_fr", "pattern": "(?i)après (?P<n>\\d+(?:[.,]\\d+)?) ?s d’incantation", "decimal": ","},
+          {"field": "description_fr", "pattern": "Incantation (?P<n>\\d+(?:[.,]\\d+)?) ?s", "decimal": ","},
+          {"field": "description_en", "pattern": "(?i)after (?P<art>an?) (?P<n>\\d+(?:\\.\\d+)?) ?s (?:interruptible )?cast", "decimal": ".", "article_an": ["8", "11", "18"]},
+          {"field": "description_en", "pattern": "Cast time (?P<n>\\d+(?:\\.\\d+)?) ?s", "decimal": "."}
+        ],
+        "cooldown": [
+          {"field": "description_fr", "pattern": "Recharge(?: :)? (?P<n>\\d+(?:[.,]\\d+)?) ?s\\b", "decimal": ","},
+          {"field": "description_en", "pattern": "Cooldown(?: :)? (?P<n>\\d+(?:\\.\\d+)?) ?s\\b", "decimal": "."}
+        ]
+      },
+      "drop_when_zero": {
+        "cast_time": [
+          {"field": "description_fr", "pattern": "Apr\u00e8s (?P<n>\\d+(?:[.,]\\d+)?) ?s d’incantation(?: interruptible)?, (?P<next>\\w)"},
+          {"field": "description_fr", "pattern": ",? après (?P<n>\\d+(?:[.,]\\d+)?) ?s d’incantation(?: interruptible)?"},
+          {"field": "description_fr", "pattern": " ?Incantation (?P<n>\\d+(?:[.,]\\d+)?) ?s\\."},
+          {"field": "description_en", "pattern": "After an? (?P<n>\\d+(?:\\.\\d+)?) ?s (?:interruptible )?cast, (?P<next>\\w)"},
+          {"field": "description_en", "pattern": ",? after an? (?P<n>\\d+(?:\\.\\d+)?) ?s (?:interruptible )?cast"},
+          {"field": "description_en", "pattern": " ?Cast time (?P<n>\\d+(?:\\.\\d+)?) ?s\\."}
+        ]
+      }
+    }
+  },
+
+  "server_dead_fields": {
+    "_comment": "Champs de skills.json qu'aucun code serveur vivant ne lit (git grep sur server-combat/src, branche vac_doublons-lot2, 2026-10-15). Le modele ne les compte pas ; le rapport les recense.",
+    "fields": ["power_per_level", "effect_power_per_level", "cooldown_per_level", "cast_interruptible", "heal_scaling_stat"]
+  },
+
+  "report": {
+    "_comment": "Seuils du rapport d'incoherences (--report). Outils de tri, pas des verdicts.",
+    "same_cost_power_ratio": 3.0,
+    "min_power_for_comparison": 60,
+    "strong_power_quantile": 0.75,
+    "top_power_quantile": 0.9,
+    "short_cooldown_seconds": 20,
+    "ultimate_min_cooldown_seconds": 60,
+    "cost_per_power_band": [0.5, 2.0],
+    "cooldown_thresholds_seconds": [6, 10, 20],
+    "spam_duration_seconds": 300,
+    "long_cast_seconds": 4,
+    "top_n": 15
+  }
+}

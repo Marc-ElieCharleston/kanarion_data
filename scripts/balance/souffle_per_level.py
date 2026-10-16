@@ -226,24 +226,25 @@ def object_span(text, idx):
 COST_SENTENCE = re.compile(r" ?(?:Coût : \d+ Souffle|Cost: \d+ Breath)[^.\"]*\.")
 
 
-def top_level_field(block, key):
-    """Match of `"key": value` at the skill's own indentation (not inside an effect)."""
+def top_level_field(block, key, value=r'([^,\r\n]+)'):
+    """Match of `"key": value` at the skill's own indentation (not inside an effect).
+    Group 1 is the value; `value` overrides its pattern (a string holds commas)."""
     first = re.search(r'^([ \t]*)"id"\s*:', block, re.M)
-    return re.search(r'^' + re.escape(first.group(1)) + r'"' + re.escape(key) + r'"\s*:\s*([^,\r\n]+)', block, re.M)
+    return re.search(r'^' + re.escape(first.group(1)) + r'"' + re.escape(key) + r'"\s*:\s*' + value, block, re.M)
 
 
-def edit_skill(block, want, nl):
-    """Return block with the target fields set, and the cost sentences removed."""
-    for key in ("mana_cost", "mana_cost_per_level", "rank_scaling_enabled"):
-        if key not in want:
-            continue
-        val = json.dumps(want[key])
+def set_fields(block, want, nl, anchors):
+    """Return block with each field of `want` set at the skill's own level. A missing field
+    is inserted on its own line after its anchor field (anchors: {field: anchor field}).
+    Textual: formatting and line endings are preserved."""
+    for key, v in want.items():
+        val = json.dumps(v)
         m = top_level_field(block, key)
         if m:
             if m.group(1).strip() != val:
                 block = block[:m.start(1)] + val + block[m.end(1):]
             continue
-        anchor = {"mana_cost_per_level": "mana_cost", "rank_scaling_enabled": "percent_per_level"}[key]
+        anchor = anchors[key]
         a = top_level_field(block, anchor)
         if not a:
             raise ValueError(f"no {anchor} line to anchor {key}")
@@ -253,7 +254,40 @@ def edit_skill(block, want, nl):
             block = block[:eol] + f'{indent}"{key}": {val},{nl}' + block[eol:]
         else:  # the anchor is the last field
             block = block[:a.end(1)] + f',{nl}{indent}"{key}": {val}' + block[a.end(1):]
+    return block
+
+
+COST_FIELDS = ("mana_cost", "mana_cost_per_level", "rank_scaling_enabled")
+COST_ANCHORS = {"mana_cost_per_level": "mana_cost", "rank_scaling_enabled": "percent_per_level"}
+
+
+def edit_skill(block, want, nl):
+    """Return block with the target fields set, and the cost sentences removed."""
+    block = set_fields(block, {k: want[k] for k in COST_FIELDS if k in want}, nl, COST_ANCHORS)
     return COST_SENTENCE.sub("", block)
+
+
+def rewrite_skills(edits):
+    """edits = {class: {skill_id: edit(block, nl) -> block}}. Each skill object is found by
+    its unique id and rewritten in place; every file is checked as JSON before any is
+    written (all or nothing)."""
+    new = {}
+    for cls, by_id in edits.items():
+        path = ROOT / f"classes/{cls}/skills.json"
+        text = path.read_bytes().decode("utf-8")
+        nl = "\r\n" if "\r\n" in text else "\n"
+        for sid in sorted(by_id):
+            hits = [m.start() for m in re.finditer(r'"id"\s*:\s*"' + re.escape(sid) + '"', text)]
+            if len(hits) != 1:
+                raise ValueError(f"{sid}: {len(hits)} occurrences of its id")
+            a, b = object_span(text, hits[0])
+            if json.loads(text[a:b]).get("id") != sid:
+                raise ValueError(f"{sid}: object span does not match the skill")
+            text = text[:a] + by_id[sid](text[a:b], nl) + text[b:]
+        json.loads(text)  # still valid JSON
+        new[path] = text
+    for path, text in new.items():
+        path.write_bytes(text.encode("utf-8"))
 
 
 def differences():
@@ -276,26 +310,11 @@ def differences():
 def apply():
     tg = targets()
     diffs = differences()
-    touched = {}
+    edits = {}
     for cls, sid, *_ in diffs:
-        touched.setdefault(cls, set()).add(sid)
-    new = {}
-    for cls, ids in touched.items():
-        path = ROOT / f"classes/{cls}/skills.json"
-        text = path.read_bytes().decode("utf-8")
-        nl = "\r\n" if "\r\n" in text else "\n"
-        for sid in sorted(ids):
-            hits = [m.start() for m in re.finditer(r'"id"\s*:\s*"' + re.escape(sid) + '"', text)]
-            if len(hits) != 1:
-                raise ValueError(f"{sid}: {len(hits)} occurrences of its id")
-            a, b = object_span(text, hits[0])
-            if json.loads(text[a:b]).get("id") != sid:
-                raise ValueError(f"{sid}: object span does not match the skill")
-            text = text[:a] + edit_skill(text[a:b], tg[cls].get(sid, {}), nl) + text[b:]
-        json.loads(text)  # still valid JSON
-        new[path] = text
-    for path, text in new.items():  # all or nothing
-        path.write_bytes(text.encode("utf-8"))
+        want = tg[cls].get(sid, {})
+        edits.setdefault(cls, {})[sid] = lambda block, nl, want=want: edit_skill(block, want, nl)
+    rewrite_skills(edits)
     left = differences()
     if left:
         raise SystemExit(f"post-check failed: {left[:5]}")
