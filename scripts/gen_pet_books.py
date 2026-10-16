@@ -54,6 +54,11 @@ OUT = ROOT / "items" / "pet_books.json"
 
 SKILL_PREFIX = "skill_familiar_"
 
+# Lettre AFFICHEE d'un rang interne (decision produit 2026-10-01) : l'interne reste
+# C..SS (ids, champ `rank`), le joueur lit D..S. Ne jamais ecrire une lettre interne
+# dans un texte joueur. Regle : systems/professions.json quality.display_letters.
+DISPLAY = {"C": "D", "B": "C", "A": "B", "S": "A", "SS": "S"}
+
 # Rang -> (suffixe d'id, % de puissance, rarete, prix d'achat). UN RANG = UNE RARETE.
 # Le prix de revente n'est PAS ici : il vient de systems/npc_resale.json (pet_books).
 RANKS = [
@@ -158,11 +163,11 @@ def build_books(skills):
 
         for rank, suffix, pct, rarity, buy in RANKS:
             desc_fr = (
-                f"Enseigne « {name_fr} » au rang {rank} à un familier de rôle {role_fr}. "
+                f"Enseigne « {name_fr} » au rang {DISPLAY[rank]} à un familier de rôle {role_fr}. "
                 f"Puissance {pct}% de la compétence de base."
             )
             desc_en = (
-                f"Teaches \"{name_en}\" at rank {rank} to {article(role_adj)} {role_adj} "
+                f"Teaches \"{name_en}\" at rank {DISPLAY[rank]} to {article(role_adj)} {role_adj} "
                 f"familiar. Power {pct}% of the base skill."
             )
             if legacy:
@@ -170,8 +175,8 @@ def build_books(skills):
                 desc_en += UPGRADE_EN
             book = {
                 "id": f"book_{short}_rank_{suffix}",
-                "name_fr": f"Grimoire {role_fr} : {name_fr} ({rank})",
-                "name_en": f"{role_en} Tome: {name_en} ({rank})",
+                "name_fr": f"Grimoire {role_fr} : {name_fr} ({DISPLAY[rank]})",
+                "name_en": f"{role_en} Tome: {name_en} ({DISPLAY[rank]})",
                 "category": "pet_book",
                 "book_type": "skill",
                 "teaches_id": sid,
