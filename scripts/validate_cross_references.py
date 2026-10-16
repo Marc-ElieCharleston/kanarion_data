@@ -1011,7 +1011,7 @@ KNOWN_ACHIEVEMENT_SOURCES = {
     "crafts_quality_second", "gathers_rarity_top", "gathers_rarity_second",
     "profession_specialties_at_100", "intermediates_crafted", "max_tool_rank_used",
 }
-# Prefixe -> le parametre doit etre un id de metier (profession_level) ou un niveau 1..100.
+# Prefixe -> le parametre doit etre un id de metier (profession_level) ou un niveau 1..rules.level_max.
 PARAMETERIZED_ACHIEVEMENT_SOURCES = ("profession_level:", "professions_at_or_above:")
 
 
@@ -1025,7 +1025,8 @@ def _known_achievement_source(db: Path, source) -> bool:
         return source.split(":", 1)[1] in ids
     if source.startswith("professions_at_or_above:"):
         n = source.split(":", 1)[1]
-        return n.isdigit() and 1 <= int(n) <= 100
+        level_max = load_json(db / "systems" / "professions.json").get("rules", {}).get("level_max", 0)
+        return n.isdigit() and 1 <= int(n) <= level_max
     return False
 
 
@@ -1237,11 +1238,59 @@ def validate_professions(db: Path) -> list:
         for g in sorted(pd["gathering"]):
             if g not in tools:
                 errors.append(f"[professions.json] metier de recolte '{g}' sans outil (kind tool)")
+    # Un fait = un proprietaire (2026-10-16) : le type d'outil vit dans tools.by_profession,
+    # le nombre maximum d'Experts dans rules.expert.max_experts.
+    by_prof = d.get("tools", {}).get("by_profession", {})
+    tool_types = {(it.get("tool_type"), it.get("profession")) for it in pd["new_items"].values()
+                  if it.get("kind") == "tool"}
+    for pid, ttype in by_prof.items():
+        if pid not in prof_ids:
+            errors.append(f"[professions.json] tools.by_profession : metier inconnu '{pid}'")
+        elif (ttype, pid) not in tool_types:
+            errors.append(f"[professions.json] tools.by_profession['{pid}'] = '{ttype}' : aucun outil "
+                          f"tool_{ttype}_r<rang> de ce metier")
+    for p in d.get("professions", []):
+        if "tool" in p:
+            errors.append(f"[professions.json] {p['id']}.tool : copie interdite, le seul proprietaire est "
+                          f"tools.by_profession")
+    rules = d.get("rules", {})
+    if "specialties" in rules:
+        errors.append("[professions.json] rules.specialties : copie interdite de rules.expert.max_experts")
+    if not isinstance(rules.get("expert", {}).get("max_experts"), int):
+        errors.append("[professions.json] rules.expert.max_experts manquant")
+    tier_rows = d.get("resource_rarity", {}).get("tiers", [])
+    lmax, lpr = rules.get("level_max"), rules.get("levels_per_rank")
+    if not (isinstance(lmax, int) and isinstance(lpr, int) and lpr > 0 and lmax % lpr == 0
+            and lmax // lpr == len(tier_rows)):
+        errors.append(f"[professions.json] rules.levels_per_rank ({lpr}) doit diviser level_max ({lmax}) en "
+                      f"{len(tier_rows)} rangs (un par tier)")
     q = d.get("quality", {})
-    tiers = [t.get("id") for t in d.get("resource_rarity", {}).get("tiers", [])]
+    tiers = [t.get("id") for t in tier_rows]
     if set(q.get("material_rarity_shift", {})) != set(tiers):
         errors.append(f"[professions.json] quality.material_rarity_shift {sorted(q.get('material_rarity_shift', {}))}"
                       f" != tiers de rarete {sorted(tiers)}")
+    # Rarete de fabrication : UN bloc (quality) pour tout lieu de fabrication (2026-10-16).
+    ms = q.get("max_shift")
+    if not isinstance(ms, (int, float)) or not 0 < ms <= 1:
+        errors.append("[professions.json] quality.max_shift doit etre un nombre dans ]0, 1]")
+    if len(q.get("base_weights", [])) != len(tiers) or any(w < 0 for w in q.get("base_weights", [])):
+        errors.append("[professions.json] quality.base_weights : un poids >= 0 par tier")
+    item_rarities = [t.get("item_rarity") for t in tier_rows]
+    floors = q.get("min_rarity_by_profession_rank", {})
+    want_ranks = [str(r) for r in range(1, len(tiers) + 1)]
+    if sorted(k for k in floors if not k.startswith("_")) != sorted(want_ranks):
+        errors.append(f"[professions.json] quality.min_rarity_by_profession_rank : rangs {want_ranks} attendus")
+    else:
+        idx = [item_rarities.index(floors[r]) if floors[r] in item_rarities else -1 for r in want_ranks]
+        if -1 in idx:
+            errors.append("[professions.json] quality.min_rarity_by_profession_rank : rarete hors "
+                          "resource_rarity.tiers[].item_rarity")
+        elif idx != sorted(idx):
+            errors.append("[professions.json] quality.min_rarity_by_profession_rank doit croitre avec le rang")
+    scal = db / "items" / "equipment_scaling.json"
+    if scal.exists() and "crafting" in load_json(scal):
+        errors.append("[equipment_scaling.json] bloc crafting : second modele de rarete de fabrication, le seul "
+                      "est systems/professions.json quality")
     return errors
 
 
@@ -1436,8 +1485,12 @@ def validate_gather_nodes(db: Path) -> list:
         p = t.get("profession")
         if p not in pd["gathering"]:
             errors.append(f"[gather_nodes.json] type '{tname}' : metier '{p}' inconnu ou pas de recolte")
-        if (t.get("tool"), p) not in tool_types:
-            errors.append(f"[gather_nodes.json] type '{tname}' : outil '{t.get('tool')}' du metier '{p}' absent")
+        if "tool" in t:
+            errors.append(f"[gather_nodes.json] type '{tname}' : champ tool interdit (copie de "
+                          f"systems/professions.json tools.by_profession)")
+        ttype = pd["prof"].get("tools", {}).get("by_profession", {}).get(p)
+        if (ttype, p) not in tool_types:
+            errors.append(f"[gather_nodes.json] type '{tname}' : outil '{ttype}' du metier '{p}' absent")
         if t.get("placement") not in ("ground", "water_edge"):
             errors.append(f"[gather_nodes.json] type '{tname}' : placement invalide")
         if tname == "fishing_spot" and t.get("placement") != "water_edge":
@@ -1489,11 +1542,9 @@ def validate_gather_nodes(db: Path) -> list:
     for tname in types:
         if gd.get("type_multiplier", {}).get(tname, 0) <= 0:
             errors.append(f"[gather_nodes.json] gather_duration.type_multiplier : '{tname}' manquant")
-    xp_path = db / "systems" / "profession_xp.json"
-    if xp_path.exists():
-        want = load_json(xp_path).get("gather_xp", {}).get("by_rank", {})
-        if g.get("profession_xp", {}).get("by_rank", {}) != want:
-            errors.append("[gather_nodes.json] profession_xp.by_rank != systems/profession_xp.json gather_xp.by_rank")
+    if "profession_xp" in g:
+        errors.append("[gather_nodes.json] profession_xp : copie interdite, le seul proprietaire est "
+                      "systems/profession_xp.json gather_xp")
     for r in ranks:
         rs = g.get("rules", {}).get("respawn_seconds", {}).get(r, [])
         if not (isinstance(rs, list) and len(rs) == 2 and 0 < rs[0] <= rs[1]):

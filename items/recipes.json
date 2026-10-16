@@ -1,21 +1,14 @@
 {
   "_meta": {
     "version": "1.2",
-    "last_updated": "2026-07-28",
-    "description": "Recettes de craft basique du Forgeron. MVP testable : matériaux de monstres + or -> equipement/consommable de base, deterministe. Filet anti-malchance + but pour les materiaux.",
+    "last_updated": "2026-10-16",
+    "description": "Recettes de la Forge du village : UNIQUEMENT la fusion des pierres d amelioration (10 -> 1 du rang au-dessus). Depuis le 2026-10-16 (proprietaire), la Forge garde l amelioration (+N) et ne fabrique plus d equipement ni de potion : l equipement se fabrique par les metiers (items/profession_recipes.json), les potions chez l Apothicaire. Le serveur refuse proprement toute recette absente de ce fichier.",
     "station_owner": "npc_blacksmith_gorik",
     "craft_contract": "Client envoie {recipe_id, idempotency_key}. Serveur : valide recipe existe + level_req + materials possedes + gold possede -> consomme atomiquement (materials + gold) -> ajoute output_item (cle UUID idempotente) -> refresh inventaire. Server-authoritative.",
-    "craft_ranks": {
-      "description": "Craft organise par RANG DE CRAFT de 10 niveaux (cap lv30 pour l'instant), un seul bracket d'item par rang pour rester leger. ATTENTION : ces rangs de craft n'ont RIEN A VOIR avec les 5 rangs d'item C->SS (bandes de 20 niveaux, voir panoplies.json / uniques.json / equipment_scaling.json _meta.rank_system). Cette cle s'appelait `rank_system` jusqu'au 2026-08-13 : homonyme trompeur, renomme pour eviter qu'on croie lire la meme table.",
-      "rank_1": "lv 1-10 -> items b1 (level_req 1). LIVRE (Rang 1 complet ci-dessous). Mats surs loup/sanglier.",
-      "rank_2": "lv 10-20 -> items b3 (level_req 11). LIVRE : 21 recettes (5 armes + 15 armures light/medium/heavy + cape silk). Mats mid-tier desert verifies dans loot_tables : bull_horn/alpha_fang/ram_horn/sharp_claw (armes), hyena_pelt/tough_hide/scorpion_shell/reinforced_leather (armures).",
-      "rank_3": "lv 20-30 -> AUCUN item de base au-dela de lv16 (brackets b1=1/b2=6/b3=11/b4=16). Soit creer des items lv20-30, soit ce palier reste loot-only."
-    },
-    "guardrail_ingredients": "Chaque materiau est present dans items/loot_tables.json (droppable) ET dans entities/monsters.json drops ET farmable a la lisiere de Havreden (familles loup + sanglier). NE PAS ajouter d'ingredient absent de loot_tables (mats rat/scarabee/substat n'y sont PAS).",
     "known_data_issue": "RESOLU 2026-07-28 : loot_tables.json est la source de verite unique (confirme dans loot_roller.cpp). Le champ drops de monsters.json (dead data) a ete migre dans loot_tables (tables par stripped-id) puis supprime. Tout mat present dans loot_tables est desormais farmable, point.",
-    "categories": ["weapon", "armor", "consumable", "enhancement_stone"],
+    "categories": ["enhancement_stone"],
     "stone_fusion": "Pierres d'amelioration rangs III a V : 10 pierres du rang inferieur, meme famille -> 1 pierre. SEULE source de ces conversions (enhancement_system.json ne les decrit plus, craft_recipe y vaut null). Gratuites et sans niveau requis : pure conversion, a retuner ici si besoin.",
-    "scope": "Couts en or = placeholders tunables. Toutes recettes debloquees d'entree (pas d'apprentissage). Armure heavy en cuir/os faute de mat metal bulletproof-farmable (a re-thematiser au Rang 2 avec du minerai).",
+    "scope": "Fusions gratuites et sans niveau requis, debloquees d entree. Les 15 armes, 32 armures et 2 potions de la Forge ont ete retirees le 2026-10-16.",
     "naming_contract": "Une recette n'a PAS de nom a elle. Elle s'affiche par le nom de son output_item, qui porte deja name_fr/name_en. Ajouter name_fr/name_en ici creerait une DEUXIEME source pour le meme texte, a traduire et maintenir deux fois, et a laisser deriver. La CI le refuse (etape 6 de validate_cross_references.py). Cote client : resoudre le nom depuis output_item. Audit client du 2026-08-14 : l'absence de noms a ete remontee comme un defaut, c'est le comportement correct."
   },
   "recipes": [

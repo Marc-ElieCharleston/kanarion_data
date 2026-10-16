@@ -8,9 +8,10 @@
   },
   "rules": {
     "level_max": 100,
-    "specialties": 2,
+    "levels_per_rank": 20,
+    "_levels_per_rank": "Un rang de metier (I a V) couvre levels_per_rank niveaux : rang = plafond(niveau / levels_per_rank), borne a 1..5, le niveau 0 est au rang I ; niveau de recolte d un rang = (rang - 1) x levels_per_rank (0, 20, 40, 60, 80). level_max / levels_per_rank doit donner les 5 rangs. Lu par economy et presence (shared/gameplay/profession_rank_scale.hpp) ; la valeur 20 etait ecrite en dur dans les deux services avant le 2026-10-16.",
     "non_specialty_level_cap": 50,
-    "_specialties": "EXPERT (remplace le choix libre de deux specialites, 2026-10-01). Jusqu'au niveau 50, tout le monde monte tous les metiers. Au niveau 50, le joueur va voir le maitre du metier pour passer Expert ; seuls les metiers Expert montent de 51 a 100. specialties = nombre maximum de metiers Expert par personnage. non_specialty_level_cap = plafond d'un metier non Expert (XP et fabrication). Les cles gardent leur nom historique.",
+    "_specialties": "EXPERT (remplace le choix libre de deux specialites, 2026-10-01). Jusqu'au niveau 50, tout le monde monte tous les metiers. Au niveau 50, le joueur va voir le maitre du metier pour passer Expert ; seuls les metiers Expert montent de 51 a 100. Le nombre maximum de metiers Expert par personnage est expert.max_experts (seul proprietaire : la copie rules.specialties a ete retiree le 2026-10-16). non_specialty_level_cap = plafond d'un metier non Expert (XP et fabrication). Les cles gardent leur nom historique.",
     "specialty_change": {
       "allowed": true,
       "gold_costs": [
@@ -52,6 +53,8 @@
       1
     ],
     "per_10_levels_above_recipe_shift": 0.08,
+    "max_shift": 0.9,
+    "_max_shift": "Borne haute du decalage total d (voir _shift_rule). Etait ecrite en dur (0.9) dans economy avant le 2026-10-16.",
     "material_rarity_shift": {
       "C": 0.0,
       "B": 0.04,
@@ -61,13 +64,33 @@
     },
     "_material_rarity_shift": "Remplace l'ancien rare_material_shift (0.05, un seul palier). Decalage de la recette = moyenne, ponderee par les quantites, du decalage de rarete de chaque ressource recoltee ou intermediaire consommee (les materiaux de monstre comptent pour 0). Toutes en legendaire = +0.25.",
     "rank_effect": "Le rang multiplie les statistiques ou la puissance de l'objet selon items/equipment_scaling.json (equipement) ; pour un consommable, il multiplie son effet (duree ou valeur).",
-    "_shift_rule": "Decalage total d = per_10_levels_above_recipe_shift x floor((niveau du metier - niveau de la recette) / 10) + decalage de rarete des materiaux. Application : en partant du rang SS vers C, chaque rang cede d x son poids au rang du dessus (SS garde le sien), puis on tire ; un resultat au-dessus de quality_cap est ramene a quality_cap. d est borne a 0.9.",
+    "_shift_rule": "Decalage total d = per_10_levels_above_recipe_shift x floor((niveau du metier - niveau de la recette) / 10) + decalage de rarete des materiaux. Application : en partant du rang SS vers C, chaque rang cede d x son poids au rang du dessus (SS garde le sien), puis on tire ; un resultat sous le plancher du rang du metier (min_rarity_by_profession_rank) est remonte au plancher, puis un resultat au-dessus de quality_cap est ramene a quality_cap. d est borne a max_shift.",
     "consumable_multipliers": {
       "C": 1.0,
       "B": 1.08,
       "A": 1.16,
       "S": 1.24,
       "SS": 1.32
+    },
+    "min_rarity_by_profession_rank": {
+      "1": "common",
+      "2": "uncommon",
+      "3": "rare",
+      "4": "epic",
+      "5": "epic"
+    },
+    "_min_rarity_by_profession_rank": "PLANCHER : un objet fabrique ne sort jamais sous la rarete du rang du metier qui le fabrique (rang I a V du niveau effectif, voir rules.levels_per_rank). Valeurs reprises telles quelles de l ancien bloc items/equipment_scaling.json crafting.profession_rank_min_rarity (2026-10-04), ou les cles s ecrivaient C, B, A, S, SS (rangs de metier avant l echelle unique I..V). Le plafond de la recette (quality_cap) l emporte sur le plancher.",
+    "_superseded": {
+      "_note": "Un seul systeme de rarete de fabrication depuis le 2026-10-16 (proprietaire) : ce bloc quality est lu par TOUT lieu de fabrication (ateliers de metier aujourd hui, tout autre demain), par un seul module serveur (economy crafting/crafted_rarity). L ancien modele de la Forge (items/equipment_scaling.json crafting, 2026-10-04) definissait les memes parametres avec d autres valeurs ; les valeurs des metiers (validees le 2026-10-01) restent actives, celles de la Forge sont gardees ici pour comparaison, AUCUN code ne les lit.",
+      "rarity_weights": {
+        "common": 45,
+        "uncommon": 33,
+        "rare": 16,
+        "epic": 5,
+        "legendary": 1
+      },
+      "_rarity_weights": "Remplace par base_weights [60, 25, 10, 4, 1] (memes cinq paliers, C=common .. SS=legendary), deplaces ensuite par le niveau et la rarete des materiaux.",
+      "item_level": "Niveau de l objet = niveau du personnage borne a la tranche du modele [level_req, fin de bande]. Remplace par : niveau d entree du modele (level_req), rang = tranche du modele."
     },
     "_crafted_storage": "Equipement (non empilable) : la qualite tiree devient la rarete de la piece (C=common, B=uncommon, A=rare, S=epic, SS=legendary) et ses stats sont tirees par le meme constructeur que le butin, au niveau d'entree de son rang ; custom_data porte quality (C..SS), rank (rang de l'objet I..V, comme le butin) et crafted_by. Consommable empilable a quality_cap > C : la qualite donne une variante generee (id + suffixe de resource_rarity) dont l'effet en valeur (soin, Souffle) est multiplie par consumable_multipliers ; une pile par qualite. Les effets de buff (status_id) gardent leur duree en V1."
   },
@@ -96,7 +119,6 @@
         "glandes, sang, venin"
       ],
       "_lore": "Nom choisi par Charleston le 2026-10-01 (regle de lore du 2026-07-30 : la vie, pas la mort). Le Glaneur recueille ce que la creature LIBEREE laisse derriere elle ; aucun cadrage depouille.",
-      "tool": "satchel",
       "consumes_from": [
         "tanner"
       ],
@@ -165,7 +187,6 @@
           }
         ]
       },
-      "tool": "lantern",
       "consumes_from": [
         "runist"
       ],
@@ -195,7 +216,6 @@
         "sable et quartz de rang 1 a 5 (verre des fioles, polissage)",
         "sel gemme"
       ],
-      "tool": "pickaxe",
       "consumes_from": [
         "bone_carver"
       ],
@@ -225,7 +245,6 @@
         "resines de rang 1 a 5"
       ],
       "_v2": "2026-10-01 : la cueillette (baies, champignons, miel, racines, Fleur de Faille) passe a l'Herboriste. Le Bucheron garde le bois et gagne l'ecorce et la resine, prelevees sans abattre.",
-      "tool": "axe",
       "consumes_from": [
         "bone_carver"
       ],
@@ -255,7 +274,6 @@
         "poissons de rang 1 a 5 (gardon, truite, brochet, anguille, poisson-lune de Faille)"
       ],
       "_master": "Tobin est deja pecheur (npc_fisher_tobin) : il devient le maitre du metier.",
-      "tool": "fishing_rod",
       "consumes_from": [
         "tanner"
       ],
@@ -281,7 +299,6 @@
         "produits de la foret : baies, champignons, miel, racines, Fleur de Faille"
       ],
       "_lore": "L'Herboriste coupe au-dessus de la racine : la plante repousse. Il ne prend que ce que la terre redonne (regle de lore du 2026-07-30 : la vie, pas la mort).",
-      "tool": "sickle",
       "consumes_from": [
         "bone_carver"
       ],
@@ -1997,7 +2014,7 @@
     "_feeds": "Les champs feeds / consumes_from de chaque metier sont DERIVES des recettes et des outils par le generateur ; le validateur verifie qu'ils correspondent et qu'aucun metier n'est isole."
   },
   "tools": {
-    "_rule": "Un outil (kind tool, id tool_<type>_r<rang>) porte uses utilisations. Le serveur prend dans le sac l'outil du bon type de rang le plus bas qui suffit (rang >= rang du point), puis celui qui a le moins d'utilisations restantes. Usure dans custom_data.uses_left ; a 0 l'outil se brise et disparait. Starter : les outils de rang I et II s'achetent chez le maitre du metier de recolte ; les rangs III a V se fabriquent.",
+    "_rule": "by_profession est le SEUL proprietaire du type d outil d un metier (lu par economy et presence ; les copies professions[].tool et world/gather_nodes.json node_types[].tool ont ete retirees le 2026-10-16). Un outil (kind tool, id tool_<type>_r<rang>) porte uses utilisations. Le serveur prend dans le sac l'outil du bon type de rang le plus bas qui suffit (rang >= rang du point), puis celui qui a le moins d'utilisations restantes. Usure dans custom_data.uses_left ; a 0 l'outil se brise et disparait. Starter : les outils de rang I et II s'achetent chez le maitre du metier de recolte ; les rangs III a V se fabriquent.",
     "by_profession": {
       "miner": "pickaxe",
       "lumberjack": "axe",
