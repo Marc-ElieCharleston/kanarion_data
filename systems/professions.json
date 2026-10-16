@@ -64,7 +64,7 @@
     },
     "_material_rarity_shift": "Remplace l'ancien rare_material_shift (0.05, un seul palier). Decalage de la recette = moyenne, ponderee par les quantites, du decalage de rarete de chaque ressource recoltee ou intermediaire consommee (les materiaux de monstre comptent pour 0). Toutes en legendaire = +0.25.",
     "rank_effect": "Le rang multiplie les statistiques ou la puissance de l'objet selon items/equipment_scaling.json (equipement) ; pour un consommable, il multiplie son effet (duree ou valeur).",
-    "_shift_rule": "Decalage total d = per_10_levels_above_recipe_shift x floor((niveau du metier - niveau de la recette) / 10) + decalage de rarete des materiaux. Application : en partant du rang SS vers C, chaque rang cede d x son poids au rang du dessus (SS garde le sien), puis on tire ; un resultat sous le plancher du rang du metier (min_rarity_by_profession_rank) est remonte au plancher, puis un resultat au-dessus de quality_cap est ramene a quality_cap. d est borne a max_shift.",
+    "_shift_rule": "Decalage total d = per_10_levels_above_recipe_shift x floor((niveau du metier - niveau de la recette) / 10) + decalage de rarete des materiaux. Application : en partant du rang SS vers C, chaque rang cede d x son poids au rang du dessus (SS garde le sien), puis on tire ; un resultat au-dessus de quality_cap est ramene a quality_cap. d est borne a max_shift. Aucun plancher par rang de metier (proprietaire, 2026-10-16) : un metier de haut niveau peut encore sortir du C.",
     "consumable_multipliers": {
       "C": 1.0,
       "B": 1.08,
@@ -72,14 +72,6 @@
       "S": 1.24,
       "SS": 1.32
     },
-    "min_rarity_by_profession_rank": {
-      "1": "common",
-      "2": "uncommon",
-      "3": "rare",
-      "4": "epic",
-      "5": "epic"
-    },
-    "_min_rarity_by_profession_rank": "PLANCHER : un objet fabrique ne sort jamais sous la rarete du rang du metier qui le fabrique (rang I a V du niveau effectif, voir rules.levels_per_rank). Valeurs reprises telles quelles de l ancien bloc items/equipment_scaling.json crafting.profession_rank_min_rarity (2026-10-04), ou les cles s ecrivaient C, B, A, S, SS (rangs de metier avant l echelle unique I..V). Le plafond de la recette (quality_cap) l emporte sur le plancher.",
     "_superseded": {
       "_note": "Un seul systeme de rarete de fabrication depuis le 2026-10-16 (proprietaire) : ce bloc quality est lu par TOUT lieu de fabrication (ateliers de metier aujourd hui, tout autre demain), par un seul module serveur (economy crafting/crafted_rarity). L ancien modele de la Forge (items/equipment_scaling.json crafting, 2026-10-04) definissait les memes parametres avec d autres valeurs ; les valeurs des metiers (validees le 2026-10-01) restent actives, celles de la Forge sont gardees ici pour comparaison, AUCUN code ne les lit.",
       "rarity_weights": {
@@ -90,7 +82,15 @@
         "legendary": 1
       },
       "_rarity_weights": "Remplace par base_weights [60, 25, 10, 4, 1] (memes cinq paliers, C=common .. SS=legendary), deplaces ensuite par le niveau et la rarete des materiaux.",
-      "item_level": "Niveau de l objet = niveau du personnage borne a la tranche du modele [level_req, fin de bande]. Remplace par : niveau d entree du modele (level_req), rang = tranche du modele."
+      "item_level": "Niveau de l objet = niveau du personnage borne a la tranche du modele [level_req, fin de bande]. Remplace par : niveau d entree du modele (level_req), rang = tranche du modele.",
+      "min_rarity_by_profession_rank": {
+        "1": "common",
+        "2": "uncommon",
+        "3": "rare",
+        "4": "epic",
+        "5": "epic"
+      },
+      "_min_rarity_by_profession_rank": "PLANCHER SUPPRIME le 2026-10-16 (proprietaire) : la qualite fabriquee est le seul tirage du metier (poids, decalages de niveau et de materiaux, max_shift), le plafond quality_cap de la recette reste. Ces valeurs (rang de metier I..V -> rarete minimale) venaient de l ancien bloc items/equipment_scaling.json crafting.profession_rank_min_rarity (2026-10-04, cles C..SS) ; gardees ici pour comparaison, AUCUN code ne les lit, le serveur et le validateur refusent la cle dans quality."
     },
     "_crafted_storage": "Equipement (non empilable) : la qualite tiree devient la rarete de la piece (C=common, B=uncommon, A=rare, S=epic, SS=legendary) et ses stats sont tirees par le meme constructeur que le butin, au niveau d'entree de son rang ; custom_data porte quality (C..SS), rank (rang de l'objet I..V, comme le butin) et crafted_by. Consommable empilable a quality_cap > C : la qualite donne une variante generee (id + suffixe de resource_rarity) dont l'effet en valeur (soin, Souffle) est multiplie par consumable_multipliers ; une pile par qualite. Les effets de buff (status_id) gardent leur duree en V1."
   },

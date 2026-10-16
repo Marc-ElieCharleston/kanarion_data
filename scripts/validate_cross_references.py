@@ -1275,18 +1275,12 @@ def validate_professions(db: Path) -> list:
         errors.append("[professions.json] quality.max_shift doit etre un nombre dans ]0, 1]")
     if len(q.get("base_weights", [])) != len(tiers) or any(w < 0 for w in q.get("base_weights", [])):
         errors.append("[professions.json] quality.base_weights : un poids >= 0 par tier")
-    item_rarities = [t.get("item_rarity") for t in tier_rows]
-    floors = q.get("min_rarity_by_profession_rank", {})
-    want_ranks = [str(r) for r in range(1, len(tiers) + 1)]
-    if sorted(k for k in floors if not k.startswith("_")) != sorted(want_ranks):
-        errors.append(f"[professions.json] quality.min_rarity_by_profession_rank : rangs {want_ranks} attendus")
-    else:
-        idx = [item_rarities.index(floors[r]) if floors[r] in item_rarities else -1 for r in want_ranks]
-        if -1 in idx:
-            errors.append("[professions.json] quality.min_rarity_by_profession_rank : rarete hors "
-                          "resource_rarity.tiers[].item_rarity")
-        elif idx != sorted(idx):
-            errors.append("[professions.json] quality.min_rarity_by_profession_rank doit croitre avec le rang")
+    # Aucun plancher de rarete par rang de metier (proprietaire, 2026-10-16) : la qualite fabriquee
+    # est le seul tirage du metier, le plafond quality_cap reste. Les anciennes valeurs vivent sous
+    # quality._superseded, lues par personne.
+    if "min_rarity_by_profession_rank" in q:
+        errors.append("[professions.json] quality.min_rarity_by_profession_rank : plancher supprime le "
+                      "2026-10-16, la qualite fabriquee n'a pas de minimum (le serveur refuse aussi la cle)")
     scal = db / "items" / "equipment_scaling.json"
     if scal.exists() and "crafting" in load_json(scal):
         errors.append("[equipment_scaling.json] bloc crafting : second modele de rarete de fabrication, le seul "
