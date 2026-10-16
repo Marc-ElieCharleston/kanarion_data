@@ -70,7 +70,7 @@ Ponts côté Attaque :
 | 30 → 50 | Endurance, Resilience, Ancrage ; ou Ecailles, Colosse, Regeneration |
 | **50** | *Inebranlable* (Sous 30 % de PV : bouclier egal a 20 % de tes PV max. Une fois toutes les 45 s) **ou** *Dernier rempart* (Sous 30 % de PV : -20 % de degats subis). Détour à 55 : *Mur vivant* (Apres un blocage ou une parade : -20 % de degats subis pendant 3 s) |
 | 50 → 75 | Maitrise : bastion, Maitrise : cuirasse, Maitrise : endurance |
-| **75 méga** | *Forteresse* (+30 % de PV max et +15 % de reduction des degats subis. Contrepartie : -25 % de degats infliges) **ou** *Colere du titan* (Renvoie 30 % des degats subis et +10 % de vol de vie. Contrepartie : -25 % de soins recus) |
+| **75 méga** | *Forteresse* (+30 % de PV max et +15 % de reduction des degats subis. Contrepartie : -25 % de degats infliges) **ou** *Colere du titan* (Renvoie 30 % des degats subis et +10 % de vol de vie. Contrepartie : +15 % de degats subis et -25 % de soins recus) |
 
 ## Bras Soin (proposition)
 

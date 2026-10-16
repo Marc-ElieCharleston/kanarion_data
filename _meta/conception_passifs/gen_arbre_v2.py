@@ -104,8 +104,8 @@ ARMS["defense"] = ("def", {
               "+30 % de PV max et +15 % de reduction des degats subis. Contrepartie : -25 % de degats infliges.",
               [once("hp", 30, "add_percent"), once("damage_reduction", 15), once("damage_percent", -25)]),
     "megab": ("mega_titan", "Colere du titan",
-              "Renvoie 30 % des degats subis et +10 % de vol de vie. Contrepartie : -25 % de soins recus.",
-              [once("thorns", 30), once("lifesteal", 10), once("healing_received", -25)]),
+              "Renvoie 30 % des degats subis et +10 % de vol de vie. Contrepartie : +15 % de degats subis et -25 % de soins recus.",
+              [once("thorns", 30), once("lifesteal", 10), once("damage_reduction", -15), once("healing_received", -25)]),
 })
 
 ARMS["healing"] = ("heal", {
