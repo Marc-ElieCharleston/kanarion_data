@@ -31,7 +31,7 @@ ALLOWED_STANDARD_FIELDS = {
     # Cost
     "mana_cost", "mana_cost_per_level",
     # Timing
-    "cooldown", "cooldown_per_level", "cast_time", "cast_interruptible",
+    "cooldown", "cooldown_per_level", "cast_time",
     # Heal
     "heal_scaling_percent", "heal_scaling_per_level", "heal_scaling_stat",
     "base_heal",

@@ -64,8 +64,7 @@
     "_soft_note": "Un controle mou ne supprime pas l'action, il la degrade ou la detourne : 40 % d'un controle dur, 24/s, comme les 25/s de balance_model.json.",
     "component_by_category": {"aggro": "debuff_defensif"},
     "_component_by_category_note": "Cas particuliers (2026-10-15). Une provocation (categorie aggro de status_effects.json : taunt) n'empeche aucune action : elle detourne les coups des allies fragiles vers le tank qui les encaisse le mieux. Prix inchange (controle mou, 24/s par ennemi, comparable a damage_transfer : 100 % des degats d'un ennemi rediriges = 20/s), mais rangee en debuff_defensif (l'ennemi blesse moins le groupe) : c'est la protection du tank, son identite. Rangee en controle, la Provocation du guerrier sortait du role du tank et passait de 26 a 60 s.",
-    "interrupts_cast_cc_type": "stun",
-    "_interrupt_note": "Le serveur n'interrompt une incantation que sur flags.stunned (room.cpp process_casting) : effets de cc_type stun (stun, freeze, fear). silence porte interrupts_cast dans la data mais le serveur ne le lit pas."
+    "_interrupt_note": "Les statuts qui interrompent une incantation portent runtime.interrupts_cast dans stats/status_effects.json ; ce que l'interruption fait perdre est dans config/combat.json settings.cast_interrupt."
   },
 
   "modifiers": {
@@ -140,7 +139,7 @@
       "cover": {"points": 120, "component": "buff_defensif"},
       "riposte_active": {"points": 60, "component": "buff_defensif"}
     },
-    "_per_cast_note": "cleanse/purge : retire un effet adverse, environ une seconde d'action (60). steal_buff : retire ET gagne. interrupt : annule une incantation ennemie sans remboursement. cover (runtime charges 1) : intercepte UN coup mono-cible, la valeur d'un coup de reference (120). riposte_active : renvoie une partie du prochain coup puis se consomme (60). cleanse range en buff_defensif (cas particuliers, 2026-10-15) : retirer un affaiblissement d'un allie le protege, c'est le coeur du role de soigneur (roles.json lightbringer cleanse) ; range en utilitaire, la dissipation sortait de l'identite du soigneur et prenait la densite d'un utilitaire (Purification 12 -> 95 s).",
+    "_per_cast_note": "cleanse/purge : retire un effet adverse, environ une seconde d'action (60). steal_buff : retire ET gagne. interrupt : annule une incantation ennemie (pertes : config/combat.json settings.cast_interrupt). cover (runtime charges 1) : intercepte UN coup mono-cible, la valeur d'un coup de reference (120). riposte_active : renvoie une partie du prochain coup puis se consomme (60). cleanse range en buff_defensif (cas particuliers, 2026-10-15) : retirer un affaiblissement d'un allie le protege, c'est le coeur du role de soigneur (roles.json lightbringer cleanse) ; range en utilitaire, la dissipation sortait de l'identite du soigneur et prenait la densite d'un utilitaire (Purification 12 -> 95 s).",
     "per_cast_area_targets": ["allies", "enemies"],
     "_per_cast_area_targets_note": "room.cpp (cleanse, purge, steal_buff) : un verbe ne touche toutes les cibles de la zone que si son effet porte target allies ou enemies ; sinon la cible principale seule, quel que soit le motif. Les autres sont comptes une fois (x portee pour un ennemi). Corrige 2026-10-15 : Rafistolage (artisan) comptait trois dissipations pour une.",
     "resurrect_points_at_full_hp": 600,
@@ -152,10 +151,10 @@
   },
 
   "casting": {
-    "_comment": "Incantation (room.cpp : Souffle, GCD et cooldown debites au debut, pas de canalisation). Ce qui depasse le GCD est du temps de rotation perdu (balance_model.json _regle_du_GCD, toujours vrai). Une interruption (stun seulement) rembourse cooldown et Souffle : seule l'action est perdue.",
+    "_comment": "Incantation (room.cpp : Souffle, GCD et cooldown debites au debut, pas de canalisation). Ce qui depasse le GCD est du temps de rotation perdu (balance_model.json _regle_du_GCD, toujours vrai). Une interruption (statuts runtime.interrupts_cast, verbe interrupt) fait perdre ce que dit config/combat.json settings.cast_interrupt ; le modele ne compte encore que l'action perdue.",
     "time_cost_per_second": 60,
     "interrupt_rate_per_second": 0.03,
-    "_interrupt_note": "Chance par seconde d'incantation qu'un stun ennemi tombe, PvE de groupe (monstres controller et elites). Perte esperee = rate x cast (probabilite) x cast (temps perdu) x debit."
+    "_interrupt_note": "Chance par seconde d'incantation qu'un controle ennemi qui interrompt tombe, PvE de groupe (monstres controller et elites). Perte esperee = rate x cast (probabilite) x cast (temps perdu) x debit."
   },
 
   "reach": {
@@ -314,7 +313,7 @@
 
   "server_dead_fields": {
     "_comment": "Champs de skills.json qu'aucun code serveur vivant ne lit (git grep sur server-combat/src, branche vac_doublons-lot2, 2026-10-15). Le modele ne les compte pas ; le rapport les recense.",
-    "fields": ["power_per_level", "effect_power_per_level", "cooldown_per_level", "cast_interruptible", "heal_scaling_stat"]
+    "fields": ["power_per_level", "effect_power_per_level", "cooldown_per_level", "heal_scaling_stat"]
   },
 
   "report": {
