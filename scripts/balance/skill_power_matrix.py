@@ -39,7 +39,7 @@ STATUS = {k: dict(e, category=c) for c, es in load("stats/status_effects.json")[
 BASE, GROWTH = load("stats/class_base_stats.json"), load("stats/class_growth.json")
 
 GCD = COMBAT["gcd_duration"]
-CDR_CAP = COMBAT["abilities"]["cooldown_reduction_cap"] / 100
+CDR_CAP = load("stats/definitions.json")["stats"]["special"]["cooldown_reduction"]["cap"] / 100   # cap owner: the stat definition
 REF = M["reference"]
 REF_DPS = REF["reference_hit_percent"] / GCD          # points per second of an ordinary action
 GRID = GAME["combat_grids"]["available"][GAME["combat_grids"]["default"]]
