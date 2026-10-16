@@ -22,6 +22,7 @@
     }
   },
   "rarity_multipliers": {
+    "_drop_weight_owner": "SOURCE UNIQUE du tirage de rarete d'une empreinte au drop (drop_weight, entiers, poids relatifs), lue par server-combat (back vac_capture-rarity : loot/capture_rarity.cpp) sans valeur par defaut. Proprietaire 2026-10-14 : 60 / 25 / 10 / 4 / 1 (le serveur tirait en dur 70 / 0 / 25 / 4 / 1, sans peu commun).",
     "_comment": "Rarete = multiplicateur de stats (relu depuis cette config a chaque lecture : pg_store.cpp rarity_multiplier_for, donc s'applique aussi aux familiers deja possedes) + drop_weight = poids du tirage de rarete au DROP (pas de capture : une fois l'empreinte droppee, le familier est obtenu). 2026-10-02 (proprietaire) : 1.0 / 1.07 / 1.15 / 1.3 / 1.5 (etait 1.0 / 1.06 / 1.12 / 1.2 / 1.3). Avec 1.5, un rat legendaire tank ~ 70 % des PV et 80 % de l'armure d'un golem commun : l'espece compte plus que la rarete pour le role, la rarete recompense la chasse.",
     "common": {
       "stat_multiplier": 1.0,
@@ -61,7 +62,7 @@
   "_gift_offers_note": "Onboarding V2 lot 3 (2026-09-24). Familiers OFFERTS, un par offre et par personnage. Cle = offer_id envoye dans la requete de choix de familier (0x0F03, champ offer_id). Le serveur refuse un archetype absent de la liste et enregistre le don dans familiar_gifts (UNIQUE character_id, offer_id) : un rejeu renvoie le familier deja donne. colette_village = objectif claim_familiar_gift de q_havreden_tour_02. Le familier offert va dans le premier emplacement porte libre (sinon au stock) et n'est PAS rendu actif. Le rat de la chaine d'Aldric n'est pas une offre de ce bloc : offer_id vide, enregistre cote serveur sous aldric_rat.",
   "_max_collection_note": "Server-authoritative collection cap (2026-07-23). Enforced at incubation claim (COLLECTION_FULL) and exposed in FamiliarListResponse.max_collection. Client displays this instead of its former hardcoded 50.",
   "capture_rate_by_rarity": {
-    "_comment": "Taux de capture (drop_chance de l empreinte) par rarete du familier (growth_tier dans monsters.json familiar_capture). Echelle canonique : commun facile, rare/legendaire = chasse. Applique aux drop_chance per-mob 2026-08-01. Si retune, changer ici PUIS re-appliquer aux mobs.",
+    "_comment": "Chance de loot de l'empreinte par palier d'espece (growth_tier dans monsters.json familiar_capture). Pas de jet de capture : une empreinte lootee = le familier. Echelle canonique : commun facile, rare/legendaire = chasse. Le serveur lit le drop_chance de chaque monstre ; scripts/validate_bestiary.py (B04) controle drop_chance == cette table. Les 4 ecarts (rats soigneur / mage, marcassin, ourson) alignes le 2026-10-14 (proprietaire, sans exception). Si retune, changer ici PUIS re-appliquer aux mobs.",
     "starter": 0.05,
     "common": 0.035,
     "uncommon": 0.02,

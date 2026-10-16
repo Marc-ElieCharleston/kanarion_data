@@ -467,3 +467,14 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       Reste à décider : partage de l'or en groupe, forge payante (`vac_equipment`), brancher `economy.json`
       gold_sinks, prix de revente (pierre rang 5 à 10 000), notes `_note_bande` périmées (le serveur filtre bien la bande).
 - [ ] Le lore du dépôt `kanarion_lore` sur GitHub date d'avril : pousser la version du bureau.
+- [ ] **Niveau maximum des guildes** (refacto `vac_refactor-lot1`, 2026-10-14) : decision owner en attente,
+      50 ou 100. Aujourd'hui `guild/config.json` `max_level` = 50 et `guild/levels.json` definit 50 niveaux
+      (capacite 20 -> 50 membres). Si c'est 100 : etendre `levels.json` jusqu'a 100 (xp_to_next, max_members,
+      unlocks), passer `max_level` a 100 et le miroir `systems/guilds.json` `config.max_guild_level`.
+      La capacite suit desormais le niveau (`levels[].max_members`) : une guilde niveau 1 tient 20 membres
+      (avant : 30 fixes pour toutes). Les guildes existantes au-dela de leur nouvelle capacite gardent leurs
+      membres mais ne peuvent plus en accueillir avant de monter de niveau.
+- [ ] **Invocations et taille d'equipe** (refacto `vac_refactor-lot1`, 2026-10-14) : la limite de 10 par camp
+      (`config/game.json` `game_constants.max_party_size`) compte joueurs + familiers + mercenaires, PAS les
+      invocations ni les leurres. Le traitement des invocations (plafond propre, `entities/summons.json`
+      max_summons_per_team, faut-il les compter dans les 10 ?) reste a decider.

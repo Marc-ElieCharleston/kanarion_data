@@ -16,6 +16,8 @@ Checks:
   8. config/rewards.json is coherent and matches the blocks it replaces
   11. Item display contract: every rollable stat has declared bounds, every
       affix is nameable and described, no socket without gem data
+  13. Single sources of gameplay values: each value the server reads from ONE
+      file is present there, and every client-facing mirror equals it
 
 Exit code 0 = pass, 1 = failures found.
 """
@@ -709,20 +711,9 @@ def validate_rewards(db: Path) -> list:
                       "applique 1 + (N-1) * 0.055 plafonne. Utiliser "
                       "bonus_per_extra_player + cap.")
 
-    mt_path = db / "config" / "monster_tiers.json"
-    tier_xp = {}
-    if mt_path.exists():
-        for name, body in load_json(mt_path).get("threat_tiers", {}).items():
-            if isinstance(body, dict) and "xp_multiplier" in body:
-                tier_xp[name] = float(body["xp_multiplier"])
-        for name, live in tier_xp.items():
-            new = fam_values("monster_threat_tier").get(name, {}).get("xp")
-            if new is None or abs(live - float(new)) > 1e-6:
-                errors.append(f"[rewards] DERIVE monster_threat_tier.{name}.xp : "
-                              f"origine={live} rewards.json={new}")
-    if not tier_xp:
-        tier_xp = {n: float(v.get("xp", 1.0))
-                   for n, v in fam_values("monster_threat_tier").items()}
+    # config/monster_tiers.json (copie morte) supprime le 2026-10-14 : rewards.json seul.
+    tier_xp = {n: float(v.get("xp", 1.0))
+               for n, v in fam_values("monster_threat_tier").items()}
 
     # --- 3. Derivation de l'XP par monstre ----------------------------------
     overrides = (rw.get("inputs_declared_elsewhere", {})
@@ -1652,6 +1643,393 @@ def validate_tower(db: Path, all_item_ids: set) -> list:
     return errors
 
 
+# ---------------------------------------------------------------------------
+# 13. Single sources of gameplay values (refacto vac_refactor-lot1, 2026-10-14).
+# The server reads each of these values from ONE file and refuses to start when
+# it is absent (no C++ default). These checks never pin a number: they check
+# that the owner carries a usable value and that every mirror kept for the
+# client says the same thing.
+# ---------------------------------------------------------------------------
+
+ALLOCATABLE_STATS = ("hp", "mp", "atk", "mag", "def")
+
+
+def _is_pos_int(v) -> bool:
+    return isinstance(v, int) and not isinstance(v, bool) and v > 0
+
+
+def validate_stat_point_values(db: Path) -> list:
+    """config/game.json stats_definition owns the value of one allocated point."""
+    errors = []
+    game = load_json(db / "config" / "game.json")
+    prog = load_json(db / "systems" / "progression.json")
+    sd = game.get("stats_definition")
+    if not isinstance(sd, dict):
+        return ["[game.json] stats_definition absent : le combat et l'economie refusent de demarrer"]
+    owner = {}
+    for stat in ALLOCATABLE_STATS:
+        v = (sd.get(stat) or {}).get("point_value") if isinstance(sd.get(stat), dict) else None
+        if not _is_pos_int(v):
+            errors.append(f"[game.json] stats_definition.{stat}.point_value absent ou non entier > 0 ({v!r})")
+        owner[stat] = v
+    alloc = prog.get("stat_allocation", {})
+    listed = alloc.get("allocatable_stats")
+    if listed is not None and sorted(listed) != sorted(ALLOCATABLE_STATS):
+        errors.append(f"[progression.json] stat_allocation.allocatable_stats={listed} : le serveur "
+                      f"lit exactement {list(ALLOCATABLE_STATS)}")
+    mirror = alloc.get("point_values")
+    if isinstance(mirror, dict):
+        for stat in ALLOCATABLE_STATS:
+            if mirror.get(stat) != owner.get(stat):
+                errors.append(f"[progression.json] DERIVE stat_allocation.point_values.{stat}="
+                              f"{mirror.get(stat)!r}, source game.json={owner.get(stat)!r}")
+    return errors
+
+
+def _is_nonneg_int(v) -> bool:
+    return isinstance(v, int) and not isinstance(v, bool) and v >= 0
+
+
+def validate_level_grants(db: Path) -> list:
+    """systems/progression.json stat_allocation owns the level-up grants."""
+    errors = []
+    prog = load_json(db / "systems" / "progression.json")
+    sa = prog.get("stat_allocation", {})
+    keys = ("points_per_level", "skill_points_per_level", "passive_points_per_level", "starting_skill_points")
+    for k in keys:
+        if not _is_nonneg_int(sa.get(k)):
+            errors.append(f"[progression.json] stat_allocation.{k} absent ou non entier >= 0 "
+                          f"({sa.get(k)!r}) : economie, quete et personnage refusent de demarrer")
+    if errors:
+        return errors
+    max_level = prog.get("leveling", {}).get("max_level")
+    total = sa.get("total_stat_points_at_max_level")
+    if isinstance(max_level, int) and total is not None and total != sa["points_per_level"] * (max_level - 1):
+        errors.append(f"[progression.json] stat_allocation.total_stat_points_at_max_level={total}, "
+                      f"attendu points_per_level x (max_level - 1) = {sa['points_per_level'] * (max_level - 1)}")
+    gc = load_json(db / "config" / "game.json").get("game_constants", {})
+    for mirror, owner in (("stat_points_per_level", "points_per_level"),
+                          ("skill_points_per_level", "skill_points_per_level")):
+        if mirror in gc and gc[mirror] != sa[owner]:
+            errors.append(f"[game.json] DERIVE game_constants.{mirror}={gc[mirror]!r}, "
+                          f"source progression.json stat_allocation.{owner}={sa[owner]!r}")
+    sp = load_json(db / "config" / "skill_system.json").get("skill_points", {})
+    for mirror, owner in (("points_per_level", "skill_points_per_level"),
+                          ("starting_points", "starting_skill_points")):
+        if mirror in sp and sp[mirror] != sa[owner]:
+            errors.append(f"[skill_system.json] DERIVE skill_points.{mirror}={sp[mirror]!r}, "
+                          f"source progression.json stat_allocation.{owner}={sa[owner]!r}")
+    top = sp.get("max_player_level")
+    if "total_points_available" in sp and isinstance(top, int):
+        expected = sa["starting_skill_points"] + sa["skill_points_per_level"] * (top - 1)
+        if sp["total_points_available"] != expected:
+            errors.append(f"[skill_system.json] skill_points.total_points_available="
+                          f"{sp['total_points_available']}, attendu {expected} (depart + par niveau x {top - 1})")
+    return errors
+
+
+ITEM_RARITIES = ("common", "uncommon", "rare", "epic", "legendary")
+
+
+def validate_rarity_power(db: Path) -> list:
+    """items/equipment_scaling.json rarity_system.rarities.<r>.power_mult owns the item power."""
+    errors = []
+    rarities = load_json(db / "items" / "equipment_scaling.json").get("rarity_system", {}).get("rarities")
+    if not isinstance(rarities, dict):
+        return ["[equipment_scaling.json] rarity_system.rarities absent : l'economie refuse de demarrer"]
+    for r in ITEM_RARITIES:
+        if r not in rarities:
+            errors.append(f"[equipment_scaling.json] rarete '{r}' absente de rarity_system.rarities "
+                          f"(le serveur exige les cinq)")
+    power = {}
+    for r, entry in rarities.items():
+        if r.startswith("_"):
+            continue
+        v = entry.get("power_mult") if isinstance(entry, dict) else None
+        if not isinstance(v, (int, float)) or isinstance(v, bool) or v <= 0:
+            errors.append(f"[equipment_scaling.json] rarity_system.rarities.{r}.power_mult absent "
+                          f"ou <= 0 ({v!r}) : le fichier est refuse")
+            continue
+        power[r] = v
+    ordered = [(r, power[r]) for r in ITEM_RARITIES if r in power]
+    for (lo, a), (hi, b) in zip(ordered, ordered[1:]):
+        if b < a:
+            errors.append(f"[equipment_scaling.json] power_mult de '{hi}' ({b}) inferieur a celui de "
+                          f"'{lo}' ({a}) : une rarete superieure ne peut pas valoir moins")
+    return errors
+
+
+def validate_star_roll_weights(db: Path) -> list:
+    """entities/monster_variants.json star_system.roll_weights owns the pack star draw."""
+    errors = []
+    w = load_json(db / "entities" / "monster_variants.json").get("star_system", {}).get("roll_weights")
+    ok = (isinstance(w, list) and len(w) == 6
+          and all(isinstance(x, (int, float)) and not isinstance(x, bool) and x >= 0 for x in w)
+          and sum(w) > 0)
+    if not ok:
+        return [f"[monster_variants.json] star_system.roll_weights={w!r} : 6 poids >= 0 de somme > 0 "
+                f"attendus (etoiles 0..5), sinon presence refuse de demarrer"]
+    mirror = load_json(db / "config" / "game.json").get("spawner", {}).get("star_roll_weights")
+    if mirror is not None and [float(x) for x in mirror] != [float(x) for x in w]:
+        errors.append(f"[game.json] DERIVE spawner.star_roll_weights={mirror}, "
+                      f"source monster_variants.json star_system.roll_weights={w}")
+    tiers = load_json(db / "systems" / "encounter_stars.json").get("star_tiers", {})
+    for s in range(6):
+        if str(s) not in tiers:
+            errors.append(f"[encounter_stars.json] star_tiers.{s} absent : presence refuse de demarrer "
+                          f"(plus de table de repli C++)")
+    return errors
+
+
+def validate_respec_cost(db: Path) -> list:
+    """systems/economy.json gold_sinks.respec owns the stat / skill / passive reset price."""
+    r = load_json(db / "systems" / "economy.json").get("gold_sinks", {}).get("respec")
+    if not isinstance(r, dict):
+        return ["[economy.json] gold_sinks.respec absent : les trois resets sont fermes"]
+    errors = []
+    for k in ("free_until_level", "gold_per_level_above"):
+        if not _is_nonneg_int(r.get(k)):
+            errors.append(f"[economy.json] gold_sinks.respec.{k} absent ou non entier >= 0 ({r.get(k)!r}) : "
+                          f"les trois resets sont fermes")
+    for dead in ("base_cost",):
+        if dead in r:
+            errors.append(f"[economy.json] gold_sinks.respec.{dead} est revenu : la regle est par niveau "
+                          f"(free_until_level / gold_per_level_above), pas par nombre de resets")
+    return errors
+
+
+def validate_koro_equipment(db: Path) -> list:
+    """systems/koro.json equipment owns the number of Koro cards and their unlock levels."""
+    eq = load_json(db / "systems" / "koro.json").get("equipment")
+    if not isinstance(eq, dict):
+        return ["[koro.json] equipment absent : le combat refuse de demarrer, l'economie ferme les cartes"]
+    errors = []
+    n = eq.get("max_equipped")
+    if not _is_pos_int(n):
+        return [f"[koro.json] equipment.max_equipped={n!r} : entier >= 1 attendu"]
+    levels = eq.get("slot_unlock_levels")
+    if (not isinstance(levels, list) or len(levels) != n
+            or not all(_is_pos_int(v) for v in levels)
+            or any(b <= a for a, b in zip(levels, levels[1:]))):
+        errors.append(f"[koro.json] equipment.slot_unlock_levels={levels!r} : {n} niveaux >= 1 strictement "
+                      f"croissants attendus (un par emplacement)")
+    cards_meta = load_json(db / "items" / "koro_cards.json").get("_meta", {})
+    if "max_equipped" in cards_meta and cards_meta["max_equipped"] != n:
+        errors.append(f"[koro_cards.json] DERIVE _meta.max_equipped={cards_meta['max_equipped']}, "
+                      f"source koro.json equipment.max_equipped={n} (relancer generate_koro_catalog.py)")
+    return errors
+
+
+def validate_guild_rules(db: Path) -> list:
+    """guild/levels.json owns the capacity by level, systems/guilds.json the creation cost."""
+    errors = []
+    gcfg = load_json(db / "guild" / "config.json")
+    levels = load_json(db / "guild" / "levels.json").get("levels", [])
+    max_level = gcfg.get("max_level")
+    capacity = {}
+    for row in levels:
+        lvl, cap = row.get("level"), row.get("max_members")
+        if not _is_pos_int(cap):
+            errors.append(f"[guild/levels.json] niveau {lvl} : max_members={cap!r}, entier >= 1 attendu "
+                          f"(capacite de la guilde a ce niveau)")
+            continue
+        capacity[lvl] = cap
+    for lvl in sorted(capacity):
+        if lvl - 1 in capacity and capacity[lvl] < capacity[lvl - 1]:
+            errors.append(f"[guild/levels.json] la capacite baisse au niveau {lvl} "
+                          f"({capacity[lvl - 1]} -> {capacity[lvl]}) : une guilde qui monte perdrait des places")
+    guilds = load_json(db / "systems" / "guilds.json")
+    cfg = guilds.get("config", {})
+    cost = cfg.get("creation_cost")
+    if not _is_nonneg_int(cost):
+        errors.append(f"[guilds.json] config.creation_cost={cost!r} : entier >= 0 attendu, sinon le service "
+                      f"de guilde refuse de demarrer")
+    for dead in ("base_max_members",):
+        if dead in cfg:
+            errors.append(f"[guilds.json] config.{dead} est revenu : la capacite suit le niveau (guild/levels.json)")
+    if "max_guild_level" in cfg and cfg["max_guild_level"] != max_level:
+        errors.append(f"[guilds.json] DERIVE config.max_guild_level={cfg['max_guild_level']}, "
+                      f"source guild/config.json max_level={max_level}")
+    for key, row in guilds.get("level_data", {}).items():
+        if key.startswith("_") or not isinstance(row, dict) or "max_members" not in row:
+            continue
+        lvl = int(key)
+        if capacity.get(lvl) != row["max_members"]:
+            errors.append(f"[guilds.json] DERIVE level_data.{key}.max_members={row['max_members']}, "
+                          f"source guild/levels.json={capacity.get(lvl)!r}")
+    eco = load_json(db / "systems" / "economy.json").get("gold_sinks", {}).get("guild", {})
+    if "creation_cost" in eco and eco["creation_cost"] != cost:
+        errors.append(f"[economy.json] DERIVE gold_sinks.guild.creation_cost={eco['creation_cost']}, "
+                      f"source guilds.json config.creation_cost={cost!r}")
+    return errors
+
+
+def validate_party_size(db: Path) -> list:
+    """config/game.json game_constants.max_party_size owns the party / team size."""
+    n = load_json(db / "config" / "game.json").get("game_constants", {}).get("max_party_size")
+    if not _is_pos_int(n):
+        return [f"[game.json] game_constants.max_party_size={n!r} : entier >= 1 attendu, sinon groupe, "
+                f"combat, presence, pvp et donjon refusent de demarrer"]
+    errors = []
+    access = load_json(db / "systems" / "tower.json").get("access", {})
+    for k in ("max_allies", "max_players"):
+        v = access.get(k)
+        if v is not None and (not _is_pos_int(v) or v > n):
+            errors.append(f"[tower.json] access.{k}={v!r} : entier entre 1 et max_party_size={n} attendu "
+                          f"(le service de donjon refuse la tour sinon)")
+    return errors
+
+
+STAT_CAPS = [  # (category, stat, max allowed) — read by shared/gameplay/stat_caps.hpp
+    ("offensive", "crit", 100), ("offensive", "crit_dmg", 1000), ("offensive", "damage_percent", 1000),
+    ("offensive", "double_hit_chance", 100), ("offensive", "triple_hit_chance", 100),
+    ("offensive", "armor_pen", 100), ("offensive", "magic_pen", 100), ("offensive", "debuff_duration", 1000),
+    ("offensive", "shield_pierce", 100), ("defensive", "damage_reduction", 100),
+    ("defensive", "block_chance", 100), ("defensive", "parry_chance", 100), ("defensive", "effect_resist", 100),
+    ("defensive", "tenacity", 100), ("precision", "flee", 100), ("support", "healing_received", 1000),
+    ("special", "lifesteal", 100), ("special", "spell_vamp", 100), ("special", "reflect", 100),
+    ("special", "thorns", 100),
+    ("special", "cast_speed", 100), ("special", "cooldown_reduction", 100),
+]
+BUFF_DURATION_TYPES = ("buff", "hot", "immunity", "shield")
+
+
+def validate_stat_caps(db: Path) -> list:
+    """stats/definitions.json owns every stat cap; combat and economy refuse to start without them."""
+    errors = []
+    defs = load_json(db / "stats" / "definitions.json")
+    stats = defs.get("stats", {})
+    for cat, stat, hi in STAT_CAPS:
+        v = (stats.get(cat, {}).get(stat) or {}).get("cap")
+        if not (isinstance(v, int) and not isinstance(v, bool) and 0 <= v <= hi):
+            errors.append(f"[definitions.json] stats.{cat}.{stat}.cap absent ou hors [0, {hi}] ({v!r})")
+    refl = stats.get("special", {}).get("reflect") or {}
+    if not (isinstance(refl.get("cap_permanent"), int) and isinstance(refl.get("cap"), int)
+            and 0 <= refl["cap_permanent"] <= refl["cap"]):
+        errors.append(f"[definitions.json] stats.special.reflect.cap_permanent absent ou > cap "
+                      f"({refl.get('cap_permanent')!r} / {refl.get('cap')!r})")
+    asp = (stats.get("offensive", {}).get("attack_speed") or {}).get("cap")
+    if not (isinstance(asp, (int, float)) and 1 <= asp <= 10):
+        errors.append(f"[definitions.json] stats.offensive.attack_speed.cap absent ou hors [1, 10] ({asp!r})")
+    by = (stats.get("support", {}).get("buff_duration") or {}).get("cap_by_effect_type")
+    if not isinstance(by, dict):
+        errors.append("[definitions.json] stats.support.buff_duration.cap_by_effect_type absent")
+        by = {}
+    for t in BUFF_DURATION_TYPES:
+        if not (isinstance(by.get(t), int) and 0 <= by[t] <= 1000):
+            errors.append(f"[definitions.json] buff_duration.cap_by_effect_type.{t} absent ou invalide ({by.get(t)!r})")
+    af = defs.get("effect_system", {}).get("apply_formula", {})
+    lo, hi = af.get("apply_chance_min"), af.get("apply_chance_max")
+    if not (isinstance(lo, int) and isinstance(hi, int) and 0 <= lo <= hi <= 100):
+        errors.append(f"[definitions.json] effect_system.apply_formula.apply_chance_min/max invalides ({lo!r}, {hi!r})")
+    md = defs.get("effect_system", {}).get("duration_formula", {}).get("minimum_duration")
+    if not (isinstance(md, (int, float)) and 0 <= md <= 10):
+        errors.append(f"[definitions.json] effect_system.duration_formula.minimum_duration invalide ({md!r})")
+    clamp = (stats.get("precision", {}).get("hit") or {}).get("clamp", {})
+    if not (isinstance(clamp.get("min"), int) and isinstance(clamp.get("max"), int)
+            and 0 <= clamp["min"] <= clamp["max"] <= 100):
+        errors.append(f"[definitions.json] stats.precision.hit.clamp invalide ({clamp!r})")
+
+    # No permanent immunity: an immunity extended by the buff duration cap must end before
+    # the skill comes back (owner, 2026-10-14).
+    imm_cap = by.get("immunity") if isinstance(by.get("immunity"), int) else 0
+    effects = load_json(db / "stats" / "status_effects.json").get("effects", {})
+    immunity_ids = {k for k in effects.get("immunity", {}) if not k.startswith("_")}
+    def skill_dicts(node):
+        if isinstance(node, dict):
+            if "id" in node and isinstance(node.get("effects"), list):
+                yield node
+            for v in node.values():
+                yield from skill_dicts(v)
+        elif isinstance(node, list):
+            for v in node:
+                yield from skill_dicts(v)
+
+    for path in sorted((db / "classes").glob("*/*skills*.json")) + sorted((db / "skills").glob("*.json")):
+        for sk in skill_dicts(load_json(path)):
+            if not isinstance(sk.get("cooldown"), (int, float)):
+                continue
+            cd = float(sk["cooldown"])
+            max_lv = sk.get("max_level", 1) if isinstance(sk.get("max_level"), int) else 1
+            for eff in sk.get("effects", []) or []:
+                if not isinstance(eff, dict):
+                    continue
+                eid = eff.get("stat") or eff.get("status") or eff.get("effect_id") or eff.get("id")
+                if eid not in immunity_ids or not isinstance(eff.get("duration"), (int, float)):
+                    continue
+                dur = float(eff["duration"]) + float(eff.get("duration_per_level", 0) or 0) * (max_lv - 1)
+                longest = dur * (1 + imm_cap / 100)
+                if cd > 0 and longest >= cd:
+                    errors.append(f"[{path.relative_to(db).as_posix()}] {sk.get('id')} : {eid} {dur:g} s "
+                                  f"x {1 + imm_cap / 100:g} (duree des buffs max) = {longest:g} s >= recharge "
+                                  f"{cd:g} s : immunite permanente")
+    return errors
+
+
+GCD_KEYS = (("gcd_duration", 0.1), ("familiar_gcd_duration", 0.1), ("monster_gcd_duration", 0.1),
+            ("monster_gcd_jitter", 0.0), ("monster_first_gcd_jitter", 0.0), ("monster_first_gcd_bonus", 0.0))
+
+
+def validate_gcd(db: Path) -> list:
+    """config/combat.json settings owns every GCD; the combat service refuses to start without them."""
+    s = load_json(db / "config" / "combat.json").get("settings", {})
+    errors = []
+    for key, lo in GCD_KEYS:
+        v = s.get(key)
+        if not (isinstance(v, (int, float)) and not isinstance(v, bool) and lo <= v <= 30):
+            errors.append(f"[combat.json] settings.{key} absent ou hors [{lo}, 30] secondes ({v!r})")
+    return errors
+
+
+def validate_combat_mirrors(db: Path) -> list:
+    """config/combat.json keeps a few values the client reads; each must equal its owner."""
+    combat = load_json(db / "config" / "combat.json")
+    defs = load_json(db / "stats" / "definitions.json")
+    mirror = combat.get("settings", {}).get("damage", {}).get("damage_reduction_cap")
+    owner = defs.get("stats", {}).get("defensive", {}).get("damage_reduction", {}).get("cap")
+    if mirror != owner:
+        return [f"[combat.json] DERIVE settings.damage.damage_reduction_cap={mirror!r}, "
+                f"source definitions.json defensive.damage_reduction.cap={owner!r}"]
+    return []
+
+
+def validate_social_limits(db: Path) -> list:
+    """systems/social.json owns the friend / block limits; the social service refuses to start without them."""
+    social = load_json(db / "systems" / "social.json")
+    errors = []
+    for section, key in (("friends", "max_friends"), ("block_ignore", "max_blocked")):
+        v = social.get(section, {}).get(key)
+        if not (isinstance(v, int) and not isinstance(v, bool) and 1 <= v <= 10000):
+            errors.append(f"[social.json] {section}.{key} absent ou hors [1, 10000] ({v!r})")
+    return errors
+
+
+SINGLE_SOURCE_CHECKS = [
+    validate_stat_point_values,
+    validate_level_grants,
+    validate_rarity_power,
+    validate_star_roll_weights,
+    validate_respec_cost,
+    validate_koro_equipment,
+    validate_guild_rules,
+    validate_party_size,
+    validate_stat_caps,
+    validate_gcd,
+    validate_combat_mirrors,
+    validate_social_limits,
+]
+
+
+def validate_single_sources(db: Path) -> list:
+    errors = []
+    for check in SINGLE_SOURCE_CHECKS:
+        try:
+            errors.extend(check(db))
+        except (OSError, ValueError, KeyError, TypeError, AttributeError) as e:
+            errors.append(f"[{check.__name__}] lecture impossible : {e!r}")
+    return errors
+
+
 def main():
     # Find database root
     db_root = os.environ.get("DB_ROOT", "")
@@ -1797,6 +2175,11 @@ def main():
 
     print("[12/12] Validating achievements (engine sources, grant titles, quests)...")
     errs = validate_achievements(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[13/13] Validating single sources of gameplay values (owner present, mirrors equal)...")
+    errs = validate_single_sources(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
     # Report

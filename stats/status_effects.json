@@ -463,13 +463,13 @@
         "impl": "done",
         "damage_type": "magical",
         "true_damage": false,
-        "formula": "MAG * 0.2 per tick, EXPLOSION at end = total_damage * 0.5",
+        "formula": "MAG * 0.2 per tick, EXPLOSION at natural end = raw damage dealt by the ticks * runtime.explosion_percent (0.5), mitigated by magic resist",
         "tick_interval": 1.0,
         "duration_modifiable": true,
         "tooltip_fr": "Inflige des dégâts continus et déclenche une explosion à la fin de l'effet.",
         "tooltip_en": "Deals continuous damage and triggers an explosion when the effect ends.",
-        "description_fr": "Dégâts constants + EXPLOSION à la fin. Durée prolongée = explosion plus forte. Durée réduite = explosion anticipée + propagation aux ennemis adjacents.",
-        "description_en": "Constant damage + EXPLOSION at end. Extended duration = stronger explosion. Reduced duration = early explosion + SPREAD to adjacent enemies.",
+        "description_fr": "Dégâts constants + EXPLOSION à la fin naturelle de l'effet, égale à 50 % des dégâts infligés par la malédiction. Durée prolongée = explosion plus forte ; durée réduite (ténacité) = explosion plus faible ; dissipée = pas d'explosion.",
+        "description_en": "Constant damage + EXPLOSION when the effect ends naturally, equal to 50% of the damage the curse dealt. Longer duration = stronger explosion; shorter (tenacity) = weaker explosion; dispelled = no explosion.",
         "sources": [
           "Mage (dark)",
           "monstres corrompus"
@@ -483,6 +483,7 @@
           "scaling_behavior": "flat",
           "on_expire": "explosion",
           "explosion_percent": 0.5,
+          "_explosion_owner": "SOURCE UNIQUE, lue par server-combat (status_manager, sans valeur par defaut) : part des degats bruts des ticks rendue en explosion a la fin naturelle (proprietaire 2026-10-14).",
           "damage_ignores_defense": false,
           "vfx_type": "curse_dark"
         }

@@ -149,6 +149,20 @@
         "cap": 50,
         "formula": "Si proc: attaque 2x, chaque hit = 100% damage"
       },
+      "triple_hit_chance": {
+        "name": "Chance Triple Frappe",
+        "name_fr": "Chance Triple Frappe",
+        "name_en": "Triple Hit Chance",
+        "description": "Chance de frapper trois fois (attaque de base uniquement), tiree avant la double frappe.",
+        "description_fr": "Chance de frapper trois fois (attaque de base uniquement), tiree avant la double frappe.",
+        "description_en": "Chance to strike three times (basic attack only), rolled before the double hit.",
+        "tooltip_fr": "Chance que l'attaque de base frappe trois fois.",
+        "tooltip_en": "Chance for the basic attack to strike three times.",
+        "bonus_type": "flat",
+        "default": 0,
+        "cap": 30,
+        "formula": "Si proc: attaque 3x, chaque hit = 100% damage"
+      },
       "attack_speed": {
         "name": "Vitesse d'Attaque",
         "name_fr": "Vitesse d'Attaque",
@@ -216,7 +230,7 @@
         "tooltip_en": "Increases duration of debuffs applied to enemies.",
         "bonus_type": "flat",
         "default": 0,
-        "cap": 100,
+        "cap": 50,
         "formula": "debuff_duration_final = base_duration \u00d7 (1 + debuff_duration/100)"
       },
       "shield_pierce": {
@@ -357,6 +371,7 @@
         "bonus_type": "flat",
         "default": 0,
         "cap": 50,
+        "_cap_2026_10_14": "Proprietaire : la tenacite divise la duree au plus par 2 (plafond 50, joueurs et monstres) CC, debuffs et degats sur la duree compris (symetrie avec debuff_duration, qui les allonge). Contre : debuff_duration de l'attaquant.",
         "formula": "duration_received = base_duration \u00d7 (1 - tenacity/100)"
       }
     },
@@ -446,6 +461,8 @@
         "bonus_type": "flat",
         "default": 0,
         "cap": 100,
+        "cap_by_effect_type": {"buff": 100, "hot": 100, "immunity": 100, "shield": 50},
+        "_cap_2026_10_14": "Plafond par type d'effet lance (proprietaire) : buffs, soins sur la duree et immunites 100, boucliers 50. Le validateur refuse une immunite dont la duree x 2 atteint sa recharge (pas d'immunite permanente).",
         "formula": "buff_duration_final = base_duration \u00d7 (1 + buff_duration/100)"
       }
     },
@@ -484,27 +501,31 @@
         "name": "Epines",
         "name_fr": "Epines",
         "name_en": "Thorns",
-        "description": "Dégâts flat renvoyés aux attaquants mêlée.",
-        "description_fr": "Dégâts flat renvoyés aux attaquants mêlée.",
-        "description_en": "Flat damage returned to melee attackers.",
-        "tooltip_fr": "Inflige des d\u00e9g\u00e2ts aux ennemis qui attaquent le porteur au corps \u00e0 corps.",
-        "tooltip_en": "Deals damage to enemies who attack the bearer in melee.",
+        "description": "% des dégâts reçus renvoyés à l'attaquant. Le porteur subit le coup en entier.",
+        "description_fr": "% des dégâts reçus renvoyés à l'attaquant. Le porteur subit le coup en entier.",
+        "description_en": "% of the damage received dealt back to the attacker. The bearer still takes the full hit.",
+        "tooltip_fr": "Renvoie une partie des dégâts reçus à l'attaquant, sans les réduire.",
+        "tooltip_en": "Deals part of the damage received back to the attacker, without reducing it.",
         "bonus_type": "both",
         "default": 0,
-        "formula": "On melee hit received: attacker takes thorns damage"
+        "cap": 30,
+        "_cap_2026_10_14": "Proprietaire : les epines sont l'effet PERMANENT de renvoi (equipement, passifs), plafond 30, applique au coup. Elles ne reduisent pas les degats subis (contrairement au renvoi).",
+        "formula": "thorns_damage = damage_received × (thorns/100)"
       },
       "reflect": {
         "name": "Reflet",
         "name_fr": "Reflet",
         "name_en": "Reflect",
-        "description": "% des dégâts reçus renvoyés a l'attaquant.",
-        "description_fr": "% des dégâts reçus renvoyés a l'attaquant.",
-        "description_en": "% of damage received returned to attacker.",
+        "description": "Effet temporaire : % du coup detourne vers l'attaquant (le porteur ne subit pas cette part).",
+        "description_fr": "Effet temporaire : % du coup detourne vers l'attaquant (le porteur ne subit pas cette part).",
+        "description_en": "Temporary effect: % of the hit redirected to the attacker (the bearer does not take that share).",
         "tooltip_fr": "Renvoie une partie des d\u00e9g\u00e2ts re\u00e7us \u00e0 l\u2019attaquant.",
         "tooltip_en": "Reflects part of the damage received back to the attacker.",
         "bonus_type": "flat",
         "default": 0,
-        "cap": 30,
+        "cap": 50,
+        "cap_permanent": 0,
+        "_cap_2026_10_14": "Proprietaire : le renvoi est uniquement TEMPORAIRE (procs, buffs dissipables), plafond 50 applique au coup ; le permanent, ce sont les epines (cap_permanent 0). La part renvoyee est retiree du coup : elle compte dans le plafond de reduction de degats (reduction + renvoi <= defensive.damage_reduction.cap). Tzinat Refleks (26-52 pendant 4 s apres blocage / parade, recharge 10 s) reste un pic temporaire.",
         "formula": "reflected_damage = damage_received \u00d7 (reflect/100)"
       },
       "shield": {
@@ -558,9 +579,11 @@
     "apply_formula": {
       "step1": "resist_chance = target.effect_resist - attacker.effect_chance",
       "step2": "apply_chance = 100 - max(0, resist_chance)",
-      "step3": "apply_chance = clamp(apply_chance, 15, 85)",
-      "explanation": "Les sorts ont 100% de chance de base. La difference effect_resist - effect_chance determine la resistance. Minimum 15% pour toujours avoir une chance, maximum 85% pour pouvoir toujours resister.",
-      "explanation_en": "Spells have 100% base chance. The difference effect_resist - effect_chance determines resistance. Minimum 15% to always have a chance, maximum 85% to always be able to resist."
+      "step3": "apply_chance = clamp(apply_chance, apply_chance_min, apply_chance_max) pour les controles durs (stun, silence, root, disarm, confusion) ; clamp(apply_chance, apply_chance_min, 100) pour le reste (DoT, debuffs, slow, provocation)",
+      "apply_chance_min": 10,
+      "apply_chance_max": 90,
+      "explanation": "Les sorts ont 100% de chance de base. La difference effect_resist - effect_chance determine la resistance. Minimum 10% pour toujours avoir une chance. Maximum 90% pour les seuls controles durs (on peut toujours y resister) ; un DoT ou un debuff sans resistance nette passe toujours.",
+      "explanation_en": "Spells have 100% base chance. The difference effect_resist - effect_chance determines resistance. Minimum 10% to always have a chance. Maximum 90% for hard CC only (always resistable); a DoT or debuff with no net resistance always lands."
     },
     "duration_formula": {
       "base": "Les debuffs/CC ont une duree de base en secondes",
