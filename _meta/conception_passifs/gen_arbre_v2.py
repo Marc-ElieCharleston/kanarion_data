@@ -91,10 +91,10 @@ ARMS["defense"] = ("def", {
     "rd3": ("regrowth", "Regeneration", "+5 % de regeneration de PV par rang.", [pct("hp_regen", 5)]),
     "n50a": ("unshakable", "Inebranlable", "Sous 30 % de PV : bouclier egal a 20 % de tes PV max. Une fois toutes les 45 s.",
              [mech("shield_on_low_hp", hp_pct=30, shield_pct_max_hp=20, internal_cooldown_s=45)]),
-    "n50b": ("bodyguard", "Garde du corps", "Tu prends a ta place 20 % des degats subis par un allie adjacent.",
-             [mech("damage_redirect_from_adjacent_ally", ratio_pct=20)]),
-    "side50": ("last_stand", "Dernier rempart", "Sous 30 % de PV : -20 % de degats subis.",
-               [mech("damage_taken_reduction_conditional", condition="hp_below", hp_pct=30, reduction_pct=20)]),
+    "n50b": ("last_stand", "Dernier rempart", "Sous 30 % de PV : -20 % de degats subis.",
+             [mech("damage_taken_reduction_conditional", condition="hp_below", hp_pct=30, reduction_pct=20)]),
+    "side50": ("living_wall", "Mur vivant", "Apres un blocage ou une parade : -20 % de degats subis pendant 3 s.",
+               [mech("stat_window_after_event", event="block_or_parry", stat="damage_reduction", value=20, duration_s=3)]),
     "m1": ("m_bastion", "Maitrise : bastion", "+2 % de PV max par rang.", [pct("hp", 2)]),
     "m2": ("m_armor", "Maitrise : cuirasse", "+2 % d'armure et +2 % de resistance magique par rang.",
            [pct("armor", 2), pct("magic_resist", 2)]),
@@ -126,8 +126,8 @@ ARMS["healing"] = ("heal", {
     "n30a": ("transfusion", "Transfusion", "10 % des soins donnes a un allie te reviennent.",
              [mech("heal_return_to_caster", ratio_pct=10)]),
     "n30b": ("spell_vamp", "Vol de sort", "+8 % de vol de sort.", [once("spell_vamp", 8)]),
-    "n30c": ("overflow", "Debordement", "Le surplus d'un soin sur une cible a PV pleins devient un bouclier (50 % du surplus, 5 s).",
-             [mech("overheal_to_shield", ratio_pct=50, duration_s=5)]),
+    "n30c": ("holy_shield", "Egide sacree", "+15 % de puissance de bouclier et +10 % de soins recus.",
+             [once("shield_power", 15), once("healing_received", 10)]),
     "rc1": ("quick_prayer", "Priere rapide", "+2 % de vitesse d'incantation par rang.", [flat("cast_speed", 2)]),
     "rc2": ("perseverance", "Perseverance", "+1 % de reduction de recharge par rang.", [flat("cooldown_reduction", 1)]),
     "rc3": ("devotion", "Recueillement", "+2 % de soins recus par rang.", [flat("healing_received", 2)]),
@@ -136,19 +136,19 @@ ARMS["healing"] = ("heal", {
     "rd3": ("radiance", "Rayonnement", "+3 % de puissance de bouclier par rang.", [flat("shield_power", 3)]),
     "n50a": ("last_breath", "Dernier souffle", "Une fois par combat, un allie qui devait mourir reste a 1 PV et recoit 25 % de ses PV max.",
              [mech("prevent_ally_death", heal_pct=25, per_combat=1)]),
-    "n50b": ("downpour", "Ondee", "Un soin sur 4 soigne aussi tous les allies a 2 cases de la cible de 30 % du soin.",
-             [mech("heal_every_n_splash_area", every_n=4, radius=2, ratio_pct=30)]),
-    "side50": ("sacrifice", "Sacrifice", "Quand un allie passe sous 20 % de ses PV, tu lui donnes 10 % de tes PV. Une fois toutes les 30 s.",
-               [mech("give_hp_to_ally_below", hp_pct=20, give_pct_own_hp=10, internal_cooldown_s=30)]),
+    "n50b": ("downpour", "Ondee", "Un soin cible soigne aussi les 2 allies blesses les plus proches de 25 % du soin.",
+             [mech("heal_splash_nearest_ally", ratio_pct=25, count=2, skill_filter="single_target_heal")]),
+    "side50": ("prayer", "Priere de combat", "Chaque soin lance donne +3 % de puissance de soin pendant 6 s, cumulable 5 fois.",
+               [mech("stacking_stat_on_event", event="heal_cast", stat="heal_power", value_per_stack=3, max_stacks=5, duration_s=6)]),
     "m1": ("m_heal", "Maitrise : soins", "+2 % de puissance de soin par rang.", [flat("heal_power", 2)]),
     "m2": ("m_wisdom", "Maitrise : sagesse", "+2 % de magie par rang.", [pct("mag", 2)]),
     "m3": ("m_source", "Maitrise : source", "+3 % de Souffle max par rang.", [pct("mp", 3)]),
     "megaa": ("mega_sanctuary", "Sanctuaire",
-              "+30 % de puissance de soin, et tes soins sur la duree durent 50 % plus longtemps. Contrepartie : -30 % de degats infliges.",
-              [once("heal_power", 30), mech("hot_duration_bonus", pct=50), once("damage_percent", -30)]),
+              "+30 % de puissance de soin et +25 % de duree des buffs (soins sur la duree compris). Contrepartie : -30 % de degats infliges.",
+              [once("heal_power", 30), once("buff_duration", 25), once("damage_percent", -30)]),
     "megab": ("mega_martyr", "Martyr",
-              "Tes soins ne coutent plus de Souffle mais 5 % de tes PV max, et soignent 25 % de plus. Contrepartie : le cout en PV.",
-              [mech("heal_cost_hp_instead_of_breath", hp_pct=5, heal_pct=25)]),
+              "+40 % de puissance de soin et +20 % de soins recus. Contrepartie : -20 % de PV max.",
+              [once("heal_power", 40), once("healing_received", 20), once("hp", -20, "add_percent")]),
 })
 
 ARMS["support"] = ("sup", {
@@ -178,10 +178,10 @@ ARMS["support"] = ("sup", {
     "rd1": ("eloquence", "Eloquence", "+2 % de vitesse d'incantation par rang.", [flat("cast_speed", 2)]),
     "rd2": ("breadth", "Ampleur", "+3 % de Souffle max par rang.", [pct("mp", 3)]),
     "rd3": ("presence", "Presence", "+2 % de PV max par rang.", [pct("hp", 2)]),
-    "n50a": ("banner", "Banniere", "Les allies a 2 cases de toi infligent +6 % de degats et subissent -6 % de degats.",
-             [mech("ally_aura_stats", radius=2, damage_percent=6, damage_reduction=6)]),
-    "n50b": ("second_wind", "Second souffle", "Buffer un allie lui rend 5 % de son Souffle max (une fois toutes les 6 s par allie).",
-             [mech("buff_restores_mp", pct_max_mp=5, internal_cooldown_s=6)]),
+    "n50a": ("vanguard", "Chef de file", "Un allie que tu buffes inflige +6 % de degats et subit -6 % de degats pendant le buff.",
+             [mech("buff_grants_stat", stat="damage_percent", value=6), mech("buff_grants_stat", stat="damage_reduction", value=6)]),
+    "n50b": ("acceleration", "Acceleration", "Un allie que tu buffes a +15 % de vitesse d'incantation pendant le buff.",
+             [mech("buff_grants_stat", stat="cast_speed", value=15)]),
     "side50": ("shared_drive", "Elan partage", "Chaque buff donne a un allie te donne +3 % de degats pendant 6 s, cumulable 5 fois.",
                [mech("stacking_stat_on_event", event="buff_applied_to_ally", stat="damage_percent", value_per_stack=3, max_stacks=5, duration_s=6)]),
     "m1": ("m_duration", "Maitrise : duree", "+3 % de duree des buffs par rang.", [flat("buff_duration", 3)]),
@@ -191,8 +191,8 @@ ARMS["support"] = ("sup", {
               "Tes buffs sur les allies durent 50 % plus longtemps et donnent +10 % de degats. Contrepartie : -25 % de tes propres degats.",
               [once("buff_duration", 50), mech("buff_grants_stat", stat="damage_percent", value=10), once("damage_percent", -25)]),
     "megab": ("mega_haste", "Hate collective",
-              "Un allie que tu buffes a -20 % de recharge pendant le buff. Contrepartie : tes buffs coutent 50 % de Souffle en plus.",
-              [mech("buff_grants_stat", stat="cooldown_reduction", value=20), mech("buff_cost_modifier", pct=50)]),
+              "Un allie que tu buffes a -20 % de recharge pendant le buff. Contrepartie : -20 % de tes PV max.",
+              [mech("buff_grants_stat", stat="cooldown_reduction", value=20), once("hp", -20, "add_percent")]),
 })
 
 ARMS["debuff"] = ("deb", {
@@ -214,8 +214,8 @@ ARMS["debuff"] = ("deb", {
              [mech("control_splash_adjacent", skill_filter="single_target_control")]),
     "n30b": ("tempo_master", "Maitre du tempo", "Controler un ennemi reduit tes autres recharges de 1 s (une fois toutes les 3 s).",
              [mech("cooldown_reduction_on_event", event="control_applied", seconds=1, scope="other_skills", internal_cooldown_s=3)]),
-    "n30c": ("laceration", "Laceration", "Tes degats sur la duree infligent +20 %.",
-             [mech("dot_damage_bonus", pct=20)]),
+    "n30c": ("deep_venom", "Venin profond", "+15 % de chance d'effet et +10 % de duree des affaiblissements.",
+             [once("effect_chance", 15), once("debuff_duration", 10)]),
     "rc1": ("fatality", "Fatalite", "+2 % de chance d'effet par rang.", [flat("effect_chance", 2)]),
     "rc2": ("dark_persistence", "Persistance noire", "+2 % de duree des affaiblissements par rang.", [flat("debuff_duration", 2)]),
     "rc3": ("armor_breaker", "Brise-armure", "+1,5 penetration d'armure et +1,5 penetration magique par rang.",
@@ -224,20 +224,21 @@ ARMS["debuff"] = ("deb", {
     "rd2": ("affliction", "Affliction", "+1 % de degats infliges par rang.", [flat("damage_percent", 1)]),
     "rd3": ("hex", "Malefice", "+3 % de duree des affaiblissements par rang.", [flat("debuff_duration", 3)]),
     "n50a": ("torment", "Supplice", "+4 % de degats par affaiblissement que porte la cible, jusqu'a 5.",
-             [mech("damage_per_target_debuff", damage_pct_per_debuff=4, max_debuffs=5)]),
-    "n50b": ("shackles", "Entrave", "Tes controles durent 1 s de plus.",
-             [mech("control_duration_bonus", seconds=1)]),
-    "side50": ("will_breaker", "Brise-volonte", "Une cible sous ton controle a -15 % de resistance aux effets.",
-               [mech("target_stat_while_controlled", stat="effect_resist", value=-15)]),
+             [mech("damage_vs_target_debuff_count", per_debuff=True, damage_pct=4, max_debuffs=5)]),
+    "n50b": ("vise", "Etau", "+15 % de degats et +10 % de chance critique contre une cible sous controle.",
+             [mech("damage_vs_target_with_status", status_category="control", damage_pct=15),
+              mech("stat_vs_target_with_status", status_category="control", stat="crit", value=10)]),
+    "side50": ("will_breaker", "Brise-volonte", "Apres avoir controle un ennemi : +15 % de chance d'effet pendant 4 s.",
+               [mech("stat_window_after_event", event="control_applied", stat="effect_chance", value=15, duration_s=4)]),
     "m1": ("m_grip", "Maitrise : emprise", "+2 % de chance d'effet par rang.", [flat("effect_chance", 2)]),
     "m2": ("m_duration", "Maitrise : duree", "+3 % de duree des affaiblissements par rang.", [flat("debuff_duration", 3)]),
     "m3": ("m_malice", "Maitrise : malice", "+2 % d'attaque et +2 % de magie par rang.", [pct("atk", 2), pct("mag", 2)]),
     "megaa": ("mega_plague", "Peste",
-              "Chaque affaiblissement que tu poses touche aussi un ennemi adjacent. Contrepartie : tes affaiblissements durent 25 % de moins.",
-              [mech("debuff_splash_adjacent", max_targets=1), once("debuff_duration", -25)]),
+              "Un affaiblissement pose par un sort cible touche aussi un ennemi adjacent (sans relance en chaine). Contrepartie : tes affaiblissements durent 25 % de moins.",
+              [mech("control_splash_adjacent", skill_filter="single_target_debuff", status_category="harmful"), once("debuff_duration", -25)]),
     "megab": ("mega_chains", "Seigneur des chaines",
-              "Tes controles durent 50 % plus longtemps. Contrepartie : -25 % de degats infliges.",
-              [mech("control_duration_pct", pct=50), once("damage_percent", -25)]),
+              "+40 % de duree des affaiblissements et +20 % de chance d'effet. Contrepartie : -25 % de degats infliges.",
+              [once("debuff_duration", 40), once("effect_chance", 20), once("damage_percent", -25)]),
 })
 
 # Ponts manquants (Attaque <-> Defense et Attaque <-> Affaiblissement existent deja).
@@ -247,32 +248,36 @@ BRIDGES = [
      ("Passage", "+12 PV max et +2 % de soins recus.", [flat("hp", 12), flat("healing_received", 2)]),
      ("Rempart vivant", "10 % des soins que tu recois deviennent un bouclier (5 s).",
       [mech("shield_from_healing_received", ratio_pct=10)]),
-     ("Second elan", "Une fois par combat, sous 25 % de PV, tu recuperes 25 % de tes PV max.",
-      [mech("self_heal_once_below", hp_pct=25, heal_pct=25, per_combat=1)])),
+     ("Second elan", "Sous 25 % de PV : bouclier egal a 15 % de tes PV max. Une fois toutes les 60 s.",
+      [mech("shield_on_low_hp", hp_pct=25, shield_pct_max_hp=15, internal_cooldown_s=60)])),
     ("healing", "support", "heal_sup",
      ("Passage", "+10 Souffle max et +2 % de duree des buffs.", [flat("mp", 10), flat("buff_duration", 2)]),
      ("Chant de guerre", "Un buff donne a un allie lui retire un affaiblissement.",
       [mech("buff_cleanses_debuff", count=1)]),
-     ("Benediction", "Un buff donne a un allie le soigne de 3 % de ses PV max.",
-      [mech("buff_heals_ally", pct_max_hp=3)])),
+     ("Benediction", "Un allie que tu buffes recoit +10 % de soins pendant le buff.",
+      [mech("buff_grants_stat", stat="healing_received", value=10)])),
     ("support", "debuff", "sup_deb",
      ("Passage", "+2 % de chance d'effet et +2 resistance aux effets.", [flat("effect_chance", 2), flat("effect_resist", 2)]),
      ("Coordination", "Un allie que tu buffes inflige +8 % de degats aux cibles que tu as affaiblies.",
       [mech("ally_buffed_bonus_vs_debuffed", damage_pct=8)]),
      ("Marque du chef", "Un allie que tu buffes a +10 % de chance critique contre les cibles que tu as affaiblies.",
-      [mech("ally_buffed_crit_vs_debuffed", crit=10)])),
+      [mech("ally_buffed_bonus_vs_debuffed", crit=10)])),
 ]
 
 # Mecaniques qui n'existent pas encore cote combat (a ajouter a la liste du document).
+# Plus aucune mecanique entierement nouvelle dans les 4 bras proposes : seulement des EXTENSIONS d'une
+# mecanique deja codee (un parametre, un evenement ou une stat de plus). Celles du bras Attaque (ecrit par
+# le proprietaire) sont listees a part dans le document.
 NEW_MECHANICS = [
-    "damage_redirect_from_adjacent_ally", "damage_taken_reduction_conditional:hp_below",
-    "heal_bonus_target_hp_above", "overheal_to_shield", "heal_every_n_splash_area",
-    "give_hp_to_ally_below", "hot_duration_bonus", "heal_cost_hp_instead_of_breath",
-    "buff_grants_stat:damage_reduction", "buff_grants_stat:cooldown_reduction", "ally_aura_stats",
-    "buff_restores_mp", "stacking_stat_on_event:buff_applied_to_ally", "buff_cost_modifier",
-    "damage_vs_target_debuff_count", "dot_damage_bonus", "damage_per_target_debuff",
-    "control_duration_bonus", "target_stat_while_controlled", "debuff_splash_adjacent",
-    "control_duration_pct", "self_heal_once_below", "buff_heals_ally", "ally_buffed_crit_vs_debuffed",
+    "damage_taken_reduction_conditional: condition hp_below (Dernier rempart)",
+    "stat_window_after_event: evenements block_or_parry, control_applied (Mur vivant, Brise-volonte) ; stats damage_reduction, effect_chance",
+    "heal_bonus_target_hp_above: miroir de heal_bonus_target_hp_below (Soins preventifs)",
+    "heal_splash_nearest_ally: parametre count (Ondee)",
+    "stacking_stat_on_event: evenement heal_cast, stat heal_power (Priere de combat) ; evenement buff_applied_to_ally (Elan partage)",
+    "buff_grants_stat: stats damage_reduction, cast_speed, cooldown_reduction, healing_received (Protection, Chef de file, Acceleration, Hate collective, Benediction)",
+    "damage_vs_target_debuff_count: mode per_debuff (Supplice)",
+    "control_splash_adjacent: status_category harmful (Peste)",
+    "ally_buffed_bonus_vs_debuffed: parametre crit (Marque du chef)",
 ]
 
 ARM_META = {a["id"]: a for a in src["arms"]}
@@ -332,6 +337,23 @@ for arm, pfx in (("defense", "def"), ("debuff", "deb")):
         CLONE_TO_REAL[f"pt2_{pfx}_{clone}"] = real
 for a, b in src["edges"]:
     edges.append([CLONE_TO_REAL.get(a, a), CLONE_TO_REAL.get(b, b)])
+
+# Ponts d'Attaque : memes regles et memes noeuds, seules les POSITIONS de dessin sont recalculees comme
+# celles des autres ponts (la ligne horizontale du brouillon croisait le dessin des bras voisins).
+def bridge_layout(arm_a, arm_b):
+    pa, pb = to_world(arm_a, 11, 0), to_world(arm_b, 11, 0)
+    lerp = lambda t: [round(pa[0] + (pb[0] - pa[0]) * t, 2), round(pa[1] + (pb[1] - pa[1]) * t, 2)]
+    mid = lerp(0.5)
+    norm = math.hypot(*mid) or 1
+    side = [round(mid[0] + mid[0] / norm * 1.5, 2), round(mid[1] + mid[1] / norm * 1.5, 2)]
+    return lerp(0.3), mid, lerp(0.7), side
+
+
+for other, key in (("defense", "atk_def"), ("debuff", "atk_deb")):
+    pos = bridge_layout("attack", other)
+    for nid, pp in zip((f"pt2_brg_{key}_a", f"pt2_hyb_{key}", f"pt2_brg_{key}_b", f"pt2_hyb_{key}_side"), pos):
+        node = next(n for n in nodes if n["id"] == nid)
+        nodes[nodes.index(node)] = dict(node, pos=pp)
 
 # Ponts manquants : passage, hybride, passage entre les notables 30 des deux bras.
 for arm_a, arm_b, key, passage, hyb, hyb_side in BRIDGES:

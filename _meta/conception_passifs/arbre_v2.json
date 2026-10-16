@@ -7,30 +7,15 @@
     "generator": "gen_arbre_v2.py : bras Attaque recopie de arbre_v2_attaque.json (proprietaire), 4 autres bras et 3 ponts generes sur son gabarit (memes rangs, couts et aretes).",
     "simulation": "python -I _meta/conception_passifs/sim_arbre_v2.py _meta/conception_passifs/arbre_v2.json",
     "new_mechanics": [
-      "damage_redirect_from_adjacent_ally",
-      "damage_taken_reduction_conditional:hp_below",
-      "heal_bonus_target_hp_above",
-      "overheal_to_shield",
-      "heal_every_n_splash_area",
-      "give_hp_to_ally_below",
-      "hot_duration_bonus",
-      "heal_cost_hp_instead_of_breath",
-      "buff_grants_stat:damage_reduction",
-      "buff_grants_stat:cooldown_reduction",
-      "ally_aura_stats",
-      "buff_restores_mp",
-      "stacking_stat_on_event:buff_applied_to_ally",
-      "buff_cost_modifier",
-      "damage_vs_target_debuff_count",
-      "dot_damage_bonus",
-      "damage_per_target_debuff",
-      "control_duration_bonus",
-      "target_stat_while_controlled",
-      "debuff_splash_adjacent",
-      "control_duration_pct",
-      "self_heal_once_below",
-      "buff_heals_ally",
-      "ally_buffed_crit_vs_debuffed"
+      "damage_taken_reduction_conditional: condition hp_below (Dernier rempart)",
+      "stat_window_after_event: evenements block_or_parry, control_applied (Mur vivant, Brise-volonte) ; stats damage_reduction, effect_chance",
+      "heal_bonus_target_hp_above: miroir de heal_bonus_target_hp_below (Soins preventifs)",
+      "heal_splash_nearest_ally: parametre count (Ondee)",
+      "stacking_stat_on_event: evenement heal_cast, stat heal_power (Priere de combat) ; evenement buff_applied_to_ally (Elan partage)",
+      "buff_grants_stat: stats damage_reduction, cast_speed, cooldown_reduction, healing_received (Protection, Chef de file, Acceleration, Hate collective, Benediction)",
+      "damage_vs_target_debuff_count: mode per_debuff (Supplice)",
+      "control_splash_adjacent: status_category harmful (Peste)",
+      "ally_buffed_bonus_vs_debuffed: parametre crit (Marque du chef)"
     ]
   },
   "rules": {
@@ -807,8 +792,8 @@
       "arm": null,
       "max_rank": 1,
       "pos": [
-        4,
-        -11
+        3.14,
+        -8.72
       ],
       "name_fr": "Passage",
       "description_fr": "+4 armure et +4 resistance magique.",
@@ -831,8 +816,8 @@
       "arm": null,
       "max_rank": 1,
       "pos": [
-        5.5,
-        -11
+        5.23,
+        -7.2
       ],
       "name_fr": "Riposte",
       "description_fr": "Apres un blocage ou une parade, ta prochaine attaque inflige +40 % de degats.",
@@ -859,8 +844,8 @@
       "arm": null,
       "max_rank": 1,
       "pos": [
-        7,
-        -11
+        7.32,
+        -5.68
       ],
       "name_fr": "Passage",
       "description_fr": "+4 armure et +4 resistance magique.",
@@ -883,8 +868,8 @@
       "arm": null,
       "max_rank": 1,
       "pos": [
-        5.5,
-        -12.5
+        6.11,
+        -8.41
       ],
       "name_fr": "Garde de fer",
       "description_fr": "Tant que tu es au-dessus de 70 % de tes PV : +12 % de degats infliges et -8 % de degats recus.",
@@ -909,8 +894,8 @@
       "arm": null,
       "max_rank": 1,
       "pos": [
-        -4,
-        -11
+        -3.14,
+        -8.72
       ],
       "name_fr": "Passage",
       "description_fr": "+4 armure et +4 resistance magique.",
@@ -933,8 +918,8 @@
       "arm": null,
       "max_rank": 1,
       "pos": [
-        -5.5,
-        -11
+        -5.23,
+        -7.2
       ],
       "name_fr": "Opportuniste",
       "description_fr": "+20 % de chance critique contre une cible sous controle.",
@@ -959,8 +944,8 @@
       "arm": null,
       "max_rank": 1,
       "pos": [
-        -7,
-        -11
+        -7.32,
+        -5.68
       ],
       "name_fr": "Passage",
       "description_fr": "+4 armure et +4 resistance magique.",
@@ -983,8 +968,8 @@
       "arm": null,
       "max_rank": 1,
       "pos": [
-        -5.5,
-        -12.5
+        -6.11,
+        -8.41
       ],
       "name_fr": "Curee",
       "description_fr": "+20 % de degats contre une cible qui porte au moins 3 affaiblissements.",
@@ -1460,7 +1445,7 @@
       ]
     },
     {
-      "id": "pt2_def_bodyguard",
+      "id": "pt2_def_last_stand",
       "kind": "notable_50",
       "arm": "defense",
       "max_rank": 1,
@@ -1470,28 +1455,8 @@
       ],
       "choice": {
         "group": "def_n50",
-        "option": "bodyguard"
+        "option": "last_stand"
       },
-      "name_fr": "Garde du corps",
-      "description_fr": "Tu prends a ta place 20 % des degats subis par un allie adjacent.",
-      "effects": [
-        {
-          "mechanic": "damage_redirect_from_adjacent_ally",
-          "params": {
-            "ratio_pct": 20
-          }
-        }
-      ]
-    },
-    {
-      "id": "pt2_def_last_stand",
-      "kind": "side",
-      "arm": "defense",
-      "max_rank": 1,
-      "pos": [
-        15.4,
-        -7.63
-      ],
       "name_fr": "Dernier rempart",
       "description_fr": "Sous 30 % de PV : -20 % de degats subis.",
       "effects": [
@@ -1501,6 +1466,29 @@
             "condition": "hp_below",
             "hp_pct": 30,
             "reduction_pct": 20
+          }
+        }
+      ]
+    },
+    {
+      "id": "pt2_def_living_wall",
+      "kind": "side",
+      "arm": "defense",
+      "max_rank": 1,
+      "pos": [
+        15.4,
+        -7.63
+      ],
+      "name_fr": "Mur vivant",
+      "description_fr": "Apres un blocage ou une parade : -20 % de degats subis pendant 3 s.",
+      "effects": [
+        {
+          "mechanic": "stat_window_after_event",
+          "params": {
+            "event": "block_or_parry",
+            "stat": "damage_reduction",
+            "value": 20,
+            "duration_s": 3
           }
         }
       ]
@@ -1904,7 +1892,7 @@
       ]
     },
     {
-      "id": "pt2_heal_overflow",
+      "id": "pt2_heal_holy_shield",
       "kind": "notable_30",
       "arm": "healing",
       "max_rank": 1,
@@ -1914,17 +1902,20 @@
       ],
       "choice": {
         "group": "heal_n30",
-        "option": "overflow"
+        "option": "holy_shield"
       },
-      "name_fr": "Debordement",
-      "description_fr": "Le surplus d'un soin sur une cible a PV pleins devient un bouclier (50 % du surplus, 5 s).",
+      "name_fr": "Egide sacree",
+      "description_fr": "+15 % de puissance de bouclier et +10 % de soins recus.",
       "effects": [
         {
-          "mechanic": "overheal_to_shield",
-          "params": {
-            "ratio_pct": 50,
-            "duration_s": 5
-          }
+          "stat": "shield_power",
+          "op": "add_flat",
+          "value": 15
+        },
+        {
+          "stat": "healing_received",
+          "op": "add_flat",
+          "value": 10
         }
       ]
     },
@@ -2081,20 +2072,20 @@
         "option": "downpour"
       },
       "name_fr": "Ondee",
-      "description_fr": "Un soin sur 4 soigne aussi tous les allies a 2 cases de la cible de 30 % du soin.",
+      "description_fr": "Un soin cible soigne aussi les 2 allies blesses les plus proches de 25 % du soin.",
       "effects": [
         {
-          "mechanic": "heal_every_n_splash_area",
+          "mechanic": "heal_splash_nearest_ally",
           "params": {
-            "every_n": 4,
-            "radius": 2,
-            "ratio_pct": 30
+            "ratio_pct": 25,
+            "count": 2,
+            "skill_filter": "single_target_heal"
           }
         }
       ]
     },
     {
-      "id": "pt2_heal_sacrifice",
+      "id": "pt2_heal_prayer",
       "kind": "side",
       "arm": "healing",
       "max_rank": 1,
@@ -2102,15 +2093,17 @@
         12.01,
         12.28
       ],
-      "name_fr": "Sacrifice",
-      "description_fr": "Quand un allie passe sous 20 % de ses PV, tu lui donnes 10 % de tes PV. Une fois toutes les 30 s.",
+      "name_fr": "Priere de combat",
+      "description_fr": "Chaque soin lance donne +3 % de puissance de soin pendant 6 s, cumulable 5 fois.",
       "effects": [
         {
-          "mechanic": "give_hp_to_ally_below",
+          "mechanic": "stacking_stat_on_event",
           "params": {
-            "hp_pct": 20,
-            "give_pct_own_hp": 10,
-            "internal_cooldown_s": 30
+            "event": "heal_cast",
+            "stat": "heal_power",
+            "value_per_stack": 3,
+            "max_stacks": 5,
+            "duration_s": 6
           }
         }
       ]
@@ -2186,7 +2179,7 @@
         "option": "mega_sanctuary"
       },
       "name_fr": "Sanctuaire",
-      "description_fr": "+30 % de puissance de soin, et tes soins sur la duree durent 50 % plus longtemps. Contrepartie : -30 % de degats infliges.",
+      "description_fr": "+30 % de puissance de soin et +25 % de duree des buffs (soins sur la duree compris). Contrepartie : -30 % de degats infliges.",
       "effects": [
         {
           "stat": "heal_power",
@@ -2194,10 +2187,9 @@
           "value": 30
         },
         {
-          "mechanic": "hot_duration_bonus",
-          "params": {
-            "pct": 50
-          }
+          "stat": "buff_duration",
+          "op": "add_flat",
+          "value": 25
         },
         {
           "stat": "damage_percent",
@@ -2220,14 +2212,22 @@
         "option": "mega_martyr"
       },
       "name_fr": "Martyr",
-      "description_fr": "Tes soins ne coutent plus de Souffle mais 5 % de tes PV max, et soignent 25 % de plus. Contrepartie : le cout en PV.",
+      "description_fr": "+40 % de puissance de soin et +20 % de soins recus. Contrepartie : -20 % de PV max.",
       "effects": [
         {
-          "mechanic": "heal_cost_hp_instead_of_breath",
-          "params": {
-            "hp_pct": 5,
-            "heal_pct": 25
-          }
+          "stat": "heal_power",
+          "op": "add_flat",
+          "value": 40
+        },
+        {
+          "stat": "healing_received",
+          "op": "add_flat",
+          "value": 20
+        },
+        {
+          "stat": "hp",
+          "op": "add_percent",
+          "value": -20
         }
       ]
     },
@@ -2647,7 +2647,7 @@
       ]
     },
     {
-      "id": "pt2_sup_banner",
+      "id": "pt2_sup_vanguard",
       "kind": "notable_50",
       "arm": "support",
       "max_rank": 1,
@@ -2657,23 +2657,29 @@
       ],
       "choice": {
         "group": "sup_n50",
-        "option": "banner"
+        "option": "vanguard"
       },
-      "name_fr": "Banniere",
-      "description_fr": "Les allies a 2 cases de toi infligent +6 % de degats et subissent -6 % de degats.",
+      "name_fr": "Chef de file",
+      "description_fr": "Un allie que tu buffes inflige +6 % de degats et subit -6 % de degats pendant le buff.",
       "effects": [
         {
-          "mechanic": "ally_aura_stats",
+          "mechanic": "buff_grants_stat",
           "params": {
-            "radius": 2,
-            "damage_percent": 6,
-            "damage_reduction": 6
+            "stat": "damage_percent",
+            "value": 6
+          }
+        },
+        {
+          "mechanic": "buff_grants_stat",
+          "params": {
+            "stat": "damage_reduction",
+            "value": 6
           }
         }
       ]
     },
     {
-      "id": "pt2_sup_second_wind",
+      "id": "pt2_sup_acceleration",
       "kind": "notable_50",
       "arm": "support",
       "max_rank": 1,
@@ -2683,16 +2689,16 @@
       ],
       "choice": {
         "group": "sup_n50",
-        "option": "second_wind"
+        "option": "acceleration"
       },
-      "name_fr": "Second souffle",
-      "description_fr": "Buffer un allie lui rend 5 % de son Souffle max (une fois toutes les 6 s par allie).",
+      "name_fr": "Acceleration",
+      "description_fr": "Un allie que tu buffes a +15 % de vitesse d'incantation pendant le buff.",
       "effects": [
         {
-          "mechanic": "buff_restores_mp",
+          "mechanic": "buff_grants_stat",
           "params": {
-            "pct_max_mp": 5,
-            "internal_cooldown_s": 6
+            "stat": "cast_speed",
+            "value": 15
           }
         }
       ]
@@ -2827,7 +2833,7 @@
         "option": "mega_haste"
       },
       "name_fr": "Hate collective",
-      "description_fr": "Un allie que tu buffes a -20 % de recharge pendant le buff. Contrepartie : tes buffs coutent 50 % de Souffle en plus.",
+      "description_fr": "Un allie que tu buffes a -20 % de recharge pendant le buff. Contrepartie : -20 % de tes PV max.",
       "effects": [
         {
           "mechanic": "buff_grants_stat",
@@ -2837,10 +2843,9 @@
           }
         },
         {
-          "mechanic": "buff_cost_modifier",
-          "params": {
-            "pct": 50
-          }
+          "stat": "hp",
+          "op": "add_percent",
+          "value": -20
         }
       ]
     },
@@ -3123,7 +3128,7 @@
       ]
     },
     {
-      "id": "pt2_deb_laceration",
+      "id": "pt2_deb_deep_venom",
       "kind": "notable_30",
       "arm": "debuff",
       "max_rank": 1,
@@ -3133,16 +3138,20 @@
       ],
       "choice": {
         "group": "deb_n30",
-        "option": "laceration"
+        "option": "deep_venom"
       },
-      "name_fr": "Laceration",
-      "description_fr": "Tes degats sur la duree infligent +20 %.",
+      "name_fr": "Venin profond",
+      "description_fr": "+15 % de chance d'effet et +10 % de duree des affaiblissements.",
       "effects": [
         {
-          "mechanic": "dot_damage_bonus",
-          "params": {
-            "pct": 20
-          }
+          "stat": "effect_chance",
+          "op": "add_flat",
+          "value": 15
+        },
+        {
+          "stat": "debuff_duration",
+          "op": "add_flat",
+          "value": 10
         }
       ]
     },
@@ -3287,16 +3296,17 @@
       "description_fr": "+4 % de degats par affaiblissement que porte la cible, jusqu'a 5.",
       "effects": [
         {
-          "mechanic": "damage_per_target_debuff",
+          "mechanic": "damage_vs_target_debuff_count",
           "params": {
-            "damage_pct_per_debuff": 4,
+            "per_debuff": true,
+            "damage_pct": 4,
             "max_debuffs": 5
           }
         }
       ]
     },
     {
-      "id": "pt2_deb_shackles",
+      "id": "pt2_deb_vise",
       "kind": "notable_50",
       "arm": "debuff",
       "max_rank": 1,
@@ -3306,15 +3316,24 @@
       ],
       "choice": {
         "group": "deb_n50",
-        "option": "shackles"
+        "option": "vise"
       },
-      "name_fr": "Entrave",
-      "description_fr": "Tes controles durent 1 s de plus.",
+      "name_fr": "Etau",
+      "description_fr": "+15 % de degats et +10 % de chance critique contre une cible sous controle.",
       "effects": [
         {
-          "mechanic": "control_duration_bonus",
+          "mechanic": "damage_vs_target_with_status",
           "params": {
-            "seconds": 1
+            "status_category": "control",
+            "damage_pct": 15
+          }
+        },
+        {
+          "mechanic": "stat_vs_target_with_status",
+          "params": {
+            "status_category": "control",
+            "stat": "crit",
+            "value": 10
           }
         }
       ]
@@ -3329,13 +3348,15 @@
         -2.88
       ],
       "name_fr": "Brise-volonte",
-      "description_fr": "Une cible sous ton controle a -15 % de resistance aux effets.",
+      "description_fr": "Apres avoir controle un ennemi : +15 % de chance d'effet pendant 4 s.",
       "effects": [
         {
-          "mechanic": "target_stat_while_controlled",
+          "mechanic": "stat_window_after_event",
           "params": {
-            "stat": "effect_resist",
-            "value": -15
+            "event": "control_applied",
+            "stat": "effect_chance",
+            "value": 15,
+            "duration_s": 4
           }
         }
       ]
@@ -3416,12 +3437,13 @@
         "option": "mega_plague"
       },
       "name_fr": "Peste",
-      "description_fr": "Chaque affaiblissement que tu poses touche aussi un ennemi adjacent. Contrepartie : tes affaiblissements durent 25 % de moins.",
+      "description_fr": "Un affaiblissement pose par un sort cible touche aussi un ennemi adjacent (sans relance en chaine). Contrepartie : tes affaiblissements durent 25 % de moins.",
       "effects": [
         {
-          "mechanic": "debuff_splash_adjacent",
+          "mechanic": "control_splash_adjacent",
           "params": {
-            "max_targets": 1
+            "skill_filter": "single_target_debuff",
+            "status_category": "harmful"
           }
         },
         {
@@ -3445,13 +3467,17 @@
         "option": "mega_chains"
       },
       "name_fr": "Seigneur des chaines",
-      "description_fr": "Tes controles durent 50 % plus longtemps. Contrepartie : -25 % de degats infliges.",
+      "description_fr": "+40 % de duree des affaiblissements et +20 % de chance d'effet. Contrepartie : -25 % de degats infliges.",
       "effects": [
         {
-          "mechanic": "control_duration_pct",
-          "params": {
-            "pct": 50
-          }
+          "stat": "debuff_duration",
+          "op": "add_flat",
+          "value": 40
+        },
+        {
+          "stat": "effect_chance",
+          "op": "add_flat",
+          "value": 20
         },
         {
           "stat": "damage_percent",
@@ -3552,14 +3578,14 @@
         3.21
       ],
       "name_fr": "Second elan",
-      "description_fr": "Une fois par combat, sous 25 % de PV, tu recuperes 25 % de tes PV max.",
+      "description_fr": "Sous 25 % de PV : bouclier egal a 15 % de tes PV max. Une fois toutes les 60 s.",
       "effects": [
         {
-          "mechanic": "self_heal_once_below",
+          "mechanic": "shield_on_low_hp",
           "params": {
             "hp_pct": 25,
-            "heal_pct": 25,
-            "per_combat": 1
+            "shield_pct_max_hp": 15,
+            "internal_cooldown_s": 60
           }
         }
       ]
@@ -3656,12 +3682,13 @@
         10.4
       ],
       "name_fr": "Benediction",
-      "description_fr": "Un buff donne a un allie le soigne de 3 % de ses PV max.",
+      "description_fr": "Un allie que tu buffes recoit +10 % de soins pendant le buff.",
       "effects": [
         {
-          "mechanic": "buff_heals_ally",
+          "mechanic": "buff_grants_stat",
           "params": {
-            "pct_max_hp": 3
+            "stat": "healing_received",
+            "value": 10
           }
         }
       ]
@@ -3761,7 +3788,7 @@
       "description_fr": "Un allie que tu buffes a +10 % de chance critique contre les cibles que tu as affaiblies.",
       "effects": [
         {
-          "mechanic": "ally_buffed_crit_vs_debuffed",
+          "mechanic": "ally_buffed_bonus_vs_debuffed",
           "params": {
             "crit": 10
           }
@@ -3900,26 +3927,26 @@
     ],
     [
       "pt2_def_anchor",
-      "pt2_def_bodyguard"
+      "pt2_def_last_stand"
     ],
     [
       "pt2_def_regrowth",
-      "pt2_def_bodyguard"
+      "pt2_def_last_stand"
     ],
     [
       "pt2_def_unshakable",
-      "pt2_def_last_stand"
+      "pt2_def_living_wall"
     ],
     [
-      "pt2_def_bodyguard",
-      "pt2_def_last_stand"
+      "pt2_def_last_stand",
+      "pt2_def_living_wall"
     ],
     [
       "pt2_def_unshakable",
       "pt2_def_m_bastion"
     ],
     [
-      "pt2_def_bodyguard",
+      "pt2_def_last_stand",
       "pt2_def_m_bastion"
     ],
     [
@@ -4012,11 +4039,11 @@
     ],
     [
       "pt2_heal_reserve",
-      "pt2_heal_overflow"
+      "pt2_heal_holy_shield"
     ],
     [
       "pt2_heal_aegis_craft",
-      "pt2_heal_overflow"
+      "pt2_heal_holy_shield"
     ],
     [
       "pt2_heal_transfusion",
@@ -4035,11 +4062,11 @@
       "pt2_heal_divine_grace"
     ],
     [
-      "pt2_heal_overflow",
+      "pt2_heal_holy_shield",
       "pt2_heal_quick_prayer"
     ],
     [
-      "pt2_heal_overflow",
+      "pt2_heal_holy_shield",
       "pt2_heal_divine_grace"
     ],
     [
@@ -4076,11 +4103,11 @@
     ],
     [
       "pt2_heal_last_breath",
-      "pt2_heal_sacrifice"
+      "pt2_heal_prayer"
     ],
     [
       "pt2_heal_downpour",
-      "pt2_heal_sacrifice"
+      "pt2_heal_prayer"
     ],
     [
       "pt2_heal_last_breath",
@@ -4228,34 +4255,34 @@
     ],
     [
       "pt2_sup_firmness",
-      "pt2_sup_banner"
+      "pt2_sup_vanguard"
     ],
     [
       "pt2_sup_presence",
-      "pt2_sup_banner"
+      "pt2_sup_vanguard"
     ],
     [
       "pt2_sup_firmness",
-      "pt2_sup_second_wind"
+      "pt2_sup_acceleration"
     ],
     [
       "pt2_sup_presence",
-      "pt2_sup_second_wind"
+      "pt2_sup_acceleration"
     ],
     [
-      "pt2_sup_banner",
+      "pt2_sup_vanguard",
       "pt2_sup_shared_drive"
     ],
     [
-      "pt2_sup_second_wind",
+      "pt2_sup_acceleration",
       "pt2_sup_shared_drive"
     ],
     [
-      "pt2_sup_banner",
+      "pt2_sup_vanguard",
       "pt2_sup_m_duration"
     ],
     [
-      "pt2_sup_second_wind",
+      "pt2_sup_acceleration",
       "pt2_sup_m_duration"
     ],
     [
@@ -4348,11 +4375,11 @@
     ],
     [
       "pt2_deb_haste",
-      "pt2_deb_laceration"
+      "pt2_deb_deep_venom"
     ],
     [
       "pt2_deb_corruption",
-      "pt2_deb_laceration"
+      "pt2_deb_deep_venom"
     ],
     [
       "pt2_deb_control_zone",
@@ -4371,11 +4398,11 @@
       "pt2_deb_curse"
     ],
     [
-      "pt2_deb_laceration",
+      "pt2_deb_deep_venom",
       "pt2_deb_fatality"
     ],
     [
-      "pt2_deb_laceration",
+      "pt2_deb_deep_venom",
       "pt2_deb_curse"
     ],
     [
@@ -4404,18 +4431,18 @@
     ],
     [
       "pt2_deb_armor_breaker",
-      "pt2_deb_shackles"
+      "pt2_deb_vise"
     ],
     [
       "pt2_deb_hex",
-      "pt2_deb_shackles"
+      "pt2_deb_vise"
     ],
     [
       "pt2_deb_torment",
       "pt2_deb_will_breaker"
     ],
     [
-      "pt2_deb_shackles",
+      "pt2_deb_vise",
       "pt2_deb_will_breaker"
     ],
     [
@@ -4423,7 +4450,7 @@
       "pt2_deb_m_grip"
     ],
     [
-      "pt2_deb_shackles",
+      "pt2_deb_vise",
       "pt2_deb_m_grip"
     ],
     [
@@ -4680,7 +4707,7 @@
     ],
     [
       "pt2_brg_atk_deb_b",
-      "pt2_deb_laceration"
+      "pt2_deb_deep_venom"
     ],
     [
       "pt2_def_guard",
@@ -4716,7 +4743,7 @@
     ],
     [
       "pt2_brg_def_heal_b",
-      "pt2_heal_overflow"
+      "pt2_heal_holy_shield"
     ],
     [
       "pt2_heal_transfusion",
@@ -4727,7 +4754,7 @@
       "pt2_brg_heal_sup_a"
     ],
     [
-      "pt2_heal_overflow",
+      "pt2_heal_holy_shield",
       "pt2_brg_heal_sup_a"
     ],
     [
@@ -4788,7 +4815,7 @@
     ],
     [
       "pt2_brg_sup_deb_b",
-      "pt2_deb_laceration"
+      "pt2_deb_deep_venom"
     ]
   ]
 }

@@ -63,63 +63,66 @@ Ponts côté Attaque :
 
 | Distance | Contenu |
 |---|---|
-| 0 → 12 | Peau dure (+armure), Constitution (+PV), Esprit calme (+RM), Pas léger (+esquive), en flat |
-| **15** | *Peau de fer* (−15 % dégâts de zone) **ou** *Position tenue* (immobile 3 s : −10 %). Détour à 20 : *Sang-froid* (−12 % d'un attaquant à plus de 3 cases) |
-| 15 → 30 | Flat (Rempart +armure/RM, Robustesse +PV) ou % (Bastion +PV %, Carapace +armure/RM %) |
-| **30** | Le style, 1 sur 3 : *Garde* (+8 parade, +8 blocage), *Représailles* (15 % d'épines), *Vampirisme* (+6 vol de vie, +6 vol de sort) |
-| 30 → 50 | Endurance (réduction des dégâts), Résilience (résistance aux effets), Ancrage (ténacité) ; ou Écailles (armure/RM %), Colosse (PV %), Régénération (regen PV %) |
-| **50** | *Inébranlable* (bouclier de 20 % sous 30 % de PV, 45 s) **ou** *Garde du corps* (tu prends 20 % des dégâts d'un allié adjacent). Détour à 55 : *Dernier rempart* (sous 30 % de PV : −20 %) |
-| 50 → 75 | Maîtrises : bastion (PV %), cuirasse (armure/RM %), endurance (réduction) |
-| **75 méga** | *Forteresse* : +30 % PV, +15 % réduction ; −25 % dégâts infligés. **Ou** *Colère du titan* : 30 % d'épines, +10 vol de vie ; −25 % soins reçus |
+| 0 → 12 | Peau dure, Constitution, Esprit calme, Pas leger (flat, 3 rangs) |
+| **15** | *Peau de fer* (-15 % de degats subis des attaques de zone) **ou** *Position tenue* (Immobile depuis 3 s : -10 % de degats subis). Détour à 20 : *Sang-froid* (-12 % de degats subis d'un attaquant a plus de 3 cases) |
+| 15 → 30 | Rempart, Robustesse ; ou Bastion, Carapace |
+| **30** | 1 sur 3 : *Garde : parade* (+8 % de chance de parade et +8 % de chance de blocage), *Represailles : epines* (Renvoie 15 % des degats subis a l'attaquant), *Endurance : vampirisme* (+6 % de vol de vie et +6 % de vol de sort) |
+| 30 → 50 | Endurance, Resilience, Ancrage ; ou Ecailles, Colosse, Regeneration |
+| **50** | *Inebranlable* (Sous 30 % de PV : bouclier egal a 20 % de tes PV max. Une fois toutes les 45 s) **ou** *Dernier rempart* (Sous 30 % de PV : -20 % de degats subis). Détour à 55 : *Mur vivant* (Apres un blocage ou une parade : -20 % de degats subis pendant 3 s) |
+| 50 → 75 | Maitrise : bastion, Maitrise : cuirasse, Maitrise : endurance |
+| **75 méga** | *Forteresse* (+30 % de PV max et +15 % de reduction des degats subis. Contrepartie : -25 % de degats infliges) **ou** *Colere du titan* (Renvoie 30 % des degats subis et +10 % de vol de vie. Contrepartie : -25 % de soins recus) |
 
 ## Bras Soin (proposition)
 
 | Distance | Contenu |
 |---|---|
-| 0 → 12 | Mains chaudes (+puissance de soin), Sève (+Souffle), Grâce (+soins reçus), Concentration (+magie) |
-| **15** | *Aide salvatrice* (+20 % de soins sous 40 % de PV) **ou** *Soins préventifs* (+15 % au-dessus de 70 %). Détour à 20 : *Soin étendu* (30 % sur l'allié blessé le plus proche) |
-| 15 → 30 | Flat (Ferveur +puissance de soin, Réserve +Souffle) ou % (Sagesse +magie %, Art du bouclier +puissance de bouclier) |
-| **30** | *Transfusion* (10 % des soins donnés te reviennent), *Vol de sort* (+8), *Débordement* (le surplus de soin devient un bouclier, 50 %, 5 s) |
-| 30 → 50 | Prière rapide (incantation), Persévérance (recharge), Recueillement (soins reçus) ; ou Grâce divine (magie %), Fontaine (Souffle %), Rayonnement (puissance de bouclier) |
-| **50** | *Dernier souffle* (sauve un allié une fois par combat) **ou** *Ondée* (1 soin sur 4 soigne aussi à 2 cases, 30 %). Détour à 55 : *Sacrifice* (un allié sous 20 % reçoit 10 % de tes PV, 30 s) |
-| 50 → 75 | Maîtrises : soins, sagesse (magie %), source (Souffle %) |
-| **75 méga** | *Sanctuaire* : +30 % puissance de soin, soins sur la durée +50 % de durée ; −30 % dégâts infligés. **Ou** *Martyr* : les soins coûtent 5 % de tes PV au lieu du Souffle, +25 % de soins |
+| 0 → 12 | Mains chaudes, Seve, Grace, Concentration (flat, 3 rangs) |
+| **15** | *Aide salvatrice* (+20 % de soins sur une cible sous 40 % de ses PV) **ou** *Soins preventifs* (+15 % de soins sur une cible au-dessus de 70 % de ses PV). Détour à 20 : *Soin etendu* (Un soin cible soigne aussi l'allie blesse le plus proche de 30 % du soin) |
+| 15 → 30 | Ferveur, Reserve ; ou Sagesse, Art du bouclier |
+| **30** | 1 sur 3 : *Transfusion* (10 % des soins donnes a un allie te reviennent), *Vol de sort* (+8 % de vol de sort), *Egide sacree* (+15 % de puissance de bouclier et +10 % de soins recus) |
+| 30 → 50 | Priere rapide, Perseverance, Recueillement ; ou Grace divine, Fontaine, Rayonnement |
+| **50** | *Dernier souffle* (Une fois par combat, un allie qui devait mourir reste a 1 PV et recoit 25 % de ses PV max) **ou** *Ondee* (Un soin cible soigne aussi les 2 allies blesses les plus proches de 25 % du soin). Détour à 55 : *Priere de combat* (Chaque soin lance donne +3 % de puissance de soin pendant 6 s, cumulable 5 fois) |
+| 50 → 75 | Maitrise : soins, Maitrise : sagesse, Maitrise : source |
+| **75 méga** | *Sanctuaire* (+30 % de puissance de soin et +25 % de duree des buffs (soins sur la duree compris). Contrepartie : -30 % de degats infliges) **ou** *Martyr* (+40 % de puissance de soin et +20 % de soins recus. Contrepartie : -20 % de PV max) |
 
 ## Bras Soutien (proposition)
 
 | Distance | Contenu |
 |---|---|
-| 0 → 12 | Persistance (durée des buffs), Vivacité (incantation), Souffle long (+Souffle), Volonté (résistance aux effets) |
-| **15** | *Inspiration* (allié buffé : +8 % de dégâts) **ou** *Protection* (allié buffé : −8 % de dégâts subis). Détour à 20 : *Aura étendue* (un buff ciblé touche un allié adjacent) |
-| 15 → 30 | Flat (Esprit vif recharge, Ténacité) ou % (Clarté Souffle %, Harmonie magie %) |
-| **30** | *Rythme* (1 sort sur 4 gratuit), *Chef d'orchestre* (buff : −1 s de recharge à l'allié), *Clairvoyance* (+15 % durée des buffs, +10 % des affaiblissements) |
-| 30 → 50 | Sérénité (durée buffs), Discipline (recharge), Fermeté (résistance) ; ou Éloquence (incantation), Ampleur (Souffle %), Présence (PV %) |
-| **50** | *Bannière* (aura à 2 cases : +6 % dégâts, −6 % subis) **ou** *Second souffle* (buff : rend 5 % du Souffle max de l'allié). Détour à 55 : *Élan partagé* (chaque buff donné : +3 % de dégâts, 5 cumuls) |
-| 50 → 75 | Maîtrises : durée, tempo (recharge), clarté (Souffle %) |
-| **75 méga** | *Maître de guerre* : buffs +50 % de durée et +10 % de dégâts aux alliés ; −25 % de tes dégâts. **Ou** *Hâte collective* : allié buffé −20 % de recharge ; tes buffs coûtent +50 % de Souffle |
+| 0 → 12 | Persistance, Vivacite, Souffle long, Volonte (flat, 3 rangs) |
+| **15** | *Inspiration* (Un allie que tu buffes inflige +8 % de degats pendant le buff) **ou** *Protection* (Un allie que tu buffes subit -8 % de degats pendant le buff). Détour à 20 : *Aura etendue* (Un buff cible touche aussi un allie adjacent) |
+| 15 → 30 | Esprit vif, Tenacite ; ou Clarte, Harmonie |
+| **30** | 1 sur 3 : *Rythme* (Un sort sur 4 qui coute du Souffle est gratuit), *Chef d'orchestre* (Buffer un allie reduit ses recharges de 1 s (une fois toutes les 5 s par allie)), *Clairvoyance* (+15 % de duree des buffs et +10 % de duree des affaiblissements) |
+| 30 → 50 | Serenite, Discipline, Fermete ; ou Eloquence, Ampleur, Presence |
+| **50** | *Chef de file* (Un allie que tu buffes inflige +6 % de degats et subit -6 % de degats pendant le buff) **ou** *Acceleration* (Un allie que tu buffes a +15 % de vitesse d'incantation pendant le buff). Détour à 55 : *Elan partage* (Chaque buff donne a un allie te donne +3 % de degats pendant 6 s, cumulable 5 fois) |
+| 50 → 75 | Maitrise : duree, Maitrise : tempo, Maitrise : clarte |
+| **75 méga** | *Maitre de guerre* (Tes buffs sur les allies durent 50 % plus longtemps et donnent +10 % de degats. Contrepartie : -25 % de tes propres degats) **ou** *Hate collective* (Un allie que tu buffes a -20 % de recharge pendant le buff. Contrepartie : -20 % de tes PV max) |
 
 ## Bras Affaiblissement (proposition)
 
 | Distance | Contenu |
 |---|---|
-| 0 → 12 | Main sûre (précision), Venin (chance d'effet), Prolongation (durée des affaiblissements), Perce-esprit (pénétration magique) |
-| **15** | *Emprise* (+10 % contre une cible contrôlée) **ou** *Fléau* (+12 % contre une cible qui porte 2 affaiblissements). Détour à 20 : *Contagion* |
-| 15 → 30 | Flat (Ténèbres chance d'effet, Hâte recharge) ou % (Malice atk/mag %, Corruption durée) |
-| **30** | *Zone de contrôle* (contrôle propagé à un adjacent), *Maître du tempo* (contrôle : −1 s aux autres recharges), *Lacération* (+20 % aux dégâts sur la durée) |
-| 30 → 50 | Fatalité (chance d'effet), Persistance noire (durée), Brise-armure (pénétrations) ; ou Malédiction (atk/mag %), Affliction (dégâts %), Maléfice (durée) |
-| **50** | *Supplice* (+4 % par affaiblissement porté, 5 max) **ou** *Entrave* (contrôles +1 s). Détour à 55 : *Brise-volonté* (cible contrôlée −15 résistance aux effets) |
-| 50 → 75 | Maîtrises : emprise (chance d'effet), durée, malice (atk/mag %) |
-| **75 méga** | *Peste* : chaque affaiblissement touche aussi un ennemi adjacent ; durée −25 %. **Ou** *Seigneur des chaînes* : contrôles +50 % de durée ; −25 % dégâts infligés |
+| 0 → 12 | Main sure, Venin, Prolongation, Perce-esprit (flat, 3 rangs) |
+| **15** | *Emprise* (+10 % de degats contre une cible sous controle) **ou** *Fleau* (+12 % de degats contre une cible qui porte au moins 2 affaiblissements). Détour à 20 : *Contagion* (Quand une cible meurt, tes affaiblissements passent sur l'ennemi le plus proche) |
+| 15 → 30 | Tenebres, Hate ; ou Malice, Corruption |
+| **30** | 1 sur 3 : *Zone de controle* (Un controle cible touche aussi un ennemi adjacent), *Maitre du tempo* (Controler un ennemi reduit tes autres recharges de 1 s (une fois toutes les 3 s)), *Venin profond* (+15 % de chance d'effet et +10 % de duree des affaiblissements) |
+| 30 → 50 | Fatalite, Persistance noire, Brise-armure ; ou Malediction, Affliction, Malefice |
+| **50** | *Supplice* (+4 % de degats par affaiblissement que porte la cible, jusqu'a 5) **ou** *Etau* (+15 % de degats et +10 % de chance critique contre une cible sous controle). Détour à 55 : *Brise-volonte* (Apres avoir controle un ennemi : +15 % de chance d'effet pendant 4 s) |
+| 50 → 75 | Maitrise : emprise, Maitrise : duree, Maitrise : malice |
+| **75 méga** | *Peste* (Un affaiblissement pose par un sort cible touche aussi un ennemi adjacent (sans relance en chaine). Contrepartie : tes affaiblissements durent 25 % de moins) **ou** *Seigneur des chaines* (+40 % de duree des affaiblissements et +20 % de chance d'effet. Contrepartie : -25 % de degats infliges) |
 
 ## Ponts (les 5)
 
 | Pont | Passage (×2, 1 pt) | Hybride sur le chemin | Hybride à côté |
 |---|---|---|---|
-| Attaque ↔ Défense | +4 armure, +4 RM | *Riposte* | *Garde de fer* |
-| Attaque ↔ Affaiblissement | +4 armure, +4 RM | *Opportuniste* | *Curée* |
-| Défense ↔ Soin | +12 PV, +2 soins reçus | *Rempart vivant* (10 % des soins reçus en bouclier) | *Second élan* (une fois, sous 25 % : +25 % PV) |
-| Soin ↔ Soutien | +10 Souffle, +2 durée des buffs | *Chant de guerre* (un buff retire un affaiblissement) | *Bénédiction* (un buff soigne 3 % des PV max) |
-| Soutien ↔ Affaiblissement | +2 chance d'effet, +2 résistance aux effets | *Coordination* (+8 % contre tes cibles affaiblies) | *Marque du chef* (+10 % crit contre tes cibles affaiblies) |
+| Attaque ↔ Défense | +4 armure et +4 resistance magique | *Riposte* (Apres un blocage ou une parade, ta prochaine attaque inflige +40 % de degats) | *Garde de fer* (Tant que tu es au-dessus de 70 % de tes PV : +12 % de degats infliges et -8 % de degats recus) |
+| Attaque ↔ Affaiblissement | +4 armure et +4 resistance magique | *Opportuniste* (+20 % de chance critique contre une cible sous controle) | *Curee* (+20 % de degats contre une cible qui porte au moins 3 affaiblissements) |
+| Défense ↔ Soin | +12 PV max et +2 % de soins recus | *Rempart vivant* (10 % des soins que tu recois deviennent un bouclier (5 s)) | *Second elan* (Sous 25 % de PV : bouclier egal a 15 % de tes PV max. Une fois toutes les 60 s) |
+| Soin ↔ Soutien | +10 Souffle max et +2 % de duree des buffs | *Chant de guerre* (Un buff donne a un allie lui retire un affaiblissement) | *Benediction* (Un allie que tu buffes recoit +10 % de soins pendant le buff) |
+| Soutien ↔ Affaiblissement | +2 % de chance d'effet et +2 resistance aux effets | *Coordination* (Un allie que tu buffes inflige +8 % de degats aux cibles que tu as affaiblies) | *Marque du chef* (Un allie que tu buffes a +10 % de chance critique contre les cibles que tu as affaiblies) |
+
+Ces tables sont **générées depuis `arbre_v2.json`** par `doc_arbre_v2.py` : modifier le contenu dans `gen_arbre_v2.py`,
+relancer les deux scripts. Rendu en image : `python -I render_arbre_v2.py arbre_v2.json arbre_v2.png`.
 
 Les mécaniques de la V1 sont reprises là où elles collent (Peau de fer, Position tenue, Sang-froid,
 Inébranlable, Aide salvatrice, Soin étendu, Transfusion, Dernier souffle, Inspiration, Aura étendue,
@@ -176,18 +179,9 @@ de 100 par le centre : les ponts servent aussi aux hybrides éloignés, et rappo
   (Élan), `consecutive_hit_stacks` (Acharnement), `crit_ignores_defense` (Brise-garde),
   `non_crit_damage_modifier` (Coup Fatal), `stats_while_hp_above` (Garde de fer),
   `damage_vs_target_debuff_count` (Curée, Fléau), événement `kill` pour `stat_window_after_event`.
-- Pour les 4 bras proposés, en plus : `damage_redirect_from_adjacent_ally` (Garde du corps),
-  condition `hp_below` de `damage_taken_reduction_conditional` (Dernier rempart),
-  `heal_bonus_target_hp_above` (Soins préventifs), `overheal_to_shield` (Débordement),
-  `heal_every_n_splash_area` (Ondée), `give_hp_to_ally_below` (Sacrifice), `hot_duration_bonus`
-  (Sanctuaire), `heal_cost_hp_instead_of_breath` (Martyr), `buff_grants_stat` sur
-  `damage_reduction` / `cooldown_reduction` (Protection, Hâte collective), `ally_aura_stats` (Bannière),
-  `buff_restores_mp` (Second souffle), `stacking_stat_on_event` sur `buff_applied_to_ally` (Élan
-  partagé), `buff_cost_modifier` (Hâte collective), `dot_damage_bonus` (Lacération),
-  `damage_per_target_debuff` (Supplice), `control_duration_bonus` / `control_duration_pct` (Entrave,
-  Seigneur des chaînes), `target_stat_while_controlled` (Brise-volonté), `debuff_splash_adjacent`
-  (Peste), `self_heal_once_below` (Second élan), `buff_heals_ally` (Bénédiction),
-  `ally_buffed_crit_vs_debuffed` (Marque du chef). Liste tenue dans `arbre_v2.json` `_meta.new_mechanics`.
+- Pour les 4 bras proposés : **aucune mécanique entièrement nouvelle**, seulement 9 extensions d'une
+  mécanique déjà codée (un paramètre, un événement ou une stat de plus), listées dans
+  `arbre_v2.json` `_meta.new_mechanics`. Les notables sans effet spécial sont en stats (comme *Brute*).
 - Migration : rembourser tous les points de l'arbre V1 au passage en V2.
 
 ## Questions ouvertes
