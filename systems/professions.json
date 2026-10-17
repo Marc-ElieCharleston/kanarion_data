@@ -157,16 +157,17 @@
       "kind": "gathering",
       "station": "workshop_fissure_hunter",
       "master_npc": "npc_master_fissure_hunter",
-      "_how": "PRESSENTIMENT (Charleston, 2026-09-30) : le chasseur sait ou s'ouvrira la PROCHAINE Fissure, de plus en plus precisement avec son niveau. Le serveur connait deja, pour chaque aire, l'heure de la prochaine invasion (presence FissureWorld, AreaSlot.next_start_s) : il n'envoie au chasseur que ce que son niveau autorise. Pendant l'invasion, il recolte en plus des ECLATS DE FAILLE reserves a ce metier : la source des reactifs rares de tous les metiers.",
+      "_how": "PRESSENTIMENT (Charleston, 2026-09-30) : le chasseur sait ou s'ouvrira la PROCHAINE Fissure, de plus en plus precisement avec son niveau. Depuis l'interieur de faille (2026-10-17), le serveur planifie chaque faille A L'AVANCE, un minuteur par rang (world/rift_events.json schedule : aire, taille et position de la porte fixees a la planification) : il n'envoie au chasseur que ce que son niveau autorise. A la fermeture reussie d'une faille, il recueille des BRAISES DE FAILLE du rang de la faille, reservees a ce metier (lanterne de rang >= rang de la faille) : la source des reactifs rares de tous les metiers.",
       "inputs": [
-        "invasions de Fissure"
+        "interieurs de faille (world/rift_events.json)"
       ],
       "outputs": [
-        "eclats de Faille (reactifs rares)",
+        "Braises de Faille mat_rift_ember_r1..r5 (reactifs rares)",
         "pressentiment de la prochaine Fissure (zone, puis aire, puis position)"
       ],
       "forecast": {
-        "_rule": "Ce que le chasseur apprend de la prochaine Fissure, par palier de niveau (le palier le plus haut atteint s'applique).",
+        "_rule": "Ce que le chasseur apprend de la prochaine Fissure, par palier de niveau (le palier le plus haut atteint s'applique). Source : la planification par rang de world/rift_events.json (prochaine faille de chaque rang). time_window_min = largeur de la fenetre annoncee qui CONTIENT l'heure d'ouverture ; la prevision ne montre une faille que si elle s'ouvre avant la fin de cette fenetre.",
+        "source": "world/rift_events.json schedule (prochaine faille de chaque rang)",
         "tiers": [
           {
             "from_level": 1,
@@ -206,7 +207,12 @@
         "runist",
         "tanner"
       ],
-      "_v1": "V1 serveur : niveau, XP et outil existent ; les Braises de Faille a recueillir pendant une invasion et le pressentiment (forecast) ne sont pas encore branches."
+      "rift": {
+        "embers_item_pattern": "mat_rift_ember_r{rank}",
+        "requires_tool": "lantern",
+        "_rule": "Braises du rang de la faille, quantite par palier dans config/rewards.json rift_closing ; lanterne de rang >= rang de la faille (une utilisation par fermeture). XP : systems/profession_xp.json rift_xp. Stabiliser (+5 min) : world/rift_events.json hunter.stabilize."
+      },
+      "_v1": "V1 alpha (2026-10-17) : Braises par rang, XP a la fermeture, stabilisation et prevision branchees sur l'interieur de faille."
     },
     {
       "id": "miner",
@@ -1322,7 +1328,34 @@
       "mat_war_banner": [
         "tanner"
       ],
-      "mat_rift_ember": [
+      "mat_rift_ember_r1": [
+        "apothecary",
+        "bone_carver",
+        "breeder",
+        "tanner"
+      ],
+      "mat_rift_ember_r2": [
+        "bone_carver",
+        "breeder",
+        "runist",
+        "tanner"
+      ],
+      "mat_rift_ember_r3": [
+        "apothecary",
+        "bone_carver",
+        "breeder",
+        "collector",
+        "runist",
+        "tanner"
+      ],
+      "mat_rift_ember_r4": [
+        "apothecary",
+        "bone_carver",
+        "breeder",
+        "runist",
+        "tanner"
+      ],
+      "mat_rift_ember_r5": [
         "apothecary",
         "bone_carver",
         "breeder",
@@ -1828,7 +1861,7 @@
     "_material_uses_v2": "Depuis la V2, material_uses liste aussi les ressources recoltees et les intermediaires (items/profession_recipes.json new_items) : pour eux la liste est DERIVEE des recettes par le generateur et verifiee par le validateur (aucune ressource sans usage)."
   },
   "achievements": {
-    "_rule": "Succes de metier : 71 deplaces dans systems/achievements.json (categorie metiers) le 2026-10-01, avec le branchement serveur (migration 111, sources relues par le moteur de succes). Restent ici les 7 dont la source n'a pas encore d'ecrivain : objets fabriques vendus a l'HDV, Braises de Faille, fusions et revelations Koro.",
+    "_rule": "Succes de metier : 71 deplaces dans systems/achievements.json (categorie metiers) le 2026-10-01, avec le branchement serveur (migration 111, sources relues par le moteur de succes). Restent ici les 5 dont la source n'a pas encore d'ecrivain : objets fabriques vendus a l'HDV, fusions et revelations Koro (les 2 Braises de Faille sont parties dans systems/achievements.json le 2026-10-17 avec leur ecrivain, l'interieur de faille).",
     "category": {
       "id": "metiers",
       "name_fr": "Métiers",
@@ -1837,7 +1870,6 @@
     "xp_rule": "Meme regle que la vague 2 : XP FIXE = forme x cout du niveau de PERSONNAGE ou le succes tombe normalement (_expected_char_level), premier 0.5 / echelle 1 / detour 2 niveaux. Textes sans lettre de rang ni de rarete : leur affichage passe de C..SS a D..S.",
     "sources_pending": {
       "crafted_items_sold": "ventes HDV dont l'objet porte custom_data.crafted_by = ce personnage",
-      "rift_embers_gathered": "Braises de Faille recueillies",
       "koro_fusions": "fusions Koro reussies (rule_koro_fuse_*)",
       "koro_reveals": "revelations Koro (rule_koro_reveal_*)"
     },
@@ -1867,36 +1899,6 @@
         "desc_en": "Sell 250 items you crafted at the auction house.",
         "source": "crafted_items_sold",
         "threshold": 250,
-        "reward": {
-          "xp": 48000
-        },
-        "_expected_char_level": 60
-      },
-      {
-        "id": "ach_rift_ember_1",
-        "category": "metiers",
-        "shape": "premier",
-        "name_fr": "Encore chaude",
-        "name_en": "Still Warm",
-        "desc_fr": "Recueille une Braise de Faille pendant une invasion.",
-        "desc_en": "Gather a Rift Ember during an invasion.",
-        "source": "rift_embers_gathered",
-        "threshold": 1,
-        "reward": {
-          "xp": 2580
-        },
-        "_expected_char_level": 30
-      },
-      {
-        "id": "ach_rift_ember_50",
-        "category": "metiers",
-        "shape": "detour",
-        "name_fr": "Gardien des braises",
-        "name_en": "Keeper of Embers",
-        "desc_fr": "Recueille 50 Braises de Faille.",
-        "desc_en": "Gather 50 Rift Embers.",
-        "source": "rift_embers_gathered",
-        "threshold": 50,
         "reward": {
           "xp": 48000
         },

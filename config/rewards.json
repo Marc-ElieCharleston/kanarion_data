@@ -24,6 +24,8 @@
       "act_progression",
       "group_size",
       "events",
+      "rift_rank",
+      "rift_level_gap",
       "guild_level"
     ]
   },
@@ -294,6 +296,28 @@
         }
       },
       "_no_producer_yet": "DECLAREE, PAS ENCORE ALIMENTEE. Aucun producteur n'ecrit d'evenement actif dans le contexte de loot aujourd'hui : event_xp_mult / event_gold_mult / event_drop_mult valent 1.0 en permanence. La famille existe pour que le cablage n'ait rien a inventer, mais tant qu'aucun service ne pousse d'evenement, elle est neutre. Ne pas la lire comme une regle appliquee."
+    },
+    "rift_rank": {
+      "description": "Combats DANS l'interieur de faille (world/rift_events.json), par rang de la faille (1..5). Neutre en V1 : les mega-groupes 3-5 etoiles sont deja genereux (etude rift_event, section 6.2). Le contexte de combat porte le rang de la faille, transmis par presence a la creation de la salle ; hors faille, la famille vaut 1.0.",
+      "values": {
+        "1": {"xp": 1.0, "gold": 1.0, "drop_chance": 1.0},
+        "2": {"xp": 1.0, "gold": 1.0, "drop_chance": 1.0},
+        "3": {"xp": 1.0, "gold": 1.0, "drop_chance": 1.0},
+        "4": {"xp": 1.0, "gold": 1.0, "drop_chance": 1.0},
+        "5": {"xp": 1.0, "gold": 1.0, "drop_chance": 1.0}
+      },
+      "_a_valider": "Neutre partout (proposition de l'etude)."
+    },
+    "rift_level_gap": {
+      "description": "Ecart (niveau du joueur - niveau de la faille) pour un combat DANS l'interieur de faille, et pour les recompenses de fermeture (rift_closing). Seule exception a la regle 'le butin n'est jamais penalise', limitee a la faille : c'est la concentration de groupes 3-5 etoiles qui cree l'avantage. Ecart <= full_up_to : in_range. De full_up_to + 1 a purification_from - 1 : over. A partir de purification_from : purification (ni XP, ni or, ni butin par combat ; decision Charleston 2026-10-17). L'XP et l'or subissent EN PLUS level_difference, comme partout. Un joueur PLUS BAS que la faille est toujours in_range (sa garde est l'entree minimale de world/rift_events.json).",
+      "full_up_to": 5,
+      "purification_from": 10,
+      "values": {
+        "in_range": {"xp": 1.0, "gold": 1.0, "drop_chance": 1.0},
+        "over": {"xp": 1.0, "gold": 1.0, "drop_chance": 0.5},
+        "purification": {"xp": 0.0, "gold": 0.0, "drop_chance": 0.0}
+      },
+      "_a_valider": "Purification a 10 niveaux d'ecart (decide), butin par combat x0.5 entre 6 et 9 (proposition de l'etude)."
     }
   },
   "level_difference": {
@@ -560,6 +584,30 @@
     "xp_ratio": 0.5,
     "_a_valider": "0.5 est une PROPOSITION, a valider par Charleston. 0 = l'abandon ne rapporte rien (l'autre option qu'il a acceptee). Lu par server-combat (content_loader load_reward_multipliers) ; absent = 0, rien n'est verse."
   },
+  "rift_closing": {
+    "_comment": "Recompense de FERMETURE REUSSIE d'un interieur de faille (world/rift_events.json), par palier de contribution. Lu par presence (coffres, Braises, purification) ; l'XP est versee par quest (world_event_rewards, idempotent par faille et personnage). XP = xp_level_fraction x l'XP du palier du niveau de BASE = le plus bas entre le niveau du joueur et le niveau de la faille (xp_level_basis 'min_player_rift' : un niveau 99 dans une faille de rang I touche une fraction d'un niveau 20). Coffres = world/zone_chests.json tiers[rang] (contenu), multiplies ici en nombre et en or. Embers = Braises de faille du rang (mat_rift_ember_r<rang>), reservees au Chasseur de Failles qui porte une lanterne de rang >= rang de la faille (une utilisation par fermeture). En echec : rien ici (seul le Chasseur garde une part d'XP de metier, systems/profession_xp.json rift_xp.failure_share).",
+    "xp_level_basis": "min_player_rift",
+    "level_gap": {
+      "_rule": "Ecart joueur - faille, seuils de multiplier_families.rift_level_gap (full_up_to, purification_from). in_range : x1. over : x half_factor sur l'XP et l'or des coffres. purification : voir le bloc purification.",
+      "half_factor": 0.5
+    },
+    "tiers": {
+      "bronze": {"xp_level_fraction": 0.3, "chests": 1, "chest_gold_multiplier": 0.5, "embers": 1},
+      "silver": {"xp_level_fraction": 0.6, "chests": 1, "chest_gold_multiplier": 1.0, "embers": 2},
+      "gold": {"xp_level_fraction": 1.0, "chests": 2, "chest_gold_multiplier": 1.0, "embers": 3}
+    },
+    "size_resource_multiplier": {"small": 1.0, "medium": 1.5, "large": 2.0},
+    "_size": "Multiplie la quantite de Braises (arrondi superieur). L'XP et les coffres ne dependent pas de la taille : une grande faille donne deja plus de combats.",
+    "purification": {
+      "_rule": "Joueur en purification (ecart >= rift_level_gap.purification_from) : ni XP, ni or, ni coffre, ni Braise, ni butin de combat dans la faille. Il garde : un point de purification (compteur, succes et titre), le fait de guilde (fissure_invasion_won) et l'XP de Chasseur de Failles (regle grise du metier).",
+      "xp": 0,
+      "chests": 0,
+      "embers": 0,
+      "profession_xp": true,
+      "purification_points": 1
+    },
+    "_a_valider": "Fractions d'XP 0.3/0.6/1.0, coffres 1/1/2, or des coffres x0.5 au bronze, Braises 1/2/3 x taille (etude section 6.2, sans essences ni Coeur de faille en V1)."
+  },
   "extension_procedure": {
     "_comment": "Les donjons, les contrats du Maitre Combat et les Failles apporteront leurs propres multiplicateurs. Ils s'ajoutent ICI, comme familles, sans toucher au moteur.",
     "steps": [
@@ -570,7 +618,7 @@
     ],
     "planned": [
       "contract_tier (contrats du Maitre Combat)",
-      "rift_depth (Failles)"
+      "zone_corruption (Failles, phase 2 : combats d'une aire corrompue apres un echec, point d'accroche de world/rift_events.json failure)"
     ],
     "anti_pattern": "Ne JAMAIS ecrire un multiplicateur de recompense ailleurs que dans ce fichier, meme 'juste pour ce donjon'. C'est exactement comme ca que les quatre sources precedentes sont nees."
   }
