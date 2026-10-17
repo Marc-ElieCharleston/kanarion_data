@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": "1.0",
-    "last_updated": "2026-09-30",
+    "last_updated": "2026-10-17",
     "description": "Invasions de Fissure (validees par Charleston le 2026-09-30). Une Fissure s'ouvre dans une AIRE de monstres (world/zones.json spawn_areas) : l'emprise se resserre, les creatures reviennent plus vite et plus fortes. Les joueurs presents doivent en liberer `kill_target` avant la fin ; tous ceux qui ont assez contribue sont recompenses et un coffre apparait a la place de la Fissure. Plusieurs aires peuvent etre envahies en meme temps.",
     "owner": "services/presence (declenchement, compteur, effets, recompenses objets/or) + services/quest (XP, idempotente). Le client lit ce fichier pour l'AFFICHAGE seulement.",
     "lore": "La Fissure s'empare du Souffle des creatures sans le detruire. Refermer la Fissure, c'est liberer l'aire : jamais un cadrage de mort ou de depouilles."
@@ -30,9 +30,11 @@
     "level_by_rank": {"1": 1, "2": 1, "3": 2, "4": 2, "5": 3}
   },
   "rewards": {
-    "_comment": "A la fermeture reussie, chaque joueur ayant libere au moins min_contribution_kills creatures de l'aire recoit : de l'XP (xp_level_fraction de son niveau en cours, comme un combat : rien ne s'accumule), de l'or et les objets d'un coffre du RANG de l'aire (world/zone_chests.json tiers, meme tirage que les coffres). Un coffre apparait en bonus a la place de la Fissure (spawn_chest_on_close).",
+    "_comment": "A la fermeture reussie, chaque joueur ayant libere au moins min_contribution_kills creatures de l'aire recoit : de l'XP, de l'or et les objets d'un coffre du RANG de l'aire (world/zone_chests.json tiers, meme tirage que les coffres). Un coffre apparait en bonus a la place de la Fissure (spawn_chest_on_close). XP = xp_level_fraction x l'XP du palier du niveau de BASE (rien ne s'accumule). Le niveau de base depend de xp_level_basis : 'min_player_invasion' = le plus bas entre le niveau du joueur et le niveau de l'invasion (= niveau max de son aire, decide par le serveur) ; 'player' = le niveau du joueur seul (ancien comportement, exploitable : un niveau 70 gagnait un niveau 70 entier dans une invasion de rang I). Si xp_apply_level_difference est vrai, la penalite d'ecart joueur - invasion de config/rewards.json level_difference s'applique en plus (meme regle que l'XP de combat). Anti-farm valide par Charleston le 2026-10-17.",
     "min_contribution_kills": 3,
     "xp_level_fraction": 1.0,
+    "xp_level_basis": "min_player_invasion",
+    "xp_apply_level_difference": true,
     "spawn_chest_on_close": true
   }
 }

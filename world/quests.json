@@ -6195,9 +6195,13 @@
     },
     "contract_chests": {
         "_comment": "Coffres des contrats (valide par Charleston le 2026-10-01). Aucune nouvelle quete et aucun tirage : les contrats de Varn et de Dargo restent repetables a volonte, et chaque contrat RENDU compte pour le coffre du jour et celui de la semaine. Lu par services/quest.",
-        "counts": "Tout contrat rendu : quete dont quest_board vaut havreden_contracts ou rochebourg_contracts, tout rang, toute bande. Par PERSONNAGE.",
+        "counts": "Tout contrat rendu : quete dont quest_board vaut havreden_contracts ou rochebourg_contracts, tout rang, toute bande dont le haut n'est pas a plus de level_difference.no_penalty_range niveaux sous le joueur (count_rule). Par PERSONNAGE.",
         "payout": "AUTOMATIQUE au contrat qui atteint le seuil, dans la meme transaction que le rendu, pousse au client. Pas de coffre a reclamer plus tard : l'XP est une fraction du niveau EN COURS, et un coffre garde en reserve se ferait encaisser a haut niveau (la raison du passage des succes en XP fixe). Idempotent : une ligne par (personnage, periode, type).",
         "band_by": "niveau du personnage au moment du versement",
+        "_anti_farm": "Anti-farm valide par Charleston le 2026-10-17 (meme regle que les invasions de Fissure et l'arene). Le niveau d'un contrat est le HAUT de sa contract_band (20 pour la bande 1-20) : la bande est le public du contrat, son XP y est deja recalee, et le haut ne penalise aucun joueur de la bande alors que level_required (bas - 4) penaliserait tout le milieu de bande. count_rule 'within_level_difference' : un contrat dont le haut de bande est a plus de config/rewards.json level_difference.no_penalty_range niveaux sous le joueur ne compte pas pour les coffres (sinon un niveau 70 remplit le coffre de la semaine avec 14 contrats de la bande 1-20 et un seul a son niveau) ; 'all' = ancien comportement. xp_level_basis 'min_player_content' : l'XP d'un coffre se calcule sur min(niveau du joueur, niveau du contrat qui atteint le seuil), puis la penalite level_difference si xp_apply_level_difference ; 'player' = ancien comportement (niveau du joueur seul).",
+        "count_rule": "within_level_difference",
+        "xp_level_basis": "min_player_content",
+        "xp_apply_level_difference": true,
         "daily": {
             "id": "contract_chest_daily",
             "name_fr": "Coffre du jour",
