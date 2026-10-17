@@ -1185,6 +1185,114 @@ def validate_achievements(db: Path) -> list:
     return errors
 
 
+# --- Quest engine contract (lot 0, 2026-10-17) --------------------------------
+# Mirrors the load rules of services/quest (it refuses to start on any of these),
+# so a data commit fails here first. world/quests.json _meta.engine_contract is the doc.
+QUEST_GRANTED_REWARD_KEYS = {"xp", "gold", "items", "item_choices", "title"}
+QUEST_EVENT_KINDS = {"fissure_invasion"}
+_UTC_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+
+
+def _npc_entries(db: Path) -> list:
+    data = load_json(db / "entities" / "npcs.json")
+    out = []
+    for key, val in data.items():
+        if key.startswith("_") or not isinstance(val, list):
+            continue
+        out.extend(n for n in val if isinstance(n, dict) and n.get("id"))
+    return out
+
+
+def _flag_list(owner: str, obj: dict, key: str, errors: list) -> list:
+    if key not in obj:
+        return []
+    val = obj[key]
+    if not isinstance(val, list) or not all(isinstance(f, str) and f for f in val):
+        errors.append(f"{owner} : {key} doit etre une liste de chaines non vides")
+        return []
+    return val
+
+
+def validate_quest_engine(db: Path, all_item_ids: set) -> list:
+    """world/quests.json + entities/npcs.json : regles de chargement du service de quetes."""
+    errors = []
+    quests = load_json(db / "world" / "quests.json").get("quests", [])
+    npcs = _npc_entries(db)
+    npc_ids = {n["id"] for n in npcs}
+    monsters = load_json(db / "entities" / "monsters.json").get("monsters", [])
+    monster_ids = {m["id"] for m in monsters} if isinstance(monsters, list) else set(monsters)
+    cosmetics = load_json(db / "ui" / "cosmetics.json").get("cosmetics", [])
+    grant_titles = {c["id"] for c in cosmetics
+                    if c.get("type") == "title" and c.get("acquisition") == "grant"}
+
+    produced = set()
+    wanted = []  # (owner, flag)
+    for q in quests:
+        qid = q.get("id", "?")
+        owner = f"[quests.json] '{qid}'"
+        if "auto_accept_on_level" in q:
+            errors.append(f"{owner} : auto_accept_on_level n'existe pas, utiliser auto_accept_at_min_level")
+        if "parked" in q and not isinstance(q["parked"], bool):
+            errors.append(f"{owner} : parked doit etre un booleen")
+        rewards = q.get("rewards", {})
+        for k in rewards:
+            if not k.startswith("_") and k not in QUEST_GRANTED_REWARD_KEYS:
+                errors.append(f"{owner} : recompense '{k}' jamais versee par le serveur "
+                              f"(versees : {sorted(QUEST_GRANTED_REWARD_KEYS)} ; sinon '_not_granted')")
+        if "title" in rewards and rewards["title"] not in grant_titles:
+            errors.append(f"{owner} : titre '{rewards['title']}' absent de ui/cosmetics.json "
+                          f"ou non octroyable (acquisition 'grant')")
+        window = []
+        for k in ("available_from", "available_until"):
+            if k in q:
+                if not isinstance(q[k], str) or not _UTC_RE.match(q[k]):
+                    errors.append(f"{owner} : {k} doit etre une date UTC 'AAAA-MM-JJTHH:MM:SSZ'")
+                else:
+                    window.append(q[k])
+        if len(window) == 2 and window[0] >= window[1]:
+            errors.append(f"{owner} : available_from doit preceder available_until")
+        for obj in q.get("objectives", []):
+            t = obj.get("template")
+            if t == "deliver_item":
+                if obj.get("npc_id") not in npc_ids:
+                    errors.append(f"{owner} : deliver_item vers un PNJ inconnu '{obj.get('npc_id')}'")
+                if obj.get("item_id") not in all_item_ids:
+                    errors.append(f"{owner} : deliver_item d'un objet inconnu '{obj.get('item_id')}'")
+                if not isinstance(obj.get("count"), int) or obj["count"] < 1:
+                    errors.append(f"{owner} : deliver_item exige un count entier >= 1")
+            elif t == "take_part_in_event":
+                if obj.get("event") not in QUEST_EVENT_KINDS:
+                    errors.append(f"{owner} : take_part_in_event, event '{obj.get('event')}' inconnu "
+                                  f"(connus : {sorted(QUEST_EVENT_KINDS)})")
+            elif t == "defeat_boss":
+                boss = obj.get("boss", obj.get("boss_mob_id"))
+                if boss not in monster_ids:
+                    errors.append(f"{owner} : defeat_boss vers un monstre inconnu '{boss}'")
+        entries = []
+        if isinstance(q.get("moral_choice"), dict):
+            entries.append(("", q["moral_choice"]))
+        for c in q.get("moral_choices", []) or []:
+            if isinstance(c, dict):
+                entries.append((c.get("id", ""), c))
+        for cid, c in entries:
+            for key in ("a", "b"):
+                opt = c.get(f"choice_{key}", {})
+                produced.add(f"moral:{qid}:" + (f"{cid}:" if cid else "") + key)
+                produced.update(_flag_list(f"{owner} choice_{key}", opt, "sets_flags", errors))
+                if ("outcome_fr" in opt) != ("outcome_en" in opt):
+                    errors.append(f"{owner} choice_{key} : outcome_fr et outcome_en vont ensemble")
+        for key in ("requires_flags", "forbids_flags"):
+            wanted += [(owner, f) for f in _flag_list(owner, q, key, errors)]
+    for n in npcs:
+        owner = f"[npcs.json] '{n['id']}'"
+        for key in ("requires_flags", "forbids_flags"):
+            wanted += [(owner, f) for f in _flag_list(owner, n, key, errors)]
+    for owner, flag in wanted:
+        if flag not in produced:
+            errors.append(f"{owner} : drapeau '{flag}' pose par aucun choix de world/quests.json")
+    return errors
+
+
 def validate_zone_chests(db: Path, all_item_ids: set) -> list:
     """world/zone_chests.json : objets existants, zones connues, rangs 1..5 complets."""
     errors = []
@@ -2400,6 +2508,11 @@ def main():
 
     print("[12/12] Validating achievements (engine sources, grant titles, quests)...")
     errs = validate_achievements(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12q/12] Validating the quest engine contract (writers, rewards, flags, windows)...")
+    errs = validate_quest_engine(db, all_item_ids)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
