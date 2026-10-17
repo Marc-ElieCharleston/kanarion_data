@@ -9,7 +9,7 @@
   },
   "formula": {
     "_comment": "Formule reelle, relevee dans server-combat/src/loot/loot_roller.cpp:98-122. Elle fait autorite : tout lecteur doit appliquer ces facteurs, dans cet ordre, avec ce cap et cet arrondi.",
-    "xp": "round( base_xp_pour_niveau(niveau_mob) * mult_threat_tier * PRODUIT(familles.xp) * (1 - penalite_ecart_niveau) )",
+    "xp": "round( base_xp_pour_niveau(niveau_mob) * mult_threat_tier * PRODUIT(familles.xp) * (1 - penalite_ecart_niveau) )   [PRODUIT(familles.xp) inclut room_level_gap : x0.25 pour un joueur porte par un plus haut niveau de la salle]",
     "gold": "max(1, or_base_par_niveau(niveau_mob) * gold_weight_du_monstre * variance * PRODUIT(familles.gold) * (1 - penalite_ecart_niveau) )   [or_base_par_niveau = curve_base + curve_coef * niveau ^ curve_exponent, voir base_gold]",
     "drop_chance": "chance_de_base_item * PRODUIT(familles.drop_chance)   [PAS de penalite d'ecart de niveau : un mob drop ce qu'il drop, quel que soit le niveau de qui le tue]",
     "rarity_boost": "SOMME(familles.rarity_boost)",
@@ -24,7 +24,8 @@
       "act_progression",
       "group_size",
       "events",
-      "guild_level"
+      "guild_level",
+      "room_level_gap"
     ]
   },
   "inputs_declared_elsewhere": {
@@ -294,6 +295,18 @@
         }
       },
       "_no_producer_yet": "DECLAREE, PAS ENCORE ALIMENTEE. Aucun producteur n'ecrit d'evenement actif dans le contexte de loot aujourd'hui : event_xp_mult / event_gold_mult / event_drop_mult valent 1.0 en permanence. La famille existe pour que le cablage n'ait rien a inventer, mais tant qu'aucun service ne pousse d'evenement, elle est neutre. Ne pas la lire comme une regle appliquee."
+    },
+    "room_level_gap": {
+      "description": "Anti power-leveling (2026-10-17). Dans une salle de combat, si le plus haut niveau de JOUEUR present depasse le niveau d'un joueur de plus de max_level_gap, l'XP de combat de ce joueur est multipliee par values.carried.xp. Les familiers et mercenaires ne comptent pas (leur niveau suit celui de leur maitre). L'or et le butin ne sont pas touches.",
+      "why": "L'aggro des monstres du monde (config/monster_aggro.json) empeche un bas niveau de TRAVERSER une zone haute, mais pas de se faire porter en groupe : le joueur niveau 1 invite par un niveau 60 prenait environ 4 niveaux par combat, car chaque joueur recoit toute l'XP du pack et l'ecart de niveau ne penalise que le joueur trop HAUT (level_difference). Cette famille est la penalite symetrique, vers le bas.",
+      "applies_to": "Tous les ecrivains d'XP de combat de server-combat (LootRoller::roll_loot, via LootContext.room_max_player_level) : victoire PvE, joueurs morts pendant le combat, chemin publish_combat_results. PAS les quetes, contrats ni l'arene (un autre lot).",
+      "_a_valider": "max_level_gap 10 et le facteur 0.25 sont des PROPOSITIONS, a valider par Charleston.",
+      "max_level_gap": 10,
+      "values": {
+        "carried": {
+          "xp": 0.25
+        }
+      }
     }
   },
   "level_difference": {

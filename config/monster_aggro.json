@@ -1,0 +1,92 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-10-17",
+    "schema_version": 1,
+    "description": "Proprietaire UNIQUE des regles d'aggro des monstres du MONDE (hors combat) : qui engage qui, a quelle distance, combien de temps avant l'engagement, et les protections. Le temperament d'une espece reste dans entities/monsters.json (aggro_type : passive | neutral | aggressive) ; tout le reste vit ici. Lu par kanarion_back services/presence (aggro_rules). Le serveur decide seul : le client recoit aggro_for_viewer / aggro_radius_px dans MonsterInstance et les pushes AGGRO_ALERT / AGGRO_CANCELLED, il n'en calcule rien.",
+    "why": "Demande de Charleston (2026-10-17) : un joueur niveau 1 ne doit plus traverser une zone niveau 10 pour se faire porter, et un niveau 30 ne doit plus pouvoir entrer dans les zones 60+. Variante proposee, validee le 17/10, puis rayon renforce selon l'ecart de niveau le meme jour. Avant ce fichier, deux sources se contredisaient : aggro_type sur 227 monstres et is_aggressive / aggro_range sur 6, et c'etait le CLIENT qui declenchait l'aggro (AggroArea 150 px puis AGGRO_TRIGGER 0x0214).",
+    "a_valider": "TOUTES les valeurs de ce fichier sont des propositions a valider par Charleston apres playtest (seuils, rayons, delais, immunites, plafonds)."
+  },
+  "enabled": true,
+  "_enabled_note": "Interrupteur general. false = aucune aggro serveur, les noms ne passent jamais au rouge (aggro_for_viewer=false partout). Le service presence relit ce fichier au demarrage.",
+  "enabled_zones": ["village"],
+  "_enabled_zones_note": "Zones du monde ou l'aggro tourne. village = Havreden (monde ouvert). Les etages de donjon, la taverne, le tutoriel et les expeditions n'en ont pas tant qu'on ne les ajoute pas ici. A valider.",
+  "triggers": {
+    "_comment": "ecart = niveau du groupe (niveau des monstres du pack) - niveau du joueur evalue. Le niveau est INDIVIDUEL : seul le joueur qui declenche est engage, ses allies recoivent l'invitation habituelle (PARTY_COMBAT_ENTERED), personne n'est aspire d'office.",
+    "level_gap_min": 7,
+    "_level_gap_min_note": "Un groupe engage tout joueur qu'il depasse d'au moins ce nombre de niveaux (sauf temperament passive).",
+    "star_min": 4,
+    "_star_min_note": "Un groupe d'au moins ce nombre d'etoiles engage (sauf passive)...",
+    "star_max_player_overlevel": 5,
+    "_star_max_player_overlevel_note": "... sauf un joueur qui le depasse de PLUS de ce nombre de niveaux.",
+    "aggressive_max_player_overlevel": 5,
+    "_aggressive_note": "aggro_type aggressive : engage aussi tant que le joueur n'a pas plus de ce nombre de niveaux de plus que le groupe, avec un rayon reduit (aggressive_radius_factor).",
+    "aggressive_radius_factor": 0.75,
+    "_temperament_note": "passive n'engage jamais. neutral n'engage que par l'ecart de niveau ou les etoiles. Le temperament du groupe est celui de son chef (le monstre visible)."
+  },
+  "radius": {
+    "_comment": "Rayon R en px MONDE, mesure au sol depuis le point d'origine du groupe (sa position de spawn), en ellipse isometrique : distance = sqrt(dx^2 + (dy * geometry.iso_y_scale)^2). R est donc la demi-largeur du disque au sol ; sa demi-hauteur a l'ecran vaut R / iso_y_scale.",
+    "tier_base_px": {
+      "fodder": 96,
+      "standard": 128,
+      "tough": 160,
+      "elite": 192,
+      "boss": 224
+    },
+    "_tier_note": "Le groupe prend le palier de son membre le plus fort (threat_tier de entities/monsters.json).",
+    "star_bonus_from": 2,
+    "star_bonus_px_per_star": 16,
+    "_star_note": "+16 px par etoile au-dela de 2 (3 etoiles = +16, 5 etoiles = +48).",
+    "gap_bonus_px_per_level": 8,
+    "_gap_bonus_note": "+8 px par niveau d'ecart au-dela de triggers.level_gap_min (ecart 7 = +0, ecart 14 = +56).",
+    "near_cap_px": 288,
+    "_near_cap_note": "Plafond du rayon 'de base' (palier + etoiles + bonus d'ecart). Les paliers de gap_curve ci-dessous peuvent le depasser.",
+    "gap_curve": [
+      { "gap": 15, "radius_px": 300 },
+      { "gap": 24, "radius_px": 450 },
+      { "gap": 25, "radius_px": 640 }
+    ],
+    "_gap_curve_note": "Plancher de rayon selon l'ecart (demande de Charleston : plus l'ecart est grand, plus le groupe repere de loin). Interpolation lineaire entre deux points, plat apres le dernier, rien avant le premier. Rayon final = max(rayon de base plafonne a near_cap_px, plancher de la courbe). Ecart 15 a 24 : de 300 a 450 px, soit la demi-largeur visible au zoom par defaut (1920 / 2 / config/game.json camera.default_zoom 2.0 = 480 px). Ecart 25 et plus : 640 px, presque tout l'ecran (demi-hauteur au sol 640 / 2.133 = 300 px pour 270 visibles). Un repere hors champ est voulu a grand ecart : le client affiche alors un indicateur au bord de l'ecran.",
+    "max_px": 640,
+    "_max_note": "Plafond absolu. Le serveur borne sa recherche de groupes a ce rayon (cout du tick)."
+  },
+  "engagement": {
+    "_comment": "Une fois repere (alerte « ! »), le joueur a detect_ms pour sortir de leash_factor x R. Sinon le groupe l'engage (ATTACK_ACK success, comme un clic). Les valeurs dependent de l'ecart : repere plus court et poursuite plus longue quand l'ecart est grand. La premiere bande dont gap_min <= ecart s'applique, en partant de la plus haute ; un engagement par etoiles ou par temperament aggressive (ecart < level_gap_min) prend la bande 'default'.",
+    "bands": [
+      { "gap_min": 25, "detect_ms": 500, "leash_factor": 2.5 },
+      { "gap_min": 15, "detect_ms": 800, "leash_factor": 2.0 },
+      { "gap_min": 7, "detect_ms": 1200, "leash_factor": 1.5 }
+    ],
+    "default": { "detect_ms": 1200, "leash_factor": 1.5 },
+    "recheck_ms": 6000,
+    "_recheck_note": "Apres une alerte annulee (fuite, engagement refuse), le meme couple groupe / joueur ne peut pas se re-declencher avant ce delai.",
+    "max_pending_alerts_per_player": 1,
+    "max_engagements_per_zone_per_second": 5,
+    "_rate_note": "Plafond d'engagements par zone et par seconde : au-dela, l'alerte attend le tick suivant. Protege presence et combat d'une rafale (creation de salle).",
+    "tick_ms": 250,
+    "engage_queue_capacity": 64,
+    "_queue_note": "File bornee des engagements en attente de creation de salle (le thread de presence ne bloque plus sur CREATE_ROOM). Pleine = l'alerte reste en attente."
+  },
+  "immunities_ms": {
+    "after_combat": 8000,
+    "_after_combat_note": "Apres une sortie de combat (victoire). Une defaite enchaine sur la reapparition ci-dessous.",
+    "after_respawn": 20000,
+    "after_zone_entry": 10000,
+    "_after_zone_entry_note": "Entree de zone, connexion et reconnexion passent toutes par JOIN_ZONE."
+  },
+  "protections": {
+    "_comment": "Jamais d'aggro : joueur dans zones.json safe_polygon ou dans une no_aggro_areas de sa zone, deja en combat ou en train d'y entrer, phase de deplacement autre que NORMAL, en attente de reapparition, spectateur d'un combat, drapeau admin aggro_immune. Un joueur dans un menu ou un dialogue PNJ (IN_MENU) est protege tant qu'il ne bouge pas ; un joueur AFK ne l'est PAS (sinon on traverse en AFK).",
+    "in_menu_protects": true,
+    "afk_protects": false
+  },
+  "geometry": {
+    "iso_y_scale": 2.133,
+    "_iso_note": "Tuiles 64 x 30 (havreden_terrain_v2) : un pas vertical a l'ecran vaut 64 / 30 = 2.133 pas au sol.",
+    "index_cell_px": 768,
+    "_index_note": "Taille de cellule de l'index des groupes par cellule (comme l'aoi_cell_size du village). Une requete ne lit que les cellules qui recouvrent radius.max_px autour du joueur.",
+    "require_inside_area_limit": true,
+    "_area_limit_note": "Un groupe hors de zones.json area_limit (hors de la carte jouable) n'engage jamais.",
+    "excluded_spawn_areas": [],
+    "_excluded_note": "Aires de spawn (spawn_areas id) dont les groupes n'engagent jamais, par exemple une aire posee sous une partie de carte pas encore peinte. Vide au 2026-10-17 : le sol de havreden_map.tscn est peint jusqu'a y = 16665 et couvre les 21 aires du village (les 7 anciennes poches 48-100 sous la carte, pocket_sud_approche_2 et pocket_faille_1..5, n'existent plus)."
+  }
+}
