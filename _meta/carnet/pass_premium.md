@@ -13,10 +13,12 @@ Source unique : `systems/premium.json` (`tiers`, `benefits`, `offer`, `planned`)
 | Téléportation | gratuite | gratuite |
 | Marchands PNJ | −10 % | −15 % |
 | Diamants reversés à l'achat | 0 | 300 |
+| Places de sac / banque en plus | 0 | +10 / +20 |
 
 Achat en jeu aux diamants, cumulable (les jours Premium déjà payés passent après les jours Premium+),
 réserve plafonnée à 365 jours, comptes invités refusés. Règle inchangée : rien en combat.
 2026-10-17 (retour Charleston) : ×3 jugé énorme, Premium+ revient à ×2 ; ce qui le différencie de plus reste à choisir par Charleston.
+Puis : « emplacements de sac et de banque, c'est pas mal pour commencer » : Premium+ donne +10 places de sac et +20 de banque (à valider). À l'expiration rien n'est perdu : on peut retirer, plus ajouter tant que le total dépasse la capacité, et le joueur n'est jamais bloqué en déplacement par ces objets.
 Pas encore branchés donc **non affichés** : clé de donjon hebdomadaire, reset d'arbre de passifs,
 relance de contrat, cosmétique d'abonné (`planned`).
 Le `battle_pass` de `boutique.json` n'existe plus : le fichier a été supprimé (commit `0db6b30`).
