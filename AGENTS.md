@@ -37,7 +37,7 @@ Validation happens at three levels:
 
 - **`_meta/`** — Version info (`version.json`), roadmap (`ROADMAP.md`), ideas backlog, 15 design suggestions in `suggestions/`
 - **`classes/`** — 6 base classes (warrior, mage, healer, archer, rogue, artisan), each with `skills.json` and `passives.json`. Also `common_passives.json` (10 universal passives) and `_classes_index.json` (6 classes x 4 subclasses x 2 tier3 = 48 tier3 specs)
-- **`combat/`** — Targeting system (`targeting.json`), LoS mechanics, ability ideas. Le plateau courant est un **10x6** ; les grilles nommees de `targeting.json` sont ecrites a la main et toute grille absente retombe sur les dimensions de `config/game.json`
+- **`combat/`** — Targeting system (`targeting.json`), LoS mechanics, ability ideas. Le plateau courant est un **12x6** ; les grilles nommees de `targeting.json` sont ecrites a la main et toute grille absente retombe sur les dimensions de `config/game.json`
 - **`config/`** — Combat formulas (`combat.json`), game constants (`game.json`), monster AI (`monster_ai.json`), skill system (`skill_system.json`), role tags (`roles.json`), monster skill scaling, **monster scaling model (`monster_scaling_model.json`: derived-stats architecture — see Monster Structure)**
 - **`entities/`** — Monsters (`monsters.json`), NPCs, boss mechanics, summons (`summons.json`: max 6/team), monster variants, healer/support monsters
 - **`items/`** — Equipment (10 slots, 5 rarities, T1-T5 scaling), consumables, materials, affixes, panoplies (25 sets with intentional Hebrew names), loot tables, currencies, substat crafting system
@@ -119,16 +119,16 @@ Players choose a faction at level 60. Subclass lore must NOT lock players into a
 ### Portée d un sort
 
 La portée est portée par le PERSONNAGE, pas par le sort : `config/roles.json` `base_range`, en
-distance Manhattan sur le plateau 10x6 (diagonale = 2). Un sort sans champ `range` hérite du
+distance Manhattan sur le plateau 12x6 (diagonale = 2). Un sort sans champ `range` hérite du
 `base_range` de son lanceur. Un `range` explicite est une dérogation, volontairement rare.
 
 Échelle : 2 (warrior et rogue et leurs sous-classes, martyr, blacksmith) | 3 (spellblade, artisan,
 alchemist, chef, musician) | 4 (mage et healer et leurs sous-classes hors martyr) | 5 (archer et
-ses sous-classes). Depuis le rang 5, cela couvre respectivement 4, 9, 15 et 21 des 30 cases
-ennemies.
+ses sous-classes). Depuis le rang de front, cela couvre respectivement 4, 9, 15 et 21 des 36 cases
+ennemies du 12x6. Les portées n'ont pas été montées avec la grille (décision 2026-10-17) : on peut fuir.
 
 Deux règles du moteur : une zone SANS `range` explicite est placée à `max(base_range, 5)`
-(plancher AOE), et les sorts bénéfiques sur allié sautent entièrement le test de portée.
+(plancher AOE, `config/game.json` `combat_reach.aoe_placement_floor`), et les sorts bénéfiques sur allié sautent entièrement le test de portée.
 
 Nova centrée sur le lanceur : `target: self_and_enemies` (ou un texte disant « autour d elle » en
 parlant du lanceur) doit porter `range: 0`. En revanche `target: allies` avec une cible désignée
@@ -285,7 +285,8 @@ Trois familles, trois rôles : le **classique** à gros jet est la référence ;
 **Stats mortes interdites dans la data lootable** : `def` plat (aucune mitigation depuis le modèle de défense B, remplacé par `armor`) et `hit` (sans effet au-dessus de 100 de précision). Gardes : `FightLootTest.NoDeadStatInLootableItemData`, `NoDeadStatInAnySetBonus`, economy `StatKeyInvariant.NoDeadDefOrHitInLootableData`.
 
 ### Combat System
-- **Grid:** 10x6 — 10 rangs de 6 colonnes, soit 5 rangs et 30 cases par equipe. rows/cols sont serveur-autoritaires et envoyes au ROOM_JOINED ; `config/game.json` `combat_grids` ne sert qu'a amorcer le client
+- **Grid:** 12x6 (depuis le 2026-10-17, tous les modes) : 12 rangs de 6 colonnes, soit 6 rangs et 36 cases par equipe. rows/cols sont serveur-autoritaires (le serveur lit `config/game.json` `combat_grids.default`) et envoyes au ROOM_JOINED
+- **Sorts « toute la carte » retires** (2026-10-17) : un sort hostile pose une zone `rect_4x4` / `rect_5x5` ; seuls les buffs et soins purement allies gardent le motif `all`.
 - **Rows:** front, mid_front, mid_back, back (positioning matters for tanks/healers)
 - **Type:** Real-time with 2.0s Global Cooldown (GCD), drag-and-drop targeting
 - **Line of Sight (LoS):** Auto-attacks blocked if target has units in front (same column on target's grid)

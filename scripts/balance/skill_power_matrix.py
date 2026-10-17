@@ -43,6 +43,7 @@ CDR_CAP = load("stats/definitions.json")["stats"]["special"]["cooldown_reduction
 REF = M["reference"]
 REF_DPS = REF["reference_hit_percent"] / GCD          # points per second of an ordinary action
 GRID = GAME["combat_grids"]["available"][GAME["combat_grids"]["default"]]
+AOE_FLOOR = GAME["combat_reach"]["aoe_placement_floor"]   # owner: game.json, read by the server too
 SIDE_ROWS, COLS = GRID["rows"] // 2, GRID["cols"]
 SKILL_BAR = GAME["skill_bar"]["slots_count"]
 RANKS = range(1, S.MAX_RANK + 1)
@@ -144,7 +145,7 @@ def reach_factor(s):
     rng = s.get("range", -1)
     if rng == 0:
         return 1.0
-    placement = rng if rng > 0 else (max(br, R["aoe_range_floor"]) if s["pattern"] != "single" else br)
+    placement = rng if rng > 0 else (max(br, AOE_FLOOR) if s["pattern"] != "single" else br)
     f = (reach(placement) / reach(br)) ** R["exponent"]
     t = s.get("targeting") or {}
     p = PATTERNS.get(s["pattern"], {})
@@ -712,7 +713,7 @@ def report(data):
     print(f"\n### 5. Novas centrees sur le lanceur posees au plancher de zone "
           f"(target self_and_enemies sans range 0) : {len(nova)}\n")
     for r in nova:
-        print(f"- {r['id']} : posee a max(base_range, {M['reach']['aoe_range_floor']}), "
+        print(f"- {r['id']} : posee a max(base_range, {AOE_FLOOR}), "
               f"facteur de portee x{r['reach_factor']:g}, {p1(r):.0f} pts")
     print("\n### 6. Champs morts cote serveur encore presents dans la data\n")
     for f in M["server_dead_fields"]["fields"]:

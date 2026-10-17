@@ -121,9 +121,9 @@
   },
   "combat_camera": {
     "_comment": "Combat-specific camera (more restrictive zoom)",
-    "_scale_note": "Board unifie fronts-colles, dims SERVEUR-AUTORITAIRES via ROOM_JOINED (grid_rows/grid_cols). Actuel 10x6. Axes iso axis_col 64/30, axis_row -64/30 (case 128x60 = 2x2 tuiles terrain_v2) — les 68/34 cites ici jusqu'au 2026-08-14 etaient perimes. min_zoom EGALE default_zoom : on ne dezoome PAS en dessous du cadrage nominal, sinon les personnages deviennent trop petits pour se lire sur un sol texture. default_zoom 1.8 cadre le 10x6 en 1920x1080 (1024x480 de plateau -> 1843x864 a l'ecran). A REAJUSTER si le board grandit : un 14x8 deborderait a cette valeur.",
-    "default_zoom": 1.8,
-    "min_zoom": 1.8,
+    "_scale_note": "Board unifie fronts-colles, dims SERVEUR-AUTORITAIRES via ROOM_JOINED (grid_rows/grid_cols). Actuel 12x6 (2026-10-17). Case 128x64 (axes 64/32, voir combat_grids.layout) : le plateau couvre (rows+cols) x 64 de large sur (rows+cols) x 32 de haut, soit 1152x576 pour le 12x6. min_zoom EGALE default_zoom : on ne dezoome PAS en dessous du cadrage nominal, sinon les personnages deviennent trop petits pour se lire sur un sol texture. default_zoom 1.6 cadre le 12x6 en 1920x1080 (1152x576 de plateau -> 1843x922 a l'ecran, la meme emprise que l'ancien 10x6 a 1.8). A REAJUSTER si le board grandit. Mobile : ce zoom n'est pas lu, combat_arena.gd _fit_mobile_grid ajuste a l'emprise mesuree.",
+    "default_zoom": 1.6,
+    "min_zoom": 1.6,
     "max_zoom": 3.0,
     "screen_offset_y": 42.0,
     "zoom_step": 0.2,
@@ -151,24 +151,24 @@
     "slots_per_row": 4
   },
   "combat_grids": {
-    "_comment": "Grille unifiee 10x6 : l'id se lit RANGS x COLONNES, soit 10 rangs de 6 colonnes = 5 rangs et 30 slots par equipe, 60 cases au total. SOURCE UNIQUE : 'default' + 'available'. Les cles 'usage' (par contexte) et 'notes' ont ete retirees le 2026-08-14 : elles annoncaient encore 4x5 alors que default valait deja 10x6, et personne ne les lisait. rows/cols sont SERVEUR-AUTORITAIRES et envoyes au ROOM_JOINED ; cette entree ne sert qu'au boot client avant la premiere reponse serveur. Un 12x6 est prevu.",
-    "default": "10x6",
+    "_comment": "Grille unifiee 12x6 (2026-10-17, decision Charleston : tous les modes) : l'id se lit RANGS x COLONNES, soit 12 rangs de 6 colonnes = 6 rangs et 36 slots par equipe, 72 cases au total. SOURCE UNIQUE : 'default' + 'available'. rows/cols sont SERVEUR-AUTORITAIRES : le serveur lit 'default' (combat_host.cpp) et l'envoie au ROOM_JOINED ; cote client cette entree ne sert qu'au boot avant la premiere reponse serveur. L'ancien 10x6 n'est plus declare : un banc qui en a besoin passe par le chemin grille runtime (CombatGridConfig.register_runtime_grid).",
+    "default": "12x6",
     "available": {
-      "10x6": {
-        "rows": 10,
+      "12x6": {
+        "rows": 12,
         "cols": 6,
-        "total_slots": 30,
-        "description": "Unified board (10 rows total = 5 per team, 6 cols) - server authoritative"
+        "total_slots": 36,
+        "description": "Unified board (12 rows total = 6 per team, 6 cols) - server authoritative. total_slots = capacite d'UNE equipe."
       }
     },
     "layout": {
-      "_comment": "Board iso unifie FRONTS-COLLES (Canaan-style): un seul lattice continu, single origin + single axis pair, AUCUNE rangee vide au milieu (le no man's land du modele pre-0.7.0.0 est mort). Les deux equipes se plient sur le meme board: ennemi = rangs [0, rows/2) (front = rows/2 - 1, rendu HAUT de l'ecran / loin de la camera), joueur = rangs [rows/2, rows) (front = rows/2, rendu BAS pres de la camera), fronts adjacents colles au centre. rows/cols = SERVEUR-AUTORITAIRES (ROOM_JOINED), actuel 10x6. Colonnes ennemies MIRRORED (vcol = (cols-1)-logical_col) pour que l'axe colonne partage reproduise la distance cross-team serveur.",
+      "_comment": "Board iso unifie FRONTS-COLLES (Canaan-style): un seul lattice continu, single origin + single axis pair, AUCUNE rangee vide au milieu (le no man's land du modele pre-0.7.0.0 est mort). Les deux equipes se plient sur le meme board: ennemi = rangs [0, rows/2) (front = rows/2 - 1, rendu HAUT de l'ecran / loin de la camera), joueur = rangs [rows/2, rows) (front = rows/2, rendu BAS pres de la camera), fronts adjacents colles au centre. rows/cols = SERVEUR-AUTORITAIRES (ROOM_JOINED), actuel 12x6. Colonnes ennemies MIRRORED (vcol = (cols-1)-logical_col) pour que l'axe colonne partage reproduise la distance cross-team serveur.",
       "_formula": "pos(row, col) = origin + (col - (cols-1)/2)*axis_col + (row - (rows-1)/2)*axis_row (centrage sur le board complet). row absolu = index de rang serveur (0 = fond ennemi en haut, rows-1 = fond joueur en bas), col absolu. board_cell_to_screen (layout_projection.gd) applique cette formule directement: PAS de fold, PAS de gap.",
-      "_scale_note": "Clean iso 2:1 axes (symmetric same-length pair, diamonds 136x68 matching the 2:1 foot ellipses). Orientation fixed 2026-07-22: axis_col down-right (68,34), axis_row down-LEFT (-68,34) so rising row advances toward the bottom of the screen -> PLAYER team (high rows) renders at the bottom near the camera, ENEMY (low rows) at the top. board_rows/board_cols DERIVED AT RUNTIME from the server grid dims (CombatGrid.rows/cols via ROOM_JOINED) in layout_projection.gd; the values below are documentation of the CURRENT server default only. Combat camera default_zoom = 1.25 (board 10x6, recalcule depuis 8x5@1.6).",
-      "board_rows": 10,
+      "_scale_note": "Axes iso 2:1, voir _axis_comment (case 128x64). Orientation fixed 2026-07-22: axis_col down-right, axis_row down-LEFT so rising row advances toward the bottom of the screen -> PLAYER team (high rows) renders at the bottom near the camera, ENEMY (low rows) at the top. board_rows/board_cols DERIVED AT RUNTIME from the server grid dims (CombatGrid.rows/cols via ROOM_JOINED) in layout_projection.gd; the values below are documentation of the CURRENT server default only. Zoom de combat : voir combat_camera.",
+      "board_rows": 12,
       "board_cols": 6,
       "_middle_row_note": "Legacy: plus de rangee vide. Le pli est entre le rang rows/2-1 (front ennemi) et rows/2 (front joueur), fronts colles.",
-      "middle_row": 5,
+      "middle_row": 6,
       "origin": {
         "x": 0,
         "y": 0
@@ -183,6 +183,13 @@
         "y": 32
       }
     }
+  },
+  "combat_reach": {
+    "_comment": "Regles de portee lues par le moteur (server-combat grid_distance.hpp, injectees par CombatHost comme les dims de grille) et par scripts/balance/skill_power_matrix.py. Distances Manhattan sur le plateau (diagonale = 2). La portee de chaque classe vit dans config/roles.json base_range ; celle des monstres vient de leur ai_role.",
+    "default_base_range": 5,
+    "_default_base_range_note": "Portee d'une entite sans portee propre (role inconnu, monstre soutien ou lanceur). Ancien 5 code en dur dans grid_distance.hpp et RangeComponent.",
+    "aoe_placement_floor": 5,
+    "_aoe_placement_floor_note": "Une zone SANS range explicite est posee a max(base_range, aoe_placement_floor). Ancien kAoePlacementFloor code en dur. Inchange au passage au 12x6 : on ne monte pas les portees (decision 2026-10-17)."
   },
   "chat_channels": {
     "world": {
