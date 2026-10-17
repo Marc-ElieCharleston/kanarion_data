@@ -1,4 +1,26 @@
-# Pass premium (abonnement) — décisions du 2026-10-13
+# Pass premium (abonnement)
+
+## 2026-10-17 : deux niveaux (remplace le pass unique ci-dessous)
+
+Demande de Charleston : **Premium ≈ 10 €** et **Premium+ ≈ 16 €**, prix d'exemple à garder en data.
+Source unique : `systems/premium.json` (`tiers`, `benefits`, `offer`, `planned`). Valeurs à valider.
+
+| | Premium | Premium+ |
+|---|---|---|
+| Prix | 1000 diamants | 1600 diamants |
+| Durée | 30 jours | 30 jours |
+| Régénération hors combat (perso et familier) | ×2 | ×3 |
+| Téléportation | gratuite | gratuite |
+| Marchands PNJ | −10 % | −15 % |
+| Diamants reversés à l'achat | 0 | 300 |
+
+Achat en jeu aux diamants, cumulable (les jours Premium déjà payés passent après les jours Premium+),
+réserve plafonnée à 365 jours, comptes invités refusés. Règle inchangée : rien en combat.
+Pas encore branchés donc **non affichés** : clé de donjon hebdomadaire, reset d'arbre de passifs,
+relance de contrat, cosmétique d'abonné (`planned`).
+Le `battle_pass` de `boutique.json` n'existe plus : le fichier a été supprimé (commit `0db6b30`).
+
+## Décisions du 2026-10-13 (historique)
 
 Modèle **Dofus** : jeu ouvert et illimité pour tous, **un seul pass** mensuel (prix de l'abonnement Dofus, ~5-6 €/mois).
 Règle : **aucune stat, aucun bonus en combat, aucun contenu fermé aux non-abonnés**. Le pass fait gagner du temps et du confort.
