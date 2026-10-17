@@ -1,0 +1,56 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-10-17",
+    "description": "Produits vendus par les boutiques des plateformes (Google Play Billing pour l'instant). Source unique de ce qu'un achat VERIFIE par le serveur octroie. Aucun prix ici : le prix est celui de la boutique (Play Console, prix locaux TTC), l'appli affiche le prix que Play lui donne. Ne jamais ecrire dans le client qu'un autre canal est moins cher (politique Play).",
+    "rule": "le client ne credite jamais rien : il transmet le jeton d'achat, economy le verifie aupres de Google, octroie, puis consomme",
+    "readers": {
+      "google_play.products": "economy, PlayBillingService : un achat dont le product_id n'est pas ici, ou enabled=false, est refuse (fail-closed). Le client n'affiche que les produits enabled.",
+      "google_play.products.<id>.grant.type": "premium = periode du pass (systems/premium.json, meme cumul et meme reserve que l'achat aux diamants, avec ses diamants reverses) ; diamonds = credit de accounts.diamonds.",
+      "google_play.products.<id>.grant.tier": "type premium : identifiant de niveau de systems/premium.json (premium | premium_plus).",
+      "google_play.products.<id>.grant.amount": "type diamonds : nombre de diamants credites.",
+      "google_play.products.<id>.enabled": "false = produit pas encore cree dans Play Console, ou retire de la vente. Un achat deja octroye reste octroye ; un remboursement reste repris.",
+      "google_play.products.<id>.order": "ordre d'affichage cote client."
+    },
+    "console": "Chaque identifiant doit exister a l'identique dans Play Console (Monetiser > Produits integres, produit ponctuel consommable). Un identifiant Play est definitif et ne se reutilise jamais."
+  },
+  "google_play": {
+    "products": {
+      "premium_30d": {
+        "enabled": true,
+        "order": 1,
+        "grant": { "type": "premium", "tier": "premium" },
+        "name_fr": "Premium (30 jours)",
+        "name_en": "Premium (30 days)"
+      },
+      "premium_plus_30d": {
+        "enabled": true,
+        "order": 2,
+        "grant": { "type": "premium", "tier": "premium_plus" },
+        "name_fr": "Premium+ (30 jours)",
+        "name_en": "Premium+ (30 days)"
+      },
+      "diamonds_500": {
+        "enabled": false,
+        "order": 10,
+        "grant": { "type": "diamonds", "amount": 500 },
+        "name_fr": "500 diamants",
+        "name_en": "500 diamonds"
+      },
+      "diamonds_1100": {
+        "enabled": false,
+        "order": 11,
+        "grant": { "type": "diamonds", "amount": 1100 },
+        "name_fr": "1 100 diamants",
+        "name_en": "1,100 diamonds"
+      },
+      "diamonds_2500": {
+        "enabled": false,
+        "order": 12,
+        "grant": { "type": "diamonds", "amount": 2500 },
+        "name_fr": "2 500 diamants",
+        "name_en": "2,500 diamonds"
+      }
+    }
+  }
+}
