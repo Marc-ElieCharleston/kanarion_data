@@ -1,12 +1,19 @@
 {
   "_meta": {
-    "version": "1.0",
-    "last_updated": "2026-10-15",
-    "description": "Pass Kanarion : un seul abonnement mensuel, confort et gain de temps, jamais de puissance en combat. Decisions : _meta/carnet/pass_premium.md (2026-10-13) ; forme du fichier : _meta/conception_systemes/PASS_PREMIUM.md section 3.1. Seuls les avantages deja branches ou decides avec leur valeur sont ici ; les autres (teleportation, remise marchands, cle hebdomadaire, offre en diamants) arrivent avec leur code.",
+    "version": "2.0",
+    "last_updated": "2026-10-17",
+    "description": "Pass Premium a deux niveaux (Premium, Premium+), confort et gain de temps, jamais de puissance en combat. Remplace le pass unique du 2026-10-13 (_meta/carnet/pass_premium.md). Source unique : niveaux, prix en diamants, duree, avantages. Le serveur lit ce fichier et n'envoie au client que les avantages qu'il applique. Prix de reference : 100 diamants = 1 euro (items/currencies.json) ; aucun prix en euros ici (data publique). Toutes les valeurs du 2026-10-17 sont A VALIDER par Charleston.",
     "rule": "aucune stat, aucun bonus en combat, aucun contenu ferme aux non-abonnes",
     "readers": {
-      "benefits.out_of_combat_regen_multiplier": "economy, HealthCoordinator::apply_regen_tick (health/regen_tick.hpp) : multiplie la regen hors combat de PV et de Souffle (stats hp_regen_out_of_combat / mp_regen_out_of_combat de stats/definitions.json). Cle obligatoire, le service refuse de demarrer sans elle. Le droit (accounts.premium_until) n'existe pas encore cote serveur : personne n'a le bonus tant qu'il n'est pas branche.",
-      "benefits.familiar_out_of_combat_regen_multiplier": "familiar, FamiliarService::do_regen_tick : pas encore lu (PASS_PREMIUM.md 2.2)."
+      "benefits": "Avantages du niveau Premium (rang 1). Premium+ les reprend et remplace les cles de tiers.premium_plus.benefits. Cle obligatoire (economy refuse de demarrer sans benefits.out_of_combat_regen_multiplier).",
+      "benefits.out_of_combat_regen_multiplier": "economy, HealthCoordinator::apply_regen_tick : multiplie la regen hors combat de PV et de Souffle.",
+      "benefits.familiar_out_of_combat_regen_multiplier": "familiar, FamiliarService::do_regen_tick : multiplie la regen hors combat du familier actif.",
+      "benefits.teleport_free": "economy, handle_teleport : le passeur ne preleve pas d'or.",
+      "benefits.npc_buy_discount_percent": "economy, handle_buy_item : remise sur le TOTAL d'un achat chez un marchand PNJ, arrondi au superieur, jamais sous 1 or. Pas sur la revente, l'HDV, la forge, les plans de metier.",
+      "benefits.bag_bonus_slots / bank_bonus_slots": "economy, InventoryManager::capacity : places de sac / banque en plus tant que le niveau est actif (Premium+ seulement, 0 si absent). A l'expiration rien n'est perdu : les objets restent, on peut les retirer, on ne peut plus en ajouter tant que le total depasse la capacite ; le seuil de surcharge garde le bonus, l'ancien abonne n'est jamais bloque. Valeurs du 2026-10-17 a valider (une extension de sac = 10 places).",
+      "tiers": "economy, premium/premium_pass.hpp : prix (price_diamonds), duree (period_days), diamants reverses (bonus_diamonds), ordre (rank). Achat aux diamants uniquement, 0x0487.",
+      "offer": "economy : enabled ferme l'achat sans toucher aux abonnes en cours ; max_banked_days plafonne la reserve de jours.",
+      "planned": "Avantages decides mais PAS branches. Le serveur ne les lit pas, le client ne les affiche pas tant qu'ils ne marchent pas."
     }
   },
   "pass": {
@@ -17,6 +24,46 @@
   },
   "benefits": {
     "out_of_combat_regen_multiplier": 2,
-    "familiar_out_of_combat_regen_multiplier": 2
+    "familiar_out_of_combat_regen_multiplier": 2,
+    "teleport_free": true,
+    "npc_buy_discount_percent": 10
+  },
+  "tiers": {
+    "premium": {
+      "rank": 1,
+      "name_fr": "Premium",
+      "name_en": "Premium",
+      "description_fr": "Le confort au quotidien : récupération plus rapide hors combat, voyages gratuits et prix réduits chez les marchands.",
+      "description_en": "Everyday comfort: faster recovery out of combat, free travel and lower prices at merchants.",
+      "price_diamonds": 1000,
+      "period_days": 30,
+      "bonus_diamonds": 0
+    },
+    "premium_plus": {
+      "rank": 2,
+      "name_fr": "Premium+",
+      "name_en": "Premium+",
+      "description_fr": "Tout Premium, avec plus de place dans le sac et la banque, une remise plus forte chez les marchands et des diamants reversés à chaque achat.",
+      "description_en": "Everything in Premium, with more bag and bank space, a bigger merchant discount and diamonds back on every purchase.",
+      "price_diamonds": 1600,
+      "period_days": 30,
+      "bonus_diamonds": 300,
+      "benefits": {
+        "npc_buy_discount_percent": 15,
+        "bag_bonus_slots": 10,
+        "bank_bonus_slots": 20
+      }
+    }
+  },
+  "offer": {
+    "enabled": true,
+    "max_banked_days": 365
+  },
+  "planned": {
+    "_comment": "Decide, pas branche. Rien de ceci n'est lu ni affiche.",
+    "weekly_dungeon_key": "1 cle de donjon par semaine (drop et consommation des cles pas branches)",
+    "weekly_passive_tree_reset": "1 reinitialisation d'arbre de passifs par semaine",
+    "contract_reroll": "1 relance de contrat",
+    "subscriber_cosmetics": "aura ou cadre d'abonne, par un artiste"
   }
 }
