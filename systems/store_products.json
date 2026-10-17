@@ -5,7 +5,7 @@
     "description": "Produits vendus par les boutiques des plateformes (Google Play Billing pour l'instant). Source unique de ce qu'un achat VERIFIE par le serveur octroie. Aucun prix ici : le prix est celui de la boutique (Play Console, prix locaux TTC), l'appli affiche le prix que Play lui donne. Ne jamais ecrire dans le client qu'un autre canal est moins cher (politique Play).",
     "rule": "le client ne credite jamais rien : il transmet le jeton d'achat, economy le verifie aupres de Google, octroie, puis consomme",
     "readers": {
-      "google_play.products": "economy, PlayBillingService : un achat dont le product_id n'est pas ici, ou enabled=false, est refuse (fail-closed). Le client n'affiche que les produits enabled.",
+      "google_play.products": "economy, PlayBillingService : un achat dont le product_id n'est pas ici est refuse (fail-closed). Le client n'affiche que les produits enabled ; un achat deja paye et verifie d'un produit enabled=false est quand meme livre.",
       "google_play.products.<id>.grant.type": "premium = periode du pass (systems/premium.json, meme cumul et meme reserve que l'achat aux diamants, avec ses diamants reverses) ; diamonds = credit de accounts.diamonds.",
       "google_play.products.<id>.grant.tier": "type premium : identifiant de niveau de systems/premium.json (premium | premium_plus).",
       "google_play.products.<id>.grant.amount": "type diamonds : nombre de diamants credites.",
