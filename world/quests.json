@@ -2,7 +2,18 @@
   "_meta": {
     "version": "3.1",
     "last_updated": "2026-07-21",
-    "description": "MVP Quests (Lv 1-20). Farming-first: quests guide/boost but don't block."
+    "description": "MVP Quests (Lv 1-20). Farming-first: quests guide/boost but don't block.",
+    "engine_contract": {
+      "_doc": "Contrat moteur du service de quetes (lot 0, 2026-10-17). Le service REFUSE DE DEMARRER si une quete viole une regle ci-dessous ; il liste les quetes fautives dans son journal.",
+      "objective_writers": "Chaque gabarit d'objectif a un writer (le fait serveur qui le fait avancer), declare dans services/quest/src/db/objective_templates.hpp. Gabarit inconnu ou sans writer (ex. 'manual') = refus de demarrer. 'recruit_party_members' et 'open_ui_screen' n'existent plus.",
+      "parked": "\"parked\": true sur une quete = contenu parque, ni charge par le serveur ni montre par le client. Seul moyen de garder en data une quete qui utilise un gabarit sans writer.",
+      "rewards": "Cles de recompense versees : xp, gold, items, item_choices, title (id d'un titre de ui/cosmetics.json, acquisition 'grant', donne au COMPTE). Toute autre cle non prefixee par '_' = refus de demarrer. '_not_granted' garde des recompenses ecrites mais jamais versees (extra_loot_rolls, unlock, story_mode, normal_mode) en attendant une decision du proprietaire : ni le serveur ni le client ne les lisent.",
+      "auto_accept": "Une seule cle d'acceptation automatique au niveau : auto_accept_at_min_level (bool, exige min_level > 0). L'ancienne auto_accept_on_level est refusee au chargement.",
+      "availability": "available_from / available_until (facultatifs, chaines UTC 'AAAA-MM-JJTHH:MM:SSZ') : fenetre ou la quete peut etre acceptee ET rendue, verifiee par le serveur (erreur QUEST_NOT_AVAILABLE 0x0A02). from < until.",
+      "resets": "reset_mode daily / weekly : la quete redevient acceptable a l'heure fixe de reset_schedule (5 h Paris), plus 24 h / 7 jours glissants.",
+      "moral_choices": "moral_choice / moral_choices[] : moment 'on_completion' = choix fait au rendu, obligatoire au rendu (erreur QUEST_CHOICE_REQUIRED 0x0A04). choice_x : label_fr/label_en, stat, value, sets_flags (facultatif), outcome_fr/outcome_en (facultatif, denouement affiche apres le choix). Les autres moments (room_*) ne sont geres par aucun flux.",
+      "story_flags": "requires_flags / forbids_flags (quete ou PNJ de entities/npcs.json) : chaque drapeau doit etre pose par un choix (implicite moral:<quete>:<a|b> ou sets_flags), verifie par validate_cross_references.py."
+    }
   },
   "quest_types": [
     "main",
@@ -51,9 +62,10 @@
     },
     "defeat_boss": {
       "fields": [
-        "boss_mob_id"
+        "boss"
       ],
-      "recommended_count": 1
+      "recommended_count": 1,
+      "description": "Win a fight in which this monster (id of entities/monsters.json, any threat tier) was killed. Credited from the combat room_ended event to every winning player, dungeon or open world."
     },
     "clear_star_packs": {
       "fields": [
@@ -71,13 +83,28 @@
       "fields": [
         "npc_id"
       ],
-      "description": "Talk to a specific NPC (auto-completes on accept)"
+      "description": "Talk to a specific NPC. The client notifies the talk, the server checks the objective."
     },
     "complete_dungeon": {
       "fields": [
         "dungeon_id"
       ],
       "description": "Finish a dungeon (last floor with its boss). Credited by the dungeon service to every member of the winning team, dead ones included."
+    },
+    "deliver_item": {
+      "fields": [
+        "npc_id",
+        "item_id",
+        "count"
+      ],
+      "description": "Give count x item_id to npc_id. When the player talks to the NPC, the server removes the whole count from the bag in one transaction (economy) and completes the objective; missing items = nothing taken, error QUEST_ITEMS_MISSING (0x0A03)."
+    },
+    "take_part_in_event": {
+      "fields": [
+        "event",
+        "count"
+      ],
+      "description": "Be a rewarded contributor of a world event that succeeded. event: 'fissure_invasion' (an invasion of the Fissure closed in time). One credit per event."
     }
   },
   "quests": [
@@ -2258,7 +2285,7 @@
       "type": "main",
       "zone": "village",
       "min_level": 20,
-      "auto_accept_on_level": 20,
+      "auto_accept_at_min_level": true,
       "title_fr": "Ta voie t'attend",
       "title_en": "Your Path Awaits",
       "summary_fr": "Tu as atteint le niveau vingt. Soren peut fixer ton Souffle dans une direction, et t'ouvrir les compétences que ta classe seule ne t'aurait jamais données.",
@@ -2565,7 +2592,9 @@
       "rewards": {
         "xp": 32,
         "gold": 40,
-        "extra_loot_rolls": 1
+        "_not_granted": {
+          "extra_loot_rolls": 1
+        }
       },
       "dialogue_give_fr": "Un sanglier alpha terrorise la route de la forêt. Les voyageurs font des détours de deux heures pour l'éviter. Grosse bête mauvais caractère. Si tu l'abats la prime est pour toi.",
       "dialogue_give_en": "An alpha boar is terrorizing the forest road. Travelers take two hour detours to avoid it. Big beast bad temper. Take it down and the bounty is yours.",
@@ -2711,7 +2740,9 @@
       "rewards": {
         "xp": 57,
         "gold": 60,
-        "extra_loot_rolls": 1
+        "_not_granted": {
+          "extra_loot_rolls": 1
+        }
       },
       "dialogue_give_fr": "Le chef des bandits. Tant qu'il est là ils se regroupent. Élimine le et le camp s'effondre. Prime élevée pour celui là.",
       "dialogue_give_en": "The bandit chief. As long as he's there they regroup. Take him out and the camp falls apart. High bounty for this one.",
@@ -2865,7 +2896,9 @@
       "rewards": {
         "xp": 96,
         "gold": 70,
-        "extra_loot_rolls": 1
+        "_not_granted": {
+          "extra_loot_rolls": 1
+        }
       },
       "dialogue_give_fr": "Au cœur des marais il y a une tanière. Et au fond de cette tanière un taureau ancestral. Les chasseurs l'appellent le Vieux. Si tu le terrasses la prime est généreuse.",
       "dialogue_give_en": "Deep in the marshes there's a den. And at the heart of that den an ancient bull. Hunters call it the Old One. Take it down and the bounty is generous.",
@@ -2937,6 +2970,7 @@
     },
     {
       "id": "q_side_maren_mari",
+      "parked": true,
       "min_level": 15,
       "type": "side",
       "zone": "zone_08",
@@ -3072,7 +3106,9 @@
       "rewards": {
         "xp": 330,
         "gold": 150,
-        "extra_loot_rolls": 2
+        "_not_granted": {
+          "extra_loot_rolls": 2
+        }
       },
       "dialogue_give_fr": "Un chef Zélote qu'ils appellent le Grand Inquisiteur dirige les excavations. Extrêmement dangereux. La prime la plus élevée que j'ai jamais posée. Si tu y vas fais le pas à moitié.",
       "dialogue_give_en": "A Zealot leader they call the Grand Inquisitor runs the excavations. Extremely dangerous. The highest bounty I've ever posted. If you go don't do it halfway.",
@@ -3382,37 +3418,39 @@
         }
       ],
       "rewards": {
-        "story_mode": {
-          "xp": 651,
-          "gold": 500,
-          "items": [
-            {
-              "id": "equip_tower_fragment",
-              "qty": 1
-            },
-            {
-              "id": "cons_hp_potion_t5",
-              "qty": 5
-            }
-          ]
-        },
-        "normal_mode": {
-          "xp": 930,
-          "gold": 800,
-          "items": [
-            {
-              "id": "equip_tower_fragment",
-              "qty": 1
-            },
-            {
-              "id": "cons_hp_potion_t5",
-              "qty": 10
-            }
-          ],
-          "extra_loot_rolls": 3
-        },
         "xp": 790,
-        "gold": 315
+        "gold": 315,
+        "_not_granted": {
+          "story_mode": {
+            "xp": 651,
+            "gold": 500,
+            "items": [
+              {
+                "id": "equip_tower_fragment",
+                "qty": 1
+              },
+              {
+                "id": "cons_hp_potion_t5",
+                "qty": 5
+              }
+            ]
+          },
+          "normal_mode": {
+            "xp": 930,
+            "gold": 800,
+            "items": [
+              {
+                "id": "equip_tower_fragment",
+                "qty": 1
+              },
+              {
+                "id": "cons_hp_potion_t5",
+                "qty": 10
+              }
+            ],
+            "extra_loot_rolls": 3
+          }
+        }
       },
       "moral_choices": [
         {
@@ -3480,7 +3518,9 @@
       "rewards": {
         "xp": 1200,
         "gold": 500,
-        "unlock": "subclass"
+        "_not_granted": {
+          "unlock": "subclass"
+        }
       },
       "dialogue_fr": "Le sol se déchire. L'air devient violet. Et dans le silence qui suit... quelque chose s'éveille en toi.",
       "dialogue_en": "The ground tears open. The air turns violet. And in the silence that follows... something awakens within you.",
@@ -6139,6 +6179,14 @@
     "side_quests": 7,
     "repeatable_quests": 3
   },
+    "reset_schedule": {
+        "_comment": "Heure fixe des journees et semaines du service de quetes (2026-10-17, lot 0 du moteur) : quetes daily / weekly (reset_mode), coffres de contrats, bonus des premieres victoires d'arene. Un seul bloc, lu par services/quest ; absent ou mal forme = le service ne demarre pas. Etait contract_chests.reset.",
+        "timezone": "Europe/Paris",
+        "daily_hour": 5,
+        "weekly_day": "monday",
+        "weekly_hour": 5,
+        "_why": "Heure fixe pour tout le monde (5 h, heure de Paris, changement d'heure compris), et non 24 h glissantes apres la fin. Le bonus des premieres victoires d'arene (config/rewards.json arena_match) suit la meme journee."
+    },
     "contract_limits": {
         "_comment": "Plafond de contrats tenus EN MEME TEMPS (decide par Charleston le 2026-10-11, audit or). Les contrats restent repetables a volonte, mais chaque kill et chaque victoire credite TOUS les contrats actifs a la fois : tenir les huit contrats chasse + endurance d'une bande transformait 12 combats en 21 120 or (bande 81-100). Le nombre tenu etait donc un multiplicateur d'or. Lu par services/quest (load_contract_limit) ; refus a l'acceptation avec l'erreur QUEST_CONTRACT_LIMIT (0x0A01).",
         "max_active": 3,
@@ -6148,13 +6196,6 @@
     "contract_chests": {
         "_comment": "Coffres des contrats (valide par Charleston le 2026-10-01). Aucune nouvelle quete et aucun tirage : les contrats de Varn et de Dargo restent repetables a volonte, et chaque contrat RENDU compte pour le coffre du jour et celui de la semaine. Lu par services/quest.",
         "counts": "Tout contrat rendu : quete dont quest_board vaut havreden_contracts ou rochebourg_contracts, tout rang, toute bande. Par PERSONNAGE.",
-        "reset": {
-            "timezone": "Europe/Paris",
-            "daily_hour": 5,
-            "weekly_day": "monday",
-            "weekly_hour": 5,
-            "_why": "Heure fixe pour tout le monde (5 h, heure de Paris, changement d'heure compris), et non 24 h glissantes apres la fin comme reset_mode aujourd'hui. Le bonus des premieres victoires d'arene (config/rewards.json arena_match) doit suivre la meme journee : il compte aujourd'hui depuis minuit UTC."
-        },
         "payout": "AUTOMATIQUE au contrat qui atteint le seuil, dans la meme transaction que le rendu, pousse au client. Pas de coffre a reclamer plus tard : l'XP est une fraction du niveau EN COURS, et un coffre garde en reserve se ferait encaisser a haut niveau (la raison du passage des succes en XP fixe). Idempotent : une ligne par (personnage, periode, type).",
         "band_by": "niveau du personnage au moment du versement",
         "daily": {
