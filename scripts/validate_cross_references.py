@@ -657,6 +657,18 @@ def validate_rank_display(db: Path) -> list:
             check_phrase(rel, item, "description_fr", "au rang", rank)
             check_phrase(rel, item, "description_en", "at rank", rank)
 
+    # Recettes a regle (fusion / revelation Koro, copie de grimoire) : chaque 'au rang X' /
+    # 'at rank X' de leur texte doit etre la lettre affichee de input_rank ou output_rank.
+    recipes_path = db / "items" / "profession_recipes.json"
+    if recipes_path.exists():
+        for rule in load_json(recipes_path).get("rule_recipes", []):
+            allowed = {DISPLAY_RANK_LETTERS.get(rule.get(k)) for k in ("input_rank", "output_rank")} - {None}
+            for key, word in (("description_fr", "au rang"), ("description_en", "at rank")):
+                for m in re.finditer(r"\b" + word + r" (SS|S|A|B|C|D)\b", rule.get(key, "")):
+                    if m.group(1) not in allowed:
+                        errors.append(f"{tag} profession_recipes {rule.get('id')} {key} : '{m.group(0)}' "
+                                      f"hors des rangs affiches {sorted(allowed)}")
+
     quests_path = db / "world" / "quests.json"
     if quests_path.exists():
         for quest in load_json(quests_path).get("quests", []):

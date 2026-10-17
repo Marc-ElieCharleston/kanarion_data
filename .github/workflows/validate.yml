@@ -243,6 +243,12 @@ jobs:
       - name: Validate cross-references (script)
         run: python3 scripts/validate_cross_references.py
 
+      # 3a-ter. Textes joueur FR/EN (2026-10-17). Le FR est la source, l'EN la traduction :
+      # un `x_fr` sans `x_en` (ou l'inverse), des listes de repliques de longueurs differentes
+      # ou un EN qui recopie le FR sans le traduire echouent ici, pas sur l'ecran du joueur.
+      - name: Validate FR/EN player texts
+        run: python3 scripts/validate_translations.py
+
       - name: Verify complete Koro catalog
         run: python3 scripts/generate_koro_catalog.py --check
 
