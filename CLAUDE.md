@@ -139,26 +139,32 @@ Players choose a faction at level 60. Subclass lore must NOT lock players into a
 ### Portée d'un sort
 
 La portée est portée par le **PERSONNAGE**, pas par le sort : `config/roles.json` `base_range`, en
-distance Manhattan sur le plateau 10x6 (diagonale = 2). Un sort sans champ `range` hérite du
+distance Manhattan sur le plateau 12x6 (diagonale = 2). Un sort sans champ `range` hérite du
 `base_range` de son lanceur. Un `range` explicite est une **dérogation, volontairement rare** :
 remplir `range` partout figerait chaque sort et casserait l'héritage.
 
-Échelle en vigueur (revue 2026-09-02, depuis le rang 5 qui est la position par défaut car les
+Échelle en vigueur (revue 2026-09-02, depuis le rang de front, rang 5 sur l'ancien 10x6 et 6 sur le 12x6, qui est la position par défaut car les
 joueurs remplissent les slots front-to-back) :
 
-| portée | qui | cases ennemies atteintes sur 30 |
+| portée | qui | cases ennemies atteintes sur 36 (12x6) |
 |---|---|---|
 | 2 | warrior et ses 4 sous-classes, rogue et ses 4, martyr, blacksmith | 4 |
 | 3 | spellblade, artisan, alchemist, chef, musician | 9 |
 | 4 | mage, elementalist, occultist, cardmaster, healer, lifewarden, lightbringer, cantor | 15 |
 | 5 | archer, ranger, falconer, ballmaster, gunslinger | 21 |
 
-Au-delà de 5 la portée cesse de décider quoi que ce soit : 6 couvre 26 cases sur 30, soit 87 % du
-plateau ennemi, et le placement ne se joue plus.
+Sur le 12x6 (depuis le 2026-10-17, six rangs par camp) ces chiffres sont inchangés jusqu'à 5 : seules les
+cases du sixième rang s'ajoutent, et elles sont hors d'atteinte. 6 couvre 27 cases sur 36, 7 en couvre 32.
+Les portées n'ont PAS été montées avec la grille (décision Charleston) : le déplacement est au cœur
+du jeu, on peut fuir, et un archer resté dans un coin ne touche plus personne, c'est voulu.
+
+Sur l'ancien 10x6, 6 couvrait 26 cases sur 30, soit 87 % du
+plateau ennemi, et le placement ne se jouait plus.
 
 **Deux règles du moteur à connaître avant d'écrire un chiffre :**
 
-1. **Plancher AOE.** Une zone SANS `range` explicite est placée à `max(base_range, 5)`
+1. **Plancher AOE.** Une zone SANS `range` explicite est placée à `max(base_range, 5)`, le 5 venant de
+   `config/game.json` `combat_reach.aoe_placement_floor`
    (`room.cpp`). Une classe sous 5 ne verra donc sa réduction s'appliquer qu'à ses sorts
    mono-cible. Conservé sur décision produit, mais c'est lui qui décide de l'ampleur réelle d'un
    changement de `base_range`, pas le chiffre écrit.
@@ -365,7 +371,8 @@ Trois familles, trois rôles : le **classique** à gros jet est la référence ;
 **Stats mortes interdites dans la data lootable** : `def` plat (aucune mitigation depuis le modèle de défense B, remplacé par `armor`) et `hit` (sans effet au-dessus de 100 de précision). Gardes : `FightLootTest.NoDeadStatInLootableItemData`, `NoDeadStatInAnySetBonus`, economy `StatKeyInvariant.NoDeadDefOrHitInLootableData`.
 
 ### Combat System
-- **Grid:** 4×5 per team (20 slots per team), max 10 players per team — single active format since the Arena Hub pivot (2026-05-01). Source: `config/game.json` `combat_grids`. Each room supports up to 32 entities total (backend `combat.json` `max_entities_per_room`).
+- **Grid:** 12x6 (depuis le 2026-10-17, tous les modes) : 12 rangs de 6 colonnes, soit 6 rangs et 36 cases par equipe. rows/cols sont serveur-autoritaires (le serveur lit `config/game.json` `combat_grids.default` et l'envoie au ROOM_JOINED). Each room supports up to 32 entities total (backend `combat.json` `max_entities_per_room`).
+- **Sorts « toute la carte » retires** (2026-10-17) : un sort hostile ne couvre plus tout le plateau, il pose une zone 4x4 ou 5x5 (`rect_4x4` / `rect_5x5`). Seuls les buffs et soins purement allies gardent le motif `all`.
 - **Rows:** front, mid_front, mid_back, back (positioning matters for tanks/healers)
 - **Type:** Real-time with 2.0s Global Cooldown (GCD), drag-and-drop targeting
 - **Line of Sight (LoS):** Auto-attacks blocked if target has units in front (same column on target's grid)

@@ -32,10 +32,9 @@
         "evasion",
         "parry_chance",
         "lifesteal",
-        "reflect",
-        "range"
+        "reflect"
       ],
-      "note": "GROWTH = stats brutes, scalent x curve(lvl) x tier_mult x rarity_mult (magnitude calibree aux ancres 10/30/50/70/100). FIXED = ne scalent PAS avec curve ni tier (crit/crit_damage/armor_pen/magic_pen = taux comme un joueur, rarity bump modere clampe par _caps ; range = constante positionnelle 2-7). PAS de 'speed' : combat statique, GCD fixe, aucune initiative par entite. crit/armor_pen/magic_pen en % ; crit_damage en % de mult (base 150 = x1.5).",
+      "note": "GROWTH = stats brutes, scalent x curve(lvl) x tier_mult x rarity_mult (magnitude calibree aux ancres 10/30/50/70/100). FIXED = ne scalent PAS avec curve ni tier (crit/crit_damage/armor_pen/magic_pen = taux comme un joueur, rarity bump modere clampe par _caps). PAS de 'speed' : combat statique, GCD fixe, aucune initiative par entite. crit/armor_pen/magic_pen en % ; crit_damage en % de mult (base 150 = x1.5).",
       "note_v2": "V2 (2026-10-02, branche vac_archetype-profiles) : 11 archétypes. ATK et MAG SÉPARÉS (décision propriétaire) : les archétypes magiques ont une ATK faible et une vraie MAG. Le serveur actuel n'a qu'une stat offensive (atk alimente attack_power ET magic_power, room_manager.cpp) : il DOIT lire 'mag' pour magic_power avant d'activer ces profils, sinon les mages / soigneurs / contrôleurs / invocateurs / enchanteurs tomberaient à 2 de puissance. Les stats FIXES montent par archétype tous les 10 niveaux (rate_growth_per_10_levels), pas lu par le serveur actuel."
     },
     "_caps": {
@@ -44,9 +43,7 @@
       "armor_pen": 70,
       "magic_pen": 70,
       "shield_pierce": 60,
-      "range_min": 2,
-      "range_max": 7,
-      "note": "Caps monstres. armor_pen/magic_pen reutilisent le cap joueur (70). crit cap 60 (< joueur 100, evite le crit-lock apres rarity). crit_damage cap 220 (base 150 + max 70). range borne [2,7].",
+      "note": "Caps monstres. armor_pen/magic_pen reutilisent le cap joueur (70). crit cap 60 (< joueur 100, evite le crit-lock apres rarity). crit_damage cap 220 (base 150 + max 70).",
       "evasion": 40,
       "block_chance": 50,
       "parry_chance": 25,
@@ -54,7 +51,7 @@
       "lifesteal": 30,
       "reflect": 30
     },
-    "_range_note": "range = base_range de l'entite (fallback moteur : eff_range = skill.range >= 0 ? skill.range : base_range). Les 66 skills monstres ont deja leur range explicite 2-7 ; ce base_range sert de defaut pour tout skill sans range + porte l'identite de reach de l'archetype (melee 2 / ranged 6-7).",
+    "_range_note": "La portee de base d'un monstre ne vit PLUS ici : source unique config/monster_ai.json ai_roles.<role>.base_range (lue par server-combat a l'apparition). L'ancienne range par archetype n'etait que journalisee et divergeait de la portee reelle ; retiree le 2026-10-17.",
     "tank": {
       "hp": 50,
       "atk": 3,
@@ -73,7 +70,6 @@
       "parry_chance": 3,
       "lifesteal": 0,
       "reflect": 0,
-      "range": 2,
       "name_fr": "tank",
       "identity": "Mur : énormément de PV et d'armure, provoque. Le joueur doit le contourner ou le percer."
     },
@@ -95,7 +91,6 @@
       "parry_chance": 0,
       "lifesteal": 0,
       "reflect": 0,
-      "range": 2,
       "name_fr": "gardien",
       "identity": "Protège ses alliés : bouclier de zone, réduction de dégâts en zone. Résistance magique plutôt qu'armure."
     },
@@ -117,7 +112,6 @@
       "parry_chance": 0,
       "lifesteal": 0,
       "reflect": 0,
-      "range": 2,
       "name_fr": "brute",
       "identity": "Frappe TRÈS fort en mêlée et perce les tanks (pénétration, perce-bouclier). Le danger de la ligne avant."
     },
@@ -139,7 +133,6 @@
       "parry_chance": 0,
       "lifesteal": 8,
       "reflect": 0,
-      "range": 2,
       "name_fr": "berserker",
       "identity": "Vol de vie et enrage : plus il frappe, plus il tient. À contrer avec la réduction de soin."
     },
@@ -161,7 +154,6 @@
       "parry_chance": 0,
       "lifesteal": 0,
       "reflect": 0,
-      "range": 2,
       "name_fr": "assassin",
       "identity": "Plonge sur la ligne arrière : burst critique, esquive, très fragile."
     },
@@ -183,7 +175,6 @@
       "parry_chance": 0,
       "lifesteal": 0,
       "reflect": 0,
-      "range": 7,
       "name_fr": "archer",
       "identity": "Physique à distance : critique et pénétration d'armure, fragile."
     },
@@ -205,7 +196,6 @@
       "parry_chance": 0,
       "lifesteal": 0,
       "reflect": 0,
-      "range": 7,
       "name_fr": "mage",
       "identity": "Burst magique à distance, longues incantations à interrompre. Fait très mal."
     },
@@ -227,7 +217,6 @@
       "parry_chance": 0,
       "lifesteal": 0,
       "reflect": 0,
-      "range": 6,
       "name_fr": "contrôleur",
       "identity": "Contrôles, anti-soin, dissipation. Peu de dégâts, beaucoup de nuisance."
     },
@@ -249,7 +238,6 @@
       "parry_chance": 0,
       "lifesteal": 0,
       "reflect": 0,
-      "range": 6,
       "name_fr": "soigneur",
       "identity": "Soigne et purifie ses alliés. Cible prioritaire."
     },
@@ -271,7 +259,6 @@
       "parry_chance": 0,
       "lifesteal": 0,
       "reflect": 0,
-      "range": 6,
       "name_fr": "invocateur",
       "identity": "Appelle des monstres temporaires. Fragile."
     },
@@ -293,7 +280,6 @@
       "parry_chance": 0,
       "lifesteal": 0,
       "reflect": 0,
-      "range": 6,
       "name_fr": "enchanteur",
       "identity": "Renforce ses alliés (attaque, défense) et dissipe les buffs des joueurs."
     },
@@ -307,7 +293,6 @@
       "crit_damage": 150,
       "armor_pen": 0,
       "magic_pen": 0,
-      "range": 6,
       "identity": "backline ranged: heal/buff, mr eleve, atk faible, aucune penetration (ex-healer)",
       "tenacity": 15,
       "block_chance": 3,
