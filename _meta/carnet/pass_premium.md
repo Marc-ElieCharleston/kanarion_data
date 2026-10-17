@@ -9,13 +9,14 @@ Source unique : `systems/premium.json` (`tiers`, `benefits`, `offer`, `planned`)
 |---|---|---|
 | Prix | 1000 diamants | 1600 diamants |
 | Durée | 30 jours | 30 jours |
-| Régénération hors combat (perso et familier) | ×2 | ×3 |
+| Régénération hors combat (perso et familier) | ×2 | ×2 |
 | Téléportation | gratuite | gratuite |
 | Marchands PNJ | −10 % | −15 % |
 | Diamants reversés à l'achat | 0 | 300 |
 
 Achat en jeu aux diamants, cumulable (les jours Premium déjà payés passent après les jours Premium+),
 réserve plafonnée à 365 jours, comptes invités refusés. Règle inchangée : rien en combat.
+2026-10-17 (retour Charleston) : ×3 jugé énorme, Premium+ revient à ×2 ; ce qui le différencie de plus reste à choisir par Charleston.
 Pas encore branchés donc **non affichés** : clé de donjon hebdomadaire, reset d'arbre de passifs,
 relance de contrat, cosmétique d'abonné (`planned`).
 Le `battle_pass` de `boutique.json` n'existe plus : le fichier a été supprimé (commit `0db6b30`).
