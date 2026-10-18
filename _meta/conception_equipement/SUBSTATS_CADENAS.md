@@ -88,7 +88,28 @@ sont plus généreuses et montent avec le niveau de l'objet. Les plafonds de sta
   `rarity_system.roll_range_percent` : vérifier qu'une seule source fixe la valeur d'une ligne.
 - `equipment_upgrade.json` `change_substat` : remplacé par la relance à cadenas.
 
-## Questions ouvertes
+## Type d'armure (propriétaire, 2026-10-18)
+
+Les valeurs des substats dépendent aussi du type d'armure : **tissu** (`light`), **cuir** (`medium`), **plaque**
+(`heavy`). La data a déjà `main_stat_by_armor_type` (stat principale) et `substat_weight_multipliers` (poids hors
+rôle x0,25) dans `equipment_stats.json` `equipment_categories.armor`. À faire : remplacer les poids par des
+**multiplicateurs de valeur** par type (ex. plaque : armure/PV x1,2, Souffle x0,6 ; tissu l'inverse), pools
+fermés par emplacement.
+
+## Stats inertes ou pas branchées : AUDIT À FAIRE (agent de la maison)
+
+Pour chacune des 38 stats de `stats/definitions.json` et des stats que les objets tirent (`atk_percent`,
+`mag_percent`, `def_percent`...) : est-elle tirée sur un objet (`server-combat/src/loot/stat_roller.cpp`),
+transportée vers le personnage (`services/economy/src/inventory/stat_calculator.hpp`), chargée en combat, puis
+**réellement utilisée dans une formule** ? Sortir un tableau stat par stat (preuve fichier:ligne) et corriger en
+premier celles qu'un joueur peut tirer ou investir mais qui ne font rien.
+
+Pistes déjà connues (à vérifier) : `attack_speed` (inerte, notée dans definitions.json), `shield_pierce`
+(`implementation_status: pending`), `double_hit_chance` lue aussi sous le nom `double_attack_chance`,
+`triple_hit_chance`, `def` contre `armor`, `shield`, la sous-stat « Reflet » qui n'arrive pas en combat
+(`carnet/plafonds_stats.md`).
+
+## Questions ouvertes (à discuter en partant du principe que toutes les stats fonctionnent)
 
 1. Valider les pools par emplacement (une stat à ajouter ou retirer ?).
 2. Valider les plafonds « tout-en-un » du tableau des valeurs.
