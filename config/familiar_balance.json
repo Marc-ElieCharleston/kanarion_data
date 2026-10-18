@@ -59,7 +59,17 @@
       "familiar_scarabee_utilitaire"
     ]
   },
-  "_gift_offers_note": "Onboarding V2 lot 3 (2026-09-24). Familiers OFFERTS, un par offre et par personnage. Cle = offer_id envoye dans la requete de choix de familier (0x0F03, champ offer_id). Le serveur refuse un archetype absent de la liste et enregistre le don dans familiar_gifts (UNIQUE character_id, offer_id) : un rejeu renvoie le familier deja donne. colette_village = objectif claim_familiar_gift de q_havreden_tour_02. Le familier offert va dans le premier emplacement porte libre (sinon au stock) et n'est PAS rendu actif. Le rat de la chaine d'Aldric n'est pas une offre de ce bloc : offer_id vide, enregistre cote serveur sous aldric_rat.",
+  "_gift_offers_note": "Onboarding V2 lot 3 (2026-09-24). Familiers OFFERTS, un par offre et par personnage. Cle = offer_id envoye dans la requete de choix de familier (0x0F03, champ offer_id). Le serveur refuse un archetype absent de la liste et enregistre le don dans familiar_gifts (UNIQUE character_id, offer_id) : un rejeu renvoie le familier deja donne. colette_village = objectif claim_familiar_gift de q_havreden_tour_02. Le familier offert va dans le premier emplacement porte libre (sinon au stock) et n'est PAS rendu actif. Le rat de la chaine d'Aldric n'est pas une offre de ce bloc : offer_id vide, voir tutorial_gift.",
+  "tutorial_gift": {
+    "offer_id": "aldric_rat",
+    "archetypes": [
+      "familiar_rat_attaque",
+      "familiar_rat_tank",
+      "familiar_rat_heal",
+      "familiar_rat_utilitaire"
+    ]
+  },
+  "_tutorial_gift_note": "Audit L3 (2026-10-14). Le familier de depart donne par Aldric (requete de choix 0x0F03 SANS offer_id). OBLIGATOIRE : le service familier refuse de demarrer si ce bloc manque, s'il est vide, ou s'il nomme un archetype absent de entities/familiars.json. archetypes = les seuls choix acceptes (avant, le serveur acceptait en dur tout id prefixe familiar_rat_, y compris rat_alpha ou rat_sorcier). offer_id = l'id enregistre dans familiar_gifts (UNIQUE character_id, offer_id) : NE JAMAIS LE RENOMMER, les lignes existantes rendent les rejeux idempotents, et le service quete y lit l'objectif choose_familiar. Il ne doit pas etre une cle de gift_offers (un client ne peut pas l'envoyer). Le familier de depart est rendu actif si le personnage n'en a aucun.",
   "_max_collection_note": "Server-authoritative collection cap (2026-07-23). Enforced at incubation claim (COLLECTION_FULL) and exposed in FamiliarListResponse.max_collection. Client displays this instead of its former hardcoded 50.",
   "capture_rate_by_rarity": {
     "_comment": "Chance de loot de l'empreinte par palier d'espece (growth_tier dans monsters.json familiar_capture). Pas de jet de capture : une empreinte lootee = le familier. Echelle canonique : commun facile, rare/legendaire = chasse. Le serveur lit le drop_chance de chaque monstre ; scripts/validate_bestiary.py (B04) controle drop_chance == cette table. Les 4 ecarts (rats soigneur / mage, marcassin, ourson) alignes le 2026-10-14 (proprietaire, sans exception). Si retune, changer ici PUIS re-appliquer aux mobs.",

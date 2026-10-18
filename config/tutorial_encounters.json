@@ -3,7 +3,12 @@
     "version": "1.0",
     "last_updated": "2026-09-24",
     "description": "Compositions des combats du tutoriel (option B combat forgiving + sparring trinite, decision 2026-07-21). Source de verite data pour le spawn serveur A1-phase2.",
-    "consumed_by": "server-combat combat_host.cpp handle_tutorial_combat_start (A1-phase2). Etat actuel : le serveur whiteliste rat_solo et group_contaminated en dur et spawn mob_id/mob_count depuis la requete client. Cible : le serveur resout le scenario_id dans CE fichier et ignore mob_id/mob_count client (anti-spoof + zero decision client).",
+    "consumed_by": "server-combat content/tutorial_plan_resolver (appele par combat_host handle_tutorial_combat_start et par la recompense de fin de combat). Audit L3 (2026-10-14) : ce fichier est la SEULE source. Il est OBLIGATOIRE (le serveur combat refuse de demarrer s'il manque, s'il est invalide, ou si un scenario nomme un monster_id absent de entities/monsters.json). Plus de liste blanche en dur (rat_solo / group_contaminated), plus de repli sur mob_rat : un scenario inconnu repond UNKNOWN_SCENARIO, un monstre inconnu UNKNOWN_MOB. mob_id/mob_count de la requete client sont ignores (anti-spoof + zero decision client).",
+    "scenario_fields": {
+      "overlay_key": "Optionnel. Cle de world/tutorial_overlays.json montree en PREGAME, sans le prefixe tutorial_. Absent = l'id du scenario. Remplace le mapping en dur sparring_trinity -> group_contaminated.",
+      "guaranteed_rewards": "Optionnel. Liste de {item_id, quantity} donnee a CHAQUE joueur a chaque victoire du scenario, hors tirage de butin et hors pot commun (personnelle, non liee). Remplace l'empreinte de rat codee en dur pour rat_solo. item_id doit exister dans items/.",
+      "allies": "Mercenaires seulement (un monstre allie est une erreur de chargement)."
+    },
     "spawn_contract": {
       "monsters": "Spawn monstre standard (monster_templates_), level explicite.",
       "mercenary_allies": "spawn_npc_ally(team=PLAYERS, archetype_id, level, balance_profile) - reutilise les archetypes de entities/mercenaries.json, fill universel LFG/matchmaking/PvP.",
@@ -52,6 +57,20 @@
         "Le joueur lv7-8 et son familier gagnent sans potion."
       ]
     },
+    "group_contaminated": {
+      "_status": "Audit L3 (2026-10-14) : scenario historique que le serveur acceptait en dur (chemin herite : 3 mob_rat a leur niveau de base). Plus reference par aucune quete ; garde en data a l'identique pour qu'un client qui l'envoie encore obtienne le meme combat.",
+      "zone": "tutorial_tavern",
+      "description": "Combat de groupe contamine historique : trois rats du terrier, a leur niveau de base.",
+      "allies": [],
+      "enemies": [
+        {
+          "kind": "monster",
+          "monster_id": "mob_rat",
+          "count": 3,
+          "grid_hint": "back"
+        }
+      ]
+    },
     "meute_sortie": {
       "zone": "tutorial_tavern",
       "description": "Premiere vraie sortie : le joueur et son familier contre un nid de cinq rats de niveau 8 mene par un alpha, XP et butin reels. 2026-09-29 : cinq rats au lieu de deux loups et un sanglier (retour Charleston : le combat de groupe est deja appris dans la lecon d'arene ; ici on reste sur la menace du terrier et on garde la chaine centree familier).",
@@ -91,6 +110,13 @@
           "grid_hint": "back"
         }
       ],
+      "guaranteed_rewards": [
+        {
+          "item_id": "empreinte_souffle_rat_attaque_common",
+          "quantity": 1
+        }
+      ],
+      "rewards_note": "Audit L3 (2026-10-14) : l'empreinte garantie du premier combat (boucle de capture : tuer -> empreinte -> Colette -> incubation -> familier) etait codee en dur cote serveur. Meme objet, meme quantite, maintenant en data.",
       "accept_criteria": [
         "Le rat n'a pas frappe 2 fois avant la premiere action du joueur (1re attaque du rat >= 5s, GCD joueur 3s).",
         "Un lecteur lent finit les overlays PREGAME avant de cliquer Pret (countdown PREGAME allonge cote server-combat/config/combat.json, zone A1)."
@@ -98,6 +124,8 @@
     },
     "sparring_trinity": {
       "_status": "Plus reference par aucune quete depuis le lot 2 de l'onboarding V2 (2026-09-23), q_tut_intro_07 utilise meute_sortie. Garde en data.",
+      "overlay_key": "group_contaminated",
+      "_overlay_key_note": "Combat de groupe : il montre les overlays de groupe, ecrits sous tutorial_group_contaminated dans world/tutorial_overlays.json (mapping auparavant code en dur cote serveur).",
       "zone": "tutorial_tavern",
       "description": "Combat de sparring qui montre l'USP tactique : compos a roles des deux cotes. La lecon est 'tue le soigneur d'abord' : ignorer le soigneur ennemi fait trainer le combat, le focus le fait tomber et debloque la victoire. Compo alliee (2026-07-21) = 2 mercs (tank warrior + healer) + le FAMILIER du joueur (auto-spawn au JOIN_ROOM, actif depuis q_tut_intro_05) + le joueur = 4 vs 3 mercs ennemis. Le familier + le joueur portent le DPS, les 2 mercs tiennent tank+heal. Passe de 3 mercs allies a 2 pour integrer le familier au coeur de l'apprentissage groupe (vision familier-coeur).",
       "allies": [

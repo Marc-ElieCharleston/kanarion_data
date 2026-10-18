@@ -34,8 +34,13 @@ Contrôles (code, gravite par defaut) :
              SPECIES_FIX), scripts/balance/species_table.py (SPECIES,
              SPECIES_IDENTITY, STAGE). Lues par `ast`, jamais executees.
   B09 WARN   especes dont la capturabilite n'est pas decidee (capturable: null)
-  B10 ERROR  tutoriel et dons : monster_id des scenarios, archetypes des
-             gift_offers, mercenaires
+  B10 ERROR  tutoriel et dons (audit L3) : tutorial_encounters.json present ;
+             monster_id des scenarios, mercenaires, au moins un ennemi, pas de
+             monstre allie, count/level entiers >= 1 ; overlay_key explicite
+             present dans world/tutorial_overlays.json ; guaranteed_rewards
+             {item_id existant dans items/, quantity >= 1} ; archetypes des
+             gift_offers ; tutorial_gift (offre d'Aldric) present, offer_id non
+             vide et hors gift_offers, archetypes uniques et existants
   B11 ERROR  affinites (familiar_balance.affinities, SI present) : especes,
              familles et statuts references existent
   B12 WARN   assets des monstres actifs : sprite resolu (client) ou art_pending
@@ -298,7 +303,7 @@ def check_archetypes(r, ctx):
             r.add("B05", f"{aid} : id '{a.get('id')}' != archetype_id")
         fam, role = a.get("species"), a.get("role")
         if not fam:
-            r.add("B05", f"{aid} : pas de famille (champ species) -> le service en ferait un rat")
+            r.add("B05", f"{aid} : pas de famille (champ species) -> le service familier refuse de demarrer")
         if role not in ctx["roles"]:
             r.add("B05", f"{aid} : role '{role}' inconnu (familiar_balance.json role_profiles)")
         if fam and role and aid != f"familiar_{fam}_{role}":
@@ -358,10 +363,11 @@ def check_traces(r, ctx):
                 if (m.get("familiar_capture") or {}).get("enabled") and m["familiar_capture"].get("family")
                 for role in m["familiar_capture"].get("allowed_roles") or []}
     gifts = {aid for offer in public(ctx["balance"].get("gift_offers")).values() for aid in offer}
+    gifts |= set((ctx["balance"].get("tutorial_gift") or {}).get("archetypes") or [])
     unreachable = sorted(aid for aid, a in ctx["archetypes"].items()
                          if (a.get("species"), a.get("role")) not in captured and aid not in gifts)
     if unreachable:
-        r.note("B06", f"{len(unreachable)} archetype(s) ni capturables ni offerts (Aldric, orphelines) : "
+        r.note("B06", f"{len(unreachable)} archetype(s) ni capturables ni offerts (orphelins) : "
                       + ", ".join(unreachable))
 
 
@@ -483,28 +489,108 @@ def check_species(r, ctx):
         r.note("B09", f"{len(unused)} espece(s) sans monstre : {', '.join(unused)}")
 
 
+def _positive_int(v):
+    return isinstance(v, int) and not isinstance(v, bool) and v >= 1
+
+
 def check_tutorial_gifts(r, ctx):
     mids = {m["id"] for m in ctx["monsters"]}
     tut = ctx["tutorial"]
     mercs = ctx["mercenary_ids"]
-    if tut is not None:
-        for sid, sc in public(tut.get("scenarios")).items():
+    overlays = ctx["tutorial_overlays"]
+    overlay_keys = set(public((overlays or {}).get("scenarios")))
+    if tut is None:
+        r.add("B10", "config/tutorial_encounters.json absent : le serveur combat refuse de demarrer")
+    else:
+        scenarios = tut.get("scenarios")
+        if not isinstance(scenarios, dict):
+            r.add("B10", "tutorial_encounters : pas d'objet 'scenarios'")
+            scenarios = {}
+        for sid, sc in public(scenarios).items():
+            if not isinstance(sc, dict):
+                r.add("B10", f"tutorial_encounters '{sid}' : le scenario n'est pas un objet")
+                continue
+            n_enemies = 0
             for side in ("allies", "enemies"):
-                for e in sc.get(side, []) or []:
-                    kind = e.get("kind")
+                entries = sc.get(side, [])
+                if not isinstance(entries, list):
+                    r.add("B10", f"tutorial_encounters '{sid}' : {side} n'est pas une liste")
+                    continue
+                for e in entries:
+                    kind = e.get("kind") if isinstance(e, dict) else None
                     if kind == "monster":
+                        if side == "allies":
+                            r.add("B10", f"tutorial_encounters '{sid}' : monstre allie '{e.get('monster_id')}' "
+                                         "(les allies sont des mercenaires)")
                         if e.get("monster_id") not in mids:
                             r.add("B10", f"tutorial_encounters '{sid}' : monster_id '{e.get('monster_id')}' "
-                                         "inconnu (le serveur le remplacerait par mob_rat)")
+                                         "inconnu (le serveur refuse de demarrer)")
                     elif kind == "mercenary":
+                        if not e.get("balance_profile"):
+                            r.add("B10", f"tutorial_encounters '{sid}' : mercenaire '{e.get('archetype_id')}' "
+                                         "sans balance_profile")
                         if mercs is not None and e.get("archetype_id") not in mercs:
                             r.add("B10", f"tutorial_encounters '{sid}' : mercenaire '{e.get('archetype_id')}' inconnu")
                     else:
                         r.add("B10", f"tutorial_encounters '{sid}' : kind '{kind}' inconnu")
-    for offer, aids in public(ctx["balance"].get("gift_offers")).items():
+                        continue
+                    for key in ("count", "level"):
+                        if key in e and not _positive_int(e[key]):
+                            r.add("B10", f"tutorial_encounters '{sid}' : {key} {e[key]!r} (entier >= 1 attendu)")
+                    if side == "enemies":
+                        n_enemies += 1
+            if n_enemies == 0:
+                r.add("B10", f"tutorial_encounters '{sid}' : aucun ennemi")
+            if "overlay_key" in sc:
+                ok = sc["overlay_key"]
+                if not isinstance(ok, str) or not ok:
+                    r.add("B10", f"tutorial_encounters '{sid}' : overlay_key {ok!r} (chaine non vide attendue)")
+                elif overlays is not None and f"tutorial_{ok}" not in overlay_keys:
+                    r.add("B10", f"tutorial_encounters '{sid}' : overlay_key '{ok}' -> 'tutorial_{ok}' "
+                                 "absent de world/tutorial_overlays.json")
+            rewards = sc.get("guaranteed_rewards", [])
+            if not isinstance(rewards, list):
+                r.add("B10", f"tutorial_encounters '{sid}' : guaranteed_rewards n'est pas une liste")
+                rewards = []
+            for g in rewards:
+                item = g.get("item_id") if isinstance(g, dict) else None
+                if not isinstance(item, str) or not item:
+                    r.add("B10", f"tutorial_encounters '{sid}' : guaranteed_rewards sans item_id ({g!r})")
+                    continue
+                if item not in ctx["item_ids"]:
+                    r.add("B10", f"tutorial_encounters '{sid}' : guaranteed_rewards item '{item}' absent de items/")
+                if "quantity" in g and not _positive_int(g["quantity"]):
+                    r.add("B10", f"tutorial_encounters '{sid}' : guaranteed_rewards '{item}' quantity "
+                                 f"{g['quantity']!r} (entier >= 1 attendu)")
+    offers = public(ctx["balance"].get("gift_offers"))
+    for offer, aids in offers.items():
         for aid in aids:
             if aid not in ctx["archetypes"]:
                 r.add("B10", f"gift_offers['{offer}'] : archetype '{aid}' inconnu")
+    # Offre de depart d'Aldric (audit L3) : obligatoire, lue par le service familier.
+    tg = ctx["balance"].get("tutorial_gift")
+    if not isinstance(tg, dict):
+        r.add("B10", "familiar_balance.json : bloc tutorial_gift absent (le service familier refuse de demarrer)")
+        return
+    oid = tg.get("offer_id")
+    if not isinstance(oid, str) or not oid:
+        r.add("B10", f"tutorial_gift : offer_id {oid!r} (chaine non vide attendue)")
+    elif oid in offers:
+        r.add("B10", f"tutorial_gift : offer_id '{oid}' est aussi une cle de gift_offers")
+    aids = tg.get("archetypes")
+    if not isinstance(aids, list) or not aids:
+        r.add("B10", "tutorial_gift : archetypes vide ou absent")
+        return
+    seen = set()
+    for aid in aids:
+        if not isinstance(aid, str) or not aid:
+            r.add("B10", f"tutorial_gift : archetype {aid!r} invalide")
+            continue
+        if aid in seen:
+            r.add("B10", f"tutorial_gift : archetype '{aid}' en double")
+        seen.add(aid)
+        if aid not in ctx["archetypes"]:
+            r.add("B10", f"tutorial_gift : archetype '{aid}' inconnu")
 
 
 def check_affinities(r, ctx):
@@ -687,6 +773,21 @@ def build_context():
                 for v in o:
                     walk(v)
         walk(mercs)
+    item_ids = set()
+
+    def collect_ids(o):
+        if isinstance(o, dict):
+            if isinstance(o.get("id"), str):
+                item_ids.add(o["id"])
+            for v in o.values():
+                collect_ids(v)
+        elif isinstance(o, list):
+            for v in o:
+                collect_ids(v)
+    items_dir = os.path.join(DB, "items")
+    for name in sorted(os.listdir(items_dir)):
+        if name.endswith(".json"):
+            collect_ids(load(f"items/{name}"))
     status_ids = set()
     for cat in (status.get("effects") or {}).values():
         if isinstance(cat, dict):
@@ -712,6 +813,8 @@ def build_context():
         "traces": cons.get("familiar_traces", []),
         "familiar_skills": {s.get("id") for s in fskills.get("base_skills", []) if isinstance(s, dict)},
         "tutorial": load_opt("config/tutorial_encounters.json"),
+        "tutorial_overlays": load_opt("world/tutorial_overlays.json"),
+        "item_ids": item_ids,
         "mercenary_ids": merc_ids,
         "status_ids": status_ids,
         "sprite_resolution": load_opt("_meta/sprite_resolution.json"),
