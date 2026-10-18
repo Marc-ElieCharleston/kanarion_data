@@ -1,0 +1,53 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-10-18",
+    "description": "Boutique des jetons d'arene (lot 1 de l'endgame, 2026-10-18). Les jetons (items/currencies.json arena_tokens, portefeuille au COMPTE accounts.arena_tokens) se gagnent a l'arene, dans la Tour, les coffres de contrats et les missions de guilde ; ils n'avaient aucun usage. Le serveur (services/economy, token_shop/) lit ce fichier, le client n'envoie qu'un offer_id.",
+    "status": "A VALIDER par Charleston : catalogue, prix, plafonds et niveaux sont des propositions.",
+    "rule": "VOLUME, JAMAIS DE PUISSANCE. On vend du temps gagne sur ce qui s'obtient deja autrement (cosmetiques, confort, pierres et Braises de bas rang), jamais ce qui fait la difference au sommet (pas de pierre rang 3+, pas de Braise rang 3+, pas de stigmate, d'unique, d'equipement, de grimoire ni de cle de la Tour). Rien qui donne de la puissance en PvP : les nourritures de combat sont exclues.",
+    "atomic": "Un achat = UNE transaction : verrou du portefeuille, plafond de la semaine, debit, octroi (objet dans le sac du personnage, emote ou cosmetique du compte), ligne arena_token_purchases et journal d'audit avec la cle d'idempotence. Sac plein, plafond atteint, solde court, niveau trop bas ou cosmetique deja possede : rien ne bouge.",
+    "income_reference": "Ordre de grandeur par semaine (valeurs du 2026-10-18) : joueur PvE avec contrats ~65 (coffres 5 x 7 + 30), membre de guilde ~35 de plus, joueur d'arene quotidien jusqu'a ~700 (5 premieres victoires doublees par jour x 10), Tour : 1 jeton x numero d'etage par gardien.",
+    "cannibalization": "title_arene et les emotes sont AUSSI en vente en diamants (ui/cosmetics.json, ui/emotes.json). Les vendre en jetons ouvre une voie gratuite vers des objets payants : a trancher (garder, retirer, ou reserver des emotes et un titre aux jetons)."
+  },
+  "currency": "arena_tokens",
+  "weekly_reset": {
+    "weekday": "monday",
+    "hour": 5,
+    "timezone": "Europe/Paris",
+    "_comment": "Meme semaine que les coffres de contrats et les missions de guilde (shared/gameplay/reset_period.hpp weekly_period). Les plafonds se comptent par COMPTE : les jetons sont au compte."
+  },
+  "max_lots_per_purchase": 10,
+  "categories": {
+    "cosmetic": {"name_fr": "Apparence", "name_en": "Cosmetics", "order": 1},
+    "comfort": {"name_fr": "Confort", "name_en": "Comfort", "order": 2},
+    "progress": {"name_fr": "Progression", "name_en": "Progression", "order": 3}
+  },
+  "offers": [
+    {"id": "tok_emote_triumph", "kind": "emote", "grant_id": "triumph", "price": 250, "category": "cosmetic"},
+    {"id": "tok_emote_cheer", "kind": "emote", "grant_id": "cheer", "price": 250, "category": "cosmetic"},
+    {"id": "tok_emote_fired_up", "kind": "emote", "grant_id": "fired_up", "price": 250, "category": "cosmetic"},
+    {"id": "tok_emote_strike", "kind": "emote", "grant_id": "strike", "price": 250, "category": "cosmetic"},
+    {"id": "tok_title_arene", "kind": "cosmetic", "grant_id": "title_arene", "price": 750, "category": "cosmetic"},
+
+    {"id": "tok_hp_potion_t3", "kind": "item", "grant_id": "cons_hp_potion_t3", "quantity": 10, "price": 15, "weekly_cap": 10, "category": "comfort"},
+    {"id": "tok_mp_potion_t3", "kind": "item", "grant_id": "cons_mp_potion_t3", "quantity": 10, "price": 15, "weekly_cap": 10, "category": "comfort"},
+    {"id": "tok_pet_hp_potion_t3", "kind": "item", "grant_id": "cons_hp_potion_pet_t3", "quantity": 10, "price": 15, "weekly_cap": 10, "category": "comfort"},
+    {"id": "tok_recall_potion", "kind": "item", "grant_id": "cons_recall_potion", "quantity": 5, "price": 10, "weekly_cap": 5, "category": "comfort"},
+
+    {"id": "tok_stone_cherev_r1", "kind": "item", "grant_id": "even_cherev_rank_1", "quantity": 3, "price": 25, "weekly_cap": 4, "category": "progress"},
+    {"id": "tok_stone_magen_r1", "kind": "item", "grant_id": "even_magen_rank_1", "quantity": 3, "price": 25, "weekly_cap": 4, "category": "progress"},
+    {"id": "tok_stone_koach_r1", "kind": "item", "grant_id": "even_koach_rank_1", "quantity": 3, "price": 25, "weekly_cap": 4, "category": "progress"},
+    {"id": "tok_stone_neshama_r1", "kind": "item", "grant_id": "even_neshama_rank_1", "quantity": 3, "price": 25, "weekly_cap": 4, "category": "progress"},
+    {"id": "tok_stone_cherev_r2", "kind": "item", "grant_id": "even_cherev_rank_2", "quantity": 1, "price": 40, "weekly_cap": 2, "min_level": 20, "category": "progress"},
+    {"id": "tok_stone_magen_r2", "kind": "item", "grant_id": "even_magen_rank_2", "quantity": 1, "price": 40, "weekly_cap": 2, "min_level": 20, "category": "progress"},
+    {"id": "tok_stone_koach_r2", "kind": "item", "grant_id": "even_koach_rank_2", "quantity": 1, "price": 40, "weekly_cap": 2, "min_level": 20, "category": "progress"},
+    {"id": "tok_stone_neshama_r2", "kind": "item", "grant_id": "even_neshama_rank_2", "quantity": 1, "price": 40, "weekly_cap": 2, "min_level": 20, "category": "progress"},
+    {"id": "tok_rift_ember_r1", "kind": "item", "grant_id": "mat_rift_ember_r1", "quantity": 2, "price": 30, "weekly_cap": 3, "min_level": 10, "category": "progress"},
+    {"id": "tok_rift_ember_r2", "kind": "item", "grant_id": "mat_rift_ember_r2", "quantity": 1, "price": 60, "weekly_cap": 2, "min_level": 25, "category": "progress"}
+  ],
+  "_excluded": {
+    "dungeon_keys": "Aucune cle de donjon utilisable : key_wild_den_*, key_lvl20_bandit_den_* et key_asher_tower_* visent des donjons sans entree sur la carte, key_tower_tier_* sont les cles d'Albion de la Tour (palier de depart, donc du progres classe).",
+    "fragments": "Aucun fragment de stigmate n'existe en data. mat_unlock_stone_* et mat_replace_token_* (substat_crafting_system.json) n'ont pas de lecteur serveur verifie : exclus tant que ce n'est pas tranche.",
+    "food": "Les nourritures donnent des stats de combat : exclues (regle PvP)."
+  }
+}

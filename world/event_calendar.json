@@ -1,0 +1,86 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-10-18",
+    "description": "Calendrier des evenements hebdomadaires (lot 1 de l'endgame, 2026-10-18). Heure de Paris, changements d'heure compris (shared/gameplay/reset_period.hpp). Proprietaire du calendrier : services/presence (presence_events.cpp), qui le lit, decide quels evenements sont actifs et les diffuse aux autres services et aux clients.",
+    "status": "A VALIDER par Charleston : jours, heures, rotation et valeurs sont des propositions.",
+    "multipliers": "Les multiplicateurs ne vivent PAS ici. Chaque evenement nomme une valeur de config/rewards.json multiplier_families.events.values (reward_value), seul proprietaire des recompenses. Ce fichier ne dit que QUAND.",
+    "admin": "Interrupteur sans redeploiement : server_flags 'weekly_events' (migration 118, FAUX par defaut). /admin events on|off|status dans le chat d'administration. Presence relit le drapeau toutes les 60 s et a chaque bascule (kanarion.admin.flag.changed). Drapeau faux ou service admin injoignable au demarrage : aucun evenement.",
+    "client": "Le client lit name_*, description_* et icon pour l'affichage seulement. Le serveur lui envoie quels evenements sont actifs, le temps restant et les bonus (WORLD_EVENTS_STATE 0x0241)."
+  },
+  "timezone": "Europe/Paris",
+  "cycle": {
+    "_comment": "Rotation sur 4 semaines. La semaine d'indice 0 commence le lundi anchor_monday (heure de Paris). weeks liste les indices de semaine ou l'evenement a lieu ; l'indice d'une occurrence est celui de la semaine ou elle COMMENCE.",
+    "weeks": 4,
+    "anchor_monday": "2026-11-02"
+  },
+  "announce": {
+    "chat_channel": "global",
+    "lead_minutes": 60,
+    "_comment": "Messages systeme dans chat_channel : une heure avant le debut (@EVENT_CHAT_SOON), au debut (@EVENT_CHAT_STARTED) et a la fin (@EVENT_CHAT_ENDED). Le client traduit la clef (translations/messages.csv) et remplace {name} par le nom de l'evenement."
+  },
+  "upcoming_days": 7,
+  "events": [
+    {
+      "id": "weekend_xp",
+      "reward_value": "weekend_xp",
+      "name_fr": "Week-end d'expérience",
+      "name_en": "Experience Weekend",
+      "description_fr": "Les combats rapportent plus d'expérience tout le week-end.",
+      "description_en": "Fights grant more experience all weekend long.",
+      "icon": "xp",
+      "weeks": [0, 2],
+      "start": {"weekday": "friday", "time": "18:00"},
+      "end": {"weekday": "monday", "time": "05:00"}
+    },
+    {
+      "id": "weekend_crafting",
+      "reward_value": "weekend_crafting",
+      "name_fr": "Week-end des métiers",
+      "name_en": "Crafting Weekend",
+      "description_fr": "La récolte et la fabrication font progresser les métiers plus vite.",
+      "description_en": "Gathering and crafting level professions faster.",
+      "icon": "profession",
+      "weeks": [1, 3],
+      "start": {"weekday": "friday", "time": "18:00"},
+      "end": {"weekday": "monday", "time": "05:00"}
+    },
+    {
+      "id": "rift_night",
+      "reward_value": "rift_night",
+      "name_fr": "Nuit des failles",
+      "name_en": "Rift Night",
+      "description_fr": "Les failles s'ouvrent deux fois plus souvent pendant la soirée.",
+      "description_en": "Rifts open twice as often during the evening.",
+      "icon": "rift",
+      "weeks": [0, 1, 2, 3],
+      "start": {"weekday": "saturday", "time": "20:00"},
+      "end": {"weekday": "sunday", "time": "00:00"}
+    },
+    {
+      "id": "familiar_week",
+      "reward_value": "familiar_week",
+      "name_fr": "Semaine du familier",
+      "name_en": "Familiar Week",
+      "description_fr": "Les créatures laissent plus souvent une empreinte de Souffle.",
+      "description_en": "Creatures leave a Breath imprint more often.",
+      "icon": "familiar",
+      "weeks": [1],
+      "start": {"weekday": "monday", "time": "05:00"},
+      "end": {"weekday": "monday", "time": "05:00"}
+    },
+    {
+      "id": "arena_week",
+      "reward_value": "arena_week",
+      "name_fr": "Semaine de l'arène",
+      "name_en": "Arena Week",
+      "description_fr": "Les matchs d'arène rapportent plus de jetons.",
+      "description_en": "Arena matches grant more tokens.",
+      "icon": "arena",
+      "weeks": [3],
+      "start": {"weekday": "monday", "time": "05:00"},
+      "end": {"weekday": "monday", "time": "05:00"}
+    }
+  ],
+  "_rotation": "Semaine 0 : week-end d'expérience. Semaine 1 : semaine du familier + week-end des métiers. Semaine 2 : week-end d'expérience. Semaine 3 : semaine de l'arène + week-end des métiers. Nuit des failles chaque samedi de 20:00 à minuit. Un debut et une fin identiques valent une semaine entiere."
+}

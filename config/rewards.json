@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": "1.2",
-    "last_updated": "2026-09-30",
+    "last_updated": "2026-10-18",
     "schema_version": 1,
     "description": "Proprietaire UNIQUE des recompenses : XP, or et chance de drop. Toute quantite qui depend du CONTEXTE d'un combat vit ici. Ce que la rencontre EST (stats, IA, composition, tirage des etoiles) vit dans entities/monster_variants.json star_system. Le critere de rangement est le verbe : ETRE vs RAPPORTER.",
     "why": "Avant ce fichier, la meme quantite etait ecrite dans jusqu'a cinq endroits dont quatre morts. Releve du 2026-08-13 : le multiplicateur d'XP a 5 etoiles valait 14.0 dans monster_variants, 3.0 dans encounter_stars et 2.3 dans loot_tables — seul le dernier etait lu. Les 180 monstres portaient un base_xp ecrit a la main que le moteur n'a jamais lu. config/monster_tiers.json documentait son propre consommateur (loot_roller) qui ne l'a jamais ouvert. La formule documentee dans loot_tables.final_calculation avait perdu son etape 5 (les etoiles) que le code applique pourtant. Un seul proprietaire supprime la question.",
@@ -266,7 +266,17 @@
       "_no_producer_yet": "Le contexte de recompense du combat ne connait pas encore la guilde du joueur : tant qu'il ne la passe pas, la famille vaut 1.0 (neutre), comme events."
     },
     "events": {
-      "description": "Evenements temporaires actives par l'exploitation. Le contexte passe l'evenement actif, ou aucun.",
+      "description": "Evenements temporaires. Producteur unique depuis le 2026-10-18 : le service presence lit world/event_calendar.json (heure de Paris) et le drapeau d'administration server_flags 'weekly_events', puis diffuse les evenements actifs (kanarion.world.events.state). Chaque consommateur multiplie ICI la clef qui le concerne ; plusieurs evenements actifs se multiplient entre eux. Une clef absente d'une valeur vaut 1.0.",
+      "_keys": {
+        "xp": "XP de combat (server-combat, LootContext.event_xp_mult, sous global_cap)",
+        "gold": "or de combat (server-combat, event_gold_mult, sous global_cap)",
+        "drop_chance": "butin de combat, par monstre et par combat (server-combat, event_drop_mult, sous global_cap)",
+        "rarity_boost": "declaree par treasure_hunt, pas encore lue",
+        "profession_xp": "XP de metier : recolte, glanage, fabrication, Chasseur de Failles (economy, aux quatre appels de ProfessionRules::apply_xp)",
+        "rift_frequency": "frequence d'ouverture des failles : l'intervalle de chaque rang est divise par la valeur (presence, RiftWorld)",
+        "capture_chance": "chance d'empreinte de Souffle par monstre capturable (server-combat, capture_drop_chance x valeur, plafonnee a 1)",
+        "arena_tokens": "jetons d'arene d'un match (quest, apres le bonus du jour et la penalite d'ecart)"
+      },
       "_migrated_from": "items/loot_tables.json events.event_types",
       "values": {
         "weekend_bonus": {
@@ -294,9 +304,25 @@
           "gold": 1.5,
           "xp": 1.5,
           "drop_chance": 1.5
+        },
+        "weekend_xp": {
+          "xp": 1.5
+        },
+        "weekend_crafting": {
+          "profession_xp": 1.5
+        },
+        "rift_night": {
+          "rift_frequency": 2.0
+        },
+        "familiar_week": {
+          "capture_chance": 1.5
+        },
+        "arena_week": {
+          "arena_tokens": 1.5
         }
       },
-      "_no_producer_yet": "DECLAREE, PAS ENCORE ALIMENTEE. Aucun producteur n'ecrit d'evenement actif dans le contexte de loot aujourd'hui : event_xp_mult / event_gold_mult / event_drop_mult valent 1.0 en permanence. La famille existe pour que le cablage n'ait rien a inventer, mais tant qu'aucun service ne pousse d'evenement, elle est neutre. Ne pas la lire comme une regle appliquee."
+      "_a_valider": "weekend_xp, weekend_crafting, rift_night, familiar_week et arena_week : valeurs PROPOSEES le 2026-10-18 (lot 1 de l'endgame), a valider par Charleston. Les cinq valeurs plus anciennes (weekend_bonus, double_drop, double_xp, treasure_hunt, festival) restent declarees mais ne sont planifiees nulle part.",
+      "_producer": "services/presence (presence_events.cpp) : calendrier world/event_calendar.json + drapeau server_flags 'weekly_events'. Lecteurs : server-combat (xp, gold, drop_chance, capture_chance), economy (profession_xp), quest (arena_tokens), presence (rift_frequency). Garde CI : validate_cross_references.py, etape evenements."
     },
     "room_level_gap": {
       "description": "Anti power-leveling (2026-10-17). Dans une salle de combat, si le plus haut niveau de JOUEUR present depasse le niveau d'un joueur de plus de max_level_gap, l'XP de combat de ce joueur est multipliee par values.carried.xp. Les familiers et mercenaires ne comptent pas (leur niveau suit celui de leur maitre). L'or et le butin ne sont pas touches.",
