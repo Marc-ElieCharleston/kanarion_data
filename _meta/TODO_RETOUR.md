@@ -4,7 +4,7 @@ Liste de TOUT ce qu'il reste à faire après le travail fait depuis la maison (o
 Tenue à jour à chaque ajout. Le détail des décisions et des branches est dans
 `_meta/VACANCES_2026-10.md`. Cocher au fur et à mesure.
 
-Dernière mise à jour : 2026-10-02.
+Dernière mise à jour : 2026-10-15.
 
 ## 1. Intégration (dans cet ordre)
 
@@ -48,6 +48,116 @@ Dernière mise à jour : 2026-10-02.
         `shield_shatter`. Puis activer `MONSTER_SCALING_MODEL=1` sur un serveur de test avec la data V2.
   - [ ] `vac_defense-curve-test` — `ctest -R MonsterScaling` avec la data `vac_archetype-profiles`
 - [ ] Mettre à jour le pin de la data (`kanarion-meta`) dans le back et le client après fusion.
+
+### Contrats V2 + partage de quêtes (branches `vac_contracts-v2`, 4 dépôts, POUSSÉES le 2026-10-15)
+
+Pour l'agent qui compile au retour. Doc : `_meta/conception_contrats/CONTRATS_V2.md`. Rien de cela n'a été
+compilé en entier : à la maison, le build WSL a été tué faute de mémoire (seuls `router.cpp` et
+`presence_service.cpp` ont compilé ; `test_contract_board` 9/9 compilé à part).
+`vac_contracts-v2` part de `vac_quest-share` (partage de quêtes du 2026-10-15) : les deux arrivent ensemble.
+
+**Branches et commits**
+
+| Dépôt | Branche | Commits |
+|---|---|---|
+| data (`kanarion_database`, renommé `kanarion_data` sur GitHub) | `vac_contracts-v2` | `a1fab5a` contrats V2 ; dessous `fe93f4f` partage de quêtes |
+| back (`kanarion_back`) | `vac_contracts-v2` | `e7c72131` contrats V2, pin `kanarion-meta` → `a1fab5a` ; dessous `29f1578f` partage |
+| protocole (`kanarion-protocole`) | `vac_contracts-v2` | `4ea1382` messages 0x0A13-0x0A16 ; dessous `96d3032` partage |
+| client (`Mmobile_godot`) | `vac_contracts-v2` | `9cab6734` tableau, pin `protocol` → `4ea1382` ; dessous `ef9e25d2` partage |
+
+**Data**
+- [ ] `git fetch && git checkout vac_contracts-v2`. Vérifier `world/quests.json` : bloc `contract_board`,
+      `contract_limits.max_per_family`, `quest_sharing`, plus aucun `q_contract_*`.
+- [ ] Si le bureau a touché `world/quests.json` ou `entities/monsters.json` : fusionner, puis
+      `python scripts/hash_content.py` et monter `database_version` (règle CI). Les validateurs de quêtes
+      peuvent se plaindre de l'absence des `q_contract_*` : c'est voulu.
+- [ ] Nouvelles zones (carte du 11-13 octobre) : quand elles entrent dans `world/zones.json`, chaque aire
+      doit avoir `level_range`, `max_stars` et `mobs` ; le tirage des contrats les prend tout seul.
+
+**Back**
+- [ ] `git fetch && git checkout vac_contracts-v2 && git submodule update --init kanarion-meta`
+      (pin sur la data `a1fab5a` : le service de quêtes refuse de démarrer sans `quest_sharing`).
+- [ ] Compiler en priorité ce qui ne l'a jamais été : `quest-core`, `test_contract_board`,
+      `test_contract_limit`, `test_quest_share`, `combat-core` (`combat_host.cpp`), `dungeon-core`,
+      `pvp-core`, puis le reste. Corriger les erreurs de compilation éventuelles.
+- [ ] `ctest -L quest` (dont `test_contract_board` sur la vraie data) puis la suite combat complète
+      (`combat.fbs` a deux champs de plus : `MonsterMapping.area_id`, `StoreCombatResultsRequest.origin_area_id`).
+- [ ] Migration `tools/db-migrate/113_contract_board.sql` (tables `contract_offers`, `contract_rerolls`) :
+      la renuméroter si le bureau a déjà une 113. Le partage de quêtes n'a pas de migration.
+- [ ] Vérifier en jeu (serveur de test) :
+  - [ ] tableau de Havreden : 3 offres de familles différentes, à la bande du joueur ; Rochebourg : rien
+        sous le niveau 61 ;
+  - [ ] accepter une offre bloque son emplacement ; on ne peut pas tenir deux contrats de la même famille
+        (erreur 0x0A01) ; rendre ou abandonner libère l'emplacement et une nouvelle offre arrive ;
+  - [ ] relance : la gratuite du jour, puis l'or (refus si pas assez d'or) ;
+  - [ ] expédition créditée seulement dans l'aire nommée et pour un groupe d'assez d'étoiles ; vague
+        (créatures en groupe 3★+) ; prime (élite nommé) ; donjon (difficulté demandée ou plus) ; invasion
+        de Fissure (rang S) ; récupération (les ressources quittent le sac au rendu) ; arène classique ou
+        classée (un duel ne compte plus pour rien, la quête de Dargo accepte aussi l'arène contre recrues) ;
+  - [ ] partage de quêtes : voir les notes de `vac_quest-share` (QUEST_SHARE 0x0A10-0x0A12).
+- [ ] Après validation : fusionner `vac_contracts-v2` dans `main` (back) et `master` (data), puis mettre le
+      pin `kanarion-meta` du back et du client sur le commit fusionné de la data.
+
+**Client**
+- [ ] `git fetch && git checkout vac_contracts-v2 && git submodule update --init protocol`
+      (pin protocole `4ea1382`) ; `kanarion-meta` du client à mettre sur la data `a1fab5a` (le journal
+      reconstruit les contrats `ct_*` depuis `contract_board`).
+- [ ] Ouvrir le projet dans Godot : le GDScript n'a jamais tourné (`scripts/systems/quest_manager.gd`,
+      `scripts/ui/popups/contract_board_popup.gd`). Corriger les erreurs d'analyse.
+- [ ] Réimporter `translations/messages.csv` (7 clés `CONTRACT_BOARD_*` nouvelles) pour régénérer les
+      `.translation`.
+- [ ] Tester : ouvrir le tableau, accepter, relancer, rendre au tableau (choix de la pierre aux rangs A et
+      S), journal des quêtes (titre « Expédition (rang B) », nom de la cible).
+- [ ] Fusionner `vac_contracts-v2` du protocole dans sa branche principale, puis le client.
+
+**Pas encore fait (décisions ou travail à venir)**
+- [ ] Pass premium côté serveur : la relance du pass est câblée (`has_premium_pass` renvoie toujours faux).
+- [ ] Prix réel de la relance (provisoire 20 / 40 / 80 / 160 / 320 selon la bande), une fois l'échelle de l'or fixée.
+
+### Refactor « tout dans la data », lot 1 (branches `vac_refactor-lot1`, back ET data) — à compiler au bureau
+
+- [ ] **Compiler et tester** back `vac_refactor-lot1` (`24d7cf37`) avec data `vac_refactor-lot1` (`21ffe94`),
+      puis fusionner dans main / master. Morceau A compilé et vert (2026-10-14) ; B1 (plafonds) en cours
+      de compilation à la maison ; **B2 (GCD) jamais compilé**.
+- [x] Bastion : recharge 8 → 15 s (propriétaire, 2026-10-14).
+- [x] Renvoi de dégâts : 25 % permanent / 50 % total (2026-10-14). **Bug** : la sous-stat « Reflet » n'arrive pas
+      en combat (`carnet/plafonds_stats.md`).
+- [ ] Morceau D (data morte) : `config/combat.json` élagué (37 clés), `systems/social.json` réduit aux limites
+      d'amis / blocages, lues par le service social (back `9d1198b3`, non compilé). Audit complet en cours.
+- [ ] Audit data morte, lot 1 (data `vac_audit-lot1`, part de `vac_refactor-lot1`, poussée) : bloc mort de la banque
+      retiré, `percent_per_level: 0` sur les 2 maneuvers à dégâts, 4 empreintes alignées sur 3,5 % (rats soigneur
+      / mage, marcassin, ourson), copie morte `rarity_drop_weights` retirée. Rareté 60/25/10/4/1 côté serveur =
+      back `vac_capture-rarity` (autre session). Client : `save_manager.gd:1816` doit lire `storage.bank.base_slots`
+      (bloc `gold_sinks.storage` supprimé). `curse_dot` : explosion = 50 % des dégâts bruts des ticks, fin naturelle
+      seulement, sans propagation (back `vac_audit-lot1` `3f20164e`, NON COMPILÉ, part de `vac_refactor-lot1`) ;
+      client : `status_engine.gd:316` (console de debug) garde l'ancienne formule.
+- [ ] Audit lot 9 fait (data `vac_audit-lot1` `0db6b30`) : 8 fichiers morts supprimés. Gardés : `entities/boss_mechanics.json`
+      (client `data_db.gd:194` le charge sans l'utiliser : retirer la ligne, puis le fichier) et `items/currencies.json`
+      (catalogue tenu à jour, à décider). `scripts/validate_skills.py` échoue déjà en CI (89 erreurs, avant ce lot).
+- [ ] Audit des doublons (`carnet/audit_doublons.md`, autre session), lot 1, fait le 2026-10-15, non compilé :
+      S1 PV/Souffle de départ = table de classe (back `vac_doublons-lot1` `b7d0a40b`, part de `vac_economy-fixes`) ;
+      S7 retour d'arène / room perso dans la zone de chaque joueur, champ 16 de `ArenaRoomSlot` (back `vac_doublons-arena`
+      `ccd75b6c`) ; reste le tournoi (`tournament_loop.cpp` envoie `arena_tournament`) et `desert_playtest` encore accepté par
+      la téléportation (`economy_service.cpp:6334`) et par le déblocage admin (`admin_service.cpp:528`) ;
+      client C3 (règle des voleurs inventée), C4 (sceptre du soigneur), C7 (grille = capacité serveur), C8 (RM suit la MAG)
+      (client `vac_doublons-lot1` `3001c1fd`). S2 canaux : pas de bug visible (la passerelle reroute les MP), `chat_channels` mort.
+      S3 : réglé par `vac_capture-rarity`. S9/C2 Souffle par niveau : 152 sorts (base + tier 2) à 0, règle confiée à un agent
+      (data `vac_souffle-scaling`, propriétaire : « éviter le spam infini sans qu'un sort vide le Souffle »).
+- [ ] Audit des doublons, lot 2 (back `vac_doublons-lot2`, part de `vac_doublons-lot1`, poussé, NON COMPILÉ) : bonus de groupe,
+      écart de niveau et plafond global obligatoires (`df2380ba`) ; niveaux de déblocage lus par un helper partagé
+      `class_unlock_levels.hpp` (`e1ea6961`) ; une seule formule de Souffle (`1531f00d`) ; `mana_cost_per_level` obligatoire
+      sur les sorts de classe, interdit sur les monstres (`1add79a5`). **À fusionner AVEC la data `vac_souffle-scaling`**
+      (`59bbf97`, 131 sorts chiffrés, note `carnet/souffle_par_niveau.md`), puis avancer le sous-module `kanarion-meta`.
+      Questions Souffle ouvertes : regen d'équipement ×4 au palier 5 (mages jamais à sec dès niv 60), réserve guerrier/voleur,
+      fillers à 0, passe tier 3 (179 sorts sans `rank_scaling_enabled`), potions en combat.
+      Data à corriger : exemples de `rewards.json level_difference` calculés avec 3, `min_drop_rate` non lu,
+      `default_mana_cost_per_level` mort. En dur repérés : RM 0.2×MAG, coût de respec `(niv-20)*10` ×3, tranches 20/40/60
+      de `equipment_template_selector.cpp`, défauts des sorts dans `content_loader.cpp` (cooldown 1 s, percent_per_level 0…).
+- [ ] **REPRISE 2026-10-16 : lire `carnet/reprise_2026-10-16.md`** (toutes les branches audits / Souffle / cooldowns /
+      scaling / interruption, ordre d'intégration `vac_integration`, ce qui bloque le démarrage, questions ouvertes).
+- [ ] Niveaux de compétence de familier par doublons (max 5) : scaling à concevoir (`carnet/familiers.md`).
+- [ ] Changements de comportement à vérifier en jeu : les contrôles durs peuvent rater (application 10-90 %, DoT et débuffs garantis sans résistance),
+      familiers à 3 s de GCD, parade / blocage / vol de vie plafonnés au jet, durée des buffs par type.
 
 ## 1bis. Carte et monstres : ce qu'il faut faire au retour (décidé le 2026-10-11)
 
@@ -113,6 +223,13 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
 - **Tour d'Asher** : plus de système d'actes côté jeu (les actes servent au propriétaire pour son lore) ; quêtes de la tour et « La Fracture » passées à 60 (`vac_tour-asher` `197e12f`).
 - **Rareté tirée à la capture** : décidé 2026-10-13 de GARDER la data (1,0 / 1,06 / 1,12 / 1,2 / 1,3 ; légendaire +30 %), pas de bonus par rareté de famille.
 - **Branches** : toutes les branches `vac_*` (data et back) sont poussées sur GitHub depuis le 2026-10-13, à la demande du propriétaire.
+- **Réapparition, décisions (2026-10-13)** : plancher (jamais 0) + plafond de groupes par zone, remplissage par minuteur de zone ; **étoiles tirées au hasard à l'apparition** + qui montent avec le temps (si les joueurs ne tuent que les petits groupes, il restera de gros groupes : à régler selon le nombre de joueurs) ; élites 1 par zone, retour 3-5 min ; coffres et fissures sur leur propre minuterie ; boss de monde ouvert plus tard (horaires fixes annoncés).
+- **Refactorisation familiers / monstres** : audit fait, `_meta/conception_systemes/AUDIT_SCALABILITE.md` (47 points, plan en 11 lots L0-L10). Bugs actifs : rareté de capture en dur (206 empreintes sur 1030 ne tombent jamais) ; portrait du rat pour 59 familles sur 103 ; 37 nouveaux monstres sans table de butin ; 44 monstres et 38 familles sans sprite, sans alerte. Commencer par L0 (validateur de bestiaire en CI) puis L1 (rareté lue dans la data).
+- **Réapparition, exigences du propriétaire (2026-10-13)** : tous les monstres normaux = « farm » (réapparition rapide partout) ; une zone ne doit JAMAIS tomber à 0 monstre et ne doit pas dépasser un maximum ; élites un peu plus lentes ; pas encore de boss de monde ouvert ; coffres et fissures apparaissent aussi. Plan détaillé : `_meta/conception_systemes/REAPPARITION.md` (à simplifier pour le mobile). Noms des zones FR/EN : `_meta/carnet/noms_zones.md`.
+- **BUG capture** : la rareté tirée à la capture est codée en dur dans le serveur (`combat_host.cpp` ~4139 sur vac_integration-all : 70/25/4/1 commun/rare/épique/légendaire, SANS uncommon) au lieu de lire `rarity_multipliers.drop_weight` de `config/familiar_balance.json` (60/25/10/4/~1). Plan des affinités : `_meta/conception_systemes/AFFINITES_FAMILIERS.md`.
+- **Poison plafonné en PvP** : back `vac_poison-cap-pvp` (`2cd9a181`, poussée, NON COMPILÉE, part de vac_poison-cap) : le plafond par charge max(ATK, MAG) × 0,5 de la source vaut partout sauf monstre → joueur. À fusionner dans l'intégration et tester (`*Poison*`).
+- **Refactorisation, lots faits (2026-10-14), à fusionner** : data `vac_bestiary-validator` (`d41dee3`) = `scripts/validate_bestiary.py` (14 contrôles, 0 erreur sur master, dette en avertissements, branché en CI étape 3e ; `--strict` pour mesurer) ; back `vac_capture-rarity` (`ca6c3457`, NON COMPILÉ en entier) = rareté de capture lue dans `familiar_balance.json`, refus de démarrer si invalide, 7 tests. Pas encore dans master/main : aussi `vac_monstres-nouveaux` 2182370 + 81953ae (affinités) et back `vac_poison-cap-pvp` 2cd9a181. CI étape 3 déjà rouge avant L0 (`mob_training_dummy` sans skill). À corriger : 4 `drop_chance` divergents (rat soigneur, rat sorcier, marcassin, ourson), 30 empreintes orphelines (chien sauvage, scarabée des sables, serpent).
+- **L2 + L3 faits (2026-10-14)** : branches `vac_no-rat-fallback` (data `74bf121`, back `484eb96f` + pin `0c77aea9`, empilées sur L0/L1), patchs client dans le scratchpad de la session (`client_patches/`, à recopier). Plus de rat de secours (erreurs au chargement ou à la requête), tuto en data (`tutorial_gift`, `guaranteed_rewards`, `overlay_key`). **BLOQUANT : ne pas déployer ce back sans le patch client `L3_starter_choice.patch`** (sinon 3 cartes d'Aldric sur 4 refusées). Découvert : aujourd'hui Aldric propose `rat_alpha_attaque`, `rat_alpha_tank`, `rat_heal`, `rat_soigneur_utilitaire` (premier id trié par rôle avec le préfixe `familiar_rat_`), pas les 4 rats de base. Non compilés en entier : combat_host, familiar_service, pg_store (19/19 tests ciblés OK).
 - **Pass premium** : fiche `_meta/carnet/pass_premium.md` (un seul pass façon Dofus : régén hors combat ×2, téléportation gratuite, −10 % achat PNJ, 1 clé de donjon/semaine) ; retirer les élixirs exclusifs du battle pass ; **câbler le drop des clés de donjon sur les monstres** (data morte aujourd'hui).
 - **Donjons, taille des salles** (2026-10-13) : les salles générées (688×384, ~500×250 px de sol, ~19 personnages de large) sont trop petites pour 10 joueurs ; le propriétaire générera plus grand lui-même (ou channels), en gardant le style Dofus. Fissures dessinées par script (repaire étages 4-5) rejetées. Sceau de Kanarion (tour, étage 2) : forme OK, motif central à redessiner.
 - **Tour d'Asher, lore** : la tour a été bâtie pour monter jusqu'à Dieu et prendre sa place (façon Babel) : monter est le sens du donjon, on garde les escaliers. Pas de croix ni de symbole sataniste : un sceau propre à Kanarion (proposé : escalier en spirale qui monte vers une couronne brisée). Niveau passé à 60-100 sur `vac_tour-asher` (`3ae35de`) ; plus on monte, plus les monstres sont particuliers (zélotes en bas, puis Golem Runique, Gardien de la Cloche, Paladin Corrompu, Sentinelles).
@@ -180,6 +297,11 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
 - [ ] `target_rule` n'est pas lu (le serveur lit `target`, `content_loader.cpp:728`) :
       `skill_mob_assassin_shadow_strike` mettrait l'invisibilité sur l'ennemi.
 - [ ] `base_monster` (fiches de boss) n'est lu nulle part dans le back.
+
+- [ ] Refactor « tout dans la data », morceau B (plafonds de stats lus dans `stats/definitions.json`) :
+      décisions du 2026-10-14 dans `carnet/plafonds_stats.md` (buffs 100 / boucliers 50, parade 30,
+      ténacité 50 (durée divisée au plus par 2, DoT compris), application des effets 10-90 (plafond haut : contrôles durs seulement), GCD 2 / 3 / 3). Plus tard : parade avec riposte,
+      contre-stat de la ténacité.
 
 ## 5. Data — travail à faire
 
@@ -497,3 +619,5 @@ noire 1 px dans la vue sud-ouest du Scarabée Géant et du Sanglier `ae1c4002`.
       (`config/game.json` `game_constants.max_party_size`) compte joueurs + familiers + mercenaires, PAS les
       invocations ni les leurres. Le traitement des invocations (plafond propre, `entities/summons.json`
       max_summons_per_team, faut-il les compter dans les 10 ?) reste a decider.
+- [ ] **Arbre des passifs V2** (2026-10-15) : bras Attaque en brouillon dans `_meta/conception_passifs/` (all-in ~75 pts + capstone, ou hybride sans capstone). À faire : valider le ressenti, décliner les 4 autres bras et les hybrides, puis serveur/client (seuils de palier, choix à N options, 1 capstone, hybrides, reset payant progressif, 1 point au niveau 1). Note : [carnet/arbre_passifs.md](carnet/arbre_passifs.md).
+- [ ] **Contrats V2** (2026-10-15) : voir la section « Contrats V2 + partage de quêtes » au point 1 (étapes back, data, client).

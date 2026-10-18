@@ -26,6 +26,52 @@ qu'il existe plus fort que lui, et il reviendra.
 
 Pas d'ours (le propriétaire n'est pas fan du rendu PixelLab).
 
+## Carte v7 (propriétaire, 2026-10-13) — la référence
+
+Image : [cartes/map_v7.png](cartes/map_v7.png). Répartition détaillée des monstres par zone (proposition
+du 11 octobre, à relire avec la v7) : artefact « Carte des monstres de Kanarion »
+https://claude.ai/artifact/9huzXAsGHhkx2DgjPvvmsG
+
+| Zone | Niveaux | Note |
+|---|---|---|
+| Havreden (ville) | 0-100 | ville de départ |
+| Abords d'Havreden | 1-8 | |
+| Lisière d'Havreden | 3-8 | insectes |
+| Fourrés des Sangliers | 8-15 | |
+| Prairie | 10-20 | frères Dorn |
+| Bocage | 9-20 | |
+| Bois des Loups | 13-23 | |
+| Forêt Nord | 12-26 | |
+| Clairière | 15-25 | |
+| Marécage | 20-30 | crapauds + 1 élite |
+| Combe aux ours | 20-28 | camp des deux sœurs à côté |
+| Bois Flétri | 25-35 | donjon |
+| Forêt Sud | 25-35 | le hameau → Mournelle (Dorn, Harlan) |
+| Ravin des crocs ? | 35-45 | élite humanoïde (nom provisoire) |
+| Route de Rochebourg | 40-50 | brigands |
+| Chemin des Pèlerins | 45-60 | |
+| Mines Basses | 50-60 | donjon |
+| Abords de Rochebourg | 45-50 | monstres corrompus et humanoïdes |
+| Rochebourg (ville) | 45-100 | |
+| Tour d'Asher | 60+ | donjon (tour infinie 60-100) |
+| Terres de Givre | 60-66 | |
+| Col d'Asher | 60-68 | monstres de pierre + Béhémoth |
+| Lac Gelé | 64-70 | donjon des glaces |
+| Terre de braise | 63-70 | |
+| Chemin des cendres | ? | le long du bord est |
+| La Rivière grise | — | frontière |
+| Marais de la Faille | 65-72 | Lanternfen, village du marais |
+| Anse des naufragés | 1-100 | (zone de capture des familiers) |
+| Plaine fendue | 72-80 | |
+| Nécropole ? | 70-78 | |
+| Chaussée Brisée | 78-88 | |
+| Terres Déchirées | 85-95 | |
+| Ville en ruine | ? | (Caer Isthrel dans l'artefact) |
+| L'Abîme | 90-100 | |
+
+Points à confirmer : niveaux du Chemin des cendres et de la Ville en ruine ; nom du Ravin des crocs ;
+« Nécropole ? ».
+
 ## Grandes régions (propriétaire)
 
 | Niveaux | Lieu | Ambiance |

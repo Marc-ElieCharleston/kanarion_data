@@ -1,0 +1,1178 @@
+{
+ "_meta": {
+  "version": "2.1-brouillon",
+  "last_updated": "2026-10-15",
+  "description": "Brouillon de l'arbre des passifs V2, modele a distance : un notable se place au cout du chemin depuis le centre (petit 15, petit moyen 30, moyen 50, mega 75). Regles + bras Attaque seul. Lu par personne (ni serveur ni client).",
+  "doc": "_meta/conception_passifs/ARBRE_PASSIFS_V2.md",
+  "generator": "fichier ecrit a la main a partir d'un script de session ; les noeuds pt2_def_* et pt2_deb_* cites par les ponts sont a creer (la simulation les clone depuis Attaque).",
+  "simulation": "python -I _meta/conception_passifs/sim_arbre_v2.py _meta/conception_passifs/arbre_v2_attaque.json"
+ },
+ "rules": {
+  "points": {
+   "starting_points": 1,
+   "points_per_level": 1,
+   "max_points": 100,
+   "_note": "1 point au niveau 1 puis 1 par niveau gagne. Aujourd'hui le serveur donne 0 au niveau 1 (level_calc) : il faudra starting_passive_points dans systems/progression.json."
+  },
+  "costs": {
+   "small_per_rank": 1,
+   "notable_15": 3,
+   "notable_30": 5,
+   "notable_50": 6,
+   "mega": 10,
+   "side": 5,
+   "hybrid": 6
+  },
+  "depth_targets": {
+   "notable_15": 15,
+   "notable_30": 30,
+   "notable_50": 50,
+   "mega": 75,
+   "_note": "Cout minimal du chemin depuis le centre, noeud compris. La simulation le verifie."
+  },
+  "path_rule": "Un noeud s'achete s'il touche un noeud deja acquis (le centre l'est toujours). Un petit noeud ne laisse passer vers la suite qu'a son rang max. Retirer un noeud qui couperait un chemin est refuse.",
+  "choice_rule": "Dans un groupe de choix, acheter une option ferme les autres. Les routes entre deux notables ne sont PAS exclusives : prendre la deuxieme route coute ses points.",
+  "mega_max": 1,
+  "bridges": {
+   "excluded_by_mega": true,
+   "_note": "Avoir un mega ferme les ponts (bridge_small et hybrid) : un all-in ne peut pas devenir hybride. Les maths le font deja (sans la regle, 75 + pont 8 + notable 30 voisin 5 = 88) mais la regle est plus claire pour le joueur."
+  },
+  "respec": {
+   "status": "proposition, a chiffrer avec l'economie",
+   "free_until_level": 20,
+   "free_per_week_with_pass": 1,
+   "cost_farm_hours": 1,
+   "cost_gold": "cost_farm_hours x or_par_heure(niveau) x (1 + 0,5 x resets_payants_recents)",
+   "_or_par_heure": "pas encore calcule (depend de l'or des monstres, des quetes et des ventes par niveau)",
+   "recent_resets_decay": "resets_payants_recents baisse de 1 toutes les 2 semaines sans reset payant"
+  }
+ },
+ "arms": [
+  {
+   "id": "attack",
+   "name_fr": "Attaque",
+   "name_en": "Attack",
+   "color": "#e66b52",
+   "angle_deg": -90,
+   "neighbors": [
+    "defense",
+    "debuff"
+   ]
+  }
+ ],
+ "nodes": [
+  {
+   "id": "pt_center",
+   "kind": "center",
+   "arm": null,
+   "pos": [
+    0,
+    0
+   ],
+   "name_fr": "Centre",
+   "description_fr": "Point de depart. Toujours acquis.",
+   "effects": []
+  },
+  {
+   "id": "pt2_atk_force",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 3,
+   "pos": [
+    0,
+    -2
+   ],
+   "name_fr": "Force",
+   "description_fr": "+2 attaque et +2 magie par rang.",
+   "effects": [
+    {
+     "stat": "atk",
+     "op": "add_flat",
+     "value_per_rank": 2
+    },
+    {
+     "stat": "mag",
+     "op": "add_flat",
+     "value_per_rank": 2
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_eye",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 3,
+   "pos": [
+    0,
+    -3
+   ],
+   "name_fr": "Oeil vif",
+   "description_fr": "+1 % de chance critique par rang.",
+   "effects": [
+    {
+     "stat": "crit",
+     "op": "add_flat",
+     "value_per_rank": 1
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_edge",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 3,
+   "pos": [
+    0,
+    -4
+   ],
+   "name_fr": "Tranchant",
+   "description_fr": "+5 degats critiques par rang.",
+   "effects": [
+    {
+     "stat": "crit_dmg",
+     "op": "add_flat",
+     "value_per_rank": 5
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_aim",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 3,
+   "pos": [
+    0,
+    -5
+   ],
+   "name_fr": "Visee",
+   "description_fr": "+3 precision par rang.",
+   "effects": [
+    {
+     "stat": "hit",
+     "op": "add_flat",
+     "value_per_rank": 3
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_execution",
+   "kind": "notable_15",
+   "arm": "attack",
+   "max_rank": 1,
+   "pos": [
+    -1,
+    -6.5
+   ],
+   "name_fr": "Execution",
+   "description_fr": "+15 % de degats contre une cible sous 30 % de ses PV.",
+   "effects": [
+    {
+     "mechanic": "damage_vs_target_hp_below",
+     "params": {
+      "hp_pct": 30,
+      "damage_pct": 15
+     }
+    }
+   ],
+   "choice": {
+    "group": "atk_n15",
+    "option": "execution"
+   }
+  },
+  {
+   "id": "pt2_atk_first_blood",
+   "kind": "notable_15",
+   "arm": "attack",
+   "max_rank": 1,
+   "pos": [
+    1,
+    -6.5
+   ],
+   "name_fr": "Premier sang",
+   "description_fr": "+20 % de degats contre une cible au-dessus de 90 % de ses PV.",
+   "effects": [
+    {
+     "mechanic": "damage_vs_target_hp_above",
+     "params": {
+      "hp_pct": 90,
+      "damage_pct": 20
+     }
+    }
+   ],
+   "choice": {
+    "group": "atk_n15",
+    "option": "first_blood"
+   }
+  },
+  {
+   "id": "pt2_atk_reach",
+   "kind": "side",
+   "arm": "attack",
+   "max_rank": 1,
+   "pos": [
+    -2.5,
+    -6.5
+   ],
+   "name_fr": "Allonge",
+   "description_fr": "+1 portee a tes sorts offensifs dont la portee de base est d'au moins 3.",
+   "effects": [
+    {
+     "mechanic": "skill_range_bonus",
+     "params": {
+      "bonus": 1,
+      "min_base_range": 3,
+      "skill_filter": "offensive"
+     }
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_grip",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 5,
+   "pos": [
+    -1.5,
+    -8
+   ],
+   "name_fr": "Poigne",
+   "description_fr": "+3 attaque et +3 magie par rang.",
+   "effects": [
+    {
+     "stat": "atk",
+     "op": "add_flat",
+     "value_per_rank": 3
+    },
+    {
+     "stat": "mag",
+     "op": "add_flat",
+     "value_per_rank": 3
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_lynx",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 5,
+   "pos": [
+    -1.5,
+    -9.5
+   ],
+   "name_fr": "Oeil de lynx",
+   "description_fr": "+1 % de chance critique par rang.",
+   "effects": [
+    {
+     "stat": "crit",
+     "op": "add_flat",
+     "value_per_rank": 1
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_vigor",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 5,
+   "pos": [
+    1.5,
+    -8
+   ],
+   "name_fr": "Vigueur",
+   "description_fr": "+2 % d'attaque et +2 % de magie par rang.",
+   "effects": [
+    {
+     "stat": "atk",
+     "op": "add_percent",
+     "value_per_rank": 2
+    },
+    {
+     "stat": "mag",
+     "op": "add_percent",
+     "value_per_rank": 2
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_ferocity",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 5,
+   "pos": [
+    1.5,
+    -9.5
+   ],
+   "name_fr": "Ferocite",
+   "description_fr": "+1 % de degats infliges par rang.",
+   "effects": [
+    {
+     "stat": "damage_percent",
+     "op": "add_flat",
+     "value_per_rank": 1
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_killer_instinct",
+   "kind": "notable_30",
+   "arm": "attack",
+   "max_rank": 1,
+   "pos": [
+    -2,
+    -11
+   ],
+   "name_fr": "Lame : instinct du tueur",
+   "description_fr": "Apres un coup critique : +10 % de chance critique pendant 3 s.",
+   "effects": [
+    {
+     "mechanic": "stat_window_after_event",
+     "params": {
+      "event": "crit",
+      "stat": "crit",
+      "value": 10,
+      "duration_s": 3
+     }
+    }
+   ],
+   "choice": {
+    "group": "atk_n30",
+    "option": "blade"
+   }
+  },
+  {
+   "id": "pt2_atk_breach",
+   "kind": "notable_30",
+   "arm": "attack",
+   "max_rank": 1,
+   "pos": [
+    0,
+    -11
+   ],
+   "name_fr": "Brute : percee",
+   "description_fr": "+10 penetration d'armure et +10 penetration magique.",
+   "effects": [
+    {
+     "stat": "armor_pen",
+     "op": "add_flat",
+     "value": 10
+    },
+    {
+     "stat": "magic_pen",
+     "op": "add_flat",
+     "value": 10
+    }
+   ],
+   "choice": {
+    "group": "atk_n30",
+    "option": "brute"
+   }
+  },
+  {
+   "id": "pt2_atk_momentum",
+   "kind": "notable_30",
+   "arm": "attack",
+   "max_rank": 1,
+   "pos": [
+    2,
+    -11
+   ],
+   "name_fr": "Cadence : elan",
+   "description_fr": "Chaque sort lance donne +2 % de degats pendant 6 s, cumulable 5 fois.",
+   "effects": [
+    {
+     "mechanic": "stacking_stat_on_event",
+     "params": {
+      "event": "skill_cast",
+      "stat": "damage_percent",
+      "value_per_stack": 2,
+      "max_stacks": 5,
+      "duration_s": 6
+     }
+    }
+   ],
+   "choice": {
+    "group": "atk_n30",
+    "option": "tempo"
+   }
+  },
+  {
+   "id": "pt2_atk_lethality",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 5,
+   "pos": [
+    -1.5,
+    -12.5
+   ],
+   "name_fr": "Letalite",
+   "description_fr": "+4 degats critiques par rang.",
+   "effects": [
+    {
+     "stat": "crit_dmg",
+     "op": "add_flat",
+     "value_per_rank": 4
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_weak_point",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 5,
+   "pos": [
+    -1.5,
+    -14
+   ],
+   "name_fr": "Point faible",
+   "description_fr": "+1 % de chance critique par rang.",
+   "effects": [
+    {
+     "stat": "crit",
+     "op": "add_flat",
+     "value_per_rank": 1
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_steady",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 4,
+   "pos": [
+    -1.5,
+    -15.5
+   ],
+   "name_fr": "Main sure",
+   "description_fr": "+3 precision par rang.",
+   "effects": [
+    {
+     "stat": "hit",
+     "op": "add_flat",
+     "value_per_rank": 3
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_carnage",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 5,
+   "pos": [
+    1.5,
+    -12.5
+   ],
+   "name_fr": "Carnage",
+   "description_fr": "+1,2 % de degats infliges par rang.",
+   "effects": [
+    {
+     "stat": "damage_percent",
+     "op": "add_flat",
+     "value_per_rank": 1.2
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_raw_power",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 5,
+   "pos": [
+    1.5,
+    -14
+   ],
+   "name_fr": "Puissance brute",
+   "description_fr": "+2 % d'attaque et +2 % de magie par rang.",
+   "effects": [
+    {
+     "stat": "atk",
+     "op": "add_percent",
+     "value_per_rank": 2
+    },
+    {
+     "stat": "mag",
+     "op": "add_percent",
+     "value_per_rank": 2
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_perforation",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 4,
+   "pos": [
+    1.5,
+    -15.5
+   ],
+   "name_fr": "Perforation",
+   "description_fr": "+1,5 penetration d'armure et +1,5 penetration magique par rang.",
+   "effects": [
+    {
+     "stat": "armor_pen",
+     "op": "add_flat",
+     "value_per_rank": 1.5
+    },
+    {
+     "stat": "magic_pen",
+     "op": "add_flat",
+     "value_per_rank": 1.5
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_relentless",
+   "kind": "notable_50",
+   "arm": "attack",
+   "max_rank": 1,
+   "pos": [
+    -1,
+    -17
+   ],
+   "name_fr": "Acharnement",
+   "description_fr": "Chaque coup sur la meme cible donne +4 % de degats contre elle, cumulable 5 fois. Changer de cible remet a zero.",
+   "effects": [
+    {
+     "mechanic": "consecutive_hit_stacks",
+     "params": {
+      "damage_pct_per_stack": 4,
+      "max_stacks": 5,
+      "reset_on_target_change": true
+     }
+    }
+   ],
+   "choice": {
+    "group": "atk_n50",
+    "option": "relentless"
+   }
+  },
+  {
+   "id": "pt2_atk_guardbreaker",
+   "kind": "notable_50",
+   "arm": "attack",
+   "max_rank": 1,
+   "pos": [
+    1,
+    -17
+   ],
+   "name_fr": "Brise-garde",
+   "description_fr": "Tes coups critiques ignorent 30 % de l'armure et de la resistance magique de la cible.",
+   "effects": [
+    {
+     "mechanic": "crit_ignores_defense",
+     "params": {
+      "armor_pct": 30,
+      "magic_resist_pct": 30
+     }
+    }
+   ],
+   "choice": {
+    "group": "atk_n50",
+    "option": "guardbreaker"
+   }
+  },
+  {
+   "id": "pt2_atk_bloodlust",
+   "kind": "side",
+   "arm": "attack",
+   "max_rank": 1,
+   "pos": [
+    -2.5,
+    -17
+   ],
+   "name_fr": "Soif de sang",
+   "description_fr": "Apres avoir tue un ennemi : +15 % de degats pendant 5 s.",
+   "effects": [
+    {
+     "mechanic": "stat_window_after_event",
+     "params": {
+      "event": "kill",
+      "stat": "damage_percent",
+      "value": 15,
+      "duration_s": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_m_carnage",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 5,
+   "pos": [
+    0,
+    -18.5
+   ],
+   "name_fr": "Maitrise : carnage",
+   "description_fr": "+1,5 % de degats infliges par rang.",
+   "effects": [
+    {
+     "stat": "damage_percent",
+     "op": "add_flat",
+     "value_per_rank": 1.5
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_m_lethal",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 5,
+   "pos": [
+    0,
+    -20
+   ],
+   "name_fr": "Maitrise : coup mortel",
+   "description_fr": "+1 % de chance critique et +3 degats critiques par rang.",
+   "effects": [
+    {
+     "stat": "crit",
+     "op": "add_flat",
+     "value_per_rank": 1
+    },
+    {
+     "stat": "crit_dmg",
+     "op": "add_flat",
+     "value_per_rank": 3
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_m_power",
+   "kind": "small",
+   "arm": "attack",
+   "max_rank": 5,
+   "pos": [
+    0,
+    -21.5
+   ],
+   "name_fr": "Maitrise : puissance",
+   "description_fr": "+2 % d'attaque et +2 % de magie par rang.",
+   "effects": [
+    {
+     "stat": "atk",
+     "op": "add_percent",
+     "value_per_rank": 2
+    },
+    {
+     "stat": "mag",
+     "op": "add_percent",
+     "value_per_rank": 2
+    }
+   ]
+  },
+  {
+   "id": "pt2_atk_mega_fatal",
+   "kind": "mega",
+   "arm": "attack",
+   "max_rank": 1,
+   "pos": [
+    -1.5,
+    -23.5
+   ],
+   "name_fr": "Coup Fatal",
+   "description_fr": "Tes coups critiques infligent +50 degats critiques et reduisent de 1 s la recharge du sort lance. Contrepartie : tes coups non critiques infligent 15 % de degats en moins.",
+   "effects": [
+    {
+     "stat": "crit_dmg",
+     "op": "add_flat",
+     "value": 50
+    },
+    {
+     "mechanic": "cooldown_reduction_on_event",
+     "params": {
+      "event": "crit",
+      "seconds": 1,
+      "scope": "cast_skill",
+      "internal_cooldown_s": 0
+     }
+    },
+    {
+     "mechanic": "non_crit_damage_modifier",
+     "params": {
+      "damage_pct": -15
+     }
+    }
+   ],
+   "choice": {
+    "group": "atk_mega",
+    "option": "fatal"
+   }
+  },
+  {
+   "id": "pt2_atk_mega_unleashed",
+   "kind": "mega",
+   "arm": "attack",
+   "max_rank": 1,
+   "pos": [
+    1.5,
+    -23.5
+   ],
+   "name_fr": "Dechainement",
+   "description_fr": "+35 % de degats infliges. Contrepartie : -30 % de soins recus et -15 % de PV max.",
+   "effects": [
+    {
+     "stat": "damage_percent",
+     "op": "add_flat",
+     "value": 35
+    },
+    {
+     "stat": "healing_received",
+     "op": "add_flat",
+     "value": -30
+    },
+    {
+     "stat": "hp",
+     "op": "add_percent",
+     "value": -15
+    }
+   ],
+   "choice": {
+    "group": "atk_mega",
+    "option": "unleashed"
+   }
+  },
+  {
+   "id": "pt2_brg_atk_def_a",
+   "kind": "bridge_small",
+   "arm": null,
+   "max_rank": 1,
+   "pos": [
+    4,
+    -11
+   ],
+   "name_fr": "Passage",
+   "description_fr": "+4 armure et +4 resistance magique.",
+   "effects": [
+    {
+     "stat": "armor",
+     "op": "add_flat",
+     "value_per_rank": 4
+    },
+    {
+     "stat": "magic_resist",
+     "op": "add_flat",
+     "value_per_rank": 4
+    }
+   ]
+  },
+  {
+   "id": "pt2_hyb_atk_def",
+   "kind": "hybrid",
+   "arm": null,
+   "max_rank": 1,
+   "pos": [
+    5.5,
+    -11
+   ],
+   "name_fr": "Riposte",
+   "description_fr": "Apres un blocage ou une parade, ta prochaine attaque inflige +40 % de degats.",
+   "effects": [
+    {
+     "mechanic": "next_hit_bonus_after_event",
+     "params": {
+      "events": [
+       "block",
+       "parry"
+      ],
+      "damage_pct": 40
+     }
+    }
+   ],
+   "arms": [
+    "attack",
+    "defense"
+   ]
+  },
+  {
+   "id": "pt2_brg_atk_def_b",
+   "kind": "bridge_small",
+   "arm": null,
+   "max_rank": 1,
+   "pos": [
+    7,
+    -11
+   ],
+   "name_fr": "Passage",
+   "description_fr": "+4 armure et +4 resistance magique.",
+   "effects": [
+    {
+     "stat": "armor",
+     "op": "add_flat",
+     "value_per_rank": 4
+    },
+    {
+     "stat": "magic_resist",
+     "op": "add_flat",
+     "value_per_rank": 4
+    }
+   ]
+  },
+  {
+   "id": "pt2_hyb_atk_def_side",
+   "kind": "hybrid",
+   "arm": null,
+   "max_rank": 1,
+   "pos": [
+    5.5,
+    -12.5
+   ],
+   "name_fr": "Garde de fer",
+   "description_fr": "Tant que tu es au-dessus de 70 % de tes PV : +12 % de degats infliges et -8 % de degats recus.",
+   "effects": [
+    {
+     "mechanic": "stats_while_hp_above",
+     "params": {
+      "hp_pct": 70,
+      "damage_percent": 12,
+      "damage_reduction": 8
+     }
+    }
+   ],
+   "arms": [
+    "attack",
+    "defense"
+   ]
+  },
+  {
+   "id": "pt2_brg_atk_deb_a",
+   "kind": "bridge_small",
+   "arm": null,
+   "max_rank": 1,
+   "pos": [
+    -4,
+    -11
+   ],
+   "name_fr": "Passage",
+   "description_fr": "+4 armure et +4 resistance magique.",
+   "effects": [
+    {
+     "stat": "armor",
+     "op": "add_flat",
+     "value_per_rank": 4
+    },
+    {
+     "stat": "magic_resist",
+     "op": "add_flat",
+     "value_per_rank": 4
+    }
+   ]
+  },
+  {
+   "id": "pt2_hyb_atk_deb",
+   "kind": "hybrid",
+   "arm": null,
+   "max_rank": 1,
+   "pos": [
+    -5.5,
+    -11
+   ],
+   "name_fr": "Opportuniste",
+   "description_fr": "+20 % de chance critique contre une cible sous controle.",
+   "effects": [
+    {
+     "mechanic": "stat_vs_target_with_status",
+     "params": {
+      "status_category": "control",
+      "stat": "crit",
+      "value": 20
+     }
+    }
+   ],
+   "arms": [
+    "attack",
+    "debuff"
+   ]
+  },
+  {
+   "id": "pt2_brg_atk_deb_b",
+   "kind": "bridge_small",
+   "arm": null,
+   "max_rank": 1,
+   "pos": [
+    -7,
+    -11
+   ],
+   "name_fr": "Passage",
+   "description_fr": "+4 armure et +4 resistance magique.",
+   "effects": [
+    {
+     "stat": "armor",
+     "op": "add_flat",
+     "value_per_rank": 4
+    },
+    {
+     "stat": "magic_resist",
+     "op": "add_flat",
+     "value_per_rank": 4
+    }
+   ]
+  },
+  {
+   "id": "pt2_hyb_atk_deb_side",
+   "kind": "hybrid",
+   "arm": null,
+   "max_rank": 1,
+   "pos": [
+    -5.5,
+    -12.5
+   ],
+   "name_fr": "Curee",
+   "description_fr": "+20 % de degats contre une cible qui porte au moins 3 affaiblissements.",
+   "effects": [
+    {
+     "mechanic": "damage_vs_target_debuff_count",
+     "params": {
+      "min_debuffs": 3,
+      "damage_pct": 20
+     }
+    }
+   ],
+   "arms": [
+    "attack",
+    "debuff"
+   ]
+  }
+ ],
+ "edges": [
+  [
+   "pt_center",
+   "pt2_atk_force"
+  ],
+  [
+   "pt2_atk_force",
+   "pt2_atk_eye"
+  ],
+  [
+   "pt2_atk_eye",
+   "pt2_atk_edge"
+  ],
+  [
+   "pt2_atk_edge",
+   "pt2_atk_aim"
+  ],
+  [
+   "pt2_atk_aim",
+   "pt2_atk_execution"
+  ],
+  [
+   "pt2_atk_aim",
+   "pt2_atk_first_blood"
+  ],
+  [
+   "pt2_atk_execution",
+   "pt2_atk_reach"
+  ],
+  [
+   "pt2_atk_first_blood",
+   "pt2_atk_reach"
+  ],
+  [
+   "pt2_atk_execution",
+   "pt2_atk_grip"
+  ],
+  [
+   "pt2_atk_execution",
+   "pt2_atk_vigor"
+  ],
+  [
+   "pt2_atk_first_blood",
+   "pt2_atk_grip"
+  ],
+  [
+   "pt2_atk_first_blood",
+   "pt2_atk_vigor"
+  ],
+  [
+   "pt2_atk_grip",
+   "pt2_atk_lynx"
+  ],
+  [
+   "pt2_atk_vigor",
+   "pt2_atk_ferocity"
+  ],
+  [
+   "pt2_atk_lynx",
+   "pt2_atk_killer_instinct"
+  ],
+  [
+   "pt2_atk_ferocity",
+   "pt2_atk_killer_instinct"
+  ],
+  [
+   "pt2_atk_lynx",
+   "pt2_atk_breach"
+  ],
+  [
+   "pt2_atk_ferocity",
+   "pt2_atk_breach"
+  ],
+  [
+   "pt2_atk_lynx",
+   "pt2_atk_momentum"
+  ],
+  [
+   "pt2_atk_ferocity",
+   "pt2_atk_momentum"
+  ],
+  [
+   "pt2_atk_killer_instinct",
+   "pt2_atk_lethality"
+  ],
+  [
+   "pt2_atk_killer_instinct",
+   "pt2_atk_carnage"
+  ],
+  [
+   "pt2_atk_breach",
+   "pt2_atk_lethality"
+  ],
+  [
+   "pt2_atk_breach",
+   "pt2_atk_carnage"
+  ],
+  [
+   "pt2_atk_momentum",
+   "pt2_atk_lethality"
+  ],
+  [
+   "pt2_atk_momentum",
+   "pt2_atk_carnage"
+  ],
+  [
+   "pt2_atk_lethality",
+   "pt2_atk_weak_point"
+  ],
+  [
+   "pt2_atk_weak_point",
+   "pt2_atk_steady"
+  ],
+  [
+   "pt2_atk_carnage",
+   "pt2_atk_raw_power"
+  ],
+  [
+   "pt2_atk_raw_power",
+   "pt2_atk_perforation"
+  ],
+  [
+   "pt2_atk_steady",
+   "pt2_atk_relentless"
+  ],
+  [
+   "pt2_atk_perforation",
+   "pt2_atk_relentless"
+  ],
+  [
+   "pt2_atk_steady",
+   "pt2_atk_guardbreaker"
+  ],
+  [
+   "pt2_atk_perforation",
+   "pt2_atk_guardbreaker"
+  ],
+  [
+   "pt2_atk_relentless",
+   "pt2_atk_bloodlust"
+  ],
+  [
+   "pt2_atk_guardbreaker",
+   "pt2_atk_bloodlust"
+  ],
+  [
+   "pt2_atk_relentless",
+   "pt2_atk_m_carnage"
+  ],
+  [
+   "pt2_atk_guardbreaker",
+   "pt2_atk_m_carnage"
+  ],
+  [
+   "pt2_atk_m_carnage",
+   "pt2_atk_m_lethal"
+  ],
+  [
+   "pt2_atk_m_lethal",
+   "pt2_atk_m_power"
+  ],
+  [
+   "pt2_atk_m_power",
+   "pt2_atk_mega_fatal"
+  ],
+  [
+   "pt2_atk_m_power",
+   "pt2_atk_mega_unleashed"
+  ],
+  [
+   "pt2_atk_killer_instinct",
+   "pt2_brg_atk_def_a"
+  ],
+  [
+   "pt2_atk_breach",
+   "pt2_brg_atk_def_a"
+  ],
+  [
+   "pt2_atk_momentum",
+   "pt2_brg_atk_def_a"
+  ],
+  [
+   "pt2_brg_atk_def_a",
+   "pt2_hyb_atk_def"
+  ],
+  [
+   "pt2_hyb_atk_def",
+   "pt2_brg_atk_def_b"
+  ],
+  [
+   "pt2_hyb_atk_def",
+   "pt2_hyb_atk_def_side"
+  ],
+  [
+   "pt2_brg_atk_def_b",
+   "pt2_def_killer_instinct"
+  ],
+  [
+   "pt2_brg_atk_def_b",
+   "pt2_def_breach"
+  ],
+  [
+   "pt2_brg_atk_def_b",
+   "pt2_def_momentum"
+  ],
+  [
+   "pt2_atk_killer_instinct",
+   "pt2_brg_atk_deb_a"
+  ],
+  [
+   "pt2_atk_breach",
+   "pt2_brg_atk_deb_a"
+  ],
+  [
+   "pt2_atk_momentum",
+   "pt2_brg_atk_deb_a"
+  ],
+  [
+   "pt2_brg_atk_deb_a",
+   "pt2_hyb_atk_deb"
+  ],
+  [
+   "pt2_hyb_atk_deb",
+   "pt2_brg_atk_deb_b"
+  ],
+  [
+   "pt2_hyb_atk_deb",
+   "pt2_hyb_atk_deb_side"
+  ],
+  [
+   "pt2_brg_atk_deb_b",
+   "pt2_deb_killer_instinct"
+  ],
+  [
+   "pt2_brg_atk_deb_b",
+   "pt2_deb_breach"
+  ],
+  [
+   "pt2_brg_atk_deb_b",
+   "pt2_deb_momentum"
+  ]
+ ]
+}

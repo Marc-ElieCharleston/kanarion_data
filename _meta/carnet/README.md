@@ -30,6 +30,11 @@ foi** : ces notes sont à fusionner avec eux au retour.
 
 ## Systèmes
 
+- [Architecture : tout l'équilibrage dans la data](architecture_data.md)
+- [Audit des valeurs codées en dur (2026-10-13)](audit_valeurs_en_dur.md)
+- [Plafonds des stats (2026-10-14)](plafonds_stats.md)
+- [Audit de la data morte et des doublons (2026-10-14)](audit_data_morte.md)
+
 - [Familiers](familiers.md)
 - [Collections](collections.md)
 - [Le Panthéon (les premiers du serveur)](pantheon.md)
@@ -40,6 +45,7 @@ foi** : ces notes sont à fusionner avec eux au retour.
 - [Équipement : stats, rareté, rang, forge](equipement.md)
 - [Souffle : coût par rang de sort](souffle_par_niveau.md)
 - [Matrice de puissance des sorts (rôles, cooldowns, spam)](matrice_sorts.md)
+- [Arbre des passifs V2 : all-in ou hybride](arbre_passifs.md)
 - [Runes : effets déclenchés à insérer (idée)](runes.md)
 - [Runes : premier catalogue (40)](runes_catalogue.md)
 - [Boutique et financement](boutique.md)
@@ -50,5 +56,8 @@ foi** : ces notes sont à fusionner avec eux au retour.
 - `_meta/conception_histoires/HISTOIRES_ET_ACCUSATEUR.md`
 - `_meta/conception_collections/COLLECTIONS.md`
 - `_meta/conception_familiers/LIVRES_DEPLACEMENTS_PASSIFS.md`
+- `_meta/conception_passifs/ARBRE_PASSIFS_V2.md`
+- `_meta/conception_contrats/CONTRATS_V2.md`
 - `_meta/refonte_monstres/DECISIONS.md`
 - `_meta/TODO_RETOUR.md` (tout ce qu'il reste à faire au retour)
+- [reprise_2026-10-16.md](reprise_2026-10-16.md) : état des branches audits / Souffle / cooldowns / scaling, ordre d'intégration.
