@@ -14,6 +14,10 @@
     "solo_allowed": true,
     "_solo": "Valide par Charleston le 2026-10-01 : un joueur sans groupe peut monter seul (avec ses compagnons dans les places libres). Il n'ira pas loin, c'est voulu."
   },
+  "presentation": {
+    "_a_valider": "Decor de combat de la Tour (2026-10-18) : le decor de faille existant (world/zones.json, compose_rift_void.py). Le service tour le passe a combat dans CreateTowerRoomRequest.combat_backdrop.",
+    "combat_backdrop": "rift_void"
+  },
   "recovery": {
     "_why": "Aucune recuperation entre les etages : on part prepare (potions, soigneurs qui soignent en fin de combat, artisans qui rendent du Souffle). La halte apres chaque gardien evite qu'un mauvais etage 42 condamne un etage 47 ; pour durcir, espacer guardian_every ou baisser full_restore_after_guardian.",
     "between_floors_hp_pct": 0,
@@ -36,6 +40,17 @@
     "growth_start_floor": 40,
     "stat_growth_per_floor": 0.06,
     "stat_multiplier_cap": 50.0,
+    "_stat_growth_segments": "A VALIDER (Charleston, propose le 2026-10-18). Multiplicateur de stats de l'etage f = produit, segment par segment, de (1 + per_floor) a la puissance du nombre d'etages de f passes dans ce segment (from_floor exclu), plafonne a stat_multiplier_cap. x1,06 par etage de 40 a 80, puis x1,03 : le plafond 50 est atteint vers l'etage 133 au lieu de 107. Les etages 1-60 sont inchanges. stat_growth_per_floor reste pour compatibilite (premier segment).",
+    "stat_growth_segments": [
+      {
+        "from_floor": 40,
+        "per_floor": 0.06
+      },
+      {
+        "from_floor": 80,
+        "per_floor": 0.03
+      }
+    ],
     "stars_by_decade": [
       1,
       2,
@@ -138,6 +153,13 @@
       "chance_per_member": 0.02
     }
   },
+  "checkpoints": {
+    "_a_valider": "Points de reprise (propose le 2026-10-18). Finir un etage gardien multiple de every debloque, pour chaque membre PRESENT, le point de reprise de cet etage pour la saison en cours (scope season = mois UTC, comme le classement). Un chef peut alors demarrer a l'etage suivant (11, 31, 51...) si SON point de reprise est au moins cet etage ; les entrees de palier (1, 21, 41...) restent les entrees normales. L'entree consomme la cle du palier de l'etage exactement comme une entree de palier (etage 11 gratuit, etage 31 cle du palier 2). Une montee partie d'un point de reprise n'est jamais classee (ranked toujours false, le serveur refuse true).",
+    "enabled": true,
+    "every": 10,
+    "scope": "season",
+    "ranked": false
+  },
   "rewards": {
     "_per_floor": "Chaque etage gagne passe par le moteur de recompenses normal (XP, or, butin par combat selon les etoiles et la presence d'elites ou de boss).",
     "guardian_chest": {
@@ -191,6 +213,192 @@
         "name_fr": "Grimpeur de la Faille",
         "name_en": "Rift Climber"
       }
+    }
+  },
+  "ranking": {
+    "_a_valider": "Regles du classement de saison (proposees le 2026-10-18). Une montee n'est classee que si elle part d'une entree de palier, avec au moins min_humans joueurs de comptes distincts (distinct_accounts) et d'adresses IP distinctes (distinct_ips, IP de la session en cours ; IP inconnue = non classee). Composition figee (roster_frozen) : des qu'un membre quitte la montee, son etage classe cesse d'avancer. Le classement lit l'etage classe et le temps mis pour l'atteindre.",
+    "min_humans": 3,
+    "distinct_accounts": true,
+    "distinct_ips": true,
+    "roster_frozen": true
+  },
+  "weekly": {
+    "_a_valider": "Cycle hebdomadaire de la Tour (propose le 2026-10-18) : affixes de la semaine et coffre hebdomadaire. Tout est a valider par Charleston (noms, valeurs, seuils).",
+    "reset": {
+      "_comment": "Lundi 05:00 heure de Paris (heure d'ete comprise), la meme horloge que les coffres de contrats et les missions de guilde (shared/gameplay/reset_period.hpp). week_key = semaine ISO du lundi de reset, 'YYYY-Www'. Seule valeur acceptee par le serveur : Europe/Paris.",
+      "weekday": "monday",
+      "hour": 5,
+      "timezone": "Europe/Paris"
+    },
+    "affixes": {
+      "_comment": "Chaque semaine, per_week affixes DISTINCTS tires du pool, de facon deterministe a partir de (seed, numero de semaine) : identiques sur tous les serveurs. L'affixe i du tirage est actif a partir de l'etage from_floors[i]. applies_to monsters = les monstres ordinaires (pas le gardien), guardian = le ou les gardiens des etages gardiens. Les multiplicateurs s'ajoutent (produit) a la croissance de l'etage ; extra_skills s'ajoutent au kit du monstre (ids de skills/monster_skills.json).",
+      "seed": 7331,
+      "per_week": 4,
+      "from_floors": [
+        41,
+        61,
+        81,
+        101
+      ],
+      "pool": [
+        {
+          "id": "fortified",
+          "name_fr": "Fortifiés",
+          "name_en": "Fortified",
+          "description_fr": "Les monstres ordinaires ont 20 % de PV et d'attaque en plus.",
+          "description_en": "Regular monsters have 20% more HP and attack.",
+          "applies_to": "monsters",
+          "hp_mult": 1.2,
+          "atk_mult": 1.2,
+          "def_mult": 1.0,
+          "extra_skills": []
+        },
+        {
+          "id": "tyrannical",
+          "name_fr": "Tyrannique",
+          "name_en": "Tyrannical",
+          "description_fr": "Les gardiens ont 30 % de PV et d'attaque en plus.",
+          "description_en": "Guardians have 30% more HP and attack.",
+          "applies_to": "guardian",
+          "hp_mult": 1.3,
+          "atk_mult": 1.3,
+          "def_mult": 1.0,
+          "extra_skills": []
+        },
+        {
+          "id": "necrotic",
+          "name_fr": "Nécrotique",
+          "name_en": "Necrotic",
+          "description_fr": "Les monstres lancent Trait de Feu, qui réduit les soins reçus par leur cible.",
+          "description_en": "Monsters cast Fire Bolt, which reduces the healing their target receives.",
+          "applies_to": "monsters",
+          "hp_mult": 1.0,
+          "atk_mult": 1.0,
+          "def_mult": 1.0,
+          "extra_skills": [
+            "skill_mob_artillery_bolt"
+          ]
+        },
+        {
+          "id": "bleeding",
+          "name_fr": "Sanglant",
+          "name_en": "Bleeding",
+          "description_fr": "Les monstres frappent avec Déchirure, qui fait saigner.",
+          "description_en": "Monsters strike with Rend, which causes bleeding.",
+          "applies_to": "monsters",
+          "hp_mult": 1.0,
+          "atk_mult": 1.0,
+          "def_mult": 1.0,
+          "extra_skills": [
+            "skill_mob_berserker_rend"
+          ]
+        },
+        {
+          "id": "enraged",
+          "name_fr": "Enragé",
+          "name_en": "Enraged",
+          "description_fr": "Les monstres frappent avec Frappe Enragée, plus forte quand ils sont blessés.",
+          "description_en": "Monsters strike with Rage Hit, stronger when they are wounded.",
+          "applies_to": "monsters",
+          "hp_mult": 1.0,
+          "atk_mult": 1.0,
+          "def_mult": 1.0,
+          "extra_skills": [
+            "skill_mob_berserker_rage_hit"
+          ]
+        },
+        {
+          "id": "reinforced",
+          "name_fr": "Renfort",
+          "name_en": "Reinforced",
+          "description_fr": "Les monstres lancent Renfort sur leurs alliés : plus d'attaque et d'armure.",
+          "description_en": "Monsters cast Reinforce on their allies: more attack and armor.",
+          "applies_to": "monsters",
+          "hp_mult": 1.0,
+          "atk_mult": 1.0,
+          "def_mult": 1.0,
+          "extra_skills": [
+            "skill_mob_enchanteur_renfort"
+          ]
+        },
+        {
+          "id": "summoner",
+          "name_fr": "Invocateur",
+          "name_en": "Summoner",
+          "description_fr": "Les gardiens lancent Appel du Néant et invoquent un Rejeton du Vide. Interrompez l'incantation.",
+          "description_en": "Guardians cast Nether Call and summon a Void Spawn. Interrupt the cast.",
+          "applies_to": "guardian",
+          "hp_mult": 1.0,
+          "atk_mult": 1.0,
+          "def_mult": 1.0,
+          "extra_skills": [
+            "skill_mob_invocateur_appel"
+          ]
+        },
+        {
+          "id": "surge",
+          "name_fr": "Déferlante",
+          "name_en": "Surge",
+          "description_fr": "Les gardiens lancent Déferlante, qui balaie une rangée annoncée à l'avance : sortez de la rangée.",
+          "description_en": "Guardians cast Sewer Surge, which sweeps a row announced in advance: leave the row.",
+          "applies_to": "guardian",
+          "hp_mult": 1.0,
+          "atk_mult": 1.0,
+          "def_mult": 1.0,
+          "extra_skills": [
+            "skill_mob_rongeur_deferlante"
+          ]
+        }
+      ]
+    },
+    "chest": {
+      "_comment": "Un coffre par seuil, par personnage et par semaine : verse au premier etage gagne au moins egal au seuil dans la semaine de la montee (n'importe quelle montee, reprise comprise), aux seuls membres presents. Les jetons d'arene vont au compte, comme le coffre de gardien.",
+      "thresholds": [
+        {
+          "floor": 20,
+          "gold": 2000,
+          "arena_tokens": 10,
+          "items": []
+        },
+        {
+          "floor": 40,
+          "gold": 5000,
+          "arena_tokens": 25,
+          "items": [
+            {
+              "id": "cons_hp_potion_t5",
+              "qty": 2
+            }
+          ]
+        },
+        {
+          "floor": 60,
+          "gold": 9000,
+          "arena_tokens": 50,
+          "items": [
+            {
+              "id": "cons_hp_potion_t5",
+              "qty": 3
+            },
+            {
+              "id": "cons_mp_potion_t5",
+              "qty": 3
+            }
+          ]
+        },
+        {
+          "floor": 80,
+          "gold": 14000,
+          "arena_tokens": 80,
+          "items": []
+        },
+        {
+          "floor": 100,
+          "gold": 20000,
+          "arena_tokens": 120,
+          "items": []
+        }
+      ]
     }
   },
   "floor_overrides": {}

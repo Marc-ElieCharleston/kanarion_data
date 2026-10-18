@@ -49,6 +49,23 @@ def entry(template, level, stars, mult, elite=False, boss=False, hp_extra=1.0, c
             'def_multiplier': round(min(cap, mult), 4)}
 
 
+def growth_multiplier(f, diff):
+    """Stat multiplier of floor f: product over difficulty.stat_growth_segments of
+    (1 + per_floor) ** (floors of f past from_floor, up to the next segment), capped.
+    Without segments: the single historical rule (growth_start_floor, stat_growth_per_floor).
+    The server computes the same thing (TowerRules::growth_multiplier)."""
+    segments = diff.get('stat_growth_segments') or [
+        {'from_floor': diff['growth_start_floor'], 'per_floor': diff['stat_growth_per_floor']}]
+    mult = 1.0
+    for i, seg in enumerate(segments):
+        end = segments[i + 1]['from_floor'] if i + 1 < len(segments) else None
+        top = f if end is None else min(f, end)
+        steps = max(0, top - seg['from_floor'])
+        if steps:
+            mult *= (1.0 + seg['per_floor']) ** steps
+    return min(diff['stat_multiplier_cap'], mult)
+
+
 def floor(f, rules, roster):
     """Composition of floor f: fixed, derived only from the rules and the seed."""
     diff = rules['difficulty']
@@ -60,8 +77,7 @@ def floor(f, rules, roster):
     stars = stars_table[min(decade, len(stars_table) - 1)]
     if guardian:
         stars = min(5, stars + diff['guardian_extra_stars'])
-    growth = max(0, f - diff['growth_start_floor'])
-    mult = min(diff['stat_multiplier_cap'], (1.0 + diff['stat_growth_per_floor']) ** growth)
+    mult = growth_multiplier(f, diff)
     count_rule = diff['monster_count']
     count = count_rule['first_floor'] + ((step - 1) // 2) * count_rule['per_two_floors_in_decade']
     if f >= count_rule['extra_from_floor']:
