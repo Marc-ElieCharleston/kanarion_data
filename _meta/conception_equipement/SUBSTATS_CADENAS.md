@@ -96,18 +96,65 @@ rôle x0,25) dans `equipment_stats.json` `equipment_categories.armor`. À faire 
 **multiplicateurs de valeur** par type (ex. plaque : armure/PV x1,2, Souffle x0,6 ; tissu l'inverse), pools
 fermés par emplacement.
 
-## Stats inertes ou pas branchées : AUDIT À FAIRE (agent de la maison)
+## Stats inertes ou pas branchées (audit du 2026-10-18, code de `vac_contracts-v2`)
 
-Pour chacune des 38 stats de `stats/definitions.json` et des stats que les objets tirent (`atk_percent`,
-`mag_percent`, `def_percent`...) : est-elle tirée sur un objet (`server-combat/src/loot/stat_roller.cpp`),
-transportée vers le personnage (`services/economy/src/inventory/stat_calculator.hpp`), chargée en combat, puis
-**réellement utilisée dans une formule** ? Sortir un tableau stat par stat (preuve fichier:ligne) et corriger en
-premier celles qu'un joueur peut tirer ou investir mais qui ne font rien.
+Audit en lecture seule, stat par stat : tirée sur l'objet (`server-combat/src/loot/stat_roller.cpp`), transportée
+(`services/economy/src/inventory/stat_calculator.hpp`, `shared/flatbuffers/builders/character_stats_builder.hpp`,
+`server-combat/src/domain/combat_profile_resolver.cpp`), chargée en combat (`combat_profile_builder.cpp`,
+`room.cpp:7043-7141`), puis utilisée dans une formule (`damage_calculator.cpp`, `status_manager.cpp`, `room.cpp`).
+À revérifier sur `main` une fois l'intégration faite (numéros de ligne de la branche).
 
-Pistes déjà connues (à vérifier) : `attack_speed` (inerte, notée dans definitions.json), `shield_pierce`
-(`implementation_status: pending`), `double_hit_chance` lue aussi sous le nom `double_attack_chance`,
-`triple_hit_chance`, `def` contre `armor`, `shield`, la sous-stat « Reflet » qui n'arrive pas en combat
-(`carnet/plafonds_stats.md`).
+**Branchées et utilisées** : hp, mp, mp_regen, atk, mag, atk_percent, mag_percent, crit, crit_dmg,
+damage_percent, armor_pen, magic_pen, debuff_duration, def_percent, armor, magic_resist, damage_reduction,
+block_chance, parry_chance (passifs seulement), effect_resist, flee, heal_power, shield_power, healing_received,
+buff_duration, lifesteal, spell_vamp, thorns, cast_speed, cooldown_reduction.
+
+### À corriger, par impact (ce qu'un joueur tire ou investit et qui ne fait rien)
+
+1. **`attack_speed` : INERTE.** Lue seulement par l'intervalle d'attaque automatique, et les attaques automatiques
+   sont coupées (`server-combat/config/combat.json:65`). Source : passifs de familier, procs, statuts. Bug d'unité
+   en plus : `lround(attack_speed)` met 0,1 à 0 (`stat_calculator.hpp:157`). Brancher `haste` sur la recharge
+   globale ou l'incantation, ou retirer la stat.
+2. **`hit` (précision) : INERTE.** Vérifiée seulement quand la précision est sous 100, et la base vaut 100 ; pas de
+   duel précision contre esquive (`damage_calculator.cpp:85-92`). Plus de 10 nœuds de passifs investissent dedans
+   pour rien (ex. « précision +1,5 par niveau »). Coder la formule de definitions.json `80 + hit - flee`, ou retirer
+   la précision des passifs et de la liste des uniques.
+3. **`effect_chance` : sans effet en PvE.** Elle ne fait que baisser la `effect_resist` de la cible, et les monstres
+   n'en ont pas (`status_manager.cpp:2036-2045`). Pourtant elle tombe en stat principale de collier (poids 15 %),
+   en substat de bijou et en affixe. Donner une résistance aux effets aux monstres, ou en faire un bonus sur la
+   chance d'appliquer. La borne 15-85 de la data n'est pas codée.
+4. **`hp_regen` : inerte EN COMBAT.** Écrite dans `HealthComponent.regen_per_tick` sans lecteur pendant le combat
+   (seul le Souffle a son tick, `room.cpp:1392`) ; elle marche hors combat (`health_coordinator.cpp:782`). Ajouter
+   un tick de PV à côté du Souffle, ou l'afficher « hors combat ».
+5. **`def` (flat) : presque inerte.** Le modèle de dégâts ignore `defense` (`damage_calculator.cpp:125-131`) ; elle
+   ne sert qu'aux compétences qui scalent sur la défense. Elle est sur 48 objets du tournoi et 8 bonus de
+   panoplie (35 à 75). Le point d'allocation, lui, marche (il va dans l'armure). Convertir en `armor` et étendre la
+   garde de `test_fight_loot.cpp:735` aux panoplies et aux uniques.
+6. **Passifs Restauration et Protection à moitié morts** (`p_common_restoration`, `p_common_warding`, familier
+   `fp_mender`) : `add_percent` sur `heal_power` / `shield_power`, qui partent de 0, et le % est appliqué avant le
+   flat (`shared/gameplay/passive_bonuses.hpp:70-95`) : la moitié en % ajoute toujours 0. Passer en `add_flat`.
+7. **`double_hit_chance`** : ne se déclenche que sur `basic_attack`, que plus rien ne lance tout seul
+   (`room.cpp:4515-4535`). L'étendre aux compétences ou l'assumer. `triple_hit_chance` : suivie mais aucune source.
+8. **Plafonds de la data non appliqués au moment de l'utiliser** : cast_speed 50 (hors statut), lifesteal 50,
+   blocage 75, parade 30, damage_percent 200. Durées des buffs et debuffs : 50 dans le code, 100 dans la data.
+9. **Nettoyage** :
+   - `tenacity` : champ 42 écrit mais jamais lu par le combat, pas de champ dans `ItemStatBonus`.
+   - `shield_break` et `reflect` (stat plate) : aucun chemin depuis un objet (seulement le fichier mort de
+     cristaux) ; `reflect_percent` passe par les procs uniquement.
+   - `shield_pierce` : marquée « pending » dans definitions.json mais branchée en combat ; aucune source joueur.
+   - Fiche de stats : n'affiche pas les épines, la réduction de dégâts ni le perce-bouclier de l'équipement
+     (`economy_service.cpp:2823-2853`).
+   - Copie `scaled_base` (`stat_calculator.hpp:432-467`) : oublie lifesteal, damage_percent et les % de base.
+   - Bonus de monde (nourriture) : n'arrivent jamais en combat (seulement la fiche) : à décider.
+   - Bloc `keystones` de `items/equipment.json` : lu par personne.
+   - Sémantique : `heal_power` et `shield_power` agissent en multiplicateur %, pas en flat comme le dit
+     definitions.json ; `hp_percent` est branché mais rien ne le tire.
+
+## Proposition : 3 substats max au lieu de 4 (2026-10-18, à valider)
+
+30 lignes au lieu de 40 sur les 10 pièces, chaque ligne compte plus et reste lisible ; cadenas 0 / 1 / 2.
+Rareté : commun 1, peu commun 1, rare 2, épique 2-3, légendaire 3 (le légendaire se distingue par ses fourchettes
+et ses affixes). L'objet parfait vient plus vite : compensé par la taille du pool (8 à 12) et le prix du cadenas.
 
 ## Questions ouvertes (à discuter en partant du principe que toutes les stats fonctionnent)
 
