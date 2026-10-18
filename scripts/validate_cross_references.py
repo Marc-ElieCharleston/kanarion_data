@@ -2236,6 +2236,32 @@ def validate_event_calendar(db: Path) -> list:
     return errors
 
 
+def validate_world_elites(db: Path) -> list:
+    """Elites et boss des aires du monde (2026-10-18) : monstres actifs (art client), chances
+    dans [0, 1]. presence lit elite_pool, elite_pack_chance et boss.{id, pack_chance}."""
+    errors = []
+    mons = load_json(db / "entities" / "monsters.json")
+    roster = {m["id"]: m for m in (mons["monsters"] if isinstance(mons, dict) else mons)}
+    for zone in load_json(db / "world" / "zones.json").get("zones", []):
+        for sa in zone.get("spawn_areas", []) or []:
+            where = f"[zones.json] {zone.get('id')}/{sa.get('id')}"
+            ids = list(sa.get("elite_pool", []) or [])
+            if isinstance(sa.get("boss"), dict) and sa["boss"].get("id"):
+                ids.append(sa["boss"]["id"])
+                pc = sa["boss"].get("pack_chance", 1.0)
+                if not (isinstance(pc, (int, float)) and 0 <= pc <= 1):
+                    errors.append(f"{where} : boss.pack_chance={pc} hors de [0, 1]")
+            ec = sa.get("elite_pack_chance", 1.0)
+            if not (isinstance(ec, (int, float)) and 0 <= ec <= 1):
+                errors.append(f"{where} : elite_pack_chance={ec} hors de [0, 1]")
+            for mid in ids:
+                if mid not in roster:
+                    errors.append(f"{where} : elite/boss inconnu '{mid}'")
+                elif roster[mid].get("roster_status", "active") != "active":
+                    errors.append(f"{where} : elite/boss '{mid}' n'est pas actif (pas d'art client)")
+    return errors
+
+
 def validate_arena_token_shop(db: Path, all_item_ids: set) -> list:
     errors = []
     path = db / "systems" / "arena_token_shop.json"
@@ -2834,7 +2860,7 @@ def main():
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
     print("[12w/12] Validating weekly events (calendar -> rewards.json events) and the token shop...")
-    errs = validate_event_calendar(db) + validate_arena_token_shop(db, all_item_ids)
+    errs = validate_event_calendar(db) + validate_arena_token_shop(db, all_item_ids) + validate_world_elites(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 

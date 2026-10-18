@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": "1.0",
-    "last_updated": "2026-10-01",
+    "last_updated": "2026-10-18",
     "description": "Points de recolte (Metiers V2, valide par Charleston le 2026-10-01). Le SERVEUR pose des points (arbres, rochers, berges de sable, carres d'herbes, buissons, coins de peche) dans des AIRES de recolte dessinees par zone, sur le modele des coffres de zone (world/zone_chests.json, presence ChestWorld). Le joueur clique, une barre d'extraction se remplit pendant gather_ms (envoye par le serveur), la ressource tombe a la fin. Bouger, entrer en combat ou prendre un coup annule la recolte.",
     "owner": "services/presence (apparition, rang, rarete, verrou de recolte, duree, tirage) + services/economy (ajout en inventaire, usure de l'outil et XP de metier dans la meme transaction). Le client lit ce fichier pour l'AFFICHAGE seulement (sprite par type et rang, cadre de rarete).",
     "status": "LU PAR LE SERVEUR (presence, metiers V1, 2026-10-01) : placement par decouverte sur les aires de monstres des zones listees dans placement.zones. Aucune aire tracee a la main.",
@@ -768,6 +768,11 @@
       "expedition_lv_21_30"
     ],
     "nodes_per_area": 3,
+    "nodes_per_area_by_rank": {
+      "4": 6,
+      "5": 9
+    },
+    "_nodes_per_area_by_rank": "Densite de fin de jeu (2026-10-18, lot 1 endgame), A VALIDER : les aires de monstres de rang IV (niveau max 61-80) recoivent 6 points au lieu de 3, celles de rang V (81-100) 9. Memes positions (aires deja connues, rien de nouveau sur la carte). Effet : rang IV 9 -> 18 points sur le serveur, rang V 6 -> 18. Un rang absent garde nodes_per_area. Lu par presence (GatherConfig::nodes_for_rank).",
     "ground_types_weights": {
       "tree": 3,
       "rock": 3,
