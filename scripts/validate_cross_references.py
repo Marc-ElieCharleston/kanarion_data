@@ -2116,6 +2116,133 @@ def validate_rest_npcs(db: Path) -> list:
     return errors
 
 
+def _monster_skill_ids(db: Path) -> set:
+    """Every skill id of skills/monster_skills.json (combat loads the whole file)."""
+    ids = set()
+
+    def walk(o):
+        if isinstance(o, dict):
+            if isinstance(o.get("id"), str) and ("tier" in o or "target" in o):
+                ids.add(o["id"])
+            for v in o.values():
+                walk(v)
+        elif isinstance(o, list):
+            for v in o:
+                walk(v)
+    path = db / "skills" / "monster_skills.json"
+    if path.exists():
+        walk(load_json(path))
+    return ids
+
+
+def validate_tower_infinite(db: Path, rules: dict, all_item_ids: set) -> list:
+    """Tour infinie (2026-10-18) : presentation, segments de croissance, points de
+    reprise, cycle hebdomadaire (affixes + coffre) et classement. Le serveur
+    (services/dungeon/src/tower/tower_rules.cpp) refuse les memes erreurs au demarrage."""
+    errors = []
+    diff = rules["difficulty"]
+    pres = rules.get("presentation")
+    if pres is not None:
+        backdrop = pres.get("combat_backdrop", "")
+        zones_text = (db / "world" / "zones.json").read_text(encoding="utf-8")
+        if not isinstance(backdrop, str) or (backdrop and f'"combat_backdrop": "{backdrop}"' not in zones_text):
+            errors.append(f"[tower.json] presentation.combat_backdrop '{backdrop}' : decor inconnu "
+                          "(aucune zone de world/zones.json ne l'utilise)")
+    segs = diff.get("stat_growth_segments")
+    if segs is not None:
+        if not isinstance(segs, list) or not segs:
+            errors.append("[tower.json] difficulty.stat_growth_segments : liste non vide attendue")
+        else:
+            prev = None
+            for s in segs:
+                ff, pf = s.get("from_floor"), s.get("per_floor")
+                if not isinstance(ff, int) or ff < 0 or not isinstance(pf, (int, float)) or not 0 <= pf <= 1:
+                    errors.append(f"[tower.json] stat_growth_segments : segment invalide {s}")
+                elif prev is not None and ff <= prev:
+                    errors.append("[tower.json] stat_growth_segments : from_floor strictement croissants attendus")
+                prev = ff if isinstance(ff, int) else prev
+            if segs[0].get("from_floor") != diff.get("growth_start_floor") \
+                    or segs[0].get("per_floor") != diff.get("stat_growth_per_floor"):
+                errors.append("[tower.json] stat_growth_segments[0] doit reprendre growth_start_floor / "
+                              "stat_growth_per_floor (compatibilite)")
+    tier_size = rules["keys"]["tier_size"]
+    every_g = rules["structure"]["guardian_every"]
+    cp = rules.get("checkpoints")
+    if cp is not None and cp.get("enabled", False):
+        every = cp.get("every")
+        if not isinstance(every, int) or every <= 0 or every % every_g != 0 or tier_size % every != 0:
+            errors.append(f"[tower.json] checkpoints.every={every!r} : multiple de guardian_every={every_g} "
+                          f"et diviseur de keys.tier_size={tier_size} attendu")
+        if cp.get("scope") != "season":
+            errors.append("[tower.json] checkpoints.scope : seule valeur geree 'season'")
+        if cp.get("ranked") is not False:
+            errors.append("[tower.json] checkpoints.ranked : doit valoir false (une reprise n'est jamais classee)")
+    rk = rules.get("ranking")
+    if rk is not None:
+        mh = rk.get("min_humans")
+        if not isinstance(mh, int) or not 1 <= mh <= rules["access"]["max_players"]:
+            errors.append(f"[tower.json] ranking.min_humans={mh!r} : entier entre 1 et access.max_players attendu")
+        for k in ("distinct_accounts", "distinct_ips", "roster_frozen"):
+            if not isinstance(rk.get(k), bool):
+                errors.append(f"[tower.json] ranking.{k} : booleen attendu")
+    wk = rules.get("weekly")
+    if wk is None:
+        return errors
+    reset = wk.get("reset", {})
+    if reset.get("timezone") != "Europe/Paris" or reset.get("weekday") not in (
+            "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday") \
+            or not isinstance(reset.get("hour"), int) or not 0 <= reset["hour"] <= 23 or reset["hour"] == 2:
+        errors.append("[tower.json] weekly.reset : timezone Europe/Paris, weekday valide, hour 0-23 hors 2 h attendus")
+    aff = wk.get("affixes", {})
+    pool = aff.get("pool", [])
+    skill_ids = _monster_skill_ids(db)
+    seen = set()
+    for a in pool:
+        aid = a.get("id")
+        if not aid or aid in seen:
+            errors.append(f"[tower.json] weekly.affixes : id vide ou en double '{aid}'")
+        seen.add(aid)
+        for k in ("name_fr", "name_en", "description_fr", "description_en"):
+            if not isinstance(a.get(k), str) or not a[k].strip():
+                errors.append(f"[tower.json] affixe '{aid}' : {k} manquant")
+            elif "—" in a[k]:
+                errors.append(f"[tower.json] affixe '{aid}' : tiret cadratin interdit dans {k}")
+        if a.get("applies_to") not in ("monsters", "guardian"):
+            errors.append(f"[tower.json] affixe '{aid}' : applies_to doit valoir monsters ou guardian")
+        for k in ("hp_mult", "atk_mult", "def_mult"):
+            v = a.get(k, 1.0)
+            if not isinstance(v, (int, float)) or not 0.1 <= v <= 5.0:
+                errors.append(f"[tower.json] affixe '{aid}' : {k}={v!r} hors [0.1, 5]")
+        for sid in a.get("extra_skills", []):
+            if sid not in skill_ids:
+                errors.append(f"[tower.json] affixe '{aid}' : skill inconnu '{sid}' (skills/monster_skills.json)")
+        if all(a.get(k, 1.0) == 1.0 for k in ("hp_mult", "atk_mult", "def_mult")) and not a.get("extra_skills"):
+            errors.append(f"[tower.json] affixe '{aid}' : ne fait rien (multiplicateurs a 1 et aucun skill)")
+    per_week = aff.get("per_week")
+    froms = aff.get("from_floors", [])
+    if not isinstance(per_week, int) or not 1 <= per_week <= len(pool):
+        errors.append(f"[tower.json] weekly.affixes.per_week={per_week!r} : entre 1 et la taille du pool ({len(pool)})")
+    if not isinstance(froms, list) or len(froms) != per_week:
+        errors.append("[tower.json] weekly.affixes.from_floors : une entree par affixe tire (per_week) attendue")
+    elif any(not isinstance(x, int) or x < 1 for x in froms) or any(b <= a for a, b in zip(froms, froms[1:])):
+        errors.append("[tower.json] weekly.affixes.from_floors : etages >= 1 strictement croissants attendus")
+    if not isinstance(aff.get("seed"), int):
+        errors.append("[tower.json] weekly.affixes.seed : entier attendu")
+    prev = 0
+    for t in wk.get("chest", {}).get("thresholds", []):
+        fl = t.get("floor")
+        if not isinstance(fl, int) or fl <= prev:
+            errors.append(f"[tower.json] weekly.chest : seuils strictement croissants attendus ({fl!r})")
+        prev = fl if isinstance(fl, int) else prev
+        if not isinstance(t.get("gold", 0), int) or t.get("gold", 0) < 0 \
+                or not isinstance(t.get("arena_tokens", 0), int) or t.get("arena_tokens", 0) < 0:
+            errors.append(f"[tower.json] weekly.chest seuil {fl} : or / jetons entiers >= 0 attendus")
+        for it in t.get("items", []):
+            if it.get("id") not in all_item_ids or not isinstance(it.get("qty"), int) or it["qty"] < 1:
+                errors.append(f"[tower.json] weekly.chest seuil {fl} : objet inconnu ou quantite invalide {it}")
+    return errors
+
+
 def validate_tower(db: Path, all_item_ids: set) -> list:
     """systems/tower.json + world/tower_floors.json : monstres actifs, cles, bornes."""
     errors = []
@@ -2147,6 +2274,7 @@ def validate_tower(db: Path, all_item_ids: set) -> list:
     for item in rules["rewards"]["guardian_chest"]["items"]:
         if item["id"] not in all_item_ids:
             errors.append(f"[tower.json] coffre de gardien : objet inconnu '{item['id']}'")
+    errors += validate_tower_infinite(db, rules, all_item_ids)
     if not floors_path.exists():
         return errors + ["[tower_floors.json] absent : lancer scripts/generate_tower.py"]
     cap = diff["stat_multiplier_cap"]
