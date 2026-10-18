@@ -2165,6 +2165,120 @@ def validate_tower(db: Path, all_item_ids: set) -> list:
 
 
 # ---------------------------------------------------------------------------
+# 12w. Evenements hebdomadaires + boutique de jetons (lot 1 endgame, 2026-10-18).
+# Le calendrier dit QUAND (world/event_calendar.json), rewards.json dit COMBIEN
+# (multiplier_families.events). Le serveur (presence) refuse de demarrer le calendrier
+# sur une valeur inconnue : la garde le dit avant.
+# ---------------------------------------------------------------------------
+
+EVENT_KEYS = ("xp", "gold", "drop_chance", "rarity_boost", "profession_xp", "rift_frequency",
+              "capture_chance", "arena_tokens")
+WEEKDAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
+
+
+def validate_event_calendar(db: Path) -> list:
+    errors = []
+    cal_path = db / "world" / "event_calendar.json"
+    if not cal_path.exists():
+        return errors
+    cal = load_json(cal_path)
+    values = load_json(db / "config" / "rewards.json").get("multiplier_families", {})         .get("events", {}).get("values", {})
+    for name, body in values.items():
+        if name.startswith("_") or not isinstance(body, dict):
+            continue
+        for k, v in body.items():
+            if k.startswith("_"):
+                continue
+            if k not in EVENT_KEYS:
+                errors.append(f"[rewards.events] {name}.{k} : clef inconnue (connues : {', '.join(EVENT_KEYS)})")
+            elif k != "rarity_boost" and not (isinstance(v, (int, float)) and 0 < v <= 5):
+                errors.append(f"[rewards.events] {name}.{k}={v} hors de ]0, 5]")
+    weeks = cal.get("cycle", {}).get("weeks", 0)
+    anchor = cal.get("cycle", {}).get("anchor_monday", "")
+    try:
+        import datetime
+        if datetime.date.fromisoformat(anchor).weekday() != 0:
+            errors.append(f"[event_calendar] cycle.anchor_monday {anchor} n'est pas un lundi")
+    except ValueError:
+        errors.append(f"[event_calendar] cycle.anchor_monday '{anchor}' n'est pas une date AAAA-MM-JJ")
+    if not isinstance(weeks, int) or weeks < 1:
+        errors.append("[event_calendar] cycle.weeks doit etre un entier >= 1")
+    seen = set()
+    for ev in cal.get("events", []):
+        eid = ev.get("id", "")
+        if eid in seen:
+            errors.append(f"[event_calendar] id en double '{eid}'")
+        seen.add(eid)
+        if ev.get("reward_value") not in values:
+            errors.append(f"[event_calendar] {eid} : reward_value '{ev.get('reward_value')}' absente de "
+                          f"rewards.json multiplier_families.events.values")
+        for f in ("name_fr", "name_en", "description_fr", "description_en"):
+            if not ev.get(f):
+                errors.append(f"[event_calendar] {eid} : {f} manquant")
+            elif "—" in ev[f]:
+                errors.append(f"[event_calendar] {eid} : tiret cadratin dans {f}")
+        for w in ev.get("weeks", []):
+            if not isinstance(w, int) or not 0 <= w < max(weeks, 1):
+                errors.append(f"[event_calendar] {eid} : semaine {w} hors du cycle de {weeks}")
+        if not ev.get("weeks"):
+            errors.append(f"[event_calendar] {eid} : weeks vide")
+        for bound in ("start", "end"):
+            b = ev.get(bound, {})
+            if b.get("weekday") not in WEEKDAYS:
+                errors.append(f"[event_calendar] {eid}.{bound}.weekday '{b.get('weekday')}' inconnu")
+            t = str(b.get("time", ""))
+            ok = len(t) == 5 and t[2] == ":" and t[:2].isdigit() and t[3:].isdigit()                 and int(t[:2]) < 24 and int(t[3:]) < 60
+            if not ok:
+                errors.append(f"[event_calendar] {eid}.{bound}.time '{t}' n'est pas HH:MM")
+            elif t[:2] == "02":
+                errors.append(f"[event_calendar] {eid}.{bound}.time {t} : 02:xx tombe dans l'heure "
+                              f"ambigue du changement d'heure")
+    return errors
+
+
+def validate_arena_token_shop(db: Path, all_item_ids: set) -> list:
+    errors = []
+    path = db / "systems" / "arena_token_shop.json"
+    if not path.exists():
+        return errors
+    shop = load_json(path)
+    emotes = {e["id"] for e in load_json(db / "ui" / "emotes.json").get("emotes", [])}
+    cosmetics = {c["id"] for c in load_json(db / "ui" / "cosmetics.json").get("cosmetics", [])}
+    # Les objets des metiers (Braises, parchemins...) vivent dans profession_recipes.json new_items.
+    pr = db / "items" / "profession_recipes.json"
+    if pr.exists():
+        all_item_ids = set(all_item_ids) | {i["id"] for i in load_json(pr).get("new_items", []) if "id" in i}
+    cats = set(shop.get("categories", {}))
+    seen = set()
+    for o in shop.get("offers", []):
+        oid = o.get("id", "")
+        if oid in seen:
+            errors.append(f"[arena_token_shop] offre en double '{oid}'")
+        seen.add(oid)
+        kind, gid = o.get("kind"), o.get("grant_id", "")
+        known = {"item": all_item_ids, "emote": emotes, "cosmetic": cosmetics}.get(kind)
+        if known is None:
+            errors.append(f"[arena_token_shop] {oid} : kind '{kind}' inconnu (item|emote|cosmetic)")
+        elif gid not in known:
+            errors.append(f"[arena_token_shop] {oid} : {kind} '{gid}' introuvable")
+        if not _is_pos_int(o.get("price")):
+            errors.append(f"[arena_token_shop] {oid} : price doit etre un entier > 0")
+        if kind == "item" and not _is_pos_int(o.get("quantity")):
+            errors.append(f"[arena_token_shop] {oid} : quantity doit etre un entier > 0")
+        if not _is_nonneg_int(o.get("weekly_cap", 0)) or not _is_nonneg_int(o.get("min_level", 0)):
+            errors.append(f"[arena_token_shop] {oid} : weekly_cap / min_level doivent etre des entiers >= 0")
+        if o.get("category") not in cats:
+            errors.append(f"[arena_token_shop] {oid} : categorie '{o.get('category')}' inconnue")
+        if kind == "item" and o.get("category") == "progress" and not o.get("weekly_cap"):
+            errors.append(f"[arena_token_shop] {oid} : un objet de progression doit avoir un weekly_cap")
+        if kind == "item" and any(gid.endswith(sfx) for sfx in ("_rank_3", "_rank_4", "_rank_5", "_r3", "_r4", "_r5")):
+            errors.append(f"[arena_token_shop] {oid} : '{gid}' est de rang 3+, regle volume-jamais-puissance")
+    if not _is_pos_int(shop.get("max_lots_per_purchase")):
+        errors.append("[arena_token_shop] max_lots_per_purchase doit etre un entier > 0")
+    return errors
+
+
+# ---------------------------------------------------------------------------
 # 13. Single sources of gameplay values (refacto vac_refactor-lot1, 2026-10-14).
 # The server reads each of these values from ONE file and refuses to start when
 # it is absent (no C++ default). These checks never pin a number: they check
@@ -2716,6 +2830,11 @@ def main():
 
     print("[12q/12] Validating the quest engine contract (writers, rewards, flags, windows)...")
     errs = validate_quest_engine(db, all_item_ids)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12w/12] Validating weekly events (calendar -> rewards.json events) and the token shop...")
+    errs = validate_event_calendar(db) + validate_arena_token_shop(db, all_item_ids)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
