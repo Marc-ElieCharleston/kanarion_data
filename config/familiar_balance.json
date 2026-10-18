@@ -180,5 +180,376 @@
         "magic_resist": 0.68
       }
     }
+  },
+  "affinities": {
+    "_comment": "Couche 2 des familiers, version 26 affinites (decision proprietaire 2026-10-13, _meta/carnet/familiers_affinites.md). A CHAQUE competence lancee par le familier (jamais l'attaque de base), UN tirage par lancement, chance selon la rarete tiree a la capture ; pas de delai interne. Affinite d'un familier = family_overrides[species de familiars.json] sinon species_to_affinity[monster_species]. stacks = stacks_to_apply (contrat Option A, jamais de value sur la grille canonique). 'value' (bouclier, soin, vol, bonus de degats) suit le value_mult de rarete de classes/familiar/passives.json ; chance et charges ne bougent pas. Pas encore lu par le serveur (FamiliarPassiveProcessor a etendre).",
+    "chance_by_rarity": {
+      "common": 2,
+      "uncommon": 4,
+      "rare": 6,
+      "epic": 8,
+      "legendary": 10
+    },
+    "durations": {
+      "_comment": "Regle proprietaire : un debuff dure 4 s = 2 GCD joueur (1 s ne sert a rien face au GCD de 2 s).",
+      "debuff_sec": 4.0,
+      "buff_sec": 4.0,
+      "shield_sec": 4.0,
+      "root_pve_sec": 4.0,
+      "root_pvp_sec": 2.0,
+      "freeze_sec": 2.0,
+      "freeze_pvp": false,
+      "displacement_max_cells": 1,
+      "displace_or_root_bosses": false
+    },
+    "effects": {
+      "meute": {
+        "name_fr": "Meute",
+        "name_en": "Pack",
+        "target": "enemy",
+        "status_id": "bleed",
+        "stacks": 1,
+        "duration_sec": 4.0,
+        "effect_fr": "Saignement",
+        "effect_en": "Bleed"
+      },
+      "charognard": {
+        "name_fr": "Charognard",
+        "name_en": "Scavenger",
+        "target": "cast",
+        "action": "execute_bonus",
+        "target_hp_below_percent": 50,
+        "value": 40,
+        "_engine": "DamageCalculator overrides.execute_threshold / execute_bonus_percent, sur ce lancement",
+        "effect_fr": "+40 % de dégâts si la cible a moins de 50 % de vie",
+        "effect_en": "+40% damage if the target is below 50% HP"
+      },
+      "fauve": {
+        "name_fr": "Fauve",
+        "name_en": "Wildcat",
+        "target": "cast",
+        "action": "guaranteed_crit",
+        "fallback": {
+          "target": "self",
+          "status_id": "crit_chance_up",
+          "stacks": 3,
+          "duration_sec": 4.0
+        },
+        "_engine": "meme chemin que skill.guaranteed_crit (room.cpp, calcul du critique) ; fallback si le branchement par lancement est refuse",
+        "effect_fr": "coup critique garanti sur ce lancement",
+        "effect_en": "guaranteed critical hit on this cast"
+      },
+      "ruse": {
+        "name_fr": "Rusé",
+        "name_en": "Cunning",
+        "target": "self",
+        "status_id": "evasion_up",
+        "stacks": 3,
+        "duration_sec": 4.0,
+        "effect_fr": "Esquive +9 points",
+        "effect_en": "+9 Evasion"
+      },
+      "colosse": {
+        "name_fr": "Colosse",
+        "name_en": "Colossus",
+        "target": "enemy",
+        "status_id": "armor_down",
+        "stacks": 3,
+        "duration_sec": 4.0,
+        "effect_fr": "Armure -15 %",
+        "effect_en": "-15% Armor"
+      },
+      "charge": {
+        "name_fr": "Charge",
+        "name_en": "Charge",
+        "target": "enemy",
+        "action": "knockback",
+        "cells": 1,
+        "never_on_boss": true,
+        "_engine": "pas de statut : primitive de deplacement (logique arrival_push de Room::reposition_for_movement_skill) a extraire en helper ; ignore les cibles immune_to_cc et les cases occupees",
+        "effect_fr": "repousse d'une case",
+        "effect_en": "knocks back one cell"
+      },
+      "ramure": {
+        "name_fr": "Ramure",
+        "name_en": "Antlers",
+        "target": "ally_most_wounded",
+        "status_id": "heal_over_time",
+        "stacks": 2,
+        "duration_sec": 4.0,
+        "effect_fr": "soin continu sur l'allié le plus blessé",
+        "effect_en": "heal over time on the most wounded ally"
+      },
+      "troupeau": {
+        "name_fr": "Troupeau",
+        "name_en": "Herd",
+        "target": "ally_nearest",
+        "status_id": "damage_reduction_up",
+        "stacks": 2,
+        "duration_sec": 4.0,
+        "effect_fr": "réduction de dégâts +10 % sur l'allié le plus proche",
+        "effect_en": "+10% damage reduction on the nearest ally"
+      },
+      "rongeur": {
+        "name_fr": "Rongeur",
+        "name_en": "Rodent",
+        "target": "enemy",
+        "status_id": "poison",
+        "stacks": 1,
+        "duration_sec": 4.0,
+        "effect_fr": "Poison",
+        "effect_en": "Poison"
+      },
+      "venin": {
+        "name_fr": "Venin",
+        "name_en": "Venom",
+        "target": "enemy",
+        "status_id": "poison",
+        "stacks": 2,
+        "duration_sec": 4.0,
+        "effect_fr": "Poison renforcé (2 charges)",
+        "effect_en": "Strong poison (2 stacks)"
+      },
+      "carapace": {
+        "name_fr": "Carapace",
+        "name_en": "Shell",
+        "target": "self",
+        "action": "shield_percent_max_hp",
+        "value": 6,
+        "duration_sec": 4.0,
+        "effect_fr": "bouclier (6 % des PV max)",
+        "effect_en": "shield (6% of max HP)"
+      },
+      "essaim": {
+        "name_fr": "Essaim",
+        "name_en": "Swarm",
+        "target": "enemy",
+        "status_id": "accuracy_down",
+        "stacks": 3,
+        "duration_sec": 4.0,
+        "effect_fr": "Précision -15 points",
+        "effect_en": "-15 Accuracy"
+      },
+      "batracien": {
+        "name_fr": "Batracien",
+        "name_en": "Batrachian",
+        "target": "enemy",
+        "action": "pull",
+        "cells": 1,
+        "never_on_boss": true,
+        "_engine": "logique MovementKind::PULL (room.cpp) a extraire en helper, distance 1",
+        "effect_fr": "attire d'une case",
+        "effect_en": "pulls one cell"
+      },
+      "aile": {
+        "name_fr": "Ailé",
+        "name_en": "Winged",
+        "target": "enemy",
+        "action": "swap",
+        "cells": 1,
+        "never_on_boss": true,
+        "_engine": "pas encore code : MovementKind::SWAP (room.cpp) n'accepte qu'un allie ; ajouter l'echange avec un ennemi a 1 case (decision proprietaire 2026-10-13)",
+        "effect_fr": "échange de place avec la cible ennemie (1 case)",
+        "effect_en": "swaps places with the enemy target (1 cell)"
+      },
+      "aquatique": {
+        "name_fr": "Aquatique",
+        "name_en": "Aquatic",
+        "target": "enemy",
+        "status_id": "slow",
+        "stacks": 2,
+        "duration_sec": 4.0,
+        "effect_fr": "Ralentissement",
+        "effect_en": "Slow"
+      },
+      "sylvestre": {
+        "name_fr": "Sylvestre",
+        "name_en": "Sylvan",
+        "target": "enemy",
+        "status_id": "root",
+        "duration_sec": 4.0,
+        "pvp_duration_sec": 2.0,
+        "never_on_boss": true,
+        "effect_fr": "Enracinement",
+        "effect_en": "Root"
+      },
+      "pierre": {
+        "name_fr": "Pierre",
+        "name_en": "Stone",
+        "target": "allies_row",
+        "status_id": "armor_up",
+        "stacks": 2,
+        "duration_sec": 4.0,
+        "effect_fr": "Armure +10 % aux alliés de la ligne",
+        "effect_en": "+10% Armor to allies in the row"
+      },
+      "givre": {
+        "name_fr": "Givre",
+        "name_en": "Frost",
+        "target": "enemy",
+        "status_id": "slow",
+        "stacks": 1,
+        "extra_status_id": "chill",
+        "extra_stacks": 1,
+        "duration_sec": 4.0,
+        "legendary": {
+          "status_id": "freeze",
+          "duration_sec": 2.0,
+          "pve_only": true,
+          "never_on_boss": true,
+          "fallback": "effet normal (Froid) en PvP, sur un boss, ou si la cible a subi un controle dur depuis moins de shared_disable_cooldown_ticks"
+        },
+        "_note": "chill n'est plus qu'un DoT depuis le 2026-09-02 : le ralentissement reel est slow",
+        "effect_fr": "Froid (ralentit) ; Gel 2 s en légendaire (PvE)",
+        "effect_en": "Chill (slows); 2 s Freeze when legendary (PvE)"
+      },
+      "braise": {
+        "name_fr": "Braise",
+        "name_en": "Ember",
+        "target": "enemy",
+        "status_id": "burn",
+        "stacks": 2,
+        "duration_sec": 4.0,
+        "effect_fr": "Brûlure (2 charges)",
+        "effect_en": "Burn (2 stacks)"
+      },
+      "faille": {
+        "name_fr": "Faille",
+        "name_en": "Rift",
+        "target": "enemy",
+        "status_id": "exposed",
+        "stacks": 1,
+        "duration_sec": 4.0,
+        "effect_fr": "Exposé",
+        "effect_en": "Exposed"
+      },
+      "ombre": {
+        "name_fr": "Ombre",
+        "name_en": "Shadow",
+        "target": "enemy",
+        "status_id": "heal_reduction",
+        "stacks": 1,
+        "max_stacks_from_affinity": 1,
+        "duration_sec": 4.0,
+        "effect_fr": "soins reçus -15 %",
+        "effect_en": "-15% healing received"
+      },
+      "spectre": {
+        "name_fr": "Spectre",
+        "name_en": "Specter",
+        "target": "enemy",
+        "status_id": "silence",
+        "duration_sec": 2.0,
+        "effect_fr": "Silence 2 s",
+        "effect_en": "2 s Silence"
+      },
+      "vide": {
+        "name_fr": "Vide",
+        "name_en": "Void",
+        "target": "enemy",
+        "action": "steal_souffle_percent_max",
+        "value": 6,
+        "fallback_self_restore_percent": 3,
+        "effect_fr": "vole 6 % du Souffle max de la cible",
+        "effect_en": "steals 6% of the target's max Breath"
+      },
+      "mort": {
+        "name_fr": "Mort",
+        "name_en": "Death",
+        "target": "self",
+        "action": "heal_percent_max_hp",
+        "value": 5,
+        "effect_fr": "soin de 5 % des PV max",
+        "effect_en": "heals 5% of max HP"
+      },
+      "abysse": {
+        "name_fr": "Abysse",
+        "name_en": "Abyss",
+        "target": "cast",
+        "action": "damage_percent_this_cast",
+        "value": 40,
+        "effect_fr": "+40 % de dégâts sur ce lancement",
+        "effect_en": "+40% damage on this cast"
+      },
+      "dechu": {
+        "name_fr": "Déchu",
+        "name_en": "Fallen",
+        "target": "enemy",
+        "status_id": "blind",
+        "duration_sec": 4.0,
+        "pvp_duration_sec": 2.0,
+        "never_on_boss": true,
+        "effect_fr": "Aveuglement (lumière brisée)",
+        "effect_en": "Blind (broken light)"
+      },
+      "demon": {
+        "name_fr": "Démon",
+        "name_en": "Demon",
+        "target": "enemy",
+        "status_id": "vulnerable",
+        "stacks": 2,
+        "duration_sec": 4.0,
+        "effect_fr": "Vulnérable (+10 % de dégâts subis)",
+        "effect_en": "Vulnerable (+10% damage taken)"
+      }
+    },
+    "species_to_affinity": {
+      "loup": "meute",
+      "chien": "meute",
+      "loup_garou": "meute",
+      "hyene": "charognard",
+      "chat_sauvage": "fauve",
+      "belette": "fauve",
+      "blaireau": "fauve",
+      "renard": "ruse",
+      "gobelin": "ruse",
+      "ours": "colosse",
+      "sanglier": "charge",
+      "bovin": "charge",
+      "sanglier_loup": "charge",
+      "cervide": "ramure",
+      "ovin_caprin": "troupeau",
+      "cheval": "troupeau",
+      "cochon": "troupeau",
+      "rat": "rongeur",
+      "ragondin": "rongeur",
+      "lievre": "rongeur",
+      "serpent": "venin",
+      "scorpion": "venin",
+      "araignee": "venin",
+      "tortue": "carapace",
+      "tatou": "carapace",
+      "herisson": "carapace",
+      "scarabee": "essaim",
+      "batracien": "batracien",
+      "corbeau": "aile",
+      "loutre": "aquatique",
+      "homme_lezard": "aquatique",
+      "esprit_sylvestre": "sylvestre",
+      "golem": "pierre",
+      "cristal": "givre",
+      "braise": "braise",
+      "faille": "faille",
+      "effroi": "ombre",
+      "spectre": "spectre",
+      "vide": "vide",
+      "squelette": "mort",
+      "abyssal": "abysse",
+      "archonte_dechu": "dechu",
+      "demon": "demon"
+    },
+    "_species_without_affinity": "Non capturables, donc sans familier : bandit, tribal, hors_la_loi, converti, zelote, edric, chevalier_dechu, culte_obscur.",
+    "family_overrides": {
+      "chacal_faille": "faille",
+      "ours_fissure": "faille",
+      "biche_fletrie": "faille",
+      "cerf_fletri": "faille",
+      "blaireau_fletri": "faille",
+      "vache": "troupeau",
+      "cerf_obscur": "ombre",
+      "moissonneur_ames": "mort",
+      "revenant_vide": "vide"
+    },
+    "_decisions_2026_10_13": "Cas douteux tranches : cochon Troupeau, vache Troupeau (les taureaux restent Charge), blaireau Fauve, hybride sanglier-loup Charge, loup-garou et loup noir Meute, cerf obscur Ombre, faucheur d'ames Mort, revenant du vide Vide, devoreur d'ames Demon, rat sorcier Rongeur. Aile echange avec l'ENNEMI cible a 1 case. Nouvelle affinite Dechu (anges dechus, espece archonte_dechu) : Aveuglement. Poison en PvP : appliquer aussi le plafond par charge = max(ATK, MAG) x 0,5 de la source quand la cible est un joueur et la source un joueur ou un familier (aujourd'hui le plafond ne vaut que sur les cibles monstres, vac_poison-cap 1c45a99f)."
   }
 }
