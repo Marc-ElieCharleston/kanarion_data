@@ -6187,6 +6187,14 @@
         "weekly_hour": 5,
         "_why": "Heure fixe pour tout le monde (5 h, heure de Paris, changement d'heure compris), et non 24 h glissantes apres la fin. Le bonus des premieres victoires d'arene (config/rewards.json arena_match) suit la meme journee."
     },
+    "contract_xp": {
+      "_comment": "XP d'un contrat rendu (quete avec contract_band), 2026-10-18. La valeur rewards.xp de chaque contrat est calculee au MILIEU de sa bande ; le service des quetes la recale sur le niveau du joueur, PLAFONNE au haut de la bande, puis applique la penalite d'ecart config/rewards.json level_difference (joueur - haut de bande). Meme regle que les invasions, les failles et l'arene (kanarion_back shared/gameplay/level_gap_rules.hpp). Lu par services/quest (contract_xp_rules.hpp) ; bloc absent ou valeur inconnue : le service refuse de demarrer.",
+      "_why": "Avant : recalage sur le niveau du joueur sans plafond. Un niveau 70 touchait 4383 XP pour un contrat de la bande 1-20 (252 XP en data), soit un contrat gris aussi rentable qu'un contrat de son niveau.",
+      "xp_level_basis": "min_player_band_top",
+      "_xp_level_basis_note": "min_player_band_top = niveau de base min(joueur, haut de la bande). player = ancien comportement (niveau du joueur, sans plafond).",
+      "xp_apply_level_difference": true,
+      "_gold_note": "L'or n'est pas recale (decision produit du 2026-08-31)."
+    },
     "contract_limits": {
         "_comment": "Plafond de contrats tenus EN MEME TEMPS (decide par Charleston le 2026-10-11, audit or). Les contrats restent repetables a volonte, mais chaque kill et chaque victoire credite TOUS les contrats actifs a la fois : tenir les huit contrats chasse + endurance d'une bande transformait 12 combats en 21 120 or (bande 81-100). Le nombre tenu etait donc un multiplicateur d'or. Lu par services/quest (load_contract_limit) ; refus a l'acceptation avec l'erreur QUEST_CONTRACT_LIMIT (0x0A01).",
         "max_active": 3,

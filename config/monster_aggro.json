@@ -10,7 +10,7 @@
   "enabled": true,
   "_enabled_note": "Interrupteur general. false = aucune aggro serveur, les noms ne passent jamais au rouge (aggro_for_viewer=false partout). Le service presence relit ce fichier au demarrage.",
   "enabled_zones": ["village"],
-  "_enabled_zones_note": "Zones du monde ou l'aggro tourne. village = Havreden (monde ouvert). Les etages de donjon, la taverne, le tutoriel et les expeditions n'en ont pas tant qu'on ne les ajoute pas ici. A valider.",
+  "_enabled_zones_note": "Zones du monde ou l'aggro tourne. village = Havreden (monde ouvert). Les etages de donjon, la taverne, le tutoriel, les expeditions et l'interieur de faille (rift_interior_*, groupes a vaincre volontairement) n'en ont pas tant qu'on ne les ajoute pas ici. A valider.",
   "triggers": {
     "_comment": "ecart = niveau du groupe (niveau des monstres du pack) - niveau du joueur evalue. Le niveau est INDIVIDUEL : seul le joueur qui declenche est engage, ses allies recoivent l'invitation habituelle (PARTY_COMBAT_ENTERED), personne n'est aspire d'office.",
     "level_gap_min": 7,
@@ -51,15 +51,15 @@
     "_max_note": "Plafond absolu. Le serveur borne sa recherche de groupes a ce rayon (cout du tick)."
   },
   "engagement": {
-    "_comment": "Une fois repere (alerte « ! »), le joueur a detect_ms pour sortir de leash_factor x R. Sinon le groupe l'engage (ATTACK_ACK success, comme un clic). Les valeurs dependent de l'ecart : repere plus court et poursuite plus longue quand l'ecart est grand. La premiere bande dont gap_min <= ecart s'applique, en partant de la plus haute ; un engagement par etoiles ou par temperament aggressive (ecart < level_gap_min) prend la bande 'default'.",
+    "_comment": "Aggro « comme Dofus » (decision de Charleston, 2026-10-18) : les monstres ne courent pas vers le joueur, des que le joueur entre dans le rayon R le combat se lance DIRECTEMENT (ATTACK_ACK success, comme un clic). Le « ! » (AGGRO_ALERT) n'est plus qu'un flash au moment de l'engagement, sans fenetre de fuite ; AGGRO_CANCELLED (0x0251) n'est plus emis. detect_ms vaut donc 0 partout et leash_factor est SANS EFFET (garde pour que le format reste stable, le serveur ne s'en sert plus). Avant le 18/10 : le joueur avait detect_ms pour sortir de leash_factor x R. La premiere bande dont gap_min <= ecart s'applique, en partant de la plus haute ; un engagement par etoiles ou par temperament aggressive prend la bande 'default'.",
     "bands": [
-      { "gap_min": 25, "detect_ms": 500, "leash_factor": 2.5 },
-      { "gap_min": 15, "detect_ms": 800, "leash_factor": 2.0 },
-      { "gap_min": 7, "detect_ms": 1200, "leash_factor": 1.5 }
+      { "gap_min": 25, "detect_ms": 0, "leash_factor": 2.5 },
+      { "gap_min": 15, "detect_ms": 0, "leash_factor": 2.0 },
+      { "gap_min": 7, "detect_ms": 0, "leash_factor": 1.5 }
     ],
-    "default": { "detect_ms": 1200, "leash_factor": 1.5 },
+    "default": { "detect_ms": 0, "leash_factor": 1.5 },
     "recheck_ms": 6000,
-    "_recheck_note": "Apres une alerte annulee (fuite, engagement refuse), le meme couple groupe / joueur ne peut pas se re-declencher avant ce delai.",
+    "_recheck_note": "Apres un engagement refuse (creation de salle en echec), le meme couple groupe / joueur ne peut pas se re-declencher avant ce delai. Il n'y a plus de fuite depuis le 2026-10-18.",
     "max_pending_alerts_per_player": 1,
     "max_engagements_per_zone_per_second": 5,
     "_rate_note": "Plafond d'engagements par zone et par seconde : au-dela, l'alerte attend le tick suivant. Protege presence et combat d'une rafale (creation de salle).",
@@ -77,7 +77,9 @@
   "protections": {
     "_comment": "Jamais d'aggro : joueur dans zones.json safe_polygon ou dans une no_aggro_areas de sa zone, deja en combat ou en train d'y entrer, phase de deplacement autre que NORMAL, en attente de reapparition, spectateur d'un combat, drapeau admin aggro_immune. Un joueur dans un menu ou un dialogue PNJ (IN_MENU) est protege tant qu'il ne bouge pas ; un joueur AFK ne l'est PAS (sinon on traverse en AFK).",
     "in_menu_protects": true,
-    "afk_protects": false
+    "afk_protects": false,
+    "rift_door_no_aggro_radius_px": 256,
+    "_rift_door_note": "Zone sans aggro autour de chaque porte de faille OUVERTE (Fissure kind 1, world/rift_events.json). Les portes sont dynamiques : le serveur pose un disque de ce rayon (px MONDE, ellipse isometrique comme no_aggro_areas) sur chaque porte tant que la faille est ouverte ou se referme. Meme rayon que les no_aggro_areas de zones.json (256, a valider). L'interieur de faille (zones rift_interior_r1..r5) n'est PAS dans enabled_zones : pas d'aggro dedans, les groupes y sont a vaincre volontairement."
   },
   "geometry": {
     "iso_y_scale": 2.133,
