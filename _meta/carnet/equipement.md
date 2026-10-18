@@ -67,3 +67,12 @@ sur les branches `vac_equipment` (data et back). Inventaire fait sur data master
    artisans deviennent utiles à l'économie. Puis recaler la courbe de référence.
 
 Lien : [loot.md](loot.md) (rythme : ne pas être équipé trop vite).
+
+## Relance à cadenas (propriétaire, 2026-10-18)
+
+- La relance à cadenas remplace « changer une substat » : on cadenasse ce qui plaît, on relance le reste d'un coup ;
+  le prix en or monte avec le nombre de cadenas.
+- 4 substats max par pièce, 10 pièces ; substats selon la pièce (arme offensive, etc.), valeurs basses en %, flat
+  qui suit le niveau. Pools fermés par emplacement (avec la relance, un poids faible ne limite plus rien).
+- Retirer les doublons de pools de substats et le code mort (`items/substat_crafting_system.json`).
+- Détail : `_meta/conception_equipement/SUBSTATS_CADENAS.md`.
