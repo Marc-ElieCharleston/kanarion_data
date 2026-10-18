@@ -160,7 +160,15 @@
     },
     "fissures_closed": {
       "scope": "character",
-      "from": "COUNT(world_event_rewards kind = fissure)"
+      "from": "COUNT(world_event_rewards kind IN (fissure, rift, rift_purified)) : invasions refermees puis, depuis le 2026-10-17, interieurs de faille refermes (purification comprise)"
+    },
+    "rifts_purified": {
+      "scope": "character",
+      "from": "COUNT(world_event_rewards kind = rift_purified) : interieurs de faille refermes en purification (joueur trop haut pour la faille, world/rift_events.json + config/rewards.json rift_level_gap)"
+    },
+    "rift_embers_gathered": {
+      "scope": "character",
+      "from": "character_profession_stats.rift_embers_gathered (economy, Braises recueillies a la fermeture d'un interieur de faille)"
     },
     "friends_count": {
       "scope": "character",
@@ -1913,8 +1921,8 @@
       "shape": "detour",
       "name_fr": "Faille refermée",
       "name_en": "Rift Sealed",
-      "desc_fr": "Aide à refermer 1 invasion de Fissure.",
-      "desc_en": "Help seal 1 Fissure invasion.",
+      "desc_fr": "Aide à refermer 1 faille.",
+      "desc_en": "Help seal 1 rift.",
       "source": "fissures_closed",
       "threshold": 1,
       "reward": {
@@ -1927,8 +1935,8 @@
       "shape": "echelle",
       "name_fr": "Gardien des brèches",
       "name_en": "Breach Warden",
-      "desc_fr": "Aide à refermer 5 invasions de Fissure.",
-      "desc_en": "Help seal 5 Fissure invasions.",
+      "desc_fr": "Aide à refermer 5 failles.",
+      "desc_en": "Help seal 5 rifts.",
       "source": "fissures_closed",
       "threshold": 5,
       "reward": {
@@ -1941,8 +1949,8 @@
       "shape": "echelle",
       "name_fr": "Chasseur de Failles",
       "name_en": "Rift Hunter",
-      "desc_fr": "Aide à refermer 25 invasions de Fissure.",
-      "desc_en": "Help seal 25 Fissure invasions.",
+      "desc_fr": "Aide à refermer 25 failles.",
+      "desc_en": "Help seal 25 rifts.",
       "source": "fissures_closed",
       "threshold": 25,
       "reward": {
@@ -1955,14 +1963,75 @@
       "shape": "echelle",
       "name_fr": "Seigneur des Failles",
       "name_en": "Rift Lord",
-      "desc_fr": "Aide à refermer 100 invasions de Fissure.",
-      "desc_en": "Help seal 100 Fissure invasions.",
+      "desc_fr": "Aide à refermer 100 failles.",
+      "desc_en": "Help seal 100 rifts.",
       "source": "fissures_closed",
       "threshold": 100,
       "reward": {
         "xp": 82500,
         "title_id": "title_seigneur_failles"
       }
+    },
+    {
+      "id": "ach_rift_purify_1",
+      "category": "donjon",
+      "shape": "premier",
+      "name_fr": "Purificateur",
+      "name_en": "Purifier",
+      "desc_fr": "Aide à refermer une faille bien en dessous de ton niveau, sans rien y prendre.",
+      "desc_en": "Help seal a rift far below your level, taking nothing from it.",
+      "source": "rifts_purified",
+      "threshold": 1,
+      "reward": {
+        "xp": 0
+      },
+      "_why_no_xp": "La purification ne rapporte ni XP ni objet (decision Charleston 2026-10-17) : le succes et le titre sont la seule trace."
+    },
+    {
+      "id": "ach_rift_purify_25",
+      "category": "donjon",
+      "shape": "echelle",
+      "name_fr": "Purificateur de Havreden",
+      "name_en": "Purifier of Havreden",
+      "desc_fr": "Aide à refermer 25 failles bien en dessous de ton niveau.",
+      "desc_en": "Help seal 25 rifts far below your level.",
+      "source": "rifts_purified",
+      "threshold": 25,
+      "reward": {
+        "xp": 0,
+        "title_id": "title_purificateur_havreden"
+      },
+      "_a_valider": "Seuil 25 et titre."
+    },
+    {
+      "id": "ach_rift_ember_1",
+      "category": "metiers",
+      "shape": "premier",
+      "name_fr": "Encore chaude",
+      "name_en": "Still Warm",
+      "desc_fr": "Recueille une Braise de Faille en refermant une faille.",
+      "desc_en": "Gather a Rift Ember while sealing a rift.",
+      "source": "rift_embers_gathered",
+      "threshold": 1,
+      "reward": {
+        "xp": 2580
+      },
+      "_expected_char_level": 30
+    },
+    {
+      "id": "ach_rift_ember_50",
+      "category": "metiers",
+      "shape": "detour",
+      "name_fr": "Gardien des braises",
+      "name_en": "Keeper of Embers",
+      "desc_fr": "Recueille 50 Braises de Faille.",
+      "desc_en": "Gather 50 Rift Embers.",
+      "source": "rift_embers_gathered",
+      "threshold": 50,
+      "reward": {
+        "xp": 48000
+      },
+      "_expected_char_level": 60
     },
     {
       "id": "ach_forge_enhance_1",

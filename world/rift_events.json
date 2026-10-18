@@ -1,0 +1,98 @@
+{
+  "_meta": {
+    "version": "1.0-alpha",
+    "last_updated": "2026-10-17",
+    "status": "V1 alpha (go de Charleston le 2026-10-17, 'avec tes recommandations'). Remplace les invasions de Fissure de Havreden (world/fissure_invasions.json, desactive) : la Fissure du monde devient la PORTE de l'interieur.",
+    "description": "Interieur de faille, evenement de zone. Une Fissure s'ouvre dans une AIRE de monstres (world/zones.json spawn_areas) ; on y entre et l'on arrive sur une carte noire ou tous les mega-groupes sont visibles des l'ouverture. Objectif commun : vaincre target_groups groupes avant la fin. Rang = celui de l'aire (ceil(niveau max / 20), meme regle que les coffres) ; la TAILLE est tiree a part. Aucune valeur de recompense ici : config/rewards.json (rift_closing, rift_rank, rift_level_gap) et systems/profession_xp.json (rift_xp).",
+    "owner": "services/presence (ordonnancement, carte, compteur, contribution, entree, sortie, fermeture, annonces). Recompenses : presence (coffres via economy), quest (XP de fermeture, compteur de purification), economy (XP du Chasseur de Failles + Braises). Le client lit ce fichier pour l'AFFICHAGE seulement.",
+    "study": "Etude de conception du 2026-10-17 (scratchpad rift_event/design.md, scripts farm_calc.py, hunter_sim.py, teams_calc.py). Les valeurs marquees _a_valider en viennent.",
+    "lore": "La Fissure s'empare du Souffle des creatures sans le detruire. Refermer la Fissure, c'est liberer l'aire : jamais un cadrage de mort ou de depouilles."
+  },
+  "schedule": {
+    "_rule": "Un minuteur PAR RANG pour tout le serveur. A chaque planification, le serveur tire une aire de ce rang parmi les zones listees, une taille, et la position de la porte : tout est fixe A L'AVANCE (c'est ce que lit la prevision du Chasseur de Failles). Au plus UNE faille ouverte par rang ; la suivante est planifiee a la fermeture de la precedente, a interval x (1 +/- jitter). Au demarrage du serveur, chaque rang ouvre entre first_open_minutes[0] et [1].",
+    "zones": ["village"],
+    "_zones": "Seules les zones qui ont une carte cote client. Les expeditions (expedition_lv_*) n'en ont plus : une porte n'y serait jamais atteinte.",
+    "interval_minutes_by_rank": {"1": 30, "2": 40, "3": 60, "4": 90, "5": 120},
+    "interval_jitter": 0.2,
+    "first_open_minutes": [2, 10],
+    "_a_valider": "Intervalles 30/40/60/90/120 min de l'etude (section 4.1), jitter 20 %, premiere ouverture 2-10 min apres le demarrage."
+  },
+  "sizes": {
+    "_rule": "Nombre de groupes a vaincre et duree d'ouverture par TAILLE (valides par Charleston : 8/14/22 groupes, 20/30/40 min). La taille est tiree a la planification avec weights_by_rank [petite, moyenne, grande]. Duree reelle = duration_minutes x duration_scale_by_rank[rang] : le rang V se regle ici, sans code, apres mesure.",
+    "small": {"target_groups": 8, "duration_minutes": 20},
+    "medium": {"target_groups": 14, "duration_minutes": 30},
+    "large": {"target_groups": 22, "duration_minutes": 40},
+    "weights_by_rank": {"1": [50, 35, 15], "2": [50, 35, 15], "3": [50, 35, 15], "4": [55, 35, 10], "5": [60, 30, 10]},
+    "duration_scale_by_rank": {"1": 1.0, "2": 1.0, "3": 1.0, "4": 1.0, "5": 1.0},
+    "_duration_scale": "A regler apres mesure : une grande faille de rang V demande ~11 equipes en parallele pendant 40 min (etude teams_calc.py). Mesurer d'abord la duree d'un mega-groupe 5 etoiles au niveau 95.",
+    "_a_valider": "Poids des tailles par rang (etude section 2.1)."
+  },
+  "visual": {
+    "_rule": "Taille de la Fissure affichee (lot invasion_a, 60 / 86 / 112 px) selon la TAILLE de la faille (et non plus selon le rang de l'aire). Decidee par le serveur, envoyee dans FissureInfo.level : le client ne fait que choisir le sprite.",
+    "level_by_size": {"small": 1, "medium": 2, "large": 3}
+  },
+  "groups": {
+    "_rule": "Tous les groupes sont poses a l'ouverture (target_groups + spare_groups), visibles d'emblee, sans reapparition. Especes tirees parmi spawn_areas[].mobs de l'aire (poids de l'aire). Niveau = niveau max de l'aire + un decalage tire dans level_offset_from_area_max (haut de la fourchette). Etoiles tirees par presence, seul proprietaire de star_level, avec star_weights (index = nombre d'etoiles 0..5).",
+    "spare_groups": 2,
+    "size": [8, 10],
+    "level_offset_from_area_max": [-4, 0],
+    "star_weights": [0, 0, 0, 40, 40, 20],
+    "_a_valider": "Taille 8-10 (regle 10 allies + 10 monstres), niveaux [max-4, max], etoiles 3/4/5 a 40/40/20, 2 groupes de reserve."
+  },
+  "interior": {
+    "_rule": "Une zone interieure PARTAGEE par rang (world/zones.json, type rift_interior). L'ordonnanceur garantit une seule faille par rang, presence repeuple la zone a chaque ouverture et la vide a la fermeture. Coordonnees monde de la carte interieure (losange iso 2:1, meme contour que zones.json area_limit).",
+    "zone_id_by_rank": {"1": "rift_interior_r1", "2": "rift_interior_r2", "3": "rift_interior_r3", "4": "rift_interior_r4", "5": "rift_interior_r5"},
+    "entry_range_px": 400,
+    "_entry_range": "Distance maximale entre le joueur et la porte (la Fissure du monde) pour entrer.",
+    "entry_point": [0, 560],
+    "exit_points": [[0, 690], [-1400, 0], [1400, 0]],
+    "exit_range_px": 220,
+    "_exits": "Fissures de bord de la carte interieure : on sort en s'en approchant (exit_range_px). On ressort devant la porte.",
+    "group_slots": [[-180, -456], [180, -456], [-450, -342], [-90, -342], [270, -342], [-720, -228], [-360, -228], [0, -228], [360, -228], [720, -228], [-810, -114], [-450, -114], [-1080, 0], [-720, 0], [-360, 0], [0, 0], [360, 0], [720, 0], [1080, 0], [-720, 228], [0, 228], [720, 228], [-450, 342], [450, 342]],
+    "_group_slots": "Une position par groupe, au moins target_groups + spare_groups de la plus grande taille (22 + 2). Les groupes prennent les premieres positions apres un melange. A reprendre si la carte finale change de dimensions.",
+    "admission_seconds": 60,
+    "_admission": "Une entree acceptee reste valable ce temps pour le JOIN_ZONE de l'interieur (chargement de la carte).",
+    "close_grace_seconds": 10,
+    "_close_grace": "Objectif atteint : attente des fins de combat (coequipiers credites) avant le bilan.",
+    "exit_grace_seconds": 20,
+    "_exit_grace": "A la fermeture (reussie ou non), les joueurs restants voient le bilan, puis le serveur les renvoie devant la porte.",
+    "on_defeat": "eject_outside",
+    "_on_defeat": "Defaite dans la faille = retour devant la porte, la contribution est gardee, on peut rentrer (decision Charleston 2026-10-17)."
+  },
+  "entry": {
+    "_rule": "Entree refusee si niveau < niveau_faille + min_level_offset (borne basse min_level_floor). niveau_faille = niveau max de l'aire. Controle par le SERVEUR pour chaque joueur qui entre (chaque membre d'un groupe entre pour lui-meme), et a la creation de chaque combat de la faille (un allie trop bas ne peut pas rejoindre le combat).",
+    "min_level_offset": -15,
+    "min_level_floor": 1
+  },
+  "contribution": {
+    "_rule": "Points = groupes vaincus par les combats du joueur : une victoire credite tous les participants du combat, morts compris (comme au donjon). Seuils [bronze, argent, or] par rang et par taille. Le bronze s'obtient des 1 groupe : un debutant qui a gagne un combat avant qu'un haut niveau ne ferme la faille garde son bronze.",
+    "tier_thresholds": {
+      "1": {"small": [1, 2, 3], "medium": [1, 3, 5], "large": [1, 4, 6]},
+      "2": {"small": [1, 1, 2], "medium": [1, 2, 3], "large": [1, 2, 4]},
+      "3": {"small": [1, 1, 2], "medium": [1, 1, 2], "large": [1, 1, 3]},
+      "4": {"small": [1, 1, 2], "medium": [1, 1, 2], "large": [1, 1, 2]},
+      "5": {"small": [1, 1, 2], "medium": [1, 1, 2], "large": [1, 1, 2]}
+    },
+    "assisted_contribution_factor": 0.5,
+    "_assisted": "Un combat gagne avec au moins un participant en purification (ecart >= rewards.json rift_level_gap.purification_from) ne compte que pour ce facteur dans les points des AUTRES participants : casse le portage et bride le vol du compteur.",
+    "_a_valider": "Seuils de l'etude (section 6.2, calibres sur une equipe a 50 % et 80 % du temps) et facteur assiste 0.5."
+  },
+  "failure": {
+    "mode": "close",
+    "_modes": "close (phase 1, alpha) : la faille se referme sans consequence. corruption (phase 2) puis corruption_then_overflow (phase 3, apres l'aggro serveur) : POINTS D'ACCROCHE seulement, non lus par le serveur en V1.",
+    "corruption": {"duration_minutes": 45, "monster_stat_multiplier": 1.2, "pause_chests": true, "pause_gather_nodes": true, "lifted_by_next_success": true, "_status": "phase 2, non branche"},
+    "overflow": {"after_consecutive_failures": 2, "groups_per_failure": 3, "max_groups_per_zone": 6, "despawn_minutes": 30, "_status": "phase 3, non branche (depend de l'aggro serveur)"}
+  },
+  "hunter": {
+    "_rule": "Chasseur de Failles. Prevision : systems/professions.json fissure_hunter.forecast, lue sur la planification de ce fichier. Stabiliser : un chasseur de niveau de metier >= min_profession_level_by_rank[rang] et qui porte une lanterne de rang >= rang de la faille ajoute extra_minutes au minuteur, max_per_rift fois par faille (option (b) de l'etude, section 4.4). XP et Braises : systems/profession_xp.json rift_xp et config/rewards.json rift_closing.",
+    "stabilize": {"min_profession_level_by_rank": {"1": 0, "2": 20, "3": 40, "4": 60, "5": 80}, "extra_minutes": 5, "max_per_rift": 1},
+    "_a_valider": "+5 min une fois par faille."
+  },
+  "announce": {
+    "_rule": "A l'ouverture : diffusion a la zone de la porte (FISSURE_UPDATE, banniere cote client) et message systeme dans chat_channel. A la fermeture : FISSURE_ENDED a la zone, bilan aux joueurs de l'interieur, message systeme.",
+    "zone_broadcast": true,
+    "chat_channel": "global",
+    "chat_on_open": true,
+    "chat_on_close": true
+  }
+}

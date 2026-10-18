@@ -1135,6 +1135,8 @@ KNOWN_ACHIEVEMENT_SOURCES = {
     "crafts_total", "gathers_total", "recipes_distinct", "crafts_quality_top",
     "crafts_quality_second", "gathers_rarity_top", "gathers_rarity_second",
     "profession_specialties_at_100", "intermediates_crafted", "max_tool_rank_used",
+    # Interieur de faille (2026-10-17) : Braises recueillies (economy) et purifications (quest).
+    "rift_embers_gathered", "rifts_purified",
 }
 # Prefixe -> le parametre doit etre un id de metier (profession_level) ou un niveau 1..rules.level_max.
 PARAMETERIZED_ACHIEVEMENT_SOURCES = ("profession_level:", "professions_at_or_above:")
@@ -1367,6 +1369,190 @@ def validate_fissure_invasions(db: Path) -> list:
     eff = data.get("effects", {})
     if not (0 < eff.get("respawn_time_multiplier", 0) <= 1):
         errors.append("[fissure_invasions.json] effects.respawn_time_multiplier doit etre dans ]0, 1]")
+    return errors
+
+
+def _point_in_polygon(x, y, poly) -> bool:
+    inside = False
+    j = len(poly) - 1
+    for i in range(len(poly)):
+        xi, yi = poly[i]
+        xj, yj = poly[j]
+        if (yi > y) != (yj > y) and x < (xj - xi) * (y - yi) / ((yj - yi) or 1e-9) + xi:
+            inside = not inside
+        j = i
+    return inside
+
+
+def validate_rift_events(db: Path) -> list:
+    """world/rift_events.json (interieur de faille, 2026-10-17) : zones, tailles, seuils de palier,
+    emplacements des groupes dans le contour de la carte interieure, Braises par rang, et les blocs
+    de recompense lus ailleurs (config/rewards.json rift_closing / rift_level_gap,
+    systems/profession_xp.json rift_xp). Le serveur refuse de charger une faille incoherente : la CI
+    le dit avant."""
+    errors = []
+    path = db / "world" / "rift_events.json"
+    if not path.exists():
+        return errors
+    tag = "[rift_events.json]"
+    data = load_json(path)
+    zones = {z.get("id"): z for z in load_json(db / "world" / "zones.json").get("zones", [])
+             if isinstance(z, dict)}
+    ranks = ("1", "2", "3", "4", "5")
+    sizes = ("small", "medium", "large")
+    sch = data.get("schedule", {})
+    for zid in sch.get("zones", []):
+        if zid not in zones:
+            errors.append(f"{tag} schedule.zones : '{zid}' absente de world/zones.json")
+        elif not zones[zid].get("spawn_areas"):
+            errors.append(f"{tag} schedule.zones : '{zid}' n'a pas de spawn_areas (aucune aire ou ouvrir)")
+    for r in ranks:
+        v = sch.get("interval_minutes_by_rank", {}).get(r)
+        if not (isinstance(v, (int, float)) and v > 0):
+            errors.append(f"{tag} schedule.interval_minutes_by_rank.{r} doit etre > 0")
+    fo = sch.get("first_open_minutes", [])
+    if not (isinstance(fo, list) and len(fo) == 2 and 0 <= fo[0] <= fo[1]):
+        errors.append(f"{tag} schedule.first_open_minutes doit etre [min, max]")
+    if not (0 <= sch.get("interval_jitter", -1) < 1):
+        errors.append(f"{tag} schedule.interval_jitter doit etre dans [0, 1[")
+    sz = data.get("sizes", {})
+    max_groups = 0
+    for name in sizes:
+        b = sz.get(name, {})
+        if not (isinstance(b.get("target_groups"), int) and b["target_groups"] > 0
+                and isinstance(b.get("duration_minutes"), (int, float)) and b["duration_minutes"] > 0):
+            errors.append(f"{tag} sizes.{name} : target_groups (entier > 0) et duration_minutes (> 0) requis")
+        else:
+            max_groups = max(max_groups, b["target_groups"])
+    for r in ranks:
+        w = sz.get("weights_by_rank", {}).get(r)
+        if not (isinstance(w, list) and len(w) == 3 and all(isinstance(x, (int, float)) and x >= 0 for x in w)
+                and sum(w) > 0):
+            errors.append(f"{tag} sizes.weights_by_rank.{r} doit etre [petite, moyenne, grande] (somme > 0)")
+        sc = sz.get("duration_scale_by_rank", {}).get(r)
+        if not (isinstance(sc, (int, float)) and sc > 0):
+            errors.append(f"{tag} sizes.duration_scale_by_rank.{r} doit etre > 0")
+    lvl = data.get("visual", {}).get("level_by_size", {})
+    for name in sizes:
+        if lvl.get(name) not in (1, 2, 3):
+            errors.append(f"{tag} visual.level_by_size.{name} doit valoir 1, 2 ou 3")
+    g = data.get("groups", {})
+    gs = g.get("size", [])
+    if not (isinstance(gs, list) and len(gs) == 2 and 1 <= gs[0] <= gs[1] <= 10):
+        errors.append(f"{tag} groups.size doit etre [min, max] dans [1, 10] (regle 10 allies + 10 monstres)")
+    off = g.get("level_offset_from_area_max", [])
+    if not (isinstance(off, list) and len(off) == 2 and off[0] <= off[1] <= 0):
+        errors.append(f"{tag} groups.level_offset_from_area_max doit etre [min, max] <= 0")
+    sw = g.get("star_weights", [])
+    if not (isinstance(sw, list) and len(sw) == 6 and all(isinstance(x, (int, float)) and x >= 0 for x in sw)
+            and sum(sw) > 0):
+        errors.append(f"{tag} groups.star_weights doit avoir 6 poids (0 a 5 etoiles), somme > 0")
+    spare = g.get("spare_groups", -1)
+    if not (isinstance(spare, int) and spare >= 0):
+        errors.append(f"{tag} groups.spare_groups doit etre un entier >= 0")
+        spare = 0
+    it = data.get("interior", {})
+    zid_by_rank = it.get("zone_id_by_rank", {})
+    polys = []
+    for r in ranks:
+        zid = zid_by_rank.get(r)
+        z = zones.get(zid)
+        if not z:
+            errors.append(f"{tag} interior.zone_id_by_rank.{r} : zone '{zid}' absente de world/zones.json")
+            continue
+        if z.get("type") != "rift_interior" or z.get("rift_rank") != int(r):
+            errors.append(f"{tag} zone '{zid}' doit avoir type rift_interior et rift_rank {r}")
+        if z.get("spawn_areas"):
+            errors.append(f"{tag} zone '{zid}' ne doit pas avoir de spawn_areas (groupes poses par l'evenement)")
+        poly = z.get("area_limit", [])
+        if len(poly) < 3:
+            errors.append(f"{tag} zone '{zid}' : area_limit (contour de la carte) requis")
+        else:
+            polys.append((zid, poly))
+    slots = it.get("group_slots", [])
+    if len(slots) < max_groups + spare:
+        errors.append(f"{tag} interior.group_slots : {len(slots)} emplacements, il en faut au moins "
+                      f"{max_groups + spare} (plus grande taille + reserve)")
+    points = [("group_slots", p) for p in slots] + [("entry_point", it.get("entry_point", []))]
+    points += [("exit_points", p) for p in it.get("exit_points", [])]
+    if not it.get("exit_points"):
+        errors.append(f"{tag} interior.exit_points : au moins une fissure de sortie")
+    for label, pt in points:
+        if not (isinstance(pt, list) and len(pt) == 2):
+            errors.append(f"{tag} interior.{label} : point [x, y] attendu, trouve {pt!r}")
+            continue
+        for zid, poly in polys:
+            if not _point_in_polygon(pt[0], pt[1], poly):
+                errors.append(f"{tag} interior.{label} {pt} hors du contour de '{zid}'")
+                break
+    for key in ("entry_range_px", "exit_range_px", "admission_seconds", "close_grace_seconds",
+                "exit_grace_seconds"):
+        if not (isinstance(it.get(key), (int, float)) and it[key] > 0):
+            errors.append(f"{tag} interior.{key} doit etre > 0")
+    ent = data.get("entry", {})
+    if not (isinstance(ent.get("min_level_offset"), int) and ent["min_level_offset"] <= 0
+            and isinstance(ent.get("min_level_floor"), int) and ent["min_level_floor"] >= 1):
+        errors.append(f"{tag} entry : min_level_offset (<= 0) et min_level_floor (>= 1) requis")
+    con = data.get("contribution", {})
+    for r in ranks:
+        for name in sizes:
+            th = con.get("tier_thresholds", {}).get(r, {}).get(name)
+            if not (isinstance(th, list) and len(th) == 3 and all(isinstance(x, (int, float)) for x in th)
+                    and 0 < th[0] <= th[1] <= th[2]):
+                errors.append(f"{tag} contribution.tier_thresholds.{r}.{name} doit etre "
+                              f"[bronze, argent, or] croissants et > 0")
+            elif th[0] > 1:
+                errors.append(f"{tag} contribution.tier_thresholds.{r}.{name} : le bronze s'obtient des "
+                              f"1 groupe (decision Charleston 2026-10-17)")
+    acf = con.get("assisted_contribution_factor")
+    if not (isinstance(acf, (int, float)) and 0 <= acf <= 1):
+        errors.append(f"{tag} contribution.assisted_contribution_factor doit etre dans [0, 1]")
+    if data.get("failure", {}).get("mode") not in ("close", "corruption", "corruption_then_overflow"):
+        errors.append(f"{tag} failure.mode inconnu")
+    st = data.get("hunter", {}).get("stabilize", {})
+    for r in ranks:
+        if not isinstance(st.get("min_profession_level_by_rank", {}).get(r), int):
+            errors.append(f"{tag} hunter.stabilize.min_profession_level_by_rank.{r} requis")
+    if not (isinstance(st.get("extra_minutes"), (int, float)) and st["extra_minutes"] > 0
+            and isinstance(st.get("max_per_rift"), int) and st["max_per_rift"] >= 0):
+        errors.append(f"{tag} hunter.stabilize : extra_minutes (> 0) et max_per_rift (>= 0) requis")
+    # Braises par rang : un objet par rang, plus l'ancien id sans rang nulle part.
+    rec = load_json(db / "items" / "profession_recipes.json")
+    items = {i.get("id") for i in rec.get("new_items", []) if isinstance(i, dict)}
+    for r in ranks:
+        if f"mat_rift_ember_r{r}" not in items:
+            errors.append(f"{tag} mat_rift_ember_r{r} absent de items/profession_recipes.json new_items")
+    if "mat_rift_ember" in items or '"mat_rift_ember"' in json.dumps(rec):
+        errors.append(f"{tag} l'id sans rang mat_rift_ember est encore utilise : Braises par rang seulement")
+    # Blocs de recompense lus par le serveur.
+    rw = load_json(db / "config" / "rewards.json")
+    gap = rw.get("multiplier_families", {}).get("rift_level_gap", {})
+    if not (isinstance(gap.get("full_up_to"), int) and isinstance(gap.get("purification_from"), int)
+            and 0 <= gap["full_up_to"] < gap["purification_from"]):
+        errors.append(f"{tag} rewards.json rift_level_gap : 0 <= full_up_to < purification_from requis")
+    for v in ("in_range", "over", "purification"):
+        if v not in gap.get("values", {}):
+            errors.append(f"{tag} rewards.json rift_level_gap.values.{v} requis")
+    rc = rw.get("rift_closing", {})
+    if rc.get("xp_level_basis") != "min_player_rift":
+        errors.append(f"{tag} rewards.json rift_closing.xp_level_basis doit valoir min_player_rift (anti-farm)")
+    for t in ("bronze", "silver", "gold"):
+        b = rc.get("tiers", {}).get(t, {})
+        for k in ("xp_level_fraction", "chests", "chest_gold_multiplier", "embers"):
+            if not (isinstance(b.get(k), (int, float)) and b[k] >= 0):
+                errors.append(f"{tag} rewards.json rift_closing.tiers.{t}.{k} requis (>= 0)")
+    for name in sizes:
+        if not isinstance(rc.get("size_resource_multiplier", {}).get(name), (int, float)):
+            errors.append(f"{tag} rewards.json rift_closing.size_resource_multiplier.{name} requis")
+    if not isinstance(rc.get("level_gap", {}).get("half_factor"), (int, float)):
+        errors.append(f"{tag} rewards.json rift_closing.level_gap.half_factor requis")
+    rx = load_json(db / "systems" / "profession_xp.json").get("rift_xp", {})
+    for k in ("actions_per_minute", "failure_share", "daily_first_multiplier"):
+        if not (isinstance(rx.get(k), (int, float)) and rx[k] >= 0):
+            errors.append(f"{tag} profession_xp.json rift_xp.{k} requis (>= 0)")
+    for t in ("bronze", "silver", "gold"):
+        if not isinstance(rx.get("tier_share", {}).get(t), (int, float)):
+            errors.append(f"{tag} profession_xp.json rift_xp.tier_share.{t} requis")
     return errors
 
 
@@ -2470,6 +2656,11 @@ def main():
 
     print("[12c/12] Validating fissure invasions (zones, bounds)...")
     errs = validate_fissure_invasions(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12c2/12] Validating rift interiors (schedule, sizes, tiers, map slots, embers, reward blocks)...")
+    errs = validate_rift_events(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 

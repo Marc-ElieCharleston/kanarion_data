@@ -8,7 +8,8 @@
   },
   "spawn": {
     "_comment": "Au demarrage, chaque aire tire une premiere ouverture entre first_start_seconds[0] et [1]. Apres une invasion (reussie ou non), la suivante dans la meme aire revient entre cooldown_seconds[0] et [1]. Jamais plus de max_active_per_zone invasions a la fois dans une zone : une aire dont le tour tombe quand la zone est pleine attend la place suivante.",
-    "zones": ["village", "expedition_lv_01_10", "expedition_lv_11_20", "expedition_lv_21_30"],
+    "zones": [],
+    "_zones_disabled": "DESACTIVE le 2026-10-17 (decision Charleston) : l'interieur de faille (world/rift_events.json) REMPLACE l'invasion de Havreden, la Fissure du monde devient sa porte. Une liste de zones vide = presence ne charge aucune invasion (FissureConfig refuse le fichier, un avertissement au demarrage). Anciennes zones : village, expedition_lv_01_10, expedition_lv_11_20, expedition_lv_21_30. Le fichier reste le temps de retirer le code (FissureWorld) une fois le correctif d'XP des invasions fusionne.",
     "max_active_per_zone": 3,
     "first_start_seconds": [120, 1800],
     "cooldown_seconds": [1800, 3600],
@@ -27,7 +28,8 @@
   },
   "visual": {
     "_comment": "Taille de la Fissure affichee (lot invasion_a, 3 niveaux : 60 / 86 / 112 px) selon le RANG de l'aire. Decide par le SERVEUR et envoye avec l'invasion (FissureInfo.level) : le client ne fait que choisir le sprite. Un rang absent vaut 1.",
-    "level_by_rank": {"1": 1, "2": 1, "3": 2, "4": 2, "5": 3}
+    "level_by_rank": {"1": 1, "2": 1, "3": 2, "4": 2, "5": 3},
+    "_superseded": "Remplace par world/rift_events.json visual.level_by_size : la taille affichee vient desormais de la TAILLE de la faille, pas du rang de l'aire."
   },
   "rewards": {
     "_comment": "A la fermeture reussie, chaque joueur ayant libere au moins min_contribution_kills creatures de l'aire recoit : de l'XP, de l'or et les objets d'un coffre du RANG de l'aire (world/zone_chests.json tiers, meme tirage que les coffres). Un coffre apparait en bonus a la place de la Fissure (spawn_chest_on_close). XP = xp_level_fraction x l'XP du palier du niveau de BASE (rien ne s'accumule). Le niveau de base depend de xp_level_basis : 'min_player_invasion' = le plus bas entre le niveau du joueur et le niveau de l'invasion (= niveau max de son aire, decide par le serveur) ; 'player' = le niveau du joueur seul (ancien comportement, exploitable : un niveau 70 gagnait un niveau 70 entier dans une invasion de rang I). Si xp_apply_level_difference est vrai, la penalite d'ecart joueur - invasion de config/rewards.json level_difference s'applique en plus (meme regle que l'XP de combat). Anti-farm valide par Charleston le 2026-10-17.",

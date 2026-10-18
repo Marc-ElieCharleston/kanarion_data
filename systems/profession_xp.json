@@ -179,5 +179,15 @@
       "100": 34.2
     },
     "_result": "Hors specialite (plafond 50) : 5.0 h. Specialite (100) : 34.2 h, soit 29.2 h de 50 a 100. A 1 h de metier par jour, 50 en une semaine ; a 1 h 15 par jour, 100 en un mois."
+  },
+  "rift_xp": {
+    "_rule": "Chasseur de Failles, a la FERMETURE d'un interieur de faille (world/rift_events.json), pour chaque joueur qui a gagne au moins un combat dans la faille (palier bronze ou mieux) et qui porte une lanterne de rang >= rang de la faille : XP = gather_xp.by_rank[rang] x duree nominale de la taille (sizes.*.duration_minutes, sans duration_scale_by_rank) x actions_per_minute x tier_share[palier] x regle grise (niveau de recolte du rang : 0, 20, 40, 60, 80) x failure_share si la faille a echoue x daily_first_multiplier pour la premiere faille du jour calendaire (UTC) du personnage. 1 action par minute = le rythme de recolte du time_model (60 par heure) : une faille vaut une heure de recolte a son rang. Versee meme en purification (regle grise du metier, pas du personnage). Calculee par economy dans la transaction du metier, idempotente par faille et personnage.",
+    "actions_per_minute": 1.0,
+    "tier_share": {"bronze": 0.5, "silver": 0.75, "gold": 1.0},
+    "failure_share": 0.5,
+    "daily_first_multiplier": 2.0,
+    "requires_tool": true,
+    "_simulation": "Etude rift_event/hunter_sim.py (200 tirages, medianes) : assidu (3 h/jour) 50 en 4 j (4,5 h en faille) et 100 en 37 j (30,6 h en faille) ; occasionnel (1 h/jour) 50 en 9 j et 100 en ~5 mois. Reglages : daily_first_multiplier, actions_per_minute, intervalles des rangs IV-V.",
+    "_a_valider": "Formule, parts du palier 0.5/0.75/1.0, echec 0.5, premiere faille du jour x2."
   }
 }
