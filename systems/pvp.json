@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": "3.1",
-    "last_updated": "2026-05-08",
+    "last_updated": "2026-10-18",
     "description": "Système PvP - duel, arena, guild wars. PR1 PvP MVP (rev 4 plan validé CTO 2026-05-08)."
   },
   "duel": {
@@ -39,41 +39,83 @@
   },
   "arena": {
     "enabled": true,
-    "exhibition_only": true,
-    "ranked_planned": false,
+    "exhibition_only": false,
     "_rewards": "Recompenses : config/rewards.json arena_match, seul proprietaire (lu par services/quest grant_arena_reward). L'ancien rewards_planned false disait le contraire et n'etait lu par personne.",
     "modes": {
       "arena_1v1": {
         "enabled": true,
         "team_size": 1,
         "bot_fill": true,
-        "description": "Exhibition 1v1 via Dargo. Si pas d'adversaire après 10s, une recrue d'arène complète."
-      },
-      "arena_8v8": {
-        "enabled": false,
-        "planned": "post_MVP",
-        "team_size": 8,
-        "bot_fill": true,
-        "notes": "Reporté: lisibilité, équilibrage, perf à valider d'abord."
+        "description": "Arene normale 1v1 (Dargo). Appariement par niveau ; recrue d'arene apres le delai de matchmaking."
       },
       "arena_3v3": {
         "enabled": true,
         "team_size": 3,
         "bot_fill": true,
-        "description": "Exhibition 3v3 : joueurs, familiers et mercenaires inclus dans les places.",
-        "entity_count_includes_companions": true
+        "description": "Arene normale 3v3. Le format compte les joueurs et les recrues ; les familiers viennent en plus."
       },
       "arena_6v6": {
         "enabled": true,
         "team_size": 6,
         "bot_fill": true,
-        "description": "Exhibition 6v6 : joueurs, familiers et mercenaires inclus dans les places.",
-        "entity_count_includes_companions": true
+        "description": "Arene normale 6v6. Le format compte les joueurs et les recrues ; les familiers viennent en plus, dans la limite des allies par camp."
+      },
+      "arena_ranked_1v1": {
+        "enabled": true,
+        "team_size": 1,
+        "bot_fill": true,
+        "ranked": true,
+        "description": "Arene classee 1v1. Appariement par Elo ; recrue calee sur l'Elo apres le delai. Un match contre des recrues n'est pas note."
+      },
+      "arena_ranked_3v3": {
+        "enabled": true,
+        "team_size": 3,
+        "bot_fill": true,
+        "ranked": true,
+        "description": "Arene classee 3v3."
+      },
+      "arena_ranked_6v6": {
+        "enabled": true,
+        "team_size": 6,
+        "bot_fill": true,
+        "ranked": true,
+        "description": "Arene classee 6v6."
+      },
+      "arena_2v2": {
+        "enabled": false,
+        "team_size": 2,
+        "bot_fill": true,
+        "description": "Format ferme (1v1, 3v3 et 6v6 seulement)."
+      },
+      "arena_4v4": {
+        "enabled": false,
+        "team_size": 4,
+        "bot_fill": true,
+        "description": "Format ferme (1v1, 3v3 et 6v6 seulement)."
+      },
+      "arena_8v8": {
+        "enabled": false,
+        "team_size": 8,
+        "bot_fill": true,
+        "description": "Format ferme (1v1, 3v3 et 6v6 seulement)."
+      },
+      "arena_ranked_2v2": {
+        "enabled": false,
+        "team_size": 2,
+        "bot_fill": true,
+        "ranked": true,
+        "description": "Format ferme (1v1, 3v3 et 6v6 seulement)."
+      },
+      "arena_ranked_4v4": {
+        "enabled": false,
+        "team_size": 4,
+        "bot_fill": true,
+        "ranked": true,
+        "description": "Format ferme (1v1, 3v3 et 6v6 seulement)."
       }
     },
     "bot_fill": {
       "enabled": true,
-      "wait_seconds_before_fill": 10,
       "balance_profile": "pvp_filler_v1",
       "level_strategy": "average_team_level",
       "ux_label_fr": "recrue d'arène",
@@ -82,11 +124,137 @@
         "arena_1v1": "random_archetype",
         "arena_3v3": "random_archetype",
         "arena_6v6": "1_frontline_1_healer_2_dps"
-      }
+      },
+      "_wait": "Le delai avant les recrues vit dans arena.matchmaking.*.bot_fill_after_seconds."
     },
     "match_ready_countdown_ms": 10000,
     "queue_status_push_interval_ms": 1000,
-    "notes": "Formats 1v1, 3v3, 6v6 en entités par côté. Compagnons actifs inclus, équipe du propriétaire conservée."
+    "notes": "Formats 1v1, 3v3, 6v6 en entités par côté. Compagnons actifs inclus, équipe du propriétaire conservée.",
+    "_alpha_2026_10_18": "Decisions Charleston du 18/10 (lots A, B, D, F, H de l'audit PvP) : classe ouvert aux recrues, difficulte des recrues du classe selon l'Elo, aucun mercenaire en arene, familiers admis partout (hors format, plafond d'allies par camp), appariement par Elo (classe) ou par niveau (normale), duree maximale par format, penalite de deserteur en classe. Les valeurs marquees _status a_valider sont des propositions a confirmer en alpha.",
+    "_modes_owner": "PROPRIETAIRE : services/pvp lit `enabled` et `bot_fill` de chaque mode ; un mode absent ou enabled false est refuse a l'inscription (mode_not_enabled). Plus de liste en dur.",
+    "matchmaking": {
+      "_status": "a_valider",
+      "_doc": "Decision Charleston 2026-10-18. Classe : appariement par Elo, fenetre de depart +/-window_start_elo qui s'elargit de window_step_elo toutes les window_step_seconds d'attente. Normale : meme principe par tranche de niveau. Deux inscriptions sont compatibles si l'ecart tient dans la fenetre de CHACUNE (les deux acceptent). Sans adversaire au bout de bot_fill_after_seconds, des recrues completent (calees sur l'Elo en classe, sur le niveau en normale). La file expire apres queue_timeout_seconds.",
+      "ranked": {
+        "window_start_elo": 100,
+        "window_step_elo": 50,
+        "window_step_seconds": 10,
+        "bot_fill_after_seconds": 30
+      },
+      "exhibition": {
+        "window_start_levels": 5,
+        "window_step_levels": 5,
+        "window_step_seconds": 10,
+        "bot_fill_after_seconds": 30
+      },
+      "queue_timeout_seconds": 300,
+      "enqueue_max_per_minute": 6,
+      "_anti_collusion": "Toutes les arenes (normale et classee) : refus du meme compte ou de la meme IP de part et d'autre, et au plus enqueue_max_per_minute inscriptions par compte et par minute. Valeur 6 reprise du classe."
+    },
+    "companions": {
+      "familiars_allowed": true,
+      "mercenaries_allowed": false,
+      "_doc": "Decision Charleston 2026-10-18. Familiers admis dans TOUS les modes d'arene, classe compris, de facon symetrique (chacun peut amener son familier actif). Ils ne prennent pas de place de format ; le plafond d'allies par camp (combat.json entity_caps, 10) les inclut. Un camp perd quand tous ses joueurs (et recrues) sont a terre, familiers debout ou non. L'Elo ne compte pas les familiers. Aucun mercenaire en arene normale, classee, salle perso ou tournoi : refus a l'inscription (mercenary_not_allowed), et le combat ne le fait jamais apparaitre. Le mercenaire reste admis en entrainement (lecons d'arene, salle d'entrainement)."
+    },
+    "deserter_penalty": {
+      "_status": "a_valider",
+      "_doc": "Decision Charleston 2026-10-18. Classe seulement : quitter un match (LEAVE_ROOM) bloque la file classee base_lock_minutes, puis la duree est multipliee par multiplier a chaque nouvel abandon dans les window_hours, plafonnee a max_lock_minutes. Rien en arene normale. Compte par COMPTE (table pvp_desertions).",
+      "ranked_only": true,
+      "base_lock_minutes": 5,
+      "multiplier": 2,
+      "window_hours": 24,
+      "max_lock_minutes": 60
+    },
+    "bot_difficulty": {
+      "_status": "a_valider",
+      "_doc": "PROPOSITION 2026-10-18, a valider par Charleston. Difficulte des recrues d'arene. Le profil d'equilibrage de l'archetype (config/mercenary_balance.json pvp_filler_<role>_v1 : PV x2.8 a x3.8, degats x1.3 a x2.5) compense l'equipement qu'une recrue n'a pas ; a bas niveau le joueur n'a presque pas d'equipement, d'ou 3 fois ses PV et 5 defaites sur 5 au niveau 1 (audit). Trois couches, multipliees : (1) level_ramp, toujours : interpolation lineaire par niveau de la recrue ; (2) en CLASSE seulement, le palier d'Elo (moyenne des humains du match) ; (3) en NORMALE, exhibition (aucun bonus d'Elo). ai_intelligence = niveau de config/monster_ai.json intelligence_levels (delai de reaction : 1 = 1.2 s ... 4 = 0.5 s). En plus, le combat filtre le kit d'une recrue comme celui d'un joueur de son niveau (config/skill_system.json : sorts de sous-classe et ultime a partir du niveau 20). Objectif : sous 1500, une recrue est battable par un joueur de son niveau.",
+      "level_ramp": [
+        {
+          "level": 1,
+          "hp_scale": 0.4,
+          "damage_scale": 0.55
+        },
+        {
+          "level": 10,
+          "hp_scale": 0.5,
+          "damage_scale": 0.65
+        },
+        {
+          "level": 20,
+          "hp_scale": 0.65,
+          "damage_scale": 0.75
+        },
+        {
+          "level": 40,
+          "hp_scale": 0.85,
+          "damage_scale": 0.9
+        },
+        {
+          "level": 60,
+          "hp_scale": 1.0,
+          "damage_scale": 1.0
+        }
+      ],
+      "exhibition": {
+        "hp_scale": 1.0,
+        "damage_scale": 1.0,
+        "mp_scale": 1.0,
+        "ai_intelligence": 1,
+        "_doc": "Arene normale : recrue calee sur le niveau des joueurs (level_ramp seul), IA par defaut des allies PNJ. Remplace l'ancien bonus en dur PV x1.15 / Souffle x1.25 de combat_host."
+      },
+      "ranked_elo_tiers": [
+        {
+          "min_elo": 0,
+          "hp_scale": 0.85,
+          "damage_scale": 0.85,
+          "mp_scale": 1.0,
+          "ai_intelligence": 1
+        },
+        {
+          "min_elo": 1200,
+          "hp_scale": 0.92,
+          "damage_scale": 0.92,
+          "mp_scale": 1.0,
+          "ai_intelligence": 1
+        },
+        {
+          "min_elo": 1400,
+          "hp_scale": 1.0,
+          "damage_scale": 1.0,
+          "mp_scale": 1.0,
+          "ai_intelligence": 2
+        },
+        {
+          "min_elo": 1600,
+          "hp_scale": 1.08,
+          "damage_scale": 1.06,
+          "mp_scale": 1.0,
+          "ai_intelligence": 3
+        },
+        {
+          "min_elo": 1800,
+          "hp_scale": 1.16,
+          "damage_scale": 1.12,
+          "mp_scale": 1.1,
+          "ai_intelligence": 3
+        },
+        {
+          "min_elo": 2000,
+          "hp_scale": 1.25,
+          "damage_scale": 1.18,
+          "mp_scale": 1.1,
+          "ai_intelligence": 4
+        },
+        {
+          "min_elo": 2200,
+          "hp_scale": 1.35,
+          "damage_scale": 1.25,
+          "mp_scale": 1.2,
+          "ai_intelligence": 4
+        }
+      ],
+      "_tiers_doc": "Le premier palier (min_elo croissant) dont min_elo <= Elo moyen des humains du match s'applique. Un nouveau joueur (1500) tombe dans le palier 1400 (x1.0) : la recrue n'y est pas plus forte que la rampe de niveau. Sous 1400, recrues plus faibles ; au-dessus de 1600, plus solides et plus reactives."
+    }
   },
   "guild_wars": {
     "enabled": false,
@@ -95,5 +263,14 @@
       "gvg",
       "war_of_emperium"
     ]
+  },
+  "combat": {
+    "_status": "a_valider",
+    "_doc": "Decision Charleston 2026-10-18 (lot F). Duree maximale d'un combat PvP (duel, arene, salle perso, tournoi), comptee depuis le VRAI debut du combat (apres PREGAME et decompte). Format 1v1 si aucun camp n'a plus d'un combattant, equipe sinon. A l'echeance, le camp au plus haut pourcentage de PV TOTAL restant gagne ; un ecart inferieur a match_time_limit_tie_permille (10 = 1 point) est une egalite. Lu par server-combat (CombatHost).",
+    "match_time_limit_seconds": {
+      "1v1": 600,
+      "team": 900
+    },
+    "match_time_limit_tie_permille": 10
   }
 }
