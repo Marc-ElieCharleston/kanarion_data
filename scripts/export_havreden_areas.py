@@ -17,9 +17,19 @@ CE QU'IL ECRIT (zone `village` seulement, le reste du fichier n'est pas reecrit)
   safe_polygons  <- chaque Polygon2D `*_area` hors map_areas (villes) ; l'ancien
                     `safe_polygon` du village est garde tel quel
   spawn_areas    <- chaque `map_areas/mz_<nom>_<min>_<max>[_elite]` :
-                    id, name_fr/name_en (carnet _meta/carnet/noms_zones.md),
+                    id, name_fr/name_en (NOM DU NOEUD, voir NOMS ci-dessous),
                     level_range (tranche du nom), polygon (rogne sur area_limit),
-                    bounds (boite englobante du polygone), count (regle de densite)
+                    bounds (boite englobante du polygone), count (regle de densite,
+                    ou COUNT_IMPOSE)
+
+NOMS (decision Charleston du 2026-10-20)
+  La scene fait foi : le nom affiche et la tranche viennent du nom du noeud
+  `mz_<nom>_<min>_<max>`. Le carnet (_meta/carnet/noms_zones.md) ne sert qu'a
+  l'orthographe (accents, articles) et a l'anglais quand il a EXACTEMENT ce nom.
+  S'il n'a qu'un nom approchant (ex. carnet « Clairiere Disputee », scene
+  « clairiere ») ou une autre tranche, le script garde la scene et SIGNALE
+  l'ecart : c'est le carnet qu'il faut mettre a jour, pas la carte. Un nom de
+  noeud provisoire (`to_do`) donne un nom provisoire, signale aussi.
 
 CE QU'IL NE TOUCHE JAMAIS
   mobs, elite_pool, boss, max_stars, elite_pack_chance et toute autre cle d'un id
@@ -81,19 +91,61 @@ REPRISE = {
 # Aires dessinees mais pas encore a exporter (Charleston les remplira).
 NON_EXPORTEES = {"mz_to_do_6_15"}
 
-# Bois des Loups (13-32, entree au nord) : pas de degrade continu, trois sous-aires
-# du nord au sud, chacune une spawn_area a part entiere. Rosters ecrits a la
-# PREMIERE creation seulement ; ensuite la data fait foi (jamais reecrits).
+# Nombre de monstres impose a la place de la regle de densite (2026-10-20, Charleston :
+# les Abords d'Havreden passent de 32 a 45, la zone de depart doit etre plus peuplee).
+# Une aire sans roster ou sans sol reste a 0 quand meme.
+COUNT_IMPOSE = {"mz_abords_d_havreden_1_8": 45}
+
+# Noms de noeud provisoires : pas un nom de lieu, le script en donne un provisoire.
+NOMS_PROVISOIRES = {
+    "to_do": {False: ("Zone à nommer", "Unnamed Zone"), True: ("Zone élite", "Elite Zone")},
+}
+
+# Anglais des noms de la scene que le carnet n'a pas (a valider, comme le carnet).
+NOMS_EN_SCENE = {"clairiere": "The Clearing"}
+
+# Mots qui restent en minuscule dans un nom (sauf en tete).
+MOTS_MINUSCULES = {"de", "des", "du", "la", "le", "les", "aux", "au", "en", "et", "sur", "sous"}
+
+# Decoupes d'une aire en sous-aires, chacune une spawn_area a part entiere (id
+# <aire>_<suffix>, parent_area = l'aire). Rosters ecrits a la PREMIERE creation
+# seulement ; ensuite la data fait foi (jamais reecrits).
+#   mode "bandes" : bandes nord -> sud d'egale hauteur, dans l'ordre de la liste.
+#   mode "coins"  : quadrants autour du centre de la boite englobante ; chaque
+#                   sous-aire nomme son coin (no, ne, se, so).
+# Bois des Loups (13-32, entree au nord) : pas de degrade continu, trois bandes.
+# La Louve Matriarche (mob_wolf_soigneur, sortie du roster par le decoupage du
+# 2026-10-19) revient au FOND du bois, en elite (Charleston, 2026-10-20).
+# Anse des Naufrages (1-100, l'ile de capture) : « les niveaux 1-100 se font par
+# coins de l'ile » (plan de la carte des monstres, zone de capture). Proposition A
+# VALIDER : quatre coins de 25 niveaux, du nord (cote continent) vers le sud, dans
+# le sens des aiguilles d'une montre ; meme roster partout (les betes saines du
+# plan), la Hyene Alpha (rare) en elite.
+_ANSE_MOBS = [{"id": "mob_belier", "weight": 10}, {"id": "mob_hyene", "weight": 10},
+              {"id": "mob_taureau", "weight": 6}, {"id": "mob_cheval_sauvage", "weight": 6},
+              {"id": "mob_armadillo", "weight": 4}]
 DECOUPES = {
-    "mz_bois_des_loups_13_32": [
+    "mz_bois_des_loups_13_32": {"mode": "bandes", "morceaux": [
         {"suffix": "a", "level_range": [13, 19], "max_stars": 3,
          "mobs": [{"id": "mob_wolf", "weight": 3}, {"id": "mob_frothing_wolf", "weight": 2}]},
         {"suffix": "b", "level_range": [20, 26], "max_stars": 3,
          "mobs": [{"id": "mob_loup_noir", "weight": 3}, {"id": "mob_wolf_packleader", "weight": 1}]},
         {"suffix": "c", "level_range": [27, 32], "max_stars": 4,
+         "elite_pool": ["mob_wolf_soigneur"], "elite_pack_chance": 0.25,
          "mobs": [{"id": "mob_loup_blanc", "weight": 3}, {"id": "mob_vieux_loup", "weight": 2}]},
-    ],
+    ]},
+    "mz_anse_des_naufrages_1_100": {"mode": "coins", "morceaux": [
+        {"suffix": "no", "coin": "no", "level_range": [1, 25], "max_stars": 2,
+         "elite_pool": ["mob_alpha_hyena"], "elite_pack_chance": 0.25, "mobs": _ANSE_MOBS},
+        {"suffix": "ne", "coin": "ne", "level_range": [26, 50], "max_stars": 3,
+         "elite_pool": ["mob_alpha_hyena"], "elite_pack_chance": 0.25, "mobs": _ANSE_MOBS},
+        {"suffix": "se", "coin": "se", "level_range": [51, 75], "max_stars": 4,
+         "elite_pool": ["mob_alpha_hyena"], "elite_pack_chance": 0.25, "mobs": _ANSE_MOBS},
+        {"suffix": "so", "coin": "so", "level_range": [76, 100], "max_stars": 5,
+         "elite_pool": ["mob_alpha_hyena"], "elite_pack_chance": 0.25, "mobs": _ANSE_MOBS},
+    ]},
 }
+CLES_ROSTER_DECOUPE = ("max_stars", "elite_pool", "elite_pack_chance", "mobs")
 
 NOM_AIRE = re.compile(r"^mz_(?P<slug>.+?)_(?P<min>\d+)[_-](?P<max>\d+)(?P<elite>_elite)?$")
 CLES_GEOMETRIE = ("id", "name_fr", "name_en", "level_range", "count", "bounds", "polygon")
@@ -323,28 +375,89 @@ def nettoie(nom):
 
 
 def lire_carnet(path: Path):
+    """-> [(slug, fr, en, tranche)] ; tranche = (min, max), ou None (ville, 60+, —)."""
     noms = []
     for line in path.read_text(encoding="utf-8").splitlines():
         cols = [c.strip() for c in line.strip().strip("|").split("|")]
         if len(cols) != 3 or cols[1] in ("Français", "") or set(cols[0]) <= set("-"):
             continue
         fr, en = nettoie(cols[1]), nettoie(cols[2])
+        m = re.fullmatch(r"(\d+)-(\d+)", cols[0])
         if fr:
-            noms.append((slug(fr), fr, en))
+            noms.append((slug(fr), fr, en, (int(m[1]), int(m[2])) if m else None))
     return noms
 
 
 def trouve_nom(nom_slug, carnet):
+    """Le MEME nom dans le carnet (a l'article pres), sinon None."""
     exacts = [n for n in carnet if n[0] == nom_slug]
     if exacts:
         return exacts[0]
     sans_article = [n for n in carnet if re.sub(r"^(le|la|les|l)_", "", n[0]) == nom_slug]
     if sans_article:
         return sans_article[0]
-    prefixes = [n for n in carnet if n[0].startswith(nom_slug + "_")]
-    if len(prefixes) == 1:
-        return prefixes[0]
     return None
+
+
+def nom_approchant(nom_slug, carnet):
+    """Un nom du carnet qui COMMENCE par celui de la scene (ex. « Clairiere Disputee »)."""
+    prefixes = [n for n in carnet if n[0].startswith(nom_slug + "_")]
+    return prefixes[0] if len(prefixes) == 1 else None
+
+
+def derive_nom(nom_slug, carnet):
+    """Nom francais tire du nom du noeud, avec l'orthographe des mots du carnet."""
+    vocab = {}
+    for _, fr, _, _ in carnet:
+        for mot in re.split(r"[\s']+", fr):
+            if mot:
+                vocab.setdefault(slug(mot), mot)
+    jetons = nom_slug.split("_")
+    out, i = [], 0
+    while i < len(jetons):
+        j = jetons[i]
+        mot = vocab.get(j, j)
+        if j in ("d", "l") and i + 1 < len(jetons):
+            suivant = vocab.get(jetons[i + 1], jetons[i + 1])
+            mot = j + "'" + suivant[:1].upper() + suivant[1:]
+            i += 1
+        elif out and j in MOTS_MINUSCULES:
+            mot = mot.lower()
+        else:
+            mot = mot[:1].upper() + mot[1:]
+        out.append(mot)
+        i += 1
+    texte = " ".join(out)
+    return texte[:1].upper() + texte[1:]
+
+
+def nom_de_scene(nom_slug, lo, hi, elite, carnet, signale):
+    """(name_fr, name_en) d'une aire, la scene faisant foi (voir NOMS en tete)."""
+    if nom_slug in NOMS_PROVISOIRES:
+        fr, en = NOMS_PROVISOIRES[nom_slug][elite]
+        signale(f"noeud au nom provisoire '{nom_slug}' : nom affiche provisoire « {fr} » / « {en} », a nommer")
+        return fr, en
+    exact = trouve_nom(nom_slug, carnet)
+    if exact:
+        if exact[3] and exact[3] != (lo, hi):
+            signale(f"« {exact[1]} » : tranche du carnet {exact[3][0]}-{exact[3][1]}, scene {lo}-{hi} "
+                    f"(la scene fait foi, carnet a mettre a jour)")
+        return exact[1], exact[2]
+    fr = derive_nom(nom_slug, carnet)
+    en = NOMS_EN_SCENE.get(nom_slug)
+    approche = nom_approchant(nom_slug, carnet)
+    if approche:
+        tr = f" ({approche[3][0]}-{approche[3][1]})" if approche[3] else ""
+        signale(f"le carnet dit « {approche[1]} »{tr}, la scene dit « {fr} » ({lo}-{hi}) : nom de la scene "
+                f"retenu, carnet a mettre a jour")
+    else:
+        signale(f"« {fr} » absent du carnet : nom tire de la scene")
+    if not en:
+        en = fr
+        signale(f"« {fr} » : pas d'anglais connu, le francais est repris (a traduire)")
+    else:
+        signale(f"« {fr} » : anglais « {en} » propose par le script (NOMS_EN_SCENE), a valider")
+    return fr, en
 
 
 # =============================================================================
@@ -529,36 +642,37 @@ def main():
             rapport["signalements"].append(f"{nid} : entierement hors de area_limit, ignoree")
             continue
 
-        nom = trouve_nom(m["slug"], carnet)
         source = nid if nid in anciennes else REPRISE.get(nid)
         if source in anciennes:
             sources_utilisees.add(source)
-        if nid in DECOUPES and REPRISE.get(nid) in anciennes and not any(
-                f"{nid}_{bd['suffix']}" in anciennes for bd in DECOUPES[nid]):
+        decoupe = DECOUPES.get(nid, {}).get("morceaux", [])
+        if decoupe and source in anciennes and not any(
+                f"{nid}_{bd['suffix']}" in anciennes for bd in decoupe):
             rapport["signalements"].append(
-                f"{nid} : decoupe en {len(DECOUPES[nid])} sous-aires ; le roster de {REPRISE[nid]} "
-                f"({', '.join(m_['id'] for m_ in anciennes[REPRISE[nid]].get('mobs', []))}) est remplace "
+                f"{nid} : decoupe en {len(decoupe)} sous-aires ; le roster de {source} "
+                f"({', '.join(m_['id'] for m_ in anciennes[source].get('mobs', [])) or 'vide'}) est remplace "
                 f"par les rosters du script")
-        if nom:
-            name_fr, name_en = nom[1], nom[2]
-        elif source in anciennes and anciennes[source].get("name_fr"):
-            name_fr, name_en = anciennes[source]["name_fr"], anciennes[source].get("name_en", "")
-            rapport["signalements"].append(f"{nid} : absent du carnet, nom repris de {source} « {name_fr} »")
-        else:
-            name_fr = name_en = m["slug"].replace("_", " ").title()
-            rapport["signalements"].append(f"{nid} : absent du carnet, nom derive « {name_fr} »")
+        name_fr, name_en = nom_de_scene(m["slug"], lo, hi, elite, carnet,
+                                        lambda t: rapport["signalements"].append(f"{nid} : {t}"))
 
-        # Sous-aires (bandes nord -> sud d'egale hauteur), sinon l'aire entiere.
+        # Sous-aires (DECOUPES : bandes nord -> sud, ou coins), sinon l'aire entiere.
         morceaux = []
-        if nid in DECOUPES:
-            ys = [q[1] for q in poly]
-            y0, y1 = min(ys), max(ys)
-            bandes = DECOUPES[nid]
-            h = (y1 - y0) / len(bandes)
+        if decoupe:
             xs = [q[0] for q in poly]
-            for k, bd in enumerate(bandes):
-                rect = [(min(xs) - 1, y0 + k * h), (max(xs) + 1, y0 + k * h),
-                        (max(xs) + 1, y0 + (k + 1) * h), (min(xs) - 1, y0 + (k + 1) * h)]
+            ys = [q[1] for q in poly]
+            x0, x1, y0, y1 = min(xs) - 1, max(xs) + 1, min(ys), max(ys)
+            mode = DECOUPES[nid]["mode"]
+            for k, bd in enumerate(decoupe):
+                if mode == "bandes":
+                    h = (y1 - y0) / len(decoupe)
+                    rect = [(x0, y0 + k * h), (x1, y0 + k * h), (x1, y0 + (k + 1) * h), (x0, y0 + (k + 1) * h)]
+                elif mode == "coins":
+                    cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+                    gx = (x0, cx) if bd["coin"][1] == "o" else (cx, x1)
+                    gy = (y0 - 1, cy) if bd["coin"][0] == "n" else (cy, y1 + 1)
+                    rect = [(gx[0], gy[0]), (gx[1], gy[0]), (gx[1], gy[1]), (gx[0], gy[1])]
+                else:
+                    raise SystemExit(f"ERREUR : mode de decoupe inconnu '{mode}' pour {nid}")
                 morceaux.append((f"{nid}_{bd['suffix']}", rogner(poly, rect), bd))
         else:
             morceaux.append((nid, poly, None))
@@ -575,7 +689,7 @@ def main():
                 entree = copy.deepcopy(anciennes[source])
                 origine = f"reprise de {source}"
             elif bd is not None:
-                entree = {"max_stars": bd["max_stars"], "mobs": copy.deepcopy(bd["mobs"])}
+                entree = {k: copy.deepcopy(bd[k]) for k in CLES_ROSTER_DECOUPE if k in bd}
                 origine = f"decoupe de {nid} (roster du script)"
             else:
                 entree = {"mobs": []}
@@ -589,6 +703,8 @@ def main():
                 n_monstres = 0
                 etat = "count 0 " + " + ".join(
                     x for x, ok in (("sans roster", not a_roster), ("sol absent", sans_sol)) if ok)
+            elif mid in COUNT_IMPOSE:
+                n_monstres, etat = COUNT_IMPOSE[mid], "spawnable (count impose)"
             elif bd is not None:
                 n_monstres = max(1, round(compte_parent * surface(mpoly) / total_parent))
                 etat = "spawnable"
