@@ -1,4 +1,4 @@
-"""Rend arbre_v2.json en image pour relecture (Pillow). Usage : python -I render_arbre_v2.py arbre_v2.json sortie.png
+"""Rend l'arbre en image pour relecture (Pillow). Usage : python -I render_arbre_v2.py classes/passive_tree.json sortie.png
 L'image n'est pas commitee (fichier de relecture)."""
 import json
 import math
@@ -18,7 +18,8 @@ colors = {a["id"]: tuple(int(a["color"][i:i + 2], 16) for i in (1, 3, 5)) for a 
 NEUTRAL = (225, 225, 230)
 GOLD = (242, 196, 90)
 nodes = {n["id"]: n for n in tree["nodes"]}
-P = lambda n: (CX + n["pos"][0] * S, CY + n["pos"][1] * S)
+U = float(tree.get("layout", {}).get("scale", 1))  # pos en unites de dessin -> unites du gabarit
+P = lambda n: (CX + n["pos"][0] / U * S, CY + n["pos"][1] / U * S)
 
 img = Image.new("RGB", (W, H), BG)
 d = ImageDraw.Draw(img)
@@ -77,7 +78,7 @@ for a in tree["arms"]:
     w = d.textlength(a["name_fr"].upper(), font=F_ARM)
     d.text((x - w / 2, y - 22), a["name_fr"].upper(), font=F_ARM, fill=colors[a["id"]])
 
-d.text((60, 40), "Arbre des passifs V2 (brouillon)", font=F_TITLE, fill=(235, 235, 240))
+d.text((60, 40), "Arbre des passifs V2", font=F_TITLE, fill=(235, 235, 240))
 leg = [("petit noeud (rangs)", "small"), ("notable 15", "notable_15"), ("detour", "side"), ("notable 30", "notable_30"),
        ("notable 50", "notable_50"), ("mega 75", "mega"), ("pont : passage / hybride", "hybrid")]
 lx, ly = 64, 130
