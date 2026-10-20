@@ -1339,6 +1339,39 @@ def validate_zone_chests(db: Path, all_item_ids: set) -> list:
     return errors
 
 
+def validate_teleport_steles(db: Path) -> list:
+    """world/teleport_steles.json : zones connues, ids uniques, position et noms FR/EN,
+    regles de portee et d'arrivee lisibles par presence."""
+    errors = []
+    path = db / "world" / "teleport_steles.json"
+    if not path.exists():
+        return errors
+    data = load_json(path)
+    zones_path = db / "world" / "zones.json"
+    zone_ids = set()
+    if zones_path.exists():
+        zone_ids = {z.get("id") for z in load_json(zones_path).get("zones", []) if isinstance(z, dict)}
+    rules = data.get("rules", {})
+    if not isinstance(rules.get("use_range_px"), (int, float)) or rules.get("use_range_px", 0) <= 0:
+        errors.append("[teleport_steles.json] rules.use_range_px doit etre un nombre > 0")
+    off = rules.get("arrival_offset")
+    if not (isinstance(off, list) and len(off) == 2 and all(isinstance(v, (int, float)) for v in off)):
+        errors.append("[teleport_steles.json] rules.arrival_offset doit etre [dx, dy]")
+    seen = set()
+    for s in data.get("steles", []):
+        sid = s.get("id", "")
+        if not sid or sid in seen:
+            errors.append(f"[teleport_steles.json] id vide ou en double : '{sid}'")
+        seen.add(sid)
+        if s.get("zone_id") not in zone_ids:
+            errors.append(f"[teleport_steles.json] {sid} : zone '{s.get('zone_id')}' absente de world/zones.json")
+        if not all(isinstance(s.get(k), (int, float)) for k in ("x", "y")):
+            errors.append(f"[teleport_steles.json] {sid} : x et y doivent etre des nombres")
+        if not s.get("name_fr") or not s.get("name_en"):
+            errors.append(f"[teleport_steles.json] {sid} : name_fr et name_en obligatoires")
+    return errors
+
+
 def validate_fissure_invasions(db: Path) -> list:
     """world/fissure_invasions.json : zones connues, bornes coherentes."""
     errors = []
@@ -2919,6 +2952,11 @@ def main():
 
     print("[12b/12] Validating zone chests (items, zones, tiers)...")
     errs = validate_zone_chests(db, all_item_ids)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12b2/12] Validating teleport steles (zones, ids, rules)...")
+    errs = validate_teleport_steles(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
