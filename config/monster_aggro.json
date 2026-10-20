@@ -51,13 +51,14 @@
     "_max_note": "Plafond absolu. Le serveur borne sa recherche de groupes a ce rayon (cout du tick)."
   },
   "engagement": {
-    "_comment": "Aggro « comme Dofus » (decision de Charleston, 2026-10-18) : les monstres ne courent pas vers le joueur, des que le joueur entre dans le rayon R le combat se lance DIRECTEMENT (ATTACK_ACK success, comme un clic). Le « ! » (AGGRO_ALERT) n'est plus qu'un flash au moment de l'engagement, sans fenetre de fuite ; AGGRO_CANCELLED (0x0251) n'est plus emis. detect_ms vaut donc 0 partout et leash_factor est SANS EFFET (garde pour que le format reste stable, le serveur ne s'en sert plus). Avant le 18/10 : le joueur avait detect_ms pour sortir de leash_factor x R. La premiere bande dont gap_min <= ecart s'applique, en partant de la plus haute ; un engagement par etoiles ou par temperament aggressive prend la bande 'default'.",
+    "_comment": "Aggro « comme Dofus » (decision de Charleston, 2026-10-18) : les monstres ne courent pas vers le joueur, des que le joueur entre dans le rayon R il est repere et le combat se lance (ATTACK_ACK success, comme un clic), sans fenetre de fuite ; AGGRO_CANCELLED (0x0251) n'est plus emis. Depuis le 2026-10-20 (retour de test mobile : engage sans avoir vu le monstre), detect_ms vaut 1000 : le serveur pousse AGGRO_ALERT (le « ! » sur le monstre et la fleche au bord de l'ecran) puis engage detect_ms plus tard ; c'est un delai d'AVERTISSEMENT, s'eloigner n'annule toujours rien. leash_factor reste SANS EFFET (garde pour que le format reste stable, le serveur ne s'en sert plus). Avant le 18/10 : le joueur avait detect_ms pour sortir de leash_factor x R. La premiere bande dont gap_min <= ecart s'applique, en partant de la plus haute ; un engagement par etoiles ou par temperament aggressive prend la bande 'default'.",
     "bands": [
-      { "gap_min": 25, "detect_ms": 0, "leash_factor": 2.5 },
-      { "gap_min": 15, "detect_ms": 0, "leash_factor": 2.0 },
-      { "gap_min": 7, "detect_ms": 0, "leash_factor": 1.5 }
+      { "gap_min": 25, "detect_ms": 1000, "leash_factor": 2.5 },
+      { "gap_min": 15, "detect_ms": 1000, "leash_factor": 2.0 },
+      { "gap_min": 7, "detect_ms": 1000, "leash_factor": 1.5 }
     ],
-    "default": { "detect_ms": 0, "leash_factor": 1.5 },
+    "default": { "detect_ms": 1000, "leash_factor": 1.5 },
+    "_detect_ms_note": "A VALIDER (proposition 2026-10-20) : 1000 ms d'avertissement avant l'engagement, sur toutes les bandes. Le client affiche le « ! » et la fleche de bord pendant ce delai, puis le combat demarre. 0 = ancien flash simultane a l'engagement.",
     "recheck_ms": 6000,
     "_recheck_note": "Apres un engagement refuse (creation de salle en echec), le meme couple groupe / joueur ne peut pas se re-declencher avant ce delai. Il n'y a plus de fuite depuis le 2026-10-18.",
     "max_pending_alerts_per_player": 1,
