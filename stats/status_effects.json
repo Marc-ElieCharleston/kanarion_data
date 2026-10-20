@@ -753,17 +753,17 @@
         "value_per_stack": 5
       },
       "def_up": {
-        "name_fr": "DEF +",
-        "name_en": "DEF +",
+        "name_fr": "Armure + (fixe)",
+        "name_en": "Armor + (flat)",
         "polarity": "buff",
         "stacking": "stackable",
         "max_stacks": 5,
         "impl": "done",
-        "formula": "+5 DEF flat per stack",
-        "tooltip_fr": "Réduit les dégâts subis (valeur fixe).",
-        "tooltip_en": "Reduces damage taken (flat value).",
-        "description_fr": "Réduit les dégâts reçus d'une valeur fixe par charge",
-        "description_en": "Reduces damage taken by a flat value per stack",
+        "formula": "+5 armor points per stack",
+        "tooltip_fr": "Augmente l'armure d'une valeur fixe.",
+        "tooltip_en": "Increases armor by a flat amount.",
+        "description_fr": "Ajoute des points d'armure par charge",
+        "description_en": "Adds armor points per stack",
         "sources": [
           "Warrior Warlord",
           "Healer Lifewarden",
@@ -775,24 +775,24 @@
           "is_hard_cc": false,
           "interrupts_cast": false,
           "stat_mods": {
-            "def": "value"
+            "armor": "value"
           },
           "vfx_type": "shield_aura"
         },
         "value_per_stack": 5
       },
       "def_down": {
-        "name_fr": "DEF -",
-        "name_en": "DEF -",
+        "name_fr": "Armure - (fixe)",
+        "name_en": "Armor - (flat)",
         "polarity": "debuff",
         "stacking": "stackable",
         "max_stacks": 5,
         "impl": "done",
-        "formula": "-5 DEF flat per stack",
-        "tooltip_fr": "Augmente les dégâts subis (valeur fixe).",
-        "tooltip_en": "Increases damage taken (flat value).",
-        "description_fr": "Augmente les dégâts reçus d'une valeur fixe par charge",
-        "description_en": "Increases damage taken by a flat value per stack",
+        "formula": "-5 armor points per stack",
+        "tooltip_fr": "Réduit l'armure d'une valeur fixe.",
+        "tooltip_en": "Reduces armor by a flat amount.",
+        "description_fr": "Retire des points d'armure par charge",
+        "description_en": "Removes armor points per stack",
         "sources": [
           "Warrior Warlord",
           "Artisan Chef"
@@ -801,7 +801,7 @@
           "is_hard_cc": false,
           "interrupts_cast": false,
           "stat_mods": {
-            "def": "-value"
+            "armor": "-value"
           },
           "vfx_type": "crack_aura"
         },
@@ -954,7 +954,7 @@
           "is_hard_cc": false,
           "interrupts_cast": false,
           "stat_mods": {
-            "def_percent": "value/100"
+            "armor_percent": "value/100"
           },
           "vfx_type": "shield_aura"
         },
@@ -976,7 +976,7 @@
           "is_hard_cc": false,
           "interrupts_cast": false,
           "stat_mods": {
-            "def_percent": "-value/100"
+            "armor_percent": "-value/100"
           },
           "vfx_type": "crack_aura"
         },
@@ -1293,7 +1293,6 @@
           "interrupts_cast": false,
           "stat_mods": {
             "atk_percent": "value/100",
-            "def_percent": "value/100",
             "mag_percent": "value/100",
             "armor_percent": "value/100",
             "magic_resist_percent": "value/100"
@@ -1321,7 +1320,6 @@
           "interrupts_cast": false,
           "stat_mods": {
             "atk_percent": "-value/100",
-            "def_percent": "-value/100",
             "mag_percent": "-value/100",
             "armor_percent": "-value/100",
             "magic_resist_percent": "-value/100"
@@ -1745,32 +1743,32 @@
         }
       },
       "shield_def": {
-        "name_fr": "Bouclier (DEF)",
-        "name_en": "Shield (DEF)",
+        "name_fr": "Bouclier (Armure)",
+        "name_en": "Shield (Armor)",
         "polarity": "buff",
         "stacking": "refresh",
         "max_stacks": 1,
         "impl": "done",
-        "formula": "absorb = value + (caster_def * pct / 100). value=base flat, pct=% scaling sur DEF du lanceur. Convention CTO 2026-05-01.",
-        "tooltip_fr": "Absorbe des dégâts proportionnels à la DEF du lanceur.",
-        "tooltip_en": "Absorbs damage scaled with caster DEF.",
-        "description_fr": "Variante DEF-scaled du bouclier, utilisée par les Tanks/Blacksmiths. Absorption = valeur de base (value) + un pourcentage de la DEF du lanceur (pct).",
-        "description_en": "DEF-scaled shield variant for Tanks/Blacksmiths. Absorption = flat value + pct% caster DEF.",
+        "formula": "absorb = value + (caster_armor * pct / 100). value=base flat, pct=% scaling sur l'armure du lanceur. Convention CTO 2026-05-01.",
+        "tooltip_fr": "Absorbe des dégâts proportionnels à l'armure du lanceur.",
+        "tooltip_en": "Absorbs damage scaled with caster armor.",
+        "description_fr": "Variante du bouclier proportionnelle à l'armure, utilisée par les Tanks/Blacksmiths. Absorption = valeur de base (value) + un pourcentage de l'armure du lanceur (pct).",
+        "description_en": "Armor-scaled shield variant for Tanks/Blacksmiths. Absorption = flat value + pct% caster armor.",
         "sources": [
           "Artisan (Blacksmith forged_retaliation, metalguard, quick_patch)"
         ],
         "runtime": {
           "is_hard_cc": false,
           "interrupts_cast": false,
-          "absorb_formula": "value + (caster.def * instance.pct) / 100",
-          "scaling_stat": "caster_def",
+          "absorb_formula": "value + (caster.armor * instance.pct) / 100",
+          "scaling_stat": "caster_armor",
           "scaling_source": "instance.pct",
           "scaling_behavior": "flat_plus_scaling",
           "stat_mods": {
             "shield": "power"
           },
           "vfx_type": "shield_aura",
-          "_backend_note": "Backend patch required (PR3): status_manager apply shield branch must add a case for effect_id 'shield_def' computing absorb = inst.value + (caster.defense * inst.pct) / 100. Skill schema must accept 'value' + 'pct' on effect entries with stat='shield_def'.",
+          "_backend_note": "Backend patch required (PR3): status_manager apply shield branch must add a case for effect_id 'shield_def' computing absorb = inst.value + (caster.armor * inst.pct) / 100. Skill schema must accept 'value' + 'pct' on effect entries with stat='shield_def'.",
           "_client_note": "stat_mods.shield='power' is a marker key required by client (pve_combat_manager.gd routes shield_amount only if mods.has('shield')). The string 'power' is replaced by the server-computed numeric absorb at runtime in combat_event_router.gd. Removing this breaks client display."
         }
       },

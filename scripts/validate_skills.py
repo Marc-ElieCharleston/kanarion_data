@@ -544,8 +544,8 @@ def validate_damage_scaling_coherence(skill, file_path, errors):
     if st is None:
         return
     allowed = {
-        "physical": {"atk", "armor", "def", "current_shield", "max_hp"},
-        "magical": {"mag", "max_hp", "def"},
+        "physical": {"atk", "armor", "current_shield", "max_hp"},
+        "magical": {"mag", "max_hp", "armor"},
     }
     if dt in allowed and st not in allowed[dt]:
         errors.append(

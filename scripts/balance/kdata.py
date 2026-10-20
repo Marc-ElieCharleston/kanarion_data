@@ -146,7 +146,7 @@ class Subclass:
         armor = (b["armor"] + x.get("def", 0)) * m("armor")
         mr = b["magic_resist"] * m("magic_resist") + 0.2 * mag
         return {
-            "hp": hp, "mp": mp, "atk": atk, "mag": mag, "def": b["def"] * m("def"), "current_shield": 0.15 * hp,
+            "hp": hp, "mp": mp, "atk": atk, "mag": mag, "current_shield": 0.15 * hp,
             "armor": armor, "magic_resist": mr, "max_hp": hp, "max_mp": mp,
             "crit": b["crit"], "crit_dmg": b["crit_dmg"],
             "armor_pen": b["armor_pen"] + self.innate.get("armor_pen", 0), "magic_pen": b["magic_pen"],
@@ -248,7 +248,7 @@ def _parse_skill(s, base_class, subclass, unpriced_log):
         elif stat == "iron_stance_shield":
             sk.self_buffs["damage_reduction_up"] = (50.0, dur)
         elif stat and stat.startswith("shield"):
-            src = {"shield_mag": "mag", "shield_max_hp": "max_hp", "shield_def": "def", "shield_max_mp": "max_mp",
+            src = {"shield_mag": "mag", "shield_max_hp": "max_hp", "shield_def": "armor", "shield_max_mp": "max_mp",
                    "shield": "mag"}.get(stat, "mag")
             sk.add_shield(tgt, flat=float(e.get("value", 0) or 0) + float(e.get("base_value", 0) or 0),
                           stat=src, coef=float(e.get("pct", 0) or 0) / 100)
@@ -330,7 +330,7 @@ if __name__ == "__main__":
     for sid in (sys.argv[1:] or ["berserker", "lifewarden", "elementalist"]):
         s = subs[sid]
         st = s.stats({"hp": 0, "mp": 0, "atk": 0, "mag": 0, "def": 0})
-        print(f"\n== {sid} ({s.base_class}) no-alloc stats:", {k: round(v, 1) for k, v in st.items() if k in ('hp','mp','atk','mag','def','armor','magic_resist','crit','crit_dmg','damage_percent','armor_pen','lifesteal')})
+        print(f"\n== {sid} ({s.base_class}) no-alloc stats:", {k: round(v, 1) for k, v in st.items() if k in ('hp','mp','atk','mag','armor','magic_resist','crit','crit_dmg','damage_percent','armor_pen','lifesteal')})
         for k in s.skills:
             parts = []
             if k.direct: parts.append("dmg=" + ",".join(f"{t[0][:4]}:{t[2]:.2f}x{t[1]}" for t in k.direct))
