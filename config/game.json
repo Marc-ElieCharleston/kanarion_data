@@ -127,7 +127,10 @@
     "max_zoom": 3.0,
     "screen_offset_y": 42.0,
     "zoom_step": 0.2,
-    "pinch_sensitivity": 0.003
+    "pinch_sensitivity": 0.003,
+    "_mobile_note": "Mobile (2026-10-20, retour de test 0.20) : le client mesure le zoom ou TOUT le plateau tient a l ecran (fitted, combat_arena.gd _fit_mobile_grid). Le combat demarre a fitted x mobile_start_zoom_factor : 1.0 = dezoom maximum, plateau entier visible. Le joueur zoome ensuite jusqu a fitted x mobile_max_zoom_factor. Le PC ne lit pas ces deux valeurs.",
+    "mobile_start_zoom_factor": 1.0,
+    "mobile_max_zoom_factor": 2.5
   },
   "ui_sizes": {
     "_comment": "Common UI sizes for mobile-friendly design",
@@ -145,7 +148,11 @@
   },
   "skill_bar": {
     "slots_count": 12,
-    "columns": 6
+    "columns": 6,
+    "_long_press_note": "Appui long sur une case de la barre (2026-10-20). Souris : long_press_seconds (tooltip en combat, reorganisation hors combat). Doigt : touch_long_press_seconds, nettement plus long qu un toucher appuye (0,3 a 0,5 s), qui doit viser ; seul un doigt IMMOBILE (deplacement <= touch_long_press_slop_px, pixels du viewport) ouvre la description, et relacher ensuite ne lance pas le sort.",
+    "long_press_seconds": 0.5,
+    "touch_long_press_seconds": 0.7,
+    "touch_long_press_slop_px": 14
   },
   "combat_grids": {
     "_comment": "Grille unifiee 12x6 (2026-10-17, decision Charleston : tous les modes) : l'id se lit RANGS x COLONNES, soit 12 rangs de 6 colonnes = 6 rangs et 36 slots par equipe, 72 cases au total. SOURCE UNIQUE : 'default' + 'available'. rows/cols sont SERVEUR-AUTORITAIRES : le serveur lit 'default' (combat_host.cpp) et l'envoie au ROOM_JOINED ; cote client cette entree ne sert qu'au boot avant la premiere reponse serveur. L'ancien 10x6 n'est plus declare : un banc qui en a besoin passe par le chemin grille runtime (CombatGridConfig.register_runtime_grid).",
