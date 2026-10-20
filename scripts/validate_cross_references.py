@@ -1372,6 +1372,41 @@ def validate_teleport_steles(db: Path) -> list:
     return errors
 
 
+def validate_per_mob_override(db: Path) -> list:
+    """config/monster_scaling_model.json per_mob_override : chaque cle est un monstre connu,
+    seules les stats de croissance que le serveur sait appliquer (le serveur refuse le modele
+    entier sur une stat inconnue : mieux vaut l'attraper ici)."""
+    errors = []
+    path = db / "config" / "monster_scaling_model.json"
+    if not path.exists():
+        return errors
+    overrides = load_json(path).get("per_mob_override", {})
+    monster_ids = {m.get("id") for m in load_json(db / "entities" / "monsters.json").get("monsters", [])}
+    stats = {"hp", "mp", "atk", "mag", "def", "magic_resist"}
+    for mob_id, entry in overrides.items():
+        if mob_id.startswith("_"):
+            continue
+        if mob_id not in monster_ids:
+            errors.append(f"[monster_scaling_model.json] per_mob_override.{mob_id} : monstre inconnu")
+            continue
+        for key in ("stat_scalar", "stat_override"):
+            val = entry.get(key)
+            if val is None or (key == "stat_scalar" and isinstance(val, (int, float))):
+                if isinstance(val, (int, float)) and val <= 0:
+                    errors.append(f"[monster_scaling_model.json] per_mob_override.{mob_id}.{key} doit etre > 0")
+                continue
+            if not isinstance(val, dict):
+                errors.append(f"[monster_scaling_model.json] per_mob_override.{mob_id}.{key} : objet attendu")
+                continue
+            for stat, v in val.items():
+                if stat.startswith("_"):
+                    continue
+                if stat not in stats or not isinstance(v, (int, float)) or v <= 0:
+                    errors.append(f"[monster_scaling_model.json] per_mob_override.{mob_id}.{key}.{stat} : "
+                                  f"stat inconnue ou valeur <= 0 (stats : {sorted(stats)})")
+    return errors
+
+
 def validate_fissure_invasions(db: Path) -> list:
     """world/fissure_invasions.json : zones connues, bornes coherentes."""
     errors = []
@@ -2957,6 +2992,11 @@ def main():
 
     print("[12b2/12] Validating teleport steles (zones, ids, rules)...")
     errs = validate_teleport_steles(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12b3/12] Validating per-mob overrides of the scaling model...")
+    errs = validate_per_mob_override(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 

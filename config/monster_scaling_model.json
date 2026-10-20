@@ -454,7 +454,13 @@
     }
   },
   "per_mob_override": {
-    "_comment": "La plupart des mobs derivent purement (stat_archetype, base_level, threat_tier, rarity). Un mob special (boss signature) peut porter un stat_override optionnel {hp?, atk?, def?, mr?} ou un stat_scalar {x1.2} pour se demarquer sans casser le modele."
+    "_comment": "La plupart des mobs derivent purement (stat_archetype, base_level, threat_tier, rarity). Un mob special peut porter ici, sous son id de monstre, un stat_scalar (nombre = toutes les stats de croissance, ou objet {hp?, mp?, atk?, mag?, def?, magic_resist?} = multiplicateur par stat) et/ou un stat_override (meme cles, valeur absolue qui remplace la valeur derivee). Applique EN DERNIER par le serveur (shared/gameplay/monster_scaling_model.cpp, combat ET barre de PV du monde), apres espece et stade. Cle = id de monstre : ne touche ni l'identite d'espece ni les familiers. Stat inconnue = modele refuse au chargement. Branche le 2026-10-20.",
+    "mob_scarab": {
+      "stat_scalar": {
+        "hp": 0.8
+      },
+      "_a_valider": "A VALIDER (2026-10-20, retour du test mobile de Charleston : scarabees adultes trop solides). PV de mob_scarab x0.8 (-20 %), seul ce monstre : ni l'espece scarabee (familiers captures), ni la larve, ni le geant."
+    }
   },
   "rate_growth_per_10_levels": {
     "_comment": "V2 (2026-10-02) : les stats FIXES (taux) montent de cette valeur tous les 10 niveaux (niveau 1 = valeur de base, niveau 100 = base + 9,9 x croissance), plafonnées par archetypes_lv1_standard._caps. generic s'ajoute à tous les archétypes. Pas lu par le serveur actuel.",
