@@ -34,7 +34,7 @@ OVERRIDES = {
     "mob_bell_guardian": "gardien",        # stone construct guarding the bell
 }
 # Stage prefixes: same role, stronger or weaker version of the species.
-STAGES = {"jeune": 0.7, "larve": 0.7, "tutorial": 0.6, "small": 0.7, "alpha": 1.3, "geant": 1.5,
+STAGES = {"jeune": 0.55, "larve": 0.55, "tutorial": 0.6, "small": 0.7, "alpha": 1.0, "geant": 1.5,
           "giant": 1.5, "ancient": 1.4, "lesser": 0.8, "corrupted": 1.2, "packleader": 1.3,
           "chief": 1.3, "warchief": 1.4, "warlord": 1.5, "king": 1.5, "queen": 1.5, "matron": 1.4}
 # Role variants: name tokens that switch the archetype.

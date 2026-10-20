@@ -1,0 +1,27 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-10-20",
+    "description": "Steles de teleportation d'une carte : chaque stele posee dans la scene d'une zone est une destination pour les autres steles de la MEME zone (Havreden est une seule grande carte). Le joueur ouvre la liste en touchant une stele (bouton d'action, verbe Voyager), choisit une autre stele, et arrive devant elle.",
+    "owner": "services/presence (WORLD_TRANSFER 0x0219 dans la meme zone : le joueur doit etre a portee d'une stele de sa zone, la destination est une stele de cette zone, le point d'arrivee vient d'ici, la position envoyee par le client sert seulement a nommer la stele visee). Le prix et la gratuite du pass restent ceux du voyage existant : TELEPORT 0x044D du service economie (50 or, pass premium teleport_free). Le client lit ce fichier pour l'AFFICHAGE (liste, noms) et pose la stele avec scenes/world/props/teleport_stele.tscn.",
+    "placement": "La position x/y d'une stele est celle de son noeud dans la scene de la zone (havreden_map.tscn pour village), au pixel pres. Poser ou deplacer une stele dans l'editeur = reporter sa position ici ; tests/test_teleport_stele.gd (client) echoue tant qu'une stele de la scene n'a pas sa ligne ici, ou l'inverse.",
+    "a_valider": "use_range_px, arrival_offset et l'absence de decouverte (toutes les steles de la zone sont connues des le depart) sont des propositions du 2026-10-20 a valider par Charleston."
+  },
+  "rules": {
+    "use_range_px": 200,
+    "_use_range_px_note": "Distance maximale (pixels monde) entre la position du joueur connue du serveur et la stele de depart. Le bouton d'action s'affiche a 96 px (NPC_INTERACT_RANGE client) : la marge couvre le retard de synchronisation de la position.",
+    "arrival_offset": [0, 56],
+    "_arrival_offset_note": "Point d'arrivee = position de la stele + ce decalage (devant la stele, vers le bas de l'ecran), pour ne pas poser le joueur dans le socle."
+  },
+  "steles": [
+    {
+      "id": "stele_havreden_place",
+      "zone_id": "village",
+      "x": 2688,
+      "y": 1752,
+      "name_fr": "Place de Havreden",
+      "name_en": "Havreden Square",
+      "_note": "Noeud deja present dans havreden_map.tscn (teleport_waystone_001, metadata teleport_hub) et aire sans aggro pierre_de_teleportation de world/zones.json au meme point."
+    }
+  ]
+}
