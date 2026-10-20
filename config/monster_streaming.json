@@ -1,0 +1,16 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-10-20",
+    "schema_version": 1,
+    "description": "Envoi des monstres du MONDE par proximite. Proprietaire unique de l'interrupteur et des rayons. Lu par kanarion_back services/presence (aoi/monster_visibility) au demarrage. Le client n'en lit rien : il recoit l'etat de sa zone (MONSTER_ZONE_STATE) limite aux cellules proches, puis MONSTER_SPAWNED / MONSTER_DESPAWNED (tueur vide = sortie de vue) a mesure qu'il se deplace.",
+    "why": "Prod 18/10 : MONSTER_ZONE_STATE envoyait les 316 groupes du village (~150 Ko) a chaque entree en zone, et la carte agrandie en ajoute. Les evenements (mort, reapparition) n'etaient diffuses qu'aux joueurs proches : un monstre lointain mort ou reapparu restait faux chez le client.",
+    "a_valider": "Rayons proposes, a valider en jeu par Charleston."
+  },
+  "enabled": true,
+  "_enabled_note": "Interrupteur general. false = retour a l'ancien comportement (toute la zone envoyee a l'entree en zone, aucun envoi en marchant). Le service presence relit ce fichier au demarrage : changer la valeur puis redemarrer presence seul suffit, les joueurs ne sont pas deconnectes.",
+  "enter_radius_cells": 2,
+  "_enter_radius_cells_note": "Une cellule entre dans la vue du joueur quand il est a cette distance (Chebyshev, en cellules) de la sienne. La taille de cellule est celle de l'AOI de la zone (world/zones.json aoi_cell_size, 768 px pour le village). 2 x 768 = au moins 1536 px autour du joueur, soit la mini-carte au dezoom maximal (base_world_radius 800 / min_zoom 0.5 = 1600 px, config/game.json minimap) a 64 px pres, et bien plus que le coin d'ecran (688 px a camera.min_zoom 1.6). Doit rester au-dessus du plus grand rayon d'aggro (config/monster_aggro.json radius.max_px = 640) : presence le verifie au demarrage.",
+  "exit_radius_cells": 3,
+  "_exit_radius_cells_note": "Une cellule ne sort de la vue qu'au-dela de cette distance (hysteresis) : longer un bord de cellule ne fait pas apparaitre et disparaitre une colonne de monstres. >= enter_radius_cells, 8 au plus."
+}
