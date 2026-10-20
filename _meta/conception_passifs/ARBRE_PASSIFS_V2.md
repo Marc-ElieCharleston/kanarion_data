@@ -1,9 +1,15 @@
 # Arbre des passifs V2 (brouillon, 2026-10-15)
 
-Statut : **proposition, bras Attaque seul**. Rien n'est branché : la V1 (`classes/passive_tree.json`)
-reste celle que lisent le serveur et le client. Data du brouillon : `arbre_v2_attaque.json`.
-Simulation : `python -I sim_arbre_v2.py arbre_v2_attaque.json` (les bras voisins sont clonés depuis
-Attaque pour tester la géométrie).
+Statut : **proposition, les 5 bras et les 5 ponts** (2026-10-16). Rien n'est branché : la V1
+(`classes/passive_tree.json`) reste celle que lisent le serveur et le client.
+
+- Bras Attaque : `arbre_v2_attaque.json`, écrit par le propriétaire (référence, inchangé).
+- Arbre complet : `arbre_v2.json`, **généré** par `gen_arbre_v2.py`. Attaque y est recopiée telle quelle ;
+  Défense, Soin, Soutien et Affaiblissement reprennent **son gabarit** (mêmes rangs, coûts et arêtes,
+  emplacement par emplacement), donc chaque notable tombe à la même distance. Pour retoucher un bras,
+  modifier son contenu dans `gen_arbre_v2.py` puis relancer le script, pas le JSON à la main.
+- Simulation : `python -I sim_arbre_v2.py arbre_v2.json` (vrais bras). Sur `arbre_v2_attaque.json`, le
+  simulateur clone toujours les bras depuis Attaque, comme avant.
 
 ## Pourquoi une V2
 
@@ -53,6 +59,76 @@ Ponts côté Attaque :
 - Attaque ↔ Défense : *Riposte* (sur le chemin, +40 % après blocage/parade), *Garde de fer* (à côté).
 - Attaque ↔ Affaiblissement : *Opportuniste* (sur le chemin, +20 % crit sous contrôle), *Curée* (à côté).
 
+## Bras Défense (proposition)
+
+| Distance | Contenu |
+|---|---|
+| 0 → 12 | Peau dure, Constitution, Esprit calme, Pas leger (flat, 3 rangs) |
+| **15** | *Peau de fer* (-15 % de degats subis des attaques de zone) **ou** *Position tenue* (Immobile depuis 3 s : -10 % de degats subis). Détour à 20 : *Sang-froid* (-12 % de degats subis d'un attaquant a plus de 3 cases) |
+| 15 → 30 | Rempart, Robustesse ; ou Bastion, Carapace |
+| **30** | 1 sur 3 : *Garde : parade* (+8 % de chance de parade et +8 % de chance de blocage), *Represailles : epines* (Renvoie 15 % des degats subis a l'attaquant), *Endurance : vampirisme* (+6 % de vol de vie et +6 % de vol de sort) |
+| 30 → 50 | Endurance, Resilience, Ancrage ; ou Ecailles, Colosse, Regeneration |
+| **50** | *Inebranlable* (Sous 30 % de PV : bouclier egal a 20 % de tes PV max. Une fois toutes les 45 s) **ou** *Dernier rempart* (Sous 30 % de PV : -20 % de degats subis). Détour à 55 : *Mur vivant* (Apres un blocage ou une parade : -20 % de degats subis pendant 3 s) |
+| 50 → 75 | Maitrise : bastion, Maitrise : cuirasse, Maitrise : endurance |
+| **75 méga** | *Forteresse* (+30 % de PV max et +15 % de reduction des degats subis. Contrepartie : -25 % de degats infliges) **ou** *Colere du titan* (Renvoie 30 % des degats subis et +10 % de vol de vie. Contrepartie : +15 % de degats subis et -25 % de soins recus) |
+
+## Bras Soin (proposition)
+
+| Distance | Contenu |
+|---|---|
+| 0 → 12 | Mains chaudes, Seve, Grace, Concentration (flat, 3 rangs) |
+| **15** | *Aide salvatrice* (+20 % de soins sur une cible sous 40 % de ses PV) **ou** *Soins preventifs* (+15 % de soins sur une cible au-dessus de 70 % de ses PV). Détour à 20 : *Soin etendu* (Un soin cible soigne aussi l'allie blesse le plus proche de 30 % du soin) |
+| 15 → 30 | Ferveur, Reserve ; ou Sagesse, Art du bouclier |
+| **30** | 1 sur 3 : *Transfusion* (10 % des soins donnes a un allie te reviennent), *Vol de sort* (+8 % de vol de sort), *Egide sacree* (+15 % de puissance de bouclier et +10 % de soins recus) |
+| 30 → 50 | Priere rapide, Perseverance, Recueillement ; ou Grace divine, Fontaine, Rayonnement |
+| **50** | *Dernier souffle* (Une fois par combat, un allie qui devait mourir reste a 1 PV et recoit 25 % de ses PV max) **ou** *Ondee* (Un soin cible soigne aussi les 2 allies blesses les plus proches de 25 % du soin). Détour à 55 : *Priere de combat* (Chaque soin lance donne +3 % de puissance de soin pendant 6 s, cumulable 5 fois) |
+| 50 → 75 | Maitrise : soins, Maitrise : sagesse, Maitrise : source |
+| **75 méga** | *Sanctuaire* (+30 % de puissance de soin et +25 % de duree des buffs (soins sur la duree compris). Contrepartie : -30 % de degats infliges) **ou** *Martyr* (+40 % de puissance de soin et +20 % de soins recus. Contrepartie : -20 % de PV max) |
+
+## Bras Soutien (proposition)
+
+| Distance | Contenu |
+|---|---|
+| 0 → 12 | Persistance, Vivacite, Souffle long, Volonte (flat, 3 rangs) |
+| **15** | *Inspiration* (Un allie que tu buffes inflige +8 % de degats pendant le buff) **ou** *Protection* (Un allie que tu buffes subit -8 % de degats pendant le buff). Détour à 20 : *Aura etendue* (Un buff cible touche aussi un allie adjacent) |
+| 15 → 30 | Esprit vif, Tenacite ; ou Clarte, Harmonie |
+| **30** | 1 sur 3 : *Rythme* (Un sort sur 4 qui coute du Souffle est gratuit), *Chef d'orchestre* (Buffer un allie reduit ses recharges de 1 s (une fois toutes les 5 s par allie)), *Clairvoyance* (+15 % de duree des buffs et +10 % de duree des affaiblissements) |
+| 30 → 50 | Serenite, Discipline, Fermete ; ou Eloquence, Ampleur, Presence |
+| **50** | *Chef de file* (Un allie que tu buffes inflige +6 % de degats et subit -6 % de degats pendant le buff) **ou** *Acceleration* (Un allie que tu buffes a +15 % de vitesse d'incantation pendant le buff). Détour à 55 : *Elan partage* (Chaque buff donne a un allie te donne +3 % de degats pendant 6 s, cumulable 5 fois) |
+| 50 → 75 | Maitrise : duree, Maitrise : tempo, Maitrise : clarte |
+| **75 méga** | *Maitre de guerre* (Tes buffs sur les allies durent 50 % plus longtemps et donnent +10 % de degats. Contrepartie : -25 % de tes propres degats) **ou** *Hate collective* (Un allie que tu buffes a -20 % de recharge pendant le buff. Contrepartie : -20 % de tes PV max) |
+
+## Bras Affaiblissement (proposition)
+
+| Distance | Contenu |
+|---|---|
+| 0 → 12 | Main sure, Venin, Prolongation, Perce-esprit (flat, 3 rangs) |
+| **15** | *Emprise* (+10 % de degats contre une cible sous controle) **ou** *Fleau* (+12 % de degats contre une cible qui porte au moins 2 affaiblissements). Détour à 20 : *Contagion* (Quand une cible meurt, tes affaiblissements passent sur l'ennemi le plus proche) |
+| 15 → 30 | Tenebres, Hate ; ou Malice, Corruption |
+| **30** | 1 sur 3 : *Zone de controle* (Un controle cible touche aussi un ennemi adjacent), *Maitre du tempo* (Controler un ennemi reduit tes autres recharges de 1 s (une fois toutes les 3 s)), *Venin profond* (+15 % de chance d'effet et +10 % de duree des affaiblissements) |
+| 30 → 50 | Fatalite, Persistance noire, Brise-armure ; ou Malediction, Affliction, Malefice |
+| **50** | *Supplice* (+4 % de degats par affaiblissement que porte la cible, jusqu'a 5) **ou** *Etau* (+15 % de degats et +10 % de chance critique contre une cible sous controle). Détour à 55 : *Brise-volonte* (Apres avoir controle un ennemi : +15 % de chance d'effet pendant 4 s) |
+| 50 → 75 | Maitrise : emprise, Maitrise : duree, Maitrise : malice |
+| **75 méga** | *Peste* (Un affaiblissement pose par un sort cible touche aussi un ennemi adjacent (sans relance en chaine). Contrepartie : tes affaiblissements durent 25 % de moins) **ou** *Seigneur des chaines* (+40 % de duree des affaiblissements et +20 % de chance d'effet. Contrepartie : -25 % de degats infliges) |
+
+## Ponts (les 5)
+
+| Pont | Passage (×2, 1 pt) | Hybride sur le chemin | Hybride à côté |
+|---|---|---|---|
+| Attaque ↔ Défense | +4 armure et +4 resistance magique | *Riposte* (Apres un blocage ou une parade, ta prochaine attaque inflige +40 % de degats) | *Garde de fer* (Tant que tu es au-dessus de 70 % de tes PV : +12 % de degats infliges et -8 % de degats recus) |
+| Attaque ↔ Affaiblissement | +4 armure et +4 resistance magique | *Opportuniste* (+20 % de chance critique contre une cible sous controle) | *Curee* (+20 % de degats contre une cible qui porte au moins 3 affaiblissements) |
+| Défense ↔ Soin | +12 PV max et +2 % de soins recus | *Rempart vivant* (10 % des soins que tu recois deviennent un bouclier (5 s)) | *Second elan* (Sous 25 % de PV : bouclier egal a 15 % de tes PV max. Une fois toutes les 60 s) |
+| Soin ↔ Soutien | +10 Souffle max et +2 % de duree des buffs | *Chant de guerre* (Un buff donne a un allie lui retire un affaiblissement) | *Benediction* (Un allie que tu buffes recoit +10 % de soins pendant le buff) |
+| Soutien ↔ Affaiblissement | +2 % de chance d'effet et +2 resistance aux effets | *Coordination* (Un allie que tu buffes inflige +8 % de degats aux cibles que tu as affaiblies) | *Marque du chef* (Un allie que tu buffes a +10 % de chance critique contre les cibles que tu as affaiblies) |
+
+Ces tables sont **générées depuis `arbre_v2.json`** par `doc_arbre_v2.py` : modifier le contenu dans `gen_arbre_v2.py`,
+relancer les deux scripts. Rendu en image : `python -I render_arbre_v2.py arbre_v2.json arbre_v2.png`.
+
+Les mécaniques de la V1 sont reprises là où elles collent (Peau de fer, Position tenue, Sang-froid,
+Inébranlable, Aide salvatrice, Soin étendu, Transfusion, Dernier souffle, Inspiration, Aura étendue,
+Rythme, Chef d'orchestre, Emprise, Contagion, Zone de contrôle, Maître du tempo, Rempart vivant, Chant de
+guerre, Coordination) : elles sont déjà codées et testées en combat réel (gate du 2026-10-01).
+
 ## Ce que donne la simulation (100 points)
 
 | Build | Coût | Notables |
@@ -69,12 +145,45 @@ Chaque notable tombe exactement à sa distance cible (15 / 30 / 50 / 75).
 Nombre de variantes : par bras, 2 × 3 × 2 × 2 = 24 all-in (sans compter les routes et les 25 points
 restants) ; hybrides : 10 paires de bras, 5 paires voisines avec ponts, et les formes à 3 bras.
 
+Avec les 5 vrais bras (`sim_arbre_v2.py arbre_v2.json`, 2026-10-16) : tous les notables tombent à
+15 / 30 / 50 / 75 (détours à 20 et 55) ; pour chaque bras, all-in 75, + notable 15 du voisin 90,
++ notable 30 du voisin 105 (impossible) ; hybride voisin 83, ou 89 avec les deux hybrides du pont.
+**Nouveau :** un hybride *éloigné* (bras à 2 crans) coûte **96** en passant par les deux ponts, au lieu
+de 100 par le centre : les ponts servent aussi aux hybrides éloignés, et rapportent 2 hybrides en route.
+À décider : on le garde (récompense le hybride à 3 bras) ou on monte le coût des passages.
+
 ## Budget de puissance (à vérifier en jeu)
 
 - All-in : 4 notables dont le méga, + 25 points (un petit notable ailleurs, ou un détour).
 - Hybride voisin : 8 notables (dont 2 hybrides), pas de méga.
 - Cible : **méga ≈ 4 notables moyens**. Si les hybrides dominent, on monte les mégas ; sinon on monte
   les hybrides. Les contreparties des mégas gardent un vrai choix de style.
+
+## Interface : ordinateur ET mobile (2026-10-17)
+
+Constat sur l'écran actuel (arbre V1, `passive_tree_view.gd`) : il est pensé souris. Sur mobile, un
+appui achète directement (+1), le retrait (clic droit) n'existe pas, le détail d'un nœud ne s'ouvre
+jamais (le survol est coupé au tactile) et le zoom ne se fait qu'aux boutons (pas de pincement). À
+corriger dès la V1, la V2 en hérite.
+
+Règles proposées, identiques sur les deux supports :
+
+- **Appui = sélection, jamais achat.** Le nœud choisi ouvre une fiche (panneau bas sur mobile,
+  bulle sur ordinateur) : icône, effet, rang, coût, raison du refus éventuel, et deux gros boutons
+  **+** / **−** (au moins 64 px). Sur ordinateur, clic gauche / clic droit restent des raccourcis.
+- **Le chemin s'affiche** dès qu'un nœud est sélectionné (ou survolé à la souris) : la route la moins
+  chère depuis ce que le joueur possède, surlignée, avec son coût total (« +13 pts par Riposte »). Pur
+  affichage, le serveur reste seul juge.
+- **Pincer pour zoomer, glisser pour déplacer**, double appui pour zoomer sur un point ; boutons de
+  zoom gardés.
+- **Niveaux de détail** : dézoomé, seuls les notables, les mégas et les noms des bras (lisible sur
+  téléphone) ; zoomé, les petits nœuds et leurs rangs. Toute cible tactile fait au moins 44 px à
+  l'écran au zoom où elle est cliquable.
+- **Ponts lisibles** : un arc sur l'anneau 30, aux couleurs des deux bras, avec le coût écrit dessus.
+  Anneaux 15 / 30 / 50 / 75 visibles en fond.
+- **Barre fixe en bas** : points restants, Annuler, Appliquer ; le panneau Impact se replie.
+- **Icônes** : chaque nœud a son champ `icon` ; les 40 manquantes sont commandées dans `ICONES_V2.md`
+  avec une contrainte de lisibilité à 30 px.
 
 ## Reset des points (proposition)
 
@@ -95,7 +204,10 @@ restants) ; hybrides : 10 paires de bras, 5 paires voisines avec ponts, et les f
 - Nouvelles mécaniques de combat : `damage_vs_target_hp_above` (Premier sang), `stacking_stat_on_event`
   (Élan), `consecutive_hit_stacks` (Acharnement), `crit_ignores_defense` (Brise-garde),
   `non_crit_damage_modifier` (Coup Fatal), `stats_while_hp_above` (Garde de fer),
-  `damage_vs_target_debuff_count` (Curée), événement `kill` pour `stat_window_after_event`.
+  `damage_vs_target_debuff_count` (Curée, Fléau), événement `kill` pour `stat_window_after_event`.
+- Pour les 4 bras proposés : **aucune mécanique entièrement nouvelle**, seulement 9 extensions d'une
+  mécanique déjà codée (un paramètre, un événement ou une stat de plus), listées dans
+  `arbre_v2.json` `_meta.new_mechanics`. Les notables sans effet spécial sont en stats (comme *Brute*).
 - Migration : rembourser tous les points de l'arbre V1 au passage en V2.
 
 ## Questions ouvertes

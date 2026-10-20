@@ -1,6 +1,7 @@
 # Arbre des passifs V2 : all-in ou hybride
 
-Décidé par le propriétaire le 2026-10-15 (bras Attaque en brouillon, le reste à faire).
+Décidé par le propriétaire le 2026-10-15 (bras Attaque en brouillon). Le 2026-10-16 : les 4 autres bras
+et les 3 ponts manquants proposés sur le gabarit d'Attaque (`arbre_v2.json`, à valider).
 
 - **100 points** : 1 au niveau 1, puis 1 par niveau (aujourd'hui le serveur en donne 99).
 - Notables placés **à distance du centre** : petits à 15 points, petits moyens à 30, moyens à 50, méga à 75.
