@@ -71,7 +71,7 @@ def collect_canonical_stats(defs: dict) -> set:
     # Also add known aliases and common names from the stat system
     # These are used interchangeably in various files
     aliases = {
-        "hp", "mp", "atk", "mag", "def", "armor", "magic_resist",
+        "hp", "mp", "atk", "mag", "armor", "magic_resist",
         "crit", "crit_chance", "crit_dmg", "crit_damage",
         "attack_speed", "hp_regen", "mp_regen",
         "lifesteal", "spell_vamp", "armor_pen", "magic_pen",

@@ -76,7 +76,7 @@ def ratio(cls, stat):
     """Value of 1 % of `stat` in % of the class's offensive stat."""
     cs = class_stats(cls)
     alias = {"max_hp": "hp", "caster_max_hp": "hp", "target_max_hp": "hp", "max_mp": "mp",
-             "caster_max_mp": "mp", "caster_def": "def", "caster_mag": "mag", "magic_power": "mag"}
+             "caster_max_mp": "mp", "caster_armor": "armor", "caster_mag": "mag", "magic_power": "mag"}
     return cs[alias.get(stat, stat)] / cs[offense_stat(cls)]
 
 
