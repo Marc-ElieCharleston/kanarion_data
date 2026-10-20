@@ -20,51 +20,22 @@
     "side",
     "repeatable"
   ],
-  "reset_modes": [
-    "none",
-    "daily",
-    "weekly"
-  ],
   "templates": {
     "kill_mobs": {
       "fields": [
         "mob_ids",
         "count"
-      ],
-      "counts_by_bracket": [
-        [
-          1,
-          5,
-          10
-        ],
-        [
-          6,
-          10,
-          15
-        ],
-        [
-          11,
-          15,
-          18
-        ],
-        [
-          16,
-          20,
-          20
-        ]
       ]
     },
     "defeat_elite": {
       "fields": [
         "count"
-      ],
-      "recommended_count": 1
+      ]
     },
     "defeat_boss": {
       "fields": [
         "boss"
       ],
-      "recommended_count": 1,
       "description": "Win a fight in which this monster (id of entities/monsters.json, any threat tier) was killed. Credited from the combat room_ended event to every winning player, dungeon or open world."
     },
     "clear_star_packs": {
@@ -2348,27 +2319,27 @@
       ],
       "title_fr": "[Tournoi] Choisis ta voie",
       "title_en": "[Tournament] Choose Your Path",
-      "summary_fr": "Ton personnage de tournoi commence au niveau vingt. Le Greffier du Tournoi, à droite du point d'apparition, peut fixer ta sous-classe et t'ouvrir cinq compétences de plus.",
-      "summary_en": "Your tournament fighter starts at level twenty. The Tournament Registrar, to the right of the spawn point, can set your subclass and open five more skills.",
-      "npc_giver": "npc_tournament_registrar",
+      "summary_fr": "Ton personnage de tournoi commence au niveau vingt. Maître Soren, le Maître des Voies, peut fixer ta sous-classe et t'ouvrir cinq compétences de plus.",
+      "summary_en": "Your tournament fighter starts at level twenty. Master Soren, the Master of Paths, can set your subclass and open five more skills.",
+      "npc_giver": "npc_class_master_elwin",
       "objectives": [
         {
           "template": "talk_to_npc",
-          "npc_id": "npc_tournament_registrar",
+          "npc_id": "npc_class_master_elwin",
           "count": 1,
-          "description_fr": "Choisir ta sous-classe auprès du Greffier",
-          "description_en": "Choose your subclass with the Registrar",
+          "description_fr": "Choisir ta sous-classe auprès de Maître Soren",
+          "description_en": "Choose your subclass with Master Soren",
           "hints": {
             "on_active": [
               {
                 "id": "q_tournoi_subclass_obj0_arrow",
                 "type": "arrow",
-                "target": "npc_tournament_registrar",
+                "target": "npc_class_master_elwin",
                 "priority": 90,
                 "show_once": true,
                 "payload": {
-                  "label_fr": "Va voir le Greffier",
-                  "label_en": "Go see the Registrar"
+                  "label_fr": "Va voir Maître Soren",
+                  "label_en": "Go see Master Soren"
                 }
               }
             ]
@@ -2385,8 +2356,8 @@
             "payload": {
               "title_fr": "Ta sous-classe",
               "title_en": "Your subclass",
-              "content_fr": "Un personnage de tournoi commence au niveau vingt, prêt à se battre. Tu peux choisir une sous-classe tout de suite : elle débloque cinq compétences que ta classe de base n'a pas, et elle oriente ta façon de jouer.\n\nLe choix ne se défait pas. Velith peut te rendre tes points de statistiques et de compétences, mais pas ta voie.\n\nLe Greffier du Tournoi se tient à droite du point d'apparition, près de Dargo.",
-              "content_en": "A tournament fighter starts at level twenty, ready to fight. You can choose a subclass right away: it unlocks five skills your base class doesn't have, and it shapes how you play.\n\nThe choice can't be undone. Velith can give back your stat and skill points, but not your path.\n\nThe Tournament Registrar stands to the right of the spawn point, near Dargo."
+              "content_fr": "Un personnage de tournoi commence au niveau vingt, prêt à se battre. Tu peux choisir une sous-classe tout de suite : elle débloque cinq compétences que ta classe de base n'a pas, et elle oriente ta façon de jouer.\n\nLe choix ne se défait pas. Velith peut te rendre tes points de statistiques et de compétences, mais pas ta voie.\n\nMaître Soren, le Maître des Voies, t'ouvre ces voies au village.",
+              "content_en": "A tournament fighter starts at level twenty, ready to fight. You can choose a subclass right away: it unlocks five skills your base class doesn't have, and it shapes how you play.\n\nThe choice can't be undone. Velith can give back your stat and skill points, but not your path.\n\nMaster Soren, the Master of Paths, opens these paths for you in the village."
             }
           }
         ]
@@ -2394,7 +2365,7 @@
       "rewards": {
         "gold": 200
       },
-      "_note": "TOURNOI UNIQUEMENT, ET PLUS DISTRIBUEE. Le drapeau est passe a false le 2026-09-19. Elle etait devenue une consigne sans acte : son objectif vise le Greffier (npc_tournament_registrar), que le client transforme en raccourci de choix de sous-classe et que handle_class_path_chosen referme aussitot. Restaient une fleche au-dessus d'un PNJ et une modale pour une etape deja franchie. quest_service.cpp portait un filtre EN DUR pour la meme raison, pose la veille du tournoi pour eviter un bump de pin ; la data redevient la source de verite. Le champ auto_accept_on_tournament EXISTE et fonctionne cote back (quest_service.cpp, index construit au chargement) -- l'ancienne note disait le contraire et m'a coute une heure."
+      "_note": "TOURNOI UNIQUEMENT, ET PLUS DISTRIBUEE. Le drapeau est passe a false le 2026-09-19. Elle etait devenue une consigne sans acte : son objectif visait le Greffier (npc_tournament_registrar, PNJ retire le 2026-10-20 ; la quete pointe desormais sur Maitre Soren, npc_class_master_elwin), que le client transforme en raccourci de choix de sous-classe et que handle_class_path_chosen referme aussitot. Restaient une fleche au-dessus d'un PNJ et une modale pour une etape deja franchie. quest_service.cpp portait un filtre EN DUR pour la meme raison, pose la veille du tournoi pour eviter un bump de pin ; la data redevient la source de verite. Le champ auto_accept_on_tournament EXISTE et fonctionne cote back (quest_service.cpp, index construit au chargement) -- l'ancienne note disait le contraire et m'a coute une heure."
     },
     {
       "id": "q_tournoi_stats_skills",
@@ -2464,7 +2435,7 @@
             "payload": {
               "title_fr": "Répartir tes points",
               "title_en": "Spending your points",
-              "content_fr": "Ouvre tes statistiques et clique sur le + à côté d'une caractéristique pour y placer un point.\n\nHP augmente ta vie, Souffle ta réserve pour lancer des compétences, Attaque tes dégâts physiques, Magie tes dégâts magiques, et Défense ce que tu encaisses.\n\nRien n'est enregistré tant que tu n'as pas cliqué sur Appliquer.\n\nFais ensuite la même chose dans l'écran des compétences pour en monter une d'un rang.",
+              "content_fr": "Ouvre tes statistiques et clique sur le + à côté d'une caractéristique pour y placer un point.\n\nPV augmente ta vie, Souffle ta réserve pour lancer des compétences, Attaque tes dégâts physiques, Magie tes dégâts magiques, et Défense ce que tu encaisses.\n\nRien n'est enregistré tant que tu n'as pas cliqué sur Appliquer.\n\nFais ensuite la même chose dans l'écran des compétences pour en monter une d'un rang.",
               "content_en": "Open your stats and click the + next to a stat to put a point into it.\n\nHP raises your health, Breath your pool for casting skills, Attack your physical damage, Magic your magic damage, and Defense how much you soak up.\n\nNothing is saved until you click Apply.\n\nThen do the same in the skills screen to raise one skill by a rank."
             }
           }
@@ -3669,7 +3640,7 @@
             "payload": {
               "title_fr": "Tes premières armes",
               "title_en": "Your first weapons",
-              "content_fr": "Ouvre ton inventaire et équipe ton arme.\n\nOuvre ensuite tes statistiques et clique sur le + à côté d'une caractéristique pour y placer un point. HP augmente ta vie, Souffle ta réserve pour lancer des compétences, Attaque tes dégâts physiques, Magie tes dégâts magiques, et Défense ce que tu encaisses. Rien n'est enregistré tant que tu n'as pas cliqué sur Appliquer.\n\nFais ensuite la même chose dans l'écran des compétences pour en monter une d'un rang.\n\nDans ce même écran, l'onglet Passif regroupe ce que ton corps apprend à faire tout seul. Tu reçois un point de passif à chaque niveau : monte un passif d'un rang. Il n'y a pas de mauvais choix au début, et jusqu'au niveau 20 Velith te rend tes points gratuitement si tu changes d'avis.",
+              "content_fr": "Ouvre ton inventaire et équipe ton arme.\n\nOuvre ensuite tes statistiques et clique sur le + à côté d'une caractéristique pour y placer un point. PV augmente ta vie, Souffle ta réserve pour lancer des compétences, Attaque tes dégâts physiques, Magie tes dégâts magiques, et Défense ce que tu encaisses. Rien n'est enregistré tant que tu n'as pas cliqué sur Appliquer.\n\nFais ensuite la même chose dans l'écran des compétences pour en monter une d'un rang.\n\nDans ce même écran, l'onglet Passif regroupe ce que ton corps apprend à faire tout seul. Tu reçois un point de passif à chaque niveau : monte un passif d'un rang. Il n'y a pas de mauvais choix au début, et jusqu'au niveau 20 Velith te rend tes points gratuitement si tu changes d'avis.",
               "content_en": "Open your inventory and equip your weapon.\n\nThen open your stats and click the + next to a stat to put a point into it. HP raises your health, Breath your pool for casting skills, Attack your physical damage, Magic your magic damage, and Defense how much you soak up. Nothing is saved until you click Apply.\n\nThen do the same in the skills screen to raise one skill by a rank.\n\nIn that same screen, the Passive tab holds what your body learns to do on its own. You get one passive point per level: raise a passive by one rank. There are no bad choices this early, and up to level 20 Velith gives your points back for free if you change your mind."
             }
           }
