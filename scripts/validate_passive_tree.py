@@ -1,33 +1,35 @@
 #!/usr/bin/env python3
 """
-Validateur de l'arbre des passifs (classes/passive_tree.json) — cree le 2026-09-30.
+Validateur de l'arbre des passifs V2 (classes/passive_tree.json) — V1 le 2026-09-30, V2 le 2026-10-20.
 
-L'arbre est un GRAPHE : une erreur de donnee (arete vers un id disparu, noeud
-inaccessible, fourche a un seul cote, sommet impossible a atteindre) ne se voit
-qu'en jeu, apres un achat refuse. Ce script la trouve avant le commit.
+L'arbre est un GRAPHE genere par _meta/conception_passifs/gen_arbre_v2.py. Une erreur de donnee
+(arete vers un id disparu, notable a la mauvaise distance, mecanique que le combat ne sait pas jouer)
+ne se voit qu'en jeu, apres un achat refuse ou un effet muet. Ce script la trouve avant le commit.
 
 Ce qu'il verifie :
-  1. structure : ids uniques prefixes pt_, sortes connues, champs FR/EN presents
-  2. un seul centre, un sommet par bras, et le sommet declare dans `arms` existe
-  3. petits noeuds : max_rank = rules.small_max_rank, effets sur des stats connues,
-     jamais add_percent sur une stat `bonus_type: flat` (meme regle que validate_passives)
-     ni sur une stat dont la base vaut 0 (heal_power, shield_power, thorns : +X % de 0 = 0,
-     trouve par PassiveDataValidityTest sur Ferveur le 2026-09-30)
-  4. grands noeuds : max_rank 1, cout = rules.costs[sorte], mecanique au catalogue,
-     parametres exactement ceux du catalogue, stats et categories de statut connues
-  5. aretes : extremites existantes, pas de boucle, pas de doublon, graphe connexe
-     depuis le centre
-  6. fourches : chaque groupe a exactement deux cotes a et b, dans un seul bras
-  7. ponts : relies a exactement deux bras differents, voisins dans l'anneau
-  8. sommet atteignable : avec le cote le plus cher de la fourche ferme, le bras
-     permet encore d'investir capstone_arm_points_required points avant le sommet
-  9. budget : l'arbre coute plus que rules.max_points (sinon aucun choix)
- 10. emplacements de grands passifs croissants, et le dernier egal au nombre max
+  1. structure : ids uniques prefixes pt_ / pt2_, sortes connues, champs FR/EN presents, icone, pos
+  2. petits noeuds (small, bridge_small) : 1 a 5 rangs, uniquement des stats connues, jamais
+     add_percent sur une stat `bonus_type: flat` ni sur une stat dont la base vaut 0
+  3. autres noeuds : 1 rang, cout = rules.costs[sorte], effets = stats connues (value) et/ou
+     mecaniques du catalogue `mechanics`, parametres exactement ceux du catalogue, et valeurs des
+     parametres discriminants dans `variants` (= ce que le combat sait jouer : une mecanique ou une
+     variante absente du catalogue est INTERDITE, elle serait muette en jeu)
+  4. stacking « single » : une meme mecanique (meme variante) portee par un seul noeud de l'arbre,
+     sinon le composant de combat ecraserait l'une par l'autre
+  5. bras : chaque noeud de bras dans un bras declare ; ponts relies a deux bras VOISINS dans l'anneau
+  6. aretes : extremites existantes, pas de boucle, pas de doublon, graphe connexe depuis le centre,
+     chaque bras part du centre
+  7. groupes de choix : au moins deux options, un seul bras, une seule sorte
+  8. un groupe de mega par bras ; rules.mega_max present
+  9. distances : chaque notable tombe a rules.depth_targets[sorte] points du centre (petits noeuds
+     payes a leur rang max, regle « passage au rang max »)
+ 10. budget : l'arbre coute plus que rules.points.max_points (sinon aucun choix)
  11. textes : pas de tiret cadratin, pas de « Mana » (terminologie Souffle)
 
 Exit 0 = tout va bien, exit 1 = erreurs.
 """
 
+import heapq
 import json
 import os
 import sys
@@ -35,8 +37,10 @@ from collections import defaultdict, deque
 
 DB = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TREE = "classes/passive_tree.json"
-KINDS = {"center", "small", "big", "unique", "capstone", "bridge"}
-GRAND = {"big", "unique", "capstone", "bridge"}
+SMALL = {"small", "bridge_small"}
+NOTABLE = {"notable_15", "notable_30", "notable_50", "side", "hybrid", "mega"}
+KINDS = {"center"} | SMALL | NOTABLE
+BRIDGE = {"bridge_small", "hybrid"}
 TEXT_FIELDS = ("name_fr", "name_en", "description_fr", "description_en")
 
 
@@ -59,20 +63,40 @@ def stat_info(defs):
     return names, flat_only, zero_base
 
 
+def check_stat_effect(nid, e, small, stats, flat_only, zero_base, errors):
+    stat, op = e.get("stat"), e.get("op")
+    if stat not in stats:
+        errors.append(f"{nid}: stat inconnue '{stat}'")
+    if op not in ("add_flat", "add_percent"):
+        errors.append(f"{nid}: op invalide '{op}'")
+    if op == "add_percent" and stat in flat_only:
+        errors.append(f"{nid}: add_percent sur '{stat}' (bonus_type flat)")
+    elif op == "add_percent" and stat in zero_base:
+        errors.append(f"{nid}: add_percent sur '{stat}' dont la base vaut 0 : le bonus vaut 0")
+    key = "value_per_rank" if small else "value"
+    v = e.get(key)
+    if not isinstance(v, (int, float)) or v == 0:
+        errors.append(f"{nid}: {key} absente ou nulle")
+    elif small and v < 0:
+        errors.append(f"{nid}: un petit noeud ne porte pas de malus")
+
+
 def main():
     # Un chemin en argument remplace l'arbre du depot (tests du validateur).
     tree = load(sys.argv[1]) if len(sys.argv) > 1 else load(TREE)
     stats, flat_only, zero_base = stat_info(load("stats/definitions.json"))
     status_categories = set(load("stats/status_effects.json").get("categories", []))
     rules = tree["rules"]
+    costs = rules["costs"]
     mechanics = tree["mechanics"]
     errors, warnings = [], []
 
     nodes = {}
+    single_users = defaultdict(list)
     for n in tree["nodes"]:
         nid = n.get("id", "")
-        if not nid.startswith("pt_"):
-            errors.append(f"id '{nid}' ne commence pas par pt_")
+        if not (nid.startswith("pt_") or nid.startswith("pt2_")):
+            errors.append(f"id '{nid}' ne commence pas par pt_ ou pt2_")
         if nid in nodes:
             errors.append(f"id '{nid}' en DOUBLE")
         nodes[nid] = n
@@ -88,70 +112,97 @@ def main():
                 errors.append(f"{nid}: tiret cadratin dans {field}")
             if "Mana" in text or "mana" in text:
                 errors.append(f"{nid}: 'mana' dans {field} (dire Souffle / Breath)")
-        if kind != "center" and not n.get("icon"):
+        if not n.get("icon"):
             errors.append(f"{nid}: pas d'icone")
         if not (isinstance(n.get("pos"), list) and len(n["pos"]) == 2):
             errors.append(f"{nid}: pos absente ou invalide")
+        if kind == "center":
+            continue
 
-        if kind == "small":
-            if n.get("max_rank") != rules["small_max_rank"]:
-                errors.append(f"{nid}: max_rank {n.get('max_rank')} != {rules['small_max_rank']}")
+        if kind in SMALL:
+            if not (isinstance(n.get("max_rank"), int) and 1 <= n["max_rank"] <= 5):
+                errors.append(f"{nid}: max_rank {n.get('max_rank')} hors de 1..5")
+            if "cost" in n:
+                errors.append(f"{nid}: un petit noeud se paie au rang (rules.costs.small_per_rank), pas de champ cost")
             if not n.get("effects"):
                 errors.append(f"{nid}: petit noeud sans effet")
             for e in n.get("effects", []):
-                stat, op = e.get("stat"), e.get("op")
-                if stat not in stats:
-                    errors.append(f"{nid}: stat inconnue '{stat}'")
-                if op not in ("add_flat", "add_percent"):
-                    errors.append(f"{nid}: op invalide '{op}'")
-                if op == "add_percent" and stat in flat_only:
-                    errors.append(f"{nid}: add_percent sur '{stat}' (bonus_type flat)")
-                elif op == "add_percent" and stat in zero_base:
-                    errors.append(f"{nid}: add_percent sur '{stat}' dont la base vaut 0 : le bonus vaut 0")
-                if not (isinstance(e.get("value_per_rank"), (int, float)) and e["value_per_rank"] > 0):
-                    errors.append(f"{nid}: value_per_rank absente ou <= 0")
                 if "mechanic" in e:
                     errors.append(f"{nid}: un petit noeud ne porte pas de mecanique")
-        elif kind in GRAND:
-            if n.get("max_rank") != 1:
-                errors.append(f"{nid}: grand noeud avec max_rank {n.get('max_rank')}")
-            if n.get("cost") != rules["costs"][kind]:
-                errors.append(f"{nid}: cout {n.get('cost')} != rules.costs.{kind} ({rules['costs'][kind]})")
-            if not n.get("effects"):
-                errors.append(f"{nid}: grand noeud sans effet")
-            for e in n.get("effects", []):
-                mech = e.get("mechanic")
-                if mech not in mechanics:
-                    errors.append(f"{nid}: mecanique inconnue '{mech}'")
                     continue
-                expected = mechanics[mech]["params"]
-                params = e.get("params", {})
-                if set(params) != set(expected):
-                    errors.append(f"{nid}: parametres {sorted(params)} != catalogue {sorted(expected)}")
-                for pname, ptype in expected.items():
-                    if pname not in params:
-                        continue
-                    value = params[pname]
-                    if ptype == "stat" and value not in stats:
-                        errors.append(f"{nid}: parametre {pname} = stat inconnue '{value}'")
-                    if ptype == "status_category" and value not in status_categories:
-                        errors.append(f"{nid}: categorie de statut inconnue '{value}'")
-                    if ptype in ("number", "int") and not isinstance(value, (int, float)):
-                        errors.append(f"{nid}: parametre {pname} non numerique")
+                check_stat_effect(nid, e, True, stats, flat_only, zero_base, errors)
+            continue
+
+        if n.get("max_rank") != 1:
+            errors.append(f"{nid}: notable avec max_rank {n.get('max_rank')}")
+        if kind not in costs:
+            errors.append(f"{nid}: rules.costs n'a pas de prix pour '{kind}'")
+        elif n.get("cost") != costs[kind]:
+            errors.append(f"{nid}: cout {n.get('cost')} != rules.costs.{kind} ({costs[kind]})")
+        if not n.get("effects"):
+            errors.append(f"{nid}: notable sans effet")
+        for e in n.get("effects", []):
+            if "stat" in e:
+                check_stat_effect(nid, e, False, stats, flat_only, zero_base, errors)
+                continue
+            mech = e.get("mechanic")
+            if mech not in mechanics:
+                errors.append(f"{nid}: mecanique '{mech}' absente du catalogue (non branchee en combat)")
+                continue
+            spec = mechanics[mech]
+            expected = spec["params"]
+            params = e.get("params", {})
+            if set(params) != set(expected):
+                errors.append(f"{nid}: parametres {sorted(params)} != catalogue {sorted(expected)}")
+            for pname, ptype in expected.items():
+                if pname not in params:
+                    continue
+                value = params[pname]
+                if ptype == "stat" and value not in stats:
+                    errors.append(f"{nid}: parametre {pname} = stat inconnue '{value}'")
+                if ptype == "status_category" and value not in status_categories:
+                    errors.append(f"{nid}: categorie de statut inconnue '{value}'")
+                if ptype in ("number", "int") and not isinstance(value, (int, float)):
+                    errors.append(f"{nid}: parametre {pname} non numerique")
+            variant = []
+            for pname, allowed in spec.get("variants", {}).items():
+                value = params.get(pname)
+                if value not in allowed:
+                    errors.append(f"{nid}: {mech}.{pname} = {value!r} : le combat ne sait jouer que {allowed}")
+                variant.append(json.dumps(value))
+            if "pairs" in spec and [params.get("event"), params.get("scope")] not in spec["pairs"]:
+                errors.append(f"{nid}: {mech} event/scope {params.get('event')}/{params.get('scope')} non branche")
+            if spec.get("stacking") == "single":
+                single_users[(mech, tuple(variant))].append(nid)
+            elif spec.get("stacking") not in ("additive", "max"):
+                errors.append(f"catalogue {mech}: stacking '{spec.get('stacking')}' inconnu")
+
+    for (mech, variant), users in single_users.items():
+        if len(users) > 1:
+            errors.append(f"{mech} {list(variant)} porte par {users} : le combat n'en garde qu'un (stacking single)")
 
     centers = [n for n in nodes.values() if n.get("kind") == "center"]
     if len(centers) != 1:
         errors.append(f"{len(centers)} centre(s) au lieu d'un seul")
 
     arm_ids = [a["id"] for a in tree["arms"]]
-    for arm in tree["arms"]:
-        caps = [n for n in nodes.values() if n.get("kind") == "capstone" and n.get("arm") == arm["id"]]
-        if len(caps) != 1:
-            errors.append(f"bras {arm['id']}: {len(caps)} sommet(s)")
-        if arm.get("capstone") not in nodes:
-            errors.append(f"bras {arm['id']}: sommet declare '{arm.get('capstone')}' introuvable")
+    ring = {aid: i for i, aid in enumerate(arm_ids)}
+
+    def neighbours(a, b):
+        i, j = sorted((ring[a], ring[b]))
+        return j - i == 1 or (i == 0 and j == len(arm_ids) - 1)
+
     for n in nodes.values():
-        if n.get("kind") not in ("center", "bridge") and n.get("arm") not in arm_ids:
+        kind = n.get("kind")
+        if kind == "center":
+            continue
+        if kind in BRIDGE:
+            arms = n.get("arms", [])
+            if n.get("arm") is not None or len(arms) != 2 or any(a not in ring for a in arms):
+                errors.append(f"{n['id']}: un pont porte arm=null et arms=[deux bras declares]")
+            elif not neighbours(*arms):
+                errors.append(f"{n['id']}: relie deux bras non voisins {arms}")
+        elif n.get("arm") not in ring:
             errors.append(f"{n['id']}: bras inconnu '{n.get('arm')}'")
 
     # Aretes
@@ -169,8 +220,17 @@ def main():
         seen.add(key)
         adj[a].add(b)
         adj[b].add(a)
-    if centers:
-        start = centers[0]["id"]
+    for n in nodes.values():  # un pont ne touche que ses deux bras (ou son propre pont)
+        if n.get("kind") in BRIDGE and len(n.get("arms", [])) == 2:
+            for x in adj[n["id"]]:
+                o = nodes[x]
+                if o.get("kind") in BRIDGE:
+                    if sorted(o.get("arms", [])) != sorted(n["arms"]):
+                        errors.append(f"{n['id']}: relie au pont d'autres bras ({x})")
+                elif o.get("arm") not in n["arms"]:
+                    errors.append(f"{n['id']}: relie a {x} hors de ses bras {n['arms']}")
+    start = centers[0]["id"] if centers else None
+    if start:
         reached, queue = {start}, deque([start])
         while queue:
             cur = queue.popleft()
@@ -181,72 +241,67 @@ def main():
         for nid in nodes:
             if nid not in reached:
                 errors.append(f"{nid}: inaccessible depuis le centre")
-        # Chaque bras part du centre : sinon il resterait joignable par un pont,
-        # le graphe paraitrait connexe et le bras ne serait ouvrable qu'en payant le pont.
         for arm in arm_ids:
             if not any(nodes[x].get("arm") == arm for x in adj[start]):
                 errors.append(f"bras {arm}: aucune arete depuis le centre")
 
-    # Fourches
-    forks = defaultdict(lambda: defaultdict(list))
+    # Groupes de choix
+    groups = defaultdict(list)
     for n in nodes.values():
-        if "fork" in n:
-            forks[n["fork"]["group"]][n["fork"]["side"]].append(n)
-    for group, sides in forks.items():
-        if set(sides) != {"a", "b"}:
-            errors.append(f"fourche {group}: cotes {sorted(sides)} au lieu de a et b")
-        arms_in = {n.get("arm") for side in sides.values() for n in side}
-        if len(arms_in) != 1:
-            errors.append(f"fourche {group}: noeuds dans plusieurs bras {sorted(arms_in)}")
+        if "choice" in n:
+            groups[n["choice"]["group"]].append(n)
+    for group, members in groups.items():
+        if len(members) < 2:
+            errors.append(f"groupe de choix {group}: une seule option")
+        if len({m.get("arm") for m in members}) != 1:
+            errors.append(f"groupe de choix {group}: options dans plusieurs bras")
+        if len({m.get("kind") for m in members}) != 1:
+            errors.append(f"groupe de choix {group}: options de sortes differentes")
+    if not isinstance(rules.get("mega_max"), int) or rules["mega_max"] < 1:
+        errors.append("rules.mega_max absent")
+    for arm in arm_ids:
+        megas = [n for n in nodes.values() if n.get("kind") == "mega" and n.get("arm") == arm]
+        if not megas:
+            errors.append(f"bras {arm}: aucun mega")
+        elif len({m.get("choice", {}).get("group") for m in megas}) != 1 or any("choice" not in m for m in megas):
+            errors.append(f"bras {arm}: les megas doivent former un seul groupe de choix")
 
-    # Ponts
-    ring = {aid: i for i, aid in enumerate(arm_ids)}
-    for n in nodes.values():
-        if n.get("kind") != "bridge":
-            continue
-        arms = {nodes[x].get("arm") for x in adj[n["id"]]}
-        if len(arms) != 2 or None in arms:
-            errors.append(f"{n['id']}: pont relie a {sorted(a or '?' for a in arms)} (il en faut deux)")
-            continue
-        i, j = sorted(ring[a] for a in arms)
-        if not (j - i == 1 or (i == 0 and j == len(arm_ids) - 1)):
-            errors.append(f"{n['id']}: relie deux bras non voisins")
-
-    # Sommet atteignable et budget
+    # Distances (cout du chemin le moins cher, petits noeuds payes a leur rang max)
     def cost(n):
-        if n.get("kind") == "small":
-            return rules["costs"]["small_per_rank"] * n["max_rank"]
+        if n.get("kind") in SMALL:
+            return costs["small_per_rank"] * n["max_rank"]
         return n.get("cost", 0)
 
-    required = rules["capstone_arm_points_required"]
-    total_reachable = 0
-    for arm in arm_ids:
-        arm_nodes = [n for n in nodes.values() if n.get("arm") == arm and n.get("kind") != "capstone"]
-        base = sum(cost(n) for n in arm_nodes if "fork" not in n)
-        side_costs = defaultdict(int)
-        for n in arm_nodes:
-            if "fork" in n:
-                side_costs[n["fork"]["side"]] += cost(n)
-        cheapest = base + min(side_costs.values()) if side_costs else base
-        if cheapest < required:
-            errors.append(f"bras {arm}: {cheapest} points avant le sommet avec le cote le moins cher, "
-                          f"moins que les {required} exiges")
-        cap = nodes[[a for a in tree["arms"] if a["id"] == arm][0]["capstone"]]
-        total_reachable += base + (max(side_costs.values()) if side_costs else 0) + cost(cap)
-    total_reachable += sum(cost(n) for n in nodes.values() if n.get("kind") == "bridge")
-    if total_reachable <= rules["max_points"]:
-        errors.append(f"arbre complet ({total_reachable} pts) <= budget ({rules['max_points']}) : aucun choix")
+    if start:
+        dist = {start: 0}
+        heap = [(0, start)]
+        while heap:
+            d, u = heapq.heappop(heap)
+            if d > dist.get(u, 1 << 30):
+                continue
+            for v in adj[u]:
+                if nodes[v].get("kind") in BRIDGE:
+                    continue  # la distance d'un bras se mesure dans le bras
+                nd = d + cost(nodes[v])
+                if nd < dist.get(v, 1 << 30):
+                    dist[v] = nd
+                    heapq.heappush(heap, (nd, v))
+        targets = rules.get("depth_targets", {})
+        for n in nodes.values():
+            want = targets.get(n.get("kind"))
+            if want is not None and dist.get(n["id"]) != want:
+                errors.append(f"{n['id']}: a {dist.get(n['id'])} pts du centre au lieu de {want}")
 
-    # Emplacements
-    slots = rules["grand_slots_by_level"]
-    levels = [s["level"] for s in slots]
-    counts = [s["slots"] for s in slots]
-    if levels != sorted(levels) or counts != sorted(counts):
-        errors.append("grand_slots_by_level doit etre croissant")
+    budget = rules["points"]["max_points"]
+    total = sum(cost(n) for n in nodes.values() if n.get("kind") != "center")
+    if total <= budget:
+        errors.append(f"arbre complet ({total} pts) <= budget ({budget}) : aucun choix")
 
-    grands = sum(1 for n in nodes.values() if n.get("kind") in GRAND)
-    print(f"{len(nodes)} noeuds, {len(seen)} aretes, {len(arm_ids)} bras, {grands} grands passifs")
-    print(f"  arbre atteignable (fourches comprises) : {total_reachable} pts pour un budget de {rules['max_points']}")
+    to_validate = [n["id"] for n in nodes.values() if n.get("to_validate")]
+    notables = sum(1 for n in nodes.values() if n.get("kind") in NOTABLE)
+    print(f"{len(nodes)} noeuds, {len(seen)} aretes, {len(arm_ids)} bras, {notables} notables")
+    print(f"  arbre complet : {total} pts pour un budget de {budget}")
+    print(f"  {len(to_validate)} noeud(s) marques to_validate (choix d'integration a faire valider)")
     for w in warnings:
         print(f"  [WARN] {w}")
     if errors:
