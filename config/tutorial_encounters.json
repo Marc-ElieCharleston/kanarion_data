@@ -25,7 +25,7 @@
       "_mp_regen_multiplier_note": "A VALIDER (2026-10-18, demande de Charleston apres le test mobile) : premier combat du jeu, le Souffle de l'equipe remonte trois fois plus vite pendant la lecon d'arene.",
       "skip_offer_after_seconds": 45,
       "skip_offer_after_los_refusals": 2,
-      "_skip_offer_note": "A VALIDER (audit des 20 premieres minutes, 2026-10-20). Lu par le CLIENT (arena_lesson_panel.gd) : un personnage d'aventure voit le bouton Passer la lecon apres skip_offer_after_seconds sans changement d'etape, ou apres skip_offer_after_los_refusals refus de ligne de vue. Le passage reste decide et applique par le serveur (refuse en tournoi). Le bouton n'est plus colle au premier Pret : un double appui mobile avait saute la lecon le 2026-09-28."
+      "_skip_offer_note": "Valide par Charleston le 2026-10-20 (45 s, 2 refus), issu de l'audit des 20 premieres minutes. Lu par le CLIENT (arena_lesson_panel.gd) : un personnage d'aventure voit le bouton Passer la lecon apres skip_offer_after_seconds sans changement d'etape, ou apres skip_offer_after_los_refusals refus de ligne de vue. Le passage reste decide et applique par le serveur (refuse en tournoi). Le bouton n'est plus colle au premier Pret : un double appui mobile avait saute la lecon le 2026-09-28."
     }
   },
   "scenarios": {
@@ -91,16 +91,19 @@
           "monster_id": "mob_rat_alpha",
           "level": 8,
           "count": 2,
-          "grid_hint": "front"
+          "grid_hint": "front",
+          "atk_mult": 0.8
         },
         {
           "kind": "monster",
           "monster_id": "mob_rat",
           "level": 8,
           "count": 2,
-          "grid_hint": "front"
+          "grid_hint": "front",
+          "atk_mult": 0.8
         }
       ],
+      "_atk_mult_note": "A VALIDER (2026-10-20, decision Charleston) : rats de la taverne trop forts, 2 defaites sur 5 au niveau 9. Attaque (physique et magique) x0,8 pour les quatre rats de ce combat seulement, soit environ -20 % de degats ; PV, niveau, XP et butin inchanges. Meme mecanisme que les affixes de la Tour (systems/tower.json atk_mult) : multiplicateur applique une fois apres le modele de scaling (MonsterSpawn.post_atk_multiplier). Les rats du monde ne changent pas. Absent = 1.",
       "rewards_note": "mob_rat est fodder (xp x0.6), base_xp_for_level(5) = 110 : 66 XP par rat, 330 pour les cinq, soit exactement l'XP de l'ancienne meute (joueur de niveau 10 ou moins). Butin normal de mob_rat. 2026-09-29 (retour QA Wassem, meme decision) : le joueur arrive ici au niveau 8. Cinq monstres au plus (le serveur refuse au-dela, INVALID_MOB_COUNT). 1 mob_rat_alpha (tough) + 3 mob_rat + 1 mob_rat_mage, niveau 8. XP : base_xp_for_level(8) = round(518 / 3.4) = 152 ; 243 (tough x1.6) + 3 x 91 (fodder) + 152 (standard) = 668 (+338). q_tut_intro_07 rend 338 XP de moins. 2026-10-13 : le Rat Sorcier est remplace par un mob_rat_jeune (pas d'humanoide dans le tuto ; un 2e Rat Alpha etait trop dur en solo tant que les familiers meurent vite) . Puis Charleston : ce combat est l'examen d'Aldric avant le sud, un joueur niveau 9-10 doit pouvoir le gagner, et il doit etre dur : 2 Rats Alpha + 2 Rats niveau 8 (avec la croissance des familiers x1,6 et le GCD monstre a 3 s). Non mesure : a verifier en jeu. Mesures : 5 mob_rat niveau 5 = ~30 s, familier a 193/193 ; 5 mob_rat niveau 8 = 28 s, joueur et familier intacts.",
       "accept_criteria": [
         "Un joueur lv8-9 avec son familier gagne en consommant au plus une potion.",
