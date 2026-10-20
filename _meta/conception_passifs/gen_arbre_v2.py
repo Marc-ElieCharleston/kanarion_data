@@ -464,13 +464,16 @@ ARMS["debuff"] = ("deb", {
 
 # Graines (2026-10-20, A VALIDER) : petit noeud de debut, relie au centre seul, pour que chaque bras
 # donne tot de la MAG ou un peu d'ATK. Attaque (Force) et Arcanes (Savoir) commencent deja ainsi.
+# Retour de Charleston (2026-10-20, 2e passe) : des premiers noeuds GENERIQUES (PV, DEF, MAG) selon le
+# theme du bras, qui n'orientent pas un build des le debut. Attaque garde Force (ATK + MAG), Arcanes Savoir.
 SEEDS = {
-    "defense": N("seed_might", "Bras armé", "Armed Arm", [flat("atk", 2)]),
+    "defense": N("seed_build", "Carrure", "Sturdy Build", [flat("hp", 12)]),
     "healing": N("seed_prayer", "Prière ardente", "Ardent Prayer", [flat("mag", 2)]),
-    "support": N("seed_verve", "Verve", "Verve", [flat("mag", 2)]),
+    "support": N("seed_poise", "Aplomb", "Poise", [flat("hp", 8), flat("armor", 1)]),
     "debuff": N("seed_dark_lore", "Sombre savoir", "Dark Lore", [flat("mag", 2)]),
 }
-SEED_NOTE = "graine de debut ajoutee le 2026-10-20 (retour de test 0.20 : pas de MAG ni d'ATK au debut) : stat et valeur a valider"
+SEED_NOTE = ("premier noeud generique du bras (retour de Charleston 2026-10-20 : PV, DEF ou MAG selon le theme, "
+             "sans orienter un build) : stat et valeur par rang a valider")
 
 # Ponts (bras A, bras B, prefixe, passage, hybride sur le chemin, hybride a cote). L'anneau est
 # Attaque, Defense, Soin, Arcanes, Soutien, Affaiblissement. Attaque <-> Defense et Attaque <->

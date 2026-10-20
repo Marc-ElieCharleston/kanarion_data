@@ -21,9 +21,12 @@ début ».
    Attaque, Défense, Soin, Arcanes, Soutien, Affaiblissement. Les deux ponts d'Attaque du propriétaire ne bougent pas ;
    l'ancien pont Soin ↔ Soutien devient Soin ↔ Arcanes et Arcanes ↔ Soutien (Chant de guerre y est repris).
    Tout le contenu du bras est à valider.
-2. **Graines** : Défense (+2 ATK par rang), Soin, Soutien et Affaiblissement (+2 MAG par rang), 3 rangs, reliées au
-   centre seul (feuilles : les distances 15 / 30 / 50 / 75 ne bougent pas). Attaque (Force) et Arcanes (Savoir)
-   commencent déjà par ATK / MAG.
+2. **Premiers nœuds génériques** (retour de Charleston, 2e passe du 2026-10-20 : PV, DEF ou MAG selon le thème, sans
+   orienter un build dès le début). Une « graine » de 3 rangs reliée au centre seul (feuille : les distances
+   15 / 30 / 50 / 75 ne bougent pas) pour les bras qui n'en avaient pas : Défense *Carrure* (+12 PV max par rang),
+   Soin *Prière ardente* (+2 MAG par rang), Soutien *Aplomb* (+8 PV max et +1 armure par rang), Affaiblissement
+   *Sombre savoir* (+2 MAG par rang). Attaque garde *Force* (+2 ATK et +2 MAG), Arcanes *Savoir* (+3 MAG). Valeurs
+   à valider.
 3. **Uniquement des mécaniques déjà branchées en combat** : 24 nœuds dont la mécanique V2 n'existe pas encore sont
    passés en stats, gardent leur id et leur icône, et portent `v2_planned` (la mécanique prévue, à brancher plus tard).
 4. Budget : **99 points** (règle actuelle du serveur, 1 par niveau du 2 au 100) ; la V2 en prévoit 100.
@@ -78,7 +81,7 @@ naturellement (méga au plus tôt vers le niveau 75).
 
 | Distance | Contenu |
 |---|---|
-| Graine (feuille du centre) | Bras armé (+2 attaque par rang) ⚠ à valider |
+| Graine (feuille du centre) | Carrure (+12 PV max par rang) ⚠ à valider |
 | 0 → 12 | Peau dure (+2 armure par rang), Constitution (+12 PV max par rang), Esprit calme (+2 résistance magique par rang), Pas léger (+1 esquive par rang) |
 | **15** | *Peau de fer* (-15 % de dégâts reçus des attaques de zone) **ou** *Position tenue* (Si tu ne t'es pas déplacé depuis 3 s : -10 % de dégâts reçus). Détour à 20 : *Sang-froid* (-12 % de dégâts reçus des ennemis à plus de 3 cases) |
 | 15 → 30 | Rempart (+3 armure et +3 résistance magique par rang), Robustesse (+15 PV max par rang) ; ou Bastion (+2 % de PV max par rang), Carapace (+2 % d'armure et +2 % de résistance magique par rang) |
@@ -116,7 +119,7 @@ naturellement (méga au plus tôt vers le niveau 75).
 
 | Distance | Contenu |
 |---|---|
-| Graine (feuille du centre) | Verve (+2 magie par rang) ⚠ à valider |
+| Graine (feuille du centre) | Aplomb (+8 PV max et +1 armure par rang) ⚠ à valider |
 | 0 → 12 | Persistance (+2 % de durée des améliorations par rang), Vivacité (+2 % de vitesse d'incantation par rang), Souffle long (+10 Souffle max par rang), Volonté (+2 résistance aux effets par rang) |
 | **15** | *Inspiration* (Tes améliorations sur un allié lui donnent aussi +8 % de dégâts pendant leur durée) **ou** *Protection* (+12 % de puissance de bouclier et +4 % de durée des améliorations) ⚠ à valider. Détour à 20 : *Aura étendue* (Tes améliorations mono-cible touchent aussi un allié adjacent) |
 | 15 → 30 | Esprit vif (+1 % de réduction de recharge par rang), Ténacité (+2 ténacité par rang) ; ou Clarté (+3 % de Souffle max par rang), Harmonie (+2 % de magie par rang) |
@@ -159,22 +162,22 @@ naturellement (méga au plus tôt vers le niveau 75).
 - `pt2_atk_mega_fatal` *Coup Fatal* : contrepartie : -10 % de degats infliges au lieu de -15 % sur les coups non critiques (non_crit_damage_modifier pas branche). Prévu par la V2 : non_crit_damage_modifier : -15 % de degats sur les coups non critiques.
 - `pt2_def_last_stand` *Dernier rempart* : mecanique V2 pas encore branchee en combat : remplacee par des stats (valeurs a valider). Prévu par la V2 : damage_taken_reduction_conditional hp_below : sous 30 % de PV, -20 % de degats subis.
 - `pt2_def_living_wall` *Mur vivant* : mecanique V2 pas encore branchee en combat : remplacee par des stats (valeurs a valider). Prévu par la V2 : stat_window_after_event block_or_parry : -20 % de degats subis pendant 3 s.
-- `pt2_def_seed_might` *Bras armé* : graine de debut ajoutee le 2026-10-20 (retour de test 0.20 : pas de MAG ni d'ATK au debut) : stat et valeur a valider.
+- `pt2_def_seed_build` *Carrure* : premier noeud generique du bras (retour de Charleston 2026-10-20 : PV, DEF ou MAG selon le theme, sans orienter un build) : stat et valeur par rang a valider.
 - `pt2_heal_prevention` *Soins préventifs* : mecanique V2 pas encore branchee en combat : remplacee par des stats (valeurs a valider). Prévu par la V2 : heal_bonus_target_hp_above : +15 % de soins sur une cible au-dessus de 70 % de ses PV.
 - `pt2_heal_downpour` *Ondée* : un seul allie (la V2 en prevoyait 2 a 25 % : parametre count pas branche). Prévu par la V2 : heal_splash_nearest_ally count=2 ratio 25.
 - `pt2_heal_prayer` *Prière de combat* : mecanique V2 pas encore branchee en combat : remplacee par des stats (valeurs a valider). Prévu par la V2 : stacking_stat_on_event heal_cast : +3 % de puissance de soin par soin, 5 cumuls, 6 s.
-- `pt2_heal_seed_prayer` *Prière ardente* : graine de debut ajoutee le 2026-10-20 (retour de test 0.20 : pas de MAG ni d'ATK au debut) : stat et valeur a valider.
+- `pt2_heal_seed_prayer` *Prière ardente* : premier noeud generique du bras (retour de Charleston 2026-10-20 : PV, DEF ou MAG selon le theme, sans orienter un build) : stat et valeur par rang a valider.
 - `pt2_sup_protection` *Protection* : mecanique V2 pas encore branchee en combat : remplacee par des stats (valeurs a valider). Prévu par la V2 : buff_grants_stat damage_reduction : un allie que tu buffes subit -8 % de degats.
 - `pt2_sup_vanguard` *Chef de file* : partie defensive (-6 % de degats subis pour l'allie) remplacee par +10 % de puissance de bouclier. Prévu par la V2 : buff_grants_stat damage_reduction 6.
 - `pt2_sup_acceleration` *Accélération* : mecanique V2 pas encore branchee en combat : remplacee par des stats (valeurs a valider). Prévu par la V2 : buff_grants_stat cast_speed : un allie que tu buffes a +15 % de vitesse d'incantation.
 - `pt2_sup_shared_drive` *Élan partagé* : mecanique V2 pas encore branchee en combat : remplacee par des stats (valeurs a valider). Prévu par la V2 : stacking_stat_on_event buff_applied_to_ally : +3 % de degats par buff donne, 5 cumuls, 6 s.
 - `pt2_sup_mega_haste` *Hâte suprême* : mecanique V2 pas encore branchee en combat : remplacee par des stats (valeurs a valider) ; l'effet porte sur toi, plus sur les allies (d'ou le nouveau nom). Prévu par la V2 : Hate collective, buff_grants_stat cooldown_reduction : un allie que tu buffes a -20 % de recharge.
-- `pt2_sup_seed_verve` *Verve* : graine de debut ajoutee le 2026-10-20 (retour de test 0.20 : pas de MAG ni d'ATK au debut) : stat et valeur a valider.
+- `pt2_sup_seed_poise` *Aplomb* : premier noeud generique du bras (retour de Charleston 2026-10-20 : PV, DEF ou MAG selon le theme, sans orienter un build) : stat et valeur par rang a valider.
 - `pt2_deb_plague_touch` *Fléau* : mecanique V2 pas encore branchee en combat : remplacee par des stats (valeurs a valider). Prévu par la V2 : damage_vs_target_debuff_count : +12 % de degats contre une cible a 2 affaiblissements ou plus.
 - `pt2_deb_torment` *Supplice* : mecanique V2 pas encore branchee en combat : remplacee par des stats (valeurs a valider). Prévu par la V2 : damage_vs_target_debuff_count per_debuff : +4 % par affaiblissement de la cible, jusqu'a 5.
 - `pt2_deb_will_breaker` *Brise-volonté* : mecanique V2 pas encore branchee en combat : remplacee par des stats (valeurs a valider). Prévu par la V2 : stat_window_after_event control_applied : +15 % de chance d'effet pendant 4 s.
 - `pt2_deb_mega_plague` *Peste* : mecanique V2 pas encore branchee en combat : remplacee par des stats (valeurs a valider). Prévu par la V2 : control_splash_adjacent harmful : un affaiblissement d'un sort cible touche aussi un ennemi adjacent ; contrepartie -25 % de duree des affaiblissements.
-- `pt2_deb_seed_dark_lore` *Sombre savoir* : graine de debut ajoutee le 2026-10-20 (retour de test 0.20 : pas de MAG ni d'ATK au debut) : stat et valeur a valider.
+- `pt2_deb_seed_dark_lore` *Sombre savoir* : premier noeud generique du bras (retour de Charleston 2026-10-20 : PV, DEF ou MAG selon le theme, sans orienter un build) : stat et valeur par rang a valider.
 - `pt2_hyb_atk_def_side` *Garde de fer* : mecanique V2 pas encore branchee en combat : remplacee par des stats (valeurs a valider). Prévu par la V2 : stats_while_hp_above : au-dessus de 70 % de PV, +12 % de degats et -8 % de degats recus.
 - `pt2_hyb_atk_deb_side` *Curée* : mecanique V2 pas encore branchee en combat : remplacee par des stats (valeurs a valider). Prévu par la V2 : damage_vs_target_debuff_count : +20 % de degats contre une cible a 3 affaiblissements ou plus.
 - `pt2_hyb_def_heal_side` *Second élan* : mecanique V2 pas encore branchee en combat : remplacee par des stats (valeurs a valider) (un 2e bouclier sous les PV bas ecraserait Inebranlable : le composant n'en tient qu'un). Prévu par la V2 : shield_on_low_hp : sous 25 % de PV, bouclier de 15 % des PV max, une fois toutes les 60 s.
