@@ -2893,6 +2893,91 @@ def validate_single_sources(db: Path) -> list:
     return errors
 
 
+def validate_status_duration_rule(db: Path) -> list:
+    """Durations of the status effects player skills apply (Charleston 2026-10-21).
+
+    Bounds, scope and hard-control classification all come from the data:
+    stats/status_effects.json `_meta.duration_rule` (soft_seconds, hard_cc_seconds,
+    excluded_categories) and each effect's `runtime.is_hard_cc`. Checked at every rank
+    (duration + duration_per_level x (rank - 1), rank 1..config/skill_system.json
+    skill_levels.max_level; a familiar casts at rank 1), plus the top-level dot_duration
+    and random_*_duration fields the server also reads. The skill's cooldown must be
+    strictly longer than the longest duration it applies (no permanent uptime from one
+    skill). Monster skills are out of scope."""
+    errors = []
+    se = load_json(db / "stats" / "status_effects.json")
+    rule = se.get("_meta", {}).get("duration_rule")
+    if not rule:
+        return ["[status_effects.json] _meta.duration_rule absent (bornes des durees des sorts de joueur)"]
+    soft, hard = tuple(rule["soft_seconds"]), tuple(rule["hard_cc_seconds"])
+    excluded = set(rule.get("excluded_categories", []))
+    category, hard_cc = {}, set()
+    for cat, group in se.get("effects", {}).items():
+        if not isinstance(group, dict):
+            continue
+        for eid, e in group.items():
+            if eid.startswith("_") or not isinstance(e, dict):
+                continue
+            category[eid] = cat
+            if (e.get("runtime") or {}).get("is_hard_cc"):
+                hard_cc.add(eid)
+    max_rank = load_json(db / "config" / "skill_system.json")["skill_levels"]["max_level"]
+
+    def walk(node):
+        if isinstance(node, dict):
+            if str(node.get("id", "")).startswith("skill_") and "target" in node:
+                yield node
+                return
+            for k, v in node.items():
+                if not k.startswith("_"):
+                    yield from walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                yield from walk(v)
+
+    eps = 1e-6
+    for path in sorted((db / "classes").glob("*/skills.json")):
+        familiar = path.parent.name == "familiar"
+        ranks = 1 if familiar else max_rank
+        for s in walk(load_json(path)):
+            sid = s["id"]
+            longest = 0.0
+            spans = []   # (label, kind, rank-1 value, max-rank value)
+            for e in s.get("effects") or []:
+                stat = e.get("stat") or e.get("status_id")
+                if e.get("type") == "utility" or not e.get("duration"):
+                    continue
+                d, dpl = float(e["duration"]), float(e.get("duration_per_level") or 0)
+                top = d + dpl * (ranks - 1)
+                longest = max(longest, d, top)
+                if category.get(stat) in excluded:
+                    continue
+                spans.append((stat, "hard" if stat in hard_cc else "soft", min(d, top), max(d, top)))
+            if s.get("dot_duration"):
+                d, dpl = float(s["dot_duration"]), float(s.get("dot_duration_per_level") or 0)
+                top = d + dpl * (ranks - 1)
+                longest = max(longest, d, top)
+                spans.append(("dot_duration", "soft", min(d, top), max(d, top)))
+            for k in ("random_buffs_duration", "random_debuffs_duration"):
+                if s.get(k):
+                    longest = max(longest, float(s[k]))
+                    spans.append((k, "soft", float(s[k]), float(s[k])))
+            for stat, kind, lo_v, hi_v in spans:
+                lo, hi = soft if kind == "soft" else hard
+                if lo_v < lo - eps or hi_v > hi + eps:
+                    errors.append(
+                        f"[{path.parent.name}/skills.json] {sid} : '{stat}' dure {lo_v:g}-{hi_v:g} s "
+                        f"(rangs 1-{ranks}), hors des bornes {'du controle fort' if kind == 'hard' else 'des effets doux'} "
+                        f"[{lo:g}, {hi:g}] s (stats/status_effects.json _meta.duration_rule)")
+            cd = float(s.get("cooldown") or 0)
+            cd_min = min(cd, cd + float(s.get("cooldown_per_level") or 0) * (ranks - 1))
+            if longest > 0 and cd_min <= longest + eps:
+                errors.append(
+                    f"[{path.parent.name}/skills.json] {sid} : cooldown {cd_min:g} s <= duree appliquee "
+                    f"{longest:g} s (le cooldown doit etre strictement plus long, _meta.duration_rule.cooldown_rule)")
+    return errors
+
+
 def main():
     # Find database root
     db_root = os.environ.get("DB_ROOT", "")
@@ -2983,6 +3068,11 @@ def main():
 
     print("[10/11] Validating skill AoE patterns exist in targeting.json...")
     errs = validate_skill_patterns(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12s/12] Validating player skill status durations and cooldowns (duration_rule)...")
+    errs = validate_status_duration_rule(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
