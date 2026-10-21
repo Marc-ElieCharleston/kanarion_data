@@ -543,6 +543,9 @@ def check_tutorial_gifts(r, ctx):
                     else:
                         r.add("B10", f"tutorial_encounters '{sid}' : kind '{kind}' inconnu")
                         continue
+                    if "hp" in e and (kind != "monster" or not _positive_int(e["hp"])):
+                        r.add("B10", f"tutorial_encounters '{sid}' : hp {e['hp']!r} (entier >= 1, monstre seulement ; "
+                                     "le serveur refuse de demarrer)")
                     for key in ("count", "level"):
                         if key in e and not _positive_int(e[key]):
                             r.add("B10", f"tutorial_encounters '{sid}' : {key} {e[key]!r} (entier >= 1 attendu)")

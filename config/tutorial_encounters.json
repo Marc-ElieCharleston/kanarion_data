@@ -8,7 +8,8 @@
       "overlay_key": "Optionnel. Cle de world/tutorial_overlays.json montree en PREGAME, sans le prefixe tutorial_. Absent = l'id du scenario. Remplace le mapping en dur sparring_trinity -> group_contaminated.",
       "guaranteed_rewards": "Optionnel. Liste de {item_id, quantity} donnee a CHAQUE joueur a chaque victoire du scenario, hors tirage de butin et hors pot commun (personnelle, non liee). Remplace l'empreinte de rat codee en dur pour rat_solo. item_id doit exister dans items/.",
       "allies": "Mercenaires seulement (un monstre allie est une erreur de chargement).",
-   "defeat_hint_key": "Optionnel (0.20.4). Cle de traduction d'une aide affichee sur l'ecran de defaite quand les joueurs perdent ce scenario. Doit figurer dans defeat_hint_keys."
+   "defeat_hint_key": "Optionnel (0.20.4). Cle de traduction d'une aide affichee sur l'ecran de defaite quand les joueurs perdent ce scenario. Doit figurer dans defeat_hint_keys.",
+   "hp": "Optionnel, entree ennemie de type monster seulement (Charleston 2026-10-21). PV max absolus de chaque monstre de l'entree, poses apres le modele de scaling et les multiplicateurs (MonsterSpawn.post_hp_absolute). Entier >= 1, sinon le serveur combat refuse de demarrer. Absent = PV du modele."
     },
     "spawn_contract": {
       "monsters": "Spawn monstre standard (monster_templates_), level explicite.",
@@ -95,7 +96,7 @@
     },
     "meute_sortie": {
       "zone": "tutorial_tavern",
-      "description": "Premiere vraie sortie : le joueur et son familier contre un nid de cinq rats de niveau 8 mene par un alpha, XP et butin reels. 2026-09-29 : cinq rats au lieu de deux loups et un sanglier (retour Charleston : le combat de groupe est deja appris dans la lecon d'arene ; ici on reste sur la menace du terrier et on garde la chaine centree familier).",
+      "description": "Premiere vraie sortie : le joueur et son familier contre deux Rats Alpha (150 PV) et un petit rat (20 PV) de niveau 8, XP et butin reels (composition du 2026-10-21, Charleston ; avant : un nid de cinq rats). 2026-09-29 : cinq rats au lieu de deux loups et un sanglier (retour Charleston : le combat de groupe est deja appris dans la lecon d'arene ; ici on reste sur la menace du terrier et on garde la chaine centree familier).",
       "allies": [],
       "enemies": [
         {
@@ -104,17 +105,20 @@
           "level": 8,
           "count": 2,
           "grid_hint": "front",
-          "atk_mult": 0.7
+          "atk_mult": 0.7,
+          "hp": 150
         },
         {
           "kind": "monster",
           "monster_id": "mob_rat",
           "level": 8,
-          "count": 2,
+          "count": 1,
           "grid_hint": "front",
-          "atk_mult": 0.75
+          "atk_mult": 0.75,
+          "hp": 20
         }
       ],
+      "_hp_note": "Charleston 2026-10-21 (playtest 0.20.3, verbatim : « pour le troisieme combat d'Aldric met 2 rats a 150 hp et 1 petit a 20 hp, sinon c'est trop dur, j'ai reussi a les battre une fois lv 18 ») : 2 Rats Alpha a 150 PV + 1 rat a 20 PV, rien d'autre (avant : 2 Rats Alpha + 2 rats, PV du modele). hp = PV absolus par entree, poses apres le scaling (server-combat MonsterSpawn.post_hp_absolute) : les rats du monde ne changent pas. Niveaux et atk_mult inchanges. Mesure : server-combat TutorialDuoRatsSimulation, SIM_SCENARIO=meute_sortie.",
       "_atk_mult_note": "A VALIDER (2026-10-20, decision Charleston) : rats de la taverne trop forts, 2 defaites sur 5 au niveau 9. Attaque (physique et magique) x0,8 pour les quatre rats de ce combat seulement, soit environ -20 % de degats ; PV, niveau, XP et butin inchanges. Meme mecanisme que les affixes de la Tour (systems/tower.json atk_mult) : multiplicateur applique une fois apres le modele de scaling (MonsterSpawn.post_atk_multiplier). Les rats du monde ne changent pas. Absent = 1. 2026-10-20 (A VALIDER, test mobile de Charleston, toujours trop dur) : Rats Alpha x0,7 et rats x0,75 ; les Rats Alpha perdent aussi 23 % de toutes leurs stats par le stade alpha (entities/monster_species.json stages.alpha 1.3 -> 1.0), dans le monde comme ici.",
       "rewards_note": "mob_rat est fodder (xp x0.6), base_xp_for_level(5) = 110 : 66 XP par rat, 330 pour les cinq, soit exactement l'XP de l'ancienne meute (joueur de niveau 10 ou moins). Butin normal de mob_rat. 2026-09-29 (retour QA Wassem, meme decision) : le joueur arrive ici au niveau 8. Cinq monstres au plus (le serveur refuse au-dela, INVALID_MOB_COUNT). 1 mob_rat_alpha (tough) + 3 mob_rat + 1 mob_rat_mage, niveau 8. XP : base_xp_for_level(8) = round(518 / 3.4) = 152 ; 243 (tough x1.6) + 3 x 91 (fodder) + 152 (standard) = 668 (+338). q_tut_intro_07 rend 338 XP de moins. 2026-10-13 : le Rat Sorcier est remplace par un mob_rat_jeune (pas d'humanoide dans le tuto ; un 2e Rat Alpha etait trop dur en solo tant que les familiers meurent vite) . Puis Charleston : ce combat est l'examen d'Aldric avant le sud, un joueur niveau 9-10 doit pouvoir le gagner, et il doit etre dur : 2 Rats Alpha + 2 Rats niveau 8 (avec la croissance des familiers x1,6 et le GCD monstre a 3 s). Non mesure : a verifier en jeu. Mesures : 5 mob_rat niveau 5 = ~30 s, familier a 193/193 ; 5 mob_rat niveau 8 = 28 s, joueur et familier intacts.",
       "accept_criteria": [
