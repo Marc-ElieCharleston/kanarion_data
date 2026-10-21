@@ -14,7 +14,7 @@
     "reference_hit_percent": 120,
     "_reference_hit_source": "Coup moyen d'un sort courant, celui du banc de reference serveur (server-combat/tests/unit/test_player_reference_curve.cpp) et de scripts/balance/pve_matrix.py.",
     "reference_level": 60,
-    "_reference_level_note": "Niveau ou l'on lit les stats de classe (base + croissance) pour convertir PV, DEF, Souffle et le stat d'un damage_type en % de la stat offensive de la classe. 60 = deblocage du tier 3."
+    "_reference_level_note": "Niveau ou l'on lit les stats de classe (base + croissance) pour convertir PV, armure, Souffle et le stat d'un damage_type en % de la stat offensive de la classe. 60 = deblocage du tier 3."
   },
 
   "targets": {
@@ -52,7 +52,7 @@
   },
 
   "heal_and_shield": {
-    "_comment": "1 PV rendu ou absorbe = 1 PV inflige. En % de MAG : converti par MAG / stat offensive de la classe. En % de PV max, DEF ou Souffle max : converti par le rapport stat / stat offensive de la CLASSE au niveau de reference.",
+    "_comment": "1 PV rendu ou absorbe = 1 PV inflige. En % de MAG : converti par MAG / stat offensive de la classe. En % de PV max, armure ou Souffle max : converti par le rapport stat / stat offensive de la CLASSE au niveau de reference.",
     "overheal_factor": 0.7,
     "_overheal_note": "Part d'un soin, HoT ou bouclier reellement utilisee (le reste deborde ou expire)."
   },
@@ -70,7 +70,7 @@
   "modifiers": {
     "_comment": "Buffs et debuffs de stat : magnitude (charges x value_per_stack plafonnees a max_stacks ; value + value_per_level quand l'effet n'est pas canonique ; litteral du runtime sinon) x duree x cibles x efficacite x debit de reference / 100. Tout vient de la CLE runtime.stat_mods de l'effet dans stats/status_effects.json, jamais de son id : un nouvel effet branche sur une cle connue est price sans toucher ce fichier. axis = ce que la cle sert chez celui qui la recoit : elle range la valeur en buff_offensif / buff_defensif (allie) ou debuff_offensif / debuff_defensif (ennemi).",
     "by_stat_mod": {
-      "_comment": "Offensif (ATK/MAG/degats infliges) et degats subis : 1.0, le debit est amplifie a plein. Armure/RM/DEF% : 0.5, la courbe 100/(100+armure) amortit. Reduction des degats : 1.0. Chance critique : 0.5 (un crit ajoute +50 %). Degats critiques : 0.2 (chance critique moyenne). Precision, esquive : 0.5. Puissance de soin, soins recus : 0.5 (seulement en presence de soins). Vitesse d'incantation : 0.3 (seule la part au-dela du GCD compte). Penetration magique : 0.3. def plat : 0.2 (morte depuis le modele de defense B). atk_speed : 0, elle ne sert qu'a l'attaque de base dont la boucle est coupee depuis le 2026-07-30.",
+      "_comment": "Offensif (ATK/MAG/degats infliges) et degats subis : 1.0, le debit est amplifie a plein. Armure/RM en % : 0.5, la courbe 100/(100+armure) amortit. Reduction des degats : 1.0. Chance critique : 0.5 (un crit ajoute +50 %). Degats critiques : 0.2 (chance critique moyenne). Precision, esquive : 0.5. Puissance de soin, soins recus : 0.5 (seulement en presence de soins). Vitesse d'incantation : 0.3 (seule la part au-dela du GCD compte). Penetration magique : 0.3. armor (points fixes d'armure, def_up/def_down) : 0.2, ramenee en % de l'armure de la classe par flat_reference_stat (cle `def` jusqu'au 2026-10-20 : la defense plate n'existe plus, ces statuts ont toujours nourri l'armure). atk_speed : 0, elle ne sert qu'a l'attaque de base dont la boucle est coupee depuis le 2026-07-30.",
       "atk_percent": {"efficiency": 1.0, "axis": "offense"},
       "attack_percent": {"efficiency": 1.0, "axis": "offense"},
       "mag_percent": {"efficiency": 1.0, "axis": "offense"},
@@ -86,14 +86,13 @@
       "atk_speed_percent": {"efficiency": 0.0, "axis": "offense"},
       "heal_power_percent": {"efficiency": 0.5, "axis": "offense"},
       "damage_taken_percent": {"efficiency": 1.0, "axis": "defense"},
-      "def_percent": {"efficiency": 0.5, "axis": "defense"},
       "armor_percent": {"efficiency": 0.5, "axis": "defense"},
       "magic_resist_percent": {"efficiency": 0.5, "axis": "defense"},
       "damage_reduction_percent": {"efficiency": 1.0, "axis": "defense"},
       "crit_resistance_percent": {"efficiency": 0.2, "axis": "defense"},
       "evasion_percent": {"efficiency": 0.5, "axis": "defense"},
       "heal_received_percent": {"efficiency": 0.5, "axis": "defense"},
-      "def": {"efficiency": 0.2, "axis": "defense"}
+      "armor": {"efficiency": 0.2, "axis": "defense"}
     },
     "implicit_stat_mods": {
       "_comment": "Effets canoniques dont stats/status_effects.json ne declare PAS runtime.stat_mods alors que le serveur applique la stat (trou de data, a corriger la-bas puis a retirer d'ici). La forme est celle de runtime.stat_mods.",
@@ -103,7 +102,7 @@
     "_harmful_note": "Cles dont une valeur POSITIVE nuit a celui qui la recoit (degats subis). Les autres l'aident quand elles sont positives.",
     "flat_reference_stat": {
       "_comment": "Cles plates : la magnitude est ramenee en % de cette stat de la classe au niveau de reference. null = deja en points de %.",
-      "def": "def",
+      "armor": "armor",
       "bonus_magic_flat": "mag",
       "magic_pen": null,
       "crit_damage": null

@@ -110,9 +110,9 @@ STARTER_BOOK = {
     "universal": True,
     "description_fr": (
         "Enseigne un petit soin à n'importe quel familier, quel que soit son rôle. "
-        "Offert pour aider les premiers pas de votre compagnon. Si le familier le "
-        "connaît déjà, il est rafraîchi ; si ses emplacements sont pleins, vous "
-        "choisissez celui qu'il remplace."
+        "Offert pour aider les premiers pas de ton compagnon. Si le familier le "
+        "connaît déjà, il est rafraîchi ; si ses emplacements sont pleins, tu "
+        "choisis celui qu'il remplace."
     ),
     "description_en": (
         "Teaches a small heal to any familiar, whatever its role. A gift to help "
@@ -128,7 +128,7 @@ STARTER_BOOK = {
 
 UPGRADE_FR = (
     " Si le familier connaît déjà cette compétence à un rang inférieur, elle est "
-    "améliorée ; si ses emplacements sont pleins, vous choisissez celle qu'elle remplace."
+    "améliorée ; si ses emplacements sont pleins, tu choisis celle qu'elle remplace."
 )
 UPGRADE_EN = (
     " If the familiar already knows it at a lower rank, it is upgraded; if its "

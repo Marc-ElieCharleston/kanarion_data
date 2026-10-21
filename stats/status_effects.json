@@ -443,9 +443,9 @@
         "formula": "caster_max_hp * 0.03 per tick (3% caster max HP/s)",
         "tick_interval": 1.0,
         "duration_modifiable": true,
-        "tooltip_fr": "Inflige des dégâts basés sur les HP max du lanceur chaque seconde.",
+        "tooltip_fr": "Inflige des dégâts basés sur les PV max du lanceur chaque seconde.",
         "tooltip_en": "Deals damage based on the caster's max HP every second.",
-        "description_fr": "Dégâts par tick basés sur les HP max du lanceur. Plus le Martyr est résistant, plus la marque brûle.",
+        "description_fr": "Dégâts par tick basés sur les PV max du lanceur. Plus le Martyr est résistant, plus la marque brûle.",
         "description_en": "Tick damage based on caster's max HP. The tougher the Martyr, the harder the brand burns.",
         "sources": [
           "Healer (Martyr)"
@@ -753,17 +753,17 @@
         "value_per_stack": 5
       },
       "def_up": {
-        "name_fr": "DEF +",
-        "name_en": "DEF +",
+        "name_fr": "Armure + (fixe)",
+        "name_en": "Armor + (flat)",
         "polarity": "buff",
         "stacking": "stackable",
         "max_stacks": 5,
         "impl": "done",
-        "formula": "+5 DEF flat per stack",
-        "tooltip_fr": "Réduit les dégâts subis (valeur fixe).",
-        "tooltip_en": "Reduces damage taken (flat value).",
-        "description_fr": "Réduit les dégâts reçus d'une valeur fixe par charge",
-        "description_en": "Reduces damage taken by a flat value per stack",
+        "formula": "+5 armor points per stack",
+        "tooltip_fr": "Augmente l'armure d'une valeur fixe.",
+        "tooltip_en": "Increases armor by a flat amount.",
+        "description_fr": "Ajoute des points d'armure par charge",
+        "description_en": "Adds armor points per stack",
         "sources": [
           "Warrior Warlord",
           "Healer Lifewarden",
@@ -775,24 +775,24 @@
           "is_hard_cc": false,
           "interrupts_cast": false,
           "stat_mods": {
-            "def": "value"
+            "armor": "value"
           },
           "vfx_type": "shield_aura"
         },
         "value_per_stack": 5
       },
       "def_down": {
-        "name_fr": "DEF -",
-        "name_en": "DEF -",
+        "name_fr": "Armure - (fixe)",
+        "name_en": "Armor - (flat)",
         "polarity": "debuff",
         "stacking": "stackable",
         "max_stacks": 5,
         "impl": "done",
-        "formula": "-5 DEF flat per stack",
-        "tooltip_fr": "Augmente les dégâts subis (valeur fixe).",
-        "tooltip_en": "Increases damage taken (flat value).",
-        "description_fr": "Augmente les dégâts reçus d'une valeur fixe par charge",
-        "description_en": "Increases damage taken by a flat value per stack",
+        "formula": "-5 armor points per stack",
+        "tooltip_fr": "Réduit l'armure d'une valeur fixe.",
+        "tooltip_en": "Reduces armor by a flat amount.",
+        "description_fr": "Retire des points d'armure par charge",
+        "description_en": "Removes armor points per stack",
         "sources": [
           "Warrior Warlord",
           "Artisan Chef"
@@ -801,7 +801,7 @@
           "is_hard_cc": false,
           "interrupts_cast": false,
           "stat_mods": {
-            "def": "-value"
+            "armor": "-value"
           },
           "vfx_type": "crack_aura"
         },
@@ -954,7 +954,7 @@
           "is_hard_cc": false,
           "interrupts_cast": false,
           "stat_mods": {
-            "def_percent": "value/100"
+            "armor_percent": "value/100"
           },
           "vfx_type": "shield_aura"
         },
@@ -976,7 +976,7 @@
           "is_hard_cc": false,
           "interrupts_cast": false,
           "stat_mods": {
-            "def_percent": "-value/100"
+            "armor_percent": "-value/100"
           },
           "vfx_type": "crack_aura"
         },
@@ -1293,7 +1293,6 @@
           "interrupts_cast": false,
           "stat_mods": {
             "atk_percent": "value/100",
-            "def_percent": "value/100",
             "mag_percent": "value/100",
             "armor_percent": "value/100",
             "magic_resist_percent": "value/100"
@@ -1321,7 +1320,6 @@
           "interrupts_cast": false,
           "stat_mods": {
             "atk_percent": "-value/100",
-            "def_percent": "-value/100",
             "mag_percent": "-value/100",
             "armor_percent": "-value/100",
             "magic_resist_percent": "-value/100"
@@ -1745,32 +1743,32 @@
         }
       },
       "shield_def": {
-        "name_fr": "Bouclier (DEF)",
-        "name_en": "Shield (DEF)",
+        "name_fr": "Bouclier (Armure)",
+        "name_en": "Shield (Armor)",
         "polarity": "buff",
         "stacking": "refresh",
         "max_stacks": 1,
         "impl": "done",
-        "formula": "absorb = value + (caster_def * pct / 100). value=base flat, pct=% scaling sur DEF du lanceur. Convention CTO 2026-05-01.",
-        "tooltip_fr": "Absorbe des dégâts proportionnels à la DEF du lanceur.",
-        "tooltip_en": "Absorbs damage scaled with caster DEF.",
-        "description_fr": "Variante DEF-scaled du bouclier, utilisée par les Tanks/Forgerons. Absorption = valeur de base (value) + un pourcentage de la DEF du lanceur (pct).",
-        "description_en": "DEF-scaled shield variant for Tanks/Blacksmiths. Absorption = flat value + pct% caster DEF.",
+        "formula": "absorb = value + (caster_armor * pct / 100). value=base flat, pct=% scaling sur l'armure du lanceur. Convention CTO 2026-05-01.",
+        "tooltip_fr": "Absorbe des dégâts proportionnels à l'armure du lanceur.",
+        "tooltip_en": "Absorbs damage scaled with caster armor.",
+        "description_fr": "Variante du bouclier proportionnelle à l'armure, utilisée par les Tanks/Blacksmiths. Absorption = valeur de base (value) + un pourcentage de l'armure du lanceur (pct).",
+        "description_en": "Armor-scaled shield variant for Tanks/Blacksmiths. Absorption = flat value + pct% caster armor.",
         "sources": [
           "Artisan (Blacksmith forged_retaliation, metalguard, quick_patch)"
         ],
         "runtime": {
           "is_hard_cc": false,
           "interrupts_cast": false,
-          "absorb_formula": "value + (caster.def * instance.pct) / 100",
-          "scaling_stat": "caster_def",
+          "absorb_formula": "value + (caster.armor * instance.pct) / 100",
+          "scaling_stat": "caster_armor",
           "scaling_source": "instance.pct",
           "scaling_behavior": "flat_plus_scaling",
           "stat_mods": {
             "shield": "power"
           },
           "vfx_type": "shield_aura",
-          "_backend_note": "Backend patch required (PR3): status_manager apply shield branch must add a case for effect_id 'shield_def' computing absorb = inst.value + (caster.defense * inst.pct) / 100. Skill schema must accept 'value' + 'pct' on effect entries with stat='shield_def'.",
+          "_backend_note": "Backend patch required (PR3): status_manager apply shield branch must add a case for effect_id 'shield_def' computing absorb = inst.value + (caster.armor * inst.pct) / 100. Skill schema must accept 'value' + 'pct' on effect entries with stat='shield_def'.",
           "_client_note": "stat_mods.shield='power' is a marker key required by client (pve_combat_manager.gd routes shield_amount only if mods.has('shield')). The string 'power' is replaced by the server-computed numeric absorb at runtime in combat_event_router.gd. Removing this breaks client display."
         }
       },
@@ -1845,7 +1843,7 @@
         "formula": "absorb = value + (caster_max_mp * pct / 100). value=base flat, pct=% scaling sur Souffle max du lanceur. Convention CTO 2026-05-01.",
         "tooltip_fr": "Absorbe des dégâts proportionnels au Souffle max du lanceur.",
         "tooltip_en": "Absorbs damage scaled with caster max Breath.",
-        "description_fr": "Variante max_mp-scaled du bouclier, utilisée par les Mage (mana_shield, spell_guard). Absorption = valeur de base (value) + un pourcentage du Souffle max du lanceur (pct).",
+        "description_fr": "Variante max_mp-scaled du bouclier, utilisée par les Mages (mana_shield, spell_guard). Absorption = valeur de base (value) + un pourcentage du Souffle max du lanceur (pct).",
         "description_en": "Max_mp-scaled shield variant for Mages (mana_shield, spell_guard). Absorption = flat value + pct% caster max Breath.",
         "sources": [
           "Mage (mana_shield, spellblade spell_guard)"
@@ -2079,7 +2077,7 @@
         "is_aura": true,
         "tooltip_fr": "Les alliés dans la zone deviennent immunisés aux contrôles.",
         "tooltip_en": "Allies inside the area become immune to crowd control.",
-        "description_fr": "Crée une zone. Alliés dans la zone immuns aux contrôles. Zone fixe, ne bouge pas. Compétence de Soigneur.",
+        "description_fr": "Crée une zone. Alliés dans la zone immuns aux contrôles. Zone fixe, ne bouge pas. Compétence de Healer.",
         "description_en": "Creates a zone. Allies inside immune to CC. Zone is fixed, doesn't move. Healer/Support skill.",
         "_pr_a2_note": "Flag corrected 2026-05-02 — code path verified wired in audit."
       }
@@ -2421,8 +2419,8 @@
         "formula": "Basic attack only. Pipeline: roll triple, if it fails roll double, else single. Each hit independent (crit/proc/status), each at 100% damage.",
         "tooltip_fr": "Chance d'effectuer une attaque supplémentaire.",
         "tooltip_en": "Chance to perform an additional attack.",
-        "description_fr": "Chance de deux attaques de base au lieu d'une. Mutuellement exclusif avec triple_attack_chance (le triple est tiré en premier, le double sert de repli). Cap 50%.",
-        "description_en": "Chance to land two basic attacks instead of one. Mutually exclusive with triple_attack_chance (triple rolls first, double falls back). Cap 50%.",
+        "description_fr": "Chance de deux attaques de base au lieu d'une. Ne se cumule pas avec la triple attaque (tentée en premier). Plafond 50 %.",
+        "description_en": "Chance to land two basic attacks instead of one. Does not combine with triple attack (rolled first). Cap 50%.",
         "sources": [
           "Archer Gunslinger"
         ],
@@ -2454,7 +2452,7 @@
         "duration": 10.0,
         "tooltip_fr": "Augmente l'attaque du porteur.",
         "tooltip_en": "Increases the bearer's attack.",
-        "description_fr": "La discipline du guerrier renforce ses coups. +5% ATK par charge (max 3). Se déclenche en lançant un sort offensif.",
+        "description_fr": "La discipline du Warrior renforce ses coups. +5% ATK par charge (max 3). Se déclenche en lançant un sort offensif.",
         "description_en": "The warrior's discipline strengthens his blows. +5% ATK per stack (max 3). Triggered by casting an offensive spell.",
         "sources": [
           "Warrior (class passive)"
@@ -2476,7 +2474,7 @@
         "duration": 10.0,
         "tooltip_fr": "Augmente la défense du porteur.",
         "tooltip_en": "Increases the bearer's defense.",
-        "description_fr": "La discipline du guerrier durcit sa garde. +5% DEF par charge (max 3). Se déclenche en lançant un sort de soutien ou défensif.",
+        "description_fr": "La discipline du Warrior durcit sa garde. +5% DEF par charge (max 3). Se déclenche en lançant un sort de soutien ou défensif.",
         "description_en": "The warrior's discipline hardens his guard. +5% DEF per stack (max 3). Triggered by casting a support or defensive spell.",
         "sources": [
           "Warrior (class passive)"
@@ -2689,8 +2687,8 @@
         "formula": "Instant action. Restores value MP to target. With scaling: 'caster_max_mp' = value% * caster.max_mp; 'mag'/'atk' = value% * stat. value_per_level adds (level-1) * vpl to value before scaling.",
         "tooltip_fr": "Restaure du Souffle.",
         "tooltip_en": "Restores Breath.",
-        "description_fr": "Restaure value Souffle a la cible. Si scaling=caster_max_mp, value est un pourcentage du Souffle max du lanceur.",
-        "description_en": "Restores value Breath to the target. If scaling=caster_max_mp, value is a percentage of caster's max Breath.",
+        "description_fr": "Restaure du Souffle à la cible (valeur fixe, ou pourcentage du Souffle max du lanceur).",
+        "description_en": "Restores Breath to the target (flat value, or a percentage of the caster's max Breath).",
         "sources": [
           "Artisan"
         ],
@@ -2748,8 +2746,8 @@
         "formula": "-50% damage taken, short duration, long CD",
         "tooltip_fr": "Posture défensive ultime. Réduit massivement les dégâts subis.",
         "tooltip_en": "Ultimate defensive stance. Massively reduces damage taken.",
-        "description_fr": "Le Guardian se met en garde absolue. -50% dégâts subis pendant la durée. Effet non-stackable, CD long. Option A custom car au-delà du cap canonique damage_reduction_up (15%).",
-        "description_en": "The Guardian enters an absolute defensive stance. -50% damage taken for the duration. Non-stackable, long CD. Option A custom effect (beyond canonical damage_reduction_up cap of 15%).",
+        "description_fr": "Le Guardian se met en garde absolue. -50 % de dégâts subis pendant la durée. Non cumulable, long temps de recharge.",
+        "description_en": "The Guardian enters an absolute defensive stance. -50% damage taken for the duration. Non-stackable, long cooldown.",
         "sources": [
           "Warrior (Guardian Iron Stance)"
         ],
@@ -2777,8 +2775,8 @@
         "formula": "+50 crit_damage (additif sur 150% base = 200%), short duration",
         "tooltip_fr": "Augmente massivement les dégâts critiques pour un court instant.",
         "tooltip_en": "Massively increases critical damage for a short time.",
-        "description_fr": "Le Ranger ajuste sa visée. +50 crit damage (additif sur 150% base, donc 200% au crit). Non-stackable. Option A custom car au-delà du cap canonique crit_damage_up (+30).",
-        "description_en": "The Ranger steadies their aim. +50 crit damage (additive on 150% base = 200% on crit). Non-stackable. Option A custom (beyond canonical crit_damage_up cap of +30).",
+        "description_fr": "Le Ranger ajuste sa visée. +50 % de dégâts critiques (200 % au lieu de 150 %). Non cumulable.",
+        "description_en": "The Ranger steadies their aim. +50% critical damage (200% instead of 150%). Non-stackable.",
         "sources": [
           "Archer (Ranger Steady Aim)"
         ],
@@ -2805,8 +2803,8 @@
         "formula": "Basic attack only. Rolls before double_attack_chance (priority); on success fires 3 hits. Cap 30%.",
         "tooltip_fr": "Chance de porter trois attaques de base.",
         "tooltip_en": "Chance to land three basic attacks.",
-        "description_fr": "Chance de trois attaques de base au lieu d'une. Roll prioritaire sur double_attack_chance. Cap 30%. Attaque de base uniquement, jamais sur une compétence.",
-        "description_en": "Chance to land three basic attacks instead of one. Rolls before double_attack_chance. Cap 30%. Basic attack only, never on a skill.",
+        "description_fr": "Chance de trois attaques de base au lieu d'une, tentée avant la double attaque. Plafond 30 %. Attaque de base uniquement, jamais sur une compétence.",
+        "description_en": "Chance to land three basic attacks instead of one, rolled before double attack. Cap 30%. Basic attack only, never on a skill.",
         "sources": [
           "Archer Gunslinger (future tier3)"
         ],

@@ -127,7 +127,10 @@
     "max_zoom": 3.0,
     "screen_offset_y": 42.0,
     "zoom_step": 0.2,
-    "pinch_sensitivity": 0.003
+    "pinch_sensitivity": 0.003,
+    "_mobile_note": "Mobile (2026-10-20, retour de test 0.20) : le client mesure le zoom ou TOUT le plateau tient a l ecran (fitted, combat_arena.gd _fit_mobile_grid). Le combat demarre a fitted x mobile_start_zoom_factor : 1.0 = dezoom maximum, plateau entier visible. Le joueur zoome ensuite jusqu a fitted x mobile_max_zoom_factor. Le PC ne lit pas ces deux valeurs.",
+    "mobile_start_zoom_factor": 1.0,
+    "mobile_max_zoom_factor": 2.5
   },
   "ui_sizes": {
     "_comment": "Common UI sizes for mobile-friendly design",
@@ -139,16 +142,33 @@
     "margin": 8.0,
     "popup_width": 280.0,
     "font_size_title": 22,
-    "font_size_normal": 14,
     "bar_height_small": 8,
     "bar_height_medium": 14,
-    "bar_height_large": 20,
     "world_hp_bar_width": 40.0
   },
   "skill_bar": {
     "slots_count": 12,
     "columns": 6,
-    "slots_per_row": 4
+    "_long_press_note": "Appui long sur une case de la barre (2026-10-20). Souris : long_press_seconds (tooltip en combat, reorganisation hors combat). Doigt : touch_long_press_seconds, nettement plus long qu un toucher appuye (0,3 a 0,5 s), qui doit viser ; seul un doigt IMMOBILE (deplacement <= touch_long_press_slop_px, pixels du viewport) ouvre la description, et relacher ensuite ne lance pas le sort.",
+    "long_press_seconds": 0.5,
+    "touch_long_press_seconds": 0.7,
+    "touch_long_press_slop_px": 14
+  },
+  "interact": {
+    "_comment": "Bouton d action unique (touche F, bouton rond tactile) : rayons propres au client, qui ne font qu OFFRIR une action. Le serveur reste seul juge (portee d attaque, engagement).",
+    "monster_group_range_px": 160,
+    "_monster_group_range_note": "Distance (px monde) a laquelle un groupe de monstres du monde se propose au bouton d action : Attaquer (F, gros bouton) et Observer (second bouton, fiche du groupe). Attaquer marche ensuite jusqu au monstre comme le bouton Attaquer de la fiche. A VALIDER (retour de test mobile du 2026-10-20)."
+  },
+  "mobile_hud": {
+    "_comment": "HUD tactile (retour de test mobile du 2026-10-20). Valeurs en dp (1 dp = 1 pixel physique a 160 points par pouce), converties en pixels du viewport selon la densite de l ecran (UILayout.dp_to_px) : meme taille physique sur telephone et tablette. Le PC ne lit pas cette section. A VALIDER apres essai sur telephone et tablette.",
+    "edge_margin_dp": 8,
+    "_edge_margin_note": "Marge propre ajoutee A L INTERIEUR de la zone sure (encoche, barres systeme) autour du HUD : icones et minimap du haut a droite, cadre joueur du haut a gauche. 0 = colle au bord de l ecran.",
+    "joystick_radius_dp": 48,
+    "_joystick_radius_note": "Rayon du socle du joystick (diametre 96 dp, environ 15 mm). L ancien socle faisait 60 pixels du viewport, soit 34 dp sur un telephone 20:9 et 58 sur une tablette 2048x1536.",
+    "joystick_knob_ratio": 0.42,
+    "_joystick_knob_note": "Rayon du bouton mobile en part du rayon du socle (l ancien 25 / 60).",
+    "joystick_edge_margin_dp": 28,
+    "_joystick_edge_margin_note": "Ecart entre le bord de la zone sure et le socle, a gauche et en bas. Assez grand pour qu un doigt pousse au bout de sa course (rayon du socle moins rayon du bouton) reste sur l ecran : centre a 76 dp du bord, doigt a au moins 48 dp (environ 7,6 mm, plus qu une demi-largeur de doigt). L ancien ecart etait de 12 pixels du viewport, environ 7 dp sur telephone."
   },
   "combat_grids": {
     "_comment": "Grille unifiee 12x6 (2026-10-17, decision Charleston : tous les modes) : l'id se lit RANGS x COLONNES, soit 12 rangs de 6 colonnes = 6 rangs et 36 slots par equipe, 72 cases au total. SOURCE UNIQUE : 'default' + 'available'. rows/cols sont SERVEUR-AUTORITAIRES : le serveur lit 'default' (combat_host.cpp) et l'envoie au ROOM_JOINED ; cote client cette entree ne sert qu'au boot avant la premiere reponse serveur. L'ancien 10x6 n'est plus declare : un banc qui en a besoin passe par le chemin grille runtime (CombatGridConfig.register_runtime_grid).",
@@ -166,7 +186,6 @@
       "_formula": "pos(row, col) = origin + (col - (cols-1)/2)*axis_col + (row - (rows-1)/2)*axis_row (centrage sur le board complet). row absolu = index de rang serveur (0 = fond ennemi en haut, rows-1 = fond joueur en bas), col absolu. board_cell_to_screen (layout_projection.gd) applique cette formule directement: PAS de fold, PAS de gap.",
       "_scale_note": "Axes iso 2:1, voir _axis_comment (case 128x64). Orientation fixed 2026-07-22: axis_col down-right, axis_row down-LEFT so rising row advances toward the bottom of the screen -> PLAYER team (high rows) renders at the bottom near the camera, ENEMY (low rows) at the top. board_rows/board_cols DERIVED AT RUNTIME from the server grid dims (CombatGrid.rows/cols via ROOM_JOINED) in layout_projection.gd; the values below are documentation of the CURRENT server default only. Zoom de combat : voir combat_camera.",
       "board_rows": 12,
-      "board_cols": 6,
       "_middle_row_note": "Legacy: plus de rangee vide. Le pli est entre le rang rows/2-1 (front ennemi) et rows/2 (front joueur), fronts colles.",
       "middle_row": 6,
       "origin": {
@@ -193,70 +212,6 @@
     "_board_range_keyword_note": "Une portee qui vaut cette chaine (skill range ou movement.range) veut dire TOUT LE PLATEAU, sans nombre magique : serveur (content_loader.cpp) et client (skill.gd) la resolvent en (rangs - 1) + (colonnes - 1) de combat_grids.default, la plus grande distance Manhattan du plateau (16 sur le 12x6). Utilisee par la teleportation de l'assassin (Frappe de l'Ombre) et le Pas de l'Ombre du voleur (decision 2026-10-17 : portee illimitee).",
     "_aoe_placement_floor_note": "Une zone SANS range explicite est posee a max(base_range, aoe_placement_floor). Ancien kAoePlacementFloor code en dur. Inchange au passage au 12x6 : on ne monte pas les portees (decision 2026-10-17)."
   },
-  "chat_channels": {
-    "world": {
-      "id": 0,
-      "prefix": "[W]",
-      "color": "#E6E6D9",
-      "commands": [
-        "/world",
-        "/1"
-      ]
-    },
-    "say": {
-      "id": 1,
-      "prefix": "[S]",
-      "color": "#FFFFFF",
-      "commands": [
-        "/s",
-        "/say"
-      ]
-    },
-    "party": {
-      "id": 2,
-      "prefix": "[P]",
-      "color": "#66B3FF",
-      "commands": [
-        "/p",
-        "/party"
-      ]
-    },
-    "guild": {
-      "id": 3,
-      "prefix": "[G]",
-      "color": "#66E666",
-      "commands": [
-        "/g",
-        "/guild"
-      ]
-    },
-    "whisper": {
-      "id": 4,
-      "prefix": "[MP]",
-      "color": "#E680E6",
-      "commands": [
-        "/w",
-        "/whisper"
-      ]
-    },
-    "sale": {
-      "id": 5,
-      "prefix": "[V]",
-      "color": "#FF9933",
-      "commands": [
-        "/v",
-        "/trade"
-      ]
-    },
-    "lfg": {
-      "id": 6,
-      "prefix": "[LFG]",
-      "color": "#E6E666",
-      "commands": [
-        "/lfg"
-      ]
-    }
-  },
   "minimap": {
     "_note": "Parametres REELS de la minimap, lus par le client. `world_radius: 300` vivait ici sans aucun lecteur pendant que minimap_panel.gd rendait avec 800 -- la meme double verite que camera/player.gd, tuee le 2026-08-28. Le backend derive son rayon d'AOI de ces valeurs : les fausser fait apparaitre des monstres sur la minimap.",
     "base_world_radius": 800.0,
@@ -265,9 +220,6 @@
     "default_zoom": 1.5,
     "zoom_step": 0.2,
     "shape": "circle",
-    "radius_pixels": 60,
-    "update_rate_hz": 10,
-    "hidden_during_combat": true,
     "markers": {
       "player": {
         "shape": "triangle",
@@ -294,12 +246,6 @@
         "size": 4
       }
     }
-  },
-  "party_behavior": {
-    "leader_controls_movement": true,
-    "party_enters_together": true,
-    "follow_distance": 40,
-    "max_members_display": 6
   },
   "afk": {
     "warning_minutes": 30,

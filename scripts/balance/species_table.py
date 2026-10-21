@@ -9,7 +9,7 @@
   and rate bonuses, proposed by coherence (name, category, portraits, lore).
   The CSV also keeps the MEASURED multipliers for reference: geometric mean of
   the members' current factors (out/monster_stats_v2.csv), stage removed.
-- STAGE: prefix multiplier on every core stat (jeune 0.7 ... geant 1.5).
+- STAGE: prefix multiplier on every core stat (jeune 0.55 ... geant 1.5).
 - Archetype: from out/monster_review.csv (archetype_proposed).
 
 Outputs: out/species_table.csv (one row per species) and
@@ -150,7 +150,7 @@ SPECIES_IDENTITY = {
     "demon":            ((1.2, 1.15, 1.0, 1.4),  {"lifesteal": 5},                     "se nourrit de la vie"),
     "archonte_dechu":   ((1.25, 1.15, 1.2, 1.25), {"tenacity": 15, "reflect": 5},      "anciens gardiens corrompus"),
 }
-STAGE = {"jeune": 0.7, "larve": 0.7, "tutorial": 0.6, "small": 0.7, "alpha": 1.3, "geant": 1.5,
+STAGE = {"jeune": 0.55, "larve": 0.55, "tutorial": 0.6, "small": 0.7, "alpha": 1.0, "geant": 1.5,
          "giant": 1.5, "ancient": 1.4, "lesser": 0.8, "corrupted": 1.2, "packleader": 1.3, "chief": 1.3,
          "warchief": 1.4, "warlord": 1.5, "king": 1.5, "queen": 1.5, "matron": 1.4}
 CORE = ["hp", "atk", "armor", "magic_resist"]

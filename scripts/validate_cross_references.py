@@ -71,7 +71,7 @@ def collect_canonical_stats(defs: dict) -> set:
     # Also add known aliases and common names from the stat system
     # These are used interchangeably in various files
     aliases = {
-        "hp", "mp", "atk", "mag", "def", "armor", "magic_resist",
+        "hp", "mp", "atk", "mag", "armor", "magic_resist",
         "crit", "crit_chance", "crit_dmg", "crit_damage",
         "attack_speed", "hp_regen", "mp_regen",
         "lifesteal", "spell_vamp", "armor_pen", "magic_pen",
@@ -1336,6 +1336,74 @@ def validate_zone_chests(db: Path, all_item_ids: set) -> list:
                 errors.append(f"[zone_chests.json] rang {rank} : objet '{iid}' inexistant")
             if it.get("weight", 0) <= 0 or it.get("min", 1) > it.get("max", 1):
                 errors.append(f"[zone_chests.json] rang {rank} : '{iid}' poids ou quantites invalides")
+    return errors
+
+
+def validate_teleport_steles(db: Path) -> list:
+    """world/teleport_steles.json : zones connues, ids uniques, position et noms FR/EN,
+    regles de portee et d'arrivee lisibles par presence."""
+    errors = []
+    path = db / "world" / "teleport_steles.json"
+    if not path.exists():
+        return errors
+    data = load_json(path)
+    zones_path = db / "world" / "zones.json"
+    zone_ids = set()
+    if zones_path.exists():
+        zone_ids = {z.get("id") for z in load_json(zones_path).get("zones", []) if isinstance(z, dict)}
+    rules = data.get("rules", {})
+    if not isinstance(rules.get("use_range_px"), (int, float)) or rules.get("use_range_px", 0) <= 0:
+        errors.append("[teleport_steles.json] rules.use_range_px doit etre un nombre > 0")
+    off = rules.get("arrival_offset")
+    if not (isinstance(off, list) and len(off) == 2 and all(isinstance(v, (int, float)) for v in off)):
+        errors.append("[teleport_steles.json] rules.arrival_offset doit etre [dx, dy]")
+    seen = set()
+    for s in data.get("steles", []):
+        sid = s.get("id", "")
+        if not sid or sid in seen:
+            errors.append(f"[teleport_steles.json] id vide ou en double : '{sid}'")
+        seen.add(sid)
+        if s.get("zone_id") not in zone_ids:
+            errors.append(f"[teleport_steles.json] {sid} : zone '{s.get('zone_id')}' absente de world/zones.json")
+        if not all(isinstance(s.get(k), (int, float)) for k in ("x", "y")):
+            errors.append(f"[teleport_steles.json] {sid} : x et y doivent etre des nombres")
+        if not s.get("name_fr") or not s.get("name_en"):
+            errors.append(f"[teleport_steles.json] {sid} : name_fr et name_en obligatoires")
+    return errors
+
+
+def validate_per_mob_override(db: Path) -> list:
+    """config/monster_scaling_model.json per_mob_override : chaque cle est un monstre connu,
+    seules les stats de croissance que le serveur sait appliquer (le serveur refuse le modele
+    entier sur une stat inconnue : mieux vaut l'attraper ici)."""
+    errors = []
+    path = db / "config" / "monster_scaling_model.json"
+    if not path.exists():
+        return errors
+    overrides = load_json(path).get("per_mob_override", {})
+    monster_ids = {m.get("id") for m in load_json(db / "entities" / "monsters.json").get("monsters", [])}
+    stats = {"hp", "mp", "atk", "mag", "def", "magic_resist"}
+    for mob_id, entry in overrides.items():
+        if mob_id.startswith("_"):
+            continue
+        if mob_id not in monster_ids:
+            errors.append(f"[monster_scaling_model.json] per_mob_override.{mob_id} : monstre inconnu")
+            continue
+        for key in ("stat_scalar", "stat_override"):
+            val = entry.get(key)
+            if val is None or (key == "stat_scalar" and isinstance(val, (int, float))):
+                if isinstance(val, (int, float)) and val <= 0:
+                    errors.append(f"[monster_scaling_model.json] per_mob_override.{mob_id}.{key} doit etre > 0")
+                continue
+            if not isinstance(val, dict):
+                errors.append(f"[monster_scaling_model.json] per_mob_override.{mob_id}.{key} : objet attendu")
+                continue
+            for stat, v in val.items():
+                if stat.startswith("_"):
+                    continue
+                if stat not in stats or not isinstance(v, (int, float)) or v <= 0:
+                    errors.append(f"[monster_scaling_model.json] per_mob_override.{mob_id}.{key}.{stat} : "
+                                  f"stat inconnue ou valeur <= 0 (stats : {sorted(stats)})")
     return errors
 
 
@@ -2919,6 +2987,16 @@ def main():
 
     print("[12b/12] Validating zone chests (items, zones, tiers)...")
     errs = validate_zone_chests(db, all_item_ids)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12b2/12] Validating teleport steles (zones, ids, rules)...")
+    errs = validate_teleport_steles(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12b3/12] Validating per-mob overrides of the scaling model...")
+    errs = validate_per_mob_override(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 

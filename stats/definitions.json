@@ -17,7 +17,7 @@
     "resources": {
       "hp": {
         "name": "PV",
-        "name_fr": "HP",
+        "name_fr": "PV",
         "name_en": "HP",
         "description": "Sante du personnage. A 0, le personnage meurt.",
         "description_fr": "Sante du personnage. A 0, le personnage meurt.",
@@ -41,7 +41,7 @@
       },
       "hp_regen": {
         "name": "Régénération PV",
-        "name_fr": "Regeneration HP",
+        "name_fr": "Régénération PV",
         "name_en": "HP Regeneration",
         "description": "Points de vie regeneres par seconde hors combat.",
         "description_fr": "Points de vie regeneres par seconde hors combat.",
@@ -317,18 +317,6 @@
     },
 
     "defensive": {
-      "def": {
-        "name": "D\u00e9fense",
-        "name_fr": "D\u00e9fense",
-        "name_en": "Defense",
-        "description": "Stat de base de réduction de dégâts fixe. Chaque point retire 1 point de dégâts reçus (min 10% du coup). Stat allocable par le joueur.",
-        "description_fr": "Stat de base de réduction de dégâts fixe. Chaque point retire 1 point de dégâts reçus (min 10% du coup). Stat allocable par le joueur.",
-        "description_en": "Base flat damage reduction stat. Each point removes 1 damage from hits (min 10% of hit). Player-allocatable stat.",
-        "tooltip_fr": "R\u00e9duit les d\u00e9g\u00e2ts subis d\u2019une valeur fixe.",
-        "tooltip_en": "Reduces incoming damage by a flat amount.",
-        "bonus_type": "both",
-        "formula": "damage_after = max(damage \u00d7 0.1, damage - def)"
-      },
       "armor": {
         "name": "Armure",
         "name_fr": "Armure",
@@ -435,11 +423,11 @@
         "description": "Chance de toucher la cible. Oppose a Flee.",
         "description_fr": "Chance de toucher la cible. Oppose a Flee.",
         "description_en": "Chance to hit the target. Opposes Flee.",
-        "tooltip_fr": "Augmente les chances de toucher une cible.",
-        "tooltip_en": "Increases chance to hit a target.",
+        "tooltip_fr": "Au-dessus de 100, chaque point de Pr\u00e9cision retire 1 % d\u2019Esquive \u00e0 la cible, sans jamais lui en retirer plus de la moiti\u00e9. Sous 100 (aveuglement), les attaques peuvent rater.",
+        "tooltip_en": "Above 100, each point of Accuracy removes 1% of the target's Evasion, but never more than half of it. Below 100 (blind), attacks can miss.",
         "bonus_type": "flat",
         "default": 100,
-        "formula": "hit_chance% = 80 + (attacker.hit - target.flee)",
+        "formula": "hit < default: hit_chance% = clamp(hit, clamp.min, clamp.max) ; hit > default: retire (hit - default) au dodge de la cible, borne par flee.accuracy_floor_ratio (voir flee)",
         "clamp": {"min": 5, "max": 95}
       },
       "flee": {
@@ -449,13 +437,15 @@
         "description": "Chance d'esquiver les attaques. Oppose a Hit.",
         "description_fr": "Chance d'esquiver les attaques. Oppose a Hit.",
         "description_en": "Chance to dodge attacks. Opposes Hit.",
-        "tooltip_fr": "Augmente les chances d\u2019\u00e9viter les attaques ennemies.",
-        "tooltip_en": "Increases chance to dodge enemy attacks.",
+        "tooltip_fr": "Augmente les chances d\u2019\u00e9viter les attaques ennemies, plafonn\u00e9es \u00e0 40 %. Chaque point de Pr\u00e9cision de l\u2019attaquant au-dessus de 100 en retire 1 %, sans jamais retirer plus de la moiti\u00e9 de l\u2019Esquive.",
+        "tooltip_en": "Increases chance to dodge enemy attacks, capped at 40%. Each point of the attacker's Accuracy above 100 removes 1%, but never more than half of your Evasion.",
         "bonus_type": "flat",
         "default": 0,
         "cap": 40,
+        "accuracy_floor_ratio": 0.5,
+        "_accuracy_floor_ratio_2026_10_21": "Valide par Charleston le 2026-10-21 (option C). Part maximale de l esquive plafonnee que la Precision peut retirer, dans [0, 1] : 0.5 = un tank a 40 garde au moins 20. Lu par le serveur (stat_caps.hpp), fichier refuse si absent ou hors [0, 1].",
         "_cap_2026_09_29": "Plafond de jeu 40 % d esquive, applique a la consommation (DamageCalculator::kEvasionCap, jet d esquive). Avant : seul le moteur bornait a 95, et un equipement SS mettait l esquive a 42-72. La stat elle-meme (affichage, buffs) n est pas plafonnee.",
-        "formula": "dodge_chance% = min(flee, 40)"
+        "formula": "capped = min(flee, cap) ; dodge_chance% = max(round(capped x (1 - accuracy_floor_ratio)), capped - max(0, attacker.hit - hit.default)) ; l'esquive au-dessus du cap est perdue, la Precision n'en retire au plus que la part accuracy_floor_ratio"
       }
     },
 
@@ -523,8 +513,8 @@
         "name": "Vol de Vie",
         "name_fr": "Vol de Vie",
         "name_en": "Lifesteal",
-        "description": "% des dégâts physiques convertis en HP.",
-        "description_fr": "% des dégâts physiques convertis en HP.",
+        "description": "% des dégâts physiques convertis en PV.",
+        "description_fr": "% des dégâts physiques convertis en PV.",
         "description_en": "% of physical damage converted to HP.",
         "tooltip_fr": "Convertit une partie des d\u00e9g\u00e2ts physiques inflig\u00e9s en points de vie.",
         "tooltip_en": "Converts part of physical damage dealt into health.",
@@ -537,8 +527,8 @@
         "name": "Vampirisme Magique",
         "name_fr": "Vampirisme Magique",
         "name_en": "Spell Vamp",
-        "description": "% des dégâts magiques convertis en HP. Reduit sur AoE.",
-        "description_fr": "% des dégâts magiques convertis en HP. Reduit sur AoE.",
+        "description": "% des dégâts magiques convertis en PV. Réduit sur AoE.",
+        "description_fr": "% des dégâts magiques convertis en PV. Réduit sur AoE.",
         "description_en": "% of magic damage converted to HP. Reduced on AoE.",
         "tooltip_fr": "Convertit une partie des d\u00e9g\u00e2ts magiques inflig\u00e9s en points de vie.",
         "tooltip_en": "Converts part of magical damage dealt into health.",
