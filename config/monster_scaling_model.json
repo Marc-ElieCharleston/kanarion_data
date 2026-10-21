@@ -319,34 +319,35 @@
     "enchanter": "enchanter"
   },
   "tier_multipliers": {
+    "_tenacity_2026_10_21": "Charleston 2026-10-21 : un monstre normal ou coriace a son niveau garde l'essentiel de la duree d'un effet, il n'en retire jamais plus de ~25 % (roster actif : max 24 % normal, 27 % coriace au niveau 100 avec le bonus d'espece le plus fort). tenacity_bonus fodder/standard 0 -> -20, tough 10 -> -17 (negatif voulu : le serveur borne le total a [0, _caps], un monstre faible tombe a 0), elite 20 -> 25 pour compenser la croissance abaissee (ecart moyen 2,3 points sur le roster actif, -9/+4), boss 40 inchange (deja au plafond serveur 50). Bonus d'etoiles (entities/monster_variants.json star_system, +5/+10/+20 a 3/4/5 etoiles) inchanges. Formule serveur : shared/gameplay/monster_scaling_model.cpp scale() (round(base x rarete + espece + croissance x (niveau-1)/10), plafond _caps, + tenacity_bonus, borne [0, _caps]), puis + bonus d'etoiles (server-combat room_manager.cpp), consommee par status/status_manager.cpp apply_effect (duree x (1 - min(tenacite, 50) / 100), plafond stats/definitions.json tenacity.cap).",
     "_comment": "Applique sur base_lv1 x curve. hp = survie, atk = menace, def/mr = mitigation. Remplace hp_multiplier bake de monster_tiers.json (plus de double-dip : le runtime applique TOUT).",
     "fodder": {
       "hp": 0.6,
       "atk": 0.85,
       "def": 0.85,
       "magic_resist": 0.85,
-      "tenacity_bonus": 0
+      "tenacity_bonus": -20
     },
     "standard": {
       "hp": 1.0,
       "atk": 1.0,
       "def": 1.0,
       "magic_resist": 1.0,
-      "tenacity_bonus": 0
+      "tenacity_bonus": -20
     },
     "tough": {
       "hp": 1.6,
       "atk": 1.15,
       "def": 1.15,
       "magic_resist": 1.15,
-      "tenacity_bonus": 10
+      "tenacity_bonus": -17
     },
     "elite": {
       "hp": 2.2,
       "atk": 1.3,
       "def": 1.25,
       "magic_resist": 1.25,
-      "tenacity_bonus": 20
+      "tenacity_bonus": 25
     },
     "boss": {
       "hp": 4.0,
@@ -469,25 +470,26 @@
     }
   },
   "rate_growth_per_10_levels": {
-    "_comment": "V2 (2026-10-02) : les stats FIXES (taux) montent de cette valeur tous les 10 niveaux (niveau 1 = valeur de base, niveau 100 = base + 9,9 x croissance), plafonnées par archetypes_lv1_standard._caps. generic s'ajoute à tous les archétypes. Pas lu par le serveur actuel.",
+    "_tenacity_2026_10_21": "Charleston 2026-10-21 (durees d'effets 6-12 s, controles forts 2-4 s) : croissance de tenacite abaissee (generic 1.0 -> 0.2, tank 3.0 -> 0.2, guardian 2.5 -> 0.2, brute 1.0 -> 0, controller/healer/enchanter 2.0 -> 0.1, summoner 1.5 -> 0.1) : au niveau 100 elle n'ajoute plus que 2 a 4 points au lieu de 10 a 40. Tenacite de base par archetype inchangee (identite des elites et boss).",
+    "_comment": "V2 (2026-10-02) : les stats FIXES (taux) montent de cette valeur tous les 10 niveaux (niveau 1 = valeur de base, niveau 100 = base + 9,9 x croissance), plafonnées par archetypes_lv1_standard._caps. generic s'ajoute à tous les archétypes. Lu par le serveur (shared/gameplay/monster_scaling_model.cpp, rate_growth_).",
     "generic": {
       "crit": 0.5,
-      "tenacity": 1.0
+      "tenacity": 0.2
     },
     "tank": {
-      "tenacity": 3.0,
+      "tenacity": 0.2,
       "block_chance": 1.5,
       "parry_chance": 0.5
     },
     "guardian": {
-      "tenacity": 2.5,
+      "tenacity": 0.2,
       "block_chance": 1.0
     },
     "brute": {
       "armor_pen": 2.0,
       "shield_pierce": 1.5,
       "crit_damage": 3.0,
-      "tenacity": 1.0
+      "tenacity": 0.0
     },
     "berserker": {
       "lifesteal": 1.5,
@@ -510,18 +512,18 @@
       "crit_damage": 2.0
     },
     "controller": {
-      "tenacity": 2.0,
+      "tenacity": 0.1,
       "magic_pen": 1.5
     },
     "healer": {
-      "tenacity": 2.0
+      "tenacity": 0.1
     },
     "summoner": {
-      "tenacity": 1.5,
+      "tenacity": 0.1,
       "magic_pen": 1.0
     },
     "enchanter": {
-      "tenacity": 2.0,
+      "tenacity": 0.1,
       "magic_pen": 0.5
     }
   }

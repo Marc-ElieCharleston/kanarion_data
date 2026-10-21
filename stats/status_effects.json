@@ -1,6 +1,25 @@
 {
   "_meta": {
     "version": "4.0",
+    "duration_rule": {
+      "_decision": "Charleston 2026-10-21 (release 0.20.4) : 'sinon l'aveuglement ne sert a rien avec un GCD de 2 s ; c'etait un sort de survie ; mieux vaut allonger les durees et monter les cooldowns que trop couper les durees.' Proprietaire unique des bornes, lu par scripts/validate_cross_references.py (etape 12s). Bornes du controle fort A VALIDER.",
+      "scope": "Sorts de joueur : classes/*/skills.json (classe, sous-classe, specialisation, manoeuvres) et classes/familiar/skills.json. Les sorts de monstres (skills/monster_skills.json) ne sont pas concernes. Une carte Koro reprend le sort de classe, duree x rank_percent / 100 (server-combat room.cpp apply_skill_effects) : elle n'a pas de champ de duree propre.",
+      "soft_seconds": [
+        6,
+        12
+      ],
+      "hard_cc_seconds": [
+        2,
+        4
+      ],
+      "hard_cc_source": "Cible 4 s : tous les controles forts des sorts de joueur sont a 4 s plats depuis le 2026-10-21 (Charleston) ; 2 s reste permis par la borne (a valider). runtime.is_hard_cc de chaque effet de ce fichier (stun, silence, disarm, fear, confusion, freeze, root au 2026-10-21) ; tout autre effet est un effet doux (DoT, HoT, buff, debuff, aveuglement, ralentissement, provocation, bouclier).",
+      "excluded_categories": [
+        "immunity"
+      ],
+      "_excluded_note": "Immunites (invulnerable, untargetable, invisible, cc_immune) hors regle : 6 s d'invulnerabilite casserait le jeu ; durees a decider par le proprietaire.",
+      "rank_rule": "Une duree est verifiee a chaque rang : duration + duration_per_level x (rang - 1), rang 1 a config/skill_system.json skill_levels.max_level. Un familier lance ses sorts au rang 1 (le serveur ne lui donne pas de niveau de sort) : seule duration compte.",
+      "cooldown_rule": "Le cooldown d'un sort est strictement superieur a la plus longue duree qu'il applique (a tout rang) : un seul sort ne tient jamais un effet en permanence."
+    },
     "last_updated": "2026-04-30",
     "description": "Tous les buffs/debuffs/DoTs du jeu. Option A canonique (CTO 2026-04-30): pour les stat_modifier stackables generiques, 1 effect_id = 1 icone, 1 stack = value_per_stack fixe. Skills appliquent stacks_to_apply (1, 2, 3...), pas de value/value_override arbitraire.",
     "damage_types": {
@@ -1564,15 +1583,15 @@
         "polarity": "debuff",
         "stacking": "refresh",
         "impl": "done",
-        "formula": "hit rate = 25%, max 5s",
+        "formula": "precision -X% (X = value du sort ; sans value : -75%), chance de toucher = precision bornee 5-95% (stats/definitions.json precision.hit.clamp). Duree = duration du sort ; tirage aleatoire sans duree : defaut max 5s",
         "stat_mods": {
           "accuracy_percent": -0.75
         },
         "cc_type": "blind",
-        "tooltip_fr": "Réduit fortement la précision.",
-        "tooltip_en": "Greatly reduces accuracy.",
-        "description_fr": "Précision réduite à 25%. 75% chance de miss sur chaque attaque. Contrôle léger, n'empêche pas d'agir.",
-        "description_en": "Accuracy reduced to 25%. 75% chance to miss each attack. Soft CC, doesn't prevent actions.",
+        "tooltip_fr": "Réduit la précision : les attaques peuvent rater.",
+        "tooltip_en": "Reduces accuracy: attacks can miss.",
+        "description_fr": "Réduit la précision du pourcentage indiqué par le sort (75% si le sort n'en donne pas). Chaque attaque touche avec une chance égale à la précision restante, entre 5% et 95%. Contrôle léger, n'empêche pas d'agir.",
+        "description_en": "Reduces accuracy by the percentage the skill states (75% if it states none). Each attack hits with a chance equal to the remaining accuracy, between 5% and 95%. Soft CC, doesn't prevent actions.",
         "runtime": {
           "is_hard_cc": false,
           "interrupts_cast": false,
