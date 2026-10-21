@@ -2782,6 +2782,12 @@ def validate_stat_caps(db: Path) -> list:
     md = defs.get("effect_system", {}).get("duration_formula", {}).get("minimum_duration")
     if not (isinstance(md, (int, float)) and 0 <= md <= 10):
         errors.append(f"[definitions.json] effect_system.duration_formula.minimum_duration invalide ({md!r})")
+    # Display unit of every stat (client: ItemStats.is_percent_stat). "percent" = the value IS a
+    # percentage (+5 crit_dmg reads "+5 %"), "flat" = raw value. One owner, no client list.
+    for cat, entries in stats.items():
+        for sid, e in (entries or {}).items():
+            if isinstance(e, dict) and e.get("unit") not in ("percent", "flat"):
+                errors.append(f"[definitions.json] stats.{cat}.{sid}.unit absent ou invalide ({e.get('unit')!r}), attendu percent|flat")
     clamp = (stats.get("precision", {}).get("hit") or {}).get("clamp", {})
     if not (isinstance(clamp.get("min"), int) and isinstance(clamp.get("max"), int)
             and 0 <= clamp["min"] <= clamp["max"] <= 100):

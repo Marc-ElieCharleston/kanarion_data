@@ -6,6 +6,7 @@
     "description_fr": "Definition complete de toutes les stats du jeu avec types de bonus et formules MMO-style",
     "description_en": "Complete definition of all game stats with bonus types and MMO-style formulas",
     "categories": ["resources", "offensive", "defensive", "precision", "support", "special"],
+    "units": {"percent": "La valeur EST un pourcentage : un bonus s'affiche \"+5 %\" (points de pourcentage ajoutes, ex. crit_dmg 150 % -> 155 %). Le client affiche le suffixe % pour ces stats et pour elles seules.", "flat": "Valeur brute sans unite (+50 PV, +10 Attaque, +5 Precision)."},
     "bonus_types": {
       "flat": "Ajoute directement a la stat (ex: +50 HP)",
       "percent": "Multiplie la stat totale (ex: +10% HP)",
@@ -25,6 +26,7 @@
         "tooltip_fr": "Points de vie du personnage. \u00c0 0, le personnage est vaincu.",
         "tooltip_en": "Character health. At 0, the character is defeated.",
         "bonus_type": "both",
+        "unit": "flat",
         "formula": "hp_final = (base + growth + flat_bonus) \u00d7 (1 + percent_bonus/100)"
       },
       "mp": {
@@ -37,6 +39,7 @@
         "tooltip_fr": "Souffle utilis\u00e9 pour lancer des comp\u00e9tences.",
         "tooltip_en": "Breath used to cast skills.",
         "bonus_type": "both",
+        "unit": "flat",
         "formula": "mp_final = (base + growth + flat_bonus) \u00d7 (1 + percent_bonus/100)"
       },
       "hp_regen": {
@@ -49,6 +52,7 @@
         "tooltip_fr": "Points de vie r\u00e9cup\u00e9r\u00e9s chaque seconde hors combat.",
         "tooltip_en": "Health regenerated per second outside combat.",
         "bonus_type": "both",
+        "unit": "flat",
         "default": 3.0,
         "formula": "hp_regen_final = (base + flat_bonus) \u00d7 (1 + percent_bonus/100)"
       },
@@ -62,6 +66,7 @@
         "tooltip_fr": "Souffle r\u00e9cup\u00e9r\u00e9 chaque seconde.",
         "tooltip_en": "Breath regenerated every second.",
         "bonus_type": "both",
+        "unit": "flat",
         "default": 2.0,
         "formula": "mp_regen_final = (base + growth + flat_bonus) \u00d7 (1 + percent_bonus/100)"
       },
@@ -75,6 +80,7 @@
         "tooltip_fr": "Pourcentage des PV max r\u00e9cup\u00e9r\u00e9 chaque seconde hors combat.",
         "tooltip_en": "Share of max health regenerated every second outside combat.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "formula": "hp_gained_per_second = hp_regen + hp_max \u00d7 hp_regen_percent/100"
       },
@@ -88,6 +94,7 @@
         "tooltip_fr": "Pourcentage du Souffle max r\u00e9cup\u00e9r\u00e9 chaque seconde, en combat et hors combat.",
         "tooltip_en": "Share of max Breath regenerated every second, in and out of combat.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 0.33,
         "formula": "mp_gained_per_second = mp_regen + mp_max \u00d7 mp_regen_percent/100"
@@ -102,6 +109,7 @@
         "tooltip_fr": "Points de vie r\u00e9cup\u00e9r\u00e9s chaque seconde hors combat, bonus de nourriture et de buffs compris.",
         "tooltip_en": "Health regenerated every second outside combat, food and buff bonuses included.",
         "bonus_type": "both",
+        "unit": "flat",
         "formula": "hp_regen_out_of_combat_final = (hp_regen + hp_max \u00d7 hp_regen_percent/100 + flat_bonus) \u00d7 (1 + percent_bonus/100)"
       },
       "mp_regen_out_of_combat": {
@@ -114,6 +122,7 @@
         "tooltip_fr": "Souffle r\u00e9cup\u00e9r\u00e9 chaque seconde hors combat, bonus de nourriture et de buffs compris.",
         "tooltip_en": "Breath regenerated every second outside combat, food and buff bonuses included.",
         "bonus_type": "both",
+        "unit": "flat",
         "formula": "mp_regen_out_of_combat_final = (mp_regen + mp_max \u00d7 mp_regen_percent/100 + flat_bonus) \u00d7 (1 + percent_bonus/100)"
       }
     },
@@ -129,6 +138,7 @@
         "tooltip_fr": "Augmente les d\u00e9g\u00e2ts des attaques et comp\u00e9tences physiques.",
         "tooltip_en": "Increases damage of physical attacks and skills.",
         "bonus_type": "both",
+        "unit": "flat",
         "formula": "atk_final = (base + growth + flat_bonus) \u00d7 (1 + percent_bonus/100)"
       },
       "mag": {
@@ -141,6 +151,7 @@
         "tooltip_fr": "Augmente les d\u00e9g\u00e2ts des sorts et la puissance des soins.",
         "tooltip_en": "Increases spell damage and healing power.",
         "bonus_type": "both",
+        "unit": "flat",
         "formula": "mag_final = (base + growth + flat_bonus) \u00d7 (1 + percent_bonus/100)"
       },
       "crit": {
@@ -153,6 +164,7 @@
         "tooltip_fr": "Chance de d\u00e9clencher un coup critique.",
         "tooltip_en": "Chance to land a critical hit.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 5,
         "cap": 100,
         "formula": "crit_final = base + flat_bonus (capped at 100)"
@@ -167,6 +179,7 @@
         "tooltip_fr": "Augmente les d\u00e9g\u00e2ts inflig\u00e9s lors d\u2019un coup critique.",
         "tooltip_en": "Increases damage dealt by critical hits.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 150,
         "cap": 300,
         "_cap_2026_09_28": "Plafond de jeu x3.0, applique a la consommation (DamageCalculator::kCritDamageCap, degats ET soins critiques). Base 150 + equipement classique legendaire SS (~+60) + panoplie complete (+60 max par set) + buffs tiennent sous 300 ; le Tzayad de la passe 2 donnait +536 a lui seul (x6.9). Les monstres s'arretent a 264 (220 x paquet etoile 1.2), le plafond ne les touche pas.",
@@ -182,6 +195,7 @@
         "tooltip_fr": "Augmente tous les d\u00e9g\u00e2ts inflig\u00e9s.",
         "tooltip_en": "Increases all damage dealt.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 200,
         "formula": "final_damage = base_damage \u00d7 (1 + damage_percent/100)"
@@ -196,6 +210,7 @@
         "tooltip_fr": "Chance que l'attaque de base frappe deux fois.",
         "tooltip_en": "Chance for the basic attack to strike twice.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 50,
         "formula": "Si proc: attaque 2x, chaque hit = 100% damage"
@@ -210,6 +225,7 @@
         "tooltip_fr": "Chance que l'attaque de base frappe trois fois.",
         "tooltip_en": "Chance for the basic attack to strike three times.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 30,
         "formula": "Si proc: attaque 3x, chaque hit = 100% damage"
@@ -225,6 +241,7 @@
         "tooltip_fr": "Vitesse d'attaque.",
         "tooltip_en": "Attack speed.",
         "bonus_type": "percent",
+        "unit": "percent",
         "default": 1.0,
         "cap": 1.6,
         "formula": "INERTE : aucun code ne lit cette stat depuis le retrait de la boucle d'auto-attaque."
@@ -239,6 +256,7 @@
         "tooltip_fr": "Ignore une partie de l\u2019armure ennemie.",
         "tooltip_en": "Ignores a portion of enemy armor.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 70,
         "formula": "effective_armor = target.armor \u00d7 (1 - armor_pen/100)"
@@ -253,6 +271,7 @@
         "tooltip_fr": "Ignore une partie de la r\u00e9sistance magique ennemie.",
         "tooltip_en": "Ignores a portion of enemy magic resistance.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 70,
         "formula": "effective_mr = target.magic_resist \u00d7 (1 - magic_pen/100)"
@@ -267,6 +286,7 @@
         "tooltip_fr": "Augmente les chances d\u2019appliquer des effets n\u00e9gatifs et contr\u00f4les.",
         "tooltip_en": "Increases chance to apply debuffs and crowd control.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "formula": "apply_chance = 100 - (target.effect_resist - attacker.effect_chance)"
       },
@@ -280,6 +300,7 @@
         "tooltip_fr": "Augmente la dur\u00e9e des effets n\u00e9gatifs inflig\u00e9s aux ennemis.",
         "tooltip_en": "Increases duration of debuffs applied to enemies.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 50,
         "formula": "debuff_duration_final = base_duration \u00d7 (1 + debuff_duration/100)"
@@ -294,6 +315,7 @@
         "tooltip_fr": "Une partie des d\u00e9g\u00e2ts ignore les boucliers ennemis.",
         "tooltip_en": "Part of the damage ignores enemy shields.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 100,
         "implementation_status": "pending",
@@ -310,6 +332,7 @@
         "tooltip_fr": "Augmente les d\u00e9g\u00e2ts inflig\u00e9s aux boucliers.",
         "tooltip_en": "Increases damage dealt to shields.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 200,
         "formula": "damage_to_shield = total_damage \u00d7 (1 + shield_break/100)"
@@ -327,6 +350,7 @@
         "tooltip_fr": "R\u00e9duit les d\u00e9g\u00e2ts physiques re\u00e7us.",
         "tooltip_en": "Reduces physical damage taken.",
         "bonus_type": "both",
+        "unit": "flat",
         "formula": "phys_reduction% = armor / (armor + 100) \u00d7 100"
       },
       "magic_resist": {
@@ -339,6 +363,7 @@
         "tooltip_fr": "R\u00e9duit les d\u00e9g\u00e2ts magiques re\u00e7us.",
         "tooltip_en": "Reduces magical damage taken.",
         "bonus_type": "both",
+        "unit": "flat",
         "formula": "magic_reduction% = mr / (mr + 100) \u00d7 100"
       },
       "damage_reduction": {
@@ -351,6 +376,7 @@
         "tooltip_fr": "R\u00e9duit tous les d\u00e9g\u00e2ts subis.",
         "tooltip_en": "Reduces all damage taken.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 75,
         "source": "buff_only",
@@ -366,6 +392,7 @@
         "tooltip_fr": "Chance de r\u00e9duire fortement les d\u00e9g\u00e2ts d\u2019une attaque.",
         "tooltip_en": "Chance to greatly reduce damage from an attack.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 75,
         "formula": "Si block: damage = damage \u00d7 0.5"
@@ -380,6 +407,7 @@
         "tooltip_fr": "Chance d\u2019annuler compl\u00e8tement une attaque.",
         "tooltip_en": "Chance to completely negate an attack.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 30,
         "formula": "Si parry: damage = 0, peut trigger counter-attack"
@@ -394,6 +422,7 @@
         "tooltip_fr": "Augmente les chances de r\u00e9sister aux effets n\u00e9gatifs et contr\u00f4les.",
         "tooltip_en": "Increases chance to resist debuffs and crowd control.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 85,
         "formula": "resist_chance = effect_resist - attacker.effect_chance"
@@ -408,6 +437,7 @@
         "tooltip_fr": "R\u00e9duit la dur\u00e9e des effets n\u00e9gatifs subis.",
         "tooltip_en": "Reduces duration of negative effects.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 50,
         "_cap_2026_10_14": "Proprietaire : la tenacite divise la duree au plus par 2 (plafond 50, joueurs et monstres) CC, debuffs et degats sur la duree compris (symetrie avec debuff_duration, qui les allonge). Contre : debuff_duration de l'attaquant.",
@@ -426,6 +456,7 @@
         "tooltip_fr": "Au-dessus de 100, chaque point de Pr\u00e9cision retire 1 % d\u2019Esquive \u00e0 la cible, sans jamais lui en retirer plus de la moiti\u00e9. Sous 100 (aveuglement), les attaques peuvent rater.",
         "tooltip_en": "Above 100, each point of Accuracy removes 1% of the target's Evasion, but never more than half of it. Below 100 (blind), attacks can miss.",
         "bonus_type": "flat",
+        "unit": "flat",
         "default": 100,
         "formula": "hit < default: hit_chance% = clamp(hit, clamp.min, clamp.max) ; hit > default: retire (hit - default) au dodge de la cible, borne par flee.accuracy_floor_ratio (voir flee)",
         "clamp": {"min": 5, "max": 95}
@@ -440,6 +471,7 @@
         "tooltip_fr": "Augmente les chances d\u2019\u00e9viter les attaques ennemies, plafonn\u00e9es \u00e0 40 %. Chaque point de Pr\u00e9cision de l\u2019attaquant au-dessus de 100 en retire 1 %, sans jamais retirer plus de la moiti\u00e9 de l\u2019Esquive.",
         "tooltip_en": "Increases chance to dodge enemy attacks, capped at 40%. Each point of the attacker's Accuracy above 100 removes 1%, but never more than half of your Evasion.",
         "bonus_type": "flat",
+        "unit": "flat",
         "default": 0,
         "cap": 40,
         "accuracy_floor_ratio": 0.5,
@@ -460,6 +492,7 @@
         "tooltip_fr": "Augmente la puissance des soins lanc\u00e9s.",
         "tooltip_en": "Increases healing power.",
         "bonus_type": "both",
+        "unit": "flat",
         "default": 0,
         "formula": "heal_final = (base_heal + heal_power) \u00d7 (1 + percent_bonus/100)"
       },
@@ -473,6 +506,7 @@
         "tooltip_fr": "Augmente la puissance des boucliers cr\u00e9\u00e9s.",
         "tooltip_en": "Increases shield strength.",
         "bonus_type": "both",
+        "unit": "flat",
         "default": 0,
         "formula": "shield_final = (base_shield + shield_power) \u00d7 (1 + percent_bonus/100)"
       },
@@ -486,6 +520,7 @@
         "tooltip_fr": "Augmente les soins re\u00e7us.",
         "tooltip_en": "Increases healing received.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 100,
         "formula": "heal_received = incoming_heal \u00d7 (1 + healing_received/100)"
@@ -500,6 +535,7 @@
         "tooltip_fr": "Augmente la dur\u00e9e des effets positifs appliqu\u00e9s.",
         "tooltip_en": "Increases duration of buffs applied.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 100,
         "cap_by_effect_type": {"buff": 100, "hot": 100, "immunity": 100, "shield": 50},
@@ -519,6 +555,7 @@
         "tooltip_fr": "Convertit une partie des d\u00e9g\u00e2ts physiques inflig\u00e9s en points de vie.",
         "tooltip_en": "Converts part of physical damage dealt into health.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 50,
         "formula": "hp_gained = physical_damage_dealt \u00d7 (lifesteal/100)"
@@ -533,6 +570,7 @@
         "tooltip_fr": "Convertit une partie des d\u00e9g\u00e2ts magiques inflig\u00e9s en points de vie.",
         "tooltip_en": "Converts part of magical damage dealt into health.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 50,
         "aoe_effectiveness": 0.33,
@@ -548,6 +586,7 @@
         "tooltip_fr": "Renvoie une partie des dégâts reçus à l'attaquant, sans les réduire.",
         "tooltip_en": "Deals part of the damage received back to the attacker, without reducing it.",
         "bonus_type": "both",
+        "unit": "percent",
         "default": 0,
         "cap": 30,
         "_cap_2026_10_14": "Proprietaire : les epines sont l'effet PERMANENT de renvoi (equipement, passifs), plafond 30, applique au coup. Elles ne reduisent pas les degats subis (contrairement au renvoi).",
@@ -563,6 +602,7 @@
         "tooltip_fr": "Renvoie une partie des d\u00e9g\u00e2ts re\u00e7us \u00e0 l\u2019attaquant.",
         "tooltip_en": "Reflects part of the damage received back to the attacker.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 50,
         "cap_permanent": 0,
@@ -579,6 +619,7 @@
         "tooltip_fr": "Absorbe les d\u00e9g\u00e2ts avant qu\u2019ils n\u2019affectent les points de vie.",
         "tooltip_en": "Absorbs damage before it affects health.",
         "bonus_type": "flat",
+        "unit": "flat",
         "default": 0,
         "formula": "Absorbe les degats avant HP jusqu'a epuisement"
       },
@@ -592,6 +633,7 @@
         "tooltip_fr": "R\u00e9duit le temps d'incantation des comp\u00e9tences.",
         "tooltip_en": "Reduces skill cast time.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 50,
         "formula": "cast_time = base_cast_time \u00d7 (1 - cast_speed/100)"
@@ -606,6 +648,7 @@
         "tooltip_fr": "R\u00e9duit le temps de recharge des comp\u00e9tences.",
         "tooltip_en": "Reduces skill cooldowns.",
         "bonus_type": "flat",
+        "unit": "percent",
         "default": 0,
         "cap": 40,
         "formula": "cooldown = base_cooldown \u00d7 (1 - cdr/100)"
