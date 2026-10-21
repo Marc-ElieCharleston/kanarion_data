@@ -506,10 +506,19 @@ def check_tutorial_gifts(r, ctx):
         if not isinstance(scenarios, dict):
             r.add("B10", "tutorial_encounters : pas d'objet 'scenarios'")
             scenarios = {}
+        # Aides de defaite (0.20.4) : catalogue defeat_hint_keys, une cle de scenario
+        # hors catalogue fait refuser le demarrage du serveur combat.
+        hint_keys = tut.get("defeat_hint_keys", [])
+        if not isinstance(hint_keys, list) or not all(isinstance(k, str) and k for k in hint_keys):
+            r.add("B10", f"tutorial_encounters : defeat_hint_keys {hint_keys!r} (liste de chaines non vides attendue)")
+            hint_keys = []
         for sid, sc in public(scenarios).items():
             if not isinstance(sc, dict):
                 r.add("B10", f"tutorial_encounters '{sid}' : le scenario n'est pas un objet")
                 continue
+            if "defeat_hint_key" in sc and sc["defeat_hint_key"] not in hint_keys:
+                r.add("B10", f"tutorial_encounters '{sid}' : defeat_hint_key {sc['defeat_hint_key']!r} "
+                             "absent de defeat_hint_keys (le serveur refuse de demarrer)")
             n_enemies = 0
             for side in ("allies", "enemies"):
                 entries = sc.get(side, [])

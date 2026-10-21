@@ -234,7 +234,7 @@ ATTACK = {
 RELOCATED = {
     "attack": {"side15": ((2.5, -17), ("n50a", "n50b"))},
 }
-RELOCATED_NOTE = ("profondeur a valider : deplacee des notables 15 (20 pts) aux notables 50 (55 pts), "
+RELOCATED_NOTE = ("valide par Charleston le 2026-10-21 : deplacee des notables 15 (20 pts) aux notables 50 (55 pts), "
                   "retour de test 0.20.3 « trop forte », sans malus")
 
 ARMS = {}
@@ -723,7 +723,7 @@ def make_node(nid, kind, arm, max_rank, pos, spec, effects, choice=None, arms=No
     node["name_fr"], node["name_en"] = spec["fr"], spec["en"]
     node["description_fr"], node["description_en"] = fr, en
     node["effects"] = effects
-    for k in ("to_validate", "v2_planned"):
+    for k in ("to_validate", "validated", "v2_planned"):
         if spec.get(k):
             node[k] = spec[k]
     node["icon"] = icon_for(node, effects)
@@ -754,7 +754,7 @@ for arm in RING:
         moved = RELOCATED.get(arm, {}).get(slot)
         if moved:
             tpl = dict(tpl, pos=list(moved[0]))
-            spec = dict(spec, to_validate=RELOCATED_NOTE)
+            spec = dict(spec, validated=RELOCATED_NOTE)
         nodes.append(make_node(nid, tpl["kind"], arm, tpl.get("max_rank", 1),
                                to_world(arm, *local_of(tpl)), spec, effects, choice))
     moved_slots = RELOCATED.get(arm, {})

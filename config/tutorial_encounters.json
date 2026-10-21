@@ -7,7 +7,8 @@
     "scenario_fields": {
       "overlay_key": "Optionnel. Cle de world/tutorial_overlays.json montree en PREGAME, sans le prefixe tutorial_. Absent = l'id du scenario. Remplace le mapping en dur sparring_trinity -> group_contaminated.",
       "guaranteed_rewards": "Optionnel. Liste de {item_id, quantity} donnee a CHAQUE joueur a chaque victoire du scenario, hors tirage de butin et hors pot commun (personnelle, non liee). Remplace l'empreinte de rat codee en dur pour rat_solo. item_id doit exister dans items/.",
-      "allies": "Mercenaires seulement (un monstre allie est une erreur de chargement)."
+      "allies": "Mercenaires seulement (un monstre allie est une erreur de chargement).",
+   "defeat_hint_key": "Optionnel (0.20.4). Cle de traduction d'une aide affichee sur l'ecran de defaite quand les joueurs perdent ce scenario. Doit figurer dans defeat_hint_keys."
     },
     "spawn_contract": {
       "monsters": "Spawn monstre standard (monster_templates_), level explicite.",
@@ -18,6 +19,10 @@
     },
     "scenario_id_note": "Onboarding V2 lot 2 (2026-09-23) : la chaine d'Aldric utilise rat_solo (q_tut_intro_03), duo_rats (q_tut_intro_05c), essai_grimoire (q_tut_intro_05b, lot 3) et meute_sortie (q_tut_intro_07). Lot 3 (2026-09-24) : UNE seule empreinte garantie dans toute la chaine, celle de rat_solo (mob_rat_tutorial, table rat_tutorial) ; duo_rats et essai_grimoire utilisent mob_rat (butin normal, empreinte a 5 %). sparring_trinity n'est plus reference par aucune quete, garde en data. Le champ level de chaque entree ennemie est le niveau IMPOSE du monstre (DEMANDE BACK S1 : l'appliquer et accepter un base_level != 1 pour les scenarios de la data, plafond 5 monstres conserve)."
   },
+  "defeat_hint_keys": [
+    "DEATH_HINT_GET_STRONGER"
+  ],
+  "_defeat_hint_keys_note": "0.20.4 (2026-10-21) : catalogue des aides de defaite. Un scenario ne peut nommer (defeat_hint_key, optionnel) qu'une cle de cette liste, sinon le serveur combat refuse de demarrer. Le texte vit cote client (translations/messages.csv) ; un test client verifie que chaque cle est traduite.",
   "room_overrides": {
     "_note": "Reglages de la SALLE d'un scenario de tutoriel, par tutorial_scenario_id. Vaut aussi pour la lecon d'arene (arena_onboarding), qui n'a pas de composition dans scenarios. mp_regen_multiplier : regeneration du Souffle de l'equipe des joueurs multipliee (1 = normale, > 0). Lu par server-combat (TutorialEncounterLoader::mp_regen_multiplier).",
     "arena_onboarding": {
@@ -37,12 +42,15 @@
         {
           "kind": "monster",
           "monster_id": "mob_rat",
-          "level": 5,
+          "level": 3,
           "count": 2,
           "grid_hint": "back",
           "atk_mult": 0.75
         }
       ],
+      "_level_note": "Charleston 2026-10-21 (playtest) : rats niveau 5 -> 3, premier combat a deux encore trop dur. Mesure : server-combat TutorialDuoRatsSimulation. Le x1,25 du familier reste en reserve (non applique).",
+      "defeat_hint_key": "DEATH_HINT_GET_STRONGER",
+      "_defeat_hint_note": "0.20.4 : sur une defaite, le serveur envoie cette cle (RoomEnded.defeat_hint_key) et l'ecran de defaite affiche le texte. Texte (client, translations/messages.csv) = brouillon a valider par Charleston.",
       "_atk_mult_note": "A VALIDER (2026-10-20, test mobile de Charleston : monstres du tuto d'Aldric trop forts). Attaque x0,75 pour les deux rats de ce combat seulement (-25 % de degats) ; PV, niveau, XP et butin inchanges.",
       "rewards_note": "Lot 3 : mob_rat au lieu de mob_rat_tutorial, plus de butin garanti (la seule empreinte garantie de la chaine est celle de rat_solo). XP reelle : mob_rat est fodder (x0.6), base_xp_for_level(2) = round(150 / 2.35) = 64, soit 38 par rat et 76 pour le combat tant que le joueur n'a pas plus de 5 niveaux d'ecart (niveau 7 ou moins). Niveau 2 plutot que 1 pour que le joueur de niveau 6-7 ne tombe pas dans la penalite d'ecart. 2026-09-29 (retour QA Wassem, familier trop fort au debut ; option 1 validee par Charleston : on durcit les combats, pas le familier). Mesure : 3 mob_rat niveau 2 contre un Guerrier niveau 6 = 14 s, ni le joueur ni le familier touches ; au niveau 8, les mob_rat (fodder) ne passent toujours pas l'armure. Le joueur arrive ici au niveau 6 : 2 mob_rat + 1 mob_rat_mage (standard, degats magiques) de niveau 5. XP : base_xp_for_level(5) = 110 ; 2 x 66 (fodder x0.6) + 110 (standard) = 242 (+166). q_tut_intro_05c rend 166 XP de moins. 2026-10-13 (review joueur : 4 defaites ici ; Charleston : un Rat Sorcier humanoide au debut casse le lore, il reste dans son donjon et sa zone) : Rat Sorcier RETIRE, 2 mob_rat niveau 5. XP : 2 x 66 = 132. q_tut_intro_05c garde ses 84 XP (moins d'XP au debut, voulu).",
       "accept_criteria": [

@@ -4220,7 +4220,8 @@
   },
   "equipment_drops": {
     "_comment": "Equipement de base (armure, accessoires, armes). UN tirage PAR COMBAT et par joueur depuis le 2026-09-28 (avant : un tirage par monstre, avec l etat du monstre compte deux fois : chance de base par etat PUIS multiplicateur d etat). Chance = base_chance_per_fight x config/rewards.json fight_loot, plafond 0.95. Niveau de la piece = monstre le plus haut du combat ; rarete tiree sur le danger le plus haut du combat.",
-    "base_chance_per_fight": 0.06,
+    "base_chance_per_fight": 0.12,
+    "_base_chance_note": "0.06 -> 0.12 (Charleston 2026-10-21, playtest : trop peu d equipement en debut de jeu). Mesure : server-combat LootSimulation (report-only).",
     "rarity_weights_by_danger": {
       "_comment": "Poids de rarete par danger_level du mob (total 1000). Courbe MONOTONE (corrige 2026-08-08) : avant, danger_3 droppait strictement moins bien que danger_2 (60% commun contre 48%, legendaire 0.2% contre 1%) et le joueur voyait son loot regresser en montant en danger. Extremites danger_1/danger_6 conservees, seul le milieu a ete lisse. Un danger au-dela du dernier palier defini (7, 8, 10 : boss et elites lv 53-100) prend le DERNIER palier (danger_6), plus danger_1 (corrige 2026-09-28 : les mobs les plus durs avaient 0% de legendaire). BUDGET DE PUISSANCE (2026-09-28) : le classique legendaire (gros jet de stats) est la REFERENCE obtenable ; sa part passe de 0-5% a 2% (danger_1) -> 10% (danger_6), les autres raretes renormalisees au prorata (total 1000, courbe toujours monotone). La chance d un equipement par combat (base_chance_per_fight) ne change pas.",
       "danger_1": {
@@ -4280,9 +4281,13 @@
     }
   },
   "panoplie_drops": {
-    "_comment": "Pieces de panoplie. UN tirage PAR COMBAT et par joueur depuis le 2026-09-28 (avant : 10% par monstre normal, etat compte deux fois, sans plafond : un boss donnait 100%). Chance = base_chance_per_fight x config/rewards.json fight_loot, plafond 0.95. Set uniforme parmi les sets lootables (no_loot/tournament exclus), piece uniforme dans le set. Rang = bande de niveau du monstre le plus haut du combat (_meta.rank_system de panoplies.json). BUDGET DE PUISSANCE (2026-09-28, modele Dofus) : qualite FIXE, une piece tire TOUJOURS ses stats en piece_rarity (legendaire) x piece_stat_scale (0.85 : stat principale, substats, affixes et bornes affichees ; la base du modele n est pas touchee), sur le poids d armure de SA panoplie (panoplies.json armor_type, ou pieces.<slot>.weight pour les sets mixed) et, pour l arme, sur pieces.weapon.weapon_type. Seule, une piece vaut ~0.85 d un classique legendaire ; sa force vient du set complet (bonus x3.5 / x5). piece_rarity absent ou 'danger' = ancien tirage sur les poids de danger ; piece_stat_scale absent = x1. Chance baissee de 0.023 a 0.015 (passe 2 ; 0.009 en passe 1 rendait un set de 6 pieces trop long) : un set de 6 pieces de sa bande en ~100 / 32 / 14 jours (Casual / Regular / Hardcore).",
+    "_comment": "Pieces de panoplie. UN tirage PAR COMBAT et par joueur depuis le 2026-09-28 (avant : 10% par monstre normal, etat compte deux fois, sans plafond : un boss donnait 100%). Chance = base_chance_per_fight x config/rewards.json fight_loot, plafond 0.95. Set uniforme parmi les sets lootables (no_loot/tournament exclus), piece uniforme dans le set. Rang = bande de niveau du monstre le plus haut du combat (_meta.rank_system de panoplies.json). BUDGET DE PUISSANCE (2026-09-28, modele Dofus) : qualite FIXE, une piece tire TOUJOURS ses stats en piece_rarity (legendaire) x piece_stat_scale (0.85 : stat principale, substats, affixes et bornes affichees ; la base du modele n est pas touchee), sur le poids d armure de SA panoplie (panoplies.json armor_type, ou pieces.<slot>.weight pour les sets mixed) et, pour l arme, sur pieces.weapon.weapon_type. Seule, une piece vaut ~0.85 d un classique legendaire ; sa force vient du set complet (bonus x3.5 / x5). piece_rarity absent ou 'danger' = ancien tirage sur les poids de danger ; piece_stat_scale absent = x1. Chance baissee de 0.023 a 0.015 (passe 2 ; 0.009 en passe 1 rendait un set de 6 pieces trop long) : un set de 6 pieces de sa bande en ~100 / 32 / 14 jours (Casual / Regular / Hardcore). Exception depuis le 2026-10-21 (Charleston) : piece_rarity_by_band, la bande C tire sa rarete au danger.",
     "base_chance_per_fight": 0.015,
     "piece_rarity": "legendary",
+    "piece_rarity_by_band": {
+      "_comment": "Rarete d une piece par bande de set (C..SS, panoplies.json band), prioritaire sur piece_rarity. 'danger' = tirage sur les poids de danger du combat, comme l equipement. Bande C (niv 1-20) : Charleston 2026-10-21, une piece de debut de jeu ne tombe plus toujours legendaire. Bande absente = piece_rarity.",
+      "C": "danger"
+    },
     "piece_stat_scale": 0.85,
     "notes": [
       "La piece droppee est aleatoire parmi les pieces du set",
