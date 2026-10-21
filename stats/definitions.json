@@ -423,11 +423,11 @@
         "description": "Chance de toucher la cible. Oppose a Flee.",
         "description_fr": "Chance de toucher la cible. Oppose a Flee.",
         "description_en": "Chance to hit the target. Opposes Flee.",
-        "tooltip_fr": "Au-dessus de 100, chaque point de Pr\u00e9cision retire 1 % d\u2019Esquive \u00e0 la cible. Sous 100 (aveuglement), les attaques peuvent rater.",
-        "tooltip_en": "Above 100, each point of Accuracy removes 1% of the target's Evasion. Below 100 (blind), attacks can miss.",
+        "tooltip_fr": "Au-dessus de 100, chaque point de Pr\u00e9cision retire 1 % d\u2019Esquive \u00e0 la cible, sans jamais lui en retirer plus de la moiti\u00e9. Sous 100 (aveuglement), les attaques peuvent rater.",
+        "tooltip_en": "Above 100, each point of Accuracy removes 1% of the target's Evasion, but never more than half of it. Below 100 (blind), attacks can miss.",
         "bonus_type": "flat",
         "default": 100,
-        "formula": "hit < default: hit_chance% = clamp(hit, clamp.min, clamp.max) ; hit > default: retire (hit - default) au dodge de la cible (voir flee)",
+        "formula": "hit < default: hit_chance% = clamp(hit, clamp.min, clamp.max) ; hit > default: retire (hit - default) au dodge de la cible, borne par flee.accuracy_floor_ratio (voir flee)",
         "clamp": {"min": 5, "max": 95}
       },
       "flee": {
@@ -437,13 +437,15 @@
         "description": "Chance d'esquiver les attaques. Oppose a Hit.",
         "description_fr": "Chance d'esquiver les attaques. Oppose a Hit.",
         "description_en": "Chance to dodge attacks. Opposes Hit.",
-        "tooltip_fr": "Augmente les chances d\u2019\u00e9viter les attaques ennemies, plafonn\u00e9es \u00e0 40 %. Chaque point de Pr\u00e9cision de l\u2019attaquant au-dessus de 100 en retire 1 %.",
-        "tooltip_en": "Increases chance to dodge enemy attacks, capped at 40%. Each point of the attacker's Accuracy above 100 removes 1%.",
+        "tooltip_fr": "Augmente les chances d\u2019\u00e9viter les attaques ennemies, plafonn\u00e9es \u00e0 40 %. Chaque point de Pr\u00e9cision de l\u2019attaquant au-dessus de 100 en retire 1 %, sans jamais retirer plus de la moiti\u00e9 de l\u2019Esquive.",
+        "tooltip_en": "Increases chance to dodge enemy attacks, capped at 40%. Each point of the attacker's Accuracy above 100 removes 1%, but never more than half of your Evasion.",
         "bonus_type": "flat",
         "default": 0,
         "cap": 40,
+        "accuracy_floor_ratio": 0.5,
+        "_accuracy_floor_ratio_2026_10_21": "A valider (option C, Charleston 2026-10-21). Part maximale de l esquive plafonnee que la Precision peut retirer, dans [0, 1] : 0.5 = un tank a 40 garde au moins 20. Lu par le serveur (stat_caps.hpp), fichier refuse si absent ou hors [0, 1].",
         "_cap_2026_09_29": "Plafond de jeu 40 % d esquive, applique a la consommation (DamageCalculator::kEvasionCap, jet d esquive). Avant : seul le moteur bornait a 95, et un equipement SS mettait l esquive a 42-72. La stat elle-meme (affichage, buffs) n est pas plafonnee.",
-        "formula": "dodge_chance% = min(flee, cap) - max(0, attacker.hit - hit.default) ; l'esquive au-dessus du cap est perdue"
+        "formula": "capped = min(flee, cap) ; dodge_chance% = max(round(capped x (1 - accuracy_floor_ratio)), capped - max(0, attacker.hit - hit.default)) ; l'esquive au-dessus du cap est perdue, la Precision n'en retire au plus que la part accuracy_floor_ratio"
       }
     },
 
