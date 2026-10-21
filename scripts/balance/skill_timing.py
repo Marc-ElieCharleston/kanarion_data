@@ -45,6 +45,9 @@ S = P.S
 T = P.M["timing"]
 CD, LOAD, CAST, COPIES = T["cooldown"], T["kit_load"], T["cast"], T["description_copies"]
 FIELDS = ("cooldown", "cast_time")
+# Skills whose written cooldown / cast_time the owner fixed against the rule (owner rule
+# 2026-10-21: cooldown capped at 4-5x the effect duration, no inflation by the model).
+EXCEPTIONS = tuple(T.get("exceptions", {}).get("skills", []))
 
 
 # ---------------------------------------------------------------- scale
@@ -250,6 +253,14 @@ def plan():
     for rl in {r["role"] for r in new.values()}:
         ROLE_STRONG[rl] = P.q([r["net_power_r1"] for r in new.values() if r["role"] == rl], LOAD["strong_role_quantile"])
     enforce_budget(new)
+    # Owner exceptions (config/skill_power_model.json timing.exceptions.skills): the written
+    # cooldown and cast_time stand, the rule keeps them as they are (kit load above already ran
+    # on the rule's values, so an exception never moves another skill).
+    for sid in EXCEPTIONS:
+        if sid not in new:
+            raise SystemExit(f"timing.exceptions: unknown skill '{sid}'")
+        new[sid]["cooldown"] = cur[sid]["cooldown"]
+        new[sid]["cast_time"] = cur[sid]["cast_time"]
     return cur, new, skills
 
 

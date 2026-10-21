@@ -2911,6 +2911,8 @@ def validate_status_duration_rule(db: Path) -> list:
         return ["[status_effects.json] _meta.duration_rule absent (bornes des durees des sorts de joueur)"]
     soft, hard = tuple(rule["soft_seconds"]), tuple(rule["hard_cc_seconds"])
     excluded = set(rule.get("excluded_categories", []))
+    # Skills the owner exempts from the cooldown rule (fillers keeping their 0.20.3 cooldown).
+    cd_exempt = set(rule.get("cooldown_rule_exempt_skills", []))
     category, hard_cc = {}, set()
     for cat, group in se.get("effects", {}).items():
         if not isinstance(group, dict):
@@ -2971,7 +2973,7 @@ def validate_status_duration_rule(db: Path) -> list:
                         f"[{lo:g}, {hi:g}] s (stats/status_effects.json _meta.duration_rule)")
             cd = float(s.get("cooldown") or 0)
             cd_min = min(cd, cd + float(s.get("cooldown_per_level") or 0) * (ranks - 1))
-            if longest > 0 and cd_min <= longest + eps:
+            if longest > 0 and cd_min <= longest + eps and sid not in cd_exempt:
                 errors.append(
                     f"[{path.parent.name}/skills.json] {sid} : cooldown {cd_min:g} s <= duree appliquee "
                     f"{longest:g} s (le cooldown doit etre strictement plus long, _meta.duration_rule.cooldown_rule)")
