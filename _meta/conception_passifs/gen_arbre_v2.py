@@ -226,6 +226,17 @@ ATTACK = {
     "megab": N("mega_unleashed", "Déchaînement", "Unleashed", None, malus=(1, 2)),
 }
 
+# Noeuds deplaces dans UN bras seulement (le gabarit des autres bras ne bouge pas) :
+# slot -> (position dans le gabarit, slots parents qui remplacent ceux du gabarit).
+# Allonge (2026-10-21, retour de test 0.20.3 : « trop forte ») : plus profonde, sans malus. Elle quitte
+# les notables 15 (20 pts) pour se brancher sur les notables 50, en miroir de Soif de sang (55 pts,
+# comme le seul autre noeud lateral du bras). Profondeur A VALIDER (alternative : sur les notables 30, 35 pts).
+RELOCATED = {
+    "attack": {"side15": ((2.5, -17), ("n50a", "n50b"))},
+}
+RELOCATED_NOTE = ("profondeur a valider : deplacee des notables 15 (20 pts) aux notables 50 (55 pts), "
+                  "retour de test 0.20.3 « trop forte », sans malus")
+
 ARMS = {}
 ARMS["defense"] = ("def", {
     "e1": N("hide", "Peau dure", "Thick Hide", [flat("armor", 2)]),
@@ -740,9 +751,18 @@ for arm in RING:
         if "choice" in tpl:
             group = next(g for g, members in GROUPS.items() if slot in members)
             choice = {"group": f"{pfx}_{group}", "option": spec["key"]}
+        moved = RELOCATED.get(arm, {}).get(slot)
+        if moved:
+            tpl = dict(tpl, pos=list(moved[0]))
+            spec = dict(spec, to_validate=RELOCATED_NOTE)
         nodes.append(make_node(nid, tpl["kind"], arm, tpl.get("max_rank", 1),
                                to_world(arm, *local_of(tpl)), spec, effects, choice))
+    moved_slots = RELOCATED.get(arm, {})
+    for slot, (_pos, parents) in moved_slots.items():
+        edges += [[ids[p], ids[slot]] for p in parents]
     for a, b in src["edges"]:
+        if SLOT_OF.get(a) in moved_slots or SLOT_OF.get(b) in moved_slots:
+            continue
         if a == "pt_center" and b in SLOT_OF:
             edges.append(["pt_center", ids[SLOT_OF[b]]])
         elif a in SLOT_OF and b in SLOT_OF:
