@@ -3527,6 +3527,23 @@
         "xp": 250
       },
       "chain_next": "q_onb_forces",
+      "quest_hints": {
+        "on_complete": [
+          {
+            "id": "q_onb_arene_next_modal",
+            "type": "modal",
+            "priority": 88,
+            "show_once": true,
+            "payload": {
+              "title_fr": "La suite",
+              "title_en": "What comes next",
+              "content_fr": "Tu connais maintenant ceux qui comptent au village.\n\nVarn affiche d'autres contrats sur son panneau : chasses, meutes, endurance, à reprendre autant de fois que tu veux.\n\nAu niveau 9, il cherchera quelqu'un pour une ronde dans les Égouts de Havreden. Et passe voir Ezra, ton ami d'enfance : il a entendu parler de ces égouts, lui aussi. Le donjon se fait entre les niveaux 10 et 14, mieux vaut ne pas y descendre seul.\n\nEt si Aldric ne t'a pas encore formé, l'arrière-salle de la taverne de Rona t'attend.",
+              "content_en": "You now know the people who matter in the village.\n\nVarn posts more contracts on his board: hunts, packs, endurance, to take on as many times as you like.\n\nAt level 9, he'll be looking for someone to do a round of the Havreden Sewers. And go and see Ezra, your childhood friend: he's heard about those sewers too. The dungeon is for levels 10 to 14, and you'd better not go down alone.\n\nAnd if Aldric hasn't trained you yet, the back room of Rona's tavern is waiting."
+            },
+            "_note": "Deplacee le 2026-10-21 depuis q_havreden_tour_03 (on_complete, rendu chez Tobin, vue vers le niveau 19 en playtest 0.20.3, trop tard pour servir) : la fin de la lecon de combat de Dargo est le premier moment ou le joueur a besoin de la suite. Texte INCHANGE, a reecrire par Charleston (il suppose encore le tour du village fini). Avant : Lot 2, manque 5 : pointe vers q_varn_egouts (npc_giver Varn, min_level 9, sans prerequis, Egouts = dungeon_rat_den niveau 10-14)."
+          }
+        ]
+      },
       "_note": "Onboarding V2 (spec 2026-09-23). Premiere quete d'un perso d'aventure neuf : la lecon d'arene demarre juste apres la cinematique, AVANT que le joueur voie le village, puis il reapparait devant l'arene de Dargo. Drapeau tutorial + pas de npc_giver = rendu automatique. 250 XP = niveau 3. ATTENTION BACK : auto_accept_on_zone_enter 'village' touche TOUT perso qui entre au village, y compris les anciens persos et les persos de tournoi. Sans garde (ligne character_arena_onboarding presente, perso non tournoi), un ancien perso recoit une quete qu'il ne peut pas finir. A trancher cote quest_service avant deploiement de cette data."
     },
     {
@@ -4150,21 +4167,6 @@
               "content_en": "A beast prowling out there is never alone: it's a group. Above it, you can read its level, its name and its stars.\n\nStars tell you how strong the group is. The more it has, the more beasts it holds, the tougher they are, and the more the fight pays.\n\nWhen you click a group, the engagement window shows what it's made of, and its stars from two stars up. Check the level and the stars before you engage: a group too strong for you is taken on with others."
             },
             "_note": "Verifie client : monster.gd affiche niveau + nom + etoiles au-dessus du monstre ; interaction_popup.gd ajoute l'indice d'etoiles a partir de 2 (star_level >= 2). Serveur : etoiles = plus de monstres (mob_count), stats multipliees, recompenses x rewards.json encounter_stars."
-          }
-        ],
-        "on_complete": [
-          {
-            "id": "q_havreden_tour_03_next_modal",
-            "type": "modal",
-            "priority": 88,
-            "show_once": true,
-            "payload": {
-              "title_fr": "La suite",
-              "title_en": "What comes next",
-              "content_fr": "Tu connais maintenant ceux qui comptent au village.\n\nVarn affiche d'autres contrats sur son panneau : chasses, meutes, endurance, à reprendre autant de fois que tu veux.\n\nAu niveau 9, il cherchera quelqu'un pour une ronde dans les Égouts de Havreden. Et passe voir Ezra, ton ami d'enfance : il a entendu parler de ces égouts, lui aussi. Le donjon se fait entre les niveaux 10 et 14, mieux vaut ne pas y descendre seul.\n\nEt si Aldric ne t'a pas encore formé, l'arrière-salle de la taverne de Rona t'attend.",
-              "content_en": "You now know the people who matter in the village.\n\nVarn posts more contracts on his board: hunts, packs, endurance, to take on as many times as you like.\n\nAt level 9, he'll be looking for someone to do a round of the Havreden Sewers. And go and see Ezra, your childhood friend: he's heard about those sewers too. The dungeon is for levels 10 to 14, and you'd better not go down alone.\n\nAnd if Aldric hasn't trained you yet, the back room of Rona's tavern is waiting."
-            },
-            "_note": "Lot 2, manque 5 : pointe vers q_varn_egouts (npc_giver Varn, min_level 9, sans prerequis, Egouts = dungeon_rat_den niveau 10-14)."
           }
         ]
       },
