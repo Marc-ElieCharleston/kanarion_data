@@ -115,6 +115,10 @@ def main():
     curve = model["level_curve"]
     curve_of = {"hp": curve["anchors_hp"], "atk": curve["anchors_offense"], "mag": curve["anchors_offense"],
                 "armor": curve["anchors_defense"], "magic_resist": curve["anchors_defense"]}
+    # low_level_relief (2026-10-22): world monsters only, the scripted tutorial fights opt out.
+    relief = curve.get("low_level_relief", {})
+    relief_hp = relief.get("hp", {"1": 1.0})
+    relief_atk = relief.get("atk", {"1": 1.0})
     mons = load("entities/monsters.json")["monsters"]
 
     def raw(m, stat):
@@ -173,8 +177,10 @@ def main():
                  "magic_resist": tm["magic_resist"]}
         today = raw(m, "hp")
         for L in SHOW_LEVELS + [lvl]:
-            row[f"hp@{L}"] = round(lv1["hp"] * interpolate(curve_of["hp"], L) * tmult["hp"])
-            row[f"off@{L}"] = round(max(lv1["atk"], lv1["mag"]) * interpolate(curve_of["atk"], L) * tmult["atk"])
+            row[f"hp@{L}"] = round(lv1["hp"] * interpolate(curve_of["hp"], L) * tmult["hp"]
+                                   * interpolate(relief_hp, L))
+            row[f"off@{L}"] = round(max(lv1["atk"], lv1["mag"]) * interpolate(curve_of["atk"], L) * tmult["atk"]
+                                    * interpolate(relief_atk, L))
         row["hp_today_at_base_level"] = today
         row["flags"] = " ".join(flags)
         out_rows.append(row)
