@@ -362,6 +362,12 @@
     },
     "_xp_mult_deprecated": "ATTENTION: les packs[].xp_mult ci-dessous (1.0->14.0) NE SONT PAS lus / PAS lautorite. Le multiplicateur dXP par etoile appartient a config/rewards.json multiplier_families.encounter_stars (migration single-owner). Ces valeurs trainent et divergent (rewards ~1.0->2.3). A supprimer une fois zero lecteur. Le star_system reste vivant pour roll_weights + composition, seul xp_mult est mort."
   },
+  "area_level_roll": {
+    "_decision": "Charleston 2026-10-22, à valider. Niveau d'un groupe dans son aire (level_range de world/zones.json), tiré par presence au spawn : il penche vers le BAS de la fourchette. Avant, il était uniforme : un joueur niveau 10 qui entrait dans la Prairie 10-20 croisait autant de groupes niveau 20 que niveau 10. Le haut de la fourchette reste atteignable, juste plus rare.",
+    "_formule": "niveau = min + floor((max - min + 1) x u^bias_exponent), u uniforme dans [0, 1). bias_exponent = 1 : uniforme (ancien tirage). 2 : Prairie 10-20, 30 % des groupes au niveau 10, 52 % entre 10 et 12, 15 % entre 18 et 20, moyenne 13,2 au lieu de 15. Forêt Nord 12-26 : 26 % au niveau 12, 45 % entre 12 et 14, moyenne 16,9 au lieu de 19.",
+    "_ownership": "SOURCE UNIQUE lue par presence (services/presence/src/world/area_level_roll.hpp, presence_service.cpp). Obligatoire, entre 1 et 8 : absent ou hors bornes, presence refuse de démarrer. Le combat ne retire jamais le niveau : il combat au niveau que presence envoie. Les groupes fixes des donjons (world/dungeons.json) gardent leur tirage uniforme.",
+    "bias_exponent": 2.0
+  },
   "elite_variant": {
     "_comment": "Version elite d'un monstre - rare spawn, stronger. Stats normalisees (CTO v2).",
     "_deprecated_2026_08": "stats_mult DOUBLONNE tier_multipliers.elite (scaling_model). Garder size/xp/gold/loot/special_abilities/spawn_chance. Voir _meta._refactor_2026_08.",
