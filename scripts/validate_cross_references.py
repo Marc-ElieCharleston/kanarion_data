@@ -1407,6 +1407,45 @@ def validate_per_mob_override(db: Path) -> list:
     return errors
 
 
+def validate_low_level_relief(db: Path) -> list:
+    """config/monster_scaling_model.json level_curve.low_level_relief (Charleston 2026-10-22) :
+    miroir des regles du serveur (shared/gameplay/monster_scaling_model.cpp, le combat refuse de
+    demarrer sinon) : cle obligatoire, tables hp et atk non vides, facteurs dans ]0, 1], derniere
+    ancre exactement 1.0. En plus : jamais de baisse quand le niveau monte et jamais plus de
+    0,06 par niveau entre deux ancres (pas de palier brusque)."""
+    errors = []
+    path = db / "config" / "monster_scaling_model.json"
+    if not path.exists():
+        return errors
+    tag = "[monster_scaling_model.json] level_curve.low_level_relief"
+    rel = load_json(path).get("level_curve", {}).get("low_level_relief")
+    if not isinstance(rel, dict):
+        return [f"{tag} : cle obligatoire absente (le combat refuse de demarrer)"]
+    for key in ("hp", "atk"):
+        table = rel.get(key)
+        if not isinstance(table, dict) or not table:
+            errors.append(f"{tag}.{key} : table d'ancres obligatoire et non vide")
+            continue
+        try:
+            anchors = sorted((int(k), v) for k, v in table.items() if not k.startswith("_"))
+        except ValueError:
+            errors.append(f"{tag}.{key} : chaque cle est un niveau entier")
+            continue
+        for lvl, v in anchors:
+            if not isinstance(v, (int, float)) or not (0 < v <= 1):
+                errors.append(f"{tag}.{key}.{lvl} : facteur hors de ]0, 1]")
+        if anchors and anchors[-1][1] != 1.0:
+            errors.append(f"{tag}.{key} : la derniere ancre doit valoir 1.0")
+        for (l0, v0), (l1, v1) in zip(anchors, anchors[1:]):
+            if not isinstance(v0, (int, float)) or not isinstance(v1, (int, float)):
+                continue
+            if v1 < v0:
+                errors.append(f"{tag}.{key} : baisse entre les niveaux {l0} et {l1}")
+            elif (v1 - v0) / (l1 - l0) > 0.06:
+                errors.append(f"{tag}.{key} : plus de 0,06 par niveau entre {l0} et {l1} (palier brusque)")
+    return errors
+
+
 def validate_fissure_invasions(db: Path) -> list:
     """world/fissure_invasions.json : zones connues, bornes coherentes."""
     errors = []
@@ -3095,6 +3134,11 @@ def main():
 
     print("[12b3/12] Validating per-mob overrides of the scaling model...")
     errs = validate_per_mob_override(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12b4/12] Validating the low-level relief of the scaling model...")
+    errs = validate_low_level_relief(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 

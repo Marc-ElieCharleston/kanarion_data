@@ -15,7 +15,7 @@
     "rarity_boost": "SOMME(familles.rarity_boost)",
     "product_cap": "Le produit des familles est plafonne a global_cap AVANT l'arrondi final, separement pour xp, gold et drop_chance.",
     "rounding": "Aucun arrondi intermediaire. Un seul arrondi final, sauf base_xp_pour_niveau qui arrondit sa propre sortie.",
-    "fight_drop_chance": "BUTIN PAR COMBAT (equipement, panoplie, unique, grimoire, keystone, pierre rang 3+) : min(0.95, chance_de_base_par_combat(items/loot_tables.json) x fight_loot.stars[etoiles].(drop_chance|unique_chance) x presence x dungeon_difficulty.drop_chance x group_size x events.drop_chance), produit des multiplicateurs plafonne a global_cap. monster_state et encounter_stars NE S APPLIQUENT PAS au butin par combat (remplaces par fight_loot) ; ils restent pour le butin par monstre, l or et l XP.",
+    "fight_drop_chance": "BUTIN PAR COMBAT (equipement, panoplie, unique, grimoire, keystone, pierre rang 3+) : min(0.95, chance_de_base_par_combat(items/loot_tables.json) x fight_loot.stars[etoiles].(drop_chance|unique_chance) x presence x dungeon_difficulty.drop_chance x group_size x events.drop_chance), produit des multiplicateurs plafonne a global_cap. monster_state et encounter_stars NE S APPLIQUENT PAS au butin par combat (remplaces par fight_loot) ; ils restent pour le butin par monstre, l or et l XP. EQUIPEMENT seulement (2026-10-22) : x fight_loot.equipment_by_tier[palier du niveau du combat] apres ce produit, chance finale plafonnee a 0.95.",
     "families_order": [
       "monster_threat_tier",
       "monster_state",
@@ -453,6 +453,15 @@
       "world_boss": 0.5
       },
       "cap": 1.5
+    },
+    "equipment_by_tier": {
+      "_decision": "Charleston 2026-10-22, à valider : « augmente le loot au rang I car avec des équipements c'est bien plus simple ». Multiplicateur de la chance d'ÉQUIPEMENT par combat (items/loot_tables.json equipment_drops.base_chance_per_fight, 0.12) selon le palier de niveau du combat (monstre le plus haut), paliers de items/equipment_scaling.json tier_system.tiers : T1 = niveaux 1-20 (rang C, rang I), T2 = 21-40, etc. T1 x2 : 0.12 -> 0.24 par combat à 0 étoile. Les autres paliers et les autres catégories (panoplie, unique, grimoire, keystone, pierres) ne changent pas.",
+      "_ownership": "Lu par server-combat (loot/drop_config_parser.cpp parse_fight_loot_multipliers, loot_roller.cpp roll_equipment). OBLIGATOIRE : une entrée par palier de tier_system.tiers, nombre > 0 ; bloc absent ou palier manquant = le combat refuse de démarrer. Appliqué après fight_loot (étoiles x présence x donjon x groupe x évènements), chance finale plafonnée à 0.95.",
+      "T1": 2.0,
+      "T2": 1.0,
+      "T3": 1.0,
+      "T4": 1.0,
+      "T5": 1.0
     }
   },
   "tournament_payout": {
