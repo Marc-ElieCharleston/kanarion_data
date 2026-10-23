@@ -97,6 +97,16 @@
   "fallback_role": "brute",
   "_fallback_role_note": "Role applique a un monstre dont le role est inconnu de ai_roles (ancien role de repli code en dur dans monster_ai.cpp, memes valeurs que brute pour la seule chose qu'il pilotait : la fuite).",
   "_base_range_note": "ai_roles.<role>.base_range = portee de base (Manhattan) d'un monstre de ce role, SOURCE UNIQUE lue par server-combat room.cpp spawn_monster (ancien tableau code en dur : melee 2, artillerie 6, le reste a la portee par defaut 5 ; bruiser passe de 5 a 2 le 2026-10-17, decision Charleston au vu de leur puissance). Un role absent de ai_roles prend game.json combat_reach.default_base_range. Le serveur refuse de demarrer si un role n'a pas de base_range.",
+  "melee_reach": {
+    "_decision": "Charleston 2026-10-23 : les monstres bruiser puissants frappent a 1 case de portee, pour qu'un guerrier, un voleur ou un artisan puisse les kiter avec ses competences de deplacement. VALEURS A VALIDER par Charleston (selection et portee proposees par l'equilibrage du 23/10).",
+    "_comment": "Lu par server-combat (ai/monster_ai.cpp, CLE OBLIGATOIRE : absente = le combat refuse de demarrer). Un monstre dont le stat_archetype ET le threat_tier sont listes, et qui n'est pas dans exclude_monsters, recoit au spawn (monde, donjon, tour, invocation) une portee plafonnee a reach : ses competences de degats portant le tag skill_tag (toutes ses competences de degats si skill_tag est vide) et son attaque de base n'atteignent qu'a reach cases (Manhattan, la diagonale vaut 2), quelle que soit la range de la competence dans skills/monster_skills.json. Les competences de deplacement (bond, teleportation) gardent leur portee. L'IA s'approche d'elle-meme (MOVE) quand sa cible est hors de portee. reach 0 = regle desactivee.",
+    "reach": 1,
+    "stat_archetypes": ["brute", "berserker"],
+    "threat_tiers": ["standard", "tough", "elite", "boss"],
+    "skill_tag": "melee",
+    "exclude_monsters": [],
+    "_selection_note": "Brutes et berserkers hors fodder (56 monstres actifs au 23/10). Les brutes fodder (rats, larves) gardent 2. Aucun de ces monstres n'a de competence de deplacement ; Deferlante du Rat Rongeur (boss, sort a distance sans tag melee) garde sa portee 7."
+  },
   "ai_roles": {
     "brute": {
       "name_fr": "Brute",
