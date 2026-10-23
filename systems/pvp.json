@@ -165,30 +165,61 @@
       "level_ramp": [
         {
           "level": 1,
-          "hp_scale": 0.4,
-          "damage_scale": 0.55
+          "hp_scale": 1.0,
+          "damage_scale": 0.95
         },
         {
           "level": 10,
-          "hp_scale": 0.5,
-          "damage_scale": 0.65
+          "hp_scale": 1.5,
+          "damage_scale": 1.1
         },
         {
           "level": 20,
-          "hp_scale": 0.65,
-          "damage_scale": 0.75
+          "hp_scale": 2.0,
+          "damage_scale": 1.1
+        },
+        {
+          "level": 30,
+          "hp_scale": 2.5,
+          "damage_scale": 1.5
         },
         {
           "level": 40,
-          "hp_scale": 0.85,
-          "damage_scale": 0.9
+          "hp_scale": 3.0,
+          "damage_scale": 1.7
+        },
+        {
+          "level": 50,
+          "hp_scale": 3.25,
+          "damage_scale": 1.75
         },
         {
           "level": 60,
-          "hp_scale": 1.0,
-          "damage_scale": 1.0
+          "hp_scale": 4.0,
+          "damage_scale": 2.2
+        },
+        {
+          "level": 70,
+          "hp_scale": 4.0,
+          "damage_scale": 2.45
+        },
+        {
+          "level": 80,
+          "hp_scale": 4.5,
+          "damage_scale": 2.75
+        },
+        {
+          "level": 90,
+          "hp_scale": 5.5,
+          "damage_scale": 3.0
+        },
+        {
+          "level": 100,
+          "hp_scale": 6.0,
+          "damage_scale": 3.2
         }
       ],
+      "_level_ramp_doc": "A VALIDER EN JEU (Charleston, 2026-10-23 : on livre pour tester). Un point tous les 10 niveaux, interpole lineairement entre deux points. Une recrue n'a ni passifs, ni equipement, ni keystones, ni Koro : son renfort suit l'ecart avec un joueur de son niveau, qui se creuse avec le niveau (equipement, passifs, puis specialisation a 60). Chaque point vient de la simulation du VRAI moteur (kanarion_back server-combat/tests/unit/test_arena_recruit_spec_kits.cpp DISABLED_HumanVersusRecruitsWinRate, SIM_LEVEL=N) : humain de niveau N (barre et rangs de son niveau, 3 points de stat par niveau, passifs communs, equipement attendu du StatRoller, IA d'auto-combat 3) contre des recrues d'arene normale (IA 1), 1v1 et 3v3 (humain + 2 recrues contre 3 recrues). Cible : l'humain gagne environ 70 %. Mesure (2 graines, 768 combats par point et par format) : 1v1 68 a 78 %, 3v3 59 a 67 % (en 3v3 les deux allies du joueur sont aussi des recrues renforcees, l'ecart y est mecaniquement plus faible). Duree mediane : 26 a 37 s en 1v1, 61 a 84 s en 3v3 (reference joueur contre joueur simule : 10 a 18 s en 1v1, 14 a 28 s en 3v3). Attention au seuil config/rewards.json arena_match.min_combat_seconds (60 s) : 1 a 12 % seulement des 1v1 contre recrues l'atteignent. Les paliers d'Elo du classe (ranked_elo_tiers) se multiplient par-dessus, inchanges. Ancienne rampe (0.4/0.55 au niveau 1 ... 1.0/1.0 a partir de 60) : l'humain gagnait 95 a 100 % du niveau 1 au niveau 100 (1v1, 17 s de mediane au niveau 60).",
       "exhibition": {
         "hp_scale": 1.0,
         "damage_scale": 1.0,
