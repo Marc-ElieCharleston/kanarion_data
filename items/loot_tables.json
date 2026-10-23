@@ -4500,5 +4500,40 @@
       }
     },
     "_comment": "One drop roll per fight/player. Rank independent of skill identity. Highest monster level selects rank weights, then choose a skill using the catalog drop_weight."
+  },
+  "emote_scroll_drops": {
+    "_comment": "Parchemins d'emote (decision Charleston 2026-10-23) : les 72 emotes premium ne se vendent plus en diamants, chacune devient un objet (items/emote_scrolls.json, genere par scripts/gen_emote_scrolls.py a partir de ui/emotes.json et de ce bloc). SEULE source des chances de drop des parchemins, lue par shared/gameplay/emote_scrolls.hpp cote serveur : server-combat (fight), presence (zone_chest, fissure_invasion, rift_chest), quest (contract_chest_daily, contract_chest_weekly). Si le tirage reussit, UN parchemin est choisi parmi tous ceux d'items/emote_scrolls.json, pondere par weight_by_rarity.",
+    "_a_valider": "Toutes les valeurs de ce bloc sont des PROPOSITIONS du 2026-10-23, a valider par Charleston : chances par source, rarete par pack, poids par rarete, prix de revente au PNJ.",
+    "chance_by_source": {
+      "fight": 0.002,
+      "zone_chest": 0.05,
+      "fissure_invasion": 0.08,
+      "rift_chest": 0.08,
+      "contract_chest_daily": 0.1,
+      "contract_chest_weekly": 0.5
+    },
+    "_chance_by_source": "fight : UN tirage par combat PvE gagne et par joueur, multiplie par config/rewards.json fight_loot (etoiles x presence elite/boss) comme les grimoires, plafond 0.95. zone_chest : par coffre de zone ouvert (le groupe present recoit le meme contenu). fissure_invasion : par joueur recompense d'une invasion de Fissure repoussee. rift_chest : par coffre de fermeture d'un interieur de faille. contract_chest_daily / contract_chest_weekly : par coffre de contrats verse. Toutes les sources sont multipliees par config/rewards.json multiplier_families.events emote_scroll_chance des evenements actifs.",
+    "rarity_by_pack": {
+      "reactions": "uncommon",
+      "familiars": "uncommon",
+      "combat": "uncommon",
+      "havreden": "uncommon",
+      "classes": "uncommon",
+      "humor": "uncommon",
+      "fissures": "rare",
+      "rare_rewards": "rare",
+      "prestige": "epic"
+    },
+    "weight_by_rarity": {
+      "uncommon": 10,
+      "rare": 4,
+      "epic": 1
+    },
+    "_weight_by_rarity": "Poids de CHAQUE parchemin dans le tirage. Avec 48 peu communs, 16 rares et 8 epiques : un parchemin tombe est peu commun 87 %, rare 11.6 %, epique 1.4 % du temps.",
+    "sell_price_by_rarity": {
+      "uncommon": 50,
+      "rare": 150,
+      "epic": 400
+    }
   }
 }
