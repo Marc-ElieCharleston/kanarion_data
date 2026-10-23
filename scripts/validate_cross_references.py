@@ -2600,6 +2600,7 @@ def validate_emote_scrolls(db: Path) -> list:
             errors.append(f"[emote_scrolls] emote premium '{eid}' sans parchemin (python scripts/gen_emote_scrolls.py)")
     try:
         sys.path.insert(0, str(Path(__file__).resolve().parent))
+        sys.dont_write_bytecode = True  # pas de __pycache__ laisse dans scripts/
         import gen_emote_scrolls
         gen_emote_scrolls.ROOT = db
         gen_emote_scrolls.EMOTES = db / "ui" / "emotes.json"
