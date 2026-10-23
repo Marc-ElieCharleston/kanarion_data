@@ -39,11 +39,11 @@
     },
     "_caps": {
       "crit": 60,
-      "crit_damage": 150,
+      "crit_damage": 220,
       "armor_pen": 70,
       "magic_pen": 70,
       "shield_pierce": 60,
-      "note": "Caps monstres. armor_pen/magic_pen reutilisent le cap joueur (70). crit cap 60 (< joueur 100, evite le crit-lock apres rarity). crit_damage cap 150 (2026-10-23, a valider par Charleston ; avant 220 = base 150 + max 70) : un coup critique de monstre fait au plus x1,5. Mesure (server-combat WorldLowLevelSimulation.DISABLED_MonsterHitAudit) : le critique doublait le coup (x1,76 en mediane, x2,1 au 9e decile) et faisait l'essentiel des one-shots d'un joueur du meme niveau, mage et soigneur en tete.",
+      "note": "Caps monstres. armor_pen/magic_pen reutilisent le cap joueur (70). crit cap 60 (< joueur 100, evite le crit-lock apres rarity). crit_damage cap 220 (base 150 + max 70).",
       "evasion": 40,
       "block_chance": 50,
       "parry_chance": 25,
@@ -319,7 +319,6 @@
     "enchanter": "enchanter"
   },
   "tier_multipliers": {
-    "_no_one_shot_2026_10_23": "A VALIDER par Charleston (balance du 23/10, regle : un monstre ne tue pas d'un coup un joueur de SON niveau a PV pleins, meme elite, boss ou 5 etoiles). atk elite 1.3 -> 1.15, boss 1.6 -> 1.1 : la menace des boss passe par leurs PV (x4), leurs mecaniques et leurs competences, plus par un coup qui retire 100 a 300 % des PV d'un mage. Mesure avant : un boss de niveau 1 a 40 tuait un mage de son niveau d'un critique a 0 etoile (109 a 160 % de ses PV).",
     "_tenacity_2026_10_21": "Charleston 2026-10-21 : un monstre normal ou coriace a son niveau garde l'essentiel de la duree d'un effet, il n'en retire jamais plus de ~25 % (roster actif : max 24 % normal, 27 % coriace au niveau 100 avec le bonus d'espece le plus fort). tenacity_bonus fodder/standard 0 -> -20, tough 10 -> -17 (negatif voulu : le serveur borne le total a [0, _caps], un monstre faible tombe a 0), elite 20 -> 25 pour compenser la croissance abaissee (ecart moyen 2,3 points sur le roster actif, -9/+4), boss 40 inchange (deja au plafond serveur 50). Bonus d'etoiles (entities/monster_variants.json star_system, +5/+10/+20 a 3/4/5 etoiles) inchanges. Formule serveur : shared/gameplay/monster_scaling_model.cpp scale() (round(base x rarete + espece + croissance x (niveau-1)/10), plafond _caps, + tenacity_bonus, borne [0, _caps]), puis + bonus d'etoiles (server-combat room_manager.cpp), consommee par status/status_manager.cpp apply_effect (duree x (1 - min(tenacite, 50) / 100), plafond stats/definitions.json tenacity.cap).",
     "_comment": "Applique sur base_lv1 x curve. hp = survie, atk = menace, def/mr = mitigation. Remplace hp_multiplier bake de monster_tiers.json (plus de double-dip : le runtime applique TOUT).",
     "fodder": {
@@ -345,14 +344,14 @@
     },
     "elite": {
       "hp": 2.2,
-      "atk": 1.15,
+      "atk": 1.3,
       "def": 1.25,
       "magic_resist": 1.25,
       "tenacity_bonus": 25
     },
     "boss": {
       "hp": 4.0,
-      "atk": 1.1,
+      "atk": 1.6,
       "def": 1.4,
       "magic_resist": 1.4,
       "tenacity_bonus": 40
@@ -381,20 +380,18 @@
       "90": 556,
       "100": 800
     },
-    "_anchors_offense_tank_2026_10_23": "A VALIDER par Charleston. Ajustement pour le tank face a un groupe 5 etoiles : 50-100 = 36/46/48/52/56/60 (au lieu de 40/50/60/70/80/90 de la proposition pas-de-one-shot). Le tank de niveau 70-90 tombait encore en 4 a 5 s sans soin.",
-    "_anchors_offense_2026_10_23": "A VALIDER par Charleston (balance du 23/10, regle pas de one-shot a niveau egal). 40-50 : 37/56 -> 31/40. 60-100 : 90/132/175/215/262 -> 50/60/70/80/90. Mesure avant (server-combat WorldLowLevelSimulation.DISABLED_MonsterHitAudit, joueur du niveau du monstre, equipement attendu) : au-dela de 50 la courbe d'attaque grandit x4,7 quand les PV d'un mage grandissent x2,2 ; un monstre standard a 0 etoile tuait un mage de son niveau sans critique (101 a 168 % de ses PV) et un joueur seul gagnait 12 a 33 % de ses combats 0 etoile. Avec ces ancres le coup le plus fort a niveau egal reste sous les PV de toutes les classes (critique et 5 etoiles compris).",
     "anchors_offense": {
       "1": 1.0,
       "10": 15.0,
       "20": 21.5,
       "30": 27.0,
-      "40": 31.0,
-      "50": 36.0,
-      "60": 46.0,
-      "70": 48.0,
-      "80": 52.0,
-      "90": 56.0,
-      "100": 60.0
+      "40": 37.0,
+      "50": 56.0,
+      "60": 90.0,
+      "70": 132.0,
+      "80": 175.0,
+      "90": 215.0,
+      "100": 262.0
     },
     "anchors_defense": {
       "1": 1.0,
@@ -478,12 +475,6 @@
     }
   },
   "per_mob_override": {
-    "mob_edric_warlord": {
-      "stat_scalar": {
-        "atk": 0.85
-      },
-      "_a_valider": "A VALIDER (2026-10-23, regle pas de one-shot a niveau egal) : seul boss encore au-dessus d'un coup mortel apres la passe generale (Brise-Garde critique a 5 etoiles, niveau 42, sur un mage : 104 % des PV). ATK x0,85, seul ce monstre."
-    },
     "_comment": "La plupart des mobs derivent purement (stat_archetype, base_level, threat_tier, rarity). Un mob special peut porter ici, sous son id de monstre, un stat_scalar (nombre = toutes les stats de croissance, ou objet {hp?, mp?, atk?, mag?, def?, magic_resist?} = multiplicateur par stat) et/ou un stat_override (meme cles, valeur absolue qui remplace la valeur derivee). Applique EN DERNIER par le serveur (shared/gameplay/monster_scaling_model.cpp, combat ET barre de PV du monde), apres espece et stade. Cle = id de monstre : ne touche ni l'identite d'espece ni les familiers. Stat inconnue = modele refuse au chargement. Branche le 2026-10-20.",
     "mob_rat_tutorial": {
       "stat_override": {
