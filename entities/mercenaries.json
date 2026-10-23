@@ -13,7 +13,8 @@
     "balance_note": "balance_profile = profil PvE (mercenaire engage par un joueur). pvp_balance_profile = override applique quand la salle est un combat PvP (arene, bot-fill). Les deux contextes lisent deux champs distincts : ne jamais mettre un pvp_filler_* dans balance_profile. Corrige 2026-08-24 : les 24 archetypes subclass portaient leur pvp_filler_<role>_v1 dans le slot PvE, donc un joueur qui en engageait un en PvE recevait un bot a x2.2-2.5 degats et x2.8-3.8 PV sans malus de niveau. Voir config/mercenary_balance.json.",
     "cost_note": "cost_gold=0 sur tous les archetypes (anti-frustration nouveaux joueurs). Augmenter sur tiers avances post-MVP.",
     "skill_loadout_note": "Base = 3 skills basiques classe. Subclass = 5 skills base classe + 5 skills subclass = 10 skills. Le PlayerAI serveur pre-resout au ROOM_SETUP via ai_loaded_skills.",
-    "tutorial_npc": "Hestaia (PNJ tuto) propose le mercenaire de base au joueur"
+    "tutorial_npc": "Hestaia (PNJ tuto) propose le mercenaire de base au joueur",
+    "spec_kits_note": "spec_kits (recrues d'arene seulement, 2026-10-23, a valider) : a partir du niveau d'acces des specialisations (config/skill_system.json skill_categories.tier3.unlock_at_player_level), le combat choisit UNE des deux specialisations de l'archetype (tirage serveur, stable par salle) et monte le kit qu'un joueur de ce niveau aurait sur sa barre : les 5 sorts de la specialisation (classes/<classe>/skills.json, tier3), les 5 sorts de sous-classe, et seulement les sorts de base listes dans base_kept, soit 12 sorts = config/game.json skill_bar.slots_count ; le deplacement de classe deja present dans skill_loadout reste en plus, comme la rangee de deplacement du joueur. Seuls les sorts de base sont choisis ici, le reste est derive de la data des classes : ajouter un sort a une specialisation l'ajoute au kit. Mercenaires engages (PvE), familiers, lecon d'arene et tutoriel ne lisent pas ce champ."
   },
   "mercenaries": [
     {
@@ -182,6 +183,20 @@
         "skill_warrior_guardian_aegis_of_the_realm",
         "skill_warrior_charge"
       ],
+      "spec_kits": {
+        "bulwark": {
+          "base_kept": [
+            "skill_warrior_shield_bash",
+            "skill_warrior_taunting_shout"
+          ]
+        },
+        "sentinel": {
+          "base_kept": [
+            "skill_warrior_taunting_shout",
+            "skill_warrior_shield_bash"
+          ]
+        }
+      },
       "ai_profile": "tank",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -212,6 +227,20 @@
         "skill_warrior_berserker_fracture",
         "skill_warrior_charge"
       ],
+      "spec_kits": {
+        "bloodrage": {
+          "base_kept": [
+            "skill_warrior_heavy_strike",
+            "skill_warrior_cleave"
+          ]
+        },
+        "frenzied": {
+          "base_kept": [
+            "skill_warrior_heavy_strike",
+            "skill_warrior_cleave"
+          ]
+        }
+      },
       "ai_profile": "bruiser",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -242,6 +271,20 @@
         "skill_warrior_weaponmaster_sovereign_strike",
         "skill_warrior_charge"
       ],
+      "spec_kits": {
+        "hammer_lord": {
+          "base_kept": [
+            "skill_warrior_shield_bash",
+            "skill_warrior_heavy_strike"
+          ]
+        },
+        "dual_axe_reaver": {
+          "base_kept": [
+            "skill_warrior_heavy_strike",
+            "skill_warrior_cleave"
+          ]
+        }
+      },
       "ai_profile": "brute",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -272,6 +315,20 @@
         "skill_warrior_warlord_war_banner",
         "skill_warrior_charge"
       ],
+      "spec_kits": {
+        "commander": {
+          "base_kept": [
+            "skill_warrior_heavy_strike",
+            "skill_warrior_shield_bash"
+          ]
+        },
+        "dreadlord": {
+          "base_kept": [
+            "skill_warrior_shield_bash",
+            "skill_warrior_taunting_shout"
+          ]
+        }
+      },
       "ai_profile": "tank",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -302,6 +359,20 @@
         "skill_mage_elem_elemental_storm",
         "skill_mage_blink"
       ],
+      "spec_kits": {
+        "frostcaller": {
+          "base_kept": [
+            "skill_mage_mana_shield",
+            "skill_mage_arcane_pulse"
+          ]
+        },
+        "magma_sage": {
+          "base_kept": [
+            "skill_mage_arcane_pulse",
+            "skill_mage_arcane_cataclysm"
+          ]
+        }
+      },
       "ai_profile": "caster",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -332,6 +403,20 @@
         "skill_mage_occ_shadow_pact",
         "skill_mage_blink"
       ],
+      "spec_kits": {
+        "sorcerer": {
+          "base_kept": [
+            "skill_mage_magic_bolt",
+            "skill_mage_arcane_cataclysm"
+          ]
+        },
+        "summoner": {
+          "base_kept": [
+            "skill_mage_mana_shield",
+            "skill_mage_magic_bolt"
+          ]
+        }
+      },
       "ai_profile": "controller",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -362,6 +447,20 @@
         "skill_mage_card_fate_flip",
         "skill_mage_blink"
       ],
+      "spec_kits": {
+        "arcane_dealer": {
+          "base_kept": [
+            "skill_mage_magic_bolt",
+            "skill_mage_arcane_pulse"
+          ]
+        },
+        "fate_gambler": {
+          "base_kept": [
+            "skill_mage_mana_shield",
+            "skill_mage_arcane_siphon"
+          ]
+        }
+      },
       "ai_profile": "support",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -392,6 +491,20 @@
         "skill_mage_sb_arcane_cleave",
         "skill_mage_blink"
       ],
+      "spec_kits": {
+        "battlemage": {
+          "base_kept": [
+            "skill_mage_mana_shield",
+            "skill_mage_arcane_pulse"
+          ]
+        },
+        "runeknight": {
+          "base_kept": [
+            "skill_mage_mana_shield",
+            "skill_mage_arcane_siphon"
+          ]
+        }
+      },
       "ai_profile": "bruiser",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -422,6 +535,20 @@
         "skill_healer_lifewarden_natures_blessing",
         "skill_healer_guardian_swap"
       ],
+      "spec_kits": {
+        "druidic_healer": {
+          "base_kept": [
+            "skill_healer_heal",
+            "skill_healer_light_pulse"
+          ]
+        },
+        "grove_warden": {
+          "base_kept": [
+            "skill_healer_holy_shield",
+            "skill_healer_heal"
+          ]
+        }
+      },
       "ai_profile": "healer",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -452,6 +579,20 @@
         "skill_healer_lightbringer_absolution",
         "skill_healer_guardian_swap"
       ],
+      "spec_kits": {
+        "sanctifier": {
+          "base_kept": [
+            "skill_healer_purify",
+            "skill_healer_heal"
+          ]
+        },
+        "battle_healer": {
+          "base_kept": [
+            "skill_healer_smite",
+            "skill_healer_holy_shield"
+          ]
+        }
+      },
       "ai_profile": "healer",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -482,6 +623,20 @@
         "skill_healer_cantor_requiem",
         "skill_healer_guardian_swap"
       ],
+      "spec_kits": {
+        "requiem": {
+          "base_kept": [
+            "skill_healer_smite",
+            "skill_healer_purify"
+          ]
+        },
+        "choirmaster": {
+          "base_kept": [
+            "skill_healer_light_pulse",
+            "skill_healer_holy_shield"
+          ]
+        }
+      },
       "ai_profile": "support",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -512,6 +667,20 @@
         "skill_healer_martyr_redemptive_wave",
         "skill_healer_guardian_swap"
       ],
+      "spec_kits": {
+        "intercessor": {
+          "base_kept": [
+            "skill_healer_smite",
+            "skill_healer_heal"
+          ]
+        },
+        "covenant": {
+          "base_kept": [
+            "skill_healer_holy_shield",
+            "skill_healer_light_pulse"
+          ]
+        }
+      },
       "ai_profile": "bruiser",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -542,6 +711,20 @@
         "skill_archer_ranger_headshot",
         "skill_archer_backstep"
       ],
+      "spec_kits": {
+        "sharpshooter": {
+          "base_kept": [
+            "skill_archer_eagle_eye",
+            "skill_archer_hunter_mark"
+          ]
+        },
+        "skirmisher": {
+          "base_kept": [
+            "skill_archer_volley",
+            "skill_archer_crippling_arrow"
+          ]
+        }
+      },
       "ai_profile": "artillery",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -572,6 +755,20 @@
         "skill_archer_falconer_falcon_fury",
         "skill_archer_backstep"
       ],
+      "spec_kits": {
+        "falcon_striker": {
+          "base_kept": [
+            "skill_archer_hunter_mark",
+            "skill_archer_precise_shot"
+          ]
+        },
+        "wind_hunter": {
+          "base_kept": [
+            "skill_archer_volley",
+            "skill_archer_crippling_arrow"
+          ]
+        }
+      },
       "ai_profile": "artillery",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -602,6 +799,20 @@
         "skill_archer_ballmaster_endless_volley",
         "skill_archer_backstep"
       ],
+      "spec_kits": {
+        "bouncer": {
+          "base_kept": [
+            "skill_archer_volley",
+            "skill_archer_hunter_mark"
+          ]
+        },
+        "striker": {
+          "base_kept": [
+            "skill_archer_precise_shot",
+            "skill_archer_eagle_eye"
+          ]
+        }
+      },
       "ai_profile": "artillery",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -632,6 +843,20 @@
         "skill_archer_gunslinger_pin_down",
         "skill_archer_backstep"
       ],
+      "spec_kits": {
+        "quickshot": {
+          "base_kept": [
+            "skill_archer_precise_shot",
+            "skill_archer_volley"
+          ]
+        },
+        "deadeye": {
+          "base_kept": [
+            "skill_archer_eagle_eye",
+            "skill_archer_hunter_mark"
+          ]
+        }
+      },
       "ai_profile": "artillery",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -662,6 +887,20 @@
         "skill_rogue_shadowblade_death_blossom",
         "skill_rogue_shadowstep"
       ],
+      "spec_kits": {
+        "nightstalker": {
+          "base_kept": [
+            "skill_rogue_mark_target",
+            "skill_rogue_quick_stab"
+          ]
+        },
+        "assassin": {
+          "base_kept": [
+            "skill_rogue_lacerate",
+            "skill_rogue_throw_dagger"
+          ]
+        }
+      },
       "ai_profile": "assassin",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -692,6 +931,20 @@
         "skill_rogue_trickster_grand_swindle",
         "skill_rogue_shadowstep"
       ],
+      "spec_kits": {
+        "debuffer": {
+          "base_kept": [
+            "skill_rogue_smoke_bomb",
+            "skill_rogue_lacerate"
+          ]
+        },
+        "blinker": {
+          "base_kept": [
+            "skill_rogue_quick_stab",
+            "skill_rogue_throw_dagger"
+          ]
+        }
+      },
       "ai_profile": "controller",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -722,6 +975,20 @@
         "skill_rogue_corsair_raid",
         "skill_rogue_shadowstep"
       ],
+      "spec_kits": {
+        "cutthroat": {
+          "base_kept": [
+            "skill_rogue_lacerate",
+            "skill_rogue_quick_stab"
+          ]
+        },
+        "gunslasher": {
+          "base_kept": [
+            "skill_rogue_throw_dagger",
+            "skill_rogue_quick_stab"
+          ]
+        }
+      },
       "ai_profile": "assassin",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -752,6 +1019,20 @@
         "skill_rogue_duelist_coup_de_grace",
         "skill_rogue_shadowstep"
       ],
+      "spec_kits": {
+        "blade_dancer": {
+          "base_kept": [
+            "skill_rogue_quick_stab",
+            "skill_rogue_mark_target"
+          ]
+        },
+        "countermaster": {
+          "base_kept": [
+            "skill_rogue_smoke_bomb",
+            "skill_rogue_lacerate"
+          ]
+        }
+      },
       "ai_profile": "assassin",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -782,6 +1063,20 @@
         "skill_artisan_blacksmith_anvil_crash",
         "skill_artisan_grapple"
       ],
+      "spec_kits": {
+        "forgemaster": {
+          "base_kept": [
+            "skill_artisan_quick_patch",
+            "skill_artisan_expose_flaw"
+          ]
+        },
+        "breaker": {
+          "base_kept": [
+            "skill_artisan_expose_flaw",
+            "skill_artisan_tool_strike"
+          ]
+        }
+      },
       "ai_profile": "tank",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -812,6 +1107,20 @@
         "skill_artisan_alchemist_catalyze",
         "skill_artisan_grapple"
       ],
+      "spec_kits": {
+        "plague_brewer": {
+          "base_kept": [
+            "skill_artisan_expose_flaw",
+            "skill_artisan_tool_strike"
+          ]
+        },
+        "reactionist": {
+          "base_kept": [
+            "skill_artisan_expose_flaw",
+            "skill_artisan_tool_strike"
+          ]
+        }
+      },
       "ai_profile": "controller",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -842,6 +1151,20 @@
         "skill_artisan_chef_inferno_feast",
         "skill_artisan_grapple"
       ],
+      "spec_kits": {
+        "battle_cook": {
+          "base_kept": [
+            "skill_artisan_quick_patch",
+            "skill_artisan_work_rhythm"
+          ]
+        },
+        "spice_master": {
+          "base_kept": [
+            "skill_artisan_work_rhythm",
+            "skill_artisan_expose_flaw"
+          ]
+        }
+      },
       "ai_profile": "support",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
@@ -872,6 +1195,20 @@
         "skill_artisan_musician_grand_performance",
         "skill_artisan_grapple"
       ],
+      "spec_kits": {
+        "guitarist": {
+          "base_kept": [
+            "skill_artisan_quick_patch",
+            "skill_artisan_work_rhythm"
+          ]
+        },
+        "war_drummer": {
+          "base_kept": [
+            "skill_artisan_work_rhythm",
+            "skill_artisan_expose_flaw"
+          ]
+        }
+      },
       "ai_profile": "controller",
       "balance_profile": "solo_helper_v1",
       "cost_gold": 0,
