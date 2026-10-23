@@ -40,7 +40,9 @@ Contrôles (code, gravite par defaut) :
              present dans world/tutorial_overlays.json ; guaranteed_rewards
              {item_id existant dans items/, quantity >= 1} ; archetypes des
              gift_offers ; tutorial_gift (offre d'Aldric) present, offer_id non
-             vide et hors gift_offers, archetypes uniques et existants
+             vide et hors gift_offers, archetypes uniques et existants (liste
+             explicite, ou rayon from_shop de la boutique : une empreinte = un
+             archetype familiar_<family>_<role>)
   B11 ERROR  affinites (familiar_balance.affinities, SI present) : especes,
              familles et statuts references existent
   B12 WARN   assets des monstres actifs : sprite resolu (client) ou art_pending
@@ -363,7 +365,7 @@ def check_traces(r, ctx):
                 if (m.get("familiar_capture") or {}).get("enabled") and m["familiar_capture"].get("family")
                 for role in m["familiar_capture"].get("allowed_roles") or []}
     gifts = {aid for offer in public(ctx["balance"].get("gift_offers")).values() for aid in offer}
-    gifts |= set((ctx["balance"].get("tutorial_gift") or {}).get("archetypes") or [])
+    gifts |= set(tutorial_gift_archetypes(ctx["balance"].get("tutorial_gift"))[0])
     unreachable = sorted(aid for aid, a in ctx["archetypes"].items()
                          if (a.get("species"), a.get("role")) not in captured and aid not in gifts)
     if unreachable:
@@ -493,6 +495,48 @@ def _positive_int(v):
     return isinstance(v, int) and not isinstance(v, bool) and v >= 1
 
 
+def tutorial_gift_archetypes(tg):
+    """Choix du tutoriel chez Colette : (archetypes, erreurs). Meme regle que le service
+    familier (services/familiar/src/starter_shop.hpp) : avec from_shop, chaque empreinte
+    du rayon donne familiar_<family>_<role>, dans l'ordre du rayon ; sinon la liste
+    archetypes explicite (ancienne forme). Les deux a la fois = refus (une seule source)."""
+    if not isinstance(tg, dict):
+        return [], []
+    src = tg.get("from_shop")
+    if src is None:
+        aids = tg.get("archetypes")
+        return (aids if isinstance(aids, list) else []), []
+    if "archetypes" in tg:
+        return [], ["from_shop et archetypes sont exclusifs (une seule source)"]
+    if not isinstance(src, dict) or not src.get("npc_id") or not src.get("section"):
+        return [], [f"from_shop {src!r} (npc_id et section non vides attendus)"]
+    npc = next((n for lst in load("entities/npcs.json").values() if isinstance(lst, list)
+                for n in lst if isinstance(n, dict) and n.get("id") == src["npc_id"]), None)
+    if npc is None:
+        return [], [f"from_shop : PNJ '{src['npc_id']}' introuvable dans entities/npcs.json"]
+    rayon = (npc.get("shop_inventory") or {}).get(src["section"])
+    if not isinstance(rayon, list) or not rayon:
+        return [], [f"from_shop : rayon '{src['section']}' absent ou vide chez '{src['npc_id']}'"]
+    traces = {t.get("id"): t for t in load("items/consumables.json").get("familiar_traces", [])
+              if isinstance(t, dict)}
+    out, errs = [], []
+    for entry in rayon:
+        iid = entry.get("item_id") if isinstance(entry, dict) else None
+        t = traces.get(iid)
+        if t is None:
+            errs.append(f"from_shop : article '{iid}' absent de familiar_traces")
+            continue
+        if t.get("item_type") != "familiar_trace" or not t.get("family") or not t.get("role"):
+            errs.append(f"from_shop : article '{iid}' n'est pas une empreinte")
+            continue
+        aid = f"familiar_{t['family']}_{t['role']}"
+        if aid in out:
+            errs.append(f"from_shop : deux empreintes font eclore '{aid}'")
+            continue
+        out.append(aid)
+    return out, errs
+
+
 def check_tutorial_gifts(r, ctx):
     mids = {m["id"] for m in ctx["monsters"]}
     tut = ctx["tutorial"]
@@ -589,9 +633,11 @@ def check_tutorial_gifts(r, ctx):
         r.add("B10", f"tutorial_gift : offer_id {oid!r} (chaine non vide attendue)")
     elif oid in offers:
         r.add("B10", f"tutorial_gift : offer_id '{oid}' est aussi une cle de gift_offers")
-    aids = tg.get("archetypes")
+    aids, errs = tutorial_gift_archetypes(tg)
+    for e in errs:
+        r.add("B10", f"tutorial_gift : {e}")
     if not isinstance(aids, list) or not aids:
-        r.add("B10", "tutorial_gift : archetypes vide ou absent")
+        r.add("B10", "tutorial_gift : aucun archetype (archetypes vide, ou rayon from_shop vide)")
         return
     seen = set()
     for aid in aids:
