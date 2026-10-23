@@ -21,7 +21,8 @@ Contrôles (code, gravite par defaut) :
              surcharge assumee (`_override_reason` dans familiar_capture)
   B05 ERROR  archetypes de familier : id == familiar_<famille>_<role>, role,
              monster_species, signature skill_familiar_sig_<template>, loadout,
-             balance_profile, icone declaree
+             balance_profile, icone declaree, name_fr ET name_en non vides (nom
+             affiche d'un familier non renomme, 2026-10-23)
   B06 ERROR  empreintes : une par (famille capturee, role) x rarete ; id, famille,
              role et rarete coherents ; toute empreinte mene a un archetype existant
              (sinon le service retombe sur le rat). Orphelines = WARN.
@@ -329,6 +330,15 @@ def check_archetypes(r, ctx):
         icon = a.get("icon")
         if not icon or not str(icon).endswith(".png"):
             r.add("B05", f"{aid} : icone non declaree ({icon!r})")
+        # Nom affiche : un familier non renomme porte le nom de son ARCHETYPE, lu ici
+        # par le client (scripts/data/familiar_name.gd). Un nom absent n'a pas de repli
+        # sur l'identifiant : le joueur lirait le mot generique « Familier ».
+        for lang in ("fr", "en"):
+            nom = a.get(f"name_{lang}")
+            if not isinstance(nom, str) or not nom.strip():
+                r.add("B05", f"{aid} : name_{lang} manquant (nom affiche du familier non renomme)")
+            elif nom.strip().lower() in {aid.lower(), str(fam or "").lower()}:
+                r.add("B05", f"{aid} : name_{lang} '{nom}' recopie l'identifiant au lieu d'un nom")
 
 
 def check_traces(r, ctx):
