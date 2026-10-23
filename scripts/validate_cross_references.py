@@ -173,6 +173,7 @@ def collect_all_item_ids(db: Path) -> set:
         "items/panoplies.json",
         "items/uniques.json",
         "items/pet_books.json",
+        "items/emote_scrolls.json",
     ]
 
     for rel_path in item_files:
@@ -2407,7 +2408,7 @@ def validate_tower(db: Path, all_item_ids: set) -> list:
 # ---------------------------------------------------------------------------
 
 EVENT_KEYS = ("xp", "gold", "drop_chance", "rarity_boost", "profession_xp", "rift_frequency",
-              "capture_chance", "arena_tokens")
+              "capture_chance", "arena_tokens", "emote_scroll_chance")
 WEEKDAYS = ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday")
 
 
@@ -2536,6 +2537,78 @@ def validate_arena_token_shop(db: Path, all_item_ids: set) -> list:
             errors.append(f"[arena_token_shop] {oid} : '{gid}' est de rang 3+, regle volume-jamais-puissance")
     if not _is_pos_int(shop.get("max_lots_per_purchase")):
         errors.append("[arena_token_shop] max_lots_per_purchase doit etre un entier > 0")
+    return errors
+
+
+# ---------------------------------------------------------------------------
+# 12x. Parchemins d'emote (decision Charleston 2026-10-23). Une emote premium = un
+# parchemin genere (scripts/gen_emote_scrolls.py), une seule source des chances
+# (items/loot_tables.json emote_scroll_drops). Le serveur (shared/gameplay/
+# emote_scrolls.hpp) refuse de charger un bloc dont une source manque : la garde le
+# dit avant.
+# ---------------------------------------------------------------------------
+
+EMOTE_SCROLL_SOURCES = ("fight", "zone_chest", "fissure_invasion", "rift_chest",
+                        "contract_chest_daily", "contract_chest_weekly")
+
+
+def validate_emote_scrolls(db: Path) -> list:
+    errors = []
+    emotes_doc = load_json(db / "ui" / "emotes.json")
+    emotes = {e["id"]: e for e in emotes_doc.get("emotes", []) if "id" in e}
+    if not isinstance(emotes_doc.get("_meta", {}).get("diamond_sale_enabled"), bool):
+        errors.append("[ui/emotes.json] _meta.diamond_sale_enabled doit etre un booleen (vente en diamants)")
+    path = db / "items" / "emote_scrolls.json"
+    if not path.exists():
+        return errors + ["[emote_scrolls] items/emote_scrolls.json absent (python scripts/gen_emote_scrolls.py)"]
+    scrolls = load_json(path).get("emote_scrolls", [])
+    block = load_json(db / "items" / "loot_tables.json").get("emote_scroll_drops")
+    if not isinstance(block, dict):
+        return errors + ["[loot_tables] emote_scroll_drops absent"]
+    chances = block.get("chance_by_source", {})
+    for src in EMOTE_SCROLL_SOURCES:
+        v = chances.get(src)
+        if not (isinstance(v, (int, float)) and not isinstance(v, bool) and 0 <= v <= 1):
+            errors.append(f"[loot_tables.emote_scroll_drops] chance_by_source.{src}={v} hors de [0, 1] ou absente")
+    for src in chances:
+        if not src.startswith("_") and src not in EMOTE_SCROLL_SOURCES:
+            errors.append(f"[loot_tables.emote_scroll_drops] source inconnue '{src}' (connues : {', '.join(EMOTE_SCROLL_SOURCES)})")
+    weights = block.get("weight_by_rarity", {})
+    seen_emotes = set()
+    for sc in scrolls:
+        sid, eid = sc.get("id", ""), sc.get("emote_id", "")
+        eff = sc.get("effect", {})
+        if eff.get("type") != "unlock_emote" or eff.get("emote_id") != eid:
+            errors.append(f"[emote_scrolls] {sid} : effect doit etre unlock_emote sur '{eid}'")
+        if sid != "scroll_emote_" + eid:
+            errors.append(f"[emote_scrolls] {sid} : l'id doit etre scroll_emote_{eid}")
+        e = emotes.get(eid)
+        if e is None:
+            errors.append(f"[emote_scrolls] {sid} : emote '{eid}' absente de ui/emotes.json")
+        elif e.get("tier") != "premium":
+            errors.append(f"[emote_scrolls] {sid} : emote '{eid}' offerte, elle n'a pas de parchemin")
+        if eid in seen_emotes:
+            errors.append(f"[emote_scrolls] deux parchemins pour l'emote '{eid}'")
+        seen_emotes.add(eid)
+        w = weights.get(sc.get("rarity"))
+        if not (isinstance(w, int) and not isinstance(w, bool) and w > 0):
+            errors.append(f"[emote_scrolls] {sid} : rarete '{sc.get('rarity')}' sans poids entier > 0 dans weight_by_rarity")
+        if sc.get("tradeable") is not True or sc.get("hdv_listable") is not True:
+            errors.append(f"[emote_scrolls] {sid} : un parchemin s'echange et se vend (tradeable, hdv_listable)")
+    for eid, e in emotes.items():
+        if e.get("tier") == "premium" and eid not in seen_emotes:
+            errors.append(f"[emote_scrolls] emote premium '{eid}' sans parchemin (python scripts/gen_emote_scrolls.py)")
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        sys.dont_write_bytecode = True  # pas de __pycache__ laisse dans scripts/
+        import gen_emote_scrolls
+        gen_emote_scrolls.ROOT = db
+        gen_emote_scrolls.EMOTES = db / "ui" / "emotes.json"
+        gen_emote_scrolls.LOOT = db / "items" / "loot_tables.json"
+        if gen_emote_scrolls.build() != load_json(path):
+            errors.append("[emote_scrolls] items/emote_scrolls.json n'est pas a jour (python scripts/gen_emote_scrolls.py)")
+    except SystemExit as e:
+        errors.append(f"[emote_scrolls] generateur : {e}")
     return errors
 
 
@@ -3209,6 +3282,11 @@ def main():
 
     print("[12w/12] Validating weekly events (calendar -> rewards.json events) and the token shop...")
     errs = validate_event_calendar(db) + validate_arena_token_shop(db, all_item_ids) + validate_world_elites(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12x/12] Validating emote scrolls (one per premium emote, drop chances, generator)...")
+    errs = validate_emote_scrolls(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
