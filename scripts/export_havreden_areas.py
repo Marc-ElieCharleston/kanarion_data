@@ -32,9 +32,12 @@ NOMS (decision Charleston du 2026-10-20)
   noeud provisoire (`to_do`) donne un nom provisoire, signale aussi.
 
 CE QU'IL NE TOUCHE JAMAIS
-  mobs, elite_pool, boss, max_stars, elite_pack_chance et toute autre cle d'un id
-  qui existe deja. Un id renomme reprend le roster de son ancien id (table
-  REPRISE). Une aire sans roster est ecrite avec `mobs: []` et `count: 0`.
+  mobs, elite_pool, boss, elite_pack_chance et toute autre cle d'un id qui existe
+  deja et a deja des monstres. Un id renomme reprend le roster de son ancien id
+  (table REPRISE). Une aire SANS monstre recoit son roster de la table ROSTERS
+  si elle y figure, sinon elle est ecrite avec `mobs: []` et `count: 0`.
+  Exception : max_stars est ecrit a MAX_STARS (5) sur toutes les aires
+  (decision du 2026-10-23).
 
 SOL PAS ENCORE PEINT
   Le calque `Ground` est decode a chaque execution : une aire dont plus de
@@ -146,6 +149,87 @@ DECOUPES = {
     ]},
 }
 CLES_ROSTER_DECOUPE = ("max_stars", "elite_pool", "elite_pack_chance", "mobs")
+
+# Etoiles : toutes les aires montent a 5 etoiles (Charleston, 2026-10-23 : « chaque
+# zone peut avoir 5 etoiles »). Ecrit sur CHAQUE aire a chaque export, y compris les
+# aires deja peuplees et les sous-aires des DECOUPES : c'est une regle de carte, pas
+# un reglage d'aire.
+MAX_STARS = 5
+
+# Rosters des aires du niveau 20 au niveau 100 restees sans monstre (carte complete,
+# Charleston 2026-10-23 : « on a toute la data jusqu'au niveau 100, place les
+# monstres »). Source : la carte des monstres du 11/10 (artifact « Carte des monstres
+# de Kanarion », noms FR -> ids de entities/monsters.json). Le niveau d'un monstre
+# vient de l'AIRE (presence roll_area_level), pas de son level_range.
+# Regles : poids 10 ; un elite nomme par la carte -> elite_pool + elite_pack_chance
+# 0.3 (valeur des aires 60+ de 0.19) ; un boss du monde nomme par la carte -> boss
+# pack_chance 0.5 (idem). Un monstre SANS sprite client dedie (monde ET combat) n'est
+# pas pose : voir la liste ABSENTS_SANS_SPRITE.
+# Ecrit seulement quand l'aire n'a pas encore de monstre (mobs vide ou absent) :
+# ensuite la data fait foi, comme pour toute aire existante.
+def _r(*ids):
+    return [{"id": i, "weight": 10} for i in ids]
+
+
+ROSTERS = {
+    # Clairiere Disputee (carte : 15-25 ; scene 30-40, la scene fait foi).
+    "mz_clairiere_30_40": {"mobs": _r("mob_wolf", "mob_loup_noir", "mob_boar", "mob_laie", "mob_marcassin")},
+    "mz_combe_aux_ours_20_28": {"mobs": _r("mob_ourson", "mob_ours_brun", "mob_ourse", "mob_ours_noir",
+                                           "mob_ours_cavernes")},
+    "mz_foret_sud_25_35": {"mobs": _r("mob_ours_fissure", "mob_boar_wolf", "mob_frothing_wolf"),
+                           "elite_pool": ["mob_grande_ourse"], "elite_pack_chance": 0.3},
+    "mz_bois_fletri_25_35": {"mobs": _r("mob_cerf_obscur", "mob_misty_fox", "mob_biche_fletrie",
+                                        "mob_cerf_fletri", "mob_blaireau_fletri")},
+    "mz_ruines_de_guetteval_35_45": {"mobs": _r("mob_rat_mage", "mob_rat_soigneur"),
+                                     "boss": {"id": "mob_rat_rongeur", "pack_chance": 0.5}},
+    "mz_terres_de_givre_60_66": {"mobs": _r("mob_crystal_wolf", "mob_spectral_wolf", "mob_golem",
+                                            "mob_ours_givre", "mob_cerf_givre")},
+    # Col d'Asher : « on melange les voisins » (Givre a l'ouest, Braise a l'est,
+    # patrouilles de zelotes venues de la Tour).
+    "mz_col_d_asher_63_70": {"mobs": _r("mob_crystal_wolf", "mob_cerf_givre", "mob_ember_hound",
+                                        "mob_sanglier_braise", "mob_zealot_guard", "mob_zealot_ritualist")},
+    "mz_lac_gele_64_70": {"mobs": _r("mob_crystal_wolf", "mob_spectral_wolf", "mob_golem",
+                                     "mob_ours_givre", "mob_cerf_givre")},
+    "mz_terres_de_braise_63_70": {"mobs": _r("mob_ember_hound", "mob_nightmare_horse", "mob_nightmare_stag",
+                                             "mob_sanglier_braise")},
+    "mz_chemin_des_cendres_66_72": {"mobs": _r("mob_ember_hound", "mob_nightmare_horse", "mob_sanglier_braise"),
+                                    "elite_pool": ["mob_taureau_braise"], "elite_pack_chance": 0.3},
+    "mz_marais_de_la_faille_65_72": {"mobs": _r("mob_lizardman", "mob_lizardman_shaman", "mob_rift_stalker",
+                                                "mob_rift_stitcher", "mob_rift_warden"),
+                                     "elite_pool": ["mob_rift_maw"], "elite_pack_chance": 0.3},
+    "mz_champ_des_ossuaires_70_78": {"mobs": _r("mob_archer_squelette", "mob_guerrier_skull",
+                                                "mob_skeleton_necromancer", "mob_soul_harvester",
+                                                "mob_bone_colossus")},
+    "mz_plaine_fendue_72_80": {"mobs": _r("mob_abyss_swarmling", "mob_void_revenant", "mob_void_hound",
+                                          "mob_void_executioner", "mob_lesser_void_titan"),
+                               "elite_pool": ["mob_dread_horror", "mob_dread_matron"], "elite_pack_chance": 0.3},
+    "mz_chaussee_brisee_78_88": {"mobs": _r("mob_void_spawn", "mob_nether_caller", "mob_void_priest",
+                                            "mob_dread_stalker", "mob_lesser_demon"),
+                                 "elite_pool": ["mob_abyssal_warlock"], "elite_pack_chance": 0.3},
+    "mz_terres_dechirees_85_95": {"mobs": _r("mob_abyssal_charger", "mob_abyssal_reaver", "mob_abyssal_juggernaut",
+                                             "mob_abyssal_seraph", "mob_abyssal_scholar"),
+                                  "elite_pool": ["mob_soul_devourer", "mob_maw_of_the_abyss"],
+                                  "elite_pack_chance": 0.3},
+    # L'Abime : la carte n'y a qu'UN monstre avec sprite (Archonte Abyssal) ; les trois
+    # archontes dechus n'ont pas d'art. Completee, A VALIDER, par les demons « qui
+    # pensent » de Caer Isthrel (80-100, meme bande de la carte) : Erudit et Seraphin.
+    "mz_l_abime_90_100": {"mobs": _r("mob_abyssal_archon", "mob_abyssal_scholar", "mob_abyssal_seraph"),
+                          "boss": {"id": "mob_abyssal_sovereign", "pack_chance": 0.5}},
+}
+
+# Monstres de la carte des monstres NON poses faute de sprite client (monde + combat),
+# a ajouter aux rosters quand leur art arrive. Informatif (rapport du script).
+ABSENTS_SANS_SPRITE = {
+    "mz_foret_sud_25_35": ["Sanglier Cuirasse (pas de fiche)", "Loup Fissure (pas de fiche)"],
+    "mz_bois_fletri_25_35": ["Faon Fletri (pas de fiche)",
+                             "boss_gardien_bois_fletri (sprite gardien_bois_fletri : le client ne retire pas boss_)"],
+    "mz_ruines_de_guetteval_35_45": ["mob_wolf_packleader, mob_wolf_corrupted (loups humanoides : sprites sur "
+                                     "feat/dungeon-open-run, pas sur main ; repli sur le loup gris)",
+                                     "Louve Chamane (pas de fiche)",
+                                     "mob_rat_assassin, mob_rat_cuirasse (repli sur le rat, art a generer)"],
+    "mz_champ_des_ossuaires_70_78": ["boss_cursed_champion (pas de sprite)", "Liche (pas de fiche)"],
+    "mz_l_abime_90_100": ["mob_grieving_sentinel, mob_wrathful_archon, mob_throne_sentinel (pas de sprite)"],
+}
 
 NOM_AIRE = re.compile(r"^mz_(?P<slug>.+?)_(?P<min>\d+)[_-](?P<max>\d+)(?P<elite>_elite)?$")
 CLES_GEOMETRIE = ("id", "name_fr", "name_en", "level_range", "count", "bounds", "polygon")
@@ -696,6 +780,10 @@ def main():
                 origine = "nouvelle"
             for k in CLES_GEOMETRIE:
                 entree.pop(k, None)
+            if not entree.get("mobs") and mid in ROSTERS:
+                entree.update(copy.deepcopy(ROSTERS[mid]))
+                origine += " + roster ROSTERS"
+            entree["max_stars"] = MAX_STARS
             vide, mouille = mesure_sol(P, sol, origine_sol, eau, origine_eau, a.ground_step)
             a_roster = bool(entree.get("mobs"))
             sans_sol = vide > a.empty_ground
@@ -788,6 +876,8 @@ def main():
               f"{r['etat']:33} {r['sol_vide']:>7.0%} {r['eau']:>5.0%}   {r['origine']}")
     total = sum(r["count"] for r in rapport["aires"])
     print(f"total monstres (count) : {total} ; villes en safe_polygons : {[s['id'] for s in sures]}")
+    for aid, absents in ABSENTS_SANS_SPRITE.items():
+        rapport["signalements"].append(f"{aid} : pas pose faute de sprite : {'; '.join(absents)}")
     for s in rapport["signalements"]:
         print("signalement :", s)
     if rapport["retirees"]:
