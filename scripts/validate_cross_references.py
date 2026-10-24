@@ -1298,13 +1298,16 @@ def validate_quest_engine(db: Path, all_item_ids: set) -> list:
                     errors.append(f"{owner} choice_{key} : outcome_fr et outcome_en vont ensemble")
         for key in ("requires_flags", "forbids_flags"):
             wanted += [(owner, f) for f in _flag_list(owner, q, key, errors)]
+        # Acte I (2026-10-24) : drapeaux poses au rendu de la quete (sets_flags au
+        # niveau quete, ecrits par le serveur dans la transaction du rendu).
+        produced.update(_flag_list(owner, q, "sets_flags", errors))
     for n in npcs:
         owner = f"[npcs.json] '{n['id']}'"
         for key in ("requires_flags", "forbids_flags"):
             wanted += [(owner, f) for f in _flag_list(owner, n, key, errors)]
     for owner, flag in wanted:
         if flag not in produced:
-            errors.append(f"{owner} : drapeau '{flag}' pose par aucun choix de world/quests.json")
+            errors.append(f"{owner} : drapeau '{flag}' pose par aucun choix ni aucun rendu (sets_flags) de world/quests.json")
     return errors
 
 
