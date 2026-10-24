@@ -3450,17 +3450,17 @@
       "flags": [
         "tutorial"
       ],
-      "title_fr": "La leçon de Dargo",
-      "title_en": "Dargo's Lesson",
-      "summary_fr": "Tous les volontaires passent d'abord par l'arène de Dargo, et aujourd'hui c'est ton tour. Suis sa leçon, ou passe-la si tu sais déjà te battre.",
-      "summary_en": "Every volunteer goes through Dargo's arena first, and today it's your turn. Follow his lesson, or skip it if you already know how to fight.",
+      "title_fr": "Le départ approche",
+      "title_en": "Departure Is Near",
+      "summary_fr": "Alors, tu t'es inscrit parmi les volontaires ? Avant l'expédition, Dargo veut voir comment tu te débrouilles dans l'arène. Va le retrouver.",
+      "summary_en": "So you signed up as a volunteer? Before the expedition, Dargo wants to see how you handle yourself in the arena. Go find him.",
       "objectives": [
         {
           "template": "tutorial_combat_complete",
           "scenario_id": "arena_onboarding",
           "count": 1,
-          "description_fr": "Suivre la leçon d'arène de Dargo",
-          "description_en": "Take Dargo's arena lesson",
+          "description_fr": "Parle à Dargo et termine la leçon d'arène",
+          "description_en": "Speak to Dargo and finish the arena lesson",
           "_note": "Onboarding V2 (2026-09-23). Cible arena_onboarding = la lecon d'arene (room_arena_lesson.cpp, table character_arena_onboarding). DEMANDE BACK B4 : compter l'objectif quand la lecon est TERMINEE (status 2) OU PASSEE (status 3), via un evenement dedie publie apres finish(), et le reconcilier a l'acceptation (status IN (2,3) => complet), sinon un joueur qui finit la lecon avant l'auto-accept reste bloque."
         }
       ],
@@ -3478,8 +3478,8 @@
             "payload": {
               "title_fr": "La suite",
               "title_en": "What comes next",
-              "content_fr": "Va voir Tobin sur la place du village. Il te guidera pour la suite.",
-              "content_en": "Find Tobin in the village square. He’ll show you what comes next."
+              "content_fr": "Pas mal pour un début. Retourne voir Tobin.",
+              "content_en": "Not bad for a start. Go see Tobin."
             },
             "_note": "Deplacee le 2026-10-21 depuis q_havreden_tour_03 (on_complete, rendu chez Tobin, vue vers le niveau 19 en playtest 0.20.3, trop tard pour servir) : la fin de la lecon de combat de Dargo est le premier moment ou le joueur a besoin de la suite. Texte reecrit le 2026-10-23 (revision des modales V2 validee par Charleston) : il renvoie seulement vers Tobin ; Varn, Ezra et les Egouts ont leurs propres quetes (q_varn_egouts...). Avant : Lot 2, manque 5 : pointe vers q_varn_egouts (npc_giver Varn, min_level 9, sans prerequis, Egouts = dungeon_rat_den niveau 10-14)."
           }
@@ -3496,9 +3496,9 @@
         "tutorial"
       ],
       "title_fr": "Tes premières armes",
-      "title_en": "Your First Weapons",
-      "summary_fr": "Avant d'aller trouver Tobin sur la place, équipe ton arme, place tes premiers points de statistiques et de compétence, et monte un passif.",
-      "summary_en": "Before you go and find Tobin on the square, equip your weapon, spend your first stat and skill points, and raise a passive.",
+      "title_en": "Your First Gear",
+      "summary_fr": "On va commencer simplement : une arme, quelques points bien placés, et tu seras déjà mieux préparé.",
+      "summary_en": "Let's keep it simple: a weapon, a few well-spent points, and you'll be better prepared already.",
       "objective_mode": "parallel",
       "objectives": [
         {
@@ -3624,10 +3624,10 @@
       "summary_en": "Tobin is waiting for you on the square. He knows who's looking for hands right now, and he has something to keep you busy.",
       "npc_giver": "npc_hub_guide_tobin",
       "accepts_on_turn_in": [
-        "q_havreden_tour_01",
+        "q_havreden_preparatifs",
         "q_tut_intro_01"
       ],
-      "_accepts_on_turn_in_note": "Decision Charleston du 2026-10-21 : parler a Tobin active directement les deux quetes qu'il annonce (le tour de Havreden et la chaine d'Aldric), sans etape vide ou il faudrait revenir les prendre. Lu par services/quest : apres le rendu de cette quete, chaque id est accepte par le serveur avec les memes controles qu'une acceptation automatique (prerequis, drapeaux, adventure_only). Les textes ne changent pas.",
+      "_accepts_on_turn_in_note": "Decision Charleston du 2026-10-21 : parler a Tobin active directement les deux quetes qu'il annonce (le tour de Havreden et la chaine d'Aldric), sans etape vide ou il faudrait revenir les prendre. Lu par services/quest : apres le rendu de cette quete, chaque id est accepte par le serveur avec les memes controles qu'une acceptation automatique (prerequis, drapeaux, adventure_only). Les textes ne changent pas. Acte I V2 (2026-10-24) : le tour q_havreden_tour_01 est remplace par q_havreden_preparatifs.",
       "objectives": [
         {
           "template": "talk_to_npc",
@@ -3664,7 +3664,7 @@
       "zone": "village",
       "min_level": 1,
       "prerequisites": [
-        "q_havreden_arrivee"
+        "q_havreden_tour_01"
       ],
       "title_fr": "Se préparer",
       "title_en": "Getting Ready",
@@ -3755,7 +3755,7 @@
         "gold": 50
       },
       "chain_next": "q_havreden_tour_02",
-      "_note": "Tour de Havreden, etape 1 (onboarding V2, 2026-09-23). Des ACTIONS, plus des visites : acheter, ameliorer, recevoir une benediction. objective_mode parallel. prerequisites [q_havreden_arrivee] : q_havreden_arrivee n'enchaine plus vers cette quete, Tobin la propose a cote de la chaine d'Aldric. Repliques par PNJ : cle q_havreden_tour_01_default chez Milo, Gorik et Naya (le client ne les lit aujourd'hui que pour les quetes tutorial)."
+      "_note": "Tour de Havreden, etape 1 (onboarding V2, 2026-09-23). Des ACTIONS, plus des visites : acheter, ameliorer, recevoir une benediction. objective_mode parallel. prerequisites [q_havreden_arrivee] : q_havreden_arrivee n'enchaine plus vers cette quete, Tobin la propose a cote de la chaine d'Aldric. Repliques par PNJ : cle q_havreden_tour_01_default chez Milo, Gorik et Naya (le client ne les lit aujourd'hui que pour les quetes tutorial). Acte I V2 (2026-10-24) : ANCIEN TOUR, plus jamais propose a un nouveau personnage (remplace par q_havreden_preparatifs). Un personnage qui l'a en cours le termine tel quel ; la fin de q_havreden_tour_03 vaut q_havreden_preparatifs (completed_by). Prerequis sur ELLE-MEME (meme methode que q_tut_intro_02) : plus acceptable, les lignes en cours se terminent."
     },
     {
       "id": "q_milo_ravitaillement",
@@ -3764,16 +3764,16 @@
       "min_level": 5,
       "title_fr": "Ce qui rentre au village",
       "title_en": "What Comes Into the Village",
-      "summary_fr": "Les routes du sud sont de moins en moins sûres. Avant de partir, achète cinq potions de soin chez Milo.",
-      "summary_en": "The southern roads are becoming less safe. Before you leave, buy five healing potions from Milo.",
+      "summary_fr": "Les routes du sud sont de moins en moins sûres. Avant de partir, achète un lot de potions de soin chez Milo.",
+      "summary_en": "The southern roads are becoming less safe. Before you leave, buy a lot of healing potions from Milo.",
       "npc_giver": "npc_vendor_milo",
       "objectives": [
         {
           "template": "buy_item",
           "item_id": "cons_hp_potion_t1",
-          "count": 5,
-          "description_fr": "Acheter 5 potions de soin chez Milo",
-          "description_en": "Buy 5 healing potions from Milo"
+          "count": 10,
+          "description_fr": "Acheter 1 lot de potions de soin chez Milo",
+          "description_en": "Buy 1 lot of healing potions from Milo"
         }
       ],
       "rewards": {
@@ -3786,7 +3786,7 @@
           }
         ]
       },
-      "_note": "Bascule 2026-08-22 vers l'intention produit d'origine : acheter chez Milo. Template buy_item, filtre item_id, evenement ItemPurchased publie par economy handle_buy_item. La version chasse provisoire est retiree."
+      "_note": "Bascule 2026-08-22 vers l'intention produit d'origine : acheter chez Milo. Template buy_item, filtre item_id, evenement ItemPurchased publie par economy handle_buy_item. La version chasse provisoire est retiree. 2026-10-24 : Milo vend par lots de 10, l'objectif demande 1 lot (10 potions)."
     },
     {
       "id": "q_gorik_crocs_et_cuirs",
@@ -3822,7 +3822,8 @@
       "zone": "village",
       "min_level": 1,
       "prerequisites": [
-        "q_tut_intro_08"
+        "q_tut_intro_08",
+        "q_havreden_tour_01"
       ],
       "title_fr": "Ne pars pas seul",
       "title_en": "Don't Go Out Alone",
@@ -3917,7 +3918,7 @@
         "gold": 50
       },
       "chain_next": "q_havreden_tour_03",
-      "_note": "Tour de Havreden, etape 2 (onboarding V2, 2026-09-23). Choisir un compagnon et engager un mercenaire sont des actions. Repliques : cle q_havreden_tour_02_default chez Colette et Hestia. 2026-09-28 : visite a Verena RETIREE (retour QA de Wassem : la guilde n'a pas sa place dans l'onboarding) ; la guilde vit dans q_verena_guilde, secondaire, niveau 20. Lot 3 (2026-09-24) : choose_familiar remplace par claim_familiar_gift (colette_village) + activate_familiar, replique q_havreden_tour_02_obj_1 de Colette pour l'activation, XP 800 -> 850. 2026-09-29 : cadeau de Colette DEPLACE dans q_colette_premier_compagnon (niveau 12) ; l'objectif 0 devient claim_hatched_familiar (recuperer le familier eclos de l'empreinte de q_tut_intro_08)."
+      "_note": "Tour de Havreden, etape 2 (onboarding V2, 2026-09-23). Choisir un compagnon et engager un mercenaire sont des actions. Repliques : cle q_havreden_tour_02_default chez Colette et Hestia. 2026-09-28 : visite a Verena RETIREE (retour QA de Wassem : la guilde n'a pas sa place dans l'onboarding) ; la guilde vit dans q_verena_guilde, secondaire, niveau 20. Lot 3 (2026-09-24) : choose_familiar remplace par claim_familiar_gift (colette_village) + activate_familiar, replique q_havreden_tour_02_obj_1 de Colette pour l'activation, XP 800 -> 850. 2026-09-29 : cadeau de Colette DEPLACE dans q_colette_premier_compagnon (niveau 12) ; l'objectif 0 devient claim_hatched_familiar (recuperer le familier eclos de l'empreinte de q_tut_intro_08). Acte I V2 (2026-10-24) : ANCIEN TOUR, plus jamais propose a un nouveau personnage (remplace par q_havreden_preparatifs). Un personnage qui l'a en cours le termine tel quel ; la fin de q_havreden_tour_03 vaut q_havreden_preparatifs (completed_by)."
     },
     {
       "id": "q_colette_incubation",
@@ -4109,7 +4110,491 @@
           }
         ]
       },
-      "_note": "Tour de Havreden, etape 3 (onboarding V2, 2026-09-23). Premier contrat de Varn (lot 2 : un groupe d'au moins 1 etoile, clear_star_packs min_star 1, au lieu de 3 rats), puis Dargo et Soren. XP 1100 -> 1000 au lot 2 (budget recalcule avec l'XP de combat). Repliques : cle q_havreden_tour_03_default chez Varn, Dargo et Soren."
+      "_note": "Tour de Havreden, etape 3 (onboarding V2, 2026-09-23). Premier contrat de Varn (lot 2 : un groupe d'au moins 1 etoile, clear_star_packs min_star 1, au lieu de 3 rats), puis Dargo et Soren. XP 1100 -> 1000 au lot 2 (budget recalcule avec l'XP de combat). Repliques : cle q_havreden_tour_03_default chez Varn, Dargo et Soren. Acte I V2 (2026-10-24) : ANCIEN TOUR, plus jamais propose a un nouveau personnage (remplace par q_havreden_preparatifs). Un personnage qui l'a en cours le termine tel quel ; la fin de q_havreden_tour_03 vaut q_havreden_preparatifs (completed_by).",
+      "prerequisites": [
+        "q_havreden_tour_02"
+      ]
+    },
+    {
+      "id": "q_havreden_preparatifs",
+      "type": "main",
+      "zone": "village",
+      "min_level": 1,
+      "prerequisites": [
+        "q_havreden_arrivee"
+      ],
+      "forbids_quests": [
+        "q_havreden_tour_01",
+        "q_havreden_tour_02",
+        "q_havreden_tour_03"
+      ],
+      "completed_by": [
+        "q_havreden_tour_03"
+      ],
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "Préparatifs pour l'expédition",
+      "title_en": "Preparing for the Expedition",
+      "summary_fr": "Tobin veut s'assurer que tu connais les personnes qui pourront t'aider en aventure. Termine par un premier contrat de chasse.",
+      "summary_en": "Tobin wants you to meet the people who can help you on your adventures. Finish with your first hunting contract.",
+      "dialogue_give_fr": "Tu connais Havreden, mais partir en expédition, c'est autre chose. Passe voir Milo pour les provisions, Colette pour ton familier, Hestia pour les mercenaires et Varn pour les contrats. Ensuite, tu feras ta première chasse.",
+      "dialogue_give_en": "You know Havreden, but an expedition is another matter. See Milo for supplies, Colette for your familiar, Hestia for mercenaries, and Varn for contracts. Then you'll take on your first hunt.",
+      "dialogue_complete_fr": "Tu sais où trouver de l'aide et comment gagner de l'expérience entre deux aventures. Va voir le capitaine Rey, il a besoin d'un coup de main.",
+      "dialogue_complete_en": "You know where to find help and how to earn experience between adventures. Go see Captain Rey. He could use a hand.",
+      "npc_giver": "npc_hub_guide_tobin",
+      "objective_mode": "sequential",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_vendor_milo",
+          "count": 1,
+          "description_fr": "Va voir Milo, le marchand.",
+          "description_en": "Speak to Milo, the merchant.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_preparatifs_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_vendor_milo",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Milo",
+                  "label_en": "Go see Milo"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_familiar_breeder_colette",
+          "count": 1,
+          "description_fr": "Passe voir Colette pour les familiers.",
+          "description_en": "Visit Colette for familiars.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_preparatifs_obj1_arrow",
+                "type": "arrow",
+                "target": "npc_familiar_breeder_colette",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Colette",
+                  "label_en": "Go see Colette"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_dungeon_keeper_hestia",
+          "count": 1,
+          "description_fr": "Rencontre Hestia, la recruteuse de mercenaires.",
+          "description_en": "Meet Hestia, the mercenary recruiter.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_preparatifs_obj2_arrow",
+                "type": "arrow",
+                "target": "npc_dungeon_keeper_hestia",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Hestia",
+                  "label_en": "Go see Hestia"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_bounty_hunter_varn",
+          "count": 1,
+          "description_fr": "Parle à Varn.",
+          "description_en": "Speak to Varn.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_preparatifs_obj3_arrow",
+                "type": "arrow",
+                "target": "npc_bounty_hunter_varn",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Varn",
+                  "label_en": "Go see Varn"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "open_quest_board",
+          "board": "havreden_contracts",
+          "count": 1,
+          "description_fr": "Ouvre le tableau des contrats.",
+          "description_en": "Open the contract board.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_preparatifs_obj4_arrow",
+                "type": "arrow",
+                "target": "quest_board_havreden_contracts",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Le tableau des contrats",
+                  "label_en": "The contract board"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "accept_quest",
+          "quest_id": "q_contract_tutorial_first_hunt",
+          "count": 1,
+          "description_fr": "Accepte « Première chasse ».",
+          "description_en": "Accept “First Hunt”.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_preparatifs_obj5_arrow",
+                "type": "arrow",
+                "target": "quest_board_havreden_contracts",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Accepte « Première chasse »",
+                  "label_en": "Accept “First Hunt”"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "quest_objective",
+          "quest_id": "q_contract_tutorial_first_hunt",
+          "objective": 0,
+          "count": 5,
+          "description_fr": "Vaincs 5 monstres désignés.",
+          "description_en": "Defeat 5 designated creatures.",
+          "_note": "Miroir serveur de l'objectif 0 de Première chasse : le compteur 0/5 vient du contrat."
+        },
+        {
+          "template": "complete_quest",
+          "quest_id": "q_contract_tutorial_first_hunt",
+          "count": 1,
+          "description_fr": "Récupère la récompense au tableau.",
+          "description_en": "Claim the reward at the board.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_preparatifs_obj7_arrow",
+                "type": "arrow",
+                "target": "quest_board_havreden_contracts",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Récupère ta récompense",
+                  "label_en": "Claim your reward"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_hub_guide_tobin",
+          "count": 1,
+          "description_fr": "Retourne voir Tobin.",
+          "description_en": "Return to Tobin.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_preparatifs_obj8_arrow",
+                "type": "arrow",
+                "target": "npc_hub_guide_tobin",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Retourne voir Tobin",
+                  "label_en": "Return to Tobin"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "rewards": {
+        "xp": 2424,
+        "gold": 150,
+        "items": [
+          {
+            "id": "even_cherev_rank_1",
+            "qty": 5
+          }
+        ]
+      },
+      "_a_valider": "Recompense = ancien tour complet (tour_01 700 + tour_02 850 + tour_03 1000 = 2550 XP, 180 or, 5 Pierres de Lame) moins Premiere chasse (126 XP, 30 or), pour garder le meme rythme de niveau vers les Egouts.",
+      "_note": "Acte I Havreden V2 (2026-10-24), etape 05. Remplace le tour de Tobin (q_havreden_tour_01/02/03) pour les NOUVEAUX personnages : q_havreden_arrivee l'accepte au rendu. forbids_quests : jamais pour un personnage qui a commence l'ancien tour (il le finit tel quel). completed_by q_havreden_tour_03 : un personnage qui a fini l'ancien tour la compte comme faite, sans recompense, et passe a la suite (Rey). Gorik sort du tour (decouverte facultative). Drapeau tutorial : la replique de Tobin a l'etape 8 est sa conclusion, le rendu est automatique apres ce dialogue."
+    },
+    {
+      "id": "q_contract_tutorial_first_hunt",
+      "type": "side",
+      "zone": "village",
+      "min_level": 1,
+      "quest_board": "havreden_contracts",
+      "tutorial_contract": true,
+      "accept_only_via_objective": true,
+      "title_fr": "Première chasse",
+      "title_en": "First Hunt",
+      "summary_fr": "Varn t'a confié ton premier contrat. Chasse cinq créatures désignées près de Havreden, puis retourne au tableau pour récupérer ta récompense.",
+      "summary_en": "Varn has given you your first contract. Hunt five designated creatures near Havreden, then return to the board to claim your reward.",
+      "toast_accept_fr": "Contrat accepté. Cinq bêtes, puis retour au tableau.",
+      "toast_accept_en": "Contract accepted. Five creatures, then back to the board.",
+      "toast_ready_fr": "Contrat rempli ! Retourne au tableau pour ta récompense.",
+      "toast_ready_en": "Contract complete! Return to the board for your reward.",
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "mobs": [
+            "mob_rat",
+            "mob_rat_jeune",
+            "mob_rat_alpha"
+          ],
+          "count": 5,
+          "description_fr": "Vaincre 5 créatures désignées",
+          "description_en": "Defeat 5 designated creatures",
+          "spawn_area": "mz_abords_d_havreden_1_8",
+          "_note": "Rats des Abords d'Havreden (mz_abords_d_havreden_1_8, niveau 1-8, juste au sud de la place). Seuls ces monstres comptent. Credit serveur (combat room_ended)."
+        }
+      ],
+      "rewards": {
+        "xp": 126,
+        "gold": 30
+      },
+      "_a_valider": "La moitie de q_contract_chasse_c_1 (10 creatures, 252 XP, 60 or) pour 5 creatures. XP fixe (pas de contract_band, pas de recalage).",
+      "_note": "Acte I (2026-10-24). Contrat tutoriel : une fois par personnage (non repetable), hors plafond de contrats actifs et hors coffres (tutorial_contract), offert au tableau seulement pendant l'etape « Accepte Premiere chasse » des preparatifs (accept_only_via_objective). Abandon : reprenable tant que l'etape est ouverte."
+    },
+    {
+      "id": "q_rey_lisiere",
+      "type": "main",
+      "zone": "village",
+      "min_level": 1,
+      "prerequisites": [
+        "q_havreden_preparatifs"
+      ],
+      "completed_by": [
+        "q_main_ezra_retrouvailles"
+      ],
+      "title_fr": "La lisière agitée",
+      "title_en": "Trouble at the Edge",
+      "summary_fr": "Repousse les créatures près des habitations, puis parle à Rey.",
+      "summary_en": "Drive back the creatures near the homes, then speak to Rey.",
+      "dialogue_give_fr": "Ça fait des années que je veille sur les environs de Havreden. D'ordinaire, les loups restent dans les bois et les sangliers évitent les fermes. Depuis quelques jours, certaines bêtes s'approchent des maisons, parfois sans même chercher de nourriture. Des gardes ont entendu des histoires semblables plus au sud. Je ne sais pas si c'est lié, mais je veux vérifier avant que les rumeurs courent. Fais une ronde près de la lisière.",
+      "dialogue_give_en": "I've watched over the outskirts of Havreden for years. Wolves usually stay in the woods, and boars keep away from the farms. But lately, some animals have been coming right up to the houses, sometimes without even looking for food. The guards have heard similar stories farther south. I don't know if they're connected, but I want to check before rumors spread. Patrol the edge of the woods.",
+      "dialogue_complete_fr": "Bien. Personne n'a été blessé, c'est l'essentiel. Je vais garder un œil sur la lisière. Si tu remarques d'autres comportements étranges, préviens-moi avant que tout le village s'inquiète.",
+      "dialogue_complete_en": "Good. No one was hurt, and that's what matters. I'll keep an eye on the woods. If you notice anything else strange, tell me before the whole village starts worrying.",
+      "npc_giver": "npc_quest_captain_rey",
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "mobs": [
+            "mob_boar",
+            "mob_enraged_boar"
+          ],
+          "count": 6,
+          "description_fr": "Repousse les créatures près des habitations",
+          "description_en": "Drive back the creatures near the homes",
+          "spawn_area": "mz_fourres_des_sangliers_8_15",
+          "_note": "Fourres des Sangliers (mz_fourres_des_sangliers_8_15, coin nord-ouest, contre la lisiere et le bord du village). Pas de loups de bas niveau pres des maisons dans la carte actuelle : sangliers seuls."
+        }
+      ],
+      "chain_next": "q_rey_traces",
+      "rewards": {
+        "xp": 850,
+        "gold": 60
+      },
+      "_a_valider": "Nombre de creatures (6, comme q_gorik_crocs_et_cuirs) et recompense (moyenne des etapes de l'ancien tour : 850 XP, 60 or). Zone de niveau 8-15 : le personnage arrive vers le niveau 10-12 apres les preparatifs.",
+      "_note": "Acte I (2026-10-24), etape 06. Remplace q_side_foret (zone_02 supprimee, laissee telle quelle et parquee de fait par sa zone). completed_by q_main_ezra_retrouvailles : un ancien personnage deja passe chez Ezra ne la recoit pas."
+    },
+    {
+      "id": "q_rey_traces",
+      "type": "main",
+      "zone": "village",
+      "min_level": 1,
+      "prerequisites": [
+        "q_rey_lisiere"
+      ],
+      "completed_by": [
+        "q_main_ezra_retrouvailles"
+      ],
+      "title_fr": "Des traces inhabituelles",
+      "title_en": "Unusual Traces",
+      "summary_fr": "Rapporte à Ezra les indices trouvés près du village.",
+      "summary_en": "Bring the evidence found near the village to Ezra.",
+      "dialogue_give_fr": "J'ai déjà vu des bêtes affolées, mais jamais de cette façon. Et avec ces histoires qui remontent du sud… Montre tes trouvailles à Ezra. Il passe ses journées dans les archives ; pour une fois, ça nous sera peut-être utile.",
+      "dialogue_give_en": "I've seen frightened animals before, but never like this. And with those stories coming from the south… Show your findings to Ezra. He spends his days buried in old records; maybe they'll finally come in handy.",
+      "dialogue_complete_fr": "J'ai lu des témoignages semblables dans de vieux récits venus du sud. Les pages manquent, les dates ne concordent pas… mais les rats des Égouts ont commencé à fuir leurs galeries. Ça mérite qu'on y regarde.",
+      "dialogue_complete_en": "I've read similar accounts in old records from the south. Pages are missing, the dates don't line up… but the rats in the sewers have started fleeing their tunnels. That's worth looking into.",
+      "npc_giver": "npc_quest_captain_rey",
+      "turn_in_npc": "npc_rift_scholar_ezra",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_rift_scholar_ezra",
+          "count": 1,
+          "description_fr": "Rapporte à Ezra les indices trouvés près du village",
+          "description_en": "Bring the evidence found near the village to Ezra",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_rey_traces_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_rift_scholar_ezra",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Ezra",
+                  "label_en": "Go see Ezra"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "chain_next": "q_main_ezra_retrouvailles",
+      "rewards": {
+        "xp": 850,
+        "gold": 60
+      },
+      "_a_valider": "Recompense : moyenne des etapes de l'ancien tour (850 XP, 60 or).",
+      "_note": "Acte I (2026-10-24), etape 07. Donnee par Rey, rendue a Ezra (turn_in_npc, lu par le client ; le serveur ne verifie aucun PNJ au rendu). Remplace q_main_zone01 (zone_01 supprimee). completed_by q_main_ezra_retrouvailles : ancien personnage deja passe chez Ezra."
+    },
+    {
+      "id": "q_main_ezra_blessure",
+      "type": "main",
+      "zone": "village",
+      "min_level": 1,
+      "prerequisites": [
+        "q_main_ezra_egouts"
+      ],
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "Une blessure sous la pierre",
+      "title_en": "A Wound Beneath the Stone",
+      "summary_fr": "Tu as découvert des rats humanoïdes et une étrange trace de Fissure au fond des Égouts. Ezra veut examiner le fragment que tu as rapporté.",
+      "summary_en": "You discovered humanoid rats and a strange Rift scar deep in the sewers. Ezra wants to examine the fragment you brought back.",
+      "dialogue_complete_fr": "Ezra a reconnu des ressemblances avec les anciens récits sur les Fissures. Cette découverte semble l'obséder. Il veut retrouver les archives du sud.",
+      "dialogue_complete_en": "Ezra recognized similarities to old accounts of the Rifts. The discovery seems to have taken hold of him. He wants to find the southern archives.",
+      "objectives": [
+        {
+          "template": "watch_cinematic",
+          "cinematic_id": "cin_ezra_fissure_egouts",
+          "count": 1,
+          "description_fr": "Remets le fragment à Ezra et assiste à la découverte.",
+          "description_en": "Give the fragment to Ezra and witness his discovery.",
+          "_note": "Credite par le client a la fin de la cinematique OU sur « Passer » (QUEST_PROGRESS watch_cinematic). Une deconnexion pendant la scene laisse l'etape ouverte : elle est rejouee a la reconnexion."
+        }
+      ],
+      "rewards": {},
+      "_note": "Acte I (2026-10-24), etape 10. Acceptee par le serveur au rendu de q_main_ezra_egouts (accepts_on_turn_in) : jamais par la ronde de Varn. Drapeau tutorial : rendu automatique cote client des que l'etape est validee. Aucune recompense (celle d'Ezra est versee au rendu de q_main_ezra_egouts) : rien a doubler. L'acte II (q_rey_nouvelles) attend sa fin (blocked_while_active)."
+    },
+    {
+      "id": "q_rey_nouvelles",
+      "type": "main",
+      "zone": "village",
+      "min_level": 1,
+      "prerequisites": [
+        "q_main_ezra_egouts"
+      ],
+      "blocked_while_active": [
+        "q_main_ezra_blessure"
+      ],
+      "title_fr": "Des nouvelles de la route",
+      "title_en": "News from the Road",
+      "summary_fr": "Interroge Nessa, puis retourne voir Rey.",
+      "summary_en": "Speak to Nessa, then return to Rey.",
+      "dialogue_give_fr": "Entre le fournisseur de Milo qui ne revient pas et les voyageurs qui font demi-tour, j'aimerais des faits plutôt que des rumeurs. Nessa est rentrée de la route du sud. Va lui demander ce qu'elle a vu.",
+      "dialogue_give_en": "Between Milo's missing supplier and travelers turning back, I'd rather have facts than rumors. Nessa just returned from the southern road. Ask her what she saw.",
+      "dialogue_complete_fr": "Merci. Je vais prévenir les gardes. Sois prudent si tu prends cette route.",
+      "dialogue_complete_en": "Thanks. I'll warn the guards. Be careful if you take that road.",
+      "npc_giver": "npc_quest_captain_rey",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_villager_05",
+          "count": 1,
+          "description_fr": "Interroge Nessa.",
+          "description_en": "Speak to Nessa.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_rey_nouvelles_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_villager_05",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Nessa",
+                  "label_en": "Go see Nessa"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "chain_next": "q_tobin_au_dela",
+      "rewards": {
+        "xp": 850,
+        "gold": 60
+      },
+      "_a_valider": "Recompense : moyenne des etapes de l'ancien tour (850 XP, 60 or).",
+      "_note": "Acte I (2026-10-24), etape 11. Ouverte apres la cinematique d'Ezra (prerequis q_main_ezra_egouts + blocked_while_active q_main_ezra_blessure) : un ancien personnage qui a fini les Egouts avant cette version la recoit sans la nouvelle scene."
+    },
+    {
+      "id": "q_tobin_au_dela",
+      "type": "main",
+      "zone": "village",
+      "min_level": 1,
+      "prerequisites": [
+        "q_rey_nouvelles"
+      ],
+      "title_fr": "Au-delà de Havreden",
+      "title_en": "Beyond Havreden",
+      "summary_fr": "Rejoins la route de Rochebourg.",
+      "summary_en": "Reach the road to Rochebourg.",
+      "dialogue_give_fr": "Tu as grandi ici, alors tu sais que Havreden n'a jamais manqué de voyageurs. Quand j'étais plus jeune, on recevait des nouvelles de Rochebourg presque chaque semaine. Maintenant, même Milo attend ses livraisons. Tu es prêt pour l'expédition : ouvre l'œil sur la route et reviens nous raconter ce que tu découvriras.",
+      "dialogue_give_en": "You grew up here, so you know Havreden has always had travelers passing through. When I was younger, we heard news from Rochebourg almost every week. Now even Milo is waiting on his deliveries. You're ready for the expedition: keep your eyes open on the road, and come back to tell us what you find.",
+      "dialogue_complete_fr": "Fais attention à toi. Et ne tarde pas trop à nous donner des nouvelles.",
+      "dialogue_complete_en": "Take care of yourself. And don't leave us waiting too long for news.",
+      "npc_giver": "npc_hub_guide_tobin",
+      "flags": [
+        "tutorial"
+      ],
+      "objectives": [
+        {
+          "template": "reach_area",
+          "area_id": "havreden_route_rochebourg",
+          "count": 1,
+          "description_fr": "Rejoins la route de Rochebourg.",
+          "description_en": "Reach the road to Rochebourg.",
+          "_note": "Zone de quete world/zones.json village.quest_areas : le serveur verifie la position presence."
+        }
+      ],
+      "rewards": {
+        "xp": 850,
+        "gold": 60
+      },
+      "_a_valider": "Recompense (850 XP, 60 or) et rectangle de la sortie sud (world/zones.json quest_areas havreden_route_rochebourg).",
+      "_note": "Acte I (2026-10-24), etape 12, transition vers l'acte II (route Havreden - Rochebourg). Drapeau tutorial : rendu automatique quand la zone est atteinte, la conclusion de Tobin s'affiche alors."
     },
     {
       "id": "q_varn_egouts",
@@ -4118,8 +4603,8 @@
       "min_level": 9,
       "title_fr": "La ronde des égouts",
       "title_en": "The Sewer Round",
-      "summary_fr": "Les rats remontent par les grilles et les gens se plaignent. Varn veut que quelqu'un fasse une ronde dans les égouts : nettoyer ce qui traîne et aller jusqu'au bout des galeries.",
-      "summary_en": "The rats are climbing up through the grates and people are complaining. Varn wants someone to do a round of the sewers: clear out whatever is lurking and go to the end of the tunnels.",
+      "summary_fr": "Les rats remontent jusque dans le village. Varn cherche quelqu'un pour nettoyer les galeries et terminer une ronde complète des Égouts.",
+      "summary_en": "Rats are making their way up into the village. Varn needs someone to clear the tunnels and complete a full sweep of the sewers.",
       "npc_giver": "npc_bounty_hunter_varn",
       "objectives": [
         {
@@ -4152,53 +4637,59 @@
           "_note": "Meme condition cachee que la quete d'Ezra (boss du dernier etage). Varn ne connait pas le danger."
         }
       ],
-      "dialogue_give_fr": "Les rats remontent par les grilles, les gens gueulent. Personne veut descendre, alors c'est pour toi.\nUne ronde, rien de plus. Tu descends, tu nettoies ce qui traîne, tu vas jusqu'au bout des galeries et tu remontes. Bon exercice pour te faire la main.",
-      "dialogue_give_en": "The rats are coming up through the grates, people are kicking up a fuss. Nobody wants to go down, so it's on you.\nA round, nothing more. You go down, clear out whatever's lurking, go to the end of the tunnels and come back up. Good practice to get your hand in.",
-      "dialogue_complete_fr": "Un rat de cette taille ? … Bon. Je vais revoir mes tarifs pour les égouts.",
-      "dialogue_complete_en": "A rat that size? … Right. I'll be revising my rates for the sewers.",
+      "dialogue_give_fr": "Les rats remontent par les grilles et les habitants râlent. Fais une ronde complète là-dessous, débarrasse-nous de ces bêtes et je te paierai pour le travail.",
+      "dialogue_give_en": "Rats are crawling up through the grates and the locals are complaining. Make a full sweep down there, clear them out, and I'll pay you for the job.",
+      "dialogue_complete_fr": "Vingt rats de moins et des égouts un peu plus sûrs. Beau travail. Tiens, voilà ce qu'on te doit.",
+      "dialogue_complete_en": "Twenty fewer rats and slightly safer sewers. Good work. Here's what you're owed.",
       "rewards": {
         "xp": 2500,
         "gold": 200
       },
-      "_note": "Acte 1 refait (2026-09-29) : secondaire. Varn croit a une affaire de nuisibles, il ignore le danger. Le meme passage valide q_main_ezra_egouts."
+      "_note": "Acte 1 refait (2026-09-29) : secondaire. Varn croit a une affaire de nuisibles, il ignore le danger. Le meme passage valide q_main_ezra_egouts. Acte I V2 (2026-10-24) : proposee seulement quand l'enquete d'Ezra sur les Egouts s'ouvre (prerequis q_rey_traces, completed_by pour les anciens personnages), jamais pendant les preparatifs. Pas de cinematique.",
+      "prerequisites": [
+        "q_rey_traces"
+      ]
     },
     {
       "id": "q_main_ezra_retrouvailles",
       "type": "main",
       "zone": "village",
       "min_level": 1,
-      "title_fr": "Retrouvailles",
-      "title_en": "Reunion",
-      "summary_fr": "Ezra, ton ami d'enfance, cartographie les Fissures dans sa maison du village. Passe le voir.",
-      "summary_en": "Ezra, your childhood friend, maps the Rifts from his house in the village. Go and see him.",
+      "title_fr": "Ce qui fait peur aux rats",
+      "title_en": "What Frightens the Rats",
+      "summary_fr": "Prépare-toi pour les Égouts et parle à Ezra.",
+      "summary_en": "Prepare for the sewers and speak to Ezra.",
       "npc_giver": "npc_rift_scholar_ezra",
       "objectives": [
         {
           "template": "talk_to_npc",
           "npc_id": "npc_rift_scholar_ezra",
-          "description_fr": "Parler à Ezra",
-          "description_en": "Talk to Ezra"
+          "description_fr": "Prépare-toi pour les Égouts et parle à Ezra",
+          "description_en": "Prepare for the sewers and speak to Ezra"
         }
       ],
-      "dialogue_give_fr": "Te voilà enfin. Dargo t'a gardé toute la matinée dans son arène, j'imagine.\nViens voir. Chaque point sur cette carte, c'est une Fissure. Il y a deux ans, il y en avait trois. Aujourd'hui, j'arrête de compter.\nAu village, tout le monde fait comme si ça se passait loin. Ça ne se passe pas loin.\nMon père disait que la terre a des veines. Tout le monde riait. Moi, je continue ses cartes.",
-      "dialogue_give_en": "There you are. Dargo kept you in his arena all morning, I suppose.\nCome and look. Every dot on this map is a Rift. Two years ago there were three. Now I've stopped counting.\nIn the village, everyone acts like it's happening far away. It isn't far away.\nMy father used to say the earth has veins. Everyone laughed. Me, I'm carrying on his maps.",
-      "dialogue_complete_fr": "Bref. T'as des choses à faire, ça se voit. Va. Mais repasse quand tu te sens d'attaque, j'aurai peut-être besoin de toi. Et reviens me voir quand tu tiendras debout plus de deux combats d'affilée.",
-      "dialogue_complete_en": "Anyway. You've got things to do, I can tell. Go. But drop by when you feel up to it, I might need you. And come back once you can stay on your feet for more than two fights in a row.",
+      "dialogue_give_fr": "Dans les vieux témoignages du sud, on parle de bêtes qui quittent leur territoire sans raison apparente. Et maintenant les rats fuient leurs propres galeries, juste sous nos pieds ! Je veux savoir ce qui les effraie autant.",
+      "dialogue_give_en": "Old accounts from the south describe animals abandoning their territory for no clear reason. And now rats are fleeing their own tunnels, right beneath our feet! I want to know what scares them that badly.",
+      "dialogue_complete_fr": "Reviens me voir après ta descente. Même le plus petit détail peut compter.",
+      "dialogue_complete_en": "Come back after you've been down there. Even the smallest detail might matter.",
       "rewards": {
         "xp": 100
       },
       "chain_next": "q_main_ezra_egouts",
-      "_note": "Acte 1 refait (kanarion_lore/acte1_ezra_egouts.md, 2026-09-29). Premiere quete principale, prenable des l'arrivee, ne bloque ni Aldric ni le tour. Quetes du village : Ezra peut parler de son pere."
+      "_note": "Acte I V2 (2026-10-24), etape 08. Id conserve (lignes en base). prerequisites [q_rey_traces] : un nouveau personnage y arrive par Rey ; un ancien qui l'a deja faite ou en cours n'est pas touche (q_rey_lisiere / q_rey_traces completed_by cette quete). Une seule etape (parler a Ezra) : la preparation (Hestia, familier) est conseillee, jamais exigee.",
+      "prerequisites": [
+        "q_rey_traces"
+      ]
     },
     {
       "id": "q_main_ezra_egouts",
       "type": "main",
       "zone": "village",
       "min_level": 10,
-      "title_fr": "Ce qui fait peur aux rats",
-      "title_en": "What Frightens the Rats",
-      "summary_fr": "Les rats des Égouts de Havreden ont changé, et Ezra veut savoir ce qui les pousse. Descends quand tu te sens prêt, les rats d'en bas sont dangereux. Si tu trouves quoi que ce soit sur les Fissures, rapporte-le-lui.",
-      "summary_en": "The rats of the Havreden Sewers have changed, and Ezra wants to know what is driving them. Go down when you feel ready, the rats below are dangerous. If you find anything about the Rifts, bring it back to him.",
+      "title_fr": "Sous Havreden",
+      "title_en": "Beneath Havreden",
+      "summary_fr": "Ezra t'a demandé de découvrir pourquoi les rats fuient les Égouts. Au dernier étage, des rats humanoïdes protègent une étrange trace de Fissure. Rapporte-en un fragment à Ezra.",
+      "summary_en": "Ezra asked you to find out why rats are fleeing the sewers. On the final floor, humanoid rats guard a strange Rift scar. Bring a fragment of it back to Ezra.",
       "npc_giver": "npc_rift_scholar_ezra",
       "objective_mode": "sequential",
       "objectives": [
@@ -4206,28 +4697,70 @@
           "template": "complete_dungeon",
           "dungeon_id": "dungeon_rat_den",
           "count": 1,
-          "description_fr": "Descendre dans les égouts et trouver ce qui effraie les rats",
-          "description_en": "Go down into the sewers and find what frightens the rats",
-          "_note": "Valide par le service donjon a la mort du boss du dernier etage (le Rongeur), pour toute l'equipe gagnante. Pas d'objectif enter_zone avant : un joueur qui accepte en cours de run ne repasse pas par l'etage 1 et resterait bloque (2026-09-29). Ezra ne connait pas le Rongeur : le texte ne le nomme jamais."
+          "description_fr": "Termine les Égouts en mode Histoire",
+          "description_en": "Complete the Sewers in Story mode",
+          "_note": "Valide par le service donjon a la mort du boss du dernier etage (le Rongeur), pour toute l'equipe gagnante. Pas d'objectif enter_zone avant : un joueur qui accepte en cours de run ne repasse pas par l'etage 1 et resterait bloque (2026-09-29). Ezra ne connait pas le Rongeur : le texte ne le nomme jamais.",
+          "difficulty": "fissure_1",
+          "_note_acte1": "2026-10-24 : difficulty fissure_1 = le mode Histoire (seul palier des Egouts, world/dungeons.json story_mode). Credite seulement par une fin de donjon serveur dans ce mode (DungeonCompleted champ 3)."
         },
         {
           "template": "talk_to_npc",
           "npc_id": "npc_rat_den_fissure",
-          "description_fr": "Prélever un échantillon de ce qui se trouve au fond",
-          "description_en": "Take a sample of what lies at the bottom",
+          "description_fr": "Découvre les rats humanoïdes et la trace de Fissure au dernier étage, et récupère un fragment",
+          "description_en": "Discover the humanoid rats and the Rift scar on the final floor, and collect a fragment",
           "_note": "La Fissure de la salle d'apres le boss. Mode sequential : le serveur refuse ce pas tant que le donjon n'est pas termine."
+        },
+        {
+          "template": "deliver_item",
+          "npc_id": "npc_rift_scholar_ezra",
+          "item_id": "quest_eclat_trace_egouts",
+          "count": 1,
+          "description_fr": "Rapporte le fragment à Ezra.",
+          "description_en": "Bring the fragment to Ezra.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_main_ezra_egouts_obj2_arrow",
+                "type": "arrow",
+                "target": "npc_rift_scholar_ezra",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Rapporte le fragment à Ezra",
+                  "label_en": "Bring the fragment to Ezra"
+                }
+              }
+            ]
+          },
+          "_note": "Acte I V2 (2026-10-24). Le fragment est donne une seule fois a la fin de l'objectif 1 (objective_items, cle d'idempotence economie). Un personnage qui avait deja cette quete en cours garde ses deux lignes : il la rend sans cette etape (pas de blocage)."
         }
       ],
-      "dialogue_give_fr": "Les égoutiers ne descendent plus. Les rats ont grossi et ne fuient plus. Tu sais depuis qu'on a dix ans ce que je pense de ces bestioles... Mais elles ne changent pas sans raison. Si tu descends, cherche ce qui les effraie. Et ne prends pas de risques pour me rapporter une simple preuve.",
-      "dialogue_give_en": "The sewer workers won't go down anymore. The rats have grown bigger, and they no longer flee. You've known how I feel about those creatures since we were ten... But something must be driving them. If you go down, find out what frightens them. And don't risk your life just to bring me proof.",
-      "dialogue_complete_fr": "Violet ? T'es sûr ? … Montre.\nC'est tiède. Comment ça peut être tiède ?\nEmmène-moi. Maintenant.",
-      "dialogue_complete_en": "Violet? You're sure? … Show me.\nIt's warm. How can it be warm?\nTake me there. Now.",
-      "completion_cinematic": "cin_ezra_fissure_egouts",
+      "dialogue_give_fr": "Les rats ne quittent pas leurs galeries sans raison. Descends jusqu'au fond et ouvre l'œil. S'il y a quelque chose d'anormal, j'ai besoin de le voir.",
+      "dialogue_give_en": "Rats don't abandon their tunnels for no reason. Go all the way down and keep your eyes open. If there's something unusual, I need to see it.",
+      "dialogue_complete_fr": "Qu'est-ce que… Tu as trouvé ça sous Havreden ? Et tu dis que les rats là-dessous se tiennent debout comme des hommes ? Montre-moi l'endroit. Maintenant.",
+      "dialogue_complete_en": "What is… You found this beneath Havreden? And you're telling me the rats down there stand like people? Show me where. Now.",
       "rewards": {
         "xp": 4000,
         "gold": 300
       },
-      "_note": "Acte 1 refait (kanarion_lore/acte1_ezra_egouts.md). Au rendu, cinematique : Ezra marche jusqu'a la Fissure (debut de son obsession). Un seul passage valide aussi la ronde de Varn."
+      "_note": "Acte I V2 (2026-10-24), etapes 09-10. Donjon des Egouts obligatoire en mode Histoire (objectif 0, verifie serveur), trace de Fissure au dernier etage (npc_rat_den_fissure, salle d'apres le Rongeur) qui donne le fragment, remise du fragment a Ezra (deliver_item, atomique). Au rendu, le serveur accepte q_main_ezra_blessure : la cinematique d'Ezra (une seule fois, validee serveur). La ronde de Varn n'a pas de cinematique.",
+      "prerequisites": [
+        "q_main_ezra_retrouvailles"
+      ],
+      "objective_items": [
+        {
+          "objective": 1,
+          "items": [
+            {
+              "id": "quest_eclat_trace_egouts",
+              "qty": 1
+            }
+          ]
+        }
+      ],
+      "accepts_on_turn_in": [
+        "q_main_ezra_blessure"
+      ]
     },
     {
       "id": "q_dargo_arene",
@@ -4677,8 +5210,8 @@
       ],
       "title_fr": "Le rat libéré",
       "title_en": "The Freed Rat",
-      "summary_fr": "Va voir Colette. Elle saura quoi faire du rat que tu as sauvé.",
-      "summary_en": "Go see Colette. She'll know what to do with the rat you saved.",
+      "summary_fr": "Ce rat a laissé quelque chose d'étrange. Colette saura peut-être ce que c'est.",
+      "summary_en": "That rat left something strange behind. Colette might know what it is.",
       "npc_giver": "npc_tutorial_familiar_colette",
       "objective_mode": "sequential",
       "objectives": [
@@ -4748,9 +5281,9 @@
         "tutorial"
       ],
       "title_fr": "Combattre à deux",
-      "title_en": "Fighting as a Pair",
-      "summary_fr": "Aldric veut voir ton familier se battre. Affronte deux rats du terrier avec lui, puis retourne voir Aldric.",
-      "summary_en": "Aldric wants to see your familiar fight. Take on two warren rats with it, then return to Aldric.",
+      "title_en": "Fighting Together",
+      "summary_fr": "Un familier n'est pas une arme qu'on range dans un sac. Apprends à le connaître.",
+      "summary_en": "A familiar isn't a weapon you put away in a bag. Get to know it.",
       "npc_giver": "npc_tutorial_instructor_aldric",
       "objective_mode": "sequential",
       "objectives": [
@@ -5258,9 +5791,10 @@
             "payload": {
               "title_fr": "La suite",
               "title_en": "What comes next",
-              "content_fr": "Ta formation est terminée.\n\nSi Tobin ne t'a pas encore fait faire le tour du village, c'est lui qu'il faut aller voir : il sait qui cherche des bras en ce moment.\n\nVarn affiche des contrats sur son panneau, à reprendre autant de fois que tu veux. Au niveau 9, il cherchera quelqu'un pour une ronde dans les Égouts de Havreden. Et passe voir Ezra, ton ami d'enfance : il a entendu parler de ces égouts, lui aussi. Le donjon se fait entre les niveaux 10 et 14, mieux vaut ne pas y descendre seul.\n\nEt Aldric reste dans l'arrière-salle de la taverne, si tu veux lui raconter ce que tu trouves dehors.",
-              "content_en": "Your training is over.\n\nIf Tobin hasn't shown you around the village yet, he's the one to see: he knows who's looking for hands right now.\n\nVarn posts contracts on his board, to take on as many times as you like. At level 9, he'll be looking for someone to do a round of the Havreden Sewers. And go and see Ezra, your childhood friend: he's heard about those sewers too. The dungeon is for levels 10 to 14, and you'd better not go down alone.\n\nAnd Aldric stays in the tavern's back room, if you want to tell him what you find out there."
-            }
+              "content_fr": "Ta formation est terminée.\n\nTobin t'attend sur la place : il veut s'assurer que tu connais les gens qui pourront t'aider avant l'expédition.\n\nEt Aldric reste dans l'arrière-salle de la taverne, si tu veux lui raconter ce que tu trouves dehors.",
+              "content_en": "Your training is over.\n\nTobin is waiting for you on the square: he wants to make sure you know the people who can help you before the expedition.\n\nAnd Aldric stays in the tavern's back room, if you want to tell him what you find out there."
+            },
+            "_a_valider": "Acte I V2 (2026-10-24) : texte raccourci, Varn ne parle plus des Egouts pendant les preparatifs. Pas de texte dans le dossier pour cette modale."
           }
         ]
       },
