@@ -33,6 +33,11 @@ Trois regles en decoulent, et elles sont le coeur de ce fichier :
      relu depuis ses empreintes, jamais recalcule -- sinon une regeneration
      renommerait des objets deja dans les inventaires des joueurs.
 
+Exception a la regle 3 : le PRIX D'ACHAT (`buy_price`). Il ne vient que de
+SHOP_BUY_PRICES (le rayon de Colette) : le script le pose sur les empreintes du
+rayon et le retire des autres, y compris sur une entree deja presente. Changer
+le rayon = changer SHOP_BUY_PRICES puis relancer le script.
+
 Usage
 -----
     python scripts/gen_familiar_traces.py            # ajoute ce qui manque
@@ -64,13 +69,17 @@ ROLES = {
     "utilitaire": ("Utilitaire", "Utility"),
 }
 
-# Empreintes vendues par Colette (entities/npcs.json, shop "familiar_traces") :
-# seules a porter un prix d'achat. Le reste s'obtient uniquement par capture.
+# Empreintes vendues par Colette (entities/npcs.json npc_familiar_breeder_colette,
+# shop_inventory.empreintes) : seules a porter un prix d'achat. Le reste s'obtient
+# uniquement par capture. Le meme rayon est le choix du familier de depart du
+# tutoriel (config/familiar_balance.json tutorial_gift.from_shop).
+# 2026-10-23 (decision Charleston, option C) : loup attaque, sanglier tank,
+# scarabee soin, rat utilitaire.
 SHOP_BUY_PRICES = {
-    "empreinte_souffle_scarabee_attaque_common": 200,
+    "empreinte_souffle_loup_attaque_common": 200,
     "empreinte_souffle_sanglier_tank_common": 200,
-    "empreinte_souffle_rat_heal_common": 200,
-    "empreinte_souffle_loup_utilitaire_common": 200,
+    "empreinte_souffle_scarabee_heal_common": 200,
+    "empreinte_souffle_rat_utilitaire_common": 200,
 }
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -201,10 +210,24 @@ def main():
                 voulues[t["id"]] = t
 
     a_ajouter = [t for i, t in voulues.items() if i not in par_id]
+    # Exception a la regle 3 : buy_price suit SHOP_BUY_PRICES, meme sur une entree
+    # presente (un objet qui sort du rayon perd son prix d'achat, un qui y entre le
+    # recoit). Les libelles, eux, ne bougent jamais.
+    prix_a_aligner = []
+    for i, t in par_id.items():
+        voulu = SHOP_BUY_PRICES.get(i)
+        if t.get("buy_price") != voulu:
+            prix_a_aligner.append((i, t.get("buy_price"), voulu))
+    inconnus = sorted(set(SHOP_BUY_PRICES) - set(par_id) - set(voulues))
+    if inconnus:
+        print("ERREUR : SHOP_BUY_PRICES nomme des empreintes qui n'existent pas :", ", ".join(inconnus))
+        return 1
     # Entrees presentes dont le contenu differe de ce que le script produirait.
     # Signalees seulement (regle 3 : le script ne reecrit pas une entree vivante),
     # mais elles font echouer --check : un ecart = la data ou le script a derive.
-    derivees = [i for i, t in voulues.items() if i in par_id and par_id[i] != t]
+    def sans_prix(t):
+        return {k: v for k, v in t.items() if k != "buy_price"}
+    derivees = [i for i, t in voulues.items() if i in par_id and sans_prix(par_id[i]) != sans_prix(t)]
     orphelines = [t for i, t in par_id.items() if i not in voulues]
 
     if nouvelles_familles:
@@ -230,17 +253,30 @@ def main():
                           if par_id[i].get(k) != voulues[i].get(k))
             print(f"    {i} : {', '.join(cles)}")
 
+    if prix_a_aligner:
+        print(f"  {len(prix_a_aligner)} prix d'achat a aligner sur SHOP_BUY_PRICES :")
+        for i, avant, apres in prix_a_aligner:
+            print(f"    {i} : {avant} -> {apres}")
+
     if check:
-        ecart = len(a_ajouter) + len(derivees) + (len(orphelines) if prune else 0)
+        ecart = (len(a_ajouter) + len(derivees) + len(prix_a_aligner)
+                 + (len(orphelines) if prune else 0))
         if ecart:
             print("--check : le fichier n'est pas a jour")
             return 1
         print("--check : a jour")
         return 0
 
-    if not a_ajouter and not (prune and orphelines):
+    if not a_ajouter and not prix_a_aligner and not (prune and orphelines):
         print("Rien a faire.")
         return 0
+
+    for t in actuelles:
+        i = t.get("id")
+        if i in SHOP_BUY_PRICES:
+            t["buy_price"] = SHOP_BUY_PRICES[i]
+        else:
+            t.pop("buy_price", None)
 
     finales = [t for t in actuelles
                if not (prune and t.get("id") in {o["id"] for o in orphelines})]
