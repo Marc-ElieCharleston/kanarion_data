@@ -228,7 +228,10 @@ def main():
     def sans_prix(t):
         return {k: v for k, v in t.items() if k != "buy_price"}
     derivees = [i for i, t in voulues.items() if i in par_id and sans_prix(par_id[i]) != sans_prix(t)]
-    orphelines = [t for i, t in par_id.items() if i not in voulues]
+    # Une empreinte d'etape (quest_step_only, 2026-10-24 : celle du tutoriel) n'est pas
+    # une capture : jamais orpheline, jamais retiree par --prune.
+    orphelines = [t for i, t in par_id.items()
+                  if i not in voulues and not t.get("quest_step_only")]
 
     if nouvelles_familles:
         print("Nouvelles familles (libelle derive du monstre, verifiez-le) :")

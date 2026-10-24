@@ -351,7 +351,9 @@ def check_traces(r, ctx):
             r.add("B06", f"{tid} : empreinte en double")
         by_id[tid] = t
         fam, role, tr = t.get("family"), t.get("role"), t.get("trace_rarity")
-        if tid != f"empreinte_souffle_{fam}_{role}_{tr}":
+        # Empreinte d'etape (quest_step_only, 2026-10-24) : l'empreinte scriptee du tutoriel
+        # n'est pas une capture, elle a son propre id ; espece, voie et rarete restent verifiees.
+        if not t.get("quest_step_only") and tid != f"empreinte_souffle_{fam}_{role}_{tr}":
             r.add("B06", f"{tid} : id != empreinte_souffle_<family>_<role>_<trace_rarity> ({fam}, {role}, {tr})")
         if tr not in rar:
             r.add("B06", f"{tid} : trace_rarity '{tr}' inconnue")
