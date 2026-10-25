@@ -115,8 +115,8 @@ STARTER_BOOK = {
         "choisis celui qu'il remplace."
     ),
     "description_en": (
-        "Teaches a small heal to any familiar, whatever its role. A gift to help "
-        "your companion's first steps. If the familiar already knows it, it is "
+        "Teaches a small heal to any companion, whatever its role. A gift to help "
+        "your companion's first steps. If the companion already knows it, it is "
         "refreshed; if its slots are full, you choose which one it replaces."
     ),
     "buy_price": 0,
@@ -131,7 +131,7 @@ UPGRADE_FR = (
     "améliorée ; si ses emplacements sont pleins, tu choisis celle qu'elle remplace."
 )
 UPGRADE_EN = (
-    " If the familiar already knows it at a lower rank, it is upgraded; if its "
+    " If the companion already knows it at a lower rank, it is upgraded; if its "
     "slots are full, you choose which one it replaces."
 )
 
@@ -168,7 +168,7 @@ def build_books(skills):
             )
             desc_en = (
                 f"Teaches \"{name_en}\" at rank {DISPLAY[rank]} to {article(role_adj)} {role_adj} "
-                f"familiar. Power {pct}% of the base skill."
+                f"companion. Power {pct}% of the base skill."
             )
             if legacy:
                 desc_fr += UPGRADE_FR

@@ -139,6 +139,20 @@ Ce glossaire est la **reference unique**. Toute deviation est un bug.
 | Stealth | Furtivite |
 | Reflect | Renvoi |
 
+### Systemes de jeu
+
+| FR (in-game) | EN (in-game) | Note |
+|-------------|-------------|------|
+| Familier / familiers | Companion / companions | Decision du 2026-10-25 (release 0.20.14). Le FR ne change pas. Les ids, cles et champs techniques gardent `familiar` (`familiar_*`, `FAMILIAR_*`, `classes/familiar/`) : seul le texte EN affiche change. |
+| Grimoire (de familier) | Tome | Les noms de grimoire EN restent « <Role> Tome: <Skill> ». |
+| Empreinte | Imprint | Garde tel quel pour l'instant (decision du 2026-10-25). |
+| Mercenaire | Mercenary | Jamais « companion » seul pour un mercenaire en EN. |
+| Souffle | Breath | Jamais « Mana » dans le texte joueur. |
+
+A trancher : quelques textes FR emploient « compagnons » pour familiers ET mercenaires
+ensemble (groupe, tour, salle perso, file PvP). Leur EN « companions » se lit desormais
+comme « familiers » seuls ; « allies » serait non ambigu.
+
 ### Termes internes a ne JAMAIS montrer au joueur
 
 | Code interne | FR (description joueur) | EN |
