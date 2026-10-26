@@ -357,9 +357,10 @@ Trois familles, trois rôles : le **classique** à gros jet est la référence ;
 
 | Bouton | Fichier / clé | Valeur |
 |---|---|---|
-| Part de légendaire du classique | `items/loot_tables.json` `equipment_drops.rarity_weights_by_danger` | 2 % (danger 1) → 10 % (danger 6), monotone ; danger 7-10 = dernière ligne |
-| Qualité fixe des pièces de panoplie | `panoplie_drops.piece_rarity` / `piece_stat_scale` | `legendary` × 0.85 (stat principale, substats, affixes et bornes affichées ; base du modèle intacte). `danger` ou absent = ancien tirage |
+| Rareté du classique ET des pièces de panoplie | `items/loot_tables.json` `equipment_drops.rarity_weights_by_tier` + `rarity_tier_bonus_if_elite_or_boss` | par palier de niveau du combat (T1 1-20 … T5 81-100), légendaire 2 % (T1) → 8 % (T5) ; un élite ou un boss dans le combat = ligne du palier suivant (+1, plafond T5, à valider). Une ligne par palier, sinon le combat refuse de démarrer. Remplace `rarity_weights_by_danger` (Charleston 2026-10-26) |
+| Stats des pièces de panoplie | `panoplie_drops.piece_stat_scale` | × 0.85 (stat principale, substats, affixes et bornes affichées ; base du modèle intacte). `piece_rarity` / `piece_rarity_by_band` (légendaire fixe) supprimés le 2026-10-26 et refusés au chargement |
 | Chance de panoplie par combat | `panoplie_drops.base_chance_per_fight` | 0.015 (un set de 6 pièces de sa bande en ~100 / 32 / 14 jours Casual / Regular / Hardcore) |
+| Ressources de faille | `rift_drops.by_rank` | par monstre tué dans un intérieur de faille, chance fixe par rang (Griffe, Plaque, Éclat de Fissure ; pas les Braises, réservées au Chasseur de Failles), jamais en purification (2026-10-26, à valider) |
 | Stats des uniques | `unique_drops.stat_rarity` / `stat_scale` | `legendary` × 0.80 ; l'unique reste affiché légendaire |
 | Poids d'armure d'un set | `items/panoplies.json` `armor_type`, `pieces.<slot>.weight` (sets `mixed`), `pieces.weapon.weapon_type` | le serveur tire le modèle de base sur ce poids / ce groupe d'arme |
 | Poids d'armure d'un unique | `items/uniques.json` `armor_weight` (emplacements d'armure) | tank / défensif → heavy ; physique, esquive, saignement, poison → medium ; magie, soin, soutien, Souffle → light |
