@@ -2501,6 +2501,64 @@ def validate_world_elites(db: Path) -> list:
     return errors
 
 
+def validate_tool_sellers(db: Path) -> list:
+    """Vente des outils de recolte (decision Charleston 2026-10-26, systems/professions.json tools.sellers) :
+    rang I chez les maitres de recolte a Havreden, rang II SEULEMENT chez le vendeur de Rochebourg (les six),
+    aucun outil de rang > max_sold_rank vendu par un PNJ. Chaque ligne d'outil vendue a un buy_price."""
+    errors = []
+    pd = _profession_data(db)
+    tools_cfg = pd["prof"].get("tools", {})
+    sellers = tools_cfg.get("sellers")
+    if not isinstance(sellers, dict):
+        return ["[professions.json] tools.sellers absent (qui vend quel rang d'outil)"]
+    by_prof = tools_cfg.get("by_profession", {})
+    masters = pd["prof"].get("masters", {}).get("by_profession", {})
+    tools = {iid: it for iid, it in pd["new_items"].items() if it.get("kind") == "tool"}
+    max_rank = sellers.get("max_sold_rank")
+    r2_seller = sellers.get("rank_2")
+    npcs = {n["id"]: n for n in _npc_entries(db)}
+    if r2_seller not in npcs:
+        errors.append(f"[professions.json] tools.sellers.rank_2 : PNJ inconnu '{r2_seller}'")
+    elif npcs[r2_seller].get("location") != sellers.get("rank_2_location"):
+        errors.append(f"[npcs.json] '{r2_seller}' (vendeur des outils de rang II) doit etre a "
+                      f"'{sellers.get('rank_2_location')}', pas '{npcs[r2_seller].get('location')}'")
+    sold = {}  # npc_id -> ids des outils vendus
+    for nid, npc in npcs.items():
+        inv = npc.get("shop_inventory")
+        if not isinstance(inv, dict):
+            continue
+        for lines in inv.values():
+            if not isinstance(lines, list):
+                continue
+            for line in lines:
+                iid = line.get("item_id", "") if isinstance(line, dict) else ""
+                if iid in tools:
+                    sold.setdefault(nid, set()).add(iid)
+    for nid, ids in sold.items():
+        for iid in sorted(ids):
+            rank = tools[iid].get("rank")
+            if not _is_pos_int(tools[iid].get("buy_price")):
+                errors.append(f"[npcs.json] '{nid}' vend '{iid}' qui n'a pas de buy_price")
+            if not isinstance(rank, int) or not isinstance(max_rank, int) or rank > max_rank:
+                errors.append(f"[npcs.json] '{nid}' vend '{iid}' : rang {rank} > max_sold_rank {max_rank} "
+                              f"(fabrication seulement)")
+            elif rank == 1:
+                prof = tools[iid].get("profession")
+                if masters.get(prof) != nid or npcs[nid].get("location") != sellers.get("rank_1_location"):
+                    errors.append(f"[npcs.json] '{nid}' vend '{iid}' : le rang I se vend chez le maitre "
+                                  f"'{masters.get(prof)}' a {sellers.get('rank_1_location')} seulement")
+            elif rank == 2 and nid != r2_seller:
+                errors.append(f"[npcs.json] '{nid}' vend '{iid}' : le rang II se vend seulement chez "
+                              f"'{r2_seller}' ({sellers.get('rank_2_location')})")
+    for prof, ttype in by_prof.items():
+        r1, r2 = f"tool_{ttype}_r1", f"tool_{ttype}_r2"
+        if r1 in tools and r1 not in sold.get(masters.get(prof), set()):
+            errors.append(f"[npcs.json] le maitre '{masters.get(prof)}' ne vend pas '{r1}'")
+        if r2 in tools and r2 not in sold.get(r2_seller, set()):
+            errors.append(f"[npcs.json] '{r2_seller}' ne vend pas '{r2}' (les six outils de rang II)")
+    return errors
+
+
 def validate_arena_token_shop(db: Path, all_item_ids: set) -> list:
     errors = []
     path = db / "systems" / "arena_token_shop.json"
@@ -3285,6 +3343,11 @@ def main():
 
     print("[12w/12] Validating weekly events (calendar -> rewards.json events) and the token shop...")
     errs = validate_event_calendar(db) + validate_arena_token_shop(db, all_item_ids) + validate_world_elites(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12t/12] Validating gathering tool sellers (rank I Havreden masters, rank II Rochebourg only)...")
+    errs = validate_tool_sellers(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 

@@ -2028,12 +2028,20 @@
   },
   "links": {
     "_rule": "REGLE V2 (Charleston, 2026-10-01), verifiee par le validateur (etape 12g) : toute recette de rang >= 2 consomme au moins un objet produit par un AUTRE metier (ressource recoltee ou intermediaire) ; toute recette FINALE de rang 4-5 (tout sauf les intermediaires) en consomme d'au moins DEUX autres metiers, dont au moins un intermediaire ; un intermediaire de rang 4-5 consomme au moins deux autres metiers. Les materiaux de monstre restent (combat et Glaneur) mais ne comptent PAS comme apport d'un autre metier : ils tombent aussi sans metier.",
-    "tools": "Outils de recolte (kind 'tool', id tool_<type>_r<rang>) : il faut un outil de rang >= au rang du point pour recolter. L'outil de rang N se fabrique avec des materiaux de rang N-1 (sinon il faudrait l'outil pour recolter de quoi le fabriquer) ; le rang 1 est offert par le maitre du metier (starter). Chaque recolte use une utilisation. Ils lient les metiers de recolte aux artisans : Pioche, Hache, Faucille = Sculpteur d'os ; Canne a peche, Besace de glaneur = Tanneur ; Lanterne de Faille = Runiste.",
+    "tools": "Outils de recolte (kind 'tool', id tool_<type>_r<rang>) : il faut un outil de rang >= au rang du point pour recolter. L'outil de rang N se fabrique avec des materiaux de rang N-1 (sinon il faudrait l'outil pour recolter de quoi le fabriquer) ; le rang 1 s'achete chez le maitre du metier a Havreden (starter), le rang 2 a Rochebourg chez Harlan (tools.sellers). Chaque recolte use une utilisation. Ils lient les metiers de recolte aux artisans : Pioche, Hache, Faucille = Sculpteur d'os ; Canne a peche, Besace de glaneur = Tanneur ; Lanterne de Faille = Runiste.",
     "producer": "Producteur d'un objet : gathered_by (ressource recoltee) ou crafted_by (intermediaire, outil) dans items/profession_recipes.json new_items. Les materiaux de monstre ont pour producteur le combat ; le Glaneur en ajoute (feeds) mais ils ne comptent pas comme apport d'un autre metier.",
     "_feeds": "Les champs feeds / consumes_from de chaque metier sont DERIVES des recettes et des outils par le generateur ; le validateur verifie qu'ils correspondent et qu'aucun metier n'est isole."
   },
   "tools": {
-    "_rule": "by_profession est le SEUL proprietaire du type d outil d un metier (lu par economy et presence ; les copies professions[].tool et world/gather_nodes.json node_types[].tool ont ete retirees le 2026-10-16). Un outil (kind tool, id tool_<type>_r<rang>) porte uses utilisations. Le serveur prend dans le sac l'outil du bon type de rang le plus bas qui suffit (rang >= rang du point), puis celui qui a le moins d'utilisations restantes. Usure dans custom_data.uses_left ; a 0 l'outil se brise et disparait. Starter : les outils de rang I et II s'achetent chez le maitre du metier de recolte ; les rangs III a V se fabriquent.",
+    "_rule": "by_profession est le SEUL proprietaire du type d outil d un metier (lu par economy et presence ; les copies professions[].tool et world/gather_nodes.json node_types[].tool ont ete retirees le 2026-10-16). Un outil (kind tool, id tool_<type>_r<rang>) porte uses utilisations. Le serveur prend dans le sac l'outil du bon type de rang le plus bas qui suffit (rang >= rang du point), puis celui qui a le moins d'utilisations restantes. Usure dans custom_data.uses_left ; a 0 l'outil se brise et disparait. Vente (decision Charleston 2026-10-26) : le rang I s'achete chez le maitre du metier de recolte, a Havreden ; le rang II s'achete SEULEMENT a Rochebourg, chez le vendeur nomme dans sellers ; les rangs III a V se fabriquent seulement. La fabrication des rangs I et II reste possible.",
+    "sellers": {
+      "_rule": "Qui vend quel rang d'outil (shop_inventory des PNJ, entities/npcs.json). rank_1 = les maitres des metiers de recolte (masters.by_profession), a Havreden ; rank_2 = un seul PNJ de Rochebourg qui vend les six outils de rang II ; au-dela de max_sold_rank, aucun PNJ ne vend d'outil. Verifie par scripts/validate_cross_references.py (validate_tool_sellers).",
+      "rank_1": "profession_master",
+      "rank_1_location": "havreden",
+      "rank_2": "npc_vendor_harlan",
+      "rank_2_location": "rochebourg",
+      "max_sold_rank": 2
+    },
     "by_profession": {
       "miner": "pickaxe",
       "lumberjack": "axe",
@@ -2055,7 +2063,7 @@
     "_rule": "Les recettes de rang I a III sont connues de tous. Une recette de rang IV ou V (recettes et rule_recipes) doit etre apprise : on achete son plan chez le maitre de son metier (flux d'achat PNJ habituel, BUY_ITEM). L'achat apprend la recette tout de suite (table des recettes apprises), aucun objet n'entre dans le sac. Refuse si le joueur n'est pas Expert du metier ou connait deja la recette. Les objets plan_* sont generes par le serveur au chargement, jamais ecrits a la main."
   },
   "masters": {
-    "_rule": "Maitre de chaque metier : passer Expert, changer d'Expert, acheter outils, materiaux de base et plans. Entrees PNJ dans entities/npcs.json (tableau profession_masters, plus Tobin et Yuki).",
+    "_rule": "Maitre de chaque metier : passer Expert, changer d'Expert, acheter outils de rang I (le rang II se vend a Rochebourg, voir tools.sellers), materiaux de base et plans. Entrees PNJ dans entities/npcs.json (tableau profession_masters, plus Tobin et Yuki).",
     "by_profession": {
       "gleaner": "npc_master_gleaner",
       "fissure_hunter": "npc_master_fissure_hunter",
