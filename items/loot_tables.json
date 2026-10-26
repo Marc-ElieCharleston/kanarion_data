@@ -4213,54 +4213,50 @@
     "_superseded_by": "config/rewards.json formula. La formule ecrite ici avait perdu son etape 5 (les etoiles) que le code applique pourtant â€” c'est exactement le genre de derive que le proprietaire unique supprime."
   },
   "equipment_drops": {
-    "_comment": "Equipement de base (armure, accessoires, armes). UN tirage PAR COMBAT et par joueur depuis le 2026-09-28 (avant : un tirage par monstre, avec l etat du monstre compte deux fois : chance de base par etat PUIS multiplicateur d etat). Chance = base_chance_per_fight x config/rewards.json fight_loot, plafond 0.95. Niveau de la piece = monstre le plus haut du combat ; rarete tiree sur le danger le plus haut du combat.",
+    "_comment": "Equipement de base (armure, accessoires, armes). UN tirage PAR COMBAT et par joueur depuis le 2026-09-28 (avant : un tirage par monstre, avec l etat du monstre compte deux fois : chance de base par etat PUIS multiplicateur d etat). Chance = base_chance_per_fight x config/rewards.json fight_loot x fight_loot.equipment_by_tier (palier de niveau du combat), plafond 0.95. Niveau de la piece = monstre le plus haut du combat ; rarete tiree sur rarity_weights_by_tier au palier de ce niveau, un palier plus haut si un elite ou un boss est dans le combat (rarity_tier_bonus_if_elite_or_boss). Depuis le 2026-10-26 (Charleston) ; avant, la rarete suivait le danger le plus haut du combat.",
     "base_chance_per_fight": 0.12,
     "_base_chance_note": "0.06 -> 0.12 (Charleston 2026-10-21, playtest : trop peu d equipement en debut de jeu). Mesure : server-combat LootSimulation (report-only).",
-    "rarity_weights_by_danger": {
-      "_comment": "Poids de rarete par danger_level du mob (total 1000). Courbe MONOTONE (corrige 2026-08-08) : avant, danger_3 droppait strictement moins bien que danger_2 (60% commun contre 48%, legendaire 0.2% contre 1%) et le joueur voyait son loot regresser en montant en danger. Extremites danger_1/danger_6 conservees, seul le milieu a ete lisse. Un danger au-dela du dernier palier defini (7, 8, 10 : boss et elites lv 53-100) prend le DERNIER palier (danger_6), plus danger_1 (corrige 2026-09-28 : les mobs les plus durs avaient 0% de legendaire). BUDGET DE PUISSANCE (2026-09-28) : le classique legendaire (gros jet de stats) est la REFERENCE obtenable ; sa part passe de 0-5% a 2% (danger_1) -> 10% (danger_6), les autres raretes renormalisees au prorata (total 1000, courbe toujours monotone). La chance d un equipement par combat (base_chance_per_fight) ne change pas.",
-      "danger_1": {
-        "common": 539,
-        "uncommon": 274,
-        "rare": 137,
-        "epic": 30,
-        "legendary": 20
+    "rarity_weights_by_tier": {
+      "_decision": "Charleston 2026-10-26 : la rarete d un equipement depend du RANG du combat, plus de son danger. Rang = palier de niveau du combat (monstre le plus haut, comme avant), paliers de items/equipment_scaling.json tier_system.tiers : T1 niv 1-20, T2 21-40, T3 41-60, T4 61-80, T5 81-100. Total 100 par ligne. La meme table sert aux pieces de panoplie (panoplie_drops). Remplace rarity_weights_by_danger (supprime le 2026-10-26 : 2 % de legendaire au danger 1, 10 % au danger 6).",
+      "_ownership": "Lu par server-combat (loot/drop_config_parser.cpp, loot_roller.cpp roll_rarity_for_tier). OBLIGATOIRE : une ligne par palier de tier_system.tiers et rien d autre ; ligne manquante ou en trop = le combat refuse de demarrer (comme config/rewards.json fight_loot.equipment_by_tier). L ancienne cle rarity_weights_by_danger est refusee au chargement.",
+      "T1": {
+        "common": 45,
+        "uncommon": 30,
+        "rare": 17,
+        "epic": 6,
+        "legendary": 2
       },
-      "danger_2": {
-        "common": 492,
-        "uncommon": 273,
-        "rare": 156,
-        "epic": 49,
-        "legendary": 30
+      "T2": {
+        "common": 40,
+        "uncommon": 30,
+        "rare": 19,
+        "epic": 8,
+        "legendary": 3
       },
-      "danger_3": {
-        "common": 444,
-        "uncommon": 265,
-        "rare": 174,
-        "epic": 72,
-        "legendary": 45
+      "T3": {
+        "common": 35,
+        "uncommon": 30,
+        "rare": 21,
+        "epic": 10,
+        "legendary": 4
       },
-      "danger_4": {
-        "common": 393,
-        "uncommon": 259,
-        "rare": 192,
-        "epic": 96,
-        "legendary": 60
+      "T4": {
+        "common": 30,
+        "uncommon": 29,
+        "rare": 23,
+        "epic": 12,
+        "legendary": 6
       },
-      "danger_5": {
-        "common": 340,
-        "uncommon": 247,
-        "rare": 214,
-        "epic": 119,
-        "legendary": 80
-      },
-      "danger_6": {
-        "common": 284,
-        "uncommon": 237,
-        "rare": 237,
-        "epic": 142,
-        "legendary": 100
+      "T5": {
+        "common": 25,
+        "uncommon": 28,
+        "rare": 25,
+        "epic": 14,
+        "legendary": 8
       }
     },
+    "rarity_tier_bonus_if_elite_or_boss": 1,
+    "_rarity_tier_bonus_a_valider": "Proposition du 2026-10-26, a valider par Charleston (0 = desactive) : si le combat contient un elite, un mini-boss, un boss ou un boss de monde, la rarete est tiree sur la ligne du palier SUIVANT (T1 -> T2 ... T5 reste T5). Ni la chance ni le niveau de la piece ne changent. Equipement ET pieces de panoplie.",
     "slot_weights": {
       "_comment": "Poids pour dÃ©terminer quel slot l'Ã©quipement occupe",
       "weapon": 12,
@@ -4275,17 +4271,12 @@
     }
   },
   "panoplie_drops": {
-    "_comment": "Pieces de panoplie. UN tirage PAR COMBAT et par joueur depuis le 2026-09-28 (avant : 10% par monstre normal, etat compte deux fois, sans plafond : un boss donnait 100%). Chance = base_chance_per_fight x config/rewards.json fight_loot, plafond 0.95. Set uniforme parmi les sets lootables (no_loot/tournament exclus), piece uniforme dans le set. Rang = bande de niveau du monstre le plus haut du combat (_meta.rank_system de panoplies.json). BUDGET DE PUISSANCE (2026-09-28, modele Dofus) : qualite FIXE, une piece tire TOUJOURS ses stats en piece_rarity (legendaire) x piece_stat_scale (0.85 : stat principale, substats, affixes et bornes affichees ; la base du modele n est pas touchee), sur le poids d armure de SA panoplie (panoplies.json armor_type, ou pieces.<slot>.weight pour les sets mixed) et, pour l arme, sur pieces.weapon.weapon_type. Seule, une piece vaut ~0.85 d un classique legendaire ; sa force vient du set complet (bonus x3.5 / x5). piece_rarity absent ou 'danger' = ancien tirage sur les poids de danger ; piece_stat_scale absent = x1. Chance baissee de 0.023 a 0.015 (passe 2 ; 0.009 en passe 1 rendait un set de 6 pieces trop long) : un set de 6 pieces de sa bande en ~100 / 32 / 14 jours (Casual / Regular / Hardcore). Exception depuis le 2026-10-21 (Charleston) : piece_rarity_by_band, la bande C tire sa rarete au danger.",
+    "_comment": "Pieces de panoplie. UN tirage PAR COMBAT et par joueur depuis le 2026-09-28 (avant : 10% par monstre normal, etat compte deux fois, sans plafond : un boss donnait 100%). Chance = base_chance_per_fight x config/rewards.json fight_loot, plafond 0.95. Set uniforme parmi les sets lootables (no_loot/tournament exclus), piece uniforme dans le set. Rang = bande de niveau du monstre le plus haut du combat (_meta.rank_system de panoplies.json). RARETE (Charleston 2026-10-26) : la piece tire sa rarete sur la MEME table que l equipement, a toutes les bandes (equipment_drops.rarity_weights_by_tier au palier de niveau du combat, un palier plus haut avec un elite ou un boss). Avant : toujours legendaire a partir de la bande B (piece_rarity), rarete au danger en bande C (piece_rarity_by_band) ; ces deux cles sont supprimees et refusees au chargement. Ses stats tirees restent x piece_stat_scale (0.85 : stat principale, substats, affixes et bornes affichees ; la base du modele n est pas touchee), sur le poids d armure de SA panoplie (panoplies.json armor_type, ou pieces.<slot>.weight pour les sets mixed) et, pour l arme, sur pieces.weapon.weapon_type ; la force vient du set complet (bonus x3.5 / x5). Chance 0.015 (passe 2 du 2026-09-28).",
     "base_chance_per_fight": 0.015,
-    "piece_rarity": "legendary",
-    "piece_rarity_by_band": {
-      "_comment": "Rarete d une piece par bande de set (C..SS, panoplies.json band), prioritaire sur piece_rarity. 'danger' = tirage sur les poids de danger du combat, comme l equipement. Bande C (niv 1-20) : Charleston 2026-10-21, une piece de debut de jeu ne tombe plus toujours legendaire. Bande absente = piece_rarity.",
-      "C": "danger"
-    },
     "piece_stat_scale": 0.85,
     "notes": [
       "La piece droppee est aleatoire parmi les pieces du set",
-      "Les pieces de pano tirent les memes pools de substats que l'equipement classique, a qualite fixe (piece_rarity x piece_stat_scale)",
+      "Les pieces de pano tirent les memes pools de substats que l'equipement classique, rarete sur rarity_weights_by_tier (2026-10-26), stats x piece_stat_scale",
       "Supprimes le 2026-09-28 car jamais lus : rank_by_danger (le rang vient du niveau du monstre) et set_size_drop_multiplier"
     ]
   },
@@ -4311,6 +4302,38 @@
     },
     "_signature_monsters": "Crochet pour plus tard, NON PEUPLE. Un unique peut porter dans items/uniques.json source.signature_monsters = {\"monster_ids\": [...], \"weight_multiplier\": N}. Si un de ces monstres a ete tue dans le combat, le POIDS de cet unique dans le tirage est multiplie par N. Ne change pas la chance qu'un unique tombe, seulement lequel tombe.",
     "_removed_2026_09_28": "star_multiplier (courbe deplacee dans config/rewards.json fight_loot.stars.unique_chance), monster_state_multiplier (remplace par le bonus de presence borne), rank_by_danger (le rang vient du niveau), examples, formula : tous charges ou documentes mais jamais lus."
+  },
+  "rift_drops": {
+    "_comment": "Ressources de faille tirees PAR MONSTRE TUE dans un INTERIEUR de faille (salle avec rift_rank > 0), pour CHAQUE joueur du combat (pas seulement le Chasseur de Failles), comme les materiaux communs (modele Dofus : le commun par monstre). Chance par rang de faille ; seules les familles de faille de config/rewards.json la multiplient (rift_rank, neutre ; rift_level_gap : x0.5 de 6 a 9 niveaux au-dessus de la faille) : ni etoiles, ni etat, ni groupe, ni evenement. Jamais en purification (ecart joueur - faille >= rift_level_gap.purification_from : rien du combat). Lu par server-combat (loot/drop_config_parser.cpp, loot_roller.cpp roll_rift_drops) ; entree invalide = le combat refuse de demarrer.",
+    "_why": "Charleston 2026-10-26 : « ajouter les ressources de faille dans les failles, j en ai pas loot ». Les Braises (mat_rift_ember_r<rang>) restent la ressource du Chasseur de Failles (metier de recolte : XP par Braise recueillie, systems/profession_xp.json ; config/rewards.json rift_closing) et ne tombent PAS ici. Tombent ici les materiaux de monstre de faille : Griffe de Faille, Plaque de Faille, Eclat de Fissure (recettes de rang V, coffres de quete et de guilde).",
+    "_a_valider": "2026-10-26, a valider par Charleston : chances par monstre ci-dessous. Une faille moyenne = 14 groupes de 8 a 10 monstres (world/rift_events.json) = ~126 monstres : ~5 ressources par joueur au rang I, ~8 au rang V si tous les groupes sont faits ; une petite faille (8 groupes) ~3 a 5.",
+    "by_rank": {
+      "1": [
+        {"item_id": "mat_rift_claw", "chance": 0.02, "min": 1, "max": 1},
+        {"item_id": "mat_rift_plate", "chance": 0.015, "min": 1, "max": 1},
+        {"item_id": "mat_fissure_shard", "chance": 0.005, "min": 1, "max": 1}
+      ],
+      "2": [
+        {"item_id": "mat_rift_claw", "chance": 0.022, "min": 1, "max": 1},
+        {"item_id": "mat_rift_plate", "chance": 0.017, "min": 1, "max": 1},
+        {"item_id": "mat_fissure_shard", "chance": 0.006, "min": 1, "max": 1}
+      ],
+      "3": [
+        {"item_id": "mat_rift_claw", "chance": 0.025, "min": 1, "max": 1},
+        {"item_id": "mat_rift_plate", "chance": 0.02, "min": 1, "max": 1},
+        {"item_id": "mat_fissure_shard", "chance": 0.007, "min": 1, "max": 1}
+      ],
+      "4": [
+        {"item_id": "mat_rift_claw", "chance": 0.028, "min": 1, "max": 1},
+        {"item_id": "mat_rift_plate", "chance": 0.022, "min": 1, "max": 1},
+        {"item_id": "mat_fissure_shard", "chance": 0.008, "min": 1, "max": 1}
+      ],
+      "5": [
+        {"item_id": "mat_rift_claw", "chance": 0.03, "min": 1, "max": 1},
+        {"item_id": "mat_rift_plate", "chance": 0.025, "min": 1, "max": 1},
+        {"item_id": "mat_fissure_shard", "chance": 0.01, "min": 1, "max": 1}
+      ]
+    }
   },
   "dungeon_key_drops": {
     "_comment": "2026-10-13 (proprietaire) : une cle de donjon tombe sur des monstres PERTINENTS, jamais en dessous du palier du donjon (la cle d un donjon niveau 100 ne tombe que sur les monstres 81-100). Regle par TRANCHE DE NIVEAU du monstre tue : chaque entree = une cle, une tranche [min_mob_level, max_mob_level], une chance par monstre tue. Les cles sont consommees a l entree, une par joueur (dungeon service), et s echangent (HDV, echange direct). Seconde source prevue : une recette par cle. Lu par server-combat LootRoller (back vac_dungeon-keys). L ancien format zone_drops visait des zones inexistantes (zone_04/06/08) et des donjons retires : remplace.",
