@@ -2520,6 +2520,24 @@
         "greeting": [
           {
             "zone": "village",
+            "requires_flags": [
+              "ezra_accident_seen"
+            ],
+            "forbids_flags": [
+              "ezra_home_visit"
+            ],
+            "lines_fr": [
+              "Tu t'inquiètes pour Ezra ? Il se remet mal, tu sais. Naya passe le voir chaque jour, mais il refuse les visites pour l'instant.",
+              "Laisse-lui un peu de temps."
+            ],
+            "lines_en": [
+              "Worried about Ezra? He's not recovering well. Naya checks on him every day, but he won't see anyone for now.",
+              "Give him a little time."
+            ],
+            "_a_valider": "Brouillon du 26/10 : nouvelles d'Ezra entre l'accident et la visite (Tobin). Entree conditionnee par drapeaux d'histoire (lue par le client, drapeaux envoyes par le serveur)."
+          },
+          {
+            "zone": "village",
             "lines_fr": [
               "Ah, te voilà. Tu cherches quelqu'un ? Dis-moi qui, je connais presque tout le monde ici."
             ],
@@ -3714,7 +3732,7 @@
           "frames": "res://resources/pnj/ezra_faithful_frames.tres"
         }
       ],
-      "_note_acte1": "Acte I V3.2 (2026-10-24) : ami d'enfance du joueur, forme 1 (deux bras) jusqu'a l'accident. Cache des la remise du fragment (forbids_flags rift_fragment_handed_in, pose par le serveur au rendu de q_main_ezra_egouts) : il part aux Egouts avec toi, puis se repose chez lui (npc_rift_scholar_ezra_home). appearance_frames : forme 1 = ezra_faithful (deux bras visibles a l'image, confirme par le proprietaire le 24/10)."
+      "_note_acte1": "Acte I V3.2 (2026-10-24) : ami d'enfance du joueur, forme 1 (deux bras) jusqu'a l'accident. Cache des la remise du fragment (forbids_flags rift_fragment_handed_in, pose par le serveur au rendu de q_main_ezra_egouts) : il part aux Egouts avec toi, puis se remet a l'ecart, absent de chez lui jusqu'a la visite de q_main_ezra_nouvelles (npc_rift_scholar_ezra_home, decision du 26/10). appearance_frames : forme 1 = ezra_faithful (deux bras visibles a l'image, confirme par le proprietaire le 24/10)."
     },
     {
       "id": "npc_bounty_hunter_varn",
@@ -3963,7 +3981,7 @@
       "services": [],
       "location": "ezra_house",
       "requires_flags": [
-        "ezra_accident_seen"
+        "ezra_home_visit"
       ],
       "appearance_frames": [
         {
@@ -3996,11 +4014,40 @@
               "Come back when you have news from the road. Even the smallest detail might matter."
             ]
           }
+        ],
+        "q_main_ezra_nouvelles_obj_0": [
+          {
+            "lines_fr": [
+              "Ah… c'est toi. Désolé pour le désordre.",
+              "Je pensais que ça irait mieux après quelques jours. Mais chaque fois que je ferme les yeux, je revois cette lumière.",
+              "Et cette voix… Tu l'as entendue, toi aussi ?"
+            ],
+            "lines_en": [
+              "Oh… it's you. Sorry about the mess.",
+              "I thought I'd feel better after a few days. But every time I close my eyes, I see that light again.",
+              "And that voice… Did you hear it too?"
+            ],
+            "replies": [
+              {
+                "label_fr": "Non. Seulement toi qui criais.",
+                "label_en": "No. I only heard you screaming."
+              }
+            ],
+            "reply_lines_fr": [
+              "Je vois…",
+              "Écoute, si tu trouves quelque chose d'étrange dans la forêt, garde-le pour moi. Je dois comprendre ce qui s'est passé."
+            ],
+            "reply_lines_en": [
+              "I see…",
+              "Listen, if you find anything strange in the forest, keep it for me. I need to understand what happened."
+            ],
+            "_a_valider": "Brouillon du 26/10 (texte final a venir du proprietaire). La replique du joueur est une reponse proposee en bouton (replies) : facultative, affichage seul, rien n'est envoye au serveur."
+          }
         ]
       },
-      "_a_valider": "Toutes les repliques d'Ezra chez lui : provisoires, absentes du dossier V3.2.",
+      "_a_valider": "Toutes les repliques d'Ezra chez lui : provisoires. Celles de la visite (q_main_ezra_nouvelles_obj_0) : brouillon du 26/10, texte final attendu du proprietaire.",
       "_note_forme": "Forme 2 = ezra_shaken, validee par le proprietaire le 24/10 : Ezra vieillit au contact de la Faille (visage vieilli voulu).",
-      "_note": "Acte I V3.2 (2026-10-24) : Ezra apres l'accident, forme 2 (bras gauche manquant), dans sa maison (zone ezra_house). Visible seulement avec ezra_accident_seen (pose par le serveur au rendu de q_main_ezra_blessure) : avant, la maison est vide."
+      "_note": "Ezra apres l'accident, forme 2 (ezra_shaken, bras gauche manquant), dans sa maison (zone ezra_house). Decision du proprietaire du 26/10 : ABSENT de chez lui apres l'accident, il n'apparait qu'a partir de la visite de « Des nouvelles d'Ezra » (q_main_ezra_nouvelles, Tobin). requires_flags ezra_home_visit : drapeau d'histoire PostgreSQL (character_story_flags) pose par le serveur dans la transaction d'ACCEPTATION de q_main_ezra_nouvelles (sets_flags_on_accept), jamais retire : Ezra reste chez lui pour la suite. Avant, la maison est vide (Tobin donne des nouvelles)."
     }
   ],
   "class_masters": [

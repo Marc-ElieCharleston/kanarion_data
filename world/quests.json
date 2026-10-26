@@ -14,7 +14,7 @@
       "resets": "reset_mode daily / weekly : la quete redevient acceptable a l'heure fixe de reset_schedule (5 h Paris), plus 24 h / 7 jours glissants.",
       "moral_choices": "moral_choice / moral_choices[] : moment 'on_completion' = choix fait au rendu, obligatoire au rendu (erreur QUEST_CHOICE_REQUIRED 0x0A04). choice_x : label_fr/label_en, stat, value, sets_flags (facultatif), outcome_fr/outcome_en (facultatif, denouement affiche apres le choix). Les autres moments (room_*) ne sont geres par aucun flux.",
       "story_flags": "requires_flags / forbids_flags (quete ou PNJ de entities/npcs.json) : chaque drapeau doit etre pose par un choix (implicite moral:<quete>:<a|b> ou sets_flags), verifie par validate_cross_references.py.",
-      "acte1_lifecycle": "Acte I Havreden V2 (2026-10-24). Gabarits : accept_quest {quest_id} et complete_quest {quest_id} (faits serveur : acceptation / rendu d'une autre quete, reconcilies a l'acceptation et a quest.state) ; quest_objective {quest_id, objective} (miroir de la progression d'un objectif d'une autre quete) ; open_quest_board {board} (notifie par le client, tableau connu de contract_limits.boards) ; reach_area {area_id} (position PRESENCE dans world/zones.json quest_areas) ; watch_cinematic {cinematic_id} (vue ou passee, porte sequentielle). complete_dungeon accepte difficulty (mode Histoire). Champs : forbids_quests (jamais si une de ces quetes est active ou faite), blocked_while_active, completed_by (comptee faite sans recompense quand une de ces quetes est faite : ancien parcours), accept_only_via_objective (acceptee seulement par une etape ouverte qui l'attend), tutorial_contract (hors plafond, hors coffres, XP fixe), objective_items [{objective, items}] (objet donne une fois a la fin d'un objectif), sets_flags (drapeaux d'histoire ecrits dans la transaction du rendu), turn_in_npc (PNJ de rendu, client), toast_accept_* / toast_ready_* (client), dialogue_progress_* (suivi dit en Parler)."
+      "acte1_lifecycle": "Acte I Havreden V2 (2026-10-24). Gabarits : accept_quest {quest_id} et complete_quest {quest_id} (faits serveur : acceptation / rendu d'une autre quete, reconcilies a l'acceptation et a quest.state) ; quest_objective {quest_id, objective} (miroir de la progression d'un objectif d'une autre quete) ; open_quest_board {board} (notifie par le client, tableau connu de contract_limits.boards) ; reach_area {area_id} (position PRESENCE dans world/zones.json quest_areas) ; watch_cinematic {cinematic_id} (vue ou passee, porte sequentielle). complete_dungeon accepte difficulty (mode Histoire). Champs : forbids_quests (jamais si une de ces quetes est active ou faite), blocked_while_active, completed_by (comptee faite sans recompense quand une de ces quetes est faite : ancien parcours), accept_only_via_objective (acceptee seulement par une etape ouverte qui l'attend), tutorial_contract (hors plafond, hors coffres, XP fixe), objective_items [{objective, items}] (objet donne une fois a la fin d'un objectif), sets_flags (drapeaux d'histoire ecrits dans la transaction du rendu), sets_flags_on_accept (2026-10-26 : drapeaux d'histoire ecrits dans la transaction de l'ACCEPTATION, ex. ezra_home_visit qui fait apparaitre Ezra chez lui des que la visite est prise), turn_in_npc (PNJ de rendu, client), toast_accept_* / toast_ready_* (client), dialogue_progress_* (suivi dit en Parler)."
     }
   },
   "quest_types": [
@@ -4705,6 +4705,47 @@
       },
       "_a_valider": "Recompense (850 XP, 60 or) et rectangle de la sortie sud (world/zones.json quest_areas havreden_route_rochebourg).",
       "_note": "Acte I (2026-10-24), etape 12, transition vers l'acte II (route Havreden - Rochebourg). Drapeau tutorial : rendu automatique quand la zone est atteinte, la conclusion de Tobin s'affiche alors."
+    },
+    {
+      "id": "q_main_ezra_nouvelles",
+      "type": "main",
+      "zone": "village",
+      "min_level": 1,
+      "prerequisites": [
+        "q_rey_nouvelles",
+        "q_tobin_au_dela"
+      ],
+      "title_fr": "Des nouvelles d'Ezra",
+      "title_en": "News from Ezra",
+      "summary_fr": "Tobin aimerait que tu passes voir Ezra chez lui.",
+      "summary_en": "Tobin would like you to stop by Ezra's house.",
+      "dialogue_give_fr": "Tu es de retour ? Tant mieux. Dis, tu pourrais passer voir Ezra ?\nDepuis l'accident, il sort très peu. Naya s'occupe de lui, mais il refuse presque toutes les visites.\nVous avez grandi ensemble. Peut-être qu'avec toi, il acceptera de parler.",
+      "dialogue_give_en": "You're back? Good. Could you stop by and see Ezra?\nHe's barely been outside since the accident. Naya's looking after him, but he won't see many people.\nYou two grew up together. Maybe he'll talk to you.",
+      "dialogue_progress_fr": "Ezra est toujours chez lui, je crois. Passe le voir quand tu peux.",
+      "dialogue_progress_en": "I think Ezra's still at home. Stop by when you can.",
+      "dialogue_complete_fr": "Tu as réussi à lui parler ? C'est déjà ça. J'espère qu'il finira par sortir un peu.",
+      "dialogue_complete_en": "You managed to talk to him? That's something. I hope he'll start getting out again.",
+      "npc_giver": "npc_hub_guide_tobin",
+      "turn_in_npc": "npc_hub_guide_tobin",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_rift_scholar_ezra_home",
+          "count": 1,
+          "description_fr": "Rends visite à Ezra, chez lui.",
+          "description_en": "Visit Ezra at his house.",
+          "_note": "Repliques de la visite : entities/npcs.json npc_rift_scholar_ezra_home dialogues.q_main_ezra_nouvelles_obj_0 (reponse du joueur en bouton, facultative)."
+        }
+      ],
+      "sets_flags_on_accept": [
+        "ezra_home_visit"
+      ],
+      "rewards": {
+        "xp": 850,
+        "gold": 60
+      },
+      "_a_valider": "Textes : brouillons du 26/10, texte final attendu du proprietaire. Recompense (850 XP, 60 or) = celle de q_rey_nouvelles, courte quete de dialogue au meme stade. PREREQUIS PROVISOIRES : la decision demande « apres les deux premieres quetes principales de la Foret des Loups », mais aucune quete de la Foret des Loups n'existe encore en data (acte II non ecrit). En attendant : les deux quetes principales qui suivent l'accident et menent hors de Havreden (q_rey_nouvelles, q_tobin_au_dela). A remplacer par les deux ids de la Foret des Loups quand elles existeront (prerequis evalues a la demande par le serveur et le client : aucune migration).",
+      "_note": "Retour d'Ezra (decision du proprietaire du 26/10). Apres l'accident, Ezra est absent de chez lui ; Tobin donne cette quete, la visite fait apparaitre Ezra chez lui en forme 2 (ezra_shaken), definitivement. sets_flags_on_accept ezra_home_visit : drapeau d'histoire ecrit par le serveur dans la transaction d'ACCEPTATION (character_story_flags), qui rend visible npc_rift_scholar_ezra_home (requires_flags) pour l'etape de dialogue et pour toute la suite. Prerequis evalues a la demande (pas de deblocage ponctuel) : un ancien personnage deja au-dela la recoit a sa prochaine visite chez Tobin. Pas de drapeau tutorial : rendue a Tobin (bouton Rendre)."
     },
     {
       "id": "q_varn_egouts",

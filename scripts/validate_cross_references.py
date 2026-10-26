@@ -1301,13 +1301,68 @@ def validate_quest_engine(db: Path, all_item_ids: set) -> list:
         # Acte I (2026-10-24) : drapeaux poses au rendu de la quete (sets_flags au
         # niveau quete, ecrits par le serveur dans la transaction du rendu).
         produced.update(_flag_list(owner, q, "sets_flags", errors))
+        # 2026-10-26 (retour d'Ezra) : drapeaux poses a l'ACCEPTATION de la quete.
+        produced.update(_flag_list(owner, q, "sets_flags_on_accept", errors))
     for n in npcs:
         owner = f"[npcs.json] '{n['id']}'"
         for key in ("requires_flags", "forbids_flags"):
             wanted += [(owner, f) for f in _flag_list(owner, n, key, errors)]
+        # Entrees conditionnees : apparences (appearance_frames) et repliques
+        # (dialogues.<cle>[].requires_flags / forbids_flags, lues par le client).
+        for k, e in enumerate(n.get("appearance_frames", []) or []):
+            if isinstance(e, dict):
+                for key in ("requires_flags", "forbids_flags"):
+                    wanted += [(f"{owner} appearance_frames[{k}]", f)
+                               for f in _flag_list(owner, e, key, errors)]
+        dialogues = n.get("dialogues", {})
+        if isinstance(dialogues, dict):
+            for dkey, entries in dialogues.items():
+                if not isinstance(entries, list):
+                    continue
+                for k, e in enumerate(entries):
+                    if isinstance(e, dict):
+                        for key in ("requires_flags", "forbids_flags"):
+                            wanted += [(f"{owner} dialogues.{dkey}[{k}]", f)
+                                       for f in _flag_list(owner, e, key, errors)]
     for owner, flag in wanted:
         if flag not in produced:
-            errors.append(f"{owner} : drapeau '{flag}' pose par aucun choix ni aucun rendu (sets_flags) de world/quests.json")
+            errors.append(f"{owner} : drapeau '{flag}' pose par aucun choix, aucun rendu (sets_flags) "
+                          f"ni aucune acceptation (sets_flags_on_accept) de world/quests.json")
+    errors += _talk_targets_reachable(quests, npcs)
+    return errors
+
+
+def _talk_targets_reachable(quests: list, npcs: list) -> list:
+    """Une etape « parler a X » ou X est cache par requires_flags doit pouvoir etre faite :
+    chaque drapeau exige est pose a l'acceptation de la quete elle-meme
+    (sets_flags_on_accept) ou au rendu d'un de ses prerequis (transitifs). Sinon la
+    quete est acceptee et jamais finissable (le serveur refuse le dialogue avec un PNJ
+    cache). Les quetes parquees ne comptent pas."""
+    errors = []
+    by_id = {q.get("id"): q for q in quests if isinstance(q, dict) and not q.get("parked")}
+    gate = {n["id"]: n.get("requires_flags", []) for n in npcs if n.get("requires_flags")}
+
+    def upstream_flags(qid, seen):
+        out = set()
+        for pre in by_id.get(qid, {}).get("prerequisites", []) or []:
+            if pre in seen or pre not in by_id:
+                continue
+            seen.add(pre)
+            out.update(by_id[pre].get("sets_flags", []) or [])
+            out.update(by_id[pre].get("sets_flags_on_accept", []) or [])
+            out.update(upstream_flags(pre, seen))
+        return out
+
+    for qid, q in by_id.items():
+        for obj in q.get("objectives", []) or []:
+            npc = obj.get("npc_id") if obj.get("template") == "talk_to_npc" else None
+            if npc not in gate:
+                continue
+            have = set(q.get("sets_flags_on_accept", []) or []) | upstream_flags(qid, {qid})
+            for flag in gate[npc]:
+                if flag not in have:
+                    errors.append(f"[quests.json] '{qid}' : parler a '{npc}' exige le drapeau '{flag}', "
+                                  f"pose ni a l'acceptation de la quete ni au rendu d'un prerequis")
     return errors
 
 
