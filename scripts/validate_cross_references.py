@@ -1459,6 +1459,11 @@ def validate_craft_stations(db: Path) -> list:
     for p in load_json(db / "systems" / "professions.json").get("professions", []):
         if isinstance(p.get("station"), str) and p["station"]:
             used.add(p["station"])
+    enh = load_json(db / "systems" / "enhancement_system.json").get("enhancement_overview", {}).get("station")
+    if not isinstance(enh, str) or not enh:
+        errors.append("[enhancement_system.json] enhancement_overview.station manquant (economy refuse de demarrer)")
+    else:
+        used.add(enh)
     npc_ids = {n.get("id") for n in _npc_entries(db)}
     seen, placed = set(), set()
     for s in data.get("stations", []):
