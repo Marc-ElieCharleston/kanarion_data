@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": "1.0",
-    "last_updated": "2026-05-07",
+    "last_updated": "2026-10-27",
     "description": "Profils de balance pour entites familier (compagnon animal du joueur). Applique au spawn combat sur le snapshot stats.",
     "rule": "Un familier doit etre un vrai allie de combat utile, sans remplacer un joueur. Compense les solo runs et donne identite gameplay au joueur.",
     "spec_ref": "PLAN_FAMILIAR_SYSTEM (a creer)",
@@ -18,7 +18,10 @@
       "healing_multiplier": 1.0,
       "shield_multiplier": 1.0,
       "hp_multiplier": 1.1,
-      "mp_multiplier": 1.0
+      "mp_multiplier": 1.0,
+      "mp_regen_base": 1.0,
+      "mp_regen_per_level": 0.01,
+      "_souffle_note": "A VALIDER (proposition 2026-10-27, decision Charleston sur le Souffle des compagnons). Avant : regen plate 1 /s a tous les niveaux (stats/class_base_stats.json), le familier etait a sec en 20 a 50 s des le niveau 30 et restait inactif. mp_regen_base + mp_regen_per_level x (niveau du familier - 1) = regen en Souffle par seconde, en combat (server-combat try_spawn_familiar_for, passifs comme Serenite +2 /s en plus) ET hors combat (tick de 5 s du service familier) : niveau 1 = 1 /s (inchange), 10 = 1,09, 30 = 1,29, 60 = 1,59, 100 = 1,99. Les couts des sorts de familier sont baisses directement dans classes/familiar/skills.json (x 0,7, arrondi) : ces sorts n'appartiennent qu'aux familiers et le client affiche le cout de la data. Le Souffle reste conserve d'un combat a l'autre (pas de remise a plein, pas d'attaque gratuite) : les potions de Souffle du familier gardent leur role. Calibre au simulateur (rotation au plafond, signature + sorts tires du role, GCD 3 s) : depense 1,4 a 1,75 fois la regen aux niveaux 30 et 60, a sec vers 50 a 150 s au niveau 30 et 95 a 150 s au niveau 60 (elite de reference 105 s et 164 s) ; au niveau 10 (2 sorts) presque jamais a sec. Une seule valeur pour le PvE et l'arene (les familiers y sont autorises)."
     }
   },
   "rarity_multipliers": {
