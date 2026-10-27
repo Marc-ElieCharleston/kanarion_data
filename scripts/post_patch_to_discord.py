@@ -298,6 +298,21 @@ def post_one_message(webhook_url: str, embeds: list[dict]) -> None:
         sys.exit(f"Network error reaching Discord: {e}")
 
 
+def build_digest(patches: list[dict]) -> dict:
+    """Merge several patches (oldest first) into one neutral grouped note."""
+    first, last = patches[0].get("version", ""), patches[-1].get("version", "")
+    label = first if first == last else f"{first} - {last}"
+    entries = [e for p in patches for e in p.get("entries", [])]
+    return {
+        "version": label,
+        "date": patches[-1].get("date", ""),
+        "title_fr": "Mises à jour regroupées" if first != last else patches[0].get("title_fr", ""),
+        "title_en": "Grouped updates" if first != last else patches[0].get("title_en", ""),
+        "entries": entries,
+        "_digest_versions": [p.get("version", "") for p in patches],
+    }
+
+
 def load_posted() -> set[str]:
     if not POSTED_PATH.exists():
         return set()
@@ -316,6 +331,9 @@ def main() -> None:
                         help="Version to post (default: latest).")
     parser.add_argument("--all", action="store_true",
                         help="Post every unposted patch oldest-to-newest.")
+    parser.add_argument("--digest", action="store_true",
+                        help="Group every patch newer than the last posted one into ONE "
+                             "message (rule since 2026-10-27: one grouped post every 2-3 days).")
     parser.add_argument("--dry-run", action="store_true",
                         help="Print the embed JSON instead of posting.")
     parser.add_argument("--force", action="store_true",
@@ -328,7 +346,20 @@ def main() -> None:
     load_dotenv_if_present()
     changelog = load_changelog()
 
-    if args.all:
+    if args.digest:
+        if args.all or args.version:
+            sys.exit("--digest takes no version and excludes --all")
+        posted_before = load_posted()
+        pending = []
+        for patch in changelog.get("patches", []):   # newest first
+            if patch.get("version", "") in posted_before:
+                break
+            pending.append(patch)
+        if not pending:
+            sys.exit("digest: nothing new since the last posted version")
+        patches_to_post = [build_digest(list(reversed(pending)))]
+        args.force = True   # the digest itself is never in the tracker
+    elif args.all:
         # changelog stores patches newest-first. Reverse so Discord reads as
         # history: oldest at top, newest at the bottom of the channel.
         patches_to_post = list(reversed(changelog.get("patches", [])))
@@ -359,7 +390,8 @@ def main() -> None:
             skipped += 1
             continue
         post_embeds(webhook_url, build_embeds(patch))
-        mark_posted(version)
+        for v in patch.get("_digest_versions", [version]):
+            mark_posted(v)
         sent += 1
         print(f"posted v{version} to Discord (EN + FR)")
         # Pace ourselves between posts when iterating; no delay on the last one.
