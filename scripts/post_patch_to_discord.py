@@ -70,6 +70,8 @@ EMBED_COLOR = 0xC8A84E
 # fall through into the "Other" bucket so the script never drops an entry
 # silently. Each locale carries its own section-order array so the
 # presentation stays native.
+SILENT_FLAG = 4096
+
 TYPE_LABELS_EN: dict[str, str] = {
     "feat": "New Features",
     "fix": "Fixes",
@@ -269,7 +271,10 @@ def post_embeds(webhook_url: str, embeds: list[dict]) -> None:
 
 def post_one_message(webhook_url: str, embeds: list[dict]) -> None:
     """POST one Discord webhook message containing up to 10 embeds."""
-    payload = json.dumps({"embeds": embeds}).encode("utf-8")
+    # flags 4096 = SUPPRESS_NOTIFICATIONS (message « @silent ») : le post reste
+    # visible dans le salon mais ne declenche ni notification ni son. Decision
+    # Charleston 2026-10-27 : trop de posts, des joueurs coupaient le salon.
+    payload = json.dumps({"embeds": embeds, "flags": SILENT_FLAG}).encode("utf-8")
     # Cloudflare (in front of Discord) blocks the default Python-urllib UA as
     # bot-like and returns HTTP 403 error code 1010. A normal-looking UA fixes
     # it without hiding what we are.
