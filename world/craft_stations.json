@@ -1,0 +1,121 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-10-27",
+    "description": "Postes de fabrication poses dans le monde : etablis des ateliers de metier (interieurs de Havreden et etablis en plein air) et Forge. Fabriquer exige d'etre pres d'un poste de la STATION de la recette (decision Charleston du 2026-10-27) : une recette de metier porte sa station dans items/profession_recipes.json (workshop_tanner...), une recette de la Forge dans items/recipes.json (blacksmith).",
+    "owner": "services/economy (CRAFT_ITEM 0x041D et ENHANCE_ITEM 0x044C) : avant toute consommation, economy demande a presence la position et la zone que le serveur connait du joueur (kanarion.presence.get), jamais une position envoyee par le client, puis refuse si aucun poste de la station de la recette n'est dans sa zone a moins de rules.use_range_px (CRAFT_TOO_FAR_FROM_STATION 0x021E, rien consomme, aucune XP). Un essai a blanc (dry_run, apercu) n'est pas controle. Le client ne lit pas ce fichier pour decider : il ouvre l'atelier au bouton d'action comme avant.",
+    "placement": "x/y = position globale du noeud dans la scene de la zone (map_path de world/zones.json), au pixel pres : noeud porteur de metadata/workshop_station ou metadata/forge_station (interieurs, instances de scenes/world/interactables/*.tscn), ou PNJ dont le menu ouvre la Forge (role Forgeron). Poser ou deplacer un poste dans l'editeur = reporter sa position ici ; tests/test_craft_stations.gd (client) echoue tant qu'un poste de scene n'a pas sa ligne ici, ou l'inverse.",
+    "validation": "rules.use_range_px valide par Charleston le 2026-10-27 (meme valeur et meme logique que world/teleport_steles.json rules.use_range_px). L'exemption premium (fabriquer loin du poste en zone sure, hors combat) vit dans systems/premium.json benefits.craft_away_from_station_in_safe_zone, elle-meme a valider. L'amelioration (+N) de la Forge passe par la meme regle (station de systems/enhancement_system.json enhancement_overview.station)."
+  },
+  "rules": {
+    "use_range_px": 200,
+    "_use_range_px_note": "Valide par Charleston le 2026-10-27. Distance maximale (pixels monde) entre la position du joueur connue du serveur et le poste. Le bouton d'action s'affiche a 96 px (NPC_INTERACT_RANGE client) : la marge couvre le retard de synchronisation de la position, comme pour les steles."
+  },
+  "stations": [
+    {
+      "id": "atelier_scribe",
+      "station": "workshop_scribe",
+      "zone_id": "havreden_atelier_scribe",
+      "x": 55.25,
+      "y": 4.438,
+      "_where": "World/Workshop, scenes/world/interiors/havreden_atelier_scribe.tscn"
+    },
+    {
+      "id": "atelier_cuisinier",
+      "station": "workshop_cook",
+      "zone_id": "havreden_atelier_cuisinier",
+      "x": 102.125,
+      "y": 18.5,
+      "_where": "World/Workshop, scenes/world/interiors/havreden_atelier_cuisinier.tscn"
+    },
+    {
+      "id": "atelier_eleveur",
+      "station": "workshop_breeder",
+      "zone_id": "havreden_atelier_eleveur",
+      "x": 92.75,
+      "y": 9.125,
+      "_where": "World/Workshop, scenes/world/interiors/havreden_atelier_eleveur.tscn"
+    },
+    {
+      "id": "atelier_apothicaire",
+      "station": "workshop_apothecary",
+      "zone_id": "havreden_atelier_apothicaire",
+      "x": 86.5,
+      "y": 12.25,
+      "_where": "World/Workshop, scenes/world/interiors/havreden_atelier_apothicaire.tscn"
+    },
+    {
+      "id": "atelier_sculpteur_os",
+      "station": "workshop_bone_carver",
+      "zone_id": "havreden_atelier_sculpteur_os",
+      "x": 89.625,
+      "y": 10.688,
+      "_where": "World/Workshop, scenes/world/interiors/havreden_atelier_sculpteur_os.tscn"
+    },
+    {
+      "id": "atelier_chasseur_failles",
+      "station": "workshop_fissure_hunter",
+      "zone_id": "havreden_atelier_chasseur_failles",
+      "x": 86.5,
+      "y": 15.375,
+      "_where": "World/Workshop, scenes/world/interiors/havreden_atelier_chasseur_failles.tscn"
+    },
+    {
+      "id": "atelier_runiste",
+      "station": "workshop_runist",
+      "zone_id": "havreden_atelier_runiste",
+      "x": 92.75,
+      "y": 15.375,
+      "_where": "World/Workshop, scenes/world/interiors/havreden_atelier_runiste.tscn"
+    },
+    {
+      "id": "atelier_forge",
+      "station": "blacksmith",
+      "zone_id": "havreden_atelier_forge",
+      "x": 80.25,
+      "y": 18.5,
+      "_where": "World/Workshop (enclume, metadata/forge_station), scenes/world/interiors/havreden_atelier_forge.tscn"
+    },
+    {
+      "id": "atelier_brasseur",
+      "station": "workshop_brewer",
+      "zone_id": "havreden_atelier_brasseur",
+      "x": 58.375,
+      "y": -23.688,
+      "_where": "World/Workshop, scenes/world/interiors/havreden_atelier_brasseur.tscn"
+    },
+    {
+      "id": "etabli_prairie_tanneur",
+      "station": "workshop_tanner",
+      "zone_id": "village",
+      "x": 3936,
+      "y": 273,
+      "_where": "prairie_map/craft_yard_tanneur_se_001/Workbench (scenes/world/interactables/prairie_tanneur.tscn), havreden_map.tscn"
+    },
+    {
+      "id": "etabli_rochebourg_runiste",
+      "station": "workshop_runist",
+      "zone_id": "village",
+      "x": 4367,
+      "y": 10560,
+      "_where": "rochebourg_map/rochebourg_runiste_se_001/Workbench (scenes/world/interactables/rochebourg_runiste.tscn), havreden_map.tscn"
+    },
+    {
+      "id": "etabli_rochebourg_apothicaire",
+      "station": "workshop_apothecary",
+      "zone_id": "village",
+      "x": 4940,
+      "y": 10566,
+      "_where": "rochebourg_map/rochebourg_apothicaire_se_001/Workbench (scenes/world/interactables/rochebourg_apothicaire.tscn), havreden_map.tscn"
+    },
+    {
+      "id": "forge_gorik",
+      "station": "blacksmith",
+      "zone_id": "village",
+      "x": 3176,
+      "y": 1884,
+      "npc_id": "npc_blacksmith_gorik",
+      "_where": "Entities/NPC_Blacksmith_Gorik, havreden_map.tscn : son menu (role Forgeron) ouvre la Forge sur la place, devant la porte de la forge."
+    }
+  ]
+}
