@@ -187,6 +187,7 @@ class Projet:
     def __init__(self, racine: Path):
         self.racine = racine
         self._cache: dict[str, dict] = {}
+        self.orphelins: list[str] = []
 
     def fichier(self, res_path: str) -> Path:
         if not res_path.startswith("res://"):
@@ -211,6 +212,12 @@ class Projet:
                 path = n["name"]
             else:
                 path = par + "/" + n["name"]
+            parent_path = parent_of(path)
+            if parent_path is not None and parent_path not in out:
+                # Godot fait pareil : « Parent node not found », le noeud (et sa collision)
+                # n'existe pas en jeu. Signale, car c'est souvent un mur perdu.
+                self.orphelins.append(f"{res_path} : {path}")
+                continue
             if n["instance"]:
                 sub_path = doc["ext"][n["instance"]]["path"]
                 sub = self.arbre(sub_path)
@@ -736,6 +743,8 @@ def main():
             f"{k} {100 * v / total:.1f} %" for k, v in s.items() if k != "marchable"))
         print(f"  corps {rap['corps']}, polygones {rap['polygones']} (+{rap['polygones_contour']} contours), "
               f"formes {rap['formes']}, tuiles a collision {rap['tuiles_collision']}")
+        for o in sorted(set(projet.orphelins)):
+            print("  NOEUD ORPHELIN (ignore, comme Godot) :", o)
         for w in rap["avertissements"]:
             print("  AVERTISSEMENT :", w)
         print(f"  fichier : {len(texte.encode('utf-8')) / 1024:.0f} Ko")
