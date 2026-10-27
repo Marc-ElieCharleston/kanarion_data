@@ -1431,6 +1431,56 @@ def validate_teleport_steles(db: Path) -> list:
     return errors
 
 
+def validate_craft_stations(db: Path) -> list:
+    """world/craft_stations.json (2026-10-27) : postes de fabrication lus par economy.
+    Zones connues, ids uniques, x/y numeriques, station utilisee par au moins une recette
+    (metiers ou Forge), npc_id connu, portee > 0. Une station de recette sans aucun poste
+    est signalee (recette infabricable), sans faire echouer."""
+    errors = []
+    path = db / "world" / "craft_stations.json"
+    if not path.exists():
+        return ["[craft_stations.json] fichier absent : economy refuse de demarrer sans lui"]
+    data = load_json(path)
+    zones_path = db / "world" / "zones.json"
+    zone_ids = set()
+    if zones_path.exists():
+        zone_ids = {z.get("id") for z in load_json(zones_path).get("zones", []) if isinstance(z, dict)}
+    rules = data.get("rules", {})
+    rng = rules.get("use_range_px")
+    if not isinstance(rng, (int, float)) or isinstance(rng, bool) or rng <= 0:
+        errors.append("[craft_stations.json] rules.use_range_px doit etre un nombre > 0")
+    used = set()
+    for r in load_json(db / "items" / "profession_recipes.json").get("recipes", []):
+        if isinstance(r.get("station"), str) and r["station"]:
+            used.add(r["station"])
+    for r in load_json(db / "items" / "recipes.json").get("recipes", []):
+        if isinstance(r.get("station"), str) and r["station"]:
+            used.add(r["station"])
+    for p in load_json(db / "systems" / "professions.json").get("professions", []):
+        if isinstance(p.get("station"), str) and p["station"]:
+            used.add(p["station"])
+    npc_ids = {n.get("id") for n in _npc_entries(db)}
+    seen, placed = set(), set()
+    for s in data.get("stations", []):
+        sid = s.get("id", "")
+        if not sid or sid in seen:
+            errors.append(f"[craft_stations.json] id vide ou en double : '{sid}'")
+        seen.add(sid)
+        st = s.get("station", "")
+        if st not in used:
+            errors.append(f"[craft_stations.json] {sid} : station '{st}' utilisee par aucune recette ni metier")
+        placed.add(st)
+        if s.get("zone_id") not in zone_ids:
+            errors.append(f"[craft_stations.json] {sid} : zone '{s.get('zone_id')}' absente de world/zones.json")
+        if not all(isinstance(s.get(k), (int, float)) and not isinstance(s.get(k), bool) for k in ("x", "y")):
+            errors.append(f"[craft_stations.json] {sid} : x et y doivent etre des nombres")
+        if "npc_id" in s and s["npc_id"] not in npc_ids:
+            errors.append(f"[craft_stations.json] {sid} : npc_id '{s['npc_id']}' absent de entities/npcs.json")
+    for st in sorted(used - placed):
+        print(f"  NOTE craft_stations : la station '{st}' n'a aucun poste pose (ses recettes sont infabricables)")
+    return errors
+
+
 def validate_per_mob_override(db: Path) -> list:
     """config/monster_scaling_model.json per_mob_override : chaque cle est un monstre connu,
     seules les stats de croissance que le serveur sait appliquer (le serveur refuse le modele
@@ -3318,6 +3368,11 @@ def main():
 
     print("[12b2/12] Validating teleport steles (zones, ids, rules)...")
     errs = validate_teleport_steles(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12b2b/12] Validating craft stations (zones, stations, range)...")
+    errs = validate_craft_stations(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
