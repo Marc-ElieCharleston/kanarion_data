@@ -29,6 +29,7 @@
         20
       ],
       "lore_context": "Acte I - Apprentissage : premier vrai donjon. Le clan bandit a fait de cette gorge son repaire. Le joueur affronte une organisation humaine, pas juste de la faune sauvage.",
+      "_comment_keys": "2026-10-28 : les cles key_bandit_fort_* n'existent dans aucun fichier d'objets, et ce donjon n'a pas d'entree en jeu. key_required est donc null partout (une cle introuvable ferait une porte qui ne s'ouvre jamais, refusee par scripts/validate_cross_references.py) ; l'intention d'origine reste dans _key_required_planned. Decision ouverte (Charleston) : quelles cles, quelles sources, le jour ou le Fort devient jouable.",
       "difficulties": {
         "easy": {
           "key_required": null,
@@ -42,7 +43,8 @@
           "description": "Difficulte reduite, pas de cle requise"
         },
         "normal": {
-          "key_required": "key_bandit_fort_normal",
+          "key_required": null,
+          "_key_required_planned": "key_bandit_fort_normal",
           "modifiers": {
             "hp_mult": 1.0,
             "dmg_mult": 1.0,
@@ -53,7 +55,8 @@
           "description": "Difficulte standard"
         },
         "hard": {
-          "key_required": "key_bandit_fort_hard",
+          "key_required": null,
+          "_key_required_planned": "key_bandit_fort_hard",
           "modifiers": {
             "hp_mult": 1.4,
             "dmg_mult": 1.3,
@@ -64,7 +67,8 @@
           "description": "Defi accru, meilleures recompenses"
         },
         "heroic": {
-          "key_required": "key_bandit_fort_heroic",
+          "key_required": null,
+          "_key_required_planned": "key_bandit_fort_heroic",
           "modifiers": {
             "hp_mult": 2.0,
             "dmg_mult": 1.6,
@@ -1298,7 +1302,7 @@
         }
       },
       "_comment_difficulties": "MVP: fissure_1 SEULE. La difficulte vient des MONSTRES (max_stars + level_range + poids de mobs par zone d etage), pas d un multiplicateur d instance : le modele hp_mult/dmg_mult a ete abandonne, rien ne le lisait au runtime. Chaque palier aura ses PROPRES zones instanciees (dungeon_rat_den_f<N>_fissure_<M>) avec son propre jeu de spawns. Ne pas declarer fissure_2/3 ici tant que leurs zones n existent pas : le popup client est data-driven, il afficherait des paliers qui servent les monstres de fissure_1.",
-      "_comment_keys": "MVP: les 3 paliers sont ouverts (key_required null). Le drop de cle n'est lu par aucun .cpp au runtime (dungeon_key_drops/zone_drops dans loot_tables.json sont de la data morte), donc gater fissure_2/3 sur une cle les rendrait inatteignables. Allumer le gate quand le drop de cle sera cable.",
+      "_comment_keys": "Paliers et cle (proprietaire 2026-10-15) : fissure_1 reste libre. fissure_2 et fissure_3 demanderont la MEME cle, key_rat_den (key_required), consommee a l entree, une par joueur, et chacune s ouvre quand le joueur a fini le palier d avant (requires_cleared: fissure_1, puis fissure_2 ; verifie par le dungeon service sur last_completed_at). Le drop est pret dans items/loot_tables.json dungeon_key_drops._pending_level_band_drops, la recette dans items/profession_recipes.json (recipe_rune_key_rat_den). Le jour ou fissure_2 est declare : passer la regle de drop dans level_band_drops. Sur le boss (2026-10-28) : dungeon_key_drops._pending_boss_drops (Rongeur, 25 %, a valider), a passer dans boss_drops le meme jour. scripts/dungeon_content.py refuse une cle qui tombe sans qu un palier la demande.",
       "floors": [
         {
           "floor": 1,

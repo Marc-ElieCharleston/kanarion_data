@@ -54,8 +54,99 @@ def zone_id_for(dungeon, floor, difficulty):
         zone_prefix=dungeon['zone_prefix'], floor=floor, difficulty=difficulty)
 
 
-def validate(root, dungeon, front=None):
+def dungeon_keys(root):
+    """items/consumables.json dungeon_keys: key id -> the dungeon its effect opens."""
+    return {k['id']: k.get('effect', {}).get('dungeon_id')
+            for k in load(root, 'items/consumables.json').get('dungeon_keys', [])}
+
+
+def validate_tiers(root, dungeon):
+    """Keys and tier order (owner, 2026-10-15): ONE key per dungeon for every keyed tier,
+    and a tier opens once the player has cleared the one named by requires_cleared."""
     errors = []
+    did = dungeon['id']
+    keys = dungeon_keys(root)
+    tiers = dungeon.get('difficulties', {})
+    required = {s.get('key_required') for s in tiers.values()} - {None}
+    if len(required) > 1:
+        errors.append(f'{did}: one key per dungeon, its tiers ask for {sorted(required)}')
+    for tier, settings in tiers.items():
+        key = settings.get('key_required')
+        if key is not None and keys.get(key) != did:
+            errors.append(f'{did} {tier}: key_required {key!r} is not a dungeon_keys item '
+                          f'whose effect.dungeon_id is {did}')
+        prev = settings.get('requires_cleared')
+        if prev is not None and (prev == tier or prev not in tiers):
+            errors.append(f'{did} {tier}: requires_cleared {prev!r} must be another tier of {did}')
+    for tier in tiers:  # requires_cleared chains must end on a free tier, never loop
+        seen, cur = set(), tier
+        while cur is not None and cur not in seen:
+            seen.add(cur)
+            cur = tiers.get(cur, {}).get('requires_cleared')
+        if cur is not None:
+            errors.append(f'{did} {tier}: requires_cleared loops')
+            break
+    return errors
+
+
+def validate_key_drops(root, dungeons):
+    """items/loot_tables.json dungeon_key_drops: a key never drops below its dungeon's
+    level, and a LIVE rule only drops a key that a declared tier asks for (else the key
+    falls and opens nothing). _pending_level_band_drops waits for its tier."""
+    errors = []
+    keys = dungeon_keys(root)
+    by_id = {d['id']: d for d in dungeons}
+    asked = {s.get('key_required') for d in dungeons for s in d.get('difficulties', {}).values()}
+    block = load(root, 'items/loot_tables.json').get('dungeon_key_drops', {})
+    for live, rules in ((True, block.get('level_band_drops', [])),
+                        (False, block.get('_pending_level_band_drops', []))):
+        for r in rules:
+            key = r.get('key_id')
+            where = f'dungeon_key_drops {key}'
+            dungeon = by_id.get(keys.get(key))
+            if dungeon is None:
+                errors.append(f'{where}: not a dungeon_keys item of an open dungeon')
+                continue
+            if live and key not in asked:
+                errors.append(f'{where}: no declared tier asks for this key; '
+                              f'keep the rule in _pending_level_band_drops')
+            lo, hi = r.get('min_mob_level'), r.get('max_mob_level')
+            floor_level = dungeon['level_range'][0]
+            if not (isinstance(lo, int) and isinstance(hi, int) and floor_level <= lo <= hi <= 100):
+                errors.append(f'{where}: band [{lo}, {hi}] must lie within '
+                              f'{floor_level}..100 (never below {dungeon["id"]})')
+            if not isinstance(r.get('chance'), (int, float)) or not 0 < r['chance'] <= 1:
+                errors.append(f'{where}: chance must be in (0, 1]')
+    # Boss rules (owner, 2026-10-28): the key also drops on the dungeon's boss, one roll
+    # per player per kill. The monster must be the boss of the key's dungeon, one rule
+    # per boss (the server would skip a second one), and a LIVE rule needs a tier.
+    for live, rules in ((True, block.get('boss_drops', [])),
+                        (False, block.get('_pending_boss_drops', []))):
+        bosses_seen = set()
+        for r in rules:
+            key = r.get('key_id')
+            where = f'dungeon_key_drops boss {key}'
+            dungeon = by_id.get(keys.get(key))
+            if dungeon is None:
+                errors.append(f'{where}: not a dungeon_keys item of an open dungeon')
+                continue
+            if live and key not in asked:
+                errors.append(f'{where}: no declared tier asks for this key; '
+                              f'keep the rule in _pending_boss_drops')
+            boss = (dungeon.get('boss') or {}).get('id')
+            if r.get('monster_id') != boss:
+                errors.append(f'{where}: monster_id {r.get("monster_id")!r} is not the boss of '
+                              f'{dungeon["id"]} ({boss!r})')
+            if r.get('monster_id') in bosses_seen:
+                errors.append(f'{where}: a second rule for {r.get("monster_id")} (one roll per boss kill)')
+            bosses_seen.add(r.get('monster_id'))
+            if not isinstance(r.get('chance'), (int, float)) or not 0 < r['chance'] <= 1:
+                errors.append(f'{where}: chance must be in (0, 1]')
+    return errors
+
+
+def validate(root, dungeon, front=None):
+    errors = validate_tiers(root, dungeon)
     zones = {z['id']: z for z in load(root, 'world/zones.json')['zones']}
     monsters = {m['id'] for m in load(root, 'entities/monsters.json')['monsters']}
     did = dungeon['id']
@@ -216,6 +307,7 @@ def main():
     errors = []
     for d in dungeons:
         errors += validate(args.data, d, args.front)
+    errors += validate_key_drops(args.data, open_dungeons(content))
     sql = '\n\n'.join(template_sql(d) for d in dungeons) + '\n'
     if args.check_sql:
         text = args.check_sql.read_text(encoding='utf-8').replace('\r\n', '\n')
