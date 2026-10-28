@@ -132,9 +132,9 @@ DECOUPES = {
         {"suffix": "a", "level_range": [13, 19], "max_stars": 3,
          "mobs": [{"id": "mob_wolf", "weight": 3}, {"id": "mob_frothing_wolf", "weight": 2}]},
         {"suffix": "b", "level_range": [20, 26], "max_stars": 3,
-         "mobs": [{"id": "mob_loup_noir", "weight": 3}, {"id": "mob_wolf_packleader", "weight": 1}]},
+         "mobs": [{"id": "mob_loup_noir", "weight": 3}]},
         {"suffix": "c", "level_range": [27, 32], "max_stars": 4,
-         "elite_pool": ["mob_wolf_soigneur"], "elite_pack_chance": 0.25,
+         "elite_pool": ["mob_vieux_loup"], "elite_pack_chance": 0.25,
          "mobs": [{"id": "mob_loup_blanc", "weight": 3}, {"id": "mob_vieux_loup", "weight": 2}]},
     ]},
     "mz_anse_des_naufrages_1_100": {"mode": "coins", "morceaux": [
