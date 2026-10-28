@@ -2464,6 +2464,53 @@ def validate_tower_infinite(db: Path, rules: dict, all_item_ids: set) -> list:
     return errors
 
 
+def validate_dungeon_key_refs(db: Path, all_item_ids: set) -> list:
+    """Cles de donjon (2026-10-28) : toute cle NOMMEE existe dans les objets.
+
+    - chaque `key_required` de chaque palier de chaque donjon (world/dungeons.json),
+      ouvert ou non : une porte qui demande une cle introuvable ne s'ouvre jamais ;
+    - chaque `key_id` de items/loot_tables.json `dungeon_key_drops` (level_band_drops,
+      boss_drops, et leurs variantes _pending_*) : une cle qui tombe doit exister ;
+    - chaque recette (items/profession_recipes.json, items/recipes.json) qui produit
+      une cle `key_*` : la cle doit exister et etre une cle de donjon (dungeon_keys).
+    Les regles de fond (une cle par donjon, tranche jamais sous le donjon, pas de regle
+    active sans palier qui la demande) vivent dans scripts/dungeon_content.py.
+    """
+    errors = []
+    tag = "[dungeon_keys]"
+    cons = load_json(db / "items" / "consumables.json")
+    dungeon_key_ids = {k.get("id") for k in cons.get("dungeon_keys", []) if isinstance(k, dict)}
+    dungeons = load_json(db / "world" / "dungeons.json").get("dungeons", [])
+    for d in dungeons:
+        for tier, s in (d.get("difficulties") or {}).items():
+            key = s.get("key_required") if isinstance(s, dict) else None
+            if key is None:
+                continue
+            if key not in all_item_ids:
+                errors.append(f"{tag} {d.get('id')} {tier} : key_required '{key}' n'existe dans aucun fichier d'objets")
+            elif key not in dungeon_key_ids:
+                errors.append(f"{tag} {d.get('id')} {tier} : key_required '{key}' n'est pas dans consumables.json dungeon_keys")
+    block = load_json(db / "items" / "loot_tables.json").get("dungeon_key_drops", {})
+    for section in ("level_band_drops", "_pending_level_band_drops", "boss_drops", "_pending_boss_drops"):
+        rules = block.get(section, [])
+        if not isinstance(rules, list):
+            errors.append(f"{tag} loot_tables.json dungeon_key_drops.{section} n'est pas une liste")
+            continue
+        for r in rules:
+            key = r.get("key_id") if isinstance(r, dict) else None
+            if key not in dungeon_key_ids:
+                errors.append(f"{tag} loot_tables.json dungeon_key_drops.{section} : cle '{key}' absente de consumables.json dungeon_keys")
+    for rel in ("items/profession_recipes.json", "items/recipes.json"):
+        path = db / rel
+        if not path.exists():
+            continue
+        for r in load_json(path).get("recipes", []):
+            out = r.get("output_item") if isinstance(r, dict) else None
+            if isinstance(out, str) and out.startswith("key_") and out not in dungeon_key_ids:
+                errors.append(f"{tag} {rel} {r.get('id')} : produit la cle '{out}' absente de consumables.json dungeon_keys")
+    return errors
+
+
 def validate_tower(db: Path, all_item_ids: set) -> list:
     """systems/tower.json + world/tower_floors.json : monstres actifs, cles, bornes."""
     errors = []
@@ -3468,6 +3515,11 @@ def main():
 
     print("[12x/12] Validating emote scrolls (one per premium emote, drop chances, generator)...")
     errs = validate_emote_scrolls(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12y/12] Validating dungeon keys (key_required, key drop rules, key recipes)...")
+    errs = validate_dungeon_key_refs(db, all_item_ids)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
