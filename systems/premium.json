@@ -11,6 +11,7 @@
       "benefits.teleport_free": "economy, handle_teleport : le passeur ne preleve pas d'or.",
       "benefits.npc_buy_discount_percent": "economy, handle_buy_item : remise sur le TOTAL d'un achat chez un marchand PNJ, arrondi au superieur, jamais sous 1 or. Pas sur la revente, l'HDV, la forge, les plans de metier.",
       "benefits.craft_away_from_station_in_safe_zone": "economy, crafting::may_craft_here (CRAFT_ITEM 0x041D, metiers ET Forge) : vrai = l'abonne fabrique sans etre pres du poste, mais seulement dans une zone sure (zone is_safe_zone de world/zones.json, ou a l'interieur d'un safe_polygon / safe_polygons de sa zone : Havreden, Rochebourg...) et hors combat, a la position que presence connait ; tous rangs de recette. Jamais une station sans aucun poste pose (aucun contenu ferme aux non-abonnes). Decision Charleston du 2026-10-27, valeur A VALIDER ; faux = tout le monde fabrique pres du poste (desactivable pour les tests). Pas encore affiche dans la fenetre du pass (le message d'etat 0x0486 ne porte pas cette cle).",
+      "benefits.auction_trade_away_from_npc_in_safe_zone": "economy, handle_auction_create / handle_auction_buyout via crafting::may_craft_here (la meme decision que la fabrication, postes de systems/economy.json auction_house.trade_posts) : vrai = l'abonne achete et vend a l'hotel des ventes sans etre aupres de Silas, mais seulement en zone sure (meme lecture que ci-dessus) et hors combat, a la position que presence connait. La consultation (recherche, prix, ses annonces) est libre pour tous, partout. Decision Charleston du 2026-10-28 pour la consultation ; l'achat et la vente a distance reserves au Premium en ville sont A VALIDER ; faux = tout le monde achete et vend aupres de Silas.",
       "benefits.bag_bonus_slots / bank_bonus_slots": "economy, InventoryManager::capacity : places de sac / banque en plus tant que le niveau est actif (Premium+ seulement, 0 si absent). A l'expiration rien n'est perdu : les objets restent, on peut les retirer, on ne peut plus en ajouter tant que le total depasse la capacite ; le seuil de surcharge garde le bonus, l'ancien abonne n'est jamais bloque. Valeurs du 2026-10-17 a valider (une extension de sac = 10 places).",
       "tiers": "economy, premium/premium_pass.hpp : prix (price_diamonds), duree (period_days), diamants reverses (bonus_diamonds), ordre (rank). Achat aux diamants uniquement, 0x0487.",
       "offer": "economy : enabled ferme l'achat sans toucher aux abonnes en cours ; max_banked_days plafonne la reserve de jours.",
@@ -28,16 +29,17 @@
     "familiar_out_of_combat_regen_multiplier": 2,
     "teleport_free": true,
     "npc_buy_discount_percent": 10,
-    "craft_away_from_station_in_safe_zone": true
+    "craft_away_from_station_in_safe_zone": true,
+    "auction_trade_away_from_npc_in_safe_zone": true
   },
   "tiers": {
     "premium": {
       "rank": 1,
       "name_fr": "Premium",
       "name_en": "Premium",
-      "description_fr": "Le confort au quotidien : récupération plus rapide hors combat, voyages gratuits et prix réduits chez les marchands. Fabrication à distance : en ville ou en zone sûre, fabrique sans être à côté de l'établi.",
-      "description_en": "Everyday comfort: faster recovery out of combat, free travel and lower prices at merchants. Remote crafting: in towns and safe zones, craft without standing at a workbench.",
-      "_description_note": "BROUILLON a valider (2026-10-27) : derniere phrase FR/EN (fabrication a distance, avantage craft_away_from_station_in_safe_zone) ajoutee, texte propose par le proprietaire, a relire. Premium+ la reprend (Tout Premium).",
+      "description_fr": "Le confort au quotidien : récupération plus rapide hors combat, voyages gratuits et prix réduits chez les marchands. Fabrication à distance : en ville ou en zone sûre, fabrique sans être à côté de l'établi. Hôtel des ventes à distance : en ville ou en zone sûre, achète et vends sans aller voir Silas.",
+      "description_en": "Everyday comfort: faster recovery out of combat, free travel and lower prices at merchants. Remote crafting: in towns and safe zones, craft without standing at a workbench. Remote auction house: in towns and safe zones, buy and sell without visiting Silas.",
+      "_description_note": "BROUILLON a valider (2026-10-27) : derniere phrase FR/EN (fabrication a distance, avantage craft_away_from_station_in_safe_zone) ajoutee, texte propose par le proprietaire, a relire. Premium+ la reprend (Tout Premium). BROUILLON a valider (2026-10-28) : derniere phrase FR/EN (hotel des ventes a distance, avantage auction_trade_away_from_npc_in_safe_zone) ajoutee.",
       "price_diamonds": 1000,
       "period_days": 30,
       "bonus_diamonds": 0
