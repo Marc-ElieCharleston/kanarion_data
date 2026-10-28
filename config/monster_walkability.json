@@ -1,0 +1,18 @@
+{
+  "_doc": "Marchabilite des monstres du monde (presence). Le serveur tire la position de chaque groupe de monstres ; le client fait ensuite errer le monstre autour de ce point, en ligne droite, a au plus patrol_radius px (scripts/actors/monsters/monster.gd _do_patrol, sans collision). Pour qu'un monstre ne marche jamais sur l'eau ni a travers un obstacle, le serveur ne garde un point que si TOUT le disque d'errance (patrol_radius + body_margin) est marchable dans la grille de la zone : un disque est convexe, donc chaque destination ET chaque trajet en ligne droite y restent. Grilles : world/walkability/<zone_id>.json, GENEREES par scripts/export_walkability.py depuis la carte Godot (collisions statiques du joueur + tuiles a collision + sol non peint + hors area_limit). Une zone sans grille garde l'ancien comportement (fail-open). Relancer le script apres toute retouche de la carte.",
+  "enabled": true,
+  "extraction": {
+    "_doc": "Lu par scripts/export_walkability.py seulement. cell_size_px : finesse de la grille (16 px = un quart de tuile iso en largeur). ground_layers : calques TileMapLayer qui comptent comme sol ; un point sans tuile sur aucun d'eux est du vide, non marchable. player_scene : la scene dont le collision_mask decide quels corps bloquent (le monstre suit les memes murs que le joueur).",
+    "cell_size_px": 16,
+    "ground_layers": ["Ground", "Water"],
+    "player_scene": "res://scenes/actors/player.tscn",
+    "zones": ["village"]
+  },
+  "spawn": {
+    "_doc": "Lu par presence au demarrage. default_patrol_radius_px : rayon d'errance envoye au client (etait 80 en dur). body_margin_px : marge ajoutee au rayon pour le pas de deplacement et l'empreinte du monstre. Si aucun point ne laisse le rayon complet apres max_attempts tirages, le meilleur point trouve est garde avec un rayon reduit, jamais sous min_patrol_radius_px ; en dessous, le groupe n'est pas pose (warning). Valeurs a valider par Charleston.",
+    "default_patrol_radius_px": 80,
+    "body_margin_px": 16,
+    "min_patrol_radius_px": 32,
+    "max_attempts": 96
+  }
+}
