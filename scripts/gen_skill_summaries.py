@@ -14,7 +14,8 @@ Rules, applied to both languages with the SAME decisions:
   1. split the description into sentences;
   2. keep the sentences that carry a number (the mechanics); the lore sentences
      ("The Commander calls his own...") have none and are dropped;
-  3. drop parenthesised details (per-rank growth, caps), still visible behind "+";
+  3. drop parenthesised details (caps, conditions), still visible behind "+",
+     but keep the ones that say how a value grows per rank or level;
   4. take the first mechanical sentence, add the next one while the whole fits;
   5. a first sentence longer than MAX_CHARS is cut on a clause boundary and ends
      with an ellipsis.
@@ -60,6 +61,10 @@ SOURCES = [
 
 _SENTENCE_END = re.compile(r'(?<=[.!?])\s+(?=[A-ZÀ-Ý«"(+\-0-9])')
 _PAREN = re.compile(r'\s*\([^()]*\)')
+# A parenthesis that says how a value GROWS with the rank stays: without it the
+# summary would claim the rank 1 value for every rank ("Inflige 60% ATQ" read at
+# rank 5, where the sheet says 68%).
+_KEEP_PAREN = re.compile(r'\b(rang|rank|niveau|level|niv)\b|/\s*(niv|lvl|rang|rank)', re.IGNORECASE)
 _NUMBER = re.compile(r'\d+(?:[.,]\d+)?')
 _CLAUSE = re.compile(r'(?<=[,;:])\s+')
 
@@ -87,7 +92,7 @@ def numbers(text):
 
 
 def strip_details(sentence):
-    out = _PAREN.sub('', sentence).strip()
+    out = _PAREN.sub(lambda m: m.group(0) if _KEEP_PAREN.search(m.group(0)) else '', sentence).strip()
     # Only the gap the removed group leaves before a period or a comma: the
     # French space before ':' ';' '!' '?' is kept.
     out = re.sub(r'\s+([.,])', r'\1', out)
@@ -125,15 +130,23 @@ def summarize(fr, en):
         if max(len(cand_fr), len(cand_en)) > MAX_CHARS:
             break
         out_fr, out_en = cand_fr, cand_en
-    # A single sentence still too long: cut both on the same clause boundary.
+    # A single sentence still too long: cut each language on a clause boundary,
+    # keeping the longest pair that fits AND says the same numbers. The two
+    # languages do not always split into the same number of clauses ("Apres
+    # 2,5s d'incantation, inflige" / "After a 2.5s cast, deals"), so the cut
+    # points are searched together rather than assumed to match.
     if max(len(out_fr), len(out_en)) > MAX_CHARS:
-        cfr, cen = _CLAUSE.split(out_fr), _CLAUSE.split(out_en)
-        if len(cfr) == len(cen) and len(cfr) > 1:
-            for count in range(len(cfr) - 1, 0, -1):
-                a, b = cut_clauses(out_fr, count), cut_clauses(out_en, count)
+        nfr, nen = len(_CLAUSE.split(out_fr)), len(_CLAUSE.split(out_en))
+        best = None
+        for kf in range(1, nfr):
+            a = cut_clauses(out_fr, kf)
+            for ke in range(1, nen):
+                b = cut_clauses(out_en, ke)
                 if max(len(a), len(b)) <= MAX_CHARS and numbers(a) == numbers(b):
-                    out_fr, out_en = a, b
-                    break
+                    if best is None or len(a) + len(b) > len(best[0]) + len(best[1]):
+                        best = (a, b)
+        if best is not None:
+            out_fr, out_en = best
     return out_fr, out_en
 
 
