@@ -14,6 +14,7 @@
       "resets": "reset_mode daily / weekly : la quete redevient acceptable a l'heure fixe de reset_schedule (5 h Paris), plus 24 h / 7 jours glissants.",
       "moral_choices": "moral_choice / moral_choices[] : moment 'on_completion' = choix fait au rendu, obligatoire au rendu (erreur QUEST_CHOICE_REQUIRED 0x0A04). choice_x : label_fr/label_en, stat, value, sets_flags (facultatif), outcome_fr/outcome_en (facultatif, denouement affiche apres le choix). Les autres moments (room_*) ne sont geres par aucun flux.",
       "story_flags": "requires_flags / forbids_flags (quete ou PNJ de entities/npcs.json) : chaque drapeau doit etre pose par un choix (implicite moral:<quete>:<a|b> ou sets_flags), verifie par validate_cross_references.py.",
+      "objective_xp": "2026-10-29. Champ de quete objective_xp [{objective, xp}] : XP fixe versee UNE fois a la fin de l'etape (service quest, registre world_event_rewards kind quest_step, poussee CHARACTER_PROGRESS_UPDATED + toast client), en plus de rewards.xp qui reste versee au rendu. Le rendu verse aussi les etapes encore non payees. Refuse sur une quete repeatable.",
       "acte1_lifecycle": "Acte I Havreden V2 (2026-10-24). Gabarits : accept_quest {quest_id} et complete_quest {quest_id} (faits serveur : acceptation / rendu d'une autre quete, reconcilies a l'acceptation et a quest.state) ; quest_objective {quest_id, objective} (miroir de la progression d'un objectif d'une autre quete) ; open_quest_board {board} (notifie par le client, tableau connu de contract_limits.boards) ; reach_area {area_id} (position PRESENCE dans world/zones.json quest_areas) ; watch_cinematic {cinematic_id} (vue ou passee, porte sequentielle). complete_dungeon accepte difficulty (mode Histoire). Champs : forbids_quests (jamais si une de ces quetes est active ou faite), blocked_while_active, completed_by (comptee faite sans recompense quand une de ces quetes est faite : ancien parcours), accept_only_via_objective (acceptee seulement par une etape ouverte qui l'attend), tutorial_contract (hors plafond, hors coffres, XP fixe), objective_items [{objective, items}] (objet donne une fois a la fin d'un objectif), sets_flags (drapeaux d'histoire ecrits dans la transaction du rendu), sets_flags_on_accept (2026-10-26 : drapeaux d'histoire ecrits dans la transaction de l'ACCEPTATION, ex. ezra_home_visit qui fait apparaitre Ezra chez lui des que la visite est prise), turn_in_npc (PNJ de rendu, client), toast_accept_* / toast_ready_* (client), dialogue_progress_* (suivi dit en Parler)."
     }
   },
@@ -4430,8 +4431,19 @@
           }
         }
       ],
+      "objective_xp": [
+        { "objective": 0, "xp": 150 },
+        { "objective": 1, "xp": 150 },
+        { "objective": 2, "xp": 150 },
+        { "objective": 3, "xp": 150 },
+        { "objective": 4, "xp": 100 },
+        { "objective": 5, "xp": 100 },
+        { "objective": 6, "xp": 600 },
+        { "objective": 7, "xp": 200 }
+      ],
+      "_objective_xp_a_valider": "2026-10-29 (Charleston) : les 2424 XP ne tombent plus d'un coup au rendu. Chaque etape paie sa part a sa fin (objective_xp, service quest, une seule fois par personnage) : Milo, Colette, Hestia et Varn 150 chacun, tableau des contrats 100, acceptation de Premiere chasse 100, les 5 monstres 600, recompense du contrat 200 ; le retour a Tobin (rendu) garde 824. Total inchange : 2424. Un personnage deja en cours au deploiement recoit au rendu les etapes encore non payees.",
       "rewards": {
-        "xp": 2424,
+        "xp": 824,
         "gold": 150,
         "items": [
           {
