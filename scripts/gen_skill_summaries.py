@@ -37,8 +37,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'ui' / 'skill_summaries.json'
 
-# Two lines of the 360 px tooltip at the medium font hold about 2 x 55 chars.
-MAX_CHARS = 110
+# Two to three lines of the 360 px tooltip (about 50 chars a line). Shorter cut
+# whole clauses away: the first sentence usually carries the damage AND its
+# status effects, a cut at 110 dropped the effects (review of the 29/10 captures).
+MAX_CHARS = 140
 ELLIPSIS = '…'
 # Long dashes are banned from player text (Charleston): never emit one, and
 # refuse a description that would carry one into a summary.
@@ -188,7 +190,7 @@ _WORD = re.compile(r'\w+', re.UNICODE)
 
 # Hard ceiling, whatever the clause cuts could do (a sentence without any clause
 # boundary stays whole). Above this, the description itself needs a rewrite.
-HARD_MAX_CHARS = 160
+HARD_MAX_CHARS = 180
 
 
 def problems(summaries, sources):
