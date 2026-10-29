@@ -1,8 +1,8 @@
 {
   "_meta": {
-    "version": "2.0",
-    "last_updated": "2026-08-01",
-    "description": "Regles de formation (placement mob en combat) keyees ai_role. v1.1: cohérence PORTEE (melee range2 tank/brute/berserker/bruiser->front rows 0-1, assassin->row1 juste derriere le front car range2 ne peut pas sniper du fond ; ranged range6-7 artillery/caster/tactician/controller/healer/support->fond rows 2-3). Ajout des roles MANQUANTS controller/caster/bruiser (avant: fallback front-row a tort). Rows absolues pour grille 4-rangs actuelle ; a etendre pour 10x5. v2.0: AJOUT formation_rules_by_archetype (7 stat_archetypes + bandes nommees) = table PRIMARY que le back consomme apres bascule de cle ; formation_rules (ai_role, rows) reste en fallback non-breaking."
+    "version": "3.0",
+    "last_updated": "2026-10-29",
+    "description": "Regles de formation (placement mob en combat) keyees ai_role. v1.1: cohérence PORTEE (melee range2 tank/brute/berserker/bruiser->front rows 0-1, assassin->row1 juste derriere le front car range2 ne peut pas sniper du fond ; ranged range6-7 artillery/caster/tactician/controller/healer/support->fond rows 2-3). Ajout des roles MANQUANTS controller/caster/bruiser (avant: fallback front-row a tort). Rows absolues pour grille 4-rangs actuelle ; a etendre pour 10x5. v2.0: AJOUT formation_rules_by_archetype (7 stat_archetypes + bandes nommees) = table PRIMARY que le back consomme apres bascule de cle ; formation_rules (ai_role, rows) reste en fallback non-breaking. v3.0 (2026-10-29, plateau 12x6) : placement par PORTEE REELLE. Les bandes 'reach' et 'support' remplacent 'back' pour les tireurs, lanceurs, soigneurs et soutiens : le moteur (server-combat combat/monster_formation.cpp) calcule la rangee depuis les competences du monstre au lieu de l'envoyer au fond, ou une portee 5 ne touchait plus la premiere ligne adverse (distance 6). Les 5 archetypes sans regle (guardian, berserker, healer, enchanter, summoner) en ont une."
   },
   "formation_rules": {
     "tank": {
@@ -111,40 +111,72 @@
     "description": "Si toutes les preferred_rows sont pleines, prendre n'importe quel slot libre en partant du front"
   },
   "formation_rules_by_archetype": {
-    "_comment": "PRIMARY (v2): keye stat_archetype + bandes nommees front/mid/back. Le back bascule le lookup ici (fallback formation_rules ai_role, non-breaking). Bandes traduites en lignes locales par rows_per_team au spawn -> geometrie-agnostique (4x5/10x5/10x6). front=melee range2 (tank/brute), back=ranged range6-7 (archer/mage/controller/support), mid=assassin (glass melee ; teleporte a n'importe quel ennemi via shadow_strike + invisible 6s, donc position de depart peu critique).",
+    "_comment": "PRIMARY : keye stat_archetype. Bandes : front = corps a corps et tanks, rangee avant d'abord ; reach = tireurs et lanceurs, la rangee la plus reculee d'ou la competence PRINCIPALE du monstre (sa competence de degats au plus court temps de recharge, a egalite la plus longue portee, en ignorant celles taguees reach_placement.main_skill_skip_tag s'il en a d'autres) atteint encore la premiere ligne adverse, moins reach_placement.safety_margin_cells, puis les rangees plus proches ; support = soigneurs et soutiens, places en dernier, une rangee derriere l'allie le plus avance du groupe (au moins support_min_row), a portee de soin/buff de cet allie, et dans cette fenetre la rangee la plus reculee d'ou sa competence offensive principale atteint encore la premiere ligne adverse ; mid = centre (assassins a teleportation, depart peu critique) ; back = ancienne bande du fond, plus utilisee. Une rangee locale r est a la distance r + 1 de la premiere ligne adverse (meme colonne). A VALIDER par Charleston : bandes par archetype et ordre de placement (2026-10-29).",
     "tank": {
       "band": "front",
       "placement_priority": 1
     },
-    "brute": {
+    "guardian": {
       "band": "front",
       "placement_priority": 2
     },
-    "archer": {
-      "band": "back",
+    "brute": {
+      "band": "front",
       "placement_priority": 3
     },
-    "mage": {
-      "band": "back",
+    "berserker": {
+      "band": "front",
       "placement_priority": 4
     },
-    "controller": {
-      "band": "back",
+    "archer": {
+      "band": "reach",
       "placement_priority": 5
     },
-    "support": {
-      "band": "back",
+    "mage": {
+      "band": "reach",
       "placement_priority": 6
+    },
+    "controller": {
+      "band": "reach",
+      "placement_priority": 7
+    },
+    "summoner": {
+      "band": "reach",
+      "placement_priority": 8
+    },
+    "healer": {
+      "band": "support",
+      "placement_priority": 13
+    },
+    "support": {
+      "band": "support",
+      "placement_priority": 14
+    },
+    "enchanter": {
+      "band": "support",
+      "placement_priority": 15
     },
     "assassin": {
       "band": "mid",
-      "placement_priority": 7
+      "placement_priority": 12
     }
   },
   "band_definitions": {
-    "_comment": "Le moteur traduit les bandes en lignes locales selon rows_per_team au spawn.",
-    "front": "ligne avant (row local 0, colle au no-mans-land)",
-    "mid": "ligne(s) du milieu (entre front et back)",
-    "back": "fond (derniere ligne locale), protege par LoS derriere une colonne front"
+    "_comment": "Le moteur traduit les bandes en rangees locales (0 = avant) selon rows_per_team et la portee du monstre.",
+    "front": "rangee avant d'abord (colle au milieu du plateau)",
+    "reach": "rangee la plus reculee d'ou la competence principale atteint la premiere ligne adverse, puis plus pres",
+    "support": "derriere le front, a portee de soin des allies du front et de la premiere ligne adverse",
+    "mid": "rangee(s) du milieu",
+    "back": "fond (ancienne bande, conservee pour un vieux fichier ; plus aucun archetype ne l'utilise)"
+  },
+  "reach_placement": {
+    "_comment": "Lu par server-combat (combat/monster_formation.cpp), CLES OBLIGATOIRES. enabled : placement par portee et garde-fou 'rangees atteignables d'abord' pour toute bande hors front (false = ancien comportement des bandes). safety_margin_cells : cases de portee gardees en reserve par un tireur (0 = au bord exact de sa portee : la premiere ligne adverse a portee, la deuxieme non ; il s'avance seul si la cible recule). support_min_row : rangee locale minimale d'un soigneur ou soutien (1 = derriere la rangee avant). A VALIDER par Charleston (2026-10-29). main_skill_skip_tag : tag de competence ignore pour choisir la competence PRINCIPALE d'un monstre qui en a d'autres (\"melee\" : la morsure d'un rat mage ne fait pas de lui un monstre de corps a corps).",
+    "enabled": true,
+    "safety_margin_cells": 0,
+    "support_min_row": 1,
+    "main_skill_skip_tag": "melee"
+  },
+  "monster_overrides": {
+    "_comment": "Placement a la main d'un monstre precis (boss au cas par cas), keye id de monstre : {\"band\": \"front|reach|support|mid|back\" ou \"\" pour garder celle de l'archetype, \"row\": rangee locale (0 = avant) ou -1}. Vide au 2026-10-29 : aucun boss n'a de placement explicite, chacun suit la regle de son archetype."
   }
 }
