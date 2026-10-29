@@ -111,7 +111,7 @@
     "description": "Si toutes les preferred_rows sont pleines, prendre n'importe quel slot libre en partant du front"
   },
   "formation_rules_by_archetype": {
-    "_comment": "PRIMARY : keye stat_archetype. Bandes : front = corps a corps et tanks, rangee avant d'abord ; reach = tireurs et lanceurs, la rangee la plus reculee d'ou la competence PRINCIPALE du monstre (sa competence de degats au plus court temps de recharge, a egalite la plus longue portee) atteint encore la premiere ligne adverse, moins reach_placement.safety_margin_cells, puis les rangees plus proches ; support = soigneurs et soutiens, derriere le front (au moins support_min_row), a portee de soin/buff des allies du front et, s'il a une competence offensive, a portee de la premiere ligne adverse ; mid = centre (assassins a teleportation, depart peu critique) ; back = ancienne bande du fond, plus utilisee. Une rangee locale r est a la distance r + 1 de la premiere ligne adverse (meme colonne). A VALIDER par Charleston : bandes par archetype et ordre de placement (2026-10-29).",
+    "_comment": "PRIMARY : keye stat_archetype. Bandes : front = corps a corps et tanks, rangee avant d'abord ; reach = tireurs et lanceurs, la rangee la plus reculee d'ou la competence PRINCIPALE du monstre (sa competence de degats au plus court temps de recharge, a egalite la plus longue portee, en ignorant celles taguees reach_placement.main_skill_skip_tag s'il en a d'autres) atteint encore la premiere ligne adverse, moins reach_placement.safety_margin_cells, puis les rangees plus proches ; support = soigneurs et soutiens, places en dernier, une rangee derriere l'allie le plus avance du groupe (au moins support_min_row), a portee de soin/buff de cet allie, et dans cette fenetre la rangee la plus reculee d'ou sa competence offensive principale atteint encore la premiere ligne adverse ; mid = centre (assassins a teleportation, depart peu critique) ; back = ancienne bande du fond, plus utilisee. Une rangee locale r est a la distance r + 1 de la premiere ligne adverse (meme colonne). A VALIDER par Charleston : bandes par archetype et ordre de placement (2026-10-29).",
     "tank": {
       "band": "front",
       "placement_priority": 1
@@ -146,15 +146,15 @@
     },
     "healer": {
       "band": "support",
-      "placement_priority": 9
+      "placement_priority": 13
     },
     "support": {
       "band": "support",
-      "placement_priority": 10
+      "placement_priority": 14
     },
     "enchanter": {
       "band": "support",
-      "placement_priority": 11
+      "placement_priority": 15
     },
     "assassin": {
       "band": "mid",
@@ -170,10 +170,11 @@
     "back": "fond (ancienne bande, conservee pour un vieux fichier ; plus aucun archetype ne l'utilise)"
   },
   "reach_placement": {
-    "_comment": "Lu par server-combat (combat/monster_formation.cpp), CLES OBLIGATOIRES. enabled : placement par portee et garde-fou 'rangees atteignables d'abord' pour toute bande hors front (false = ancien comportement des bandes). safety_margin_cells : cases de portee gardees en reserve par un tireur (0 = au bord exact de sa portee : la premiere ligne adverse a portee, la deuxieme non ; il s'avance seul si la cible recule). support_min_row : rangee locale minimale d'un soigneur ou soutien (1 = derriere la rangee avant). A VALIDER par Charleston (2026-10-29).",
+    "_comment": "Lu par server-combat (combat/monster_formation.cpp), CLES OBLIGATOIRES. enabled : placement par portee et garde-fou 'rangees atteignables d'abord' pour toute bande hors front (false = ancien comportement des bandes). safety_margin_cells : cases de portee gardees en reserve par un tireur (0 = au bord exact de sa portee : la premiere ligne adverse a portee, la deuxieme non ; il s'avance seul si la cible recule). support_min_row : rangee locale minimale d'un soigneur ou soutien (1 = derriere la rangee avant). A VALIDER par Charleston (2026-10-29). main_skill_skip_tag : tag de competence ignore pour choisir la competence PRINCIPALE d'un monstre qui en a d'autres (\"melee\" : la morsure d'un rat mage ne fait pas de lui un monstre de corps a corps).",
     "enabled": true,
     "safety_margin_cells": 0,
-    "support_min_row": 1
+    "support_min_row": 1,
+    "main_skill_skip_tag": "melee"
   },
   "monster_overrides": {
     "_comment": "Placement a la main d'un monstre precis (boss au cas par cas), keye id de monstre : {\"band\": \"front|reach|support|mid|back\" ou \"\" pour garder celle de l'archetype, \"row\": rangee locale (0 = avant) ou -1}. Vide au 2026-10-29 : aucun boss n'a de placement explicite, chacun suit la regle de son archetype."
