@@ -1299,10 +1299,92 @@
           "key_required": null,
           "description_fr": "Emprise faible. La Fissure tient a peine le terrier.",
           "description_en": "Weak hold. The Fissure barely grips the burrow."
+        },
+        "fissure_2": {
+          "key_required": "key_rat_den",
+          "requires_cleared": "fissure_1",
+          "level_range": [
+            15,
+            20
+          ],
+          "mob_level_offset": 5,
+          "star_weights": {
+            "3": 30,
+            "4": 40,
+            "5": 30
+          },
+          "extra_skills": {
+            "mob_rat_jeune": [
+              "skill_mob_assassin_venom"
+            ],
+            "mob_rat": [
+              "skill_mob_berserker_rend"
+            ],
+            "mob_rat_alpha": [
+              "skill_mob_support_bloodlust"
+            ],
+            "mob_rat_soigneur": [
+              "skill_mob_support_shield_barrier"
+            ],
+            "mob_rat_mage": [
+              "skill_mob_artillery_frost_nova"
+            ],
+            "mob_rat_rongeur": [
+              "skill_mob_rongeur_summon_assassins_2"
+            ]
+          },
+          "description_fr": "Emprise forte. La Fissure a durci le terrier : chaque rat a appris un tour de plus.",
+          "description_en": "Strong hold. The Fissure has hardened the burrow: every rat has learned one more trick.",
+          "_a_valider": "Valeurs validees par Charleston le 2026-10-29 (proposition du jour), a mesurer en jeu : niveau conseille 15-20, monstres +5 niveaux, etoiles 30/40/30, une competence de plus par espece, le Rongeur invoque 2 assassins (skill_mob_rongeur_summon_assassins_2 remplace celle du kit, champ replaces)."
+        },
+        "fissure_3": {
+          "key_required": "key_rat_den",
+          "requires_cleared": "fissure_2",
+          "level_range": [
+            20,
+            25
+          ],
+          "mob_level_offset": 10,
+          "star_weights": {
+            "3": 20,
+            "4": 40,
+            "5": 40
+          },
+          "extra_skills": {
+            "mob_rat_jeune": [
+              "skill_mob_assassin_venom",
+              "skill_mob_assassin_quick_strike"
+            ],
+            "mob_rat": [
+              "skill_mob_berserker_rend",
+              "skill_mob_berserker_rage_hit"
+            ],
+            "mob_rat_alpha": [
+              "skill_mob_support_bloodlust",
+              "skill_mob_support_weaken"
+            ],
+            "mob_rat_soigneur": [
+              "skill_mob_support_shield_barrier",
+              "skill_mob_healer_mend"
+            ],
+            "mob_rat_mage": [
+              "skill_mob_artillery_frost_nova",
+              "skill_mob_artillery_lightning_bolt"
+            ],
+            "mob_rat_cuirasse": [
+              "skill_mob_tank_taunt_roar"
+            ],
+            "mob_rat_rongeur": [
+              "skill_mob_rongeur_summon_assassins_3"
+            ]
+          },
+          "description_fr": "Emprise totale. La Fissure a pris le terrier : les rats frappent comme une meute qui n'a plus peur de rien.",
+          "description_en": "Total hold. The Fissure owns the burrow: the rats strike like a pack that fears nothing anymore.",
+          "_a_valider": "Valeurs validees par Charleston le 2026-10-29, a mesurer en jeu : niveau conseille 20-25, monstres +10 niveaux, etoiles 20/40/40, la competence de Fissure II plus une autre par espece, le Cuirasse provoque. Le Rongeur invoque 3 assassins, mais le plafond reste de 10 ennemis par camp (combat.json entity_caps.enemies_max) : avec son groupe de 8, deux arrivent, le troisieme quand un rat tombe."
         }
       },
-      "_comment_difficulties": "MVP: fissure_1 SEULE. La difficulte vient des MONSTRES (max_stars + level_range + poids de mobs par zone d etage), pas d un multiplicateur d instance : le modele hp_mult/dmg_mult a ete abandonne, rien ne le lisait au runtime. Chaque palier aura ses PROPRES zones instanciees (dungeon_rat_den_f<N>_fissure_<M>) avec son propre jeu de spawns. Ne pas declarer fissure_2/3 ici tant que leurs zones n existent pas : le popup client est data-driven, il afficherait des paliers qui servent les monstres de fissure_1.",
-      "_comment_keys": "Paliers et cle (proprietaire 2026-10-15) : fissure_1 reste libre. fissure_2 et fissure_3 demanderont la MEME cle, key_rat_den (key_required), consommee a l entree, une par joueur, et chacune s ouvre quand le joueur a fini le palier d avant (requires_cleared: fissure_1, puis fissure_2 ; verifie par le dungeon service sur last_completed_at). Le drop est pret dans items/loot_tables.json dungeon_key_drops._pending_level_band_drops, la recette dans items/profession_recipes.json (recipe_rune_key_rat_den). Le jour ou fissure_2 est declare : passer la regle de drop dans level_band_drops. Sur le boss (2026-10-28) : dungeon_key_drops._pending_boss_drops (Rongeur, 25 %, a valider), a passer dans boss_drops le meme jour. scripts/dungeon_content.py refuse une cle qui tombe sans qu un palier la demande.",
+      "_comment_difficulties": "Trois paliers (2026-10-29, valeurs validees par Charleston, a mesurer) : fissure_1 = mode Histoire de l acte I (entree libre), fissure_2 et fissure_3 = paliers a cle. MEMES cartes, decor, etages et groupes pour les trois : un palier decale le niveau des monstres (mob_level_offset, lu par presence), peut changer le tirage d etoiles (star_weights) et ajoute des competences a des monstres choisis (extra_skills, envoyees au combat ; une competence de palier qui declare replaces prend la place de celle du kit). Chaque palier a ses zones d etage (dungeon_rat_den_f<N>_fissure_<M> dans zones.json, meme map_path) et sa ligne dungeon_templates (migration generee par scripts/dungeon_content.py --sql). Recompenses : rewards.json multiplier_families.dungeon_difficulty.<palier>, transmis par presence au combat (CreateRoomRequest.dungeon_difficulty). level_range d un palier = affichage du niveau conseille, n ouvre ni ne ferme rien.",
+      "_comment_keys": "Paliers et cle (proprietaire 2026-10-15, active le 2026-10-29) : fissure_1 reste libre. fissure_2 et fissure_3 demandent la MEME cle, key_rat_den (key_required), consommee a l entree, une par joueur, et chacune s ouvre quand le joueur a fini le palier d avant (requires_cleared, verifie par le dungeon service sur last_completed_at). Sources : items/loot_tables.json dungeon_key_drops (1,5 % par monstre de niveau 8 a 24, 20 % sur le Rongeur avec un seul tirage) et la recette Runiste recipe_rune_key_rat_den. scripts/dungeon_content.py refuse une cle qui tombe sans qu un palier la demande.",
       "floors": [
         {
           "floor": 1,

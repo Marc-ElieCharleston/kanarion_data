@@ -89,6 +89,69 @@ def validate_tiers(root, dungeon):
     return errors
 
 
+def _walk_ids(node, out):
+    """Every dict carrying an "id" in a nested JSON tree, by id."""
+    if isinstance(node, dict):
+        if isinstance(node.get('id'), str):
+            out.setdefault(node['id'], node)
+        for v in node.values():
+            _walk_ids(v, out)
+    elif isinstance(node, list):
+        for v in node:
+            _walk_ids(v, out)
+    return out
+
+
+def validate_tier_content(root, dungeon):
+    """Per-tier settings (2026-10-29): same floors for every tier, a tier moves the
+    monster level (mob_level_offset), may retune the star roll (star_weights) and adds
+    skills to chosen monsters (extra_skills, sent by presence to combat). A tier skill
+    that declares `replaces` must replace a skill the monster really has. Every tier has
+    its value in config/rewards.json multiplier_families.dungeon_difficulty."""
+    errors = []
+    did = dungeon['id']
+    skills = _walk_ids(load(root, 'skills/monster_skills.json'), {})
+    monsters = _walk_ids(load(root, 'entities/monsters.json'), {})
+    reward_tiers = (load(root, 'config/rewards.json').get('multiplier_families', {})
+                    .get('dungeon_difficulty', {}).get('values', {}))
+    present = {m for fl in dungeon.get('floors', []) for g in fl.get('monster_groups', [])
+               for m in g.get('members', [])}
+    top = max((fl.get('mob_level_range', [0, 0])[1] for fl in dungeon.get('floors', [])), default=0)
+    for tier, settings in dungeon.get('difficulties', {}).items():
+        where = f'{did} {tier}'
+        if tier not in reward_tiers:
+            errors.append(f'{where}: no config/rewards.json dungeon_difficulty value for this tier')
+        offset = settings.get('mob_level_offset', 0)
+        if not isinstance(offset, int) or offset < 0 or top + offset > 100:
+            errors.append(f'{where}: mob_level_offset {offset!r} must be an int >= 0 '
+                          f'keeping the top floor ({top}) at most 100')
+        weights = settings.get('star_weights')
+        if weights is not None:
+            ok = isinstance(weights, dict) and weights and all(
+                k in {'0', '1', '2', '3', '4', '5'} and isinstance(v, (int, float)) and v >= 0
+                for k, v in weights.items()) and sum(weights.values()) > 0
+            if not ok:
+                errors.append(f'{where}: star_weights must map stars "0".."5" to weights >= 0, sum > 0')
+        lr = settings.get('level_range')
+        if lr is not None and not (isinstance(lr, list) and len(lr) == 2
+                                   and all(isinstance(x, int) for x in lr) and lr[0] <= lr[1]):
+            errors.append(f'{where}: level_range must be [min, max]')
+        for mob, extra in (settings.get('extra_skills') or {}).items():
+            if mob not in present:
+                errors.append(f'{where}: extra_skills names {mob}, absent from the floors')
+                continue
+            kit = (monsters.get(mob) or {}).get('skills', [])
+            for sk in extra if isinstance(extra, list) else [extra]:
+                skill = skills.get(sk)
+                if skill is None:
+                    errors.append(f'{where}: extra skill {sk!r} of {mob} is not in monster_skills.json')
+                    continue
+                rep = skill.get('replaces')
+                if rep is not None and rep not in kit:
+                    errors.append(f'{where}: {sk} replaces {rep!r}, which {mob} does not have')
+    return errors
+
+
 def validate_key_drops(root, dungeons):
     """items/loot_tables.json dungeon_key_drops: a key never drops below its dungeon's
     level, and a LIVE rule only drops a key that a declared tier asks for (else the key
@@ -146,7 +209,7 @@ def validate_key_drops(root, dungeons):
 
 
 def validate(root, dungeon, front=None):
-    errors = validate_tiers(root, dungeon)
+    errors = validate_tiers(root, dungeon) + validate_tier_content(root, dungeon)
     zones = {z['id']: z for z in load(root, 'world/zones.json')['zones']}
     monsters = {m['id'] for m in load(root, 'entities/monsters.json')['monsters']}
     did = dungeon['id']
