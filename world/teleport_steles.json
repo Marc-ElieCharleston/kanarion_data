@@ -1,27 +1,48 @@
 {
   "_meta": {
-    "version": "1.0",
-    "last_updated": "2026-10-20",
-    "description": "Steles de teleportation d'une carte : chaque stele posee dans la scene d'une zone est une destination pour les autres steles de la MEME zone (Havreden est une seule grande carte). Le joueur ouvre la liste en touchant une stele (bouton d'action, verbe Voyager), choisit une autre stele, et arrive devant elle.",
-    "owner": "services/presence (WORLD_TRANSFER 0x0219 dans la meme zone : le joueur doit etre a portee d'une stele de sa zone, la destination est une stele de cette zone, le point d'arrivee vient d'ici, la position envoyee par le client sert seulement a nommer la stele visee). Le prix et la gratuite du pass restent ceux du voyage existant : TELEPORT 0x044D du service economie (50 or, pass premium teleport_free). Le client lit ce fichier pour l'AFFICHAGE (liste, noms) et pose la stele avec scenes/world/props/teleport_stele.tscn.",
-    "placement": "La position x/y d'une stele est celle de son noeud dans la scene de la zone (havreden_map.tscn pour village), au pixel pres. Poser ou deplacer une stele dans l'editeur = reporter sa position ici ; tests/test_teleport_stele.gd (client) echoue tant qu'une stele de la scene n'a pas sa ligne ici, ou l'inverse.",
-    "a_valider": "use_range_px, arrival_offset et l'absence de decouverte (toutes les steles de la zone sont connues des le depart) sont des propositions du 2026-10-20 a valider par Charleston."
+    "version": "2.0",
+    "last_updated": "2026-10-29",
+    "description": "Pierres de teleportation (steles, a la maniere des zaaps) d'une carte : chaque pierre posee dans la scene d'une zone est une destination pour les autres pierres de la MEME zone (Havreden est une seule grande carte). Le joueur ouvre la liste en touchant une pierre (bouton d'action, verbe Voyager), choisit une autre pierre, et arrive sur sa case d'arrivee.",
+    "owner": "services/presence (WORLD_TRANSFER 0x0219 dans la meme zone : le joueur doit etre hors combat et a portee d'une pierre de sa zone, la destination est une pierre de cette zone, la case d'arrivee vient d'ici, la position envoyee par le client sert seulement a nommer la pierre visee). zones.json arrival_stele : la pierre devant laquelle on arrive en ville sans porte connue. Le client lit ce fichier pour l'AFFICHAGE (liste, noms, prix).",
+    "placement": "LA SCENE EST LA SOURCE (2026-10-29). Une pierre = un noeud qui porte scripts/world/teleport_stele.gd (instance de scenes/world/props/teleport_stele.tscn, ou decor existant + ce script), avec stele_id, name_fr, name_en et arrival_offset. La liste steles est GENEREE par scripts/export_teleport_steles.py (voir scenes/world/props/README_steles.md cote client) ; l'export echoue sur un id vide ou en double, un nom manquant ou une case d'arrivee non marchable. tests/test_teleport_stele.gd (client) echoue tant que la data n'est pas a jour de la scene.",
+    "a_valider": "2026-10-29 : voyage GRATUIT par defaut (rules.paid false ; true = prix du voyage existant, 50 or ou pass) ; PAS de decouverte (toutes les pierres de la zone sont connues ; rules.require_discovery n'est pas implemente et presence refuse de demarrer s'il vaut true) ; noms des pierres ; arrivee en ville devant la pierre du Passeur du Bois des Loups.",
+    "generated_by": "scripts/export_teleport_steles.py depuis les scenes de carte (noeuds portant scripts/world/teleport_stele.gd). NE PAS EDITER la liste steles a la main : poser la pierre dans la scene puis relancer."
   },
   "rules": {
     "use_range_px": 200,
     "_use_range_px_note": "Distance maximale (pixels monde) entre la position du joueur connue du serveur et la stele de depart. Le bouton d'action s'affiche a 96 px (NPC_INTERACT_RANGE client) : la marge couvre le retard de synchronisation de la position.",
-    "arrival_offset": [0, 56],
-    "_arrival_offset_note": "Point d'arrivee = position de la stele + ce decalage (devant la stele, vers le bas de l'ecran), pour ne pas poser le joueur dans le socle."
+    "arrival_offset": [
+      0,
+      56
+    ],
+    "_arrival_offset_note": "Decalage par defaut de la case d'arrivee (devant la pierre). Chaque pierre porte desormais sa propre case (arrival_x/arrival_y, reglee dans la scene par arrival_offset) ; ce decalage ne sert plus qu'a une ligne sans case.",
+    "paid": false,
+    "_paid_note": "false = gratuit (defaut, a valider). true = meme prix que le voyage existant : TELEPORT 0x044D du service economie (50 or, pass premium teleport_free), preleve apres validation du voyage.",
+    "require_discovery": false,
+    "_require_discovery_note": "Idee a la maniere des zaaps : ne pouvoir voyager que vers une pierre deja touchee une fois. NON IMPLEMENTEE (aucune persistance) : laisser false, presence refuse de demarrer sur true."
   },
   "steles": [
+    {
+      "id": "stele_havreden_passeur",
+      "zone_id": "village",
+      "x": 2500,
+      "y": 2850,
+      "arrival_x": 2500,
+      "arrival_y": 2906,
+      "name_fr": "Bois des Loups (Passeur)",
+      "name_en": "Wolf Woods (Ferryman)",
+      "source": "res://scenes/world/havreden_map.tscn :: havreden_map/passeur_marker_bois_loups"
+    },
     {
       "id": "stele_havreden_place",
       "zone_id": "village",
       "x": 2688,
       "y": 1752,
+      "arrival_x": 2688,
+      "arrival_y": 1776,
       "name_fr": "Place de Havreden",
       "name_en": "Havreden Square",
-      "_note": "Noeud deja present dans havreden_map.tscn (teleport_waystone_001, metadata teleport_hub) et aire sans aggro pierre_de_teleportation de world/zones.json au meme point."
+      "source": "res://scenes/world/havreden_map.tscn :: havreden_map/teleport_waystone_001"
     }
   ]
 }
