@@ -51,6 +51,8 @@ Contrôles (code, gravite par defaut) :
              (client)
   B14 WARN   _meta/sprite_resolution.json : alias et echelles sur des familles
              qui existent
+  B15 WARN   capture sur un monstre tague humanoid (forbidden_monster_tags) sans
+             `humanoid_tag_exception` ecrite dans familiar_capture (2026-10-29)
 
 ASSETS. Les sprites et portraits vivent dans le depot CLIENT. Sans lui, B12/B13 se
 limitent a ce que dit la data (art_pending, icones rat_*.png). Avec lui
@@ -104,6 +106,7 @@ SEVERITY = {
     "B12": WARNING,   # monstres sans sprite (faune des vacances, boss_*, humains)
     "B13": WARNING,   # familles en icone rat / sans portrait / sans sprite
     "B14": WARNING,
+    "B15": WARNING,   # rat sorcier et loup humain : captures taguees humanoid sans exception ecrite
 }
 
 TITLES = {
@@ -122,6 +125,7 @@ TITLES = {
     "B12": "assets des monstres actifs",
     "B13": "assets des familiers (icone, portrait, sprite)",
     "B14": "_meta/sprite_resolution.json",
+    "B15": "capture sur un monstre tague humanoid sans humanoid_tag_exception",
 }
 
 ROLES_FALLBACK = ("attaque", "tank", "heal", "utilitaire")
@@ -277,6 +281,14 @@ def check_capture(r, ctx):
                 r.add("B03", f"{mid} : role '{role}' inconnu (familiar_balance.json role_profiles)")
             elif f"familiar_{fam}_{role}" not in arch:
                 r.add("B03", f"{mid} : pas d'archetype familiar_{fam}_{role} pour le role autorise '{role}'")
+        # Tag humanoid = personne, jamais un familier (familiars.json _meta.capture_design.
+        # forbidden_monster_tags). Un monstre a silhouette debout mais d'espece capturable
+        # (le Rongeur) porte une exception ECRITE : humanoid_tag_exception (2026-10-29).
+        forbidden = set(ctx.get("forbidden_tags") or ())
+        bad = sorted(forbidden & set(m.get("tags") or ()))
+        if bad and not str(cap.get("humanoid_tag_exception") or "").strip():
+            r.add("B15", f"{mid} : capture active sur un monstre tague {bad} "
+                         "(retirer la capture, ou justifier par familiar_capture.humanoid_tag_exception)")
         sp = m.get("species")
         spd = ctx["species"].get(sp)
         if spd is not None and spd.get("capturable") is not True and not m.get("capturable"):
@@ -813,7 +825,9 @@ def check_assets(r, ctx, client):
 def build_context():
     monsters = load("entities/monsters.json")["monsters"]
     sp = load("entities/monster_species.json")
-    fams = load("entities/familiars.json")["familiars"]
+    fam_doc = load("entities/familiars.json")
+    fams = fam_doc["familiars"]
+    forbidden_tags = ((fam_doc.get("_meta") or {}).get("capture_design") or {}).get("forbidden_monster_tags") or []
     balance = load("config/familiar_balance.json")
     model = load("config/monster_scaling_model.json")
     ai = load("config/monster_ai.json")
@@ -867,6 +881,7 @@ def build_context():
         "species": public(sp.get("species")),
         "stages": public(sp.get("stages")),
         "familiar_list": fams,
+        "forbidden_tags": forbidden_tags,
         "archetypes": {a.get("archetype_id"): a for a in fams},
         "family_roles": dict(family_roles),
         "balance": balance,

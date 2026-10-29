@@ -59,6 +59,8 @@ FAMILIAR_TO_MONSTER = {
     # Variantes : leur propre famille, identité de l'espèce du monstre (comme loup_cristal -> cristal).
     "ours_fissure": "ours", "grande_ourse": "ours", "ours_givre": "cristal", "cerf_givre": "cristal",
     "sanglier_braise": "braise", "taureau_braise": "braise", "chacal_faille": "hyene",
+    # Boss de donjon capturables (2026-10-29) : famille a part (sprite du boss), espece du monstre.
+    "rat_rongeur": "rat", "loup_alpha": "loup", "louve_matriarche": "loup",
 }
 
 # Species passive per MONSTER species: (name_fr, name_en, {stat: weight}). Tier values below are
@@ -157,6 +159,15 @@ def main():
         ident = species[msp]["identity"]
         mult = {"hp": ident["hp"], "mp": 1.0, "atk": ident["atk"], "mag": ident["atk"],
                 "armor": ident["armor"], "magic_resist": ident["magic_resist"]}
+        # Familier de boss (2026-10-29) : base plus forte que sa famille, x boss_stat_multiplier
+        # sur tout sauf le Souffle (mp reste la regle commune des familiers). La rarete s'applique
+        # par-dessus cote service, comme pour les autres familiers.
+        bsm = f.get("boss_stat_multiplier")
+        if bsm is not None:
+            if not isinstance(bsm, (int, float)) or not (1.0 <= bsm <= 3.0):
+                errors.append(f"boss_stat_multiplier hors de [1, 3] : {f['id']} ({bsm})")
+                continue
+            mult = {s: (v if s == "mp" else v * bsm) for s, v in mult.items()}
         prof = roles[f["role"]]
         f["monster_species"] = msp
         own_mp = f["base_stats"].get("mp", 0)  # per familiar, kept as authored
