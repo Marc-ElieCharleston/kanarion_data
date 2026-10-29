@@ -1170,6 +1170,11 @@ def validate_achievements(db: Path) -> list:
                     if c.get("type") == "title" and c.get("acquisition") == "grant"}
     quests = {q["id"] for q in load_json(db / "world" / "quests.json").get("quests", [])}
     categories = {c["id"] for c in data.get("categories", [])}
+    account_sources = {k: (v or {}).get("scope", "character")
+                       for k, v in data.get("sources", {}).items() if isinstance(v, dict)}
+    prog_path = db / "systems" / "progression.json"
+    xp_table = (load_json(prog_path).get("leveling", {}).get("xp_table", {})
+                if prog_path.exists() else {})
     seen = set()
     for a in data.get("achievements", []):
         aid = a.get("id", "?")
@@ -1188,6 +1193,23 @@ def validate_achievements(db: Path) -> list:
                           f"la recompense est une XP fixe (reward.xp)")
         if not isinstance(reward.get("xp", 0), int) or reward.get("xp", 0) < 0:
             errors.append(f"[achievements.json] '{aid}' : reward.xp doit etre un entier >= 0")
+        if not isinstance(reward.get("arena_tokens", 0), int) or reward.get("arena_tokens", 0) < 0:
+            errors.append(f"[achievements.json] '{aid}' : reward.arena_tokens doit etre un entier >= 0")
+        unknown_keys = set(reward) - {"xp", "title_id", "arena_tokens"}
+        if unknown_keys:
+            errors.append(f"[achievements.json] '{aid}' : recompense inconnue du moteur {sorted(unknown_keys)}")
+        # 2026-10-29 : un succes de COMPTE ne donne jamais d'XP (l'XP est par personnage ;
+        # un perso neuf encaissait les succes de familier deja remplis par le compte).
+        if account_sources.get(a.get("source")) == "account" and reward.get("xp", 0):
+            errors.append(f"[achievements.json] '{aid}' : succes de compte avec reward.xp, interdit "
+                          f"(recompense au compte : arena_tokens ou title_id)")
+        # 2026-10-29 : un palier de niveau donne au plus 25 % du cout du palier, sinon toute
+        # salve d'XP s'auto-entretient de palier en palier.
+        if a.get("source") == "char_level" and isinstance(reward.get("xp", 0), int):
+            cost = xp_table.get(str(a.get("threshold")))
+            if isinstance(cost, int) and reward.get("xp", 0) > cost // 4:
+                errors.append(f"[achievements.json] '{aid}' : reward.xp {reward.get('xp')} depasse 25 % "
+                              f"du cout du palier ({cost} -> max {cost // 4})")
         title = reward.get("title_id")
         if title and title not in grant_titles:
             errors.append(f"[achievements.json] '{aid}' : titre '{title}' absent de ui/cosmetics.json "
