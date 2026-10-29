@@ -1428,6 +1428,21 @@ def validate_teleport_steles(db: Path) -> list:
             errors.append(f"[teleport_steles.json] {sid} : x et y doivent etre des nombres")
         if not s.get("name_fr") or not s.get("name_en"):
             errors.append(f"[teleport_steles.json] {sid} : name_fr et name_en obligatoires")
+        if ("arrival_x" in s) != ("arrival_y" in s):
+            errors.append(f"[teleport_steles.json] {sid} : arrival_x et arrival_y vont ensemble")
+    if rules.get("require_discovery"):
+        errors.append("[teleport_steles.json] rules.require_discovery n'est pas implemente (laisser false)")
+    if not isinstance(rules.get("paid", False), bool):
+        errors.append("[teleport_steles.json] rules.paid doit etre un booleen")
+    # zones.json arrival_stele : une pierre connue de la meme zone.
+    if zones_path.exists():
+        by_id = {s.get("id"): s for s in data.get("steles", [])}
+        for z in load_json(zones_path).get("zones", []):
+            aid = z.get("arrival_stele") if isinstance(z, dict) else None
+            if aid is None:
+                continue
+            if aid not in by_id or by_id[aid].get("zone_id") != z.get("id"):
+                errors.append(f"[zones.json] {z.get('id')} : arrival_stele '{aid}' absente de teleport_steles.json pour cette zone")
     return errors
 
 
