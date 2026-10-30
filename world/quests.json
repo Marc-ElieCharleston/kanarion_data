@@ -6894,6 +6894,122 @@
       },
       "_a_valider": "ID q_act2_wolves_den (marque « a confirmer » dans le document). Recompense reprise de l'echelle de l'acte I, a valider : 4000 XP, 300 or, comme q_main_ezra_egouts (donjon en mode Histoire + decouverte). Au niveau 13-20 il faut 900 a 2100 XP par niveau (systems/progression.json), donc ces valeurs pesent moins qu'a l'acte I.",
       "_note": "Acte II lot 1 (2026-10-28), document V2, textes tels quels. Une seule quete pour la taniere : plus d'aller-retour entre le reperage de l'entree et la descente (V1 abandonnee). Donjon dungeon_wolf_den (world/dungeons.json), entree au decor wolf_den_se_001 de la carte. Rendu a Maelor (donneur). Une seule recompense : la quete, le donjon ne paie rien de plus que ses monstres."
+    },
+    {
+      "id": "q_act2_withered_woods",
+      "type": "main",
+      "zone": "village",
+      "min_level": 21,
+      "prerequisites": [
+        "q_act2_wolves_den"
+      ],
+      "title_fr": "La forêt qui dépérit",
+      "title_en": "The Withering Woods",
+      "summary_fr": "Edran connaît ces bois depuis des décennies. Des arbres meurent par endroits, sans qu'il trouve de cause évidente. Il demande un coup de main pour vérifier les parcelles proches du sentier.",
+      "summary_en": "Edran has known these woods for decades. Trees are dying in scattered patches, and he can't find an obvious cause. He asks you to check the plots near the trail.",
+      "dialogue_give_fr": "Ah, Havreden ! Ça fait un moment que j'ai pas vu un de vos volontaires par ici.\nRegarde-moi ce sentier... Avant, les branches se touchaient au-dessus de nos têtes. On voyait à peine le ciel.\nLà, t'as trois arbres secs, et celui d'à côté se porte très bien. J'ai cherché des insectes, des champignons... Rien du tout.\nTu pourrais jeter un œil aux troncs que j'ai marqués ? Mes genoux me font payer chaque aller-retour.",
+      "dialogue_give_en": "Ah, Havreden! Haven't seen one of your volunteers around here in a while.\nLook at this trail... The branches used to meet overhead. You could barely see the sky.\nNow you've got three dead trees, and the one beside them is doing just fine. I checked for bugs, fungus... Nothing at all.\nCould you take a look at the trunks I marked? My knees aren't too happy about all this walking.",
+      "dialogue_progress_fr": "Les arbres marqués sont près du vieux sentier.\nSi tu vois des insectes ou des coups de hache, dis-le-moi.",
+      "dialogue_progress_en": "The marked trees are near the old trail.\nIf you spot bugs or axe marks, let me know.",
+      "dialogue_complete_fr": "Rien non plus ? Bon... On peut rayer les insectes de la liste.\nLa bûcheronne m'a dit que la terre était encore humide sous les arbres morts. Ça colle pas avec une sécheresse.\nTiens, si tu croises Yselle à la halte, demande-lui si elle a vu ça ailleurs.",
+      "dialogue_complete_en": "Nothing there either? Well... We can cross bugs off the list.\nThe woodcutter says the ground's still damp under the dead trees. Doesn't sound like drought to me.\nOh, if you run into Yselle at the rest stop, ask if she's seen this anywhere else.",
+      "npc_giver": "npc_forester_edran",
+      "objectives": [
+        {
+          "template": "reach_area",
+          "area_id": "bois_fletri_arbres_marques",
+          "count": 1,
+          "description_fr": "Examiner les arbres signalés par Edran, puis lui parler.",
+          "description_en": "Check the trees Edran marked, then report back.",
+          "_note": "« Examiner les arbres marques » = reach_area : aucune interaction avec un objet du monde n'est validee par le serveur (talk_to_npc ne verifie que la visibilite du PNJ, pas la distance), reach_area compare la position PRESENCE a world/zones.json village.quest_areas bois_fletri_arbres_marques. Une seule zone couvrant les troncs marques plutot que trois points : le document dit que trois points sont une suggestion, et l'objectif HUD est une seule phrase."
+        }
+      ],
+      "chain_next": "q_act2_green_trees",
+      "rewards": {
+        "xp": 2150,
+        "gold": 105
+      },
+      "_a_valider": "ID q_act2_withered_woods (propose par le document). Niveau minimal 21 a valider : l'histoire s'arrete a la Taniere (15-20) ; l'aire de monstres du Bois Fletri est 25-35 en data (mz_bois_fletri_25_35) alors que le plan du 30/10 parle d'une zone 21-30. Recompense a valider : meme part d'un niveau que le lot 1 de l'acte II (850 XP / 60 or au niveau 13, plancher de l'aire des loups), recalee au niveau minimal 21 : XP x 2580/1020 (systems/progression.json, niveau 21->22 contre 13->14) = 2150 ; or x 5,81/3,34 (config/rewards.json base_gold, niveau 21 contre 13) = 105. Aucune regle de calibrage par tranche n'est en vigueur dans la data (la matrice du 17/10, 25 % de l'XP de la bande 20-40 par les quetes, reste une proposition). Rectangle de la zone de quete (carte non modifiee).",
+      "_note": "Acte II lot 2, quete 06 (Bois Fletri). Document V2 du proprietaire (30/10, Kanarion_Acte_II_Bois_Fletri_Quetes_06_08_FR_EN_V2.md), textes FR/EN tels quels. Prerequis q_act2_wolves_den (fin du lot 1, la Taniere) ; aucune dependance a la quete d'Ezra. Rendu a Edran (donneur). Ouvre q_act2_green_trees (Edran) et q_act2_missing_caravans (Yselle, que la replique de rendu nomme). Aucune trace de Fissure en surface."
+    },
+    {
+      "id": "q_act2_green_trees",
+      "type": "main",
+      "zone": "village",
+      "min_level": 21,
+      "prerequisites": [
+        "q_act2_withered_woods"
+      ],
+      "title_fr": "Des arbres encore verts",
+      "title_en": "Still Green",
+      "summary_fr": "Certains arbres sont secs alors que d'autres poussent à quelques pas. Edran veut comparer le sol des deux endroits. Une bûcheronne a remarqué quelque chose près de la halte.",
+      "summary_en": "Some trees have dried out while others grow only a few steps away. Edran wants to compare the ground in both places. A woodcutter noticed something near the rest stop.",
+      "dialogue_give_fr": "J'ai parlé aux bûcherons. La terre est humide sous les arbres morts, figure-toi.\nAlors quoi ? C'est pas la sécheresse. Et les arbres juste à côté sont verts comme au printemps.\nJ'ai repéré deux coins à comparer. Tu peux aller voir ? J'aimerais bien arrêter de tourner en rond.",
+      "dialogue_give_en": "I spoke to the woodcutters. Get this: the soil's damp even under the dead trees.\nSo what is it? Not drought. And the trees right beside them are green as ever.\nI've got two spots I'd like to compare. Could you check them? I'm tired of going in circles.",
+      "dialogue_progress_fr": "Un coin tout sec, l'autre encore vert. C'est près du sentier.\nPas besoin d'aller te perdre au fond du bois.",
+      "dialogue_progress_en": "One dead patch, one green. Both are near the trail.\nNo need to get lost deep in the woods.",
+      "dialogue_complete_fr": "Hein ? Le sol est pareil des deux côtés ?\nBon... Là, je comprends plus grand-chose. Quarante ans que je travaille dans ces bois, et j'ai jamais vu ça.\nPfff... Va falloir que je retourne fouiller dans mes vieux carnets.\nMerci pour le coup de main, en tout cas.",
+      "dialogue_complete_en": "Huh? Same soil in both places?\nWell... I'm stumped. Forty years working these woods, and I've never seen anything like it.\nGuess I'll have to dig out my old notebooks again.\nThanks for the help, anyway.",
+      "npc_giver": "npc_forester_edran",
+      "objectives": [
+        {
+          "template": "reach_area",
+          "area_id": "bois_fletri_coin_sec",
+          "count": 1,
+          "description_fr": "Vérifier les deux zones indiquées et rapporter tes observations à Edran.",
+          "description_en": "Check the two marked areas and report your findings to Edran.",
+          "_note": "Coin sec (world/zones.json village.quest_areas bois_fletri_coin_sec). L'objectif HUD du document est porte par cette premiere ligne."
+        },
+        {
+          "template": "reach_area",
+          "area_id": "bois_fletri_coin_vert",
+          "count": 1,
+          "_description_a_fournir": "Le document ne donne qu'une phrase HUD pour les deux zones. Sans description, le suivi affiche le libelle generique QUEST_OBJ_GENERIC (« Objectif en cours » / « Objective in progress »). Libelle court FR/EN a fournir par le proprietaire pour la zone encore verte.",
+          "_note": "Coin encore vert (bois_fletri_coin_vert), a quelques pas du coin sec."
+        }
+      ],
+      "rewards": {
+        "xp": 2150,
+        "gold": 105
+      },
+      "_a_valider": "Niveau minimal 21 a valider : l'histoire s'arrete a la Taniere (15-20) ; l'aire de monstres du Bois Fletri est 25-35 en data (mz_bois_fletri_25_35) alors que le plan du 30/10 parle d'une zone 21-30. Recompense a valider : meme part d'un niveau que le lot 1 de l'acte II (850 XP / 60 or au niveau 13, plancher de l'aire des loups), recalee au niveau minimal 21 : XP x 2580/1020 (systems/progression.json, niveau 21->22 contre 13->14) = 2150 ; or x 5,81/3,34 (config/rewards.json base_gold, niveau 21 contre 13) = 105. Aucune regle de calibrage par tranche n'est en vigueur dans la data (la matrice du 17/10, 25 % de l'XP de la bande 20-40 par les quetes, reste une proposition). Rectangles des deux zones. Rythme : 06 et 07 utilisent le meme gabarit (aller a un endroit) ; le document autorise a les fusionner si elles se ressemblent trop en jeu.",
+      "_note": "Acte II lot 2, quete 07 (Bois Fletri). Document V2 du proprietaire (30/10, Kanarion_Acte_II_Bois_Fletri_Quetes_06_08_FR_EN_V2.md), textes FR/EN tels quels. Rendu a Edran (donneur). Dialogue intermediaire avec la bucheronne non integre : le document ne lui donne aucune replique et aucun sprite de bucheronne n'existe. La cause reste ouverte (pas de Fissure, pas de cinematique)."
+    },
+    {
+      "id": "q_act2_missing_caravans",
+      "type": "main",
+      "zone": "village",
+      "min_level": 21,
+      "prerequisites": [
+        "q_act2_withered_woods"
+      ],
+      "title_fr": "Ceux qui ne reviennent pas",
+      "title_en": "Those Who Haven't Returned",
+      "summary_fr": "Yselle fait régulièrement la route entre les villes. Plusieurs marchands ont cessé de passer, dont peut-être le fournisseur que Milo attend à Havreden. Elle cherche à savoir où les voyageurs ont été vus pour la dernière fois.",
+      "summary_en": "Yselle regularly travels between towns. Several traders have stopped coming through, possibly including the supplier Milo is waiting for in Havreden. She wants to know where the travelers were last seen.",
+      "dialogue_give_fr": "Ah, Havreden ! Tu connais Milo, alors ? Il doit râler avec ses étagères à moitié vides.\nSon fournisseur, je le croisais souvent. Toujours à recompter ses caisses, même quand tout le monde l'attendait pour partir.\nÇa fait un moment que je l'ai pas vu. Et il est pas le seul à manquer à l'appel...\nDis, tu pourrais demander aux gens de la halte s'ils ont vu son chariot ? Je veux pas inquiéter Milo pour rien.",
+      "dialogue_give_en": "Oh, Havreden! You know Milo, then? Bet he's grumbling about his half-empty shelves.\nI used to see his supplier all the time. Always counting his crates twice, even with everyone waiting to leave.\nHaven't seen him in a while. And he's not the only one missing...\nSay, could you ask around the rest stop about his cart? I don't want to worry Milo over nothing.",
+      "dialogue_progress_fr": "Essaie ceux qui attendent près du feu.\nUn chariot, une date... N'importe quel détail me va.",
+      "dialogue_progress_en": "Try the people by the fire.\nA cart, a date... Any detail helps.",
+      "dialogue_complete_fr": "La route du sud ? Oui, c'est bien son trajet habituel.\nBon... Ça nous avance pas beaucoup. Je préfère attendre avant d'annoncer quoi que ce soit à Milo.\nSi tu tombes sur un chariot de provisions en allant vers Rochebourg, pense à moi, d'accord ?",
+      "dialogue_complete_en": "The southern road? Yeah, that's his usual route.\nWell... Doesn't tell us much. I'd rather wait before saying anything to Milo.\nIf you spot a supply cart on your way to Rochebourg, let me know, all right?",
+      "npc_giver": "npc_merchant_yselle",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_weary_traveler",
+          "count": 1,
+          "description_fr": "Recueillir des nouvelles auprès des voyageurs de la halte, puis revenir voir Yselle.",
+          "description_en": "Ask travelers at the rest stop for news, then return to Yselle.",
+          "_note": "« Interroger les voyageurs de la halte » = talk_to_npc sur le voyageur de la halte (npc_weary_traveler). Sa replique d'etape entities/npcs.json dialogues.q_act2_missing_caravans_obj_0 = le dialogue temoin du document, affichee par le client a « Parler » (main.gd _replique_de_quete, meme chemin que la visite chez Ezra), la notification talk_to_npc part a la fin du dialogue."
+        }
+      ],
+      "rewards": {
+        "xp": 2150,
+        "gold": 105
+      },
+      "_a_valider": "Niveau minimal 21 a valider : l'histoire s'arrete a la Taniere (15-20) ; l'aire de monstres du Bois Fletri est 25-35 en data (mz_bois_fletri_25_35) alors que le plan du 30/10 parle d'une zone 21-30. Recompense a valider : meme part d'un niveau que le lot 1 de l'acte II (850 XP / 60 or au niveau 13, plancher de l'aire des loups), recalee au niveau minimal 21 : XP x 2580/1020 (systems/progression.json, niveau 21->22 contre 13->14) = 2150 ; or x 5,81/3,34 (config/rewards.json base_gold, niveau 21 contre 13) = 105. Aucune regle de calibrage par tranche n'est en vigueur dans la data (la matrice du 17/10, 25 % de l'XP de la bande 20-40 par les quetes, reste une proposition). Relations Yselle / Milo / fournisseur : hypotheses narratives du document, a confirmer.",
+      "_note": "Acte II lot 2, quete 08 (halte du Bois Fletri). Document V2 du proprietaire (30/10, Kanarion_Acte_II_Bois_Fletri_Quetes_06_08_FR_EN_V2.md), textes FR/EN tels quels. Prerequis q_act2_withered_woods (la replique de rendu d'Edran envoie vers Yselle), en parallele de q_act2_green_trees. Rendu a Yselle (donneuse). Le fournisseur n'est ni retrouve ni declare mort ; pas de bandits ici. Ne conditionne ni la quete d'Ezra ni le hameau."
     }
   ],
   "_summary": {
