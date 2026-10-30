@@ -152,17 +152,46 @@ def validate_tier_content(root, dungeon):
     return errors
 
 
+def rank_bands(root):
+    """items/equipment_scaling.json tier_system.tiers -> [(rank, level_min, level_max)], rank 1-based
+    in level order: the rank of a monster is the rank of its level (same table as the loot)."""
+    tiers = load(root, 'items/equipment_scaling.json')['tier_system']['tiers']
+    bands = sorted((t['level_range'][0], t['level_range'][1]) for k, t in tiers.items() if not k.startswith('_'))
+    return [(i + 1, lo, hi) for i, (lo, hi) in enumerate(bands)]
+
+
+def rank_of(bands, level):
+    for rank, lo, hi in bands:
+        if level <= hi:
+            return rank
+    return bands[-1][0]
+
+
 def validate_key_drops(root, dungeons):
-    """items/loot_tables.json dungeon_key_drops: a key never drops below its dungeon's
-    level, and a LIVE rule only drops a key that a declared tier asks for (else the key
-    falls and opens nothing). _pending_level_band_drops waits for its tier."""
+    """items/loot_tables.json dungeon_key_drops (owner, 2026-10-30): a key drops on every
+    monster whose RANK is at least its dungeon's rank, the chance decaying with the rank gap
+    (rank_decay). The rule's rank is never below the dungeon's rank (rank of its level_range
+    floor) nor above the rank of its highest monster level, and a LIVE rule only drops a key
+    that a declared tier asks for (else the key falls and opens nothing). _pending_rank_drops
+    waits for its tier. level_band_drops (0.20.26) is gone: the server no longer reads it."""
     errors = []
     keys = dungeon_keys(root)
     by_id = {d['id']: d for d in dungeons}
     asked = {s.get('key_required') for d in dungeons for s in d.get('difficulties', {}).values()}
     block = load(root, 'items/loot_tables.json').get('dungeon_key_drops', {})
-    for live, rules in ((True, block.get('level_band_drops', [])),
-                        (False, block.get('_pending_level_band_drops', []))):
+    bands = rank_bands(root)
+    if 'level_band_drops' in block or '_pending_level_band_drops' in block:
+        errors.append('dungeon_key_drops: level_band_drops is replaced by rank_drops (2026-10-30), '
+                      'the server no longer reads it')
+    decay = block.get('rank_decay')
+    if not (isinstance(decay, list) and decay and decay[0] == 1
+            and all(isinstance(x, (int, float)) and 0 < x <= 1 for x in decay)
+            and all(a >= b for a, b in zip(decay, decay[1:]))):
+        errors.append(f'dungeon_key_drops.rank_decay {decay!r}: non-empty list in ]0, 1], '
+                      f'non-increasing, first value 1')
+    seen = set()
+    for live, rules in ((True, block.get('rank_drops', [])),
+                        (False, block.get('_pending_rank_drops', []))):
         for r in rules:
             key = r.get('key_id')
             where = f'dungeon_key_drops {key}'
@@ -172,12 +201,19 @@ def validate_key_drops(root, dungeons):
                 continue
             if live and key not in asked:
                 errors.append(f'{where}: no declared tier asks for this key; '
-                              f'keep the rule in _pending_level_band_drops')
-            lo, hi = r.get('min_mob_level'), r.get('max_mob_level')
-            floor_level = dungeon['level_range'][0]
-            if not (isinstance(lo, int) and isinstance(hi, int) and floor_level <= lo <= hi <= 100):
-                errors.append(f'{where}: band [{lo}, {hi}] must lie within '
-                              f'{floor_level}..100 (never below {dungeon["id"]})')
+                              f'keep the rule in _pending_rank_drops')
+            if live and key in seen:
+                errors.append(f'{where}: a second live rank rule for the same key (one per key)')
+            seen.add(key)
+            rank = r.get('rank')
+            floor_rank = rank_of(bands, dungeon['level_range'][0])
+            top = max((fl['mob_level_range'][1] for fl in dungeon.get('floors', [])), default=1)
+            top += max((t.get('mob_level_offset', 0) for t in dungeon.get('difficulties', {}).values()), default=0)
+            top_rank = rank_of(bands, min(top, 100))
+            if not (isinstance(rank, int) and floor_rank <= rank <= top_rank):
+                errors.append(f'{where}: rank {rank!r} must lie within {floor_rank}..{top_rank} '
+                              f'(rank of {dungeon["id"]} level {dungeon["level_range"][0]} up to the '
+                              f'rank of its highest monster, level {top}); never below the dungeon')
             if not isinstance(r.get('chance'), (int, float)) or not 0 < r['chance'] <= 1:
                 errors.append(f'{where}: chance must be in (0, 1]')
     # Boss rules (owner, 2026-10-28): the key also drops on the dungeon's boss, one roll
@@ -208,8 +244,61 @@ def validate_key_drops(root, dungeons):
     return errors
 
 
+def validate_floor_overrides(root, dungeon):
+    """Per-tier floor settings (2026-10-30, Story mode of the Sewers): difficulties.<tier>.
+    floor_overrides."<floor>" may replace that floor's mob_level_range for THIS tier only,
+    pin the star of all its groups (stars) and scale the HP / attack of chosen monsters of
+    that floor (hp_multipliers / atk_multipliers, sent by presence as MonsterMapping.
+    post_hp_multiplier / post_atk_multiplier and applied by
+    combat after the scaling model and the stars). Read by presence
+    (world/dungeon_fixed_groups.cpp). The other tiers keep the floor as authored."""
+    errors = []
+    did = dungeon['id']
+    floors = {fl.get('floor'): fl for fl in dungeon.get('floors', [])}
+    allowed = {'mob_level_range', 'stars', 'hp_multipliers', 'atk_multipliers'}
+    for tier, settings in dungeon.get('difficulties', {}).items():
+        fos = settings.get('floor_overrides')
+        if fos is None:
+            continue
+        if not isinstance(fos, dict):
+            errors.append(f'{did} {tier}: floor_overrides must be an object keyed by floor number')
+            continue
+        for key, fo in fos.items():
+            if key.startswith('_'):
+                continue
+            where = f'{did} {tier} floor_overrides.{key}'
+            fl = floors.get(int(key)) if key.isdigit() else None
+            if fl is None or not isinstance(fo, dict):
+                errors.append(f'{where}: not a floor of {did}, or not an object')
+                continue
+            unknown = {k for k in fo if not k.startswith('_')} - allowed
+            if unknown:
+                errors.append(f'{where}: unknown key(s) {sorted(unknown)} (allowed: {sorted(allowed)})')
+            lr = fo.get('mob_level_range')
+            offset = settings.get('mob_level_offset', 0)
+            if lr is not None and not (isinstance(lr, list) and len(lr) == 2
+                                       and all(isinstance(x, int) for x in lr)
+                                       and 1 <= lr[0] <= lr[1] and lr[1] + offset <= 100):
+                errors.append(f'{where}: mob_level_range must be [min, max] within 1..100 (offset included)')
+            st = fo.get('stars')
+            if st is not None and not (isinstance(st, int) and 0 <= st <= 5):
+                errors.append(f'{where}: stars must be an integer 0..5')
+            members = {m for g in fl.get('monster_groups', []) for m in g.get('members', [])}
+            for field in ('hp_multipliers', 'atk_multipliers'):
+                for mob, mult in (fo.get(field) or {}).items():
+                    if mob.startswith('_'):
+                        continue
+                    if mob not in members:
+                        errors.append(f'{where}: {field} names {mob}, absent from floor {key}')
+                    if not isinstance(mult, (int, float)) or not 0.1 <= mult <= 50:
+                        errors.append(f'{where}: {field}.{mob} = {mult!r} outside [0.1, 50] '
+                                      f'(the combat server clamps there)')
+    return errors
+
+
 def validate(root, dungeon, front=None):
-    errors = validate_tiers(root, dungeon) + validate_tier_content(root, dungeon)
+    errors = (validate_tiers(root, dungeon) + validate_tier_content(root, dungeon)
+              + validate_floor_overrides(root, dungeon))
     zones = {z['id']: z for z in load(root, 'world/zones.json')['zones']}
     monsters = {m['id'] for m in load(root, 'entities/monsters.json')['monsters']}
     did = dungeon['id']

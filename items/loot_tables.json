@@ -4336,24 +4336,41 @@
     }
   },
   "dungeon_key_drops": {
-    "_comment": "2026-10-13 (proprietaire) : une cle de donjon tombe sur des monstres PERTINENTS, jamais en dessous du palier du donjon (la cle d un donjon niveau 100 ne tombe que sur les monstres 81-100). Regle par TRANCHE DE NIVEAU du monstre tue : chaque entree = une cle, une tranche [min_mob_level, max_mob_level], une chance par monstre tue. Les cles sont consommees a l entree, une par joueur (dungeon service), et s echangent (HDV, echange direct). Seconde source prevue : une recette par cle. Lu par server-combat LootRoller (back vac_dungeon-keys). L ancien format zone_drops visait des zones inexistantes (zone_04/06/08) et des donjons retires : remplace.",
+    "_comment": "2026-10-30 (Charleston, comme les cles Bouftou de Dofus) : la cle d un donjon tombe sur TOUS les monstres du monde dont le RANG est superieur ou egal au rang du donjon, dans le donjon comme dehors, jamais en dessous. Rang = items/equipment_scaling.json tier_system.tiers (T1 = niveaux 1-20, T2 = 21-40, ... : le meme rang que la rarete du butin) ; le rang d un monstre est celui de SON niveau (niveau reel du combat, palier compris). Chaque entree de rank_drops = une cle, le rang de son donjon, une chance par monstre tue au rang du donjon ; au-dessus, la chance est multipliee par rank_decay[rang du monstre - rang du donjon] (la derniere valeur vaut pour tous les ecarts plus grands). Les cles sont consommees a l entree, une par joueur (dungeon service), et s echangent (HDV, echange direct). Seconde source : une recette de Runiste par cle. Lu par server-combat LootRoller::roll_dungeon_keys. Remplace level_band_drops (tranche de niveau 8-24 des Egouts, 0.20.26).",
     "_rule_one_key": "2026-10-15 (proprietaire) : UNE cle par donjon, valable pour tous ses paliers a cle (fissure_2, fissure_3). La difficulte vient des monstres, pas de la cle. Un palier s ouvre quand le joueur a fini le palier d avant (world/dungeons.json difficulties.<palier>.requires_cleared). Garde : scripts/dungeon_content.py (la cle existe, un palier la demande, la tranche ne descend pas sous le niveau du donjon).",
-    "level_band_drops": [
+    "rank_decay": [
+      1.0,
+      0.5,
+      0.25
+    ],
+    "_rank_decay_note": "A VALIDER (proposition du 2026-10-30) : rang egal = taux de base, rang + 1 = moitie, rang + 2 et au-dela = quart. Liste non vide, valeurs dans ]0, 1], decroissante, la premiere vaut 1 (garde : scripts/dungeon_content.py et le serveur de combat, qui refuse de demarrer sinon).",
+    "rank_drops": [
       {
         "key_id": "key_rat_den",
-        "min_mob_level": 8,
-        "max_mob_level": 24,
+        "rank": 1,
         "chance": 0.015,
-        "_note": "Active le 2026-10-29 avec les paliers fissure_2 et fissure_3 des Egouts (valeurs validees par Charleston, a mesurer). Tranche 8-24 = niveaux reels des monstres du donjon, tous paliers (8-14, +5, +10). 1,5 % par monstre : un run de fissure_1 compte 39 monstres hors boss, soit environ 0,6 cle par joueur, plus le boss. A 3 % (valeur du 15/10) un run rapportait environ 1,4 cle par joueur et le palier se payait tout seul. Les monstres du monde de niveau 8 a 24 la donnent aussi (pack de 3 : une cle tous les 22 combats environ)."
+        "_note": "Rang I : les Egouts (contenu 8-12, paliers jusqu au niveau 22) sont au rang des niveaux 1-20. 1,5 % = le taux de la tranche 8-24 de la 0.20.26 (valide par Charleston le 29/10), garde tel quel : un run de fissure_1 (39 monstres hors boss, rang I) rapporte toujours environ 0,6 cle par joueur. Nouveau : tout monstre de rang I du monde la donne (niveaux 1 a 20, plus seulement 8 a 24), 0,75 % au rang II, 0,375 % au-dela. A mesurer."
+      },
+      {
+        "key_id": "key_wolf_den",
+        "rank": 1,
+        "chance": 0.015,
+        "_note": "A VALIDER (2026-10-30). Rang de la Taniere des Loups = rang de son contenu : level_range 15-20 du donjon (ramene dans le rang I le 2026-10-30) et aire 13-19 du Bois des Loups, soit le rang I (T1 = 1-20). Consequence a trancher : au rang I, la cle des loups tombe aussi sur les monstres de niveau 1 a 20, comme celle des Egouts. Variante : rank 2 (la Taniere II/III se joue aux niveaux 20-30), la cle ne tomberait alors que sur les monstres 21+ (et sur l Alpha). Meme taux que les Egouts (1,5 %), a mesurer."
       }
     ],
-    "_comment_boss": "2026-10-28 (proprietaire : la cle tombe aussi DANS le donjon et sur le BOSS). Dans le donjon : les monstres des etages sont dans la tranche, la regle level_band_drops s y applique deja. Sur le boss : boss_drops = une cle, le monster_id du boss (monsters.json), une chance PAR JOUEUR quand ce boss est tue (LootRoller::roll_dungeon_keys, server-combat). Cette chance REMPLACE la tranche pour ce monstre : un boss tue = un seul tirage de cle par joueur, jamais deux. Les monstres a gold_weight 0 (assassins invoques par le Rongeur, mannequin) ne donnent aucune cle. Une regle par boss au plus. Garde : scripts/dungeon_content.py (le monstre est le boss du donjon de la cle, un palier demande la cle).",
+    "_comment_boss": "2026-10-28 (proprietaire : la cle tombe aussi DANS le donjon et sur le BOSS). Dans le donjon : les monstres des etages sont au rang du donjon ou au-dessus, la regle rank_drops s y applique deja. Sur le boss : boss_drops = une cle, le monster_id du boss (monsters.json), une chance PAR JOUEUR quand ce boss est tue (LootRoller::roll_dungeon_keys, server-combat). Cette chance REMPLACE la regle par rang pour ce monstre : un boss tue = un seul tirage de cle par joueur, jamais deux. Les monstres a gold_weight 0 (assassins invoques par le Rongeur, mannequin) ne donnent aucune cle. Une regle par boss au plus. Garde : scripts/dungeon_content.py (le monstre est le boss du donjon de la cle, un palier demande la cle).",
     "boss_drops": [
       {
         "key_id": "key_rat_den",
         "monster_id": "mob_rat_rongeur",
         "chance": 0.2,
         "_note": "Active le 2026-10-29 (valeur validee par Charleston, a mesurer ; 25 % propose le 28/10). Un seul tirage par joueur, qui remplace la tranche pour le Rongeur. Avec les 7 autres monstres du groupe (1,5 % chacun), un combat de boss rapporte environ 0,3 cle par joueur, soit environ 0,8 cle par run complet de fissure_1."
+      },
+      {
+        "key_id": "key_wolf_den",
+        "monster_id": "boss_alpha_wolf",
+        "chance": 0.2,
+        "_note": "A VALIDER (2026-10-30) : meme valeur que le Rongeur (20 %, un seul tirage par joueur, qui remplace la regle par rang pour l Alpha). La Louve Matriarche (mob_wolf_soigneur) n est pas le boss du donjon : elle suit la regle par rang."
       }
     ]
   },
