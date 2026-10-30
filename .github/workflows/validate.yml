@@ -252,6 +252,13 @@ jobs:
       - name: Verify complete Koro catalog
         run: python3 scripts/generate_koro_catalog.py --check
 
+      # Resumes courts des infobulles (2026-10-29) : extraits de description_fr/en,
+      # jamais ecrits a la main. Une description modifiee sans regenerer, une
+      # competence sans resume, un mot absent de la description ou un tiret long
+      # echouent ici.
+      - name: Verify skill summaries are generated and complete
+        run: python3 scripts/gen_skill_summaries.py --check
+
       - name: Verify Rift Tower floors match their rules
         run: python3 scripts/generate_tower.py --check
 
