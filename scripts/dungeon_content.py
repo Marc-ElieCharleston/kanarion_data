@@ -247,14 +247,15 @@ def validate_key_drops(root, dungeons):
 def validate_floor_overrides(root, dungeon):
     """Per-tier floor settings (2026-10-30, Story mode of the Sewers): difficulties.<tier>.
     floor_overrides."<floor>" may replace that floor's mob_level_range for THIS tier only,
-    pin the star of all its groups (stars) and scale the HP of chosen monsters of that floor
-    (hp_multipliers, sent by presence as MonsterMapping.post_hp_multiplier and applied by
+    pin the star of all its groups (stars) and scale the HP / attack of chosen monsters of
+    that floor (hp_multipliers / atk_multipliers, sent by presence as MonsterMapping.
+    post_hp_multiplier / post_atk_multiplier and applied by
     combat after the scaling model and the stars). Read by presence
     (world/dungeon_fixed_groups.cpp). The other tiers keep the floor as authored."""
     errors = []
     did = dungeon['id']
     floors = {fl.get('floor'): fl for fl in dungeon.get('floors', [])}
-    allowed = {'mob_level_range', 'stars', 'hp_multipliers'}
+    allowed = {'mob_level_range', 'stars', 'hp_multipliers', 'atk_multipliers'}
     for tier, settings in dungeon.get('difficulties', {}).items():
         fos = settings.get('floor_overrides')
         if fos is None:
@@ -283,14 +284,15 @@ def validate_floor_overrides(root, dungeon):
             if st is not None and not (isinstance(st, int) and 0 <= st <= 5):
                 errors.append(f'{where}: stars must be an integer 0..5')
             members = {m for g in fl.get('monster_groups', []) for m in g.get('members', [])}
-            for mob, mult in (fo.get('hp_multipliers') or {}).items():
-                if mob.startswith('_'):
-                    continue
-                if mob not in members:
-                    errors.append(f'{where}: hp_multipliers names {mob}, absent from floor {key}')
-                if not isinstance(mult, (int, float)) or not 0.1 <= mult <= 50:
-                    errors.append(f'{where}: hp_multipliers.{mob} = {mult!r} outside [0.1, 50] '
-                                  f'(the combat server clamps there)')
+            for field in ('hp_multipliers', 'atk_multipliers'):
+                for mob, mult in (fo.get(field) or {}).items():
+                    if mob.startswith('_'):
+                        continue
+                    if mob not in members:
+                        errors.append(f'{where}: {field} names {mob}, absent from floor {key}')
+                    if not isinstance(mult, (int, float)) or not 0.1 <= mult <= 50:
+                        errors.append(f'{where}: {field}.{mob} = {mult!r} outside [0.1, 50] '
+                                      f'(the combat server clamps there)')
     return errors
 
 
