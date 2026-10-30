@@ -1295,6 +1295,16 @@
       "difficulties": {
         "fissure_1": {
           "story_mode": true,
+          "floor_overrides": {
+            "5": {
+              "mob_level_range": [
+                11,
+                12
+              ],
+              "stars": 4,
+              "_a_valider": "Charleston 2026-10-30 (mode Histoire, groupe de reference 3 joueurs + 3 familiers) : l etage 4 est bien, l etage 5 etait une marche (Rongeur ~1 350-1 500 PV contre ~370-480 pour l Alpha de l etage 4, 54 % de victoires contre 100 % a l etage 4). Mesure : aucun scaling par joueur ni par familier n existe ; le saut venait du rang boss du Rongeur (PV x4,0 contre x1,6 pour un monstre coriace), de deux niveaux de plus (13-14, la courbe de PV monte d environ 12 % par niveau ici) et de l etoile 5 fixee pour tout le groupe. Reglage du palier fissure_1 seulement : etage 5 au niveau de l etage 4 (11-12) et 4 etoiles. Rongeur ~2,0-2,3 fois l Alpha de l etage 4. Paliers II et III inchanges (leur etage 5 garde 13-14 + decalage et 5 etoiles)."
+            }
+          },
           "_story_mode_note": "Acte I V2 (2026-10-24) : le seul palier des Egouts est le mode Histoire de l'acte I (q_main_ezra_egouts, objectif complete_dungeon difficulty fissure_1). Le client l'affiche « Mode Histoire ». A valider.",
           "key_required": null,
           "description_fr": "Emprise faible. La Fissure tient a peine le terrier.",
@@ -1384,7 +1394,7 @@
         }
       },
       "_comment_difficulties": "Trois paliers (2026-10-29, valeurs validees par Charleston, a mesurer) : fissure_1 = mode Histoire de l acte I (entree libre), fissure_2 et fissure_3 = paliers a cle. MEMES cartes, decor, etages et groupes pour les trois : un palier decale le niveau des monstres (mob_level_offset, lu par presence), peut changer le tirage d etoiles (star_weights) et ajoute des competences a des monstres choisis (extra_skills, envoyees au combat ; une competence de palier qui declare replaces prend la place de celle du kit). Chaque palier a ses zones d etage (dungeon_rat_den_f<N>_fissure_<M> dans zones.json, meme map_path) et sa ligne dungeon_templates (migration generee par scripts/dungeon_content.py --sql). Recompenses : rewards.json multiplier_families.dungeon_difficulty.<palier>, transmis par presence au combat (CreateRoomRequest.dungeon_difficulty). level_range d un palier = affichage du niveau conseille, n ouvre ni ne ferme rien.",
-      "_comment_keys": "Paliers et cle (proprietaire 2026-10-15, active le 2026-10-29) : fissure_1 reste libre. fissure_2 et fissure_3 demandent la MEME cle, key_rat_den (key_required), consommee a l entree, une par joueur, et chacune s ouvre quand le joueur a fini le palier d avant (requires_cleared, verifie par le dungeon service sur last_completed_at). Sources : items/loot_tables.json dungeon_key_drops (1,5 % par monstre de niveau 8 a 24, 20 % sur le Rongeur avec un seul tirage) et la recette Runiste recipe_rune_key_rat_den. scripts/dungeon_content.py refuse une cle qui tombe sans qu un palier la demande.",
+      "_comment_keys": "Paliers et cle (proprietaire 2026-10-15, active le 2026-10-29) : fissure_1 reste libre. fissure_2 et fissure_3 demandent la MEME cle, key_rat_den (key_required), consommee a l entree, une par joueur, et chacune s ouvre quand le joueur a fini le palier d avant (requires_cleared, verifie par le dungeon service sur last_completed_at). Sources : items/loot_tables.json dungeon_key_drops (depuis le 2026-10-30 : 1,5 % sur tout monstre de rang I du monde, la moitie au rang II, le quart au-dela ; 20 % sur le Rongeur avec un seul tirage) et la recette Runiste recipe_rune_key_rat_den. scripts/dungeon_content.py refuse une cle qui tombe sans qu un palier la demande.",
       "floors": [
         {
           "floor": 1,
@@ -1821,11 +1831,112 @@
       "difficulties": {
         "fissure_1": {
           "story_mode": true,
-          "_story_mode_note": "Acte II lot 1 : seul palier, mode Histoire de la Taniere (q_act2_wolves_den, objectif complete_dungeon difficulty fissure_1). Le client l'affiche « Mode Histoire ».",
+          "_story_mode_note": "Acte II lot 1 : mode Histoire de la Taniere (paliers II et III a cle depuis le 2026-10-30) (q_act2_wolves_den, objectif complete_dungeon difficulty fissure_1). Le client l'affiche « Mode Histoire ».",
           "key_required": null,
           "description_fr": "La Fissure s'éveille à peine au fond de la tanière.",
           "description_en": "The Fissure is barely stirring at the bottom of the den.",
           "_a_valider": "Texte du palier : brouillon."
+        },
+        "fissure_2": {
+          "key_required": "key_wolf_den",
+          "requires_cleared": "fissure_1",
+          "level_range": [
+            20,
+            26
+          ],
+          "mob_level_offset": 5,
+          "star_weights": {
+            "3": 30,
+            "4": 40,
+            "5": 30
+          },
+          "extra_skills": {
+            "mob_wolf": [
+              "skill_mob_hamstring_gnaw"
+            ],
+            "mob_frothing_wolf": [
+              "skill_mob_berserker_blood_frenzy"
+            ],
+            "mob_vieux_loup": [
+              "skill_mob_old_hide"
+            ],
+            "mob_loup_noir": [
+              "skill_mob_assassin_quick_strike"
+            ],
+            "mob_loup_blanc": [
+              "skill_mob_support_haste"
+            ],
+            "mob_wolf_packleader": [
+              "skill_mob_support_bloodlust"
+            ],
+            "mob_wolf_soigneur": [
+              "skill_mob_support_shield_barrier"
+            ],
+            "mob_wolf_corrupted": [
+              "skill_mob_maul_rot"
+            ],
+            "boss_alpha_wolf": [
+              "skill_mob_dread_howl"
+            ]
+          },
+          "description_fr": "Emprise forte. La Fissure a gagné la tanière : chaque loup a appris un tour de plus.",
+          "description_en": "Strong hold. The Fissure has taken the den: every wolf has learned one more trick.",
+          "_a_valider": "Proposition du 2026-10-30, sur le schema des Egouts II : niveau conseille 20-26, monstres +5 niveaux, etoiles 30/40/30, une competence de plus par espece (competences existantes de monster_skills.json : Ronge-jarret, Frenesie Sanguinaire, Cuir du solitaire, Frappe Rapide, Hate, Furie Gregaire, Barriere Protectrice, Morsure Putride ; l Alpha gagne Hurlement d Effroi). Le duo Alpha / Matriarche (bonded_pair) est inchange : memes membres, la releve et la Fureur jouent comme en fissure_1."
+        },
+        "fissure_3": {
+          "key_required": "key_wolf_den",
+          "requires_cleared": "fissure_2",
+          "level_range": [
+            25,
+            31
+          ],
+          "mob_level_offset": 10,
+          "star_weights": {
+            "3": 20,
+            "4": 40,
+            "5": 40
+          },
+          "extra_skills": {
+            "mob_wolf": [
+              "skill_mob_hamstring_gnaw",
+              "skill_mob_pounce"
+            ],
+            "mob_frothing_wolf": [
+              "skill_mob_berserker_blood_frenzy",
+              "skill_mob_berserker_wild_swing"
+            ],
+            "mob_vieux_loup": [
+              "skill_mob_old_hide",
+              "skill_mob_tank_taunt_roar"
+            ],
+            "mob_loup_noir": [
+              "skill_mob_assassin_quick_strike",
+              "skill_mob_assassin_poison_blade"
+            ],
+            "mob_loup_blanc": [
+              "skill_mob_support_haste",
+              "skill_mob_cavern_growl"
+            ],
+            "mob_wolf_packleader": [
+              "skill_mob_support_bloodlust",
+              "skill_mob_support_weaken"
+            ],
+            "mob_wolf_soigneur": [
+              "skill_mob_support_shield_barrier",
+              "skill_mob_healer_mend"
+            ],
+            "mob_wolf_corrupted": [
+              "skill_mob_maul_rot",
+              "skill_mob_brute_cleave"
+            ],
+            "boss_alpha_wolf": [
+              "skill_mob_dread_howl",
+              "skill_mob_assassin_ambush"
+            ]
+          },
+          "description_fr": "Emprise totale. La Fissure possède la tanière : la meute chasse comme un seul corps.",
+          "description_en": "Total hold. The Fissure owns the den: the pack hunts as a single body.",
+          "_a_valider": "Proposition du 2026-10-30, sur le schema des Egouts III : niveau conseille 25-31, monstres +10 niveaux, etoiles 20/40/40, la competence de Taniere II plus une autre par espece (Bond Predateur, Frappe Sauvage, Rugissement Provocateur, Lame Empoisonnee, Grondement des cavernes, Affaiblissement, Soin Mineur, Fendre ; l Alpha gagne Embuscade). Duo Alpha / Matriarche inchange."
         }
       },
       "floors": [
