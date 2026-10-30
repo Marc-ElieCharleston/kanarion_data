@@ -25,6 +25,14 @@ Schema d'un parchemin :
   emote_id     = l'emote apprise (aussi dans effect.emote_id, que lit le serveur)
   effect       = {"type": "unlock_emote", "emote_id": <id>}
   icon         = l'icone de l'emote (assets/icons/ui/emotes/<icon>.png cote client)
+  global_pool  = false si l'emote a une source PRECISE (ui/emotes.json source.kind autre
+                 que "global") : le parchemin sort du tirage global (coffres, evenements,
+                 combats) et ne tombe que de sa source, sinon "Se trouve : X" serait faux.
+                 Lu par shared/gameplay/emote_scrolls.hpp. Absent = true.
+
+Lot 2 (2026-10-30) :
+  - `rarity` sur l'emote remplace la rarete de son pack ;
+  - `scroll: false` = emote liee au compte (hauts faits) : aucun parchemin.
 
 Usage :
   python scripts/gen_emote_scrolls.py            # regenere items/emote_scrolls.json
@@ -57,15 +65,18 @@ def build() -> dict:
 
     scrolls = []
     for e in emotes:
-        if e.get("tier") != "premium":
+        if e.get("tier") != "premium" or e.get("scroll") is False:
             continue
         eid = e["id"]
         pack = e.get("pack", "")
-        if pack not in rarity_by_pack:
-            raise SystemExit(f"emote '{eid}' : pack '{pack}' absent de emote_scroll_drops.rarity_by_pack")
-        rarity = rarity_by_pack[pack]
+        rarity = e.get("rarity") or rarity_by_pack.get(pack)
+        if rarity is None:
+            raise SystemExit(f"emote '{eid}' : ni rarity, ni pack '{pack}' dans emote_scroll_drops.rarity_by_pack")
+        if rarity not in prices:
+            raise SystemExit(f"emote '{eid}' : rarete '{rarity}' sans prix dans sell_price_by_rarity")
+        source_kind = (e.get("source") or {}).get("kind", "global")
         name_fr, name_en = e["name_fr"], e["name_en"]
-        scrolls.append({
+        scroll = {
             "id": PREFIX + eid,
             "name_fr": f"Parchemin d'emote : {name_fr}",
             "name_en": f"Emote Scroll: {name_en}",
@@ -83,17 +94,21 @@ def build() -> dict:
             "hdv_listable": True,
             "stack_max": STACK_MAX,
             "sell_price": prices[rarity],
-        })
+        }
+        if source_kind != "global":
+            scroll["global_pool"] = False
+        scrolls.append(scroll)
 
     return {
         "_meta": {
             "version": "1.0",
-            "last_updated": "2026-10-23",
+            "last_updated": "2026-10-30",
             "description": "Parchemins d'emote (decision Charleston 2026-10-23). Un parchemin par emote "
                            "premium de ui/emotes.json. L'utiliser apprend l'emote a tout le compte "
                            "(serveur : economy USE_ITEM effet unlock_emote, refuse sans rien consommer "
                            "si l'emote est deja possedee). Echangeable, vendable a l'hotel des ventes et "
-                           "au PNJ. Chances de drop : items/loot_tables.json emote_scroll_drops.",
+                           "au PNJ. Chances de drop : items/loot_tables.json emote_scroll_drops. global_pool:false = "
+                           "parchemin a source precise (lot 2), hors du tirage global.",
             "generated_by": "scripts/gen_emote_scrolls.py",
             "count": len(scrolls),
         },
