@@ -53,6 +53,11 @@ Contrôles (code, gravite par defaut) :
              qui existent
   B15 WARN   capture sur un monstre tague humanoid (forbidden_monster_tags) sans
              `humanoid_tag_exception` ecrite dans familiar_capture (2026-10-29)
+  B16 ERROR  archetype obtenable (capture active, empreinte, don, familier de depart)
+             sans `skill_loadout` non vide, ou avec une competence d'un autre role.
+             Le service familier en a besoin pour tout familier sans tirage
+             (rolled_skills vide : dons, anciennes lignes) : rattrapage au demarrage
+             et repli runtime. Sans lui, le familier n'a que sa signature (2026-10-30)
 
 ASSETS. Les sprites et portraits vivent dans le depot CLIENT. Sans lui, B12/B13 se
 limitent a ce que dit la data (art_pending, icones rat_*.png). Avec lui
@@ -107,6 +112,7 @@ SEVERITY = {
     "B13": WARNING,   # familles en icone rat / sans portrait / sans sprite
     "B14": WARNING,
     "B15": WARNING,   # rat sorcier et loup humain : captures taguees humanoid sans exception ecrite
+    "B16": ERROR,     # 2026-10-30 : 82 archetypes de capture sans loadout (rattrapage saute)
 }
 
 TITLES = {
@@ -126,6 +132,7 @@ TITLES = {
     "B13": "assets des familiers (icone, portrait, sprite)",
     "B14": "_meta/sprite_resolution.json",
     "B15": "capture sur un monstre tague humanoid sans humanoid_tag_exception",
+    "B16": "skill_loadout non vide et du bon role pour tout archetype obtenable",
 }
 
 ROLES_FALLBACK = ("attaque", "tank", "heal", "utilitaire")
@@ -351,6 +358,42 @@ def check_archetypes(r, ctx):
                 r.add("B05", f"{aid} : name_{lang} manquant (nom affiche du familier non renomme)")
             elif nom.strip().lower() in {aid.lower(), str(fam or "").lower()}:
                 r.add("B05", f"{aid} : name_{lang} '{nom}' recopie l'identifiant au lieu d'un nom")
+
+
+def check_loadouts(r, ctx):
+    """B16. Un archetype qu'un joueur peut obtenir doit declarer un skill_loadout non vide,
+    fait de competences de SON role. Le service familier
+    (services/familiar/src/familiar_service.cpp backfill_legacy_rolled_skills et
+    build_legacy_fallback_loadout) lit ce champ pour tout familier dont rolled_skills est
+    vide : dons (familiar_gifts), lignes d'avant la migration 067. Un archetype sans
+    loadout y est SAUTE et le familier reste avec sa seule signature (bug du 2026-10-30 :
+    82 archetypes de capture, dont vieux_loup_tank, loup_blanc_attaque, loup_noir_attaque)."""
+    obtainable = set()
+    for m in ctx["monsters"]:
+        cap = m.get("familiar_capture") or {}
+        if cap.get("enabled") and cap.get("family"):
+            for role in cap.get("allowed_roles") or []:
+                obtainable.add(f"familiar_{cap['family']}_{role}")
+    for t in ctx["traces"]:
+        if t.get("family") and t.get("role"):
+            obtainable.add(f"familiar_{t['family']}_{t['role']}")
+    for offer in public(ctx["balance"].get("gift_offers")).values():
+        obtainable |= set(offer or [])
+    obtainable |= set(tutorial_gift_archetypes(ctx["balance"].get("tutorial_gift"))[0])
+    roles = ctx["familiar_skill_roles"]
+    for aid in sorted(obtainable):
+        a = ctx["archetypes"].get(aid)
+        if a is None:
+            continue  # archetype absent : deja signale par B03 / B06 / B10
+        lo = a.get("skill_loadout")
+        if not isinstance(lo, list) or not lo:
+            r.add("B16", f"{aid} : obtenable mais sans skill_loadout (le rattrapage du service "
+                         "familier le saute : familier avec sa seule signature)")
+            continue
+        for s in lo:
+            sr = roles.get(s)
+            if sr is not None and sr != a.get("role"):
+                r.add("B16", f"{aid} : competence '{s}' du role '{sr}' dans un archetype '{a.get('role')}'")
 
 
 def check_traces(r, ctx):
@@ -897,6 +940,8 @@ def build_context():
         "loot_tables": public(loot.get("monster_loot_tables")),
         "traces": cons.get("familiar_traces", []),
         "familiar_skills": {s.get("id") for s in fskills.get("base_skills", []) if isinstance(s, dict)},
+        "familiar_skill_roles": {s.get("id"): s.get("role") for s in fskills.get("base_skills", [])
+                                 if isinstance(s, dict) and s.get("role")},
         "tutorial": load_opt("config/tutorial_encounters.json"),
         "tutorial_overlays": load_opt("world/tutorial_overlays.json"),
         "item_ids": item_ids,
@@ -926,6 +971,7 @@ def main():
     check_loot(r, ctx)
     check_capture(r, ctx)
     check_archetypes(r, ctx)
+    check_loadouts(r, ctx)
     check_traces(r, ctx)
     check_rarities(r, ctx)
     check_generators(r, ctx)
