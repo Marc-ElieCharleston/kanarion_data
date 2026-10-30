@@ -2185,6 +2185,15 @@ def validate_gather_nodes(db: Path) -> list:
                 if it.get("node_type") != tname:
                     errors.append(f"[gather_nodes.json] '{main}' : node_type '{it.get('node_type')}' != '{tname}'")
             for s in rb[r].get("secondary", []):
+                if s.get("keep_id") is True:
+                    # Emotes lot 2 (2026-10-30) : trouvaille rare de recolte, l'objet tombe
+                    # sans suffixe de rarete. Seuls les parchemins d'emote y ont droit.
+                    if not str(s.get("id", "")).startswith("scroll_emote_") or                             s.get("id") not in collect_all_item_ids(db):
+                        errors.append(f"[gather_nodes.json] type '{tname}' rang {r} : keep_id reserve a un "
+                                      f"parchemin d'emote existant ('{s.get('id')}')")
+                    if not 0 < s.get("chance", 0) <= 1:
+                        errors.append(f"[gather_nodes.json] secondaire '{s.get('id')}' : chance hors ]0, 1]")
+                    continue
                 sit = items.get(s.get("id"))
                 if not sit:
                     errors.append(f"[gather_nodes.json] type '{tname}' rang {r} : secondaire '{s.get('id')}' inconnu")
@@ -2324,7 +2333,7 @@ def validate_recipe_chain(db: Path) -> list:
     inter = {i["id"] for i in d.get("new_items", []) if i.get("category") == "intermediate"}
     k_equip = {5: 2, 4: 2, 3: 1, 2: 1}
     batches = [(r"^cons_(hp|mp)_potion_(pet_)?t[1-5]$", 50), (r"^food_", 10), (r"^elix_", 10),
-               (r"^scroll_", 10), (r"^pet_treat_", 10), (r"^cons_recall_potion$", 10)]
+               (r"^scroll_(?!emote_)", 10), (r"^pet_treat_", 10), (r"^cons_recall_potion$", 10)]
     eq = _re.compile(r"^((?:wpn|head|chest|legs|feet|belt|cape|acc)_[a-z_]+_b)([1-5])$")
     for r in d.get("recipes", []):
         rid, out = r.get("id", "?"), r.get("output_item", "")
@@ -2807,6 +2816,86 @@ EMOTE_SCROLL_SOURCES = ("fight", "zone_chest", "fissure_invasion", "rift_chest",
                         "contract_chest_daily", "contract_chest_weekly")
 
 
+EMOTE_SOURCE_KINDS = ("free", "global", "drop", "harvest", "recipe", "token_shop", "event",
+                      "achievement", "pending")
+
+
+def validate_emote_album(db: Path, emotes_doc: dict, scrolls: list) -> list:
+    """Album des emotes (lot 2, 2026-10-30) : serie et source de chaque emote, et la source
+    annoncee existe vraiment. Une emote a source precise sort du tirage global
+    (global_pool:false) : elle doit donc avoir une source VIVANTE, sinon elle est
+    introuvable ; une emote marquee obtainable:false n'en a aucune."""
+    errors = []
+    series = {s.get("id") for s in emotes_doc.get("series", [])}
+    if not series:
+        return ["[ui/emotes.json] liste series absente (Album)"]
+    for s in emotes_doc.get("series", []):
+        if not s.get("name_fr") or not s.get("name_en"):
+            errors.append(f"[ui/emotes.json] serie '{s.get('id')}' sans name_fr / name_en")
+    scroll_by_emote = {sc.get("emote_id"): sc for sc in scrolls}
+    # Ou chaque parchemin peut tomber aujourd'hui.
+    live = {}
+    lt = load_json(db / "items" / "loot_tables.json")
+    for key, drops in lt.get("monster_loot_tables", {}).items():
+        if isinstance(drops, list):
+            for d in drops:
+                live.setdefault(d.get("item_id"), set()).add("drop")
+    gn = load_json(db / "world" / "gather_nodes.json")
+    for t in gn.get("node_types", {}).values():
+        if isinstance(t, dict):
+            for rv in t.get("resources_by_rank", {}).values():
+                for sec in rv.get("secondary", []):
+                    live.setdefault(sec.get("id"), set()).add("harvest")
+    for r in load_json(db / "items" / "profession_recipes.json").get("recipes", []):
+        live.setdefault(r.get("output_item"), set()).add("recipe")
+    shop = {o.get("grant_id") for o in load_json(db / "systems" / "arena_token_shop.json").get("offers", [])
+            if o.get("kind") == "emote"}
+    for e in emotes_doc.get("emotes", []):
+        eid = e.get("id", "?")
+        if e.get("series") not in series:
+            errors.append(f"[ui/emotes.json] emote '{eid}' : serie '{e.get('series')}' inconnue")
+        src = e.get("source")
+        if not isinstance(src, dict) or src.get("kind") not in EMOTE_SOURCE_KINDS:
+            errors.append(f"[ui/emotes.json] emote '{eid}' : source.kind absent ou inconnu")
+            continue
+        for lang in ("text_fr", "text_en"):
+            txt = src.get(lang, "")
+            if not txt:
+                errors.append(f"[ui/emotes.json] emote '{eid}' : source.{lang} vide")
+            if "—" in txt or "–" in txt:
+                errors.append(f"[ui/emotes.json] emote '{eid}' : tiret long dans source.{lang}")
+        kind = src["kind"]
+        if (kind == "free") != (e.get("tier") == "free"):
+            errors.append(f"[ui/emotes.json] emote '{eid}' : source free <=> tier free")
+        sc = scroll_by_emote.get(eid)
+        sid = "scroll_emote_" + eid
+        if sc is not None and (sc.get("global_pool") is False) != (kind != "global"):
+            errors.append(f"[emote_scrolls] {sid} : global_pool doit valoir false si et seulement si la "
+                          f"source est precise (source.kind '{kind}')")
+        where = set(live.get(sid, set()))
+        if eid in shop:
+            where.add("token_shop")
+        obtainable = e.get("obtainable", True) is not False
+        if kind in ("drop", "harvest", "recipe", "token_shop"):
+            if not obtainable:
+                errors.append(f"[ui/emotes.json] emote '{eid}' : source '{kind}' mais obtainable:false")
+            elif kind not in where:
+                errors.append(f"[ui/emotes.json] emote '{eid}' : annoncee '{kind}' mais aucune source de ce "
+                              f"type ne la donne (tables, recolte, recettes, Dargo)")
+            elif where - {kind}:
+                errors.append(f"[ui/emotes.json] emote '{eid}' : annoncee '{kind}' mais tombe aussi via "
+                              f"{sorted(where - {kind})}")
+        elif kind in ("event", "achievement", "pending"):
+            if obtainable:
+                errors.append(f"[ui/emotes.json] emote '{eid}' : source '{kind}' sans moteur en jeu, "
+                              f"obtainable:false attendu")
+            if where:
+                errors.append(f"[ui/emotes.json] emote '{eid}' : obtainable:false mais tombe via {sorted(where)}")
+        elif kind == "global" and "drop" in where:
+            errors.append(f"[ui/emotes.json] emote '{eid}' : tirage global ET table de butin precise")
+    return errors
+
+
 def validate_emote_scrolls(db: Path) -> list:
     errors = []
     emotes_doc = load_json(db / "ui" / "emotes.json")
@@ -2851,8 +2940,11 @@ def validate_emote_scrolls(db: Path) -> list:
         if sc.get("tradeable") is not True or sc.get("hdv_listable") is not True:
             errors.append(f"[emote_scrolls] {sid} : un parchemin s'echange et se vend (tradeable, hdv_listable)")
     for eid, e in emotes.items():
-        if e.get("tier") == "premium" and eid not in seen_emotes:
+        if e.get("tier") == "premium" and e.get("scroll") is not False and eid not in seen_emotes:
             errors.append(f"[emote_scrolls] emote premium '{eid}' sans parchemin (python scripts/gen_emote_scrolls.py)")
+        if e.get("scroll") is False and eid in seen_emotes:
+            errors.append(f"[emote_scrolls] emote '{eid}' liee au compte (scroll:false) avec un parchemin")
+    errors += validate_emote_album(db, emotes_doc, scrolls)
     try:
         sys.path.insert(0, str(Path(__file__).resolve().parent))
         sys.dont_write_bytecode = True  # pas de __pycache__ laisse dans scripts/
