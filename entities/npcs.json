@@ -3,6 +3,7 @@
     "version": "3.1",
     "last_updated": "2026-04-26",
     "description": "NPCs: service, quest, class_master, ambient. Enriched profiles with dialogues, shop inventory, bilingual text.",
+    "interior_zone_note": "PNJ pose DANS un interieur (atelier, forge, cabinet de Yuki) : \"interior_zone\" = id de la zone de cet interieur (world/zones.json, zone avec map_path et return_position). La fleche de quete du client (quest_guide_targets.gd) montre alors, depuis la ville, le cercle de la PORTE de cet interieur, et le PNJ lui-meme une fois dedans (retour de Charleston du 2026-10-31). `location` garde son sens de ville (boutiques, validateur des outils). La scene reste la source de verite du placement : tests/test_npc_interior_zones.gd (client) echoue si un PNJ d'une scene d'interieur n'a pas ce champ, ou si le champ nomme un interieur ou le PNJ n'est pas pose.",
     "ambient_npcs_note": "PNJ d'ambiance du village. Ils n'existaient qu'en @export dans havreden_map.tscn, donc _update_labels() ne trouvait aucune entree et retombait sur le role FR en dur : un joueur EN voyait 26 roles francais autour du village. role_fr est recopie OCTET POUR OCTET depuis la scene, car normalize_role_key(role_fr) est la cle qui choisit les actions du popup d'interaction (chat_du_marche -> Caresser, garde -> Parler...) : la retoucher retirerait des interactions du jeu. Seul role_en est nouveau. Les PNJ sans npc_id_override prennent l'id derive par get_npc_id() : 'npc_' + display_name en minuscules, espaces en underscores.",
     "story_flags_note": "Visibilite par drapeaux d'histoire (lot 0 du moteur de quetes, 2026-10-17). Tout PNJ de ce fichier peut porter \"requires_flags\": [...] (visible seulement si le joueur a TOUS ces drapeaux) et \"forbids_flags\": [...] (cache des qu'il en a UN). Les drapeaux viennent du serveur (etat des quetes, champ story_flags) ; le client cache le PNJ et ses marqueurs, et ne le montre qu'une fois l'etat recu. Le serveur refuse aussi une quete donnee par, ou un objectif de dialogue vers, un PNJ cache. Chaque drapeau doit etre pose par un choix de world/quests.json (implicite moral:<quete>:<a|b> ou sets_flags) : verifie par validate_cross_references.py. Ne deplace ni ne place aucun PNJ : le placement reste dans les scenes."
   },
@@ -1389,12 +1390,12 @@
           {
             "zone": "tutorial_tavern",
             "lines_fr": [
-              "Voilà qui est mieux. Quand tu trouveras mieux dehors, change-la sans regret, et Gorik, sur la place, sait renforcer ce que tu portes.",
+              "Voilà qui est mieux. Quand tu trouveras mieux dehors, change-la sans regret, et Gorik, dans sa forge, sait renforcer ce que tu portes.",
               "Avec Ezra, on a commencé à étudier les animaux des alentours. On a gardé quelques rats pour comprendre leur agressivité, mais on n'a rien trouvé qui soit lié aux traces...",
               "Je m'égare. Je t'ai gardé le plus agressif pour ton premier combat, montre-moi ce que tu vaux."
             ],
             "lines_en": [
-              "That's better. When you find something better out there, swap it without regret, and Gorik, on the square, knows how to strengthen what you wear.",
+              "That's better. When you find something better out there, swap it without regret, and Gorik, in his forge, knows how to strengthen what you wear.",
               "Ezra and I have started studying the animals around here. We kept a few rats to understand why they turned aggressive, but we found nothing tied to the marks...",
               "I'm rambling. I saved you the most aggressive one for your first fight, show me what you can do."
             ]
@@ -2105,6 +2106,7 @@
         "profession_master"
       ],
       "location": "rochebourg_atelier_collectionneur",
+      "interior_zone": "rochebourg_atelier_collectionneur",
       "lore_fr": "Yuki collectionne les Koros depuis l'enfance pour leurs motifs et leurs reflets. Il les classe dans un carnet et revend ceux qu'il possède en double pour agrandir sa collection. Il ne connaît ni leur origine ni leur véritable nature. Certains disent qu'ils portent chance. Lui les trouve surtout beaux.",
       "lore_en": "Yuki has collected Koros since childhood for their patterns and the way they catch the light. He records them in a notebook and sells his duplicates to grow his collection. He knows neither their origin nor their true nature. Some say they bring good luck. He mostly thinks they are beautiful.",
       "dialogues": {
@@ -2752,6 +2754,7 @@
         "craft"
       ],
       "location": "village",
+      "interior_zone": "havreden_atelier_forge",
       "lore_fr": "Gorik tient la forge du village. Il ne fait pas dans le beau, il fait dans le solide. Ramène-lui des trophées de chasse, crocs, cuirs, os, et une poignée de pièces, il t'en tire une arme ou une armure de base. Il dit qu'un volontaire mal équipé, c'est un volontaire qu'on enterre, et qu'il n'aime pas creuser.",
       "lore_en": "Gorik keeps the village forge. He doesn't do pretty, he does sturdy. Bring him hunting trophies, fangs, hides, bones, and a handful of coins, and he'll hammer you out a basic weapon or a piece of armor. He says a poorly equipped volunteer is a volunteer you bury, and he doesn't like digging.",
       "dialogues": {
@@ -4673,6 +4676,7 @@
       "profession": "fissure_hunter",
       "sells_recipe_plans": "fissure_hunter",
       "location": "havreden",
+      "interior_zone": "havreden_atelier_chasseur_failles",
       "position": null,
       "_todo": "Position et sprite a poser (art du PNJ en cours). Dialogues a ecrire.",
       "shop_inventory": {
@@ -4803,6 +4807,7 @@
       "profession": "bone_carver",
       "sells_recipe_plans": "bone_carver",
       "location": "havreden",
+      "interior_zone": "havreden_atelier_sculpteur_os",
       "position": null,
       "_todo": "Position et sprite a poser (art du PNJ en cours). Dialogues a ecrire.",
       "shop_inventory": {
@@ -4822,6 +4827,7 @@
       "profession": "apothecary",
       "sells_recipe_plans": "apothecary",
       "location": "havreden",
+      "interior_zone": "havreden_atelier_apothicaire",
       "position": null,
       "_todo": "Position et sprite a poser (art du PNJ en cours). Dialogues a ecrire.",
       "shop_inventory": {
@@ -4848,6 +4854,7 @@
       "profession": "cook",
       "sells_recipe_plans": "cook",
       "location": "havreden",
+      "interior_zone": "havreden_atelier_cuisinier",
       "position": null,
       "_todo": "Position et sprite a poser (art du PNJ en cours). Dialogues a ecrire.",
       "shop_inventory": {
@@ -4874,6 +4881,7 @@
       "profession": "brewer",
       "sells_recipe_plans": "brewer",
       "location": "havreden",
+      "interior_zone": "havreden_atelier_brasseur",
       "position": null,
       "_todo": "Position et sprite a poser (art du PNJ en cours). Dialogues a ecrire.",
       "shop_inventory": {
@@ -4893,6 +4901,7 @@
       "profession": "scribe",
       "sells_recipe_plans": "scribe",
       "location": "havreden",
+      "interior_zone": "havreden_atelier_scribe",
       "position": null,
       "_todo": "Position et sprite a poser (art du PNJ en cours). Dialogues a ecrire.",
       "shop_inventory": {
@@ -4919,6 +4928,7 @@
       "profession": "breeder",
       "sells_recipe_plans": "breeder",
       "location": "havreden",
+      "interior_zone": "havreden_atelier_eleveur",
       "position": null,
       "_todo": "Position et sprite a poser (art du PNJ en cours). Dialogues a ecrire.",
       "shop_inventory": {
@@ -4938,6 +4948,7 @@
       "profession": "runist",
       "sells_recipe_plans": "runist",
       "location": "havreden",
+      "interior_zone": "havreden_atelier_runiste",
       "position": null,
       "_todo": "Position et sprite a poser (art du PNJ en cours). Dialogues a ecrire.",
       "shop_inventory": {

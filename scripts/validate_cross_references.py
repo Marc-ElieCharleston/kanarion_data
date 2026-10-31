@@ -1468,6 +1468,29 @@ def validate_teleport_steles(db: Path) -> list:
     return errors
 
 
+def validate_npc_interior_zones(db: Path) -> list:
+    """entities/npcs.json `interior_zone` (2026-10-31) : le PNJ est pose DANS l'interieur
+    de cette zone (atelier, forge, cabinet). Le client s'en sert pour guider le joueur
+    vers la PORTE de cet interieur (fleche de quete, quest_guide_targets.gd). La zone doit
+    exister dans world/zones.json, avoir une scene (map_path) et un point devant la porte
+    (return_position). Le client verifie de son cote que chaque PNJ d'une scene
+    d'interieur porte bien ce champ (tests/test_npc_interior_zones.gd)."""
+    errors = []
+    zones = {z.get("id"): z for z in load_json(db / "world" / "zones.json").get("zones", [])
+             if isinstance(z, dict)}
+    for npc in _npc_entries(db):
+        if "interior_zone" not in npc:
+            continue
+        zid = npc.get("interior_zone")
+        z = zones.get(zid) if isinstance(zid, str) else None
+        if z is None:
+            errors.append(f"[npcs.json] '{npc['id']}' interior_zone '{zid}' : zone inconnue de world/zones.json")
+        elif not z.get("map_path") or not isinstance(z.get("return_position"), list):
+            errors.append(f"[npcs.json] '{npc['id']}' interior_zone '{zid}' : zone sans map_path ni "
+                          f"return_position (pas un interieur a porte)")
+    return errors
+
+
 def validate_craft_stations(db: Path) -> list:
     """world/craft_stations.json (2026-10-27) : postes de fabrication lus par economy.
     Zones connues, ids uniques, x/y numeriques, station utilisee par au moins une recette
@@ -3554,6 +3577,11 @@ def main():
 
     print("[12b2b/12] Validating craft stations (zones, stations, range)...")
     errs = validate_craft_stations(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12b2c/12] Validating NPC interior zones (interior_zone)...")
+    errs = validate_npc_interior_zones(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
