@@ -1556,7 +1556,8 @@ def validate_per_mob_override(db: Path) -> list:
         return errors
     overrides = load_json(path).get("per_mob_override", {})
     monster_ids = {m.get("id") for m in load_json(db / "entities" / "monsters.json").get("monsters", [])}
-    stats = {"hp", "mp", "atk", "mag", "def", "magic_resist"}
+    # "mp" refuse depuis le 2026-10-31 : les monstres n'ont plus de Souffle (decision Charleston).
+    stats = {"hp", "atk", "mag", "def", "magic_resist"}
     for mob_id, entry in overrides.items():
         if mob_id.startswith("_"):
             continue

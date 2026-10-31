@@ -14,8 +14,13 @@
     "monster_gcd_jitter": 1.0,
     "monster_first_gcd_jitter": 1.5,
     "monster_first_gcd_bonus": 1.0,
-    "monster_mp_regen_per_second": 2.0,
-    "_monster_mp_regen_owner": "Regen de Souffle des monstres, en Souffle par seconde, lue par le serveur (shared/gameplay/companion_breath.hpp, RoomManager::build_monster). Etait codee en dur (0,2 par tick a 10 Hz = 2 /s) jusqu'au 2026-10-27 : meme valeur, aucun changement de comportement. Cle obligatoire : le serveur refuse de demarrer sans elle.",
+    "breath_theft_on_breathless": {
+      "restore_pct_of_damage": 15,
+      "_a_valider": "A VALIDER par Charleston (valeur de depart du 2026-10-31).",
+      "_comment": "Decision Charleston du 2026-10-31 : contre une cible SANS Souffle (un monstre), un sort ou un proc qui vole ou draine du Souffle (Siphon Arcanique, Pillage, Raid Pirate, Drain de Vie de l'Occultiste, Morsure Assoiffee, Drain de souffle, Vol de souffle, Frappe du vide, Appel du Neant, keystone Siphon) rend au lanceur, ou au MAITRE pour un sort de familier, ce pourcentage des degats que le sort a infliges a cette cible. Une fois par lancer. Le keystone Siphon (proc sur controle) prend le dernier coup que le porteur a porte a la cible. Contre une cible qui a du Souffle (PvP), rien ne change. Lu par server-combat (shared/gameplay/breath_theft_rules.hpp), cle obligatoire.",
+      "_justification": "Ordre de grandeur du Souffle vole a un joueur de meme niveau, rapporte aux degats du sort (estimation niveau 30, Souffle d'un mage ~170, d'un voleur ~80) : Pillage vole 8 pour ~50 % ATQ de degats (~13 %), Drain de Vie draine ~18 % du max sur 6 s soit ~30 pour ~95 % MAG (~20 %), Raid Pirate vole 5 sur une zone (~5 %), Siphon Arcanique vole 30 % du Souffle courant (~50 pour ~60 % MAG, ~50 %). 15 % est la mediane basse : de l'ordre du vol reel pour la plupart des sorts, sans faire du Siphon une fontaine de Souffle en PvE. Les sorts de familier Drain de souffle et Vol de souffle ne font aucun degat : ils ne rendent rien."
+    },
+    "_monster_breath": "Decision Charleston du 2026-10-31 : les monstres n'ont plus de Souffle (max 0, regen 0, cout de leurs sorts ignore), voir config/monster_scaling_model.json _breath_note. La cle monster_mp_regen_per_second (2 /s depuis le 2026-10-27) est retiree avec eux : le serveur ne la lit plus.",
     "_gcd_owner": "Source unique des GCD (secondes), lue par le serveur (shared/gameplay/gcd_rules.hpp) ; gcd_duration aussi par le client. Joueurs et mercenaires 2 s, familiers 3 s, monstres 3 s (+0..jitter apres chaque sort, premier sort +bonus +0..first_jitter). Proprietaire 2026-10-14 : les grosses attaques de boss passent par leurs propres recharges.",
     "cast_interrupt": {
       "_comment": "Ce que perd un lanceur dont l'incantation est interrompue : par un statut qui porte runtime.interrupts_cast (stats/status_effects.json), par le verbe interrupt, ou par sa mort. Le GCD est toujours perdu. Decision proprietaire 2026-10-15 : rien n'est rembourse, sinon interrompre ne sert a rien (comme dans les MMO et League of Legends). Cles obligatoires : le serveur refuse de demarrer sans elles.",
