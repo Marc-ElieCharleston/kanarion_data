@@ -107,6 +107,26 @@ def textures_sources(projet: W.Projet, ctx: str, ref: str) -> dict:
     return out
 
 
+# Repere des tuiles tel que Godot le calcule (TileMapLayer.map_to_local / local_to_map).
+# En isometrique DIAMOND_DOWN, Godot place le CENTRE de la case (0, 0) en (w/2, h/2) :
+# verifie dans Godot 4.5 sur havreden_terrain_v2 (64 x 30) : map_to_local((0,0)) = (32, 15),
+# local_to_map((0,0)) = (-1, 0). TileSetInfo d'export_walkability.py omet ce demi-pas.
+
+def godot_map_to_local(ts, cx: int, cy: int):
+    w, h = ts.size
+    if ts.shape == 1 and ts.layout == 5:
+        return ((cx - cy) * w / 2.0 + w / 2.0, (cx + cy) * h / 2.0 + h / 2.0)
+    return ts.map_to_local(cx, cy)
+
+
+def godot_local_to_map(ts, x: float, y: float):
+    w, h = ts.size
+    if ts.shape == 1 and ts.layout == 5:
+        u, v = (x - w / 2.0) / (w / 2.0), (y - h / 2.0) / (h / 2.0)
+        return (math.floor((u + v) / 2.0 + 0.5), math.floor((v - u) / 2.0 + 0.5))
+    return ts.local_to_map(x, y)
+
+
 class Calque:
     def __init__(self, path, n, ts, cells, xform, order, textures):
         self.path = path
@@ -120,7 +140,7 @@ class Calque:
 
     def tuile(self, x, y):
         lx, ly = W.apply(self.inv, (x, y))
-        return self.cells.get(self.ts.local_to_map(lx, ly))
+        return self.cells.get(godot_local_to_map(self.ts, lx, ly))
 
 
 def type_eau(regle_types: dict) -> dict:
@@ -190,7 +210,7 @@ def exporte_zone(projet: W.Projet, zone: dict, wf: dict):
             if par_image.get(c.textures.get(t[2], "")) is None:
                 continue
             rapport["tuiles_eau"] += 1
-            ox, oy = c.ts.map_to_local(cx, cy)
+            ox, oy = godot_map_to_local(c.ts, cx, cy)
             coins = [W.apply(c.xform, p) for p in ((ox, oy - hh), (ox + hw, oy), (ox, oy + hh), (ox - hw, oy))]
             xs = [p[0] for p in coins]
             ys = [p[1] for p in coins]
