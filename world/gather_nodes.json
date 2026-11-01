@@ -934,5 +934,81 @@
     },
     "_water_edge_points": "Points de rive par zone : [{x, y, facing, level}] en px monde, facing = direction de l'eau (north, south, east, west), level = niveau de la rive (donne le rang). A REMPLIR par l'outil d'export des tuiles d'eau (a ecrire cote client). Vide = aucun coin de peche ni banc de sable dans la zone."
   },
+  "water_fishing": {
+    "_doc": "Peche en cliquant sur l'eau (valide par Charleston le 2026-11-01, 0.20.30). Toute eau VISIBLE d'une carte est pechable, sans point pose a la main : le type d'eau se reconnait a la tuile (extraction.water_types), pas a la case. La carte reste l'outil de DESSIN ; scripts/export_fishing_water.py en extrait world/fishing_water/<zone>.json (grille de cases, chaque case d'eau porte le numero de son plan d'eau = composante connexe). Le serveur (presence) lit ce fichier : il fait de chaque plan d'eau un point de recolte du type node_type (memes ressources, meme duree, meme XP de metier, meme canne, meme idempotence que la recolte), rang = rang de l'aire mz_* qui contient le plan d'eau. Le client lit le meme fichier pour proposer « Pecher » sur l'eau ; le serveur verifie seul que le joueur est au bord d'une vraie eau de ce plan d'eau.",
+    "_status": "Valeurs de jeu A VALIDER par Charleston (2026-11-01) : fish_range_px, cast_cooldown_ms, catches, refill_seconds_by_rank.",
+    "zones": [
+      "village"
+    ],
+    "node_type": "fishing_spot",
+    "_node_type": "Type de point de node_types dont le plan d'eau reprend metier, outil, ressources par rang, secondaires et type_multiplier de duree.",
+    "fish_range_px": 112,
+    "_fish_range_px": "A VALIDER. Distance max (px monde) entre le joueur et la case d'eau la plus proche du plan d'eau vise, verifiee par le serveur. Le client approche le joueur a moins de cette distance avant de demander.",
+    "cast_cooldown_ms": 1500,
+    "_cast_cooldown_ms": "A VALIDER. Cadence : delai minimal entre la fin d'une prise et le lancer suivant du meme joueur (refus « cooldown » sinon). La duree d'une prise reste gather_duration (fishing_spot x1.5).",
+    "catches": {
+      "min": 3,
+      "max": 12,
+      "cells_per_catch": 40
+    },
+    "_catches": "A VALIDER. Prises avant epuisement d'un plan d'eau = clamp(ceil(cases / cells_per_catch), min, max) : une mare de 2 cases donne 3 prises, le lac en donne 12. Epuise : plus de prise jusqu'au remplissage, partage entre tous les pecheurs du plan d'eau (pas de verrou : plusieurs joueurs pechent ensemble).",
+    "refill_seconds_by_rank": {
+      "1": [
+        180,
+        300
+      ],
+      "2": [
+        240,
+        420
+      ],
+      "3": [
+        300,
+        540
+      ],
+      "4": [
+        360,
+        660
+      ],
+      "5": [
+        420,
+        780
+      ]
+    },
+    "_refill_seconds_by_rank": "A VALIDER. Plan d'eau epuise : il redevient pechable (prises pleines, rarete retiree) apres un delai tire dans [min, max] selon son rang.",
+    "extraction": {
+      "_doc": "Lu par scripts/export_fishing_water.py seulement. cell_size_px : finesse de la grille. layers : calques TileMapLayer de sol ; une case est de l'eau si le calque le PLUS HAUT (z_index puis ordre de la scene) qui a une tuile a cet endroit y pose une tuile d'eau : l'eau recouverte de sol ne compte pas. water_types : type d'eau -> images d'atlas (textures) dont les tuiles sont de cette eau, ou scenes dont les CollisionPolygon2D sont de cette eau (le lac anime). skip_alternatives : alternatives de tuile ignorees (1 = eau sous un ponton, voir kanarion_front tools/art/terrain_pass.py).",
+      "cell_size_px": 16,
+      "layers": [
+        "Water",
+        "Ground"
+      ],
+      "skip_alternatives": [
+        1
+      ],
+      "water_types": {
+        "water": {
+          "textures": [
+            "res://assets/world/havreden/terrain/v2/fill/water.png",
+            "res://assets/world/havreden/terrain/v2/transitions/water.png"
+          ]
+        },
+        "water_shallow": {
+          "textures": [
+            "res://assets/world/havreden/terrain/v2/fill/water_shallow.png"
+          ]
+        },
+        "swamp_water": {
+          "textures": [
+            "res://assets/world/havreden/terrain/v2/fill/swamp_water.png"
+          ]
+        },
+        "lake_havreden": {
+          "scenes": [
+            "res://assets/world/havreden/biomes/marais/water/lac_havreden_v2/lac_havreden.tscn"
+          ]
+        }
+      }
+    }
+  },
   "_visuals": "Kit graphique livre le 2026-10-01 (kanarion_front assets/world/resources/gathering, README.md) : SpriteFrames idle / hit (4 images, 12 fps) / depleted par point ; outils animes dans ../tools (harvest_motion.json). L'animation ne decide de rien : l'impact declenche seulement la reaction visuelle, le serveur decide gains, duree et epuisement."
 }
