@@ -3537,7 +3537,8 @@
       "rewards": {
         "xp": 250
       },
-      "chain_next": "q_onb_forces",
+      "chain_next": "q_onb_premiere_chasse",
+      "_chain_next_note": "2026-11-01 (Charleston) : la lecon d'arene enchaine sur Premiere chasse (q_onb_premiere_chasse, 3 rats), qui enchaine ensuite sur q_onb_forces. Constat prod : 25 min sans combat apres la lecon.",
       "quest_hints": {
         "on_complete": [
           {
@@ -3548,14 +3549,94 @@
             "payload": {
               "title_fr": "La suite",
               "title_en": "What comes next",
-              "content_fr": "Pas mal pour un début. Retourne voir Tobin.",
-              "content_en": "Not bad for a start. Go see Tobin."
+              "content_fr": "Pas mal pour un début. Mais dehors, personne ne te laissera passer la leçon. Va te faire la main sur les rats, juste au sud de l'arène. Trois suffiront.",
+              "content_en": "Not bad for a start. But out there, nobody lets you skip the lesson. Go and get some practice on the rats, just south of the arena. Three will do.",
+              "_a_valider": "2026-11-01 : replique de Dargo qui donne Premiere chasse (meme texte que dialogue_give de q_onb_premiere_chasse). Brouillon, a relire par Charleston. Avant : « Pas mal pour un début. Retourne voir Tobin. », reporte sur la fin de Premiere chasse."
             },
             "_note": "Deplacee le 2026-10-21 depuis q_havreden_tour_03 (on_complete, rendu chez Tobin, vue vers le niveau 19 en playtest 0.20.3, trop tard pour servir) : la fin de la lecon de combat de Dargo est le premier moment ou le joueur a besoin de la suite. Texte reecrit le 2026-10-23 (revision des modales V2 validee par Charleston) : il renvoie seulement vers Tobin ; Varn, Ezra et les Egouts ont leurs propres quetes (q_varn_egouts...). Avant : Lot 2, manque 5 : pointe vers q_varn_egouts (npc_giver Varn, min_level 9, sans prerequis, Egouts = dungeon_rat_den niveau 10-14)."
           }
         ]
       },
       "_note": "Onboarding V2 (spec 2026-09-23). Premiere quete d'un perso d'aventure neuf : la lecon d'arene demarre juste apres la cinematique, AVANT que le joueur voie le village, puis il reapparait devant l'arene de Dargo. Drapeau tutorial + pas de npc_giver = rendu automatique. 250 XP = niveau 3. ATTENTION BACK : auto_accept_on_zone_enter 'village' touche TOUT perso qui entre au village, y compris les anciens persos et les persos de tournoi. Sans garde (ligne character_arena_onboarding presente, perso non tournoi), un ancien perso recoit une quete qu'il ne peut pas finir. A trancher cote quest_service avant deploiement de cette data."
+    },
+    {
+      "id": "q_onb_premiere_chasse",
+      "type": "main",
+      "zone": "village",
+      "min_level": 1,
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "Première chasse",
+      "title_en": "First Hunt",
+      "summary_fr": "Dargo veut te voir te battre ailleurs que dans son arène. Des rats rôdent juste au sud, aux abords d'Havreden : bats-en trois.",
+      "summary_en": "Dargo wants to see you fight somewhere other than his arena. Rats prowl just to the south, on the outskirts of Havreden: defeat three of them.",
+      "dialogue_give_fr": "Pas mal pour un début. Mais dehors, personne ne te laissera passer la leçon.\nVa te faire la main sur les rats, juste au sud de l'arène. Trois suffiront.",
+      "dialogue_give_en": "Not bad for a start. But out there, nobody lets you skip the lesson.\nGo and get some practice on the rats, just south of the arena. Three will do.",
+      "dialogue_progress_fr": "Trois rats, c'est pas la mer à boire. Ils traînent juste au sud de l'arène.\nSi ça tourne mal, reviens. Ici on apprend à perdre sans y laisser sa peau. Dehors, pas vraiment.",
+      "dialogue_progress_en": "Three rats isn't asking much. They hang around just south of the arena.\nIf it goes badly, come back. In here you learn to lose without losing your hide. Out there, not so much.",
+      "dialogue_complete_fr": "Trois de moins. Tu tiens debout, c'est déjà ça.\nRetourne voir Tobin, il saura quoi faire de toi.",
+      "dialogue_complete_en": "Three fewer. You're still standing, that's something.\nGo back to Tobin, he'll know what to do with you.",
+      "_dialogues_a_valider": "2026-11-01 : les trois dialogues (give / progress / complete) sont des BROUILLONS, a relire par Charleston. give = modale de fin de lecon (q_onb_arene_next_modal) ; progress = Dargo (cle q_onb_premiere_chasse_default de npcs.json) ; complete = modale on_complete ci-dessous.",
+      "forbids_quests": [
+        "q_onb_forces"
+      ],
+      "_forbids_quests_note": "Un personnage deja engage dans q_onb_forces (ou au-dela) ne recoit JAMAIS cette quete : ni par la chaine, ni par l'auto-guerison des quetes chain-only (QuestService::maybe_heal_chain_only_quests, qui la redonnerait sinon a tout ancien personnage ayant fini q_onb_arene). Garde lue par acte1_gates_allow, aucun code serveur ajoute.",
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "mobs": [
+            "mob_rat",
+            "mob_rat_jeune",
+            "mob_rat_alpha"
+          ],
+          "count": 3,
+          "description_fr": "Vaincre 3 rats aux abords d'Havreden",
+          "description_en": "Defeat 3 rats on the outskirts of Havreden",
+          "spawn_area": "mz_abords_d_havreden_1_8",
+          "_note": "Rats des Abords d'Havreden (mz_abords_d_havreden_1_8, niveau 1-8). Credit serveur (combat room_ended killed_mob_ids), meme regle que q_contract_tutorial_first_hunt. Etoiles plafonnees a 1 dans cette aire (zones.json max_stars, tirage presence roll_star_level).",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_onb_premiere_chasse_obj0_arrow",
+                "type": "arrow",
+                "target": "area:havreden_premiere_chasse",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Les rats, au sud de l'arène",
+                  "label_en": "The rats, south of the arena"
+                },
+                "_note": "Zone de quete havreden_premiere_chasse (zones.json quest_areas, village) : les rats les plus proches de l'arene. Le centre de l'aire de monstres entiere (x -52..6044) tombe hors de son contour, au bord du village : la fleche y menait nulle part."
+              }
+            ]
+          }
+        }
+      ],
+      "rewards": {
+        "xp": 75,
+        "gold": 15
+      },
+      "_rewards_a_valider": "2026-11-01 : 3/5 de q_contract_tutorial_first_hunt (5 rats, 126 XP, 30 or), arrondi. Le perso reste niveau 3 a la fin (250 + 75 + XP des combats < 468), q_onb_forces le passe niveau 4 comme avant.",
+      "chain_next": "q_onb_forces",
+      "quest_hints": {
+        "on_complete": [
+          {
+            "id": "q_onb_premiere_chasse_done_modal",
+            "type": "modal",
+            "priority": 88,
+            "show_once": true,
+            "payload": {
+              "title_fr": "La suite",
+              "title_en": "What comes next",
+              "content_fr": "Trois de moins. Tu tiens debout, c'est déjà ça. Retourne voir Tobin, il saura quoi faire de toi.",
+              "content_en": "Three fewer. You're still standing, that's something. Go back to Tobin, he'll know what to do with you."
+            },
+            "_note": "Reprend le role de l'ancienne modale de fin de lecon (« Retourne voir Tobin »). Texte = dialogue_complete, brouillon a relire."
+          }
+        ]
+      },
+      "_note": "2026-11-01 (Charleston, 0.20.30). Premier combat dehors juste apres la lecon d'arene : q_onb_arene -> q_onb_premiere_chasse -> q_onb_forces. Drapeau tutorial sans npc_giver = rendu automatique (client turn_in_place 'auto'), comme q_onb_arene et q_onb_forces. Personne ne la donne : chain-only, reparee par le serveur si l'acceptation chainee se perd. Ne change ni q_havreden_arrivee ni l'ordre des objectifs de q_havreden_preparatifs."
     },
     {
       "id": "q_onb_forces",

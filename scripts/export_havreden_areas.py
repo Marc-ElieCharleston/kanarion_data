@@ -37,7 +37,8 @@ CE QU'IL NE TOUCHE JAMAIS
   (table REPRISE). Une aire SANS monstre recoit son roster de la table ROSTERS
   si elle y figure, sinon elle est ecrite avec `mobs: []` et `count: 0`.
   Exception : max_stars est ecrit a MAX_STARS (5) sur toutes les aires
-  (decision du 2026-10-23).
+  (decision du 2026-10-23), sauf celles de MAX_STARS_IMPOSE (Abords : 1,
+  2026-11-01).
 
 SOL PAS ENCORE PEINT
   Le calque `Ground` est decode a chaque execution : une aire dont plus de
@@ -155,6 +156,13 @@ CLES_ROSTER_DECOUPE = ("max_stars", "elite_pool", "elite_pack_chance", "mobs")
 # aires deja peuplees et les sous-aires des DECOUPES : c'est une regle de carte, pas
 # un reglage d'aire.
 MAX_STARS = 5
+
+# Exceptions a la regle des 5 etoiles, par aire (Charleston, 2026-11-01) : les rats
+# des Abords, juste au sud de l'arene, sont la cible de Premiere chasse
+# (q_onb_premiere_chasse) pour un personnage de niveau 3 ; ils sortaient jusqu'a 5
+# etoiles. Plafond lu par presence (spawn_areas[].max_stars, borne le tirage
+# roll_star_level). Sans cette table, un nouvel export remettait 5.
+MAX_STARS_IMPOSE = {"mz_abords_d_havreden_1_8": 1}
 
 # Rosters des aires du niveau 20 au niveau 100 restees sans monstre (carte complete,
 # Charleston 2026-10-23 : « on a toute la data jusqu'au niveau 100, place les
@@ -783,7 +791,7 @@ def main():
             if not entree.get("mobs") and mid in ROSTERS:
                 entree.update(copy.deepcopy(ROSTERS[mid]))
                 origine += " + roster ROSTERS"
-            entree["max_stars"] = MAX_STARS
+            entree["max_stars"] = MAX_STARS_IMPOSE.get(mid, MAX_STARS)
             vide, mouille = mesure_sol(P, sol, origine_sol, eau, origine_eau, a.ground_step)
             a_roster = bool(entree.get("mobs"))
             sans_sol = vide > a.empty_ground
