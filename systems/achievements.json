@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "version": "6.0",
-    "last_updated": "2026-10-29",
+    "version": "6.1",
+    "last_updated": "2026-11-01",
     "description": "Succes, vague 1 (conception : La Matrice des Succes, https://claude.ai/artifact/JJ2sE2jHBgQ8ioC9NCPNpR). Uniquement des sources d'ETAT relues en base : un succes ajoute plus tard se debloque retroactivement, et aucun ne peut mourir en silence faute d'ecrivain.",
     "owner": "services/quest (AchievementEngine). Le serveur evalue, debloque et recompense ; le client lit ce fichier pour l'AFFICHAGE seulement (noms, descriptions, recompense).",
     "reward_rule": "2026-10-13 bis : ach_quest_10 (1 500 -> 150) et ach_quest_aldric (3 000 -> 300), qui tombent aussi pendant le tuto, baissent ; les 4 050 XP retires vont a ach_quest_25 (1 650 -> 3 000) et ach_level_15 (1 150 -> 3 850). 2026-10-13 (review joueur, Charleston : on arrive chez Aldric niveau 7-9, trop d'XP et trop d'infos au debut) : les 7 succes de l'onboarding (premier point de stat, premiere competence, premiere quete, niveau 5, premiere victoire, 10 monstres, 10 points de stats) passent a 10-30 XP (1 220 -> 160) ; les 1 060 XP retires vont au premier donjon fini (ach_dungeon_runs_1, 2 300 -> 3 360). reward.xp = XP FIXE (2026-09-30, choix de Charleston : un pourcentage du niveau en cours laissait garder ses succes et les encaisser tard, 80 -> 100 en cliquant). Calibre : l'ancien pourcentage applique au cout du niveau ou le succes tombe normalement (premiers pas ~2, sous-classe/arene ~10, legendaire ~50). Puis x10 (30/09, Charleston : 100 quetes pour 2 250 XP pesait moins qu'un petit combat). Tout encaisser au niveau 80 vaut environ 5 niveaux. Personnage tournoi : 0 XP (vitrine), titres quand meme (compte). reward.title_id reference ui/cosmetics.json (acquisition 'grant').",
@@ -10,11 +10,30 @@
     "not_in_wave_1": "Competence montee au maximum (aucun niveau max de competence fiable dans la data) ; elites, zones visitees, detours de combat (aucune source aujourd'hui).",
     "early_pace": "Debut de partie retune le 2026-10-01 (Charleston) : la premiere quete rendue mene vers le niveau 3,5 et le premier point de caracteristique + la premiere competence vers 5 (avant : 6 puis 9). Raison : un joueur monte trop haut avant son premier combat subit la penalite d ecart de niveau sur les monstres du tutoriel. ach_quest_first 750 -> 260, ach_prog_first_stat et ach_prog_first_skill 750 -> 180, ach_level_5 250 -> 100. Sans aucun combat, la chaine des succes plafonne au niveau 4 a 5.",
     "early_pace_2026_10_16": "Retour du proprietaire (16/10, niveau 7 a la sortie de la lecon d'arene, build sur des valeurs d'avant le 13/10). Avec les valeurs du 13/10 la lecon mene au niveau 3 et l'onboarding (forces + Tobin) au niveau 4, mais la CASCADE continuait plus loin : au dernier combat d'Aldric (meute_sortie, niveau 9), ach_prog_skills_10 (800) puis ach_level_10 (2000) poussaient au niveau 13, fin de chaine 14 (cible 9-10) ; dans le tour, ach_familiar_first_hatch (1000) faisait passer 15, ach_level_15 (3850) puis ach_prog_stats_50 (2100) et ach_level_20 (4750) menaient au niveau 22 a la fin du tour (cible 15). Proposition (A VALIDER par Charleston) : forme de la vague 2 x cout du niveau ou le succes tombe REELLEMENT sur ce parcours (joueur qui depense tous ses points), et x0.1 pour ce qui tombe pendant la chaine d'Aldric (meme facteur que ach_quest_10 et ach_quest_aldric le 13/10). ach_prog_skills_10 800 -> 50 (echelle, niveau 9 : 518 x 0.1), ach_level_10 2000 -> 60 (echelle, 600 x 0.1), ach_familiar_first_hatch 1000 -> 390 (premier, niveau 12 : 0.5 x 788), ach_level_15 3850 -> 1155 (echelle, cout du niveau 15 ; annule le report du 13/10), ach_prog_stats_50 2100 -> 1650 (echelle, tombe au niveau 18), ach_level_20 4750 -> 2100 (echelle, cout du niveau 20 ; etait au-dessus de ach_level_25 = 3300). Parcours simule (quetes + combats du tuto, groupe 1 etoile estime) : creation 1, fin de lecon 3, fin onboarding 4, fin d'Aldric 11 (10 sans aucun succes : l'XP de quete seule depasse deja 9), fin du tour 14. Chaine autoalimentee (niveau + points seuls, rien d'encaisse) : +0 jusqu'au niveau 14, +1 a 15, +2 a 19-20 (avant : 9 -> 12, 13 -> 19, 15 -> 22). XP retiree (~10 000) NON reportee : a trancher. Constat back : ach_prog_first_skill se debloque a la CREATION (la competence de depart vaut 1 dans skill_allocations et la source la compte comme un point depense).",
-    "reward_cap_levels": 0,
-    "reward_cap_rule": "Plafond serveur DESACTIVE (0) le 2026-09-30, choix de Charleston : on regle l'XP des succes eux-memes, et de gros sauts de niveau restent acceptables (esprit Dofus). Les succes de CHANCE (premier familier eclos, rare, epique, legendaire) sont bas : les trois premiers d'un coup au niveau 2 menent vers le niveau 12, pas 25. Le mecanisme reste dans le code : reward_cap_levels > 0 le rallume.",
     "wave_2": "Vague 2 (2026-09-30) : ~100 succes, 14 sources nouvelles (migr 103). XP = forme x cout du niveau ou le succes tombe normalement (premier 0.5, echelle 1, detour 2 niveaux).",
     "account_reward_rule": "2026-10-29, A VALIDER par Charleston : l'XP des 19 succes de familier est convertie en jetons d'arene au compte (premier 10, echelle 15 a 250, rare 20/40/100, epique 40/80/200, legendaire 100/250, quatre roles 50) ; les titres existants sont gardes. Total si tout est obtenu : ~1 750 jetons (un titre de la boutique = 750, une emote = 250 ; revenu d'un joueur PvE ~65 par semaine).",
-    "level_milestone_rule": "2026-10-29 (Charleston, a valider) : un succes de palier de niveau (char_level) donne au plus 25 % du cout du palier, xp_table[palier] x 0,25 arrondi par defaut (CI data). Avant, il remboursait le palier entier : toute salve d'XP s'auto-entretenait de palier en palier (arene 29 -> 30 puis ach_level_30 30 -> 31). Les paliers sont espaces de 5 niveaux : 25 % d'un niveau ne peut plus en franchir un autre. ach_level_5 (20) et ach_level_10 (60) restent sous ce plafond, inchanges."
+    "level_milestone_rule": "2026-10-29 (Charleston, a valider) : un succes de palier de niveau (char_level) donne au plus 25 % du cout du palier, xp_table[palier] x 0,25 arrondi par defaut (CI data). Avant, il remboursait le palier entier : toute salve d'XP s'auto-entretenait de palier en palier (arene 29 -> 30 puis ach_level_30 30 -> 31). Les paliers sont espaces de 5 niveaux : 25 % d'un niveau ne peut plus en franchir un autre. ach_level_5 (20) et ach_level_10 (60) restent sous ce plafond, inchanges.",
+    "xp_scaling_rule": "2026-11-01 (Charleston : reduire drastiquement l'XP des succes, surtout au debut ; A VALIDER). Constat prod : un healer niveau 1 -> 22 en 2 h ; ach_koro_1 donnait 4 350 XP au niveau 17 (17 -> 19), ach_prog_subclass 4 250 XP au niveau 22 (un niveau entier). Un succes remboursait la valeur d'un palier complet. reward.xp n'est plus qu'un PLAFOND : le serveur verse au plus une fraction du cout du niveau COURANT (bloc xp_scaling ci-dessous, seul endroit qui pilote cette XP) et tous les succes d'une fenetre glissante partagent un demi-niveau au plus. Remplace reward_cap_levels (plafond en niveaux, desactive a 0 depuis le 2026-09-30, retire)."
+  },
+  "xp_scaling": {
+    "_status": "A VALIDER par Charleston (proposition du 2026-11-01)",
+    "_rule": "XP versee par un succes de personnage = min(reward.xp, arrondi par defaut de level_fraction x cout du niveau courant), au moins 1 XP. Cout du niveau courant = XP pour passer au niveau suivant (systems/progression.json leveling.xp_table[niveau+1]). level_fraction = celle de la premiere tranche dont up_to_level >= niveau (au-dela de la derniere : la derniere). Budget glissant : la somme de l'XP versee par TOUS les succes a ce personnage pendant window_minutes ne depasse jamais max_level_fraction x cout du niveau courant ; une salve de succes (ou une cascade de montees de niveau) ne fait donc jamais gagner un niveau entier. Au niveau maximal : 0 XP. Personnage tournoi et succes de compte : 0 XP (inchange). Or, jetons et titres ne sont pas touches. max_level_fraction est plafonne a 0.5 par le serveur et par la CI. Lu par kanarion_back services/quest (AchievementCatalog, QuestQueries::unlock_achievement). Le client n'affiche aucune XP calculee : la banniere de deblocage montre l'XP renvoyee par le serveur.",
+    "bands": [
+      {
+        "up_to_level": 10,
+        "level_fraction": 0.03
+      },
+      {
+        "up_to_level": 30,
+        "level_fraction": 0.05
+      },
+      {
+        "up_to_level": 100,
+        "level_fraction": 0.08
+      }
+    ],
+    "max_level_fraction": 0.5,
+    "window_minutes": 10
   },
   "categories": [
     {

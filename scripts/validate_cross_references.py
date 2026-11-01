@@ -1175,6 +1175,35 @@ def validate_achievements(db: Path) -> list:
     prog_path = db / "systems" / "progression.json"
     xp_table = (load_json(prog_path).get("leveling", {}).get("xp_table", {})
                 if prog_path.exists() else {})
+    # 2026-11-01 : l'XP d'un succes est une fraction du niveau courant (bloc xp_scaling,
+    # lu par services/quest). Sans ce bloc le serveur verserait reward.xp en entier.
+    scaling = data.get("xp_scaling")
+    if not isinstance(scaling, dict):
+        errors.append("[achievements.json] bloc xp_scaling absent (XP des succes par niveau)")
+    else:
+        bands = scaling.get("bands")
+        if not isinstance(bands, list) or not bands:
+            errors.append("[achievements.json] xp_scaling.bands doit etre une liste non vide")
+        else:
+            last = 0
+            for b in bands:
+                up = b.get("up_to_level") if isinstance(b, dict) else None
+                frac = b.get("level_fraction") if isinstance(b, dict) else None
+                if not isinstance(up, int) or up <= last:
+                    errors.append(f"[achievements.json] xp_scaling.bands : up_to_level {up} "
+                                  f"doit etre un entier croissant")
+                else:
+                    last = up
+                if not isinstance(frac, (int, float)) or not 0 < frac <= 0.5:
+                    errors.append(f"[achievements.json] xp_scaling.bands : level_fraction {frac} "
+                                  f"doit etre dans ]0 ; 0.5]")
+        mlf = scaling.get("max_level_fraction")
+        if not isinstance(mlf, (int, float)) or not 0 < mlf <= 0.5:
+            errors.append(f"[achievements.json] xp_scaling.max_level_fraction {mlf} doit etre "
+                          f"dans ]0 ; 0.5] (jamais plus d'un demi-niveau)")
+        wm = scaling.get("window_minutes")
+        if not isinstance(wm, int) or wm < 1:
+            errors.append(f"[achievements.json] xp_scaling.window_minutes {wm} doit etre un entier >= 1")
     seen = set()
     for a in data.get("achievements", []):
         aid = a.get("id", "?")
