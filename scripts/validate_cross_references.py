@@ -1175,35 +1175,6 @@ def validate_achievements(db: Path) -> list:
     prog_path = db / "systems" / "progression.json"
     xp_table = (load_json(prog_path).get("leveling", {}).get("xp_table", {})
                 if prog_path.exists() else {})
-    # 2026-11-01 : l'XP d'un succes est une fraction du niveau courant (bloc xp_scaling,
-    # lu par services/quest). Sans ce bloc le serveur verserait reward.xp en entier.
-    scaling = data.get("xp_scaling")
-    if not isinstance(scaling, dict):
-        errors.append("[achievements.json] bloc xp_scaling absent (XP des succes par niveau)")
-    else:
-        bands = scaling.get("bands")
-        if not isinstance(bands, list) or not bands:
-            errors.append("[achievements.json] xp_scaling.bands doit etre une liste non vide")
-        else:
-            last = 0
-            for b in bands:
-                up = b.get("up_to_level") if isinstance(b, dict) else None
-                frac = b.get("level_fraction") if isinstance(b, dict) else None
-                if not isinstance(up, int) or up <= last:
-                    errors.append(f"[achievements.json] xp_scaling.bands : up_to_level {up} "
-                                  f"doit etre un entier croissant")
-                else:
-                    last = up
-                if not isinstance(frac, (int, float)) or not 0 < frac <= 0.5:
-                    errors.append(f"[achievements.json] xp_scaling.bands : level_fraction {frac} "
-                                  f"doit etre dans ]0 ; 0.5]")
-        mlf = scaling.get("max_level_fraction")
-        if not isinstance(mlf, (int, float)) or not 0 < mlf <= 0.5:
-            errors.append(f"[achievements.json] xp_scaling.max_level_fraction {mlf} doit etre "
-                          f"dans ]0 ; 0.5] (jamais plus d'un demi-niveau)")
-        wm = scaling.get("window_minutes")
-        if not isinstance(wm, int) or wm < 1:
-            errors.append(f"[achievements.json] xp_scaling.window_minutes {wm} doit etre un entier >= 1")
     seen = set()
     for a in data.get("achievements", []):
         aid = a.get("id", "?")
@@ -1239,6 +1210,21 @@ def validate_achievements(db: Path) -> list:
             if isinstance(cost, int) and reward.get("xp", 0) > cost // 4:
                 errors.append(f"[achievements.json] '{aid}' : reward.xp {reward.get('xp')} depasse 25 % "
                               f"du cout du palier ({cost} -> max {cost // 4})")
+        # 2026-11-01 : XP FIXE, mais jamais plus d'un demi-niveau au niveau ou le succes
+        # tombe normalement (typical_level, obligatoire des que reward.xp > 0). Cout du
+        # niveau L = XP pour passer de L a L+1 (xp_table[L+1]) ; au niveau max, le dernier.
+        xp_val = reward.get("xp", 0)
+        if isinstance(xp_val, int) and xp_val > 0 and xp_table:
+            typ = a.get("typical_level")
+            if not isinstance(typ, int) or not 1 <= typ <= 100:
+                errors.append(f"[achievements.json] '{aid}' : typical_level (entier 1-100) obligatoire "
+                              f"quand reward.xp > 0")
+            else:
+                last = max(int(k) for k in xp_table)
+                cost = xp_table.get(str(typ + 1), xp_table.get(str(last)))
+                if isinstance(cost, int) and xp_val * 2 > cost:
+                    errors.append(f"[achievements.json] '{aid}' : reward.xp {xp_val} depasse un demi-niveau "
+                                  f"au niveau {typ} ({cost} -> max {cost // 2})")
         title = reward.get("title_id")
         if title and title not in grant_titles:
             errors.append(f"[achievements.json] '{aid}' : titre '{title}' absent de ui/cosmetics.json "
