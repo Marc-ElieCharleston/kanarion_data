@@ -419,10 +419,16 @@ class TileSetInfo:
                     continue
                 self.physique.setdefault((src_id, ax, ay, alt), []).append(pts(tv))
 
+    # Repere des tuiles tel que Godot 4.5 le calcule (TileMapLayer.map_to_local / local_to_map).
+    # En isometrique DIAMOND_DOWN, Godot place le CENTRE de la case (0, 0) en (w/2, h/2) :
+    # sur havreden_terrain_v2 (64 x 30), map_to_local((0,0)) = (32, 15) et
+    # local_to_map((0,0)) = (-1, 0). Jusqu'a la 0.20.29 ce demi-pas manquait : toute la
+    # grille des tuiles (eau a collision, sol peint) etait decalee de (-32, -15) px.
+    # Meme correction que scripts/export_fishing_water.py (620b564).
     def map_to_local(self, cx: int, cy: int):
         w, h = self.size
         if self.shape == 1 and self.layout == 5:  # isometrique, DIAMOND_DOWN
-            return ((cx - cy) * w / 2.0, (cx + cy) * h / 2.0)
+            return ((cx - cy) * w / 2.0 + w / 2.0, (cx + cy) * h / 2.0 + h / 2.0)
         if self.shape == 0:  # carre
             return (cx * w + w / 2.0, cy * h + h / 2.0)
         raise SystemExit(f"ERREUR : tile_shape={self.shape} layout={self.layout} non gere")
@@ -430,7 +436,7 @@ class TileSetInfo:
     def local_to_map(self, x: float, y: float):
         w, h = self.size
         if self.shape == 1 and self.layout == 5:
-            u, v = x / (w / 2.0), y / (h / 2.0)
+            u, v = (x - w / 2.0) / (w / 2.0), (y - h / 2.0) / (h / 2.0)
             fx, fy = (u + v) / 2.0, (v - u) / 2.0
             return (math.floor(fx + 0.5), math.floor(fy + 0.5))
         if self.shape == 0:
