@@ -73,12 +73,16 @@
     "_after_combat_note": "Apres une sortie de combat (victoire). Une defaite enchaine sur la reapparition ci-dessous.",
     "after_respawn": 20000,
     "after_zone_entry": 10000,
-    "_after_zone_entry_note": "Entree de zone, connexion et reconnexion passent toutes par JOIN_ZONE."
+    "_after_zone_entry_note": "Entree de zone, connexion et reconnexion passent toutes par JOIN_ZONE.",
+    "after_chest_open": 10000,
+    "_after_chest_open_note": "A VALIDER (decision Charleston 2026-11-01, valeur proposee). Apres l'ouverture d'un coffre de zone, l'ouvreur (et les membres de son groupe qui se tenaient dans le rayon de protection du coffre) ne peuvent pas etre engages par l'aggro pendant ce delai : le coffre disparait a l'ouverture, sa protection avec, et le joueur doit avoir le temps de s'eloigner d'un groupe trop fort. 0 = aucune immunite."
   },
   "protections": {
     "_comment": "Jamais d'aggro : joueur dans zones.json safe_polygon ou dans une no_aggro_areas de sa zone, deja en combat ou en train d'y entrer, phase de deplacement autre que NORMAL, en attente de reapparition, spectateur d'un combat, drapeau admin aggro_immune. Un joueur dans un menu ou un dialogue PNJ (IN_MENU) est protege tant qu'il ne bouge pas ; un joueur AFK ne l'est PAS (sinon on traverse en AFK).",
     "in_menu_protects": true,
     "afk_protects": false,
+    "zone_chest_no_aggro_radius_px": 400,
+    "_zone_chest_note": "A VALIDER (decision Charleston 2026-11-01 : « pour l'instant on retire l'aggro autour des coffres »). Aucun groupe n'engage AUTOMATIQUEMENT (ecart de niveau, etoiles ou temperament aggressive) un joueur qui se tient pres d'un coffre de zone actif (world/zone_chests.json, coffres bonus de Fissure compris). Rayon en px MONDE, mesure comme l'ouverture du coffre (distance droite, sans ellipse isometrique) ; le serveur prend le plus grand de cette valeur et de zone_chests.json spawn.open_range, pour que tout joueur assez proche pour ouvrir le coffre soit protege. Le clic volontaire sur un groupe reste permis pres d'un coffre. 0 = protection coupee. Contexte : en prod, un niveau 6 ouvrant un coffre de rang 1 a ete engage par une meute de loups niveau 19 a 176 px (zones de niveaux tres differents qui se touchent).",
     "rift_door_no_aggro_radius_px": 256,
     "_rift_door_note": "Zone sans aggro autour de chaque porte de faille OUVERTE (Fissure kind 1, world/rift_events.json). Les portes sont dynamiques : le serveur pose un disque de ce rayon (px MONDE, ellipse isometrique comme no_aggro_areas) sur chaque porte tant que la faille est ouverte ou se referme. Meme rayon que les no_aggro_areas de zones.json (256, a valider). L'interieur de faille (zones rift_interior_r1..r5) n'est PAS dans enabled_zones : pas d'aggro dedans, les groupes y sont a vaincre volontairement."
   },
