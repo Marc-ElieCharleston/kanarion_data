@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "version": "6.0",
-    "last_updated": "2026-10-29",
+    "version": "6.1",
+    "last_updated": "2026-11-01",
     "description": "Succes, vague 1 (conception : La Matrice des Succes, https://claude.ai/artifact/JJ2sE2jHBgQ8ioC9NCPNpR). Uniquement des sources d'ETAT relues en base : un succes ajoute plus tard se debloque retroactivement, et aucun ne peut mourir en silence faute d'ecrivain.",
     "owner": "services/quest (AchievementEngine). Le serveur evalue, debloque et recompense ; le client lit ce fichier pour l'AFFICHAGE seulement (noms, descriptions, recompense).",
     "reward_rule": "2026-10-13 bis : ach_quest_10 (1 500 -> 150) et ach_quest_aldric (3 000 -> 300), qui tombent aussi pendant le tuto, baissent ; les 4 050 XP retires vont a ach_quest_25 (1 650 -> 3 000) et ach_level_15 (1 150 -> 3 850). 2026-10-13 (review joueur, Charleston : on arrive chez Aldric niveau 7-9, trop d'XP et trop d'infos au debut) : les 7 succes de l'onboarding (premier point de stat, premiere competence, premiere quete, niveau 5, premiere victoire, 10 monstres, 10 points de stats) passent a 10-30 XP (1 220 -> 160) ; les 1 060 XP retires vont au premier donjon fini (ach_dungeon_runs_1, 2 300 -> 3 360). reward.xp = XP FIXE (2026-09-30, choix de Charleston : un pourcentage du niveau en cours laissait garder ses succes et les encaisser tard, 80 -> 100 en cliquant). Calibre : l'ancien pourcentage applique au cout du niveau ou le succes tombe normalement (premiers pas ~2, sous-classe/arene ~10, legendaire ~50). Puis x10 (30/09, Charleston : 100 quetes pour 2 250 XP pesait moins qu'un petit combat). Tout encaisser au niveau 80 vaut environ 5 niveaux. Personnage tournoi : 0 XP (vitrine), titres quand meme (compte). reward.title_id reference ui/cosmetics.json (acquisition 'grant').",
@@ -14,7 +14,8 @@
     "reward_cap_rule": "Plafond serveur DESACTIVE (0) le 2026-09-30, choix de Charleston : on regle l'XP des succes eux-memes, et de gros sauts de niveau restent acceptables (esprit Dofus). Les succes de CHANCE (premier familier eclos, rare, epique, legendaire) sont bas : les trois premiers d'un coup au niveau 2 menent vers le niveau 12, pas 25. Le mecanisme reste dans le code : reward_cap_levels > 0 le rallume.",
     "wave_2": "Vague 2 (2026-09-30) : ~100 succes, 14 sources nouvelles (migr 103). XP = forme x cout du niveau ou le succes tombe normalement (premier 0.5, echelle 1, detour 2 niveaux).",
     "account_reward_rule": "2026-10-29, A VALIDER par Charleston : l'XP des 19 succes de familier est convertie en jetons d'arene au compte (premier 10, echelle 15 a 250, rare 20/40/100, epique 40/80/200, legendaire 100/250, quatre roles 50) ; les titres existants sont gardes. Total si tout est obtenu : ~1 750 jetons (un titre de la boutique = 750, une emote = 250 ; revenu d'un joueur PvE ~65 par semaine).",
-    "level_milestone_rule": "2026-10-29 (Charleston, a valider) : un succes de palier de niveau (char_level) donne au plus 25 % du cout du palier, xp_table[palier] x 0,25 arrondi par defaut (CI data). Avant, il remboursait le palier entier : toute salve d'XP s'auto-entretenait de palier en palier (arene 29 -> 30 puis ach_level_30 30 -> 31). Les paliers sont espaces de 5 niveaux : 25 % d'un niveau ne peut plus en franchir un autre. ach_level_5 (20) et ach_level_10 (60) restent sous ce plafond, inchanges."
+    "level_milestone_rule": "2026-10-29 (Charleston, a valider) : un succes de palier de niveau (char_level) donne au plus 25 % du cout du palier, xp_table[palier] x 0,25 arrondi par defaut (CI data). Avant, il remboursait le palier entier : toute salve d'XP s'auto-entretenait de palier en palier (arene 29 -> 30 puis ach_level_30 30 -> 31). Les paliers sont espaces de 5 niveaux : 25 % d'un niveau ne peut plus en franchir un autre. ach_level_5 (20) et ach_level_10 (60) restent sous ce plafond, inchanges.",
+    "fixed_xp_rescale_2026_11_01": "2026-11-01, A VALIDER par Charleston (decision : XP FIXE, pas de pourcentage ; reduire fortement les premiers rangs). Prod : un healer niveau 1 -> 22 en 2 h ; ach_koro_1 donnait 4 350 XP au niveau 17 (17 -> 19), ach_prog_subclass 4 250 XP (un niveau entier). Chaque succes de personnage porte typical_level, le niveau ou on l'obtient normalement (estimation, A VALIDER). reward.xp = XP FIXE versee telle quelle, recalculee UNE fois : au plus 3 % du cout du niveau typique (XP pour passer au suivant) jusqu'au niveau 10, 5 % jusqu'au 30, 8 % au-dela, arrondie par defaut a une valeur ronde (1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100...), jamais au-dessus de l'ancienne valeur. Paliers de niveau 50 a 95 inchanges (25 % du palier, regle du 2026-10-29). CI data : aucun succes de personnage ne depasse un demi-niveau a son typical_level (typical_level obligatoire des que reward.xp > 0). Le serveur ne lit pas typical_level : seule reward.xp compte en jeu."
   },
   "categories": [
     {
@@ -260,8 +261,9 @@
       "desc_en": "Spend your first attribute point.",
       "source": "char_stat_points_spent",
       "threshold": 1,
+      "typical_level": 2,
       "reward": {
-        "xp": 20
+        "xp": 4
       }
     },
     {
@@ -274,8 +276,9 @@
       "desc_en": "Spend your first skill point.",
       "source": "char_skill_points_spent",
       "threshold": 1,
+      "typical_level": 2,
       "reward": {
-        "xp": 20
+        "xp": 4
       }
     },
     {
@@ -288,8 +291,9 @@
       "desc_en": "Choose your subclass with Soren.",
       "source": "char_subclass_chosen",
       "threshold": 1,
+      "typical_level": 20,
       "reward": {
-        "xp": 4250
+        "xp": 100
       }
     },
     {
@@ -302,8 +306,9 @@
       "desc_en": "Reach level 10.",
       "source": "char_level",
       "threshold": 10,
+      "typical_level": 10,
       "reward": {
-        "xp": 60
+        "xp": 20
       }
     },
     {
@@ -316,8 +321,9 @@
       "desc_en": "Reach level 20.",
       "source": "char_level",
       "threshold": 20,
+      "typical_level": 20,
       "reward": {
-        "xp": 525,
+        "xp": 100,
         "title_id": "title_aguerri"
       }
     },
@@ -331,8 +337,9 @@
       "desc_en": "Reach level 40.",
       "source": "char_level",
       "threshold": 40,
+      "typical_level": 40,
       "reward": {
-        "xp": 2175
+        "xp": 500
       }
     },
     {
@@ -345,6 +352,7 @@
       "desc_en": "Reach level 60.",
       "source": "char_level",
       "threshold": 60,
+      "typical_level": 60,
       "reward": {
         "xp": 5625,
         "title_id": "title_arpenteur"
@@ -390,8 +398,9 @@
       "desc_en": "Turn in your first quest.",
       "source": "quests_completed",
       "threshold": 1,
+      "typical_level": 1,
       "reward": {
-        "xp": 30
+        "xp": 3
       }
     },
     {
@@ -404,8 +413,9 @@
       "desc_en": "Turn in 10 quests.",
       "source": "quests_completed",
       "threshold": 10,
+      "typical_level": 7,
       "reward": {
-        "xp": 150
+        "xp": 10
       }
     },
     {
@@ -418,8 +428,9 @@
       "desc_en": "Turn in 50 quests.",
       "source": "quests_completed",
       "threshold": 50,
+      "typical_level": 30,
       "reward": {
-        "xp": 10500
+        "xp": 250
       }
     },
     {
@@ -432,8 +443,9 @@
       "desc_en": "Turn in 100 quests.",
       "source": "quests_completed",
       "threshold": 100,
+      "typical_level": 45,
       "reward": {
-        "xp": 22500
+        "xp": 750
       }
     },
     {
@@ -446,8 +458,9 @@
       "desc_en": "Finish everything Aldric asked of you in the tavern's back room.",
       "source": "quests_set_completed",
       "threshold": 8,
+      "typical_level": 9,
       "reward": {
-        "xp": 300
+        "xp": 15
       },
       "params": {
         "quests": [
@@ -472,8 +485,9 @@
       "desc_en": "Finish the story of Havreden, from your arrival to the road to Rochebourg.",
       "source": "quests_set_completed",
       "threshold": 9,
+      "typical_level": 20,
       "reward": {
-        "xp": 10500,
+        "xp": 100,
         "title_id": "title_ami_havreden"
       },
       "params": {
@@ -502,8 +516,9 @@
       "desc_en": "Finish your first arena fight.",
       "source": "arena_matches",
       "threshold": 1,
+      "typical_level": 12,
       "reward": {
-        "xp": 3500
+        "xp": 40
       }
     },
     {
@@ -516,8 +531,9 @@
       "desc_en": "Win your first arena fight.",
       "source": "arena_wins",
       "threshold": 1,
+      "typical_level": 12,
       "reward": {
-        "xp": 3500
+        "xp": 40
       }
     },
     {
@@ -530,8 +546,9 @@
       "desc_en": "Lose your first arena fight. Dargo says you learn more from one defeat than from ten wins.",
       "source": "arena_losses",
       "threshold": 1,
+      "typical_level": 12,
       "reward": {
-        "xp": 3500
+        "xp": 40
       }
     },
     {
@@ -544,8 +561,9 @@
       "desc_en": "Finish your first 2v2 arena fight.",
       "source": "arena_matches_2v2",
       "threshold": 1,
+      "typical_level": 12,
       "reward": {
-        "xp": 4500
+        "xp": 40
       }
     },
     {
@@ -558,8 +576,9 @@
       "desc_en": "Finish your first 4v4 arena fight.",
       "source": "arena_matches_4v4",
       "threshold": 1,
+      "typical_level": 15,
       "reward": {
-        "xp": 6500
+        "xp": 50
       }
     },
     {
@@ -572,8 +591,9 @@
       "desc_en": "Finish 5 arena fights.",
       "source": "arena_matches",
       "threshold": 5,
+      "typical_level": 14,
       "reward": {
-        "xp": 2750
+        "xp": 50
       }
     },
     {
@@ -586,8 +606,9 @@
       "desc_en": "Finish 20 arena fights.",
       "source": "arena_matches",
       "threshold": 20,
+      "typical_level": 20,
       "reward": {
-        "xp": 4750
+        "xp": 100
       }
     },
     {
@@ -600,8 +621,9 @@
       "desc_en": "Finish 50 arena fights.",
       "source": "arena_matches",
       "threshold": 50,
+      "typical_level": 30,
       "reward": {
-        "xp": 7500
+        "xp": 250
       }
     },
     {
@@ -614,8 +636,9 @@
       "desc_en": "Finish 200 arena fights.",
       "source": "arena_matches",
       "threshold": 200,
+      "typical_level": 55,
       "reward": {
-        "xp": 15000,
+        "xp": 1500,
         "title_id": "title_gladiateur"
       }
     },
@@ -629,8 +652,9 @@
       "desc_en": "Win 10 arena fights.",
       "source": "arena_wins",
       "threshold": 10,
+      "typical_level": 18,
       "reward": {
-        "xp": 5500
+        "xp": 75
       }
     },
     {
@@ -643,8 +667,9 @@
       "desc_en": "Win 50 arena fights.",
       "source": "arena_wins",
       "threshold": 50,
+      "typical_level": 35,
       "reward": {
-        "xp": 14000
+        "xp": 500
       }
     },
     {
@@ -657,8 +682,9 @@
       "desc_en": "Win 3 ranked arena fights in a row.",
       "source": "arena_best_win_streak",
       "threshold": 3,
+      "typical_level": 18,
       "reward": {
-        "xp": 14000
+        "xp": 75
       }
     },
     {
@@ -671,8 +697,9 @@
       "desc_en": "Win 10 ranked arena fights in a row.",
       "source": "arena_best_win_streak",
       "threshold": 10,
+      "typical_level": 40,
       "reward": {
-        "xp": 74000,
+        "xp": 500,
         "title_id": "title_invaincu"
       }
     },
@@ -800,8 +827,9 @@
       "desc_en": "Reach level 5.",
       "source": "char_level",
       "threshold": 5,
+      "typical_level": 5,
       "reward": {
-        "xp": 20
+        "xp": 5
       }
     },
     {
@@ -814,8 +842,9 @@
       "desc_en": "Reach level 15.",
       "source": "char_level",
       "threshold": 15,
+      "typical_level": 15,
       "reward": {
-        "xp": 288
+        "xp": 50
       }
     },
     {
@@ -828,8 +857,9 @@
       "desc_en": "Reach level 25.",
       "source": "char_level",
       "threshold": 25,
+      "typical_level": 25,
       "reward": {
-        "xp": 825
+        "xp": 150
       }
     },
     {
@@ -842,8 +872,9 @@
       "desc_en": "Reach level 30.",
       "source": "char_level",
       "threshold": 30,
+      "typical_level": 30,
       "reward": {
-        "xp": 1200
+        "xp": 250
       }
     },
     {
@@ -856,8 +887,9 @@
       "desc_en": "Reach level 35.",
       "source": "char_level",
       "threshold": 35,
+      "typical_level": 35,
       "reward": {
-        "xp": 1650
+        "xp": 500
       }
     },
     {
@@ -870,8 +902,9 @@
       "desc_en": "Reach level 45.",
       "source": "char_level",
       "threshold": 45,
+      "typical_level": 45,
       "reward": {
-        "xp": 2812
+        "xp": 750
       }
     },
     {
@@ -884,6 +917,7 @@
       "desc_en": "Reach level 50.",
       "source": "char_level",
       "threshold": 50,
+      "typical_level": 50,
       "reward": {
         "xp": 3562
       }
@@ -898,6 +932,7 @@
       "desc_en": "Reach level 55.",
       "source": "char_level",
       "threshold": 55,
+      "typical_level": 55,
       "reward": {
         "xp": 4500
       }
@@ -912,6 +947,7 @@
       "desc_en": "Reach level 65.",
       "source": "char_level",
       "threshold": 65,
+      "typical_level": 65,
       "reward": {
         "xp": 7500
       }
@@ -926,6 +962,7 @@
       "desc_en": "Reach level 70.",
       "source": "char_level",
       "threshold": 70,
+      "typical_level": 70,
       "reward": {
         "xp": 10500
       }
@@ -940,6 +977,7 @@
       "desc_en": "Reach level 75.",
       "source": "char_level",
       "threshold": 75,
+      "typical_level": 75,
       "reward": {
         "xp": 15000
       }
@@ -954,6 +992,7 @@
       "desc_en": "Reach level 85.",
       "source": "char_level",
       "threshold": 85,
+      "typical_level": 85,
       "reward": {
         "xp": 28125
       }
@@ -968,6 +1007,7 @@
       "desc_en": "Reach level 90.",
       "source": "char_level",
       "threshold": 90,
+      "typical_level": 90,
       "reward": {
         "xp": 37500
       }
@@ -982,6 +1022,7 @@
       "desc_en": "Reach level 95.",
       "source": "char_level",
       "threshold": 95,
+      "typical_level": 95,
       "reward": {
         "xp": 50625
       }
@@ -996,8 +1037,9 @@
       "desc_en": "Spend 10 attribute points.",
       "source": "char_stat_points_spent",
       "threshold": 10,
+      "typical_level": 5,
       "reward": {
-        "xp": 30
+        "xp": 5
       }
     },
     {
@@ -1010,8 +1052,9 @@
       "desc_en": "Spend 50 attribute points.",
       "source": "char_stat_points_spent",
       "threshold": 50,
+      "typical_level": 18,
       "reward": {
-        "xp": 1650
+        "xp": 75
       }
     },
     {
@@ -1024,8 +1067,9 @@
       "desc_en": "Spend 150 attribute points.",
       "source": "char_stat_points_spent",
       "threshold": 150,
+      "typical_level": 51,
       "reward": {
-        "xp": 18000
+        "xp": 1000
       }
     },
     {
@@ -1038,8 +1082,9 @@
       "desc_en": "Spend 10 skill points.",
       "source": "char_skill_points_spent",
       "threshold": 10,
+      "typical_level": 9,
       "reward": {
-        "xp": 50
+        "xp": 15
       }
     },
     {
@@ -1052,8 +1097,9 @@
       "desc_en": "Spend 30 skill points.",
       "source": "char_skill_points_spent",
       "threshold": 30,
+      "typical_level": 30,
       "reward": {
-        "xp": 6600
+        "xp": 250
       }
     },
     {
@@ -1066,8 +1112,9 @@
       "desc_en": "Spend 60 skill points.",
       "source": "char_skill_points_spent",
       "threshold": 60,
+      "typical_level": 60,
       "reward": {
-        "xp": 42000
+        "xp": 1500
       }
     },
     {
@@ -1080,8 +1127,9 @@
       "desc_en": "Complete 25 quests.",
       "source": "quests_completed",
       "threshold": 25,
+      "typical_level": 15,
       "reward": {
-        "xp": 3000
+        "xp": 50
       }
     },
     {
@@ -1094,8 +1142,9 @@
       "desc_en": "Complete 200 quests.",
       "source": "quests_completed",
       "threshold": 200,
+      "typical_level": 65,
       "reward": {
-        "xp": 60000
+        "xp": 2500
       }
     },
     {
@@ -1108,8 +1157,9 @@
       "desc_en": "Complete 300 quests.",
       "source": "quests_completed",
       "threshold": 300,
+      "typical_level": 80,
       "reward": {
-        "xp": 150000
+        "xp": 5000
       }
     },
     {
@@ -1122,8 +1172,9 @@
       "desc_en": "Fight 100 arena matches.",
       "source": "arena_matches",
       "threshold": 100,
+      "typical_level": 40,
       "reward": {
-        "xp": 11250
+        "xp": 500
       }
     },
     {
@@ -1136,8 +1187,9 @@
       "desc_en": "Fight 500 arena matches.",
       "source": "arena_matches",
       "threshold": 500,
+      "typical_level": 75,
       "reward": {
-        "xp": 82500,
+        "xp": 5000,
         "title_id": "title_legende_gradins"
       }
     },
@@ -1151,8 +1203,9 @@
       "desc_en": "Win 5 arena matches.",
       "source": "arena_wins",
       "threshold": 5,
+      "typical_level": 15,
       "reward": {
-        "xp": 800
+        "xp": 50
       }
     },
     {
@@ -1165,8 +1218,9 @@
       "desc_en": "Win 25 arena matches.",
       "source": "arena_wins",
       "threshold": 25,
+      "typical_level": 25,
       "reward": {
-        "xp": 4200
+        "xp": 150
       }
     },
     {
@@ -1179,8 +1233,9 @@
       "desc_en": "Win 100 arena matches.",
       "source": "arena_wins",
       "threshold": 100,
+      "typical_level": 45,
       "reward": {
-        "xp": 18000
+        "xp": 750
       }
     },
     {
@@ -1193,8 +1248,9 @@
       "desc_en": "Win 250 arena matches.",
       "source": "arena_wins",
       "threshold": 250,
+      "typical_level": 65,
       "reward": {
-        "xp": 82500,
+        "xp": 2500,
         "title_id": "title_champion_confirme"
       }
     },
@@ -1208,8 +1264,9 @@
       "desc_en": "Lose 10 arena matches and keep going.",
       "source": "arena_losses",
       "threshold": 10,
+      "typical_level": 20,
       "reward": {
-        "xp": 2100
+        "xp": 100
       }
     },
     {
@@ -1222,8 +1279,9 @@
       "desc_en": "Lose 50 arena matches and keep going.",
       "source": "arena_losses",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 11250
+        "xp": 500
       }
     },
     {
@@ -1236,8 +1294,9 @@
       "desc_en": "Fight 10 arena matches in 2v2.",
       "source": "arena_matches_2v2",
       "threshold": 10,
+      "typical_level": 25,
       "reward": {
-        "xp": 3300
+        "xp": 150
       }
     },
     {
@@ -1250,8 +1309,9 @@
       "desc_en": "Fight 50 arena matches in 2v2.",
       "source": "arena_matches_2v2",
       "threshold": 50,
+      "typical_level": 45,
       "reward": {
-        "xp": 18000
+        "xp": 750
       }
     },
     {
@@ -1264,8 +1324,9 @@
       "desc_en": "Fight 10 arena matches in 4v4.",
       "source": "arena_matches_4v4",
       "threshold": 10,
+      "typical_level": 25,
       "reward": {
-        "xp": 3300
+        "xp": 150
       }
     },
     {
@@ -1278,8 +1339,9 @@
       "desc_en": "Fight 50 arena matches in 4v4.",
       "source": "arena_matches_4v4",
       "threshold": 50,
+      "typical_level": 45,
       "reward": {
-        "xp": 18000
+        "xp": 750
       }
     },
     {
@@ -1292,8 +1354,9 @@
       "desc_en": "Win 5 arena matches in a row.",
       "source": "arena_best_win_streak",
       "threshold": 5,
+      "typical_level": 25,
       "reward": {
-        "xp": 13200
+        "xp": 150
       }
     },
     {
@@ -1461,8 +1524,9 @@
       "desc_en": "Win 1 fight against monsters.",
       "source": "pve_wins",
       "threshold": 1,
+      "typical_level": 2,
       "reward": {
-        "xp": 10
+        "xp": 4
       }
     },
     {
@@ -1475,8 +1539,9 @@
       "desc_en": "Win 10 fights against monsters.",
       "source": "pve_wins",
       "threshold": 10,
+      "typical_level": 6,
       "reward": {
-        "xp": 300
+        "xp": 10
       }
     },
     {
@@ -1489,8 +1554,9 @@
       "desc_en": "Win 50 fights against monsters.",
       "source": "pve_wins",
       "threshold": 50,
+      "typical_level": 12,
       "reward": {
-        "xp": 1150
+        "xp": 40
       }
     },
     {
@@ -1503,8 +1569,9 @@
       "desc_en": "Win 100 fights against monsters.",
       "source": "pve_wins",
       "threshold": 100,
+      "typical_level": 16,
       "reward": {
-        "xp": 2600
+        "xp": 50
       }
     },
     {
@@ -1517,8 +1584,9 @@
       "desc_en": "Win 250 fights against monsters.",
       "source": "pve_wins",
       "threshold": 250,
+      "typical_level": 25,
       "reward": {
-        "xp": 6600
+        "xp": 150
       }
     },
     {
@@ -1531,8 +1599,9 @@
       "desc_en": "Win 500 fights against monsters.",
       "source": "pve_wins",
       "threshold": 500,
+      "typical_level": 35,
       "reward": {
-        "xp": 14250
+        "xp": 500
       }
     },
     {
@@ -1545,8 +1614,9 @@
       "desc_en": "Win 1,000 fights against monsters.",
       "source": "pve_wins",
       "threshold": 1000,
+      "typical_level": 50,
       "reward": {
-        "xp": 42000,
+        "xp": 1000,
         "title_id": "title_mille_victoires"
       }
     },
@@ -1560,8 +1630,9 @@
       "desc_en": "Win 2,500 fights against monsters.",
       "source": "pve_wins",
       "threshold": 2500,
+      "typical_level": 75,
       "reward": {
-        "xp": 202500
+        "xp": 5000
       }
     },
     {
@@ -1574,8 +1645,9 @@
       "desc_en": "Defeat 10 monsters.",
       "source": "monsters_killed",
       "threshold": 10,
+      "typical_level": 4,
       "reward": {
-        "xp": 30
+        "xp": 5
       }
     },
     {
@@ -1588,8 +1660,9 @@
       "desc_en": "Defeat 100 monsters.",
       "source": "monsters_killed",
       "threshold": 100,
+      "typical_level": 12,
       "reward": {
-        "xp": 800
+        "xp": 40
       }
     },
     {
@@ -1602,8 +1675,9 @@
       "desc_en": "Defeat 500 monsters.",
       "source": "monsters_killed",
       "threshold": 500,
+      "typical_level": 22,
       "reward": {
-        "xp": 3300
+        "xp": 100
       }
     },
     {
@@ -1616,8 +1690,9 @@
       "desc_en": "Defeat 1,000 monsters.",
       "source": "monsters_killed",
       "threshold": 1000,
+      "typical_level": 30,
       "reward": {
-        "xp": 6600
+        "xp": 250
       }
     },
     {
@@ -1630,8 +1705,9 @@
       "desc_en": "Defeat 2,500 monsters.",
       "source": "monsters_killed",
       "threshold": 2500,
+      "typical_level": 42,
       "reward": {
-        "xp": 14250
+        "xp": 750
       }
     },
     {
@@ -1644,8 +1720,9 @@
       "desc_en": "Defeat 5,000 monsters.",
       "source": "monsters_killed",
       "threshold": 5000,
+      "typical_level": 55,
       "reward": {
-        "xp": 30000
+        "xp": 1500
       }
     },
     {
@@ -1658,8 +1735,9 @@
       "desc_en": "Defeat 10,000 monsters.",
       "source": "monsters_killed",
       "threshold": 10000,
+      "typical_level": 70,
       "reward": {
-        "xp": 82500,
+        "xp": 3000,
         "title_id": "title_fleau_monstres"
       }
     },
@@ -1673,8 +1751,9 @@
       "desc_en": "Defeat 25,000 monsters.",
       "source": "monsters_killed",
       "threshold": 25000,
+      "typical_level": 90,
       "reward": {
-        "xp": 247500
+        "xp": 10000
       }
     },
     {
@@ -1687,8 +1766,9 @@
       "desc_en": "Deal 10,000 total damage.",
       "source": "damage_dealt_total",
       "threshold": 10000,
+      "typical_level": 8,
       "reward": {
-        "xp": 600
+        "xp": 15
       }
     },
     {
@@ -1701,8 +1781,9 @@
       "desc_en": "Deal 100,000 total damage.",
       "source": "damage_dealt_total",
       "threshold": 100000,
+      "typical_level": 20,
       "reward": {
-        "xp": 4800
+        "xp": 100
       }
     },
     {
@@ -1715,8 +1796,9 @@
       "desc_en": "Deal 1,000,000 total damage.",
       "source": "damage_dealt_total",
       "threshold": 1000000,
+      "typical_level": 45,
       "reward": {
-        "xp": 22500
+        "xp": 750
       }
     },
     {
@@ -1729,8 +1811,9 @@
       "desc_en": "Deal 10,000,000 total damage.",
       "source": "damage_dealt_total",
       "threshold": 10000000,
+      "typical_level": 80,
       "reward": {
-        "xp": 150000
+        "xp": 5000
       }
     },
     {
@@ -1743,8 +1826,9 @@
       "desc_en": "Restore 5,000 total health.",
       "source": "healing_done_total",
       "threshold": 5000,
+      "typical_level": 8,
       "reward": {
-        "xp": 600
+        "xp": 15
       }
     },
     {
@@ -1757,8 +1841,9 @@
       "desc_en": "Restore 50,000 total health.",
       "source": "healing_done_total",
       "threshold": 50000,
+      "typical_level": 20,
       "reward": {
-        "xp": 4800
+        "xp": 100
       }
     },
     {
@@ -1771,8 +1856,9 @@
       "desc_en": "Restore 500,000 total health.",
       "source": "healing_done_total",
       "threshold": 500000,
+      "typical_level": 45,
       "reward": {
-        "xp": 22500
+        "xp": 750
       }
     },
     {
@@ -1785,8 +1871,9 @@
       "desc_en": "Restore 5,000,000 total health.",
       "source": "healing_done_total",
       "threshold": 5000000,
+      "typical_level": 80,
       "reward": {
-        "xp": 150000
+        "xp": 5000
       }
     },
     {
@@ -1799,8 +1886,9 @@
       "desc_en": "Clear 1 dungeon floor.",
       "source": "dungeon_floors_cleared",
       "threshold": 1,
+      "typical_level": 10,
       "reward": {
-        "xp": 300
+        "xp": 20
       }
     },
     {
@@ -1813,8 +1901,9 @@
       "desc_en": "Clear 10 dungeon floors.",
       "source": "dungeon_floors_cleared",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1150
+        "xp": 50
       }
     },
     {
@@ -1827,8 +1916,9 @@
       "desc_en": "Clear 50 dungeon floors.",
       "source": "dungeon_floors_cleared",
       "threshold": 50,
+      "typical_level": 30,
       "reward": {
-        "xp": 4800
+        "xp": 250
       }
     },
     {
@@ -1841,8 +1931,9 @@
       "desc_en": "Clear 100 dungeon floors.",
       "source": "dungeon_floors_cleared",
       "threshold": 100,
+      "typical_level": 40,
       "reward": {
-        "xp": 11250
+        "xp": 500
       }
     },
     {
@@ -1855,8 +1946,9 @@
       "desc_en": "Clear 250 dungeon floors.",
       "source": "dungeon_floors_cleared",
       "threshold": 250,
+      "typical_level": 60,
       "reward": {
-        "xp": 42000
+        "xp": 1500
       }
     },
     {
@@ -1869,8 +1961,9 @@
       "desc_en": "Complete 1 dungeon to the last floor.",
       "source": "dungeon_runs_completed",
       "threshold": 1,
+      "typical_level": 12,
       "reward": {
-        "xp": 3360
+        "xp": 40
       }
     },
     {
@@ -1883,8 +1976,9 @@
       "desc_en": "Complete 5 dungeons to the last floor.",
       "source": "dungeon_runs_completed",
       "threshold": 5,
+      "typical_level": 18,
       "reward": {
-        "xp": 2600
+        "xp": 75
       }
     },
     {
@@ -1897,8 +1991,9 @@
       "desc_en": "Complete 25 dungeons to the last floor.",
       "source": "dungeon_runs_completed",
       "threshold": 25,
+      "typical_level": 35,
       "reward": {
-        "xp": 8700
+        "xp": 500
       }
     },
     {
@@ -1911,8 +2006,9 @@
       "desc_en": "Complete 100 dungeons to the last floor.",
       "source": "dungeon_runs_completed",
       "threshold": 100,
+      "typical_level": 60,
       "reward": {
-        "xp": 60000,
+        "xp": 1500,
         "title_id": "title_seigneur_donjons"
       }
     },
@@ -1926,8 +2022,9 @@
       "desc_en": "Help seal 1 rift.",
       "source": "fissures_closed",
       "threshold": 1,
+      "typical_level": 15,
       "reward": {
-        "xp": 1600
+        "xp": 50
       }
     },
     {
@@ -1940,8 +2037,9 @@
       "desc_en": "Help seal 5 rifts.",
       "source": "fissures_closed",
       "threshold": 5,
+      "typical_level": 20,
       "reward": {
-        "xp": 2600
+        "xp": 100
       }
     },
     {
@@ -1954,8 +2052,9 @@
       "desc_en": "Help seal 25 rifts.",
       "source": "fissures_closed",
       "threshold": 25,
+      "typical_level": 35,
       "reward": {
-        "xp": 11250
+        "xp": 500
       }
     },
     {
@@ -1968,8 +2067,9 @@
       "desc_en": "Help seal 100 rifts.",
       "source": "fissures_closed",
       "threshold": 100,
+      "typical_level": 60,
       "reward": {
-        "xp": 82500,
+        "xp": 1500,
         "title_id": "title_seigneur_failles"
       }
     },
@@ -2014,8 +2114,9 @@
       "desc_en": "Gather a Rift Ember while sealing a rift.",
       "source": "rift_embers_gathered",
       "threshold": 1,
+      "typical_level": 22,
       "reward": {
-        "xp": 2580
+        "xp": 100
       },
       "_expected_char_level": 30
     },
@@ -2029,8 +2130,9 @@
       "desc_en": "Gather 50 Rift Embers.",
       "source": "rift_embers_gathered",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 48000
+        "xp": 500
       },
       "_expected_char_level": 60
     },
@@ -2044,8 +2146,9 @@
       "desc_en": "Enhance an item to +1.",
       "source": "max_enhancement_level",
       "threshold": 1,
+      "typical_level": 10,
       "reward": {
-        "xp": 200
+        "xp": 20
       }
     },
     {
@@ -2058,8 +2161,9 @@
       "desc_en": "Enhance an item to +5.",
       "source": "max_enhancement_level",
       "threshold": 5,
+      "typical_level": 20,
       "reward": {
-        "xp": 4200
+        "xp": 100
       }
     },
     {
@@ -2072,8 +2176,9 @@
       "desc_en": "Enhance an item to +10.",
       "source": "max_enhancement_level",
       "threshold": 10,
+      "typical_level": 35,
       "reward": {
-        "xp": 17400
+        "xp": 500
       }
     },
     {
@@ -2086,8 +2191,9 @@
       "desc_en": "Enhance an item to +15.",
       "source": "max_enhancement_level",
       "threshold": 15,
+      "typical_level": 55,
       "reward": {
-        "xp": 60000
+        "xp": 1500
       }
     },
     {
@@ -2100,8 +2206,9 @@
       "desc_en": "Enhance an item to +20.",
       "source": "max_enhancement_level",
       "threshold": 20,
+      "typical_level": 80,
       "reward": {
-        "xp": 300000,
+        "xp": 5000,
         "title_id": "title_maitre_forge"
       }
     },
@@ -2115,8 +2222,9 @@
       "desc_en": "Sell 1 item at the auction house.",
       "source": "auction_items_sold",
       "threshold": 1,
+      "typical_level": 12,
       "reward": {
-        "xp": 400
+        "xp": 40
       }
     },
     {
@@ -2129,8 +2237,9 @@
       "desc_en": "Sell 10 items at the auction house.",
       "source": "auction_items_sold",
       "threshold": 10,
+      "typical_level": 20,
       "reward": {
-        "xp": 3300
+        "xp": 100
       }
     },
     {
@@ -2143,8 +2252,9 @@
       "desc_en": "Sell 50 items at the auction house.",
       "source": "auction_items_sold",
       "threshold": 50,
+      "typical_level": 35,
       "reward": {
-        "xp": 11250
+        "xp": 500
       }
     },
     {
@@ -2157,8 +2267,9 @@
       "desc_en": "Sell 200 items at the auction house.",
       "source": "auction_items_sold",
       "threshold": 200,
+      "typical_level": 55,
       "reward": {
-        "xp": 60000,
+        "xp": 1500,
         "title_id": "title_marchand_prospere"
       }
     },
@@ -2172,8 +2283,9 @@
       "desc_en": "Hold 1,000 gold.",
       "source": "gold_held",
       "threshold": 1000,
+      "typical_level": 8,
       "reward": {
-        "xp": 600
+        "xp": 15
       }
     },
     {
@@ -2186,8 +2298,9 @@
       "desc_en": "Hold 10,000 gold.",
       "source": "gold_held",
       "threshold": 10000,
+      "typical_level": 20,
       "reward": {
-        "xp": 4800
+        "xp": 100
       }
     },
     {
@@ -2200,8 +2313,9 @@
       "desc_en": "Hold 100,000 gold.",
       "source": "gold_held",
       "threshold": 100000,
+      "typical_level": 40,
       "reward": {
-        "xp": 18000
+        "xp": 500
       }
     },
     {
@@ -2214,8 +2328,9 @@
       "desc_en": "Hold 1,000,000 gold.",
       "source": "gold_held",
       "threshold": 1000000,
+      "typical_level": 70,
       "reward": {
-        "xp": 112500
+        "xp": 3000
       }
     },
     {
@@ -2228,8 +2343,9 @@
       "desc_en": "Own 1 different Koro card.",
       "source": "koro_cards_owned",
       "threshold": 1,
+      "typical_level": 17,
       "reward": {
-        "xp": 4350
+        "xp": 75
       }
     },
     {
@@ -2242,8 +2358,9 @@
       "desc_en": "Own 10 different Koro cards.",
       "source": "koro_cards_owned",
       "threshold": 10,
+      "typical_level": 30,
       "reward": {
-        "xp": 14250
+        "xp": 250
       }
     },
     {
@@ -2256,8 +2373,9 @@
       "desc_en": "Own 50 different Koro cards.",
       "source": "koro_cards_owned",
       "threshold": 50,
+      "typical_level": 55,
       "reward": {
-        "xp": 42000
+        "xp": 1500
       }
     },
     {
@@ -2270,8 +2388,9 @@
       "desc_en": "Own 100 different Koro cards.",
       "source": "koro_cards_owned",
       "threshold": 100,
+      "typical_level": 75,
       "reward": {
-        "xp": 150000
+        "xp": 5000
       }
     },
     {
@@ -2284,8 +2403,9 @@
       "desc_en": "Equip 1 keystone at once.",
       "source": "keystones_equipped",
       "threshold": 1,
+      "typical_level": 30,
       "reward": {
-        "xp": 9600
+        "xp": 250
       }
     },
     {
@@ -2298,8 +2418,9 @@
       "desc_en": "Equip 2 keystones at once.",
       "source": "keystones_equipped",
       "threshold": 2,
+      "typical_level": 45,
       "reward": {
-        "xp": 28500
+        "xp": 750
       }
     },
     {
@@ -2312,8 +2433,9 @@
       "desc_en": "Equip 3 keystones at once.",
       "source": "keystones_equipped",
       "threshold": 3,
+      "typical_level": 60,
       "reward": {
-        "xp": 84000
+        "xp": 1500
       }
     },
     {
@@ -2326,8 +2448,9 @@
       "desc_en": "Equip 4 keystones at once.",
       "source": "keystones_equipped",
       "threshold": 4,
+      "typical_level": 80,
       "reward": {
-        "xp": 555000
+        "xp": 5000
       }
     },
     {
@@ -2340,8 +2463,9 @@
       "desc_en": "Have 1 friend.",
       "source": "friends_count",
       "threshold": 1,
+      "typical_level": 5,
       "reward": {
-        "xp": 150
+        "xp": 5
       }
     },
     {
@@ -2354,8 +2478,9 @@
       "desc_en": "Have 10 friends.",
       "source": "friends_count",
       "threshold": 10,
+      "typical_level": 20,
       "reward": {
-        "xp": 2100
+        "xp": 100
       }
     },
     {
@@ -2368,8 +2493,9 @@
       "desc_en": "Have 25 friends.",
       "source": "friends_count",
       "threshold": 25,
+      "typical_level": 35,
       "reward": {
-        "xp": 8700
+        "xp": 500
       }
     },
     {
@@ -2382,8 +2508,9 @@
       "desc_en": "Join a guild.",
       "source": "guild_joined",
       "threshold": 1,
+      "typical_level": 10,
       "reward": {
-        "xp": 600
+        "xp": 20
       }
     },
     {
@@ -2396,8 +2523,9 @@
       "desc_en": "Reach level 10 as a Gleaner.",
       "source": "profession_level:gleaner",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -2411,8 +2539,9 @@
       "desc_en": "Reach level 50 as a Gleaner.",
       "source": "profession_level:gleaner",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 9210
+        "xp": 500
       },
       "_expected_char_level": 40
     },
@@ -2426,8 +2555,9 @@
       "desc_en": "Reach level 100 as a Gleaner.",
       "source": "profession_level:gleaner",
       "threshold": 100,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -2441,8 +2571,9 @@
       "desc_en": "Reach level 10 as a Rift Hunter.",
       "source": "profession_level:fissure_hunter",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -2456,8 +2587,9 @@
       "desc_en": "Reach level 50 as a Rift Hunter.",
       "source": "profession_level:fissure_hunter",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 9210
+        "xp": 500
       },
       "_expected_char_level": 40
     },
@@ -2471,8 +2603,9 @@
       "desc_en": "Reach level 100 as a Rift Hunter.",
       "source": "profession_level:fissure_hunter",
       "threshold": 100,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -2486,8 +2619,9 @@
       "desc_en": "Reach level 10 as a Miner.",
       "source": "profession_level:miner",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -2501,8 +2635,9 @@
       "desc_en": "Reach level 50 as a Miner.",
       "source": "profession_level:miner",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 9210
+        "xp": 500
       },
       "_expected_char_level": 40
     },
@@ -2516,8 +2651,9 @@
       "desc_en": "Reach level 100 as a Miner.",
       "source": "profession_level:miner",
       "threshold": 100,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -2531,8 +2667,9 @@
       "desc_en": "Reach level 10 as a Lumberjack.",
       "source": "profession_level:lumberjack",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -2546,8 +2683,9 @@
       "desc_en": "Reach level 50 as a Lumberjack.",
       "source": "profession_level:lumberjack",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 9210
+        "xp": 500
       },
       "_expected_char_level": 40
     },
@@ -2561,8 +2699,9 @@
       "desc_en": "Reach level 100 as a Lumberjack.",
       "source": "profession_level:lumberjack",
       "threshold": 100,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -2576,8 +2715,9 @@
       "desc_en": "Reach level 10 as a Fisher.",
       "source": "profession_level:fisher",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -2591,8 +2731,9 @@
       "desc_en": "Reach level 50 as a Fisher.",
       "source": "profession_level:fisher",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 9210
+        "xp": 500
       },
       "_expected_char_level": 40
     },
@@ -2606,8 +2747,9 @@
       "desc_en": "Reach level 100 as a Fisher.",
       "source": "profession_level:fisher",
       "threshold": 100,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -2621,8 +2763,9 @@
       "desc_en": "Reach level 10 as a Herbalist.",
       "source": "profession_level:herbalist",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -2636,8 +2779,9 @@
       "desc_en": "Reach level 50 as a Herbalist.",
       "source": "profession_level:herbalist",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 9210
+        "xp": 500
       },
       "_expected_char_level": 40
     },
@@ -2651,8 +2795,9 @@
       "desc_en": "Reach level 100 as a Herbalist.",
       "source": "profession_level:herbalist",
       "threshold": 100,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -2666,8 +2811,9 @@
       "desc_en": "Reach level 10 as a Tanner.",
       "source": "profession_level:tanner",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -2681,8 +2827,9 @@
       "desc_en": "Reach level 50 as a Tanner.",
       "source": "profession_level:tanner",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 9210
+        "xp": 500
       },
       "_expected_char_level": 40
     },
@@ -2696,8 +2843,9 @@
       "desc_en": "Reach level 100 as a Tanner.",
       "source": "profession_level:tanner",
       "threshold": 100,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -2711,8 +2859,9 @@
       "desc_en": "Reach level 10 as a Bone Carver.",
       "source": "profession_level:bone_carver",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -2726,8 +2875,9 @@
       "desc_en": "Reach level 50 as a Bone Carver.",
       "source": "profession_level:bone_carver",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 9210
+        "xp": 500
       },
       "_expected_char_level": 40
     },
@@ -2741,8 +2891,9 @@
       "desc_en": "Reach level 100 as a Bone Carver.",
       "source": "profession_level:bone_carver",
       "threshold": 100,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -2756,8 +2907,9 @@
       "desc_en": "Reach level 10 as an Apothecary.",
       "source": "profession_level:apothecary",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -2771,8 +2923,9 @@
       "desc_en": "Reach level 50 as an Apothecary.",
       "source": "profession_level:apothecary",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 9210
+        "xp": 500
       },
       "_expected_char_level": 40
     },
@@ -2786,8 +2939,9 @@
       "desc_en": "Reach level 100 as an Apothecary.",
       "source": "profession_level:apothecary",
       "threshold": 100,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -2801,8 +2955,9 @@
       "desc_en": "Reach level 10 as a Cook.",
       "source": "profession_level:cook",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -2816,8 +2971,9 @@
       "desc_en": "Reach level 50 as a Cook.",
       "source": "profession_level:cook",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 9210
+        "xp": 500
       },
       "_expected_char_level": 40
     },
@@ -2831,8 +2987,9 @@
       "desc_en": "Reach level 100 as a Cook.",
       "source": "profession_level:cook",
       "threshold": 100,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -2846,8 +3003,9 @@
       "desc_en": "Reach level 10 as a Brewer.",
       "source": "profession_level:brewer",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -2861,8 +3019,9 @@
       "desc_en": "Reach level 50 as a Brewer.",
       "source": "profession_level:brewer",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 9210
+        "xp": 500
       },
       "_expected_char_level": 40
     },
@@ -2876,8 +3035,9 @@
       "desc_en": "Reach level 100 as a Brewer.",
       "source": "profession_level:brewer",
       "threshold": 100,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -2891,8 +3051,9 @@
       "desc_en": "Reach level 10 as a Scribe.",
       "source": "profession_level:scribe",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -2906,8 +3067,9 @@
       "desc_en": "Reach level 50 as a Scribe.",
       "source": "profession_level:scribe",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 9210
+        "xp": 500
       },
       "_expected_char_level": 40
     },
@@ -2921,8 +3083,9 @@
       "desc_en": "Reach level 100 as a Scribe.",
       "source": "profession_level:scribe",
       "threshold": 100,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -2936,8 +3099,9 @@
       "desc_en": "Reach level 10 as a Breeder.",
       "source": "profession_level:breeder",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -2951,8 +3115,9 @@
       "desc_en": "Reach level 50 as a Breeder.",
       "source": "profession_level:breeder",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 9210
+        "xp": 500
       },
       "_expected_char_level": 40
     },
@@ -2966,8 +3131,9 @@
       "desc_en": "Reach level 100 as a Breeder.",
       "source": "profession_level:breeder",
       "threshold": 100,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -2981,8 +3147,9 @@
       "desc_en": "Reach level 10 as a Runist.",
       "source": "profession_level:runist",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -2996,8 +3163,9 @@
       "desc_en": "Reach level 50 as a Runist.",
       "source": "profession_level:runist",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 9210
+        "xp": 500
       },
       "_expected_char_level": 40
     },
@@ -3011,8 +3179,9 @@
       "desc_en": "Reach level 100 as a Runist.",
       "source": "profession_level:runist",
       "threshold": 100,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -3026,8 +3195,9 @@
       "desc_en": "Reach level 10 as a Collector.",
       "source": "profession_level:collector",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -3041,8 +3211,9 @@
       "desc_en": "Reach level 50 as a Collector.",
       "source": "profession_level:collector",
       "threshold": 50,
+      "typical_level": 40,
       "reward": {
-        "xp": 9210
+        "xp": 500
       },
       "_expected_char_level": 40
     },
@@ -3056,8 +3227,9 @@
       "desc_en": "Reach level 100 as a Collector.",
       "source": "profession_level:collector",
       "threshold": 100,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -3071,8 +3243,9 @@
       "desc_en": "Craft 1 item at a workshop.",
       "source": "crafts_total",
       "threshold": 1,
+      "typical_level": 8,
       "reward": {
-        "xp": 160
+        "xp": 15
       },
       "_expected_char_level": 5
     },
@@ -3086,8 +3259,9 @@
       "desc_en": "Craft 50 items at a workshop.",
       "source": "crafts_total",
       "threshold": 50,
+      "typical_level": 18,
       "reward": {
-        "xp": 1300
+        "xp": 75
       },
       "_expected_char_level": 15
     },
@@ -3101,8 +3275,9 @@
       "desc_en": "Craft 250 items at a workshop.",
       "source": "crafts_total",
       "threshold": 250,
+      "typical_level": 30,
       "reward": {
-        "xp": 5160
+        "xp": 250
       },
       "_expected_char_level": 30
     },
@@ -3116,8 +3291,9 @@
       "desc_en": "Craft 1,000 items at a workshop.",
       "source": "crafts_total",
       "threshold": 1000,
+      "typical_level": 50,
       "reward": {
-        "xp": 15000
+        "xp": 1000
       },
       "_expected_char_level": 50
     },
@@ -3131,8 +3307,9 @@
       "desc_en": "Craft 5,000 items at a workshop.",
       "source": "crafts_total",
       "threshold": 5000,
+      "typical_level": 75,
       "reward": {
-        "xp": 91200
+        "xp": 5000
       },
       "_expected_char_level": 70
     },
@@ -3146,8 +3323,9 @@
       "desc_en": "Gather once from a gathering point.",
       "source": "gathers_total",
       "threshold": 1,
+      "typical_level": 5,
       "reward": {
-        "xp": 160
+        "xp": 5
       },
       "_expected_char_level": 5
     },
@@ -3161,8 +3339,9 @@
       "desc_en": "Gather 100 times from a gathering point.",
       "source": "gathers_total",
       "threshold": 100,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -3176,8 +3355,9 @@
       "desc_en": "Gather 500 times from a gathering point.",
       "source": "gathers_total",
       "threshold": 500,
+      "typical_level": 28,
       "reward": {
-        "xp": 5160
+        "xp": 200
       },
       "_expected_char_level": 30
     },
@@ -3191,8 +3371,9 @@
       "desc_en": "Gather 2,500 times from a gathering point.",
       "source": "gathers_total",
       "threshold": 2500,
+      "typical_level": 45,
       "reward": {
-        "xp": 15000
+        "xp": 750
       },
       "_expected_char_level": 50
     },
@@ -3206,8 +3387,9 @@
       "desc_en": "Gather 10,000 times from a gathering point.",
       "source": "gathers_total",
       "threshold": 10000,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -3221,8 +3403,9 @@
       "desc_en": "Craft 10 different recipes.",
       "source": "recipes_distinct",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 1300
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -3236,8 +3419,9 @@
       "desc_en": "Craft 50 different recipes.",
       "source": "recipes_distinct",
       "threshold": 50,
+      "typical_level": 30,
       "reward": {
-        "xp": 5160
+        "xp": 250
       },
       "_expected_char_level": 30
     },
@@ -3251,8 +3435,9 @@
       "desc_en": "Craft 150 different recipes.",
       "source": "recipes_distinct",
       "threshold": 150,
+      "typical_level": 50,
       "reward": {
-        "xp": 15000
+        "xp": 1000
       },
       "_expected_char_level": 50
     },
@@ -3266,8 +3451,9 @@
       "desc_en": "Craft 300 different recipes.",
       "source": "recipes_distinct",
       "threshold": 300,
+      "typical_level": 75,
       "reward": {
-        "xp": 91200
+        "xp": 5000
       },
       "_expected_char_level": 70
     },
@@ -3281,8 +3467,9 @@
       "desc_en": "Craft an item of the highest possible quality.",
       "source": "crafts_quality_top",
       "threshold": 1,
+      "typical_level": 35,
       "reward": {
-        "xp": 18420
+        "xp": 500
       },
       "_expected_char_level": 40
     },
@@ -3296,8 +3483,9 @@
       "desc_en": "Craft 10 items of the highest possible quality.",
       "source": "crafts_quality_top",
       "threshold": 10,
+      "typical_level": 55,
       "reward": {
-        "xp": 48000
+        "xp": 1500
       },
       "_expected_char_level": 60
     },
@@ -3311,8 +3499,9 @@
       "desc_en": "Craft an item of the second-best quality.",
       "source": "crafts_quality_second",
       "threshold": 1,
+      "typical_level": 25,
       "reward": {
-        "xp": 5160
+        "xp": 150
       },
       "_expected_char_level": 30
     },
@@ -3326,8 +3515,9 @@
       "desc_en": "Gather a resource of the highest rarity.",
       "source": "gathers_rarity_top",
       "threshold": 1,
+      "typical_level": 30,
       "reward": {
-        "xp": 10320
+        "xp": 250
       },
       "_expected_char_level": 30
     },
@@ -3341,8 +3531,9 @@
       "desc_en": "Gather 25 resources of the highest rarity.",
       "source": "gathers_rarity_top",
       "threshold": 25,
+      "typical_level": 55,
       "reward": {
-        "xp": 48000
+        "xp": 1500
       },
       "_expected_char_level": 60
     },
@@ -3356,8 +3547,9 @@
       "desc_en": "Gather a resource of the second highest rarity.",
       "source": "gathers_rarity_second",
       "threshold": 1,
+      "typical_level": 18,
       "reward": {
-        "xp": 2340
+        "xp": 75
       },
       "_expected_char_level": 20
     },
@@ -3371,8 +3563,9 @@
       "desc_en": "Raise both your Expert professions to level 100.",
       "source": "profession_specialties_at_100",
       "threshold": 2,
+      "typical_level": 85,
       "reward": {
-        "xp": 177000
+        "xp": 7500
       },
       "_expected_char_level": 80
     },
@@ -3386,8 +3579,9 @@
       "desc_en": "Reach level 25 in all 15 professions.",
       "source": "professions_at_or_above:25",
       "threshold": 15,
+      "typical_level": 45,
       "reward": {
-        "xp": 9210
+        "xp": 750
       },
       "_expected_char_level": 40
     },
@@ -3401,8 +3595,9 @@
       "desc_en": "Reach level 50 in all 15 professions.",
       "source": "professions_at_or_above:50",
       "threshold": 15,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     },
@@ -3416,8 +3611,9 @@
       "desc_en": "Craft 10 intermediate goods (tanned leather, ingot, vial...).",
       "source": "intermediates_crafted",
       "threshold": 10,
+      "typical_level": 15,
       "reward": {
-        "xp": 650
+        "xp": 50
       },
       "_expected_char_level": 15
     },
@@ -3431,8 +3627,9 @@
       "desc_en": "Craft 500 intermediate goods.",
       "source": "intermediates_crafted",
       "threshold": 500,
+      "typical_level": 45,
       "reward": {
-        "xp": 15000
+        "xp": 750
       },
       "_expected_char_level": 50
     },
@@ -3446,8 +3643,9 @@
       "desc_en": "Use a rank V gathering tool.",
       "source": "max_tool_rank_used",
       "threshold": 5,
+      "typical_level": 70,
       "reward": {
-        "xp": 91200
+        "xp": 3000
       },
       "_expected_char_level": 70
     }
