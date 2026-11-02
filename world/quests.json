@@ -3537,7 +3537,8 @@
       "rewards": {
         "xp": 250
       },
-      "chain_next": "q_onb_forces",
+      "chain_next": "q_onb_premiere_chasse",
+      "_chain_next_note": "2026-11-01 (Charleston) : la lecon d'arene enchaine sur Premiere chasse (q_onb_premiere_chasse, 3 rats), qui enchaine ensuite sur q_onb_forces. Constat prod : 25 min sans combat apres la lecon.",
       "quest_hints": {
         "on_complete": [
           {
@@ -3548,14 +3549,95 @@
             "payload": {
               "title_fr": "La suite",
               "title_en": "What comes next",
-              "content_fr": "Pas mal pour un début. Retourne voir Tobin.",
-              "content_en": "Not bad for a start. Go see Tobin."
+              "content_fr": "Pas mal ! Mais dans l'arène, je peux arrêter le combat. Dehors, c'est une autre histoire. Va t'occuper de trois rats au sud. On verra comment tu te débrouilles.",
+              "content_en": "Not bad! But in the arena, I can stop the fight. Out there, it's a different story. Go deal with three rats to the south. Let's see how you manage.",
+              "_a_valider": "2026-11-01 : replique de Dargo qui donne Premiers pas dehors (meme texte que dialogue_give de q_onb_premiere_chasse). Texte valide par Charleston le 2026-11-02 (relecture des textes 0.20.30). Avant : « Pas mal pour un début. Retourne voir Tobin. », reporte sur la fin de Premiere chasse."
             },
             "_note": "Deplacee le 2026-10-21 depuis q_havreden_tour_03 (on_complete, rendu chez Tobin, vue vers le niveau 19 en playtest 0.20.3, trop tard pour servir) : la fin de la lecon de combat de Dargo est le premier moment ou le joueur a besoin de la suite. Texte reecrit le 2026-10-23 (revision des modales V2 validee par Charleston) : il renvoie seulement vers Tobin ; Varn, Ezra et les Egouts ont leurs propres quetes (q_varn_egouts...). Avant : Lot 2, manque 5 : pointe vers q_varn_egouts (npc_giver Varn, min_level 9, sans prerequis, Egouts = dungeon_rat_den niveau 10-14)."
           }
         ]
       },
       "_note": "Onboarding V2 (spec 2026-09-23). Premiere quete d'un perso d'aventure neuf : la lecon d'arene demarre juste apres la cinematique, AVANT que le joueur voie le village, puis il reapparait devant l'arene de Dargo. Drapeau tutorial + pas de npc_giver = rendu automatique. 250 XP = niveau 3. ATTENTION BACK : auto_accept_on_zone_enter 'village' touche TOUT perso qui entre au village, y compris les anciens persos et les persos de tournoi. Sans garde (ligne character_arena_onboarding presente, perso non tournoi), un ancien perso recoit une quete qu'il ne peut pas finir. A trancher cote quest_service avant deploiement de cette data."
+    },
+    {
+      "id": "q_onb_premiere_chasse",
+      "type": "main",
+      "zone": "village",
+      "min_level": 1,
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "Premiers pas dehors",
+      "title_en": "First Steps Outside",
+      "_title_note": "2026-11-02 (Charleston) : titre « Premiers pas dehors » pour ne pas doubler « Premiere chasse » (q_contract_tutorial_first_hunt, contrat de Varn, qui garde son nom). L'identifiant q_onb_premiere_chasse ne change pas.",
+      "summary_fr": "Dargo veut voir comment tu te débrouilles hors de l'arène. Trois rats rôdent au sud, près du village.",
+      "summary_en": "Dargo wants to see how you handle yourself outside the arena. Three rats are roaming south of the village.",
+      "dialogue_give_fr": "Pas mal ! Mais dans l'arène, je peux arrêter le combat. Dehors, c'est une autre histoire.\nVa t'occuper de trois rats au sud. On verra comment tu te débrouilles.",
+      "dialogue_give_en": "Not bad! But in the arena, I can stop the fight. Out there, it's a different story.\nGo deal with three rats to the south. Let's see how you manage.",
+      "dialogue_progress_fr": "Alors, ces rats ? Ils sont juste au sud de l'arène.\nPrends ton temps. Mieux vaut revenir entier.",
+      "dialogue_progress_en": "How are those rats coming along? They're just south of the arena.\nTake your time. Better to come back in one piece.",
+      "dialogue_complete_fr": "Ah, tu t'en es sorti !\nVa voir Tobin sur la place. Il a encore deux ou trois choses à te montrer.",
+      "dialogue_complete_en": "Hey, you made it!\nGo see Tobin in the square. He's got a few more things to show you.",
+      "_dialogues_a_valider": "2026-11-01 : les trois dialogues (give / progress / complete), textes valide par Charleston le 2026-11-02 (relecture des textes 0.20.30). give = modale de fin de lecon (q_onb_arene_next_modal) ; progress = Dargo (cle q_onb_premiere_chasse_default de npcs.json) ; complete = modale on_complete ci-dessous.",
+      "forbids_quests": [
+        "q_onb_forces"
+      ],
+      "_forbids_quests_note": "Un personnage deja engage dans q_onb_forces (ou au-dela) ne recoit JAMAIS cette quete : ni par la chaine, ni par l'auto-guerison des quetes chain-only (QuestService::maybe_heal_chain_only_quests, qui la redonnerait sinon a tout ancien personnage ayant fini q_onb_arene). Garde lue par acte1_gates_allow, aucun code serveur ajoute.",
+      "objectives": [
+        {
+          "template": "kill_mobs",
+          "mobs": [
+            "mob_rat",
+            "mob_rat_jeune",
+            "mob_rat_alpha"
+          ],
+          "count": 3,
+          "description_fr": "Vaincre 3 rats au sud de l'arène",
+          "description_en": "Defeat 3 rats south of the arena",
+          "spawn_area": "mz_abords_d_havreden_1_8",
+          "_note": "Rats des Abords d'Havreden (mz_abords_d_havreden_1_8, niveau 1-8). Credit serveur (combat room_ended killed_mob_ids), meme regle que q_contract_tutorial_first_hunt. Etoiles plafonnees a 1 dans cette aire (zones.json max_stars, tirage presence roll_star_level).",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_onb_premiere_chasse_obj0_arrow",
+                "type": "arrow",
+                "target": "area:havreden_premiere_chasse",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Rats au sud de l'arène",
+                  "label_en": "Rats south of the arena"
+                },
+                "_note": "Zone de quete havreden_premiere_chasse (zones.json quest_areas, village) : les rats les plus proches de l'arene. Le centre de l'aire de monstres entiere (x -52..6044) tombe hors de son contour, au bord du village : la fleche y menait nulle part."
+              }
+            ]
+          }
+        }
+      ],
+      "rewards": {
+        "xp": 75,
+        "gold": 15
+      },
+      "_rewards_a_valider": "2026-11-01 : 3/5 de q_contract_tutorial_first_hunt (5 rats, 126 XP, 30 or), arrondi. Le perso reste niveau 3 a la fin (250 + 75 + XP des combats < 468), q_onb_forces le passe niveau 4 comme avant.",
+      "chain_next": "q_onb_forces",
+      "quest_hints": {
+        "on_complete": [
+          {
+            "id": "q_onb_premiere_chasse_done_modal",
+            "type": "modal",
+            "priority": 88,
+            "show_once": true,
+            "payload": {
+              "title_fr": "La suite",
+              "title_en": "What Comes Next",
+              "content_fr": "Ah, tu t'en es sorti ! Va voir Tobin sur la place. Il a encore deux ou trois choses à te montrer.",
+              "content_en": "Hey, you made it! Go see Tobin in the square. He's got a few more things to show you."
+            },
+            "_note": "Reprend le role de l'ancienne modale de fin de lecon (« Retourne voir Tobin »). Texte = dialogue_complete, valide par Charleston le 2026-11-02 (relecture des textes 0.20.30)."
+          }
+        ]
+      },
+      "_note": "2026-11-01 (Charleston, 0.20.30). Premier combat dehors juste apres la lecon d'arene : q_onb_arene -> q_onb_premiere_chasse -> q_onb_forces. Drapeau tutorial sans npc_giver = rendu automatique (client turn_in_place 'auto'), comme q_onb_arene et q_onb_forces. Personne ne la donne : chain-only, reparee par le serveur si l'acceptation chainee se perd. Ne change ni q_havreden_arrivee ni l'ordre des objectifs de q_havreden_preparatifs."
     },
     {
       "id": "q_onb_forces",
