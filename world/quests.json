@@ -6098,8 +6098,8 @@
         {
           "template": "choose_familiar",
           "count": 1,
-          "description_fr": "Récupérer ton premier familier",
-          "description_en": "Collect your first companion",
+          "description_fr": "Sauver le rat",
+          "description_en": "Save the rat",
           "_note": "Template à créer côté backend (Phase 2). Incrémente sur FAMILIAR_CHOOSE_ROLE_RESPONSE success.",
           "_note_0_20_31": "2026-11-03 (Charleston) : on garde le familier rat dans le tutoriel d'Aldric. familiar_balance.json tutorial_gift.archetypes ne propose plus qu'un rat ; le choix des 4 roles se fait dans q_havreden_expedition."
         },
@@ -6148,7 +6148,8 @@
           }
         ]
       },
-      "_note_0_20_31": "2026-11-03 (spec finale) : apres le rat seul, Colette incube l'empreinte INSTANTANEMENT (tutoriel seulement) : le rat d'Aldric (familiar_balance.json tutorial_gift, niveau 5 pour CE familier, empreinte consommee par le service familier, aucun deuxieme rat). Enchaine sur le grimoire (q_tut_grimoire), sans combat intermediaire."
+      "_note_0_20_31": "2026-11-03 (spec finale) : apres le rat seul, Colette incube l'empreinte INSTANTANEMENT (tutoriel seulement) : le rat d'Aldric (familiar_balance.json tutorial_gift, niveau 5 pour CE familier, empreinte consommee par le service familier, aucun deuxieme rat). Enchaine sur le grimoire (q_tut_grimoire), sans combat intermediaire.",
+      "_note_sauver": "2026-11-03 (Charleston) : « sauver » le rat, jamais « recuperer »."
     },
     {
       "id": "q_tut_intro_05c",
@@ -6362,16 +6363,16 @@
       ],
       "title_fr": "Le grimoire",
       "title_en": "The Tome",
-      "summary_fr": "Colette t'a donné un grimoire. Apprends sa compétence à ton familier.",
-      "summary_en": "Colette gave you a tome. Teach its skill to your companion.",
+      "summary_fr": "Aldric t'a donné un grimoire. Apprends sa compétence à ton familier.",
+      "summary_en": "Aldric gave you a tome. Teach its skill to your companion.",
       "dialogue_give_fr": "[À ÉCRIRE PAR CHARLESTON] Tiens, prends ça. Un grimoire. Ton familier est jeune, il a encore beaucoup à apprendre.",
       "dialogue_give_en": "[À ÉCRIRE PAR CHARLESTON] Here, take this. A tome. Your companion is young, it still has plenty to learn.",
       "dialogue_progress_fr": "[À ÉCRIRE PAR CHARLESTON] Ouvre ton inventaire et utilise le grimoire sur ton familier.",
       "dialogue_progress_en": "[À ÉCRIRE PAR CHARLESTON] Open your inventory and use the tome on your companion.",
-      "dialogue_complete_fr": "[À ÉCRIRE PAR CHARLESTON] Voilà. Retourne voir Aldric, il a encore quelque chose pour toi.",
-      "dialogue_complete_en": "[À ÉCRIRE PAR CHARLESTON] There you go. Go back to Aldric, he has something else for you.",
+      "dialogue_complete_fr": "[À ÉCRIRE PAR CHARLESTON] Voilà. Il en a appris un peu plus. On passe à la suite.",
+      "dialogue_complete_en": "[À ÉCRIRE PAR CHARLESTON] There. It's learned a bit more. Let's move on.",
       "_dialogues_a_ecrire": "2026-11-03 : PROVISOIRES (reprennent l'ancienne replique de Colette du grimoire, sans le combat d'essai).",
-      "npc_giver": "npc_tutorial_familiar_colette",
+      "npc_giver": "npc_tutorial_instructor_aldric",
       "objective_mode": "sequential",
       "rewards_on_accept": {
         "items": [
@@ -6394,12 +6395,34 @@
               "content_fr": "Les grimoires permettent d'apprendre de nouvelles compétences à tes familiers. Double-clique sur un grimoire dans ton inventaire, puis choisis ton familier. Si tous ses emplacements sont occupés, tu devras remplacer une compétence. Attention, sa compétence signature ne peut pas être réapprise !",
               "content_en": "Tomes teach new skills to your companions. Double-click a tome in your inventory, then choose your companion. If all its slots are taken, you'll have to replace a skill. Careful: its signature skill can never be learned again!"
             },
-            "after_dialogue_with": "npc_tutorial_familiar_colette",
-            "_note": "2026-11-03 : modale M3 de la decision finale A (seules M1 a M7 restent). FR = textes de kanarion_onboarding_0_20_31_final_pour_agent.md (Charleston, 03/11) ; EN a relire (traduction de l'agent). Apres la remise du grimoire (fin du dialogue avec Colette)."
+            "after_dialogue_with": "npc_tutorial_instructor_aldric",
+            "_note": "2026-11-03 : modale M3 de la decision finale A (seules M1 a M7 restent). FR = textes de kanarion_onboarding_0_20_31_final_pour_agent.md (Charleston, 03/11) ; EN a relire (traduction de l'agent). Apres la remise du grimoire (fin du dialogue avec Aldric)."
           }
         ]
       },
       "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_tutorial_instructor_aldric",
+          "count": 1,
+          "description_fr": "Parler à Aldric",
+          "description_en": "Talk to Aldric",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_grimoire_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_tutorial_instructor_aldric",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Aldric",
+                  "label_en": "Go see Aldric"
+                }
+              }
+            ]
+          }
+        },
         {
           "template": "familiar_learn_skill",
           "count": 1,
@@ -6424,21 +6447,21 @@
         },
         {
           "template": "talk_to_npc",
-          "npc_id": "npc_tutorial_familiar_colette",
+          "npc_id": "npc_tutorial_instructor_aldric",
           "count": 1,
-          "description_fr": "Reparler à Colette",
-          "description_en": "Talk to Colette again",
+          "description_fr": "Reparler à Aldric",
+          "description_en": "Talk to Aldric again",
           "hints": {
             "on_active": [
               {
-                "id": "q_tut_grimoire_obj1_arrow",
+                "id": "q_tut_grimoire_obj2_arrow",
                 "type": "arrow",
-                "target": "npc_tutorial_familiar_colette",
+                "target": "npc_tutorial_instructor_aldric",
                 "priority": 90,
                 "show_once": true,
                 "payload": {
-                  "label_fr": "Reviens voir Colette",
-                  "label_en": "Return to Colette"
+                  "label_fr": "Reviens voir Aldric",
+                  "label_en": "Return to Aldric"
                 }
               }
             ]
@@ -6450,7 +6473,7 @@
       },
       "_rewards_a_valider": "2026-11-03 : 200 XP, comme l'ancienne q_tut_intro_05b.",
       "chain_next": "q_tut_intro_06",
-      "_note": "2026-11-03 (spec finale). Remplace q_tut_intro_05c (combat a deux) et q_tut_intro_05b (grimoire + combat d'essai) dans la chaine des NOUVEAUX personnages : grimoire sans combat. Les deux anciennes quetes restent chargees pour les joueurs qui les ont en cours (leurs lignes d'objectifs ne bougent pas).",
+      "_note": "2026-11-03 (spec finale). Remplace q_tut_intro_05c (combat a deux) et q_tut_intro_05b (grimoire + combat d'essai) dans la chaine des NOUVEAUX personnages : grimoire sans combat. Les deux anciennes quetes restent chargees pour les joueurs qui les ont en cours (leurs lignes d'objectifs ne bougent pas). 2026-11-03 (Charleston) : c'est ALDRIC qui remet le grimoire et la rend ; Colette ne fait que l'incubation. Etapes : parler a Aldric (il remet le grimoire, M3 apres sa replique), l'apprendre au familier, revenir le voir.",
       "completed_by": [
         "q_tut_intro_05b"
       ],
