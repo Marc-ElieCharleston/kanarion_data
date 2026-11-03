@@ -81,6 +81,8 @@
       "description": "Be a rewarded contributor of a world event that succeeded. event: 'fissure_invasion' (a Fissure closed in time: since 2026-10-17 the rift interior, world/rift_events.json, which replaced the invasions) or 'rift_interior' (same ledger). A player in purification is not credited. One credit per event."
     }
   },
+  "main_story": ["q_onb_arene", "q_onb_forces", "q_onb_premiere_chasse", "q_main_rey_rencontre", "q_rey_lisiere", "q_rey_traces", "q_main_ezra_retrouvailles", "q_main_ezra_egouts", "q_main_ezra_blessure", "q_rey_nouvelles", "q_tobin_au_dela", "q_act2_wolves_silence", "q_act2_wolves_tracks", "q_act2_wolves_den", "q_main_ezra_nouvelles", "q_act2_withered_woods", "q_act2_green_trees"],
+  "_main_story_note": "2026-11-03 (Charleston, fil principal toujours visible) : etapes de l'histoire DANS L'ORDRE. Lu par services/quest (quest.state, QuestStateResponse champs 13-15) : quand aucune etape n'est active, le serveur envoie la suivante (id, niveau requis, PNJ) et le client l'affiche grisee, « <titre> : atteins le niveau X » ou « <titre> : va voir <PNJ> ». Une etape interdite (forbids_quests) est sautee. La liste s'arrete a q_act2_green_trees (niveau 21) : aucune quete principale active au-dela dans la data (la Tour et l'Acte III sont parques), le suivi est vide apres. Un id inconnu = erreur de chargement.",
   "quests": [
     {
       "id": "q_main_zone01",
@@ -3525,7 +3527,9 @@
       "objectives": [
         {
           "template": "tutorial_combat_complete",
-          "guide_targets": ["npc_arena_dargo"],
+          "guide_targets": [
+            "npc_arena_dargo"
+          ],
           "_guide_targets_note": "Revue playtest 2026-10-25 : cible du guidage (fleche, cartes) seulement, aucun effet serveur. Dargo donne la lecon d'arene.",
           "scenario_id": "arena_onboarding",
           "count": 1,
@@ -3537,27 +3541,10 @@
       "rewards": {
         "xp": 250
       },
-      "chain_next": "q_onb_premiere_chasse",
-      "_chain_next_note": "2026-11-01 (Charleston) : la lecon d'arene enchaine sur Premiere chasse (q_onb_premiere_chasse, 3 rats), qui enchaine ensuite sur q_onb_forces. Constat prod : 25 min sans combat apres la lecon.",
-      "quest_hints": {
-        "on_complete": [
-          {
-            "id": "q_onb_arene_next_modal",
-            "type": "modal",
-            "priority": 88,
-            "show_once": true,
-            "payload": {
-              "title_fr": "La suite",
-              "title_en": "What comes next",
-              "content_fr": "Pas mal ! Mais dans l'arène, je peux arrêter le combat. Dehors, c'est une autre histoire. Va t'occuper de trois rats au sud. On verra comment tu te débrouilles.",
-              "content_en": "Not bad! But in the arena, I can stop the fight. Out there, it's a different story. Go deal with three rats to the south. Let's see how you manage.",
-              "_a_valider": "2026-11-01 : replique de Dargo qui donne Premiers pas dehors (meme texte que dialogue_give de q_onb_premiere_chasse). Texte valide par Charleston le 2026-11-02 (relecture des textes 0.20.30). Avant : « Pas mal pour un début. Retourne voir Tobin. », reporte sur la fin de Premiere chasse."
-            },
-            "_note": "Deplacee le 2026-10-21 depuis q_havreden_tour_03 (on_complete, rendu chez Tobin, vue vers le niveau 19 en playtest 0.20.3, trop tard pour servir) : la fin de la lecon de combat de Dargo est le premier moment ou le joueur a besoin de la suite. Texte reecrit le 2026-10-23 (revision des modales V2 validee par Charleston) : il renvoie seulement vers Tobin ; Varn, Ezra et les Egouts ont leurs propres quetes (q_varn_egouts...). Avant : Lot 2, manque 5 : pointe vers q_varn_egouts (npc_giver Varn, min_level 9, sans prerequis, Egouts = dungeon_rat_den niveau 10-14)."
-          }
-        ]
-      },
-      "_note": "Onboarding V2 (spec 2026-09-23). Premiere quete d'un perso d'aventure neuf : la lecon d'arene demarre juste apres la cinematique, AVANT que le joueur voie le village, puis il reapparait devant l'arene de Dargo. Drapeau tutorial + pas de npc_giver = rendu automatique. 250 XP = niveau 3. ATTENTION BACK : auto_accept_on_zone_enter 'village' touche TOUT perso qui entre au village, y compris les anciens persos et les persos de tournoi. Sans garde (ligne character_arena_onboarding presente, perso non tournoi), un ancien perso recoit une quete qu'il ne peut pas finir. A trancher cote quest_service avant deploiement de cette data."
+      "chain_next": "q_onb_forces",
+      "_chain_next_note": "2026-11-03 (Charleston) : nouvel ordre, la montee des competences et stats (q_onb_forces) vient AVANT le premier combat dehors : q_onb_arene -> q_onb_forces -> q_onb_premiere_chasse -> q_onb_retour_dargo -> q_havreden_arrivee. Avant (2026-11-01) : q_onb_arene -> q_onb_premiere_chasse -> q_onb_forces.",
+      "_note": "Onboarding V2 (spec 2026-09-23). Premiere quete d'un perso d'aventure neuf : la lecon d'arene demarre juste apres la cinematique, AVANT que le joueur voie le village, puis il reapparait devant l'arene de Dargo. Drapeau tutorial + pas de npc_giver = rendu automatique. 250 XP = niveau 3. ATTENTION BACK : auto_accept_on_zone_enter 'village' touche TOUT perso qui entre au village, y compris les anciens persos et les persos de tournoi. Sans garde (ligne character_arena_onboarding presente, perso non tournoi), un ancien perso recoit une quete qu'il ne peut pas finir. A trancher cote quest_service avant deploiement de cette data.",
+      "_quest_hints_note": "2026-11-03 (decision finale A) : la modale de fin de lecon (« La suite ») est retiree. La premiere modale du parcours est M1 (q_onb_forces), donnee apres la remise de l'arme."
     },
     {
       "id": "q_onb_premiere_chasse",
@@ -3572,17 +3559,20 @@
       "_title_note": "2026-11-02 (Charleston) : titre « Premiers pas dehors » pour ne pas doubler « Premiere chasse » (q_contract_tutorial_first_hunt, contrat de Varn, qui garde son nom). L'identifiant q_onb_premiere_chasse ne change pas.",
       "summary_fr": "Dargo veut voir comment tu te débrouilles hors de l'arène. Trois rats rôdent au sud, près du village.",
       "summary_en": "Dargo wants to see how you handle yourself outside the arena. Three rats are roaming south of the village.",
-      "dialogue_give_fr": "Pas mal ! Mais dans l'arène, je peux arrêter le combat. Dehors, c'est une autre histoire.\nVa t'occuper de trois rats au sud. On verra comment tu te débrouilles.",
-      "dialogue_give_en": "Not bad! But in the arena, I can stop the fight. Out there, it's a different story.\nGo deal with three rats to the south. Let's see how you manage.",
-      "dialogue_progress_fr": "Alors, ces rats ? Ils sont juste au sud de l'arène.\nPrends ton temps. Mieux vaut revenir entier.",
-      "dialogue_progress_en": "How are those rats coming along? They're just south of the arena.\nTake your time. Better to come back in one piece.",
-      "dialogue_complete_fr": "Ah, tu t'en es sorti !\nVa voir Tobin sur la place. Il a encore deux ou trois choses à te montrer.",
-      "dialogue_complete_en": "Hey, you made it!\nGo see Tobin in the square. He's got a few more things to show you.",
-      "_dialogues_a_valider": "2026-11-01 : les trois dialogues (give / progress / complete), textes valide par Charleston le 2026-11-02 (relecture des textes 0.20.30). give = modale de fin de lecon (q_onb_arene_next_modal) ; progress = Dargo (cle q_onb_premiere_chasse_default de npcs.json) ; complete = modale on_complete ci-dessous.",
+      "dialogue_give_fr": "Voilà, c'est déjà mieux. Il y a pas mal de rats autour du village en ce moment. Va en chasser trois et reviens me voir.",
+      "dialogue_give_en": "There, that's better already. There are quite a few rats around the village right now. Go hunt three of them and come back to me.",
+      "dialogue_progress_fr": "Déjà de retour ? Me dis pas que trois rats t'ont fait changer d'avis.\nIls sont autour du village. Allez, je t'attends.",
+      "dialogue_progress_en": "Back already? Don't tell me three rats made you change your mind.\nThey're around the village. Go on, I'll be waiting.",
+      "dialogue_complete_fr": "Ah, te revoilà ! Alors, ces rats t'ont pas donné trop de fil à retordre ?\nBon, je crois que tu peux te débrouiller sans moi. Mais va pas prendre la grosse tête non plus.\nPasse voir Tobin sur la place. Dis-lui que pour moi, t'es prêt. Il va t'aider à préparer la suite.",
+      "dialogue_complete_en": "Ah, there you are! So, did those rats give you much trouble?\nWell, I think you can manage without me now. But don't let it go to your head.\nGo see Tobin in the square. Tell him I said you're ready. He'll help you get set for what comes next.",
+      "_dialogues_a_valider": "2026-11-03 : FR = textes de kanarion_onboarding_0_20_31_final_pour_agent.md (Charleston, 03/11) ; EN a relire (traduction de l'agent). complete = replique de Dargo au retour (objectif 1).",
       "forbids_quests": [
-        "q_onb_forces"
+        "q_havreden_arrivee",
+        "q_havreden_preparatifs",
+        "q_havreden_expedition",
+        "q_tut_intro_01"
       ],
-      "_forbids_quests_note": "Un personnage deja engage dans q_onb_forces (ou au-dela) ne recoit JAMAIS cette quete : ni par la chaine, ni par l'auto-guerison des quetes chain-only (QuestService::maybe_heal_chain_only_quests, qui la redonnerait sinon a tout ancien personnage ayant fini q_onb_arene). Garde lue par acte1_gates_allow, aucun code serveur ajoute.",
+      "_forbids_quests_note": "2026-11-03 : avec le nouvel ordre (q_onb_forces -> q_onb_premiere_chasse), un personnage qui a deja rencontre Tobin (q_havreden_arrivee ou au-dela, active ou faite) ne la recoit jamais : ni par la chaine, ni par l'auto-guerison des quetes chain-only (QuestService::maybe_heal_chain_only_quests, qui la redonnerait sinon a tout ancien personnage ayant fini q_onb_forces). Avant : forbids q_onb_forces (ancien ordre).",
       "objectives": [
         {
           "template": "kill_mobs",
@@ -3595,7 +3585,7 @@
           "description_fr": "Vaincre 3 rats au sud de l'arène",
           "description_en": "Defeat 3 rats south of the arena",
           "spawn_area": "mz_abords_d_havreden_1_8",
-          "_note": "Rats des Abords d'Havreden (mz_abords_d_havreden_1_8, niveau 1-8). Credit serveur (combat room_ended killed_mob_ids), meme regle que q_contract_tutorial_first_hunt. Etoiles plafonnees a 1 dans cette aire (zones.json max_stars, tirage presence roll_star_level).",
+          "_note": "Rats des Abords d'Havreden (mz_abords_d_havreden_1_8, niveau 1-8). Credit serveur (combat room_ended killed_mob_ids), meme regle que q_contract_tutorial_first_hunt. Etoiles 1 a 5 dans cette aire depuis le 2026-11-03 (plafond de 1 etoile retire, decision Charleston).",
           "hints": {
             "on_active": [
               {
@@ -3609,9 +3599,44 @@
                   "label_en": "Rats south of the arena"
                 },
                 "_note": "Zone de quete havreden_premiere_chasse (zones.json quest_areas, village) : les rats les plus proches de l'arene. Le centre de l'aire de monstres entiere (x -52..6044) tombe hors de son contour, au bord du village : la fleche y menait nulle part."
+              },
+              {
+                "id": "q_onb_premiere_chasse_stars_help",
+                "type": "help_text",
+                "target": "monster_stars:nearest",
+                "priority": 89,
+                "show_once": false,
+                "payload": {
+                  "text_key": "HELP_STARS_GROUP",
+                  "until": "first_combat"
+                },
+                "_note": "2026-11-03 (Charleston) : AVANT le tout premier combat, texte gris d'aide accroche aux etoiles du groupe de monstres le plus proche : plus d'etoiles = plus fort et meilleures recompenses ; choisir un groupe a 1 etoile. Texte client translations/messages.csv HELP_STARS_GROUP (brouillon a valider). Il disparait au premier combat. Aucun objectif ne peut viser un nombre d'etoiles MAX (kill_mobs n'a pas de filtre d'etoiles, clear_star_packs n'a que min_star) : le texte conseille 1 etoile, le serveur compte n'importe quel rat."
               }
             ]
           }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_arena_dargo",
+          "count": 1,
+          "description_fr": "Retourne voir Dargo",
+          "description_en": "Return to Dargo",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_onb_premiere_chasse_obj1_arrow",
+                "type": "arrow",
+                "target": "npc_arena_dargo",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Voir Dargo",
+                  "label_en": "See Dargo"
+                }
+              }
+            ]
+          },
+          "_note": "2026-11-03 (spec finale) : retour obligatoire chez Dargo. AJOUTE EN FIN : un personnage qui a deja la quete en cours en prod la termine comme avant (index inchanges)."
         }
       ],
       "rewards": {
@@ -3619,25 +3644,69 @@
         "gold": 15
       },
       "_rewards_a_valider": "2026-11-01 : 3/5 de q_contract_tutorial_first_hunt (5 rats, 126 XP, 30 or), arrondi. Le perso reste niveau 3 a la fin (250 + 75 + XP des combats < 468), q_onb_forces le passe niveau 4 comme avant.",
-      "chain_next": "q_onb_forces",
-      "quest_hints": {
-        "on_complete": [
-          {
-            "id": "q_onb_premiere_chasse_done_modal",
-            "type": "modal",
-            "priority": 88,
-            "show_once": true,
-            "payload": {
-              "title_fr": "La suite",
-              "title_en": "What Comes Next",
-              "content_fr": "Ah, tu t'en es sorti ! Va voir Tobin sur la place. Il a encore deux ou trois choses à te montrer.",
-              "content_en": "Hey, you made it! Go see Tobin in the square. He's got a few more things to show you."
-            },
-            "_note": "Reprend le role de l'ancienne modale de fin de lecon (« Retourne voir Tobin »). Texte = dialogue_complete, valide par Charleston le 2026-11-02 (relecture des textes 0.20.30)."
+      "_note": "2026-11-01 (Charleston, 0.20.30). Premier combat dehors juste apres la lecon d'arene : q_onb_arene -> q_onb_premiere_chasse -> q_onb_forces. Drapeau tutorial sans npc_giver = rendu automatique (client turn_in_place 'auto'), comme q_onb_arene et q_onb_forces. Personne ne la donne : chain-only, reparee par le serveur si l'acceptation chainee se perd. Ne change ni q_havreden_arrivee ni l'ordre des objectifs de q_havreden_preparatifs. 2026-11-03 : nouvel ordre q_onb_forces -> q_onb_premiere_chasse -> q_onb_retour_dargo ; les Abords d'Havreden reviennent a 1-5 etoiles (zones.json, decision Charleston), l'aide sur les etoiles guide vers 1 etoile. 2026-11-03 : nouvel ordre q_onb_forces -> q_onb_premiere_chasse -> q_onb_retour_dargo ; les Abords d'Havreden reviennent a 1-5 etoiles (zones.json, decision Charleston), l'aide sur les etoiles guide vers 1 etoile.",
+      "accepts_on_turn_in": [
+        "q_havreden_arrivee",
+        "q_main_rey_rencontre"
+      ],
+      "_accepts_on_turn_in_note": "2026-11-03 (Charleston, fil principal toujours visible) : a la fin du tutoriel obligatoire (stats et competences, puis ces trois rats), le SERVEUR donne deux quetes sans clic sur un PNJ : « Parler a Tobin » (q_havreden_arrivee, qui ouvre les Preparatifs et Aldric, chemin conseille) et « Parler au capitaine Rey » (q_main_rey_rencontre, fil principal). Un joueur qui saute le tour d'Havreden et Aldric les a quand meme. Remplace la quete-etape q_onb_retour_dargo (jamais livree) : Dargo envoie vers Tobin par la modale de fin.",
+      "_quest_hints_note": "2026-11-03 (spec finale) : plus de validation automatique ni de modale « La suite » : le joueur retourne VRAIMENT voir Dargo (objectif 1), qui dit la replique de fin."
+    },
+    {
+      "id": "q_main_rey_rencontre",
+      "type": "main",
+      "zone": "village",
+      "min_level": 1,
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "[À ÉCRIRE PAR CHARLESTON] Le capitaine Rey",
+      "title_en": "[À ÉCRIRE PAR CHARLESTON] Captain Rey",
+      "summary_fr": "[À ÉCRIRE PAR CHARLESTON] Le capitaine Rey cherche des volontaires. Va le voir.",
+      "summary_en": "[À ÉCRIRE PAR CHARLESTON] Captain Rey is looking for volunteers. Go and see him.",
+      "dialogue_give_fr": "[À ÉCRIRE PAR CHARLESTON] Le capitaine Rey cherche des volontaires. Va le voir.",
+      "dialogue_give_en": "[À ÉCRIRE PAR CHARLESTON] Captain Rey is looking for volunteers. Go and see him.",
+      "dialogue_progress_fr": "[À ÉCRIRE PAR CHARLESTON] Le capitaine Rey t'attend.",
+      "dialogue_progress_en": "[À ÉCRIRE PAR CHARLESTON] Captain Rey is waiting for you.",
+      "dialogue_complete_fr": "[À ÉCRIRE PAR CHARLESTON] Un volontaire ? Tu n'es pas encore prêt pour ce qui rôde à la lisière. Prépare-toi, gagne en force, et reviens me voir au niveau 12.",
+      "dialogue_complete_en": "[À ÉCRIRE PAR CHARLESTON] A volunteer? You're not ready yet for what's prowling the forest edge. Get ready, grow stronger, and come back to me at level 12.",
+      "_dialogues_a_ecrire": "2026-11-03 : textes PROVISOIRES, section 14.1 de textes_a_reecrire_onboarding_0_20_31.md (« Titre FR/EN », « Objectif FR/EN », « Message du suivi a la reception » = dialogue_give, « dialogue_complete »). Quete donnee par le serveur (pas de dialogue de remise) ; dialogue_give sert de message du suivi. Replique de Rey : cle q_main_rey_rencontre_obj_0 de npcs.json.",
+      "completed_by": [
+        "q_rey_lisiere",
+        "q_havreden_preparatifs",
+        "q_havreden_tour_03"
+      ],
+      "_completed_by_note": "Un personnage de l'ancienne route (Preparatifs ou tour finis, ou deja chez Rey) la compte comme faite, sans recompense : q_rey_lisiere, qui la demande en prerequis, reste ouverte pour lui.",
+      "objective_mode": "sequential",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_quest_captain_rey",
+          "count": 1,
+          "description_fr": "[À ÉCRIRE PAR CHARLESTON] Parler au capitaine Rey",
+          "description_en": "[À ÉCRIRE PAR CHARLESTON] Talk to Captain Rey",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_main_rey_rencontre_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_quest_captain_rey",
+                "priority": 85,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir le capitaine Rey",
+                  "label_en": "Go see Captain Rey"
+                }
+              }
+            ]
           }
-        ]
+        }
+      ],
+      "rewards": {
+        "xp": 0
       },
-      "_note": "2026-11-01 (Charleston, 0.20.30). Premier combat dehors juste apres la lecon d'arene : q_onb_arene -> q_onb_premiere_chasse -> q_onb_forces. Drapeau tutorial sans npc_giver = rendu automatique (client turn_in_place 'auto'), comme q_onb_arene et q_onb_forces. Personne ne la donne : chain-only, reparee par le serveur si l'acceptation chainee se perd. Ne change ni q_havreden_arrivee ni l'ordre des objectifs de q_havreden_preparatifs."
+      "_rewards_a_valider": "2026-11-03 : aucune recompense (premiere rencontre).",
+      "_note": "2026-11-03 (Charleston, fil principal toujours visible). Donnee par le serveur a la fin de Premiers pas dehors (accepts_on_turn_in), en meme temps que « Parler a Tobin » (q_havreden_arrivee). Drapeau tutorial sans npc_giver : rendu automatique apres la replique de Rey. Ensuite le suivi montre « La lisiere agitee : atteins le niveau 8 » (main_story, QuestStateResponse champs 13-15) jusqu'au niveau 8, ou Rey la propose."
     },
     {
       "id": "q_onb_forces",
@@ -3738,6 +3807,35 @@
               }
             ]
           }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_arena_dargo",
+          "count": 1,
+          "description_fr": "Parler à Dargo",
+          "description_en": "Talk to Dargo",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_onb_forces_obj4_arrow",
+                "type": "arrow",
+                "target": "npc_arena_dargo",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Dargo",
+                  "label_en": "Go see Dargo"
+                }
+              }
+            ]
+          },
+          "gated_by_objectives": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "_note": "2026-11-03 (spec finale) : Dargo donne la ceinture (+1 Souffle/s en combat) et envoie chasser. Objectif AJOUTE EN FIN de liste : un personnage qui a deja la quete en cours en prod garde ses lignes (index inchanges) et la termine sans lui parler."
         }
       ],
       "quest_hints": {
@@ -3749,18 +3847,27 @@
             "show_once": true,
             "payload": {
               "title_fr": "Tes premières armes",
-              "title_en": "Your first weapons",
-              "content_fr": "Équipe ton arme, puis répartis tes points de statistiques. Clique sur « Appliquer » pour valider. Améliore ensuite une compétence et un passif.",
-              "content_en": "Equip your weapon, then spend your stat points. Press “Apply” to confirm. Next, upgrade a skill and a passive."
-            }
+              "title_en": "Your First Weapons",
+              "content_fr": "Équipe l'arme que Dargo vient de te donner depuis ton inventaire. Répartis ensuite tes 3 points de statistiques et clique sur « Appliquer ». Améliore une compétence et un passif dans le menu « Compétences ».",
+              "content_en": "Equip the weapon Dargo just gave you from your inventory. Then spend your 3 stat points and click “Apply”. Upgrade one skill and one passive in the “Skills” menu."
+            },
+            "_note": "2026-11-03 : modale M1 de la decision finale A (seules M1 a M7 restent). FR = textes de kanarion_onboarding_0_20_31_final_pour_agent.md (Charleston, 03/11) ; EN a relire (traduction de l'agent)."
           }
         ]
       },
       "rewards": {
-        "xp": 218
+        "xp": 218,
+        "items": [
+          {
+            "id": "expedition_belt",
+            "qty": 1
+          }
+        ]
       },
-      "chain_next": "q_havreden_arrivee",
-      "_note": "Onboarding V2 (spec 2026-09-23). Reprend les objectifs de l'ancienne etape stats et competence de la chaine d'Aldric (supprimee) plus l'equipement de l'arme. 250 + 218 = 468 XP cumules = niveau 4. Objectifs paralleles, rendu automatique (tutorial, pas de npc_giver). Le perso de tournoi a son equivalent q_tournoi_stats_skills : si le back distribue aussi les q_onb_* aux persos de tournoi, retirer l'une des deux. Lot 2 : objectif upgrade_passive ajoute (le passif sort de la chaine d'Aldric), XP inchangee."
+      "chain_next": "q_onb_premiere_chasse",
+      "_note": "Onboarding V2 (spec 2026-09-23). Reprend les objectifs de l'ancienne etape stats et competence de la chaine d'Aldric (supprimee) plus l'equipement de l'arme. 250 + 218 = 468 XP cumules = niveau 4. Objectifs paralleles, rendu automatique (tutorial, pas de npc_giver). Le perso de tournoi a son equivalent q_tournoi_stats_skills : si le back distribue aussi les q_onb_* aux persos de tournoi, retirer l'une des deux. Lot 2 : objectif upgrade_passive ajoute (le passif sort de la chaine d'Aldric), XP inchangee. 2026-11-03 (spec finale) : Dargo donne l'arme (l'arme de depart, deja remise a la creation : starter_weapon.hpp, pas de deuxieme arme), fait equiper, 3 points de stats, une competence, un passif, puis la ceinture. Enchaine sur la chasse aux trois rats.",
+      "_chain_next_note": "2026-11-03 (Charleston) : enchaine sur q_onb_premiere_chasse (avant : q_havreden_arrivee).",
+      "_rewards_note": "2026-11-03 : la ceinture de Dargo (expedition_belt, items/equipment.json) est remise au rendu, apres la replique de Dargo. Une seule fois (rendu idempotent)."
     },
     {
       "id": "q_havreden_arrivee",
@@ -3776,10 +3883,10 @@
       "summary_en": "Tobin is waiting for you on the square. He knows who's looking for hands right now, and he has something to keep you busy.",
       "npc_giver": "npc_hub_guide_tobin",
       "accepts_on_turn_in": [
-        "q_havreden_preparatifs",
+        "q_havreden_expedition",
         "q_tut_intro_01"
       ],
-      "_accepts_on_turn_in_note": "Decision Charleston du 2026-10-21 : parler a Tobin active directement les deux quetes qu'il annonce (le tour de Havreden et la chaine d'Aldric), sans etape vide ou il faudrait revenir les prendre. Lu par services/quest : apres le rendu de cette quete, chaque id est accepte par le serveur avec les memes controles qu'une acceptation automatique (prerequis, drapeaux, adventure_only). Les textes ne changent pas. Acte I V2 (2026-10-24) : le tour q_havreden_tour_01 est remplace par q_havreden_preparatifs.",
+      "_accepts_on_turn_in_note": "Decision Charleston du 2026-10-21 : parler a Tobin active directement les deux quetes qu'il annonce (le tour de Havreden et la chaine d'Aldric), sans etape vide ou il faudrait revenir les prendre. Lu par services/quest : apres le rendu de cette quete, chaque id est accepte par le serveur avec les memes controles qu'une acceptation automatique (prerequis, drapeaux, adventure_only). Les textes ne changent pas. Acte I V2 (2026-10-24) : le tour q_havreden_tour_01 est remplace par q_havreden_preparatifs. 2026-11-03 : q_havreden_preparatifs est remplacee par q_havreden_expedition (memes titre et role, nouvelles etapes : potions, veste, familier, contrat de Varn).",
       "objectives": [
         {
           "template": "talk_to_npc",
@@ -3832,7 +3939,8 @@
         "gold": 20
       },
       "_note": "Onboarding V2 (2026-09-23) : acceptee par chainage depuis q_onb_forces, plus par auto_accept_on_zone_enter (c'est q_onb_arene qui porte l'entree au village). PLUS de chain_next : Tobin propose ensuite DEUX quetes independantes, la chaine d'Aldric (q_tut_intro_01) et le tour de Havreden (q_havreden_tour_01), toutes deux avec prerequisites [q_havreden_arrivee], a faire dans l'ordre que le joueur veut. Drapeau tutorial ajoute : rendu automatique apres le dialogue (q_havreden_arrivee_obj_0 chez Tobin) et les repliques contextuelles de Dargo/Tobin sont lues par main.gd, qui ne les cherche que sur les quetes tutorial. V3.2 (2026-10-24) : sequentielle, Tobin envoie dire un mot a Ezra (objectif 1) avant l'arriere-salle d'Aldric ; le rendu automatique (tutorial) a lieu apres Ezra.",
-      "objective_mode": "sequential"
+      "objective_mode": "sequential",
+      "_note_fil_principal": "2026-11-03 : c'est la quete « Parler a Tobin » du fil principal (section 14.2 du fichier de textes) : donnee par le serveur a la fin de Premiers pas dehors (accepts_on_turn_in), plus par la chaine. Son rendu ouvre les Preparatifs (q_havreden_expedition) et la chaine d'Aldric, chemin conseille."
     },
     {
       "id": "q_havreden_tour_01",
@@ -4314,10 +4422,12 @@
       "forbids_quests": [
         "q_havreden_tour_01",
         "q_havreden_tour_02",
-        "q_havreden_tour_03"
+        "q_havreden_tour_03",
+        "q_havreden_expedition"
       ],
       "completed_by": [
-        "q_havreden_tour_03"
+        "q_havreden_tour_03",
+        "q_havreden_expedition"
       ],
       "flags": [
         "tutorial"
@@ -4522,14 +4632,38 @@
         }
       ],
       "objective_xp": [
-        { "objective": 0, "xp": 150 },
-        { "objective": 1, "xp": 150 },
-        { "objective": 2, "xp": 150 },
-        { "objective": 3, "xp": 150 },
-        { "objective": 4, "xp": 100 },
-        { "objective": 5, "xp": 100 },
-        { "objective": 6, "xp": 600 },
-        { "objective": 7, "xp": 200 }
+        {
+          "objective": 0,
+          "xp": 150
+        },
+        {
+          "objective": 1,
+          "xp": 150
+        },
+        {
+          "objective": 2,
+          "xp": 150
+        },
+        {
+          "objective": 3,
+          "xp": 150
+        },
+        {
+          "objective": 4,
+          "xp": 100
+        },
+        {
+          "objective": 5,
+          "xp": 100
+        },
+        {
+          "objective": 6,
+          "xp": 600
+        },
+        {
+          "objective": 7,
+          "xp": 200
+        }
       ],
       "_objective_xp_a_valider": "2026-10-29 (Charleston) : les 2424 XP ne tombent plus d'un coup au rendu. Chaque etape paie sa part a sa fin (objective_xp, service quest, une seule fois par personnage) : Milo, Colette, Hestia et Varn 150 chacun, tableau des contrats 100, acceptation de Premiere chasse 100, les 5 monstres 600, recompense du contrat 200 ; le retour a Tobin (rendu) garde 824. Total inchange : 2424. Un personnage deja en cours au deploiement recoit au rendu les etapes encore non payees.",
       "rewards": {
@@ -4543,7 +4677,448 @@
         ]
       },
       "_a_valider": "Recompense = ancien tour complet (tour_01 700 + tour_02 850 + tour_03 1000 = 2550 XP, 180 or, 5 Pierres de Lame) moins Premiere chasse (126 XP, 30 or), pour garder le meme rythme de niveau vers les Egouts.",
-      "_note": "Acte I Havreden V2 (2026-10-24), etape 05. Remplace le tour de Tobin (q_havreden_tour_01/02/03) pour les NOUVEAUX personnages : q_havreden_arrivee l'accepte au rendu. forbids_quests : jamais pour un personnage qui a commence l'ancien tour (il le finit tel quel). completed_by q_havreden_tour_03 : un personnage qui a fini l'ancien tour la compte comme faite, sans recompense, et passe a la suite (Rey). Gorik sort du tour (decouverte facultative). Drapeau tutorial : la replique de Tobin a l'etape 8 est sa conclusion, le rendu est automatique apres ce dialogue."
+      "_note": "Acte I Havreden V2 (2026-10-24), etape 05. Remplace le tour de Tobin (q_havreden_tour_01/02/03) pour les NOUVEAUX personnages : q_havreden_arrivee l'accepte au rendu. forbids_quests : jamais pour un personnage qui a commence l'ancien tour (il le finit tel quel). completed_by q_havreden_tour_03 : un personnage qui a fini l'ancien tour la compte comme faite, sans recompense, et passe a la suite (Rey). Gorik sort du tour (decouverte facultative). Drapeau tutorial : la replique de Tobin a l'etape 8 est sa conclusion, le rendu est automatique apres ce dialogue. 2026-11-03 : ANCIENNE VERSION, plus jamais donnee a un nouveau personnage (q_havreden_arrivee accepte q_havreden_expedition). Un personnage qui l'a en cours la termine telle quelle ; forbids q_havreden_expedition pour que Tobin ne la propose pas en plus ; completed_by q_havreden_expedition pour que le succes et les prerequis qui la nomment restent vrais."
+    },
+    {
+      "id": "q_havreden_expedition",
+      "type": "main",
+      "zone": "village",
+      "min_level": 1,
+      "prerequisites": [
+        "q_havreden_arrivee"
+      ],
+      "forbids_quests": [
+        "q_havreden_preparatifs",
+        "q_havreden_tour_01",
+        "q_havreden_tour_02",
+        "q_havreden_tour_03"
+      ],
+      "completed_by": [
+        "q_havreden_preparatifs",
+        "q_havreden_tour_03"
+      ],
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "Préparatifs pour l'expédition",
+      "title_en": "Preparing for the Expedition",
+      "summary_fr": "Tobin veut que tu partes bien préparé : des potions chez Milo, une arme renforcée chez Gorik et un compagnon choisi chez Colette.",
+      "summary_en": "Tobin wants you to leave well prepared: potions from Milo, a stronger weapon from Gorik and a companion chosen at Colette's.",
+      "dialogue_give_fr": "Bon, si tu pars vraiment, j'aimerais vérifier deux ou trois choses avant.\nCommence par aller voir Milo. Prends quelques provisions, on sait jamais ce qui peut arriver dehors.",
+      "dialogue_give_en": "Right, if you're really going, I'd like to check a couple of things first.\nStart with Milo. Get some supplies. You never know what might happen out there.",
+      "dialogue_progress_fr": "Bon, si tu pars vraiment, j'aimerais vérifier deux ou trois choses avant.",
+      "dialogue_progress_en": "Right, if you're really going, I'd like to check a couple of things first.",
+      "dialogue_complete_fr": "[À ÉCRIRE PAR CHARLESTON] Te voilà mieux équipé. Quand tu seras un peu plus aguerri, repasse me voir : j'aurai d'autres personnes à te présenter.",
+      "dialogue_complete_en": "[À ÉCRIRE PAR CHARLESTON] You're better equipped now. Once you're a bit more seasoned, come back: I'll have other people for you to meet.",
+      "_dialogues_a_ecrire": "2026-11-03 : give et progress = Tobin, addendum « Dialogues naturels » de kanarion_onboarding_0_20_31_final_pour_agent_v2.md (Charleston) ; EN a relire. La 3e bulle (Gorik puis Colette) est dite aux etapes correspondantes (npcs.json q_havreden_expedition_obj_2..5). complete PROVISOIRE.",
+      "npc_giver": "npc_hub_guide_tobin",
+      "objective_mode": "sequential",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_vendor_milo",
+          "count": 1,
+          "description_fr": "Va voir Milo, le marchand.",
+          "description_en": "Speak to Milo, the merchant.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_expedition_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_vendor_milo",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Milo",
+                  "label_en": "Go see Milo"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "buy_item",
+          "item_id": "cons_hp_potion_t1",
+          "count": 10,
+          "description_fr": "Acheter 10 potions de soin",
+          "description_en": "Buy 10 healing potions",
+          "_note": "2026-11-03 (Charleston : 10 potions) : reprend q_milo_ravitaillement (parquee le 24/10). Milo vend par lots de 10. Aide contextuelle de boutique (pas de modale) : replique de Milo pendant cette etape (npcs.json q_havreden_expedition_obj_1).",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_expedition_obj1_arrow",
+                "type": "arrow",
+                "target": "npc_vendor_milo",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Achète 10 potions chez Milo",
+                  "label_en": "Buy 10 potions from Milo"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_blacksmith_gorik",
+          "count": 1,
+          "description_fr": "Va voir Gorik pour ton arme.",
+          "description_en": "See Gorik about your weapon.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_expedition_obj2_arrow",
+                "type": "arrow",
+                "target": "npc_blacksmith_gorik",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Gorik",
+                  "label_en": "Go see Gorik"
+                }
+              }
+            ],
+            "on_complete": [
+              {
+                "id": "q_havreden_expedition_enhance_modal",
+                "type": "modal",
+                "priority": 89,
+                "show_once": true,
+                "payload": {
+                  "title_fr": "Améliorer son équipement",
+                  "title_en": "Upgrading Your Gear",
+                  "content_fr": "Les pierres d'amélioration permettent de renforcer ton équipement. Ouvre l'atelier d'amélioration, sélectionne ton arme et utilise les pierres reçues pour l'améliorer.",
+                  "content_en": "Enhancement stones strengthen your gear. Open the enhancement workshop, select your weapon and use the stones you received to upgrade it."
+                },
+                "_note": "2026-11-03 : modale M5 de la decision finale A (seules M1 a M7 restent). FR = textes de kanarion_onboarding_0_20_31_final_pour_agent.md (Charleston, 03/11) ; EN a relire (traduction de l'agent). Chez l'artisan, apres la remise des pierres."
+              }
+            ]
+          }
+        },
+        {
+          "template": "enhance_item",
+          "count": 1,
+          "description_fr": "Améliorer ton arme",
+          "description_en": "Upgrade your weapon",
+          "_note": "2026-11-03 : une tentative suffit, reussie ou non (economy handle_enhance_item). Atelier d'amelioration = poste de la forge (systems/enhancement_system.json station) : marche pour TOUTES les armes. Decision Charleston du 2026-11-03 : TOUTES les ameliorations passent par Gorik pour l'instant (toutes armes, toutes classes : les six armes de depart vont dans l'emplacement weapon et prennent la Pierre de Lame rang I).",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_expedition_obj3_arrow",
+                "type": "arrow",
+                "target": "npc_blacksmith_gorik",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Améliore ton arme",
+                  "label_en": "Upgrade your weapon"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "claim_familiar_gift",
+          "offer_id": "colette_village",
+          "count": 1,
+          "description_fr": "Choisis ton familier chez Colette.",
+          "description_en": "Choose your companion at Colette's.",
+          "_note": "2026-11-03 (spec finale) : loup attaque, sanglier tank, scarabee soin, rat utilitaire (config/familiar_balance.json gift_offers.colette_village). Roles expliques dans l'ecran de choix, sans modale. La replique de Colette ne suppose pas qu'Aldric a ete fait.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_expedition_obj4_arrow",
+                "type": "arrow",
+                "target": "npc_familiar_breeder_colette",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Colette",
+                  "label_en": "Go see Colette"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_familiar_breeder_colette",
+          "count": 1,
+          "description_fr": "Reparler à Colette",
+          "description_en": "Talk to Colette again",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_expedition_obj5_arrow",
+                "type": "arrow",
+                "target": "npc_familiar_breeder_colette",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Reviens voir Colette",
+                  "label_en": "Return to Colette"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_hub_guide_tobin",
+          "count": 1,
+          "description_fr": "Retourne voir Tobin.",
+          "description_en": "Return to Tobin.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_expedition_obj6_arrow",
+                "type": "arrow",
+                "target": "npc_hub_guide_tobin",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Retourne voir Tobin",
+                  "label_en": "Return to Tobin"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "objective_xp": [
+        {
+          "objective": 0,
+          "xp": 100
+        },
+        {
+          "objective": 1,
+          "xp": 150
+        },
+        {
+          "objective": 2,
+          "xp": 100
+        },
+        {
+          "objective": 3,
+          "xp": 150
+        },
+        {
+          "objective": 4,
+          "xp": 150
+        },
+        {
+          "objective": 5,
+          "xp": 50
+        }
+      ],
+      "_objective_xp_a_valider": "2026-11-03 : a valider (700 XP d'etapes + rendu).",
+      "rewards": {
+        "xp": 674,
+        "gold": 150,
+        "items": [
+          {
+            "id": "even_cherev_rank_1",
+            "qty": 2
+          }
+        ]
+      },
+      "_a_valider": "2026-11-03 : recompenses a valider.",
+      "_note": "2026-11-03 (spec finale) : Preparatifs I (vers les niveaux 5-7), facultatifs : Milo (10 potions), l'arme amelioree avec les pierres de la quete, le choix du familier chez Colette du village. Hestia et Varn passent dans les Preparatifs II (q_havreden_preparatifs_2, niveau 9). Ne bloque ni l'histoire ni le tableau. Nouvel id (et non q_havreden_preparatifs) : l'ancienne reste pour les personnages qui l'ont en cours.",
+      "rewards_on_accept": {
+        "items": [
+          {
+            "id": "even_cherev_rank_1",
+            "qty": 3
+          }
+        ],
+        "_note": "2026-11-03 : pierres d'amelioration donnees par la quete, pour l'etape de l'arme (a valider : 3, comme l'ancien tour). Pierre de Lame rang I : +1 a +4 sur une arme de rang I, toutes classes."
+      }
+    },
+    {
+      "id": "q_havreden_preparatifs_2",
+      "type": "main",
+      "zone": "village",
+      "min_level": 9,
+      "prerequisites": [
+        "q_havreden_expedition"
+      ],
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "[À ÉCRIRE PAR CHARLESTON] Préparatifs, suite",
+      "title_en": "[À ÉCRIRE PAR CHARLESTON] More Preparations",
+      "summary_fr": "Tobin veut que tu rencontres Varn et Hestia avant de partir.",
+      "summary_en": "Tobin wants you to meet Varn and Hestia before you leave.",
+      "dialogue_give_fr": "Alors, les préparatifs avancent bien ? Il y a encore deux personnes que j'aimerais que tu voies avant de partir.\nJe sais, je sais, je suis pénible avec ça... Mais ces derniers temps, beaucoup de volontaires ne sont pas revenus de leurs expéditions.\nAlors laisse-moi m'inquiéter un peu, d'accord ? J'aimerais bien te voir revenir, toi.",
+      "dialogue_give_en": "How are the preparations going? There are still two people I'd like you to see before you leave.\nI know, I know, I keep going on about it... But lately, a lot of volunteers haven't come back from their expeditions.\nSo let me worry a little, all right? I'd really like to see you come back.",
+      "dialogue_progress_fr": "[À ÉCRIRE PAR CHARLESTON] Varn est près du tableau des contrats, Hestia recrute des mercenaires.",
+      "dialogue_progress_en": "[À ÉCRIRE PAR CHARLESTON] Varn is by the contract board, Hestia recruits mercenaries.",
+      "dialogue_complete_fr": "[À ÉCRIRE PAR CHARLESTON] Bien. Tu sais maintenant vers qui te tourner.",
+      "dialogue_complete_en": "[À ÉCRIRE PAR CHARLESTON] Good. Now you know who to turn to.",
+      "_dialogues_a_valider": "2026-11-03 : give = Tobin, Preparatifs II (textes de kanarion_onboarding_0_20_31_final_pour_agent.md (Charleston, 03/11)) ; EN a relire (traduction de l'agent). progress et complete PROVISOIRES. Bulle 1 remplacee (addendum « Dialogues naturels » de kanarion_onboarding_0_20_31_final_pour_agent_v2.md (Charleston)), bulles 2 et 3 inchangees.",
+      "npc_giver": "npc_hub_guide_tobin",
+      "objective_mode": "parallel",
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_bounty_hunter_varn",
+          "count": 1,
+          "description_fr": "Parler à Varn",
+          "description_en": "Talk to Varn",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_preparatifs_2_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_bounty_hunter_varn",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Varn",
+                  "label_en": "Go see Varn"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_dungeon_keeper_hestia",
+          "count": 1,
+          "description_fr": "Parler à Hestia",
+          "description_en": "Talk to Hestia",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_havreden_preparatifs_2_obj1_arrow",
+                "type": "arrow",
+                "target": "npc_dungeon_keeper_hestia",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Hestia",
+                  "label_en": "Go see Hestia"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "rewards": {
+        "xp": 300,
+        "gold": 50
+      },
+      "_rewards_a_valider": "2026-11-03 : a valider.",
+      "_note": "2026-11-03 (spec finale) : Preparatifs II, niveau 9, proposes par Tobin. Facultatifs. La quete de contrat de Varn (q_varn_premier_contrat) est ANNEXE et le tableau est accessible sans ces Preparatifs. Metiers presentes a part."
+    },
+    {
+      "id": "q_varn_premier_contrat",
+      "type": "side",
+      "zone": "village",
+      "min_level": 1,
+      "prerequisites": [
+        "q_havreden_arrivee"
+      ],
+      "forbids_quests": [
+        "q_havreden_preparatifs",
+        "q_havreden_tour_03"
+      ],
+      "title_fr": "[À ÉCRIRE PAR CHARLESTON] Ton premier contrat",
+      "title_en": "[À ÉCRIRE PAR CHARLESTON] Your First Contract",
+      "summary_fr": "[À ÉCRIRE PAR CHARLESTON] Varn t'explique le tableau des contrats : prends un contrat, remplis-le, puis rends-le au tableau pour ta récompense.",
+      "summary_en": "[À ÉCRIRE PAR CHARLESTON] Varn shows you the contract board: take a contract, fulfil it, then hand it in at the board for your reward.",
+      "dialogue_give_fr": "Tu cherches de quoi progresser ? Regarde le tableau derrière moi. Il y a toujours des contrats à prendre.\nLes bêtes se font de plus en plus nombreuses ces derniers temps. Et certaines sont bien plus agressives qu'avant.\nPrends un contrat, fais le travail et récupère ta récompense au tableau. Simple, non ?",
+      "dialogue_give_en": "Looking for a way to get stronger? Check the board behind me. There are always contracts to take.\nThere have been more and more beasts lately. And some are a lot more aggressive than they used to be.\nTake a contract, do the job and collect your reward at the board. Simple, right?",
+      "dialogue_progress_fr": "Le tableau se remplit plus vite que je ne le vide. Pour commencer, prends le contrat des cinq bêtes.\nCinq bêtes. Le tableau t'indiquera lesquelles.",
+      "dialogue_progress_en": "The board fills up faster than I can clear it. To start, take the five-creature contract.\nFive creatures. The board will tell you which ones.",
+      "dialogue_complete_fr": "Beau travail. Tu sais maintenant comment fonctionnent les contrats. Tu pourras en refaire quand tu voudras.",
+      "dialogue_complete_en": "Good work. Now you know how contracts work. You can take more whenever you like.",
+      "_dialogues_a_ecrire": "2026-11-03 : give = Varn, premiere rencontre (textes de kanarion_onboarding_0_20_31_final_pour_agent.md (Charleston, 03/11)) ; EN a relire (traduction de l'agent). Titre et resume PROVISOIRES.",
+      "npc_giver": "npc_bounty_hunter_varn",
+      "objective_mode": "sequential",
+      "objectives": [
+        {
+          "template": "open_quest_board",
+          "board": "havreden_contracts",
+          "count": 1,
+          "description_fr": "Ouvre le tableau des contrats.",
+          "description_en": "Open the contract board.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_varn_premier_contrat_obj0_arrow",
+                "type": "arrow",
+                "target": "board:havreden_contracts",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Le tableau des contrats",
+                  "label_en": "The contract board"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "accept_quest",
+          "quest_id": "q_contract_tutorial_first_hunt",
+          "count": 1,
+          "description_fr": "Accepte « Première chasse ».",
+          "description_en": "Accept “First Hunt”.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_varn_premier_contrat_obj1_arrow",
+                "type": "arrow",
+                "target": "board:havreden_contracts",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Accepte « Première chasse »",
+                  "label_en": "Accept “First Hunt”"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "quest_objective",
+          "quest_id": "q_contract_tutorial_first_hunt",
+          "objective": 0,
+          "count": 5,
+          "description_fr": "Vaincs 5 monstres désignés.",
+          "description_en": "Defeat 5 designated creatures.",
+          "_note": "Miroir serveur de l'objectif 0 de Premiere chasse : le compteur 0/5 vient du contrat."
+        },
+        {
+          "template": "complete_quest",
+          "quest_id": "q_contract_tutorial_first_hunt",
+          "count": 1,
+          "description_fr": "Récupère la récompense au tableau.",
+          "description_en": "Claim the reward at the board.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_varn_premier_contrat_obj3_arrow",
+                "type": "arrow",
+                "target": "board:havreden_contracts",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Récupère ta récompense",
+                  "label_en": "Claim your reward"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "rewards": {
+        "xp": 1150
+      },
+      "_rewards_a_valider": "2026-11-03 : 1150 XP = la part des anciennes etapes Varn + tableau de q_havreden_preparatifs (150 + 100 + 100 + 600 + 200), pour garder le meme total sur la route. Le contrat Premiere chasse garde sa propre recompense (126 XP, 30 or).",
+      "_note": "2026-11-03 (spec finale) : quete ANNEXE et independante (plus liee aux Preparatifs). Le tableau des contrats s'utilise sans elle ; les contrats se rendent AU TABLEAU. Proposee par Varn apres Tobin."
     },
     {
       "id": "q_contract_tutorial_first_hunt",
@@ -4587,9 +5162,9 @@
       "id": "q_rey_lisiere",
       "type": "main",
       "zone": "village",
-      "min_level": 1,
+      "min_level": 12,
       "prerequisites": [
-        "q_havreden_preparatifs"
+        "q_main_rey_rencontre"
       ],
       "completed_by": [
         "q_main_ezra_retrouvailles"
@@ -4625,7 +5200,9 @@
         "gold": 60
       },
       "_a_valider": "Nombre de creatures (6, comme q_gorik_crocs_et_cuirs) et recompense (moyenne des etapes de l'ancien tour : 850 XP, 60 or). Zone de niveau 8-15 : le personnage arrive vers le niveau 10-12 apres les preparatifs.",
-      "_note": "Acte I (2026-10-24), etape 06. Remplace q_side_foret (zone_02 supprimee, laissee telle quelle et parquee de fait par sa zone). completed_by q_main_ezra_retrouvailles : un ancien personnage deja passe chez Ezra ne la recoit pas."
+      "_note": "Acte I (2026-10-24), etape 06. Remplace q_side_foret (zone_02 supprimee, laissee telle quelle et parquee de fait par sa zone). completed_by q_main_ezra_retrouvailles : un ancien personnage deja passe chez Ezra ne la recoit pas.",
+      "_prerequisites_note": "2026-11-03 : ne depend plus des Preparatifs (chemin conseille) mais de la rencontre avec Rey (q_main_rey_rencontre) et du niveau 12.",
+      "_min_level_a_valider": "2026-11-03 (spec finale) : Rey accessible au niveau 12 (remplace 8). Egouts conseilles au niveau 14 : a equilibrer, q_main_ezra_egouts garde son min_level 10 (non invente)."
     },
     {
       "id": "q_rey_traces",
@@ -4963,7 +5540,9 @@
         },
         {
           "template": "talk_to_npc",
-          "guide_targets": ["dungeon:dungeon_rat_den"],
+          "guide_targets": [
+            "dungeon:dungeon_rat_den"
+          ],
           "_guide_targets_note": "Revue playtest 2026-10-25 : cible du guidage seulement. Depuis le village, la grille des Egouts (la Fissure est au dernier etage).",
           "npc_id": "npc_rat_den_fissure",
           "description_fr": "Découvre les rats humanoïdes et la trace de Fissure au dernier étage, et récupère un fragment",
@@ -5026,6 +5605,12 @@
       "sets_flags": [
         "sewers_story_completed",
         "rift_fragment_handed_in"
+      ],
+      "recommended_level": 12,
+      "_recommended_level_note": "2026-11-03 (Charleston) : niveau conseille 12 et 4 a 5 joueurs conseilles, AFFICHAGE seulement (journal de quetes). Ne bloque rien : min_level reste 10.",
+      "recommended_party_size": [
+        4,
+        5
       ]
     },
     {
@@ -5488,8 +6073,8 @@
       ],
       "title_fr": "Le rat libéré",
       "title_en": "The Freed Rat",
-      "summary_fr": "Ce rat a laissé quelque chose d'étrange. Colette saura peut-être ce que c'est.",
-      "summary_en": "That rat left something strange behind. Colette might know what it is.",
+      "summary_fr": "Le rat a laissé une empreinte de Souffle. Colette saura quoi en faire.",
+      "summary_en": "The rat left a Breath imprint behind. Colette will know what to do with it.",
       "npc_giver": "npc_tutorial_familiar_colette",
       "objective_mode": "sequential",
       "objectives": [
@@ -5518,9 +6103,10 @@
         {
           "template": "choose_familiar",
           "count": 1,
-          "description_fr": "Choisir ton premier compagnon",
-          "description_en": "Choose your first companion",
-          "_note": "Template à créer côté backend (Phase 2). Incrémente sur FAMILIAR_CHOOSE_ROLE_RESPONSE success."
+          "description_fr": "Sauver le rat",
+          "description_en": "Save the rat",
+          "_note": "Template à créer côté backend (Phase 2). Incrémente sur FAMILIAR_CHOOSE_ROLE_RESPONSE success.",
+          "_note_0_20_31": "2026-11-03 (Charleston) : on garde le familier rat dans le tutoriel d'Aldric. familiar_balance.json tutorial_gift.archetypes ne propose plus qu'un rat ; le choix des 4 roles se fait dans q_havreden_expedition."
         },
         {
           "template": "talk_to_npc",
@@ -5548,7 +6134,27 @@
       "rewards": {
         "xp": 250
       },
-      "chain_next": "q_tut_intro_05c"
+      "chain_next": "q_tut_grimoire",
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_tut_intro_05_imprints",
+            "type": "modal",
+            "priority": 92,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Les empreintes de Souffle",
+              "title_en": "Breath Imprints",
+              "content_fr": "Certaines créatures vaincues peuvent laisser une empreinte de Souffle. Apporte ces empreintes à Colette pour les faire incuber et obtenir de nouveaux familiers. Pour ton premier rat, l'incubation est instantanée. Les suivantes prendront un peu de temps.",
+              "content_en": "Some defeated creatures can leave a Breath imprint. Bring these imprints to Colette to incubate them and get new companions. For your first rat, incubation is instant. The next ones will take a little while."
+            },
+            "after_dialogue_with": "npc_tutorial_familiar_colette",
+            "_note": "2026-11-03 : modale M2 de la decision finale A (seules M1 a M7 restent). FR = textes de kanarion_onboarding_0_20_31_final_pour_agent.md (Charleston, 03/11) ; EN a relire (traduction de l'agent). Apres le premier dialogue avec Colette."
+          }
+        ]
+      },
+      "_note_0_20_31": "2026-11-03 (spec finale) : apres le rat seul, Colette incube l'empreinte INSTANTANEMENT (tutoriel seulement) : le rat d'Aldric (familiar_balance.json tutorial_gift, niveau 5 pour CE familier, empreinte consommee par le service familier, aucun deuxieme rat). Enchaine sur le grimoire (q_tut_grimoire), sans combat intermediaire.",
+      "_note_sauver": "2026-11-03 (Charleston) : « sauver » le rat, jamais « recuperer »."
     },
     {
       "id": "q_tut_intro_05c",
@@ -5631,7 +6237,8 @@
         "xp": 84
       },
       "chain_next": "q_tut_intro_05b",
-      "_note": "Onboarding V2 lot 2 (2026-09-23), nouvelle etape entre le choix du familier (q_tut_intro_05) et le grimoire (q_tut_intro_05b). Emplacements : config/familiar_balance.json slot_progression (2/3/4/5 a 1/20/50/100). Signature : slot 1, stockee dans rolled_skills, remplacable mais aucun des pet_books n'enseigne de signature."
+      "_note": "Onboarding V2 lot 2 (2026-09-23), nouvelle etape entre le choix du familier (q_tut_intro_05) et le grimoire (q_tut_intro_05b). Emplacements : config/familiar_balance.json slot_progression (2/3/4/5 a 1/20/50/100). Signature : slot 1, stockee dans rolled_skills, remplacable mais aucun des pet_books n'enseigne de signature.",
+      "_note_0_20_31": "2026-11-03 (spec finale) : HORS de la chaine des nouveaux personnages (deux combats seulement chez Aldric, une seule empreinte). Gardee pour les personnages qui l'ont en cours."
     },
     {
       "id": "q_tut_intro_05b",
@@ -5673,7 +6280,8 @@
                 "payload": {
                   "label_fr": "Ouvre ton inventaire",
                   "label_en": "Open your inventory"
-                }
+                },
+                "item_id": "book_starter_heal"
               }
             ]
           },
@@ -5738,13 +6346,143 @@
             "show_once": true,
             "payload": {
               "title_fr": "Apprendre une compétence",
-              "title_en": "Teaching a skill",
-              "content_fr": "Double-clique sur le grimoire dans ton inventaire, puis sélectionne le familier qui doit apprendre la compétence.\n\nLes grimoires tombent sur les bêtes que tu libères dehors, et Colette vend ceux de rang D sur la place. Un grimoire agit à pleine puissance sur un familier du même rôle que sa compétence, et un peu moins sur les autres. Les grimoires universels, comme celui que le rat t'a laissé, agissent pareil sur tous.\n\nLe rang d'un grimoire, de D à S, est sa rareté, et il fixe la puissance de la compétence apprise.\n\nSi tous ses emplacements sont pris, tu choisis la compétence qu'il oublie.",
-              "content_en": "Double-click the tome in your inventory, then pick the companion that should learn the skill.\n\nTomes drop from the beasts you free out there, and Colette sells the rank D ones on the square. A tome works at full power on a companion of the same role as its skill, and somewhat less on the others. Universal tomes, like the one the rat left you, work the same on all of them.\n\nA tome's rank, from D to S, is its rarity, and it sets the power of the skill learned.\n\nIf all its slots are taken, you choose the skill it forgets."
-            }
+              "title_en": "Learning a Skill",
+              "content_fr": "Les grimoires permettent d'apprendre de nouvelles compétences à tes familiers. Double-clique sur un grimoire dans ton inventaire, puis choisis ton familier. Si tous ses emplacements sont occupés, tu devras remplacer une compétence. Attention, sa compétence signature ne peut pas être réapprise !",
+              "content_en": "Tomes teach new skills to your companions. Double-click a tome in your inventory, then choose your companion. If all its slots are taken, you'll have to replace a skill. Careful: its signature skill can never be learned again!"
+            },
+            "after_dialogue_with": "npc_tutorial_familiar_colette",
+            "_after_dialogue_with_note": "2026-11-03 (Charleston) : la modale arrivait a l'acceptation (chainee depuis q_tut_intro_05c chez Aldric), donc AVANT que Colette donne le grimoire. Le client la differe jusqu'a la fin du prochain dialogue avec Colette (quest_hint_handler.gd), ou l'affiche tout de suite si la quete a deja avance.",
+            "_note_0_20_31": "2026-11-03 : texte M3 de la spec finale (ligne 158), EN a relire. Meme texte que q_tut_grimoire_howto (chaine des nouveaux personnages)."
           }
         ]
-      }
+      },
+      "_note_0_20_31": "2026-11-03 (spec finale) : HORS de la chaine des nouveaux personnages (deux combats seulement chez Aldric, une seule empreinte). Gardee pour les personnages qui l'ont en cours."
+    },
+    {
+      "id": "q_tut_grimoire",
+      "type": "main",
+      "zone": "tutorial_tavern",
+      "min_level": 1,
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "Le grimoire",
+      "title_en": "The Tome",
+      "summary_fr": "Aldric t'a donné un grimoire. Apprends sa compétence à ton familier.",
+      "summary_en": "Aldric gave you a tome. Teach its skill to your companion.",
+      "dialogue_give_fr": "[À ÉCRIRE PAR CHARLESTON] Tiens, prends ça. Un grimoire. Ton familier est jeune, il a encore beaucoup à apprendre.",
+      "dialogue_give_en": "[À ÉCRIRE PAR CHARLESTON] Here, take this. A tome. Your companion is young, it still has plenty to learn.",
+      "dialogue_progress_fr": "[À ÉCRIRE PAR CHARLESTON] Ouvre ton inventaire et utilise le grimoire sur ton familier.",
+      "dialogue_progress_en": "[À ÉCRIRE PAR CHARLESTON] Open your inventory and use the tome on your companion.",
+      "dialogue_complete_fr": "[À ÉCRIRE PAR CHARLESTON] Voilà. Il en a appris un peu plus. On passe à la suite.",
+      "dialogue_complete_en": "[À ÉCRIRE PAR CHARLESTON] There. It's learned a bit more. Let's move on.",
+      "_dialogues_a_ecrire": "2026-11-03 : PROVISOIRES (reprennent l'ancienne replique de Colette du grimoire, sans le combat d'essai).",
+      "npc_giver": "npc_tutorial_instructor_aldric",
+      "objective_mode": "sequential",
+      "rewards_on_accept": {
+        "items": [
+          {
+            "id": "book_starter_heal",
+            "qty": 1
+          }
+        ]
+      },
+      "quest_hints": {
+        "on_accept": [
+          {
+            "id": "q_tut_grimoire_howto",
+            "type": "modal",
+            "priority": 85,
+            "show_once": true,
+            "payload": {
+              "title_fr": "Apprendre une compétence",
+              "title_en": "Learning a Skill",
+              "content_fr": "Les grimoires permettent d'apprendre de nouvelles compétences à tes familiers. Double-clique sur un grimoire dans ton inventaire, puis choisis ton familier. Si tous ses emplacements sont occupés, tu devras remplacer une compétence. Attention, sa compétence signature ne peut pas être réapprise !",
+              "content_en": "Tomes teach new skills to your companions. Double-click a tome in your inventory, then choose your companion. If all its slots are taken, you'll have to replace a skill. Careful: its signature skill can never be learned again!"
+            },
+            "after_dialogue_with": "npc_tutorial_instructor_aldric",
+            "_note": "2026-11-03 : modale M3 de la decision finale A (seules M1 a M7 restent). FR = textes de kanarion_onboarding_0_20_31_final_pour_agent.md (Charleston, 03/11) ; EN a relire (traduction de l'agent). Apres la remise du grimoire (fin du dialogue avec Aldric)."
+          }
+        ]
+      },
+      "objectives": [
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_tutorial_instructor_aldric",
+          "count": 1,
+          "description_fr": "Parler à Aldric",
+          "description_en": "Talk to Aldric",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_grimoire_obj0_arrow",
+                "type": "arrow",
+                "target": "npc_tutorial_instructor_aldric",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Va voir Aldric",
+                  "label_en": "Go see Aldric"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "template": "familiar_learn_skill",
+          "count": 1,
+          "description_fr": "Apprendre la compétence du grimoire à ton familier",
+          "description_en": "Teach your companion the skill from the tome",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_grimoire_arrow_inv",
+                "type": "arrow",
+                "target": "ui_inventory_button",
+                "priority": 88,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Ouvre ton inventaire",
+                  "label_en": "Open your inventory"
+                },
+                "item_id": "book_starter_heal"
+              }
+            ]
+          }
+        },
+        {
+          "template": "talk_to_npc",
+          "npc_id": "npc_tutorial_instructor_aldric",
+          "count": 1,
+          "description_fr": "Reparler à Aldric",
+          "description_en": "Talk to Aldric again",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_grimoire_obj2_arrow",
+                "type": "arrow",
+                "target": "npc_tutorial_instructor_aldric",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Reviens voir Aldric",
+                  "label_en": "Return to Aldric"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "rewards": {
+        "xp": 200
+      },
+      "_rewards_a_valider": "2026-11-03 : 200 XP, comme l'ancienne q_tut_intro_05b.",
+      "chain_next": "q_tut_intro_06",
+      "_note": "2026-11-03 (spec finale). Remplace q_tut_intro_05c (combat a deux) et q_tut_intro_05b (grimoire + combat d'essai) dans la chaine des NOUVEAUX personnages : grimoire sans combat. Les deux anciennes quetes restent chargees pour les joueurs qui les ont en cours (leurs lignes d'objectifs ne bougent pas). 2026-11-03 (Charleston) : c'est ALDRIC qui remet le grimoire et la rend ; Colette ne fait que l'incubation. Etapes : parler a Aldric (il remet le grimoire, M3 apres sa replique), l'apprendre au familier, revenir le voir.",
+      "completed_by": [
+        "q_tut_intro_05b"
+      ],
+      "_completed_by_note": "2026-11-03 : un personnage de l'ancienne chaine (combats intermediaires, depot de l'empreinte) la compte comme faite, sans recompense (succes « Le terrier nettoye »)."
     },
     {
       "id": "q_tut_intro_06",
@@ -5808,19 +6546,6 @@
           "hints": {
             "on_active": [
               {
-                "id": "q_tut_intro_06_potion_modal",
-                "type": "modal",
-                "priority": 95,
-                "show_once": true,
-                "payload": {
-                  "title_fr": "Les potions",
-                  "title_en": "Potions",
-                  "content_fr": "Place une potion dans ta barre rapide pour te soigner entre les combats. Les potions de familier soignent ton compagnon actif.",
-                  "content_en": "Put a potion on your quickbar to heal between fights. Companion potions heal your active companion."
-                },
-                "_note": "Deplacee de quest_hints.on_accept vers cet objectif : sur on_accept elle se declenchait AVANT qu'Aldric ne remette les potions (objectif 0 = lui parler). La fleche vers ui_quickbar_slot_first_empty est RETABLIE (client 92992ea6 : le repartiteur sert un indice par TYPE, plus un seul par objectif ; la modale explique, la fleche montre ou, elles ne se masquent plus)."
-              },
-              {
                 "id": "q_tut_intro_06_obj1_arrow",
                 "type": "arrow",
                 "target": "ui_quickbar_slot_first_empty",
@@ -5860,7 +6585,8 @@
       "rewards": {
         "xp": 200
       },
-      "chain_next": "q_tut_intro_07"
+      "chain_next": "q_tut_intro_07",
+      "_modal_note": "2026-11-03 (decision finale A) : plus de modale pour les potions simples (q_tut_intro_06_potion_modal retiree)."
     },
     {
       "id": "q_tut_intro_07",
@@ -5960,14 +6686,15 @@
           {
             "id": "q_tut_intro_07_howto",
             "type": "modal",
-            "priority": 89,
+            "priority": 90,
             "show_once": true,
             "payload": {
-              "title_fr": "Un vrai combat",
-              "title_en": "A real fight",
-              "content_fr": "Cette fois, le combat rapporte de l’XP et du butin. Protège tes alliés fragiles et garde un œil sur ton familier.",
-              "content_en": "This fight earns XP and loot. Protect vulnerable allies and keep an eye on your companion."
-            }
+              "title_fr": "Combattre à deux",
+              "title_en": "Fighting Together",
+              "content_fr": "Ton familier combat automatiquement à tes côtés. Pendant le combat, ses compétences apparaissent au-dessus de ta barre de compétences. Tu n'as pas besoin de les lancer. Hors combat, clique sur ton familier pour consulter le détail de ses compétences. Surveille ses PV et pense à le soigner entre les combats.",
+              "content_en": "Your companion fights automatically at your side. During combat, its skills appear above your skill bar. You don't need to use them yourself. Outside combat, click your companion to see the details of its skills. Keep an eye on its HP and heal it between fights."
+            },
+            "_note": "2026-11-03 : modale M4 de la decision finale A (seules M1 a M7 restent). FR = textes de kanarion_onboarding_0_20_31_final_pour_agent.md (Charleston, 03/11) ; EN a relire (traduction de l'agent). Avant le test final."
           }
         ]
       },
@@ -5981,7 +6708,7 @@
           }
         ]
       },
-      "chain_next": "q_tut_intro_08",
+      "chain_next": "q_tut_retour",
       "_note": "2026-09-29 : meute_sortie = cinq mob_rat niveau 5 (330 XP, inchange) au lieu de 2 loups + 1 sanglier. Onboarding V2 lot 2 (2026-09-23). XP de quete 800 -> 400 : le combat rapporte desormais sa propre XP (3 x 110 = 330 a niveau de joueur <= 10, loot_roller base_xp_for_level(5) = round(315 / 2.875) = 110, tier standard x1.0). Le sparring_trinity reste dans tutorial_encounters.json mais n'est plus reference par une quete. 2026-10-21 (Charleston) : meute_sortie = 2 Rats Alpha a 150 PV + 1 rat a 20 PV (config/tutorial_encounters.json, champ hp)."
     },
     {
@@ -6079,7 +6806,61 @@
       "rewards": {
         "xp": 250
       },
-      "_note": "Onboarding V2 lot 2 (2026-09-23) : + depot d'empreinte chez Colette du village (boucle capture), modale de sortie vers q_varn_egouts. Toujours PAS de chain_next : la chaine d'Aldric et le tour de Tobin sont independants depuis q_havreden_arrivee."
+      "_note": "Onboarding V2 lot 2 (2026-09-23) : + depot d'empreinte chez Colette du village (boucle capture), modale de sortie vers q_varn_egouts. Toujours PAS de chain_next : la chaine d'Aldric et le tour de Tobin sont independants depuis q_havreden_arrivee.",
+      "_note_0_20_31": "2026-11-03 (spec finale) : HORS de la chaine des nouveaux personnages (deux combats seulement chez Aldric, une seule empreinte). Gardee pour les personnages qui l'ont en cours."
+    },
+    {
+      "id": "q_tut_retour",
+      "type": "main",
+      "zone": "tutorial_tavern",
+      "min_level": 1,
+      "flags": [
+        "tutorial"
+      ],
+      "title_fr": "Retour au village",
+      "title_en": "Back to the Village",
+      "summary_fr": "Ta formation chez Aldric est terminée. Repasse la porte de la taverne.",
+      "summary_en": "Your training with Aldric is over. Head back out through the tavern door.",
+      "dialogue_give_fr": "[À ÉCRIRE PAR CHARLESTON] C'est bon, tu sais te battre avec ton familier. Retourne sur la place, Tobin t'attend.",
+      "dialogue_give_en": "[À ÉCRIRE PAR CHARLESTON] Good, you know how to fight with your companion. Head back to the square, Tobin is waiting.",
+      "dialogue_progress_fr": "[À ÉCRIRE PAR CHARLESTON] La porte est juste là.",
+      "dialogue_progress_en": "[À ÉCRIRE PAR CHARLESTON] The door is right there.",
+      "dialogue_complete_fr": "[À ÉCRIRE PAR CHARLESTON] Bonne route.",
+      "dialogue_complete_en": "[À ÉCRIRE PAR CHARLESTON] Safe travels.",
+      "objective_mode": "sequential",
+      "objectives": [
+        {
+          "template": "enter_zone",
+          "zone_id": "village",
+          "count": 1,
+          "description_fr": "Retourner sur la place du village",
+          "description_en": "Return to the village square",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_retour_obj0_portal",
+                "type": "arrow",
+                "target": "warp_to_havreden_map",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Passe la porte",
+                  "label_en": "Go through the door"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "rewards": {
+        "xp": 250
+      },
+      "_rewards_a_valider": "2026-11-03 : 250 XP, comme l'ancienne q_tut_intro_08.",
+      "_note": "2026-11-03 (spec finale) : fin de la chaine d'Aldric sans l'etape « confier l'empreinte a Colette » de q_tut_intro_08 (l'empreinte est deja incubee chez Colette du tutoriel, pas de deuxieme rat). Rendu automatique.",
+      "completed_by": [
+        "q_tut_intro_08"
+      ],
+      "_completed_by_note": "2026-11-03 : un personnage de l'ancienne chaine (combats intermediaires, depot de l'empreinte) la compte comme faite, sans recompense (succes « Le terrier nettoye »)."
     },
     {
       "id": "q_milo_premier_cristal",

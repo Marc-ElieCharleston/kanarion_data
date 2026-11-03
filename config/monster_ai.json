@@ -107,6 +107,14 @@
     "exclude_monsters": [],
     "_selection_note": "Brutes et berserkers hors fodder (56 monstres actifs au 23/10). Les brutes fodder (rats, larves) gardent 2. Aucun de ces monstres n'a de competence de deplacement ; Deferlante du Rat Rongeur (boss, sort a distance sans tag melee) garde sa portee 7."
   },
+  "melee_movement": {
+    "_decision": "Charleston 2026-11-03 : le deplacement d'une case des monstres de MELEE recharge plus vite que celui du joueur, pour qu'ils puissent le rattraper. Lanceurs de sorts et archers gardent la recharge commune (server-combat/config/combat.json combat.movement_cooldown, 10 s depuis 0a7885ec0 ; Charleston pensait 8 s).",
+    "_a_valider": "9 s (decision Charleston du 03/11, le joueur est a 10 s ; avant : 7 s), a valider en jeu.",
+    "_comment": "Lu par server-combat (ai/monster_ai.cpp, CLE OBLIGATOIRE : absente = le combat refuse de demarrer). Un monstre est de melee si ses tags (entities/monsters.json) contiennent un de melee_tags et aucun de exclude_tags. Applique au spawn (MovementCooldownOverrideComponent) ; Room::execute_move l'utilise a la place de la recharge commune. cooldown_seconds 0 = regle coupee.",
+    "cooldown_seconds": 9.0,
+    "melee_tags": ["melee"],
+    "exclude_tags": ["caster", "ranged"]
+  },
   "ai_roles": {
     "brute": {
       "name_fr": "Brute",

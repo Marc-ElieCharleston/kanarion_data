@@ -4,20 +4,23 @@
     "last_updated": "2026-08-03",
     "description": "Conseils de palier — le tutoriel qui continue hors tutoriel. Modale unique (HintModal) affichee aux gros moments de progression : deblocage de sous-classe, specialisation, keystones. Chaque conseil est one-shot par device, avec une case 'Ne plus afficher' persistee par hint id (HintDismissalStore). Le contenu est bilingue inline, comme quests.json et tutorial_overlays.json — pas de cle de traduction : le texte de contenu vit dans la data.",
     "id_vs_level_note": "Les ids `hint_lv10_pathmaster` et `hint_lv40_specialization` nomment les paliers d'ORIGINE (10 et 40). Ces paliers ont ete corriges a 20 et 60 le 2026-09-07 pour coller a config/skill_system.json, qui est la source de verite (subclass.unlock_at_player_level=20, tier3=60). Les ids ne suivent PAS, et c'est volontaire : ce sont des cles de persistance, un id neuf reafficherait la modale a tous les joueurs. Lire le champ `trigger.level`, jamais le nom de l'id.",
-  "indexed_by": "id (identifiant stable, sert de cle de persistance — NE JAMAIS renommer un id deja livre, cela reafficherait le conseil a tous les joueurs)",
+    "indexed_by": "id (identifiant stable, sert de cle de persistance — NE JAMAIS renommer un id deja livre, cela reafficherait le conseil a tous les joueurs)",
     "consumers": [
       "frontend: scripts/systems/milestone_hint_manager.gd"
     ],
     "trigger_types": {
       "player_level": "Declenche quand le niveau joueur atteint ou depasse `level`. Les paliers deja franchis a la premiere evaluation sont marques vus en silence (pas d'empilement de modales a la connexion).",
-      "player_defeat": "Declenche quand le joueur perd un combat PvE (ecran de defaite, combat_manager.handle_defeat). Une fois vu, ne revient plus, sauf `repeat_until_opted_out: true` : revient a chaque defaite tant que la case Ne plus afficher n'est pas cochee."
+      "player_defeat": "Declenche quand le joueur perd un combat PvE (ecran de defaite, combat_manager.handle_defeat). Une fois vu, ne revient plus, sauf `repeat_until_opted_out: true` : revient a chaque defaite tant que la case Ne plus afficher n'est pas cochee.",
+      "arena_lesson_level_up": "Montee de niveau de la lecon d'arene. 2026-11-03 (spec finale, decision A : seules M1 a M7) : plus aucune modale n'y est attachee ; le client notifie toujours l'evenement, sans effet."
     }
   },
-
   "hints": [
     {
       "id": "hint_lv10_pathmaster",
-      "trigger": { "type": "player_level", "level": 20 },
+      "trigger": {
+        "type": "player_level",
+        "level": 20
+      },
       "priority": 80,
       "cta_target_npc": "npc_class_master_elwin",
       "title_fr": "Une voie s'ouvre à toi",
@@ -29,7 +32,10 @@
     },
     {
       "id": "hint_lv40_specialization",
-      "trigger": { "type": "player_level", "level": 60 },
+      "trigger": {
+        "type": "player_level",
+        "level": 60
+      },
       "priority": 80,
       "cta_target_npc": "npc_class_master_elwin",
       "title_fr": "L'heure de te spécialiser",
@@ -54,10 +60,13 @@
       "_rules_note": "Lot 2, manque 1. Regles relevees dans le code : aucun gain pour le camp vaincu ; economy post_combat_persist (defaite => trigger_post_defeat_respawn : HP/Souffle au max + presence.respawn vers la zone de reapparition) ; victoire a 0 HP => revive-in-place a 1 HP ; familier/mercenaire : ratio de HP persiste, plancher 1."
     }
   ],
-
   "_summary": {
     "total": 3,
-    "by_trigger": { "player_level": 2, "player_defeat": 1 },
+    "by_trigger": {
+      "player_level": 2,
+      "player_defeat": 1,
+      "arena_lesson_level_up": 1
+    },
     "note": "Le conseil keystone sera ajoute ici quand le systeme sera livre : meme forme, trigger a definir (deblocage keystone), cta_target_npc vers le PNJ de la quete."
   }
 }

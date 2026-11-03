@@ -37,8 +37,8 @@ CE QU'IL NE TOUCHE JAMAIS
   (table REPRISE). Une aire SANS monstre recoit son roster de la table ROSTERS
   si elle y figure, sinon elle est ecrite avec `mobs: []` et `count: 0`.
   Exception : max_stars est ecrit a MAX_STARS (5) sur toutes les aires
-  (decision du 2026-10-23), sauf celles de MAX_STARS_IMPOSE (Abords : 1,
-  2026-11-01).
+  (decision du 2026-10-23), sauf celles de MAX_STARS_IMPOSE (vide depuis le 2026-11-03 ;
+  Abords plafonnes a 1 du 2026-11-01 au 2026-11-03).
 
 SOL PAS ENCORE PEINT
   Le calque `Ground` est decode a chaque execution : une aire dont plus de
@@ -162,7 +162,9 @@ MAX_STARS = 5
 # (q_onb_premiere_chasse) pour un personnage de niveau 3 ; ils sortaient jusqu'a 5
 # etoiles. Plafond lu par presence (spawn_areas[].max_stars, borne le tirage
 # roll_star_level). Sans cette table, un nouvel export remettait 5.
-MAX_STARS_IMPOSE = {"mz_abords_d_havreden_1_8": 1}
+# 2026-11-03 (Charleston) : plafond des Abords retire, retour a 1-5 etoiles ; table
+# gardee vide pour une prochaine exception.
+MAX_STARS_IMPOSE = {}
 
 # Rosters des aires du niveau 20 au niveau 100 restees sans monstre (carte complete,
 # Charleston 2026-10-23 : « on a toute la data jusqu'au niveau 100, place les
