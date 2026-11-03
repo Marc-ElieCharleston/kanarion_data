@@ -59,8 +59,8 @@
     "colette_village": [
       "familiar_loup_attaque",
       "familiar_sanglier_tank",
-      "familiar_rat_heal",
-      "familiar_scarabee_utilitaire"
+      "familiar_scarabee_heal",
+      "familiar_rat_utilitaire"
     ]
   },
   "_gift_offers_note": "Onboarding V2 lot 3 (2026-09-24). Familiers OFFERTS, un par offre et par personnage. Cle = offer_id envoye dans la requete de choix de familier (0x0F03, champ offer_id). Le serveur refuse un archetype absent de la liste et enregistre le don dans familiar_gifts (UNIQUE character_id, offer_id) : un rejeu renvoie le familier deja donne. colette_village = objectif claim_familiar_gift de q_havreden_tour_02. Le familier offert va dans le premier emplacement porte libre (sinon au stock) et n'est PAS rendu actif. Le rat de la chaine d'Aldric n'est pas une offre de ce bloc : offer_id vide, voir tutorial_gift.",
@@ -68,7 +68,9 @@
     "offer_id": "aldric_rat",
     "archetypes": [
       "familiar_rat_attaque"
-    ]
+    ],
+    "initial_level": 5,
+    "consumes_item": "empreinte_souffle_rat_tutoriel"
   },
   "_tutorial_gift_note": "Audit L3 (2026-10-14). Le familier de depart donne par Aldric (requete de choix 0x0F03 SANS offer_id). OBLIGATOIRE : le service familier refuse de demarrer si ce bloc manque, s'il est vide, ou s'il nomme un archetype absent de entities/familiars.json. archetypes = les seuls choix acceptes (avant, le serveur acceptait en dur tout id prefixe familiar_rat_, y compris rat_alpha ou rat_sorcier). offer_id = l'id enregistre dans familiar_gifts (UNIQUE character_id, offer_id) : NE JAMAIS LE RENOMMER, les lignes existantes rendent les rejeux idempotents, et le service quete y lit l'objectif choose_familiar. Il ne doit pas etre une cle de gift_offers (un client ne peut pas l'envoyer). Le familier de depart est rendu actif si le personnage n'en a aucun. 2026-10-23 (idee Charleston, lot UX) : le choix du tutoriel chez Colette (q_tut_intro_05) n'est plus une liste a part (les quatre rats) mais le rayon empreintes de la boutique de Colette (entities/npcs.json npc_familiar_breeder_colette shop_inventory.empreintes) : chaque empreinte donne l'archetype qu'elle ferait eclore, familiar_<family>_<role> (meme regle que la reconstitution). Le joueur en choisit une gratuitement, recoit directement le familier (commun, actif) et peut acheter les trois autres a Colette. from_shop et archetypes sont exclusifs (une seule source). Changer le rayon change le choix du tutoriel, sans recompiler. NOM TROMPEUR, VOULU : depuis le 2026-10-23 l'offre aldric_rat ne donne plus forcement un rat (loup attaque, sanglier tank, scarabee soin ou rat utilitaire, selon le rayon). L'id est un vestige de l'ancien choix entre quatre rats, garde tel quel parce que la prod a des lignes familiar_gifts aldric_rat des deux epoques (rats avant le 23/10, loup/sanglier/scarabee apres) et que le service quete le lit en dur (onboarding_rules.hpp kTutorialRatOfferId, quest_queries.cpp). Ne pas le renommer, ne pas le prendre pour un bug. 2026-11-03 (Charleston, point A) : retour au RAT dans le tutoriel d'Aldric (q_tut_intro_05), archetypes explicites, plus from_shop. Le choix entre quatre roles part dans les Preparatifs (gift_offers). La regression du 23/10 (d276948) faisait combattre un loup, un sanglier ou un scarabee dans duo_rats a la place du rat. Rat retenu (familiar_rat_attaque, comme l'empreinte du rat du tutoriel) : A VALIDER.",
   "_max_collection_note": "Server-authoritative collection cap (2026-07-23). Enforced at incubation claim (COLLECTION_FULL) and exposed in FamiliarListResponse.max_collection. Client displays this instead of its former hardcoded 50.",
@@ -552,5 +554,7 @@
       "revenant_vide": "vide"
     },
     "_decisions_2026_10_13": "Cas douteux tranches : cochon Troupeau, vache Troupeau (les taureaux restent Charge), blaireau Fauve, hybride sanglier-loup Charge, loup-garou et loup noir Meute, cerf obscur Ombre, faucheur d'ames Mort, revenant du vide Vide, devoreur d'ames Demon, rat sorcier Rongeur. Aile echange avec l'ENNEMI cible a 1 case. Nouvelle affinite Dechu (anges dechus, espece archonte_dechu) : Aveuglement. Poison en PvP : appliquer aussi le plafond par charge = max(ATK, MAG) x 0,5 de la source quand la cible est un joueur et la source un joueur ou un familier (aujourd'hui le plafond ne vaut que sur les cibles monstres, vac_poison-cap 1c45a99f)."
-  }
+  },
+  "_tutorial_gift_0_20_31_note": "2026-11-03 (spec finale) : l'empreinte garantie du rat seul est incubee INSTANTANEMENT chez Colette du tutoriel (et seulement celle-la) : le service familier donne le rat au niveau initial_level (5, CE familier seulement) et consomme l'objet consumes_item de l'inventaire (best-effort, cle d'idempotence). Pas de deuxieme rat.",
+  "_gift_offers_0_20_31_note": "2026-11-03 (spec finale) : choix du village dans les Preparatifs I : loup attaque, sanglier tank, scarabee soin, rat utilitaire."
 }
