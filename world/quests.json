@@ -81,6 +81,8 @@
       "description": "Be a rewarded contributor of a world event that succeeded. event: 'fissure_invasion' (a Fissure closed in time: since 2026-10-17 the rift interior, world/rift_events.json, which replaced the invasions) or 'rift_interior' (same ledger). A player in purification is not credited. One credit per event."
     }
   },
+  "main_story": ["q_onb_arene", "q_onb_forces", "q_onb_premiere_chasse", "q_main_rey_rencontre", "q_rey_lisiere", "q_rey_traces", "q_main_ezra_retrouvailles", "q_main_ezra_egouts", "q_main_ezra_blessure", "q_rey_nouvelles", "q_tobin_au_dela", "q_act2_wolves_silence", "q_act2_wolves_tracks", "q_act2_wolves_den", "q_main_ezra_nouvelles", "q_act2_withered_woods", "q_act2_green_trees"],
+  "_main_story_note": "2026-11-03 (Charleston, fil principal toujours visible) : etapes de l'histoire DANS L'ORDRE. Lu par services/quest (quest.state, QuestStateResponse champs 13-15) : quand aucune etape n'est active, le serveur envoie la suivante (id, niveau requis, PNJ) et le client l'affiche grisee, « <titre> : atteins le niveau X » ou « <titre> : va voir <PNJ> ». Une etape interdite (forbids_quests) est sautee. La liste s'arrete a q_act2_green_trees (niveau 21) : aucune quete principale active au-dela dans la data (la Tour et l'Acte III sont parques), le suivi est vide apres. Un id inconnu = erreur de chargement.",
   "quests": [
     {
       "id": "q_main_zone01",
@@ -3578,8 +3580,8 @@
       "dialogue_give_en": "Not bad! But in the arena, I can stop the fight. Out there, it's a different story.\nGo deal with three rats to the south. Let's see how you manage.",
       "dialogue_progress_fr": "Alors, ces rats ? Ils sont juste au sud de l'arène.\nPrends ton temps. Mieux vaut revenir entier.",
       "dialogue_progress_en": "How are those rats coming along? They're just south of the arena.\nTake your time. Better to come back in one piece.",
-      "dialogue_complete_fr": "[À ÉCRIRE PAR CHARLESTON] Bien joué, tu t'en es sorti ! Repasse à l'arène, Dargo veut te voir.",
-      "dialogue_complete_en": "[À ÉCRIRE PAR CHARLESTON] Well done, you made it! Head back to the arena, Dargo wants to see you.",
+      "dialogue_complete_fr": "[À ÉCRIRE PAR CHARLESTON] Tu t'en es bien sorti, je te crois prêt. Va voir Tobin sur la place, et passe saluer le capitaine Rey : il cherche des volontaires.",
+      "dialogue_complete_en": "[À ÉCRIRE PAR CHARLESTON] You handled yourself well, I think you're ready. Go see Tobin in the square, and say hello to Captain Rey: he's looking for volunteers.",
       "_dialogues_a_valider": "2026-11-03 : give et progress valides par Charleston le 2026-11-02 ; give est maintenant la modale de fin de q_onb_forces (q_onb_forces_next_modal). complete = PROVISOIRE (le joueur retourne chez Dargo, q_onb_retour_dargo).",
       "forbids_quests": [
         "q_havreden_arrivee",
@@ -3636,7 +3638,6 @@
         "gold": 15
       },
       "_rewards_a_valider": "2026-11-01 : 3/5 de q_contract_tutorial_first_hunt (5 rats, 126 XP, 30 or), arrondi. Le perso reste niveau 3 a la fin (250 + 75 + XP des combats < 468), q_onb_forces le passe niveau 4 comme avant.",
-      "chain_next": "q_onb_retour_dargo",
       "quest_hints": {
         "on_complete": [
           {
@@ -3647,60 +3648,64 @@
             "payload": {
               "title_fr": "La suite",
               "title_en": "What Comes Next",
-              "content_fr": "[À ÉCRIRE PAR CHARLESTON] Bien joué, tu t'en es sorti ! Repasse à l'arène, Dargo veut te voir.",
-              "content_en": "[À ÉCRIRE PAR CHARLESTON] Well done, you made it! Head back to the arena, Dargo wants to see you."
+              "content_fr": "[À ÉCRIRE PAR CHARLESTON] Tu t'en es bien sorti, je te crois prêt. Va voir Tobin sur la place, et passe saluer le capitaine Rey : il cherche des volontaires.",
+              "content_en": "[À ÉCRIRE PAR CHARLESTON] You handled yourself well, I think you're ready. Go see Tobin in the square, and say hello to Captain Rey: he's looking for volunteers."
             },
-            "_note": "2026-11-03 : texte = dialogue_complete, PROVISOIRE. Avant : « Ah, tu t'en es sorti ! Va voir Tobin sur la place... », maintenant dit par Dargo (q_onb_retour_dargo)."
+            "_note": "2026-11-03 : Dargo envoie vers Tobin (point 3) et Rey (fil principal). Texte = dialogue_complete, PROVISOIRE."
           }
         ]
       },
-      "_note": "2026-11-01 (Charleston, 0.20.30). Premier combat dehors juste apres la lecon d'arene : q_onb_arene -> q_onb_premiere_chasse -> q_onb_forces. Drapeau tutorial sans npc_giver = rendu automatique (client turn_in_place 'auto'), comme q_onb_arene et q_onb_forces. Personne ne la donne : chain-only, reparee par le serveur si l'acceptation chainee se perd. Ne change ni q_havreden_arrivee ni l'ordre des objectifs de q_havreden_preparatifs. 2026-11-03 : nouvel ordre q_onb_forces -> q_onb_premiere_chasse -> q_onb_retour_dargo ; les Abords d'Havreden reviennent a 1-5 etoiles (zones.json, decision Charleston), l'aide sur les etoiles guide vers 1 etoile. 2026-11-03 : nouvel ordre q_onb_forces -> q_onb_premiere_chasse -> q_onb_retour_dargo ; les Abords d'Havreden reviennent a 1-5 etoiles (zones.json, decision Charleston), l'aide sur les etoiles guide vers 1 etoile."
+      "_note": "2026-11-01 (Charleston, 0.20.30). Premier combat dehors juste apres la lecon d'arene : q_onb_arene -> q_onb_premiere_chasse -> q_onb_forces. Drapeau tutorial sans npc_giver = rendu automatique (client turn_in_place 'auto'), comme q_onb_arene et q_onb_forces. Personne ne la donne : chain-only, reparee par le serveur si l'acceptation chainee se perd. Ne change ni q_havreden_arrivee ni l'ordre des objectifs de q_havreden_preparatifs. 2026-11-03 : nouvel ordre q_onb_forces -> q_onb_premiere_chasse -> q_onb_retour_dargo ; les Abords d'Havreden reviennent a 1-5 etoiles (zones.json, decision Charleston), l'aide sur les etoiles guide vers 1 etoile. 2026-11-03 : nouvel ordre q_onb_forces -> q_onb_premiere_chasse -> q_onb_retour_dargo ; les Abords d'Havreden reviennent a 1-5 etoiles (zones.json, decision Charleston), l'aide sur les etoiles guide vers 1 etoile.",
+      "accepts_on_turn_in": [
+        "q_havreden_arrivee",
+        "q_main_rey_rencontre"
+      ],
+      "_accepts_on_turn_in_note": "2026-11-03 (Charleston, fil principal toujours visible) : a la fin du tutoriel obligatoire (stats et competences, puis ces trois rats), le SERVEUR donne deux quetes sans clic sur un PNJ : « Parler a Tobin » (q_havreden_arrivee, qui ouvre les Preparatifs et Aldric, chemin conseille) et « Parler au capitaine Rey » (q_main_rey_rencontre, fil principal). Un joueur qui saute le tour d'Havreden et Aldric les a quand meme. Remplace la quete-etape q_onb_retour_dargo (jamais livree) : Dargo envoie vers Tobin par la modale de fin."
     },
     {
-      "id": "q_onb_retour_dargo",
+      "id": "q_main_rey_rencontre",
       "type": "main",
       "zone": "village",
       "min_level": 1,
       "flags": [
         "tutorial"
       ],
-      "title_fr": "[À ÉCRIRE PAR CHARLESTON] Le verdict de Dargo",
-      "title_en": "[À ÉCRIRE PAR CHARLESTON] Dargo's Verdict",
-      "summary_fr": "[À ÉCRIRE PAR CHARLESTON] Tu as survécu à tes premiers rats. Dargo veut te voir à l'arène.",
-      "summary_en": "[À ÉCRIRE PAR CHARLESTON] You survived your first rats. Dargo wants to see you at the arena.",
-      "dialogue_give_fr": "[À ÉCRIRE PAR CHARLESTON] Bien joué, tu t'en es sorti ! Repasse à l'arène, Dargo veut te voir.",
-      "dialogue_give_en": "[À ÉCRIRE PAR CHARLESTON] Well done, you made it! Head back to the arena, Dargo wants to see you.",
-      "dialogue_progress_fr": "[À ÉCRIRE PAR CHARLESTON] Dargo t'attend à l'arène.",
-      "dialogue_progress_en": "[À ÉCRIRE PAR CHARLESTON] Dargo is waiting for you at the arena.",
-      "dialogue_complete_fr": "[À ÉCRIRE PAR CHARLESTON] Tu t'en es bien sorti. Je crois que tu es prêt.\nVa voir Tobin sur la place. Il a encore deux ou trois choses à te montrer.",
-      "dialogue_complete_en": "[À ÉCRIRE PAR CHARLESTON] You handled yourself well. I think you're ready.\nGo see Tobin in the square. He's got a few more things to show you.",
-      "_dialogues_a_ecrire": "2026-11-03 : les trois dialogues sont PROVISOIRES, Charleston les ecrit. give = modale de fin de q_onb_premiere_chasse ; progress = Dargo et Tobin (cle q_onb_retour_dargo_default de npcs.json) ; complete = Dargo (cle q_onb_retour_dargo_obj_0, rendu automatique apres sa replique).",
-      "forbids_quests": [
-        "q_havreden_arrivee",
+      "title_fr": "[À ÉCRIRE PAR CHARLESTON] Le capitaine Rey",
+      "title_en": "[À ÉCRIRE PAR CHARLESTON] Captain Rey",
+      "summary_fr": "[À ÉCRIRE PAR CHARLESTON] Le capitaine Rey cherche des volontaires. Va le voir.",
+      "summary_en": "[À ÉCRIRE PAR CHARLESTON] Captain Rey is looking for volunteers. Go and see him.",
+      "dialogue_give_fr": "[À ÉCRIRE PAR CHARLESTON] Le capitaine Rey cherche des volontaires. Va le voir.",
+      "dialogue_give_en": "[À ÉCRIRE PAR CHARLESTON] Captain Rey is looking for volunteers. Go and see him.",
+      "dialogue_progress_fr": "[À ÉCRIRE PAR CHARLESTON] Le capitaine Rey t'attend.",
+      "dialogue_progress_en": "[À ÉCRIRE PAR CHARLESTON] Captain Rey is waiting for you.",
+      "dialogue_complete_fr": "[À ÉCRIRE PAR CHARLESTON] Un volontaire ? Tu n'es pas encore prêt pour ce qui rôde à la lisière. Prépare-toi, gagne en force, et reviens me voir au niveau 8.",
+      "dialogue_complete_en": "[À ÉCRIRE PAR CHARLESTON] A volunteer? You're not ready yet for what's prowling the forest edge. Get ready, grow stronger, and come back to me at level 8.",
+      "_dialogues_a_ecrire": "2026-11-03 : textes PROVISOIRES, section 14.1 de textes_a_reecrire_onboarding_0_20_31.md (« Titre FR/EN », « Objectif FR/EN », « Message du suivi a la reception » = dialogue_give, « dialogue_complete »). Quete donnee par le serveur (pas de dialogue de remise) ; dialogue_give sert de message du suivi. Replique de Rey : cle q_main_rey_rencontre_obj_0 de npcs.json.",
+      "completed_by": [
+        "q_rey_lisiere",
         "q_havreden_preparatifs",
-        "q_havreden_expedition",
-        "q_tut_intro_01"
+        "q_havreden_tour_03"
       ],
-      "_forbids_quests_note": "Comme q_onb_premiere_chasse : jamais pour un personnage qui a deja rencontre Tobin (chaine ou auto-guerison chain-only).",
+      "_completed_by_note": "Un personnage de l'ancienne route (Preparatifs ou tour finis, ou deja chez Rey) la compte comme faite, sans recompense : q_rey_lisiere, qui la demande en prerequis, reste ouverte pour lui.",
       "objective_mode": "sequential",
       "objectives": [
         {
           "template": "talk_to_npc",
-          "npc_id": "npc_arena_dargo",
+          "npc_id": "npc_quest_captain_rey",
           "count": 1,
-          "description_fr": "[À ÉCRIRE PAR CHARLESTON] Retourner voir Dargo à l'arène",
-          "description_en": "[À ÉCRIRE PAR CHARLESTON] Return to Dargo at the arena",
+          "description_fr": "[À ÉCRIRE PAR CHARLESTON] Parler au capitaine Rey",
+          "description_en": "[À ÉCRIRE PAR CHARLESTON] Talk to Captain Rey",
           "hints": {
             "on_active": [
               {
-                "id": "q_onb_retour_dargo_obj0_arrow",
+                "id": "q_main_rey_rencontre_obj0_arrow",
                 "type": "arrow",
-                "target": "npc_arena_dargo",
-                "priority": 90,
+                "target": "npc_quest_captain_rey",
+                "priority": 85,
                 "show_once": true,
                 "payload": {
-                  "label_fr": "Retourne voir Dargo",
-                  "label_en": "Return to Dargo"
+                  "label_fr": "Va voir le capitaine Rey",
+                  "label_en": "Go see Captain Rey"
                 }
               }
             ]
@@ -3710,9 +3715,8 @@
       "rewards": {
         "xp": 0
       },
-      "_rewards_a_valider": "2026-11-03 : aucune recompense (transition). L'XP de Premiers pas dehors (75) reste sur q_onb_premiere_chasse.",
-      "chain_next": "q_havreden_arrivee",
-      "_note": "2026-11-03 (Charleston) : apres la validation de Premiers pas dehors, parler a Dargo, qui envoie le joueur vers Tobin (il le pense pret). Quete-etape tutorielle sans npc_giver : rendu automatique apres la replique de Dargo, chain-only (auto-guerison serveur si l'acceptation chainee se perd). Nouvelle quete plutot qu'un objectif ajoute a q_onb_premiere_chasse : ajouter un objectif a une quete deja en cours en prod decalerait les lignes character_quest_objectives des joueurs qui l'ont active."
+      "_rewards_a_valider": "2026-11-03 : aucune recompense (premiere rencontre).",
+      "_note": "2026-11-03 (Charleston, fil principal toujours visible). Donnee par le serveur a la fin de Premiers pas dehors (accepts_on_turn_in), en meme temps que « Parler a Tobin » (q_havreden_arrivee). Drapeau tutorial sans npc_giver : rendu automatique apres la replique de Rey. Ensuite le suivi montre « La lisiere agitee : atteins le niveau 8 » (main_story, QuestStateResponse champs 13-15) jusqu'au niveau 8, ou Rey la propose."
     },
     {
       "id": "q_onb_forces",
@@ -3923,7 +3927,8 @@
         "gold": 20
       },
       "_note": "Onboarding V2 (2026-09-23) : acceptee par chainage depuis q_onb_forces, plus par auto_accept_on_zone_enter (c'est q_onb_arene qui porte l'entree au village). PLUS de chain_next : Tobin propose ensuite DEUX quetes independantes, la chaine d'Aldric (q_tut_intro_01) et le tour de Havreden (q_havreden_tour_01), toutes deux avec prerequisites [q_havreden_arrivee], a faire dans l'ordre que le joueur veut. Drapeau tutorial ajoute : rendu automatique apres le dialogue (q_havreden_arrivee_obj_0 chez Tobin) et les repliques contextuelles de Dargo/Tobin sont lues par main.gd, qui ne les cherche que sur les quetes tutorial. V3.2 (2026-10-24) : sequentielle, Tobin envoie dire un mot a Ezra (objectif 1) avant l'arriere-salle d'Aldric ; le rendu automatique (tutorial) a lieu apres Ezra.",
-      "objective_mode": "sequential"
+      "objective_mode": "sequential",
+      "_note_fil_principal": "2026-11-03 : c'est la quete « Parler a Tobin » du fil principal (section 14.2 du fichier de textes) : donnee par le serveur a la fin de Premiers pas dehors (accepts_on_turn_in), plus par la chaine. Son rendu ouvre les Preparatifs (q_havreden_expedition) et la chaine d'Aldric, chemin conseille."
     },
     {
       "id": "q_havreden_tour_01",
@@ -5103,9 +5108,9 @@
       "id": "q_rey_lisiere",
       "type": "main",
       "zone": "village",
-      "min_level": 1,
+      "min_level": 8,
       "prerequisites": [
-        "q_havreden_expedition"
+        "q_main_rey_rencontre"
       ],
       "completed_by": [
         "q_main_ezra_retrouvailles"
@@ -5142,7 +5147,8 @@
       },
       "_a_valider": "Nombre de creatures (6, comme q_gorik_crocs_et_cuirs) et recompense (moyenne des etapes de l'ancien tour : 850 XP, 60 or). Zone de niveau 8-15 : le personnage arrive vers le niveau 10-12 apres les preparatifs.",
       "_note": "Acte I (2026-10-24), etape 06. Remplace q_side_foret (zone_02 supprimee, laissee telle quelle et parquee de fait par sa zone). completed_by q_main_ezra_retrouvailles : un ancien personnage deja passe chez Ezra ne la recoit pas.",
-      "_prerequisites_note": "2026-11-03 : q_havreden_expedition remplace q_havreden_preparatifs ; un personnage de l'ancienne route la recoit comme faite (completed_by q_havreden_preparatifs / q_havreden_tour_03)."
+      "_prerequisites_note": "2026-11-03 (Charleston) : ne depend plus des Preparatifs (chemin conseille, plus un prerequis de l'histoire) mais de la rencontre avec Rey (q_main_rey_rencontre) et du niveau (min_level 8, a valider).",
+      "_min_level_a_valider": "2026-11-03 : niveau 8 donne par Charleston, a valider."
     },
     {
       "id": "q_rey_traces",
