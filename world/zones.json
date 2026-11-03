@@ -175,8 +175,8 @@
           "name_en": "Havreden Outskirts",
           "level_range": [1, 8],
           "count": 45,
-          "max_stars": 1,
-          "_max_stars_note": "2026-11-01 (Charleston, a valider) : plafond 1 etoile (0 ou 1) pour Premiere chasse (q_onb_premiere_chasse, 3 rats a niveau 3, juste apres la lecon d'arene) : les groupes y sortaient jusqu'a 5 etoiles. Lu par presence (borne roll_star_level). Garde par scripts/export_havreden_areas.py MAX_STARS_IMPOSE. Effet de bord : plus de groupe de 2 etoiles ou plus dans les Abords (les contrats meute de la bande 1 se font a la Lisiere ou ailleurs).",
+          "max_stars": 5,
+          "_max_stars_note": "2026-11-03 (decision Charleston) : retour a 1 a 5 etoiles, le plafond de 1 etoile ajoute le 2026-11-01 pour Premiere chasse (q_onb_premiere_chasse) est retire. Le joueur est guide vers un groupe a 1 etoile par l'aide sur les etoiles (hint help_text de q_onb_premiere_chasse), pas par le tirage. Lu par presence (borne roll_star_level).",
           "bounds": {
             "x_min": -52,
             "x_max": 6044,
@@ -2030,6 +2030,8 @@
       "_arrival_position_note": "Point d'arrivee en venant du village (2026-10-21) : juste devant la porte, a l'interieur, a ~80 px de World/Warps/WarpToVillage (-270, 130) de kanarion_front/scenes/world/tutorial_house.tscn, hors de sa zone de declenchement. Lu par presence (WorldTransferRules) : le serveur place le joueur ici au WORLD_TRANSFER. Le .tscn est l'outil de dessin, ce champ est la donnee serveur : si la porte bouge, recopier ici. Le Spawn0 du .tscn reste le point de reapparition (defaite dans l'arriere-salle).",
       "transfer_from": ["village"],
       "_transfer_from_note": "Zones depuis lesquelles un WORLD_TRANSFER peut mener ici (presence, audit FUI-024 2026-10-18). Le retour en ville (default_respawn_zone / respawn_zone) et les etages d un meme donjon sont autorises sans ce champ ; toute autre destination demandee par le client est refusee.",
+      "return_position": [3415, 1500],
+      "_return_position_note": "2026-11-03 (decision Charleston : a chaque sortie de la taverne, le joueur apparait devant la porte, au point qui sert pour entrer). Point devant la porte, EN VILLE : 78 px sous Warps/WarpToTutorialTavern (3444, 1422) de kanarion_front/scenes/world/havreden_map.tscn, hors de son anneau de declenchement ; c'est aussi la destination_spawn (exact_spawn) de World/Warps/WarpToVillage dans tutorial_house.tscn. Lu par presence (WorldTransferRules) : sortie vers le village = ce point (avant : pierre d'arrivee du village, au Bois des Loups) ; entree depuis le village = porte gardee a door_rules.use_range_px de ce point. La respawn_zone reste l'arriere-salle (defaite au tutoriel) : la ville de la porte est alors la premiere zone de transfer_from. Garde client : tests/test_building_exit_returns.gd. Si la porte bouge sur la carte, recopier ici.",
       "respawn_zone": "tutorial_tavern",
       "name_fr": "Taverne d'Initiation",
       "name_en": "Initiation Tavern",
@@ -2090,6 +2092,8 @@
       "transfer_from": [
         "village"
       ],
+      "return_position": [3900, 1157],
+      "_return_position_note": "2026-11-03 (decision Charleston : en sortant d'un batiment, le joueur apparait devant sa porte, comme pour tous les interieurs). Point devant la porte, EN VILLE : 72 px sous Warps/WarpToEzraHouse (3925, 1085) de kanarion_front/scenes/world/havreden_map.tscn, hors de son anneau ; c'est aussi la destination_spawn (exact_spawn) de World/Warps/WarpToVillage dans ezra_house.tscn. Avant : pas de point, la sortie posait le joueur sur la pierre d'arrivee du village (Bois des Loups). Garde client : tests/test_building_exit_returns.gd. Si la porte de la maison bouge sur la carte, recopier ici ET dans ezra_house.tscn.",
       "respawn_zone": "village",
       "name_fr": "Maison d'Ezra",
       "name_en": "Ezra's House",
