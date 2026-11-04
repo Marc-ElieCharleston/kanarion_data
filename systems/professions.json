@@ -104,9 +104,9 @@
     "_crafted_storage": "Equipement (non empilable) : la qualite tiree devient la rarete de la piece (C=common, B=uncommon, A=rare, S=epic, SS=legendary) et ses stats sont tirees par le meme constructeur que le butin, au niveau d'entree de son rang ; custom_data porte quality (C..SS), rank (rang de l'objet I..V, comme le butin) et crafted_by. Consommable empilable a quality_cap > C : la qualite donne une variante generee (id + suffixe de resource_rarity) dont l'effet en valeur (soin, Souffle) est multiplie par consumable_multipliers ; une pile par qualite. Les effets de buff (status_id) gardent leur duree en V1."
   },
   "xp": {
-    "_rule": "L'XP de metier vient de la fabrication (une recette executee) et de la recolte (un coup sur un point, un jet de glanage, une braise de Faille). Une recette ou un point trop bas pour le niveau du metier rapporte de moins en moins, puis rien : on monte en travaillant a son niveau.",
+    "_rule": "L'XP de metier vient de la fabrication (une recette executee) et de la recolte (un coup sur un point, un jet de glanage, une braise de Faille). Facon Albion (v3, 2026-11-04, A VALIDER) : chaque rang rapporte 2,5 fois le precedent et la table monte en continu ; une recette ou un point de rang inferieur rapporte toujours, mais devient negligeable face aux besoins (aucune regle grise). On monte vite en passant au rang superieur.",
     "curve": "same_shape_as_character",
-    "gray_after_levels": 30,
+    "gray_after_levels": null,
     "owner": "systems/profession_xp.json",
     "_owner": "Les chiffres (table niveau par niveau, XP par recette et par recolte, bonus de premiere fabrication, modele de temps) vivent dans systems/profession_xp.json. Ne pas les recopier ici."
   },
@@ -2013,7 +2013,7 @@
         "item_rarity": "uncommon",
         "name_suffix_fr": " (C)",
         "name_suffix_en": " (C)",
-        "xp_multiplier": 1.2,
+        "xp_multiplier": 1.5,
         "sell_multiplier": 2
       },
       {
@@ -2022,7 +2022,7 @@
         "item_rarity": "rare",
         "name_suffix_fr": " (B)",
         "name_suffix_en": " (B)",
-        "xp_multiplier": 1.5,
+        "xp_multiplier": 2.0,
         "sell_multiplier": 5
       },
       {
@@ -2031,7 +2031,7 @@
         "item_rarity": "epic",
         "name_suffix_fr": " (A)",
         "name_suffix_en": " (A)",
-        "xp_multiplier": 2.0,
+        "xp_multiplier": 3.0,
         "sell_multiplier": 12
       },
       {
@@ -2040,10 +2040,11 @@
         "item_rarity": "legendary",
         "name_suffix_fr": " (S)",
         "name_suffix_en": " (S)",
-        "xp_multiplier": 3.0,
+        "xp_multiplier": 5.0,
         "sell_multiplier": 30
       }
     ],
+    "_xp_multiplier_a_valider": "A VALIDER (2026-11-04, courbe d'XP metiers v3 facon Albion, systems/profession_xp.json). Une ressource rare est un proc : B x1,5, A x2, S x3, SS x5 (avant : 1,2 / 1,5 / 2 / 3). En moyenne +17 % d'XP au rang I et +34 % au rang V, compte dans la table. Seule l'XP de recolte change ; sell_multiplier inchange.",
     "variant_rule": "Une variante est un id GENERE, jamais ecrit a la main : id = id de base + suffix (ex. mat_herb_sauge_a). Elle reprend tout l'objet de base (icone comprise : le client dessine le cadre de rarete), remplace rarity par item_rarity, ajoute name_suffix_fr/en au nom et multiplie sell_price par sell_multiplier. Le serveur et le client construisent les variantes au chargement a partir de cette table ; aucune n'apparait dans les fichiers. Les variantes ne s'empilent pas entre elles (une pile par id).",
     "base_rarity": "L'objet de base (rarete normale) porte rarity 'common' a tous les rangs : le rang s'affiche a part (I..V, champ rank). Les anciennes raretes par rang des ressources (common..legendary selon le rang) ont ete retirees le 2026-10-01 pour ne pas melanger les deux axes.",
     "recipe_matching": "Une recette ecrit l'id de BASE ; n'importe quelle variante le satisfait. La requete de fabrication nomme les piles choisies par le joueur ; par defaut le serveur prend les raretes les plus basses d'abord (on ne grille pas une SS par accident). Une recette qui citerait une variante est refusee par le validateur.",
