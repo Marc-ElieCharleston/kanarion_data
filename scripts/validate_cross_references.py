@@ -2334,10 +2334,12 @@ def validate_profession_xp(db: Path) -> list:
     if not (0 <= gr.get("full_until_levels_above", -1) < gr.get("half_at_levels_above", -1)
             < gr.get("zero_from_levels_above", -1)):
         errors.append("[profession_xp.json] gray : full_until < half_at < zero_from")
-    hrs = d.get("time_model", {}).get("hours_to_level_crafting", {})
-    if hrs and not (3 <= hrs.get("50", 0) <= 7 and 25 <= hrs.get("100", 0) <= 45):
-        errors.append(f"[profession_xp.json] modele de temps hors cible : 50 en {hrs.get('50')} h (3-7), 100 en "
-                      f"{hrs.get('100')} h (25-45)")
+    # Cibles v2 (2026-11-04, a valider) : recolte au sol, 50 en environ un mois a 45 min par jour (~22 h),
+    # 100 en environ 90 h. La v1 visait la fabrication : 50 en 3-7 h, 100 en 25-45 h.
+    hrs = d.get("time_model", {}).get("hours_to_level_gathering", {})
+    if hrs and not (15 <= hrs.get("50", 0) <= 30 and 60 <= hrs.get("100", 0) <= 130):
+        errors.append(f"[profession_xp.json] modele de temps hors cible : recolte 50 en {hrs.get('50')} h (15-30), "
+                      f"100 en {hrs.get('100')} h (60-130)")
     return errors
 
 
