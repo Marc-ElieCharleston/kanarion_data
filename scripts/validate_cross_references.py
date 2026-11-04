@@ -2803,6 +2803,33 @@ def validate_tool_sellers(db: Path) -> list:
     return errors
 
 
+def validate_tool_slots(db: Path) -> list:
+    """Emplacements d'outil equipe (0.20.33, systems/professions.json tools.slots) : la liste contient
+    exactement les types de by_profession, sans doublon, et chaque type a ses outils tool_<type>_r<n>.
+    L'ordre = item_instances.slot_index (migration back 131_tool_slots.sql, verifie aussi par economy au
+    demarrage). wear_enabled et auto_equip_on_acquire sont des booleens (lus par economy)."""
+    errors = []
+    pd = _profession_data(db)
+    tools_cfg = pd["prof"].get("tools", {})
+    slots = tools_cfg.get("slots")
+    by_prof = tools_cfg.get("by_profession", {})
+    if not isinstance(slots, list) or not all(isinstance(t, str) and t for t in slots):
+        return ["[professions.json] tools.slots absent ou mal forme (liste des types d'outil, ordre des emplacements)"]
+    if len(set(slots)) != len(slots):
+        errors.append(f"[professions.json] tools.slots contient un doublon : {slots}")
+    if set(slots) != set(by_prof.values()):
+        errors.append(f"[professions.json] tools.slots {sorted(set(slots))} doit contenir exactement les types de "
+                      f"tools.by_profession {sorted(set(by_prof.values()))}")
+    tool_types = {it.get("tool_type") for it in pd["new_items"].values() if it.get("kind") == "tool"}
+    for t in slots:
+        if t not in tool_types:
+            errors.append(f"[professions.json] tools.slots : aucun outil (kind tool) de type '{t}'")
+    for key in ("wear_enabled", "auto_equip_on_acquire"):
+        if not isinstance(tools_cfg.get(key), bool):
+            errors.append(f"[professions.json] tools.{key} doit etre un booleen")
+    return errors
+
+
 def validate_arena_token_shop(db: Path, all_item_ids: set) -> list:
     errors = []
     path = db / "systems" / "arena_token_shop.json"
@@ -3685,6 +3712,11 @@ def main():
 
     print("[12t/12] Validating gathering tool sellers (rank I Havreden masters, rank II Rochebourg only)...")
     errs = validate_tool_sellers(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12u/12] Validating tool slots (tools.slots = types of tools.by_profession, slot order)...")
+    errs = validate_tool_slots(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
