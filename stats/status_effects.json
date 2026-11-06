@@ -530,7 +530,7 @@
         "impl": "done",
         "damage_type": "magical",
         "true_damage": false,
-        "formula": "tick_1: MAG * 0.1, tick_2: MAG * 0.15, tick_3: MAG * 0.2, ... (croissant). Une reapplication remet la duree a celle du sort (Chatiment : 8 s depuis le 2026-11-06), sans stack (max_stacks 1), et fait REPARTIR la rampe du premier palier (status_manager.cpp, decision Charleston 2026-11-06 : avant, la rampe continuait et grimpait sans limite tant qu on rafraichissait).",
+        "formula": "tick k (depuis la derniere application) : MAG * (runtime.scaling_percent + runtime.ramp_per_tick * k), soit 0.12, 0.16, 0.20... (croissant). Une reapplication remet la duree a celle du sort (Chatiment : 8 s depuis le 2026-11-06), sans stack (max_stacks 1), et fait REPARTIR la rampe du premier palier (status_manager.cpp, decision Charleston 2026-11-06 : avant, la rampe continuait et grimpait sans limite tant qu on rafraichissait).",
         "tick_interval": 1.0,
         "duration_modifiable": true,
         "tooltip_fr": "Inflige des dégâts croissants à chaque pulsation. Se prolonge si réappliqué.",
@@ -548,9 +548,10 @@
           "tick_damage": "value",
           "tick_rate": 1.0,
           "scaling_stat": "mag",
-          "scaling_percent": 0.1,
+          "scaling_percent": 0.08,
+          "_ramp_a_valider": "A VALIDER (decision Charleston 2026-11-06, option B) : scaling_percent 0.1 -> 0.08 et ramp_per_tick 0.05 -> 0.04 (x0,8). Feu Sacre dure 8 s et Chatiment se recharge en 7,5 s : une relance des que pret fait 7 ticks par cycle (la rampe repart a la reapplication), soit MAG x (7 x 0.08 + 28 x 0.04) = 1,68 MAG par 7,5 s = 0,224 MAG/s, le dps soutenu d avant (6 s, 6 ticks, 1,65 MAG / 7,5 s = 0,22 MAG/s). Lus par server-combat (status_manager, sans valeur par defaut).",
           "scaling_behavior": "ramp",
-          "ramp_per_tick": 0.05,
+          "ramp_per_tick": 0.04,
           "damage_ignores_defense": false,
           "vfx_type": "holy_glow"
         }
