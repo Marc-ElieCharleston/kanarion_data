@@ -1790,6 +1790,8 @@ def validate_rift_events(db: Path) -> list:
     if not (isinstance(ent.get("min_level_offset"), int) and ent["min_level_offset"] <= 0
             and isinstance(ent.get("min_level_floor"), int) and ent["min_level_floor"] >= 1):
         errors.append(f"{tag} entry : min_level_offset (<= 0) et min_level_floor (>= 1) requis")
+    if not isinstance(ent.get("min_level_enabled"), bool):
+        errors.append(f"{tag} entry.min_level_enabled (booleen) requis : le serveur refuse de charger sans")
     con = data.get("contribution", {})
     for r in ranks:
         for name in sizes:
