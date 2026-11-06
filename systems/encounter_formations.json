@@ -161,6 +161,34 @@
       "placement_priority": 12
     }
   },
+  "start_row_by_archetype": {
+    "_note": "a valider",
+    "_comment": "Rangee de DEPART des combattants pilotes par l IA (mercenaire, recrue d arene, familier), par stat_archetype : memes ids que formation_rules_by_archetype ci-dessus (le serveur refuse un id qui n y est pas). Decision Charleston 2026-11-06 : tank 1, combattant de melee 2, soigneur 3, mage et archer 4. Rangees comptees depuis l AVANT de l equipe (1 = la plus proche de l ennemi, 6 = la plus eloignee sur le 12x6), bornees a la moitie d equipe. L archetype d une classe ou sous-classe vit dans classes/class_registry.json (champ archetype). SOURCE UNIQUE, lue par server-combat au demarrage (combat_host.cpp load_formation_rules). Les JOUEURS ne sont PAS concernes (decision Charleston 2026-11-06 : ils se placent ou ils veulent, case memorisee last_combat_slot, sinon premiere case libre). Le familier garde sa case memorisee (last_familiar_slot) en priorite ; son archetype vient de familiar_role_archetypes. Ni les monstres (bandes ci-dessus), ni les salles de tutoriel ou d entrainement ne sont concernes.",
+    "default_row": 1,
+    "_default_row_note": "Archetype inconnu ou classe sans archetype (ne devrait pas arriver) : rangee de devant, le comportement d avant. A valider.",
+    "rows": {
+      "tank": 1,
+      "guardian": 1,
+      "brute": 2,
+      "berserker": 2,
+      "assassin": 2,
+      "healer": 3,
+      "support": 3,
+      "enchanter": 3,
+      "mage": 4,
+      "archer": 4,
+      "controller": 4,
+      "summoner": 4
+    },
+    "familiar_role_archetypes": {
+      "_note": "a valider",
+      "_comment": "Role de famille d un familier (entities/familiars.json role) -> stat_archetype ci-dessus. Deduit : c est l ai_profile que portent deja tous les familiers de chaque role (attaque=brute, tank=tank, heal=healer, utilitaire=support).",
+      "attaque": "brute",
+      "tank": "tank",
+      "heal": "healer",
+      "utilitaire": "support"
+    }
+  },
   "band_definitions": {
     "_comment": "Le moteur traduit les bandes en rangees locales (0 = avant) selon rows_per_team et la portee du monstre.",
     "front": "rangee avant d'abord (colle au milieu du plateau)",
