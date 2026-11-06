@@ -13,13 +13,17 @@ Rules (owner: config/skill_system.json mana_cost_scaling; note: _meta/carnet/sou
                   higher tier that has one; above that, its mana_cost is brought to that
                   ceiling minus 1. Checked as well: the median of each family rises strictly
                   from tier to tier, at rank 1 and at max rank.
+  rank_max_cap    at max rank, a skill costs at most pct_of_class_base_mp of its class base
+                  Souffle at `level` (no gear, no passive): mana_cost_per_level is lowered to
+                  floor((ceiling - mana_cost) / (max_level - 1)) when per_rank_rule goes above.
   no copy         a description never restates the cost (the client shows mana fields).
   set regen       items/panoplies.json _meta.rank_system: a set gives regen in the form of its
                   rank (regen_form: flat at ranks I-III, percent at IV-V, stats per resource in
                   regen_forms), and a full flat set gives the value of its rank (flat_regen).
 
 Scope: classes/<6 classes>/skills.json, base, subclass and tier-3 skills, mana_cost > 0,
-max_level != 1.
+max_level != 1. The free base fillers (mana_cost 0, skill_system.json _free_base_fillers,
+2026-11-06) are out of scope.
 
 Usage (from the repo root):
     python -X utf8 scripts/balance/souffle_per_level.py            # apply
@@ -58,6 +62,17 @@ MAX_RANK = SKILL_SYSTEM["skill_levels"]["max_level"]
 TIER_ORDER = SKILL_SYSTEM["mana_cost_scaling"]["tier_order"]
 TIERS = TIER_ORDER["tiers"]
 FAMILIES = {k: v for k, v in TIER_ORDER["families"].items() if not k.startswith("_")}
+RANK_MAX_CAP = SKILL_SYSTEM["mana_cost_scaling"].get("rank_max_cap")
+
+
+def class_cost_ceiling(cls):
+    """Highest cost at max rank for a skill of cls (rank_max_cap), or None without the rule:
+    pct_of_class_base_mp x the class base Souffle at the cap level, rounded down."""
+    if not RANK_MAX_CAP:
+        return None
+    base = load("stats/class_base_stats.json")[cls]["mp"]
+    growth = load("stats/class_growth.json")[cls]["mp"]
+    return math.floor(RANK_MAX_CAP["pct_of_class_base_mp"] * (base + growth * (RANK_MAX_CAP["level"] - 1)) + 1e-9)
 
 
 def round_half_up(x):
@@ -179,7 +194,11 @@ def targets():
                     mc[sid] = c
         out[cls] = {}
         for k, s in skills.items():
-            t = {"mana_cost": mc[k], "mana_cost_per_level": per_rank(mc[k], s)}
+            mpl = per_rank(mc[k], s)
+            ceiling = class_cost_ceiling(cls)
+            if ceiling is not None and mc[k] + (MAX_RANK - 1) * mpl > ceiling:
+                mpl = max(0, (ceiling - mc[k]) // (MAX_RANK - 1))
+            t = {"mana_cost": mc[k], "mana_cost_per_level": mpl}
             if (s.get("percent_per_level") or 0) > 0:
                 t["rank_scaling_enabled"] = True
             out[cls][k] = t
@@ -343,6 +362,13 @@ def tier_order_violations():
         for sid, (ceil, ref) in tier_ceilings(cls, mc).items():
             if mc[sid] > ceil:
                 bad.append(f"{sid}: {mc[sid]} at rank 1, not below {ref} ({ceil + 1})")
+    for cls in CLASSES:
+        ceiling = class_cost_ceiling(cls)
+        if ceiling is None:
+            continue
+        for _, _, _, s in iter_skills(cls):
+            if in_scope(s) and cost(s, MAX_RANK) > ceiling:
+                bad.append(f"{s['id']}: {cost(s, MAX_RANK)} at rank {MAX_RANK}, above rank_max_cap {ceiling} ({cls})")
     for rank in (1, MAX_RANK):
         fc = family_costs(rank)
         for fam in FAMILIES:
