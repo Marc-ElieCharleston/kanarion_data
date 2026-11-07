@@ -3646,9 +3646,9 @@
       "_rewards_a_valider": "2026-11-01 : 3/5 de q_contract_tutorial_first_hunt (5 rats, 126 XP, 30 or), arrondi. Le perso reste niveau 3 a la fin (250 + 75 + XP des combats < 468), q_onb_forces le passe niveau 4 comme avant.",
       "_note": "2026-11-01 (Charleston, 0.20.30). Premier combat dehors juste apres la lecon d'arene : q_onb_arene -> q_onb_premiere_chasse -> q_onb_forces. Drapeau tutorial sans npc_giver = rendu automatique (client turn_in_place 'auto'), comme q_onb_arene et q_onb_forces. Personne ne la donne : chain-only, reparee par le serveur si l'acceptation chainee se perd. Ne change ni q_havreden_arrivee ni l'ordre des objectifs de q_havreden_preparatifs. 2026-11-03 : nouvel ordre q_onb_forces -> q_onb_premiere_chasse -> q_onb_retour_dargo ; les Abords d'Havreden reviennent a 1-5 etoiles (zones.json, decision Charleston), l'aide sur les etoiles guide vers 1 etoile. 2026-11-03 : nouvel ordre q_onb_forces -> q_onb_premiere_chasse -> q_onb_retour_dargo ; les Abords d'Havreden reviennent a 1-5 etoiles (zones.json, decision Charleston), l'aide sur les etoiles guide vers 1 etoile.",
       "accepts_on_turn_in": [
-        "q_havreden_arrivee",
-        "q_main_rey_rencontre"
+        "q_havreden_arrivee"
       ],
+      "_accepts_on_turn_in_note_0711": "2026-11-07 (playtest Charleston 0.20.38, « Aldric en premier, Preparatifs en deuxieme, Rey en troisieme, sinon ca porte a confusion ») : ne donne plus q_main_rey_rencontre. Ordre : q_havreden_arrivee -> chaine d'Aldric (q_tut_intro_01 ... q_tut_retour) -> q_havreden_expedition (acceptee au rendu de q_tut_retour) -> q_main_rey_rencontre (acceptee au rendu de q_havreden_expedition, prerequis). Le fil principal ne montre pas Rey tant que ses prerequis ne sont pas faits (services/quest next_main_quest).",
       "_accepts_on_turn_in_note": "2026-11-03 (Charleston, fil principal toujours visible) : a la fin du tutoriel obligatoire (stats et competences, puis ces trois rats), le SERVEUR donne deux quetes sans clic sur un PNJ : « Parler a Tobin » (q_havreden_arrivee, qui ouvre les Preparatifs et Aldric, chemin conseille) et « Parler au capitaine Rey » (q_main_rey_rencontre, fil principal). Un joueur qui saute le tour d'Havreden et Aldric les a quand meme. Remplace la quete-etape q_onb_retour_dargo (jamais livree) : Dargo envoie vers Tobin par la modale de fin.",
       "_quest_hints_note": "2026-11-03 (spec finale) : plus de validation automatique ni de modale « La suite » : le joueur retourne VRAIMENT voir Dargo (objectif 1), qui dit la replique de fin."
     },
@@ -3677,6 +3677,10 @@
         "q_havreden_tour_03"
       ],
       "_completed_by_note": "Un personnage de l'ancienne route (Preparatifs ou tour finis, ou deja chez Rey) la compte comme faite, sans recompense : q_rey_lisiere, qui la demande en prerequis, reste ouverte pour lui.",
+      "prerequisites": [
+        "q_havreden_expedition"
+      ],
+      "_prerequisites_note": "2026-11-07 (playtest Charleston : Rey en troisieme, apres Aldric et les Preparatifs). Acceptee par le serveur au rendu de q_havreden_expedition (accepts_on_turn_in). q_havreden_expedition est completed_by q_havreden_preparatifs et q_havreden_tour_03 : un personnage de l'ancienne route remplit le prerequis. Le fil principal (main_story) ne montre pas cette etape grisee tant que le prerequis manque.",
       "objective_mode": "sequential",
       "objectives": [
         {
@@ -3883,9 +3887,9 @@
       "summary_en": "Tobin is waiting for you on the square. He knows who's looking for hands right now, and he has something to keep you busy.",
       "npc_giver": "npc_hub_guide_tobin",
       "accepts_on_turn_in": [
-        "q_havreden_expedition",
         "q_tut_intro_01"
       ],
+      "_accepts_on_turn_in_note_0711": "2026-11-07 (playtest Charleston) : n'accepte plus q_havreden_expedition. Les Preparatifs viennent APRES la chaine d'Aldric (q_tut_retour.accepts_on_turn_in, et prerequis q_tut_retour).",
       "_accepts_on_turn_in_note": "Decision Charleston du 2026-10-21 : parler a Tobin active directement les deux quetes qu'il annonce (le tour de Havreden et la chaine d'Aldric), sans etape vide ou il faudrait revenir les prendre. Lu par services/quest : apres le rendu de cette quete, chaque id est accepte par le serveur avec les memes controles qu'une acceptation automatique (prerequis, drapeaux, adventure_only). Les textes ne changent pas. Acte I V2 (2026-10-24) : le tour q_havreden_tour_01 est remplace par q_havreden_preparatifs. 2026-11-03 : q_havreden_preparatifs est remplacee par q_havreden_expedition (memes titre et role, nouvelles etapes : potions, veste, familier, contrat de Varn).",
       "objectives": [
         {
@@ -4685,8 +4689,9 @@
       "zone": "village",
       "min_level": 1,
       "prerequisites": [
-        "q_havreden_arrivee"
+        "q_tut_retour"
       ],
+      "_prerequisites_note_0711": "2026-11-07 (playtest Charleston : Aldric en premier, Preparatifs en deuxieme, Rey en troisieme). Avant : q_havreden_arrivee (acceptee en meme temps que la chaine d'Aldric). Acceptee par le serveur au rendu de q_tut_retour (accepts_on_turn_in) ; q_tut_retour est completed_by l'ancienne fin de chaine, un personnage de l'ancienne route remplit donc le prerequis. Un personnage qui l'a deja en cours la garde.",
       "forbids_quests": [
         "q_havreden_preparatifs",
         "q_havreden_tour_01",
@@ -4712,7 +4717,8 @@
       "dialogue_complete_en": "That's better. Keep preparing and come back to see me a little later.",
       "_dialogues_a_ecrire": "2026-11-03 : give et progress = Tobin, addendum « Dialogues naturels » de kanarion_onboarding_0_20_31_final_pour_agent_v2.md (Charleston) ; EN a relire. La 3e bulle (Gorik puis Colette) est dite aux etapes correspondantes (npcs.json q_havreden_expedition_obj_2..5). complete PROVISOIRE.",
       "npc_giver": "npc_hub_guide_tobin",
-      "objective_mode": "sequential",
+      "objective_mode": "parallel",
+      "_objective_mode_note_0711": "2026-11-07 (playtest Charleston : « a chaque etape des preparatifs on n'a pas d'animation qui nous fait passer a l'etape d'apres, ou la quete devrait afficher les 3 d'un coup, et on choisit qui on voit dans l'ordre qu'on veut »). Avant : sequential. Les trois visites (Milo 0-1, Gorik 2-3, Colette 4-5) sont ouvertes ensemble, dans l'ordre que le joueur veut ; gated_by_objectives garde l'ordre DANS chaque visite (acheter apres Milo, ameliorer apres Gorik, reparler a Colette apres le choix) et le retour chez Tobin (6) attend les six autres. Serveur : services/quest refuse une etape parlee dont un objectif de gated_by_objectives n'est pas fait ; les etapes evenementielles (achat, amelioration, cadeau) comptent des qu'elles arrivent. Index inchanges : un personnage deja en cours garde sa progression.",
       "objectives": [
         {
           "template": "talk_to_npc",
@@ -4740,6 +4746,7 @@
           "template": "buy_item",
           "item_id": "cons_hp_potion_t1",
           "count": 10,
+          "gated_by_objectives": [0],
           "description_fr": "Acheter 10 potions de soin",
           "description_en": "Buy 10 healing potions",
           "_note": "2026-11-03 (Charleston : 10 potions) : reprend q_milo_ravitaillement (parquee le 24/10). Milo vend par lots de 10. Aide contextuelle de boutique (pas de modale) : replique de Milo pendant cette etape (npcs.json q_havreden_expedition_obj_1).",
@@ -4799,6 +4806,7 @@
         {
           "template": "enhance_item",
           "count": 1,
+          "gated_by_objectives": [2],
           "description_fr": "Améliorer ton arme",
           "description_en": "Upgrade your weapon",
           "_note": "2026-11-03 : une tentative suffit, reussie ou non (economy handle_enhance_item). Atelier d'amelioration = poste de la forge (systems/enhancement_system.json station) : marche pour TOUTES les armes. Decision Charleston du 2026-11-03 : TOUTES les ameliorations passent par Gorik pour l'instant (toutes armes, toutes classes : les six armes de depart vont dans l'emplacement weapon et prennent la Pierre de Lame rang I).",
@@ -4845,6 +4853,7 @@
           "template": "talk_to_npc",
           "npc_id": "npc_familiar_breeder_colette",
           "count": 1,
+          "gated_by_objectives": [4],
           "description_fr": "Reparler à Colette",
           "description_en": "Talk to Colette again",
           "hints": {
@@ -4867,6 +4876,7 @@
           "template": "talk_to_npc",
           "npc_id": "npc_hub_guide_tobin",
           "count": 1,
+          "gated_by_objectives": [0, 1, 2, 3, 4, 5],
           "description_fr": "Retourne voir Tobin.",
           "description_en": "Return to Tobin.",
           "hints": {
@@ -4924,6 +4934,10 @@
         ]
       },
       "_a_valider": "2026-11-03 : recompenses a valider.",
+      "accepts_on_turn_in": [
+        "q_main_rey_rencontre"
+      ],
+      "_accepts_on_turn_in_note": "2026-11-07 (playtest Charleston : Rey en troisieme). Au rendu chez Tobin, le serveur accepte « Le capitaine Rey » (prerequis q_havreden_expedition). Avant, Rey etait donne a la fin de Premiers pas dehors, en meme temps que Tobin.",
       "_note": "2026-11-03 (spec finale) : Preparatifs I (vers les niveaux 5-7), facultatifs : Milo (10 potions), l'arme amelioree avec les pierres de la quete, le choix du familier chez Colette du village. Hestia et Varn passent dans les Preparatifs II (q_havreden_preparatifs_2, niveau 9). Ne bloque ni l'histoire ni le tableau. Nouvel id (et non q_havreden_preparatifs) : l'ancienne reste pour les personnages qui l'ont en cours.",
       "rewards_on_accept": {
         "items": [
@@ -6022,6 +6036,19 @@
             ],
             "on_complete": [
               {
+                "id": "q_tut_intro_03_imprint_modal",
+                "type": "modal",
+                "priority": 89,
+                "show_once": true,
+                "payload": {
+                  "title_fr": "Empreinte de Souffle (provisoire)",
+                  "title_en": "Breath Imprint (placeholder)",
+                  "content_fr": "PROVISOIRE. Le rat t'a laissé une empreinte de Souffle. Certaines créatures vaincues en laissent une : c'est la trace qui permet d'en faire un familier. Garde-la et apporte-la à Colette, qui la fera incuber. Une fois le familier éclos, active-le dans « Mes familiers » pour qu'il combatte avec toi.",
+                  "content_en": "PLACEHOLDER. The rat left you a Breath imprint. Some defeated creatures leave one: it's the trace that lets you turn them into a companion. Keep it and bring it to Colette, who will incubate it. Once the companion hatches, set it active in “My Companions” so it fights with you."
+                },
+                "_note": "2026-11-07 (decision Charleston au playtest 0.20.38 : le premier loot d'empreinte se fait dans le tuto d'Aldric, une MODALE l'explique, la quete de Colette prolonge). Declenchee par le serveur : la progression de l'objectif 0 (combat rat_solo gagne, QUEST_PROGRESS_PUSH) ; ce combat donne l'empreinte de facon garantie (config/tutorial_encounters.json rat_solo guaranteed_rewards, corrige cote server-combat le 07/11 pour le rat scripte). Le client la garde derriere l'ecran de fin de combat. TEXTE PROVISOIRE : brief kanarion_brief_copywriting_onboarding.md."
+              },
+              {
                 "id": "q_tut_intro_03_obj0_return",
                 "type": "arrow",
                 "target": "npc_tutorial_instructor_aldric",
@@ -6626,6 +6653,32 @@
       },
       "objectives": [
         {
+          "template": "assign_quickslot",
+          "item_id": "cons_hp_potion_pet_t1",
+          "_order_note_0711": "2026-11-07 (playtest Charleston : « j'ai eu le combat contre les rats avant d'avoir a mettre la potion dans les raccourcis ») : la potion du familier passe AVANT le nid de rats (index 0, le combat en 1, le retour en 2). Un personnage deja en cours est realigne par le serveur sur la data (services/quest realign_quest, appariement par gabarit et cible) : sa progression est gardee. Repliques d'Aldric renumerotees en consequence (npcs.json q_tut_intro_07_obj_0 / _obj_1).",
+          "_item_id_note": "2026-10-21 : le serveur credite cet objectif en lisant la barre rapide enregistree (characters.consumable_hotbar_slots), plus sur la parole du client. Sans item_id, la potion posee a l'etape 06 validait cette etape d'office ; la description demande la potion du familier.",
+          "count": 1,
+          "description_fr": "Placer la potion de ton familier sur la barre rapide",
+          "description_en": "Put your companion's potion on the quick bar",
+          "_note": "2026-09-29 : remplace use_item cons_hp_potion_pet_t1. Le serveur refuse une potion sur un familier plein (RESOURCE_ALREADY_FULL, rien consomme) ; apres le nid le familier etait plein (les rats visent le joueur, la regen hors combat remplit le reste) et la chaine se bloquait. Toujours trois objectifs : un personnage deja a cette etape garde ses lignes en base (use_item a l'index 1, retour Aldric a l'index 2) sans decalage.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_07_obj0_quickbar",
+                "type": "arrow",
+                "target": "ui_quickbar_slot_first_empty",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Place une potion ici",
+                  "label_en": "Place a potion here"
+                },
+                "_note": "2026-11-07 (playtest Charleston, bloquant : « la fleche pointe le sac et la potion, mais on n'a pas depuis cette interface de clic droit ou gauche pour mettre dans les raccourcis »). Meme geste que q_tut_intro_06 (case vide de la barre rapide -> Consommable -> la potion), qui marche. Libelles repris tels quels de q_tut_intro_06_obj1_arrow. Le sac propose aussi « Mettre dans les raccourcis » au clic droit (PC) et a l'appui long (mobile) depuis le client 0.20.39."
+              }
+            ]
+          }
+        },
+        {
           "template": "tutorial_combat_complete",
           "scenario_id": "meute_sortie",
           "count": 1,
@@ -6643,30 +6696,6 @@
                 "payload": {
                   "label_fr": "Parle à Aldric pour partir",
                   "label_en": "Talk to Aldric to head out"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "template": "assign_quickslot",
-          "item_id": "cons_hp_potion_pet_t1",
-          "_item_id_note": "2026-10-21 : le serveur credite cet objectif en lisant la barre rapide enregistree (characters.consumable_hotbar_slots), plus sur la parole du client. Sans item_id, la potion posee a l'etape 06 validait cette etape d'office ; la description demande la potion du familier.",
-          "count": 1,
-          "description_fr": "Placer la potion de ton familier sur la barre rapide",
-          "description_en": "Put your companion's potion on the quick bar",
-          "_note": "2026-09-29 : remplace use_item cons_hp_potion_pet_t1. Le serveur refuse une potion sur un familier plein (RESOURCE_ALREADY_FULL, rien consomme) ; apres le nid le familier etait plein (les rats visent le joueur, la regen hors combat remplit le reste) et la chaine se bloquait. Toujours trois objectifs : un personnage deja a cette etape garde ses lignes en base (use_item a l'index 1, retour Aldric a l'index 2) sans decalage.",
-          "hints": {
-            "on_active": [
-              {
-                "id": "q_tut_intro_07_obj1_inv",
-                "type": "arrow",
-                "target": "ui_inventory_button",
-                "priority": 88,
-                "show_once": true,
-                "payload": {
-                  "label_fr": "Ouvre ton inventaire",
-                  "label_en": "Open your inventory"
                 }
               }
             ]
@@ -6874,9 +6903,15 @@
         }
       ],
       "rewards": {
-        "xp": 250
+        "xp": 250,
+        "gold": 50
       },
       "_rewards_a_valider": "2026-11-03 : 250 XP, comme l'ancienne q_tut_intro_08.",
+      "_gold_note_0711": "2026-11-07 (decision Charleston au playtest 0.20.38 : « il faudra avoir les 50 g pour l'amelioration de l'arme en +1, sinon on est un peu bloque »). +50 or = le cout exact d'une tentative de +1 (systems/enhancement_system.json stone_ranks.rank_1.gold_cost = 50, paye reussite ou echec), verse juste avant les Preparatifs (acceptes au rendu de cette quete), qui demandent aussi 10 potions chez Milo (100 or). rewards_on_accept ne sait livrer que des objets (services/quest), d'ou l'or ici et non a l'acceptation des Preparatifs. Or de quete garanti a ce moment : 100 de depart + 15 + 20 + 50 (q_tut_intro_07) + 50 = 235, pour 150 de depenses demandees.",
+      "accepts_on_turn_in": [
+        "q_havreden_expedition"
+      ],
+      "_accepts_on_turn_in_note": "2026-11-07 (playtest Charleston : Aldric, puis Preparatifs, puis Rey). Au retour sur la place, le serveur accepte les Preparatifs (prerequis q_tut_retour).",
       "_note": "2026-11-03 (spec finale) : fin de la chaine d'Aldric sans l'etape « confier l'empreinte a Colette » de q_tut_intro_08 (l'empreinte est deja incubee chez Colette du tutoriel, pas de deuxieme rat). Rendu automatique.",
       "completed_by": [
         "q_tut_intro_08"
