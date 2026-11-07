@@ -12,6 +12,7 @@
       "duel_1v1": {
         "enabled": true,
         "team_size": 1,
+        "familiars": "none",
         "bot_fill": false,
         "description": "Défi direct entre deux joueurs humains, sans bot fill."
       },
@@ -19,6 +20,7 @@
         "enabled": false,
         "planned": "PR3",
         "team_size": 2,
+        "familiars": "count_in_format",
         "bot_fill": false,
         "description": "Défi direct entre deux équipes de 2 joueurs humains, planifié PR3."
       }
@@ -37,24 +39,28 @@
       "arena_1v1": {
         "enabled": true,
         "team_size": 1,
+        "familiars": "none",
         "bot_fill": true,
-        "description": "Arene normale 1v1 (Dargo). Appariement par niveau ; recrue d'arene apres le delai de matchmaking."
+        "description": "Arene normale 1v1 (Dargo). Appariement par niveau ; recrue d'arene apres le delai de matchmaking. Aucun familier."
       },
       "arena_3v3": {
         "enabled": true,
         "team_size": 3,
+        "familiars": "count_in_format",
         "bot_fill": true,
-        "description": "Arene normale 3v3. Le format compte les joueurs et les recrues ; les familiers viennent en plus."
+        "description": "Arene normale 3v3. Le format compte les joueurs, les familiers et les recrues : 3 combattants par camp, familiers compris."
       },
       "arena_6v6": {
         "enabled": true,
         "team_size": 6,
+        "familiars": "count_in_format",
         "bot_fill": true,
-        "description": "Arene normale 6v6. Le format compte les joueurs et les recrues ; les familiers viennent en plus, dans la limite des allies par camp."
+        "description": "Arene normale 6v6. Le format compte les joueurs, les familiers et les recrues : 6 combattants par camp, familiers compris."
       },
       "arena_ranked_1v1": {
         "enabled": true,
         "team_size": 1,
+        "familiars": "none",
         "bot_fill": true,
         "ranked": true,
         "description": "Arene classee 1v1. Appariement par Elo ; recrue calee sur l'Elo apres le delai. Un match contre des recrues n'est pas note."
@@ -62,6 +68,7 @@
       "arena_ranked_3v3": {
         "enabled": true,
         "team_size": 3,
+        "familiars": "count_in_format",
         "bot_fill": true,
         "ranked": true,
         "description": "Arene classee 3v3."
@@ -69,6 +76,7 @@
       "arena_ranked_6v6": {
         "enabled": true,
         "team_size": 6,
+        "familiars": "count_in_format",
         "bot_fill": true,
         "ranked": true,
         "description": "Arene classee 6v6."
@@ -76,24 +84,28 @@
       "arena_2v2": {
         "enabled": false,
         "team_size": 2,
+        "familiars": "count_in_format",
         "bot_fill": true,
         "description": "Format ferme (1v1, 3v3 et 6v6 seulement)."
       },
       "arena_4v4": {
         "enabled": false,
         "team_size": 4,
+        "familiars": "count_in_format",
         "bot_fill": true,
         "description": "Format ferme (1v1, 3v3 et 6v6 seulement)."
       },
       "arena_8v8": {
         "enabled": false,
         "team_size": 8,
+        "familiars": "count_in_format",
         "bot_fill": true,
         "description": "Format ferme (1v1, 3v3 et 6v6 seulement)."
       },
       "arena_ranked_2v2": {
         "enabled": false,
         "team_size": 2,
+        "familiars": "count_in_format",
         "bot_fill": true,
         "ranked": true,
         "description": "Format ferme (1v1, 3v3 et 6v6 seulement)."
@@ -101,6 +113,7 @@
       "arena_ranked_4v4": {
         "enabled": false,
         "team_size": 4,
+        "familiars": "count_in_format",
         "bot_fill": true,
         "ranked": true,
         "description": "Format ferme (1v1, 3v3 et 6v6 seulement)."
@@ -121,8 +134,8 @@
     },
     "match_ready_countdown_ms": 10000,
     "queue_status_push_interval_ms": 1000,
-    "notes": "Formats 1v1, 3v3, 6v6 en entités par côté. Compagnons actifs inclus, équipe du propriétaire conservée.",
-    "_alpha_2026_10_18": "Decisions Charleston du 18/10 (lots A, B, D, F, H de l'audit PvP) : classe ouvert aux recrues, difficulte des recrues du classe selon l'Elo, aucun mercenaire en arene, familiers admis partout (hors format, plafond d'allies par camp), appariement par Elo (classe) ou par niveau (normale), duree maximale par format, penalite de deserteur en classe. Les valeurs marquees _status a_valider sont des propositions a confirmer en alpha.",
+    "notes": "Formats 1v1, 3v3, 6v6 en combattants par côté, familiers compris (aucun familier en 1v1). Équipe du propriétaire conservée.",
+    "_alpha_2026_10_18": "Decisions Charleston du 18/10 (lots A, B, D, F, H de l'audit PvP) : classe ouvert aux recrues, difficulte des recrues du classe selon l'Elo, aucun mercenaire en arene, familiers admis partout (hors format, plafond d'allies par camp ; REMPLACE le 2026-11-07 : aucun familier en 1v1, en equipe il prend une place, voir companions), appariement par Elo (classe) ou par niveau (normale), duree maximale par format, penalite de deserteur en classe. Les valeurs marquees _status a_valider sont des propositions a confirmer en alpha.",
     "_modes_owner": "PROPRIETAIRE : services/pvp lit `enabled` et `bot_fill` de chaque mode ; un mode absent ou enabled false est refuse a l'inscription (mode_not_enabled). Plus de liste en dur.",
     "matchmaking": {
       "_status": "a_valider",
@@ -148,7 +161,12 @@
     "companions": {
       "familiars_allowed": true,
       "mercenaries_allowed": false,
-      "_doc": "Decision Charleston 2026-10-18. Familiers admis dans TOUS les modes d'arene, classe compris, de facon symetrique (chacun peut amener son familier actif). Ils ne prennent pas de place de format ; le plafond d'allies par camp (combat.json entity_caps, 10) les inclut. Un camp perd quand tous ses joueurs (et recrues) sont a terre, familiers debout ou non. L'Elo ne compte pas les familiers. Aucun mercenaire en arene normale, classee, salle perso ou tournoi : refus a l'inscription (mercenary_not_allowed), et le combat ne le fait jamais apparaitre. Le mercenaire reste un compagnon de PvE. ATTENTION : il n'apparait aujourd'hui NI en salle d'entrainement (combat_host saute les salles is_training) NI dans les lecons d'arene (equipe scriptee). L'y admettre, comme Charleston l'autorise, reste a cabler."
+      "familiars_by_format": {
+        "1v1": "none",
+        "team": "count_in_format"
+      },
+      "_familiars_doc": "Decision Charleston 2026-11-07, remplace celle du 2026-10-18 (familiers hors format). Regle par format, lue par services/pvp (file, salle perso) et par server-combat (salle d'arene, duel) : `none` = aucun familier (1v1 : un contre un, pas deux contre un) ; `count_in_format` = le familier prend UNE place du format, comme un joueur ou une recrue. Chaque mode porte sa regle (arena.modes.<mode>.familiars, duel.modes.<mode>.familiars) ; familiars_by_format sert aux salles sans mode (salle perso, tournoi) et de repli : `1v1` quand aucun camp n'a plus d'un joueur, `team` sinon. Composition, la plus simple : les JOUEURS d'abord, puis les familiers de ces joueurs dans les places restantes de leur camp (ordre d'inscription), puis les recrues. Un familier ne prend jamais la place d'un joueur : dans un 3v3 complet de joueurs, les familiers restent au repos. Un joueur seul avec son familier en 3v3 occupe 2 places, la 3e va a un joueur si la file en trouve un, sinon a une recrue. Un camp ne perd que quand tous ses combattants sont a terre, familiers compris. L'Elo ignore les familiers. familiars_allowed false = aucun familier nulle part.",
+      "_doc": "Aucun mercenaire en arene normale, classee, salle perso ou tournoi : refus a l'inscription (mercenary_not_allowed), et le combat ne le fait jamais apparaitre. Le mercenaire reste un compagnon de PvE. ATTENTION : il n'apparait aujourd'hui NI en salle d'entrainement (combat_host saute les salles is_training) NI dans les lecons d'arene (equipe scriptee). L'y admettre, comme Charleston l'autorise, reste a cabler."
     },
     "deserter_penalty": {
       "_status": "a_valider",
