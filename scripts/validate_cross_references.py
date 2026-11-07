@@ -1279,6 +1279,13 @@ def validate_quest_engine(db: Path, all_item_ids: set) -> list:
 
     produced = set()
     wanted = []  # (owner, flag)
+    # 2026-11-07 : un contrat sur un tableau absent de contract_limits.boards n'est ni
+    # plafonne ni affiche (le serveur repond unknown_board). Un tableau = une ligne ici.
+    boards = set(load_json(db / "world" / "quests.json").get("contract_limits", {}).get("boards", []))
+    for q in quests:
+        qb = q.get("quest_board")
+        if qb and qb not in boards:
+            errors.append(f"[quests.json] '{q.get('id', '?')}' : quest_board '{qb}' absent de contract_limits.boards")
     for q in quests:
         qid = q.get("id", "?")
         owner = f"[quests.json] '{qid}'"
