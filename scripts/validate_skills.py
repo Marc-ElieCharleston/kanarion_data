@@ -119,6 +119,8 @@ ALLOWED_METADATA_FIELDS = {
     "detonate_damage_base", "detonate_damage_per_stack",
     # Reaver (consumes bleed stacks for bonus damage)
     "consumes_bleed_stacks", "bleed_consume_damage_per_stack",
+    # Falconer (2026-11-07): remaining bleed folded into the hit (room.cpp)
+    "bleed_consume_remaining_percent",
     # Stun chance (per-skill)
     "stun_chance", "stun_chance_per_level", "stun_duration",
     # Disarm chance
