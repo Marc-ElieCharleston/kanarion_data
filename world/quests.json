@@ -6584,6 +6584,33 @@
           }
         },
         {
+          "_merge_note_0711": "2026-11-07 (Charleston : les deux potions se posent ensemble sur la barre rapide, avant le combat contre le groupe de rats) : objectif deplace de q_tut_intro_07 (index 0) vers q_tut_intro_06 (index 2). Un personnage deja en cours est realigne par le serveur (services/quest realign_quest, appariement par gabarit et cible).",
+          "template": "assign_quickslot",
+          "item_id": "cons_hp_potion_pet_t1",
+          "_order_note_0711": "2026-11-07 (playtest Charleston : « j'ai eu le combat contre les rats avant d'avoir a mettre la potion dans les raccourcis ») : la potion du familier passe AVANT le nid de rats (index 0, le combat en 1, le retour en 2). Un personnage deja en cours est realigne par le serveur sur la data (services/quest realign_quest, appariement par gabarit et cible) : sa progression est gardee. Repliques d'Aldric renumerotees en consequence (npcs.json q_tut_intro_07_obj_0 / _obj_1).",
+          "_item_id_note": "2026-10-21 : le serveur credite cet objectif en lisant la barre rapide enregistree (characters.consumable_hotbar_slots), plus sur la parole du client. Sans item_id, la potion posee a l'etape 06 validait cette etape d'office ; la description demande la potion du familier.",
+          "count": 1,
+          "description_fr": "Placer la potion de ton familier sur la barre rapide",
+          "description_en": "Put your companion's potion on the quick bar",
+          "_note": "2026-09-29 : remplace use_item cons_hp_potion_pet_t1. Le serveur refuse une potion sur un familier plein (RESOURCE_ALREADY_FULL, rien consomme) ; apres le nid le familier etait plein (les rats visent le joueur, la regen hors combat remplit le reste) et la chaine se bloquait. Toujours trois objectifs : un personnage deja a cette etape garde ses lignes en base (use_item a l'index 1, retour Aldric a l'index 2) sans decalage.",
+          "hints": {
+            "on_active": [
+              {
+                "id": "q_tut_intro_07_obj0_quickbar",
+                "type": "arrow",
+                "target": "ui_quickbar_slot_first_empty",
+                "priority": 90,
+                "show_once": true,
+                "payload": {
+                  "label_fr": "Place une potion ici",
+                  "label_en": "Place a potion here"
+                },
+                "_note": "2026-11-07 (playtest Charleston, bloquant : « la fleche pointe le sac et la potion, mais on n'a pas depuis cette interface de clic droit ou gauche pour mettre dans les raccourcis »). Meme geste que q_tut_intro_06 (case vide de la barre rapide -> Consommable -> la potion), qui marche. Libelles repris tels quels de q_tut_intro_06_obj1_arrow. Le sac propose aussi « Mettre dans les raccourcis » au clic droit (PC) et a l'appui long (mobile) depuis le client 0.20.39."
+              }
+            ]
+          }
+        },
+        {
           "template": "talk_to_npc",
           "npc_id": "npc_tutorial_instructor_aldric",
           "count": 1,
@@ -6635,32 +6662,6 @@
         ]
       },
       "objectives": [
-        {
-          "template": "assign_quickslot",
-          "item_id": "cons_hp_potion_pet_t1",
-          "_order_note_0711": "2026-11-07 (playtest Charleston : « j'ai eu le combat contre les rats avant d'avoir a mettre la potion dans les raccourcis ») : la potion du familier passe AVANT le nid de rats (index 0, le combat en 1, le retour en 2). Un personnage deja en cours est realigne par le serveur sur la data (services/quest realign_quest, appariement par gabarit et cible) : sa progression est gardee. Repliques d'Aldric renumerotees en consequence (npcs.json q_tut_intro_07_obj_0 / _obj_1).",
-          "_item_id_note": "2026-10-21 : le serveur credite cet objectif en lisant la barre rapide enregistree (characters.consumable_hotbar_slots), plus sur la parole du client. Sans item_id, la potion posee a l'etape 06 validait cette etape d'office ; la description demande la potion du familier.",
-          "count": 1,
-          "description_fr": "Placer la potion de ton familier sur la barre rapide",
-          "description_en": "Put your companion's potion on the quick bar",
-          "_note": "2026-09-29 : remplace use_item cons_hp_potion_pet_t1. Le serveur refuse une potion sur un familier plein (RESOURCE_ALREADY_FULL, rien consomme) ; apres le nid le familier etait plein (les rats visent le joueur, la regen hors combat remplit le reste) et la chaine se bloquait. Toujours trois objectifs : un personnage deja a cette etape garde ses lignes en base (use_item a l'index 1, retour Aldric a l'index 2) sans decalage.",
-          "hints": {
-            "on_active": [
-              {
-                "id": "q_tut_intro_07_obj0_quickbar",
-                "type": "arrow",
-                "target": "ui_quickbar_slot_first_empty",
-                "priority": 90,
-                "show_once": true,
-                "payload": {
-                  "label_fr": "Place une potion ici",
-                  "label_en": "Place a potion here"
-                },
-                "_note": "2026-11-07 (playtest Charleston, bloquant : « la fleche pointe le sac et la potion, mais on n'a pas depuis cette interface de clic droit ou gauche pour mettre dans les raccourcis »). Meme geste que q_tut_intro_06 (case vide de la barre rapide -> Consommable -> la potion), qui marche. Libelles repris tels quels de q_tut_intro_06_obj1_arrow. Le sac propose aussi « Mettre dans les raccourcis » au clic droit (PC) et a l'appui long (mobile) depuis le client 0.20.39."
-              }
-            ]
-          }
-        },
         {
           "template": "tutorial_combat_complete",
           "scenario_id": "meute_sortie",
