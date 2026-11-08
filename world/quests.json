@@ -5574,20 +5574,9 @@
           "count": 1,
           "description_fr": "Terminer les Égouts de Havreden",
           "description_en": "Complete the Havreden Sewers",
-          "_note": "Valide par le service donjon a la mort du boss du dernier etage (le Rongeur), pour toute l'equipe gagnante. Ezra ne connait pas le Rongeur : le texte ne le nomme jamais. 0.20.40 : l'etape d'entree (objectif 0) ne peut pas bloquer celle-ci : les deux sont ecrites par le serveur, et une fin de donjon valide aussi l'entree.",
+          "_note": "Valide par le service donjon a la mort du boss du dernier etage (le Rongeur), pour toute l'equipe gagnante. Ezra ne connait pas le Rongeur : le texte ne le nomme jamais. 0.20.40 : l'etape d'entree (objectif 0) ne peut pas bloquer celle-ci : les deux sont ecrites par le serveur, et une fin de donjon valide aussi l'entree. Decision Charleston du 08/11 : le Fragment etrange est donne AUTOMATIQUEMENT quand cette etape se termine (objective_items objectif 1), plus d'etape « examiner la marque ».",
           "difficulty": "fissure_1",
           "_note_acte1": "2026-10-24 : difficulty fissure_1 = le mode Histoire (seul palier des Egouts, world/dungeons.json story_mode). Credite seulement par une fin de donjon serveur dans ce mode (DungeonCompleted champ 3)."
-        },
-        {
-          "template": "talk_to_npc",
-          "guide_targets": [
-            "dungeon:dungeon_rat_den"
-          ],
-          "_guide_targets_note": "Revue playtest 2026-10-25 : cible du guidage seulement. Depuis le village, la grille des Egouts (la Fissure est au dernier etage).",
-          "npc_id": "npc_rat_den_fissure",
-          "description_fr": "Récupérer le fragment",
-          "description_en": "Collect the fragment",
-          "_note": "La marque de la salle d'apres le boss (npc_rat_den_fissure, nommee « Marque etrange » tant que le joueur ne sait pas ce que c'est). Mode sequential : le serveur refuse ce pas tant que le donjon n'est pas termine. 0.20.40 : Ezra a une replique par etape (entities/npcs.json npc_rift_scholar_ezra q_main_ezra_egouts_obj_0..2) : celle de cette etape reste vraie pour un joueur qui a fini le donjon sans ramasser le fragment."
         },
         {
           "template": "deliver_item",
@@ -5599,7 +5588,7 @@
           "hints": {
             "on_active": [
               {
-                "id": "q_main_ezra_egouts_obj3_arrow",
+                "id": "q_main_ezra_egouts_obj2_arrow",
                 "type": "arrow",
                 "target": "npc_rift_scholar_ezra",
                 "priority": 90,
@@ -5611,7 +5600,7 @@
               }
             ]
           },
-          "_note": "Acte I V2 (2026-10-24). Le fragment est donne une seule fois a la fin de l'objectif 2 (objective_items, cle d'idempotence economie ; objectif 1 avant le passage a 4 etapes de la 0.20.40)."
+          "_note": "Acte I V2 (2026-10-24). Le fragment est donne une seule fois a la fin de l'objectif 1, la fin du donjon en mode Histoire (objective_items, cle d'idempotence economie questobj:<quete>:<perso>:1:0, la meme qu'avant la 0.20.40 : un joueur qui l'a deja recu ne le recoit pas deux fois). Rattrapage : a la connexion, le serveur le rend a qui est a cette etape sans l'avoir (heal_quest_items, quest_step_only), par exemple un joueur qui avait fini le donjon sans examiner la marque."
         }
       ],
       "dialogue_give_fr": "Tu vas vraiment descendre ? Bon... Promets-moi de regarder ce qu'il y a tout au fond.\nLes gardes ne vont jamais aussi loin. Et moi, tu me connais, je suis meilleur avec les livres.",
@@ -5624,13 +5613,13 @@
         "xp": 4000,
         "gold": 300
       },
-      "_note": "0.20.40 (Charleston 07/11) : 4 etapes sequentielles, entrer (0), finir le donjon (1), recuperer le fragment (2), l'apporter a Ezra (3). Acte I V2 (2026-10-24), etapes 09-10. Donjon des Egouts obligatoire en mode Histoire (objectif 1, verifie serveur), trace de Fissure au dernier etage (npc_rat_den_fissure, salle d'apres le Rongeur) qui donne le fragment, remise du fragment a Ezra (deliver_item, atomique). Au rendu, le serveur accepte q_main_ezra_blessure : la cinematique d'Ezra (une seule fois, validee serveur). La ronde de Varn n'a pas de cinematique. V3.2 : le rendu pose sewers_story_completed et rift_fragment_handed_in (meme transaction) ; Ezra du village disparait alors (il part avec toi aux Egouts, puis se repose chez lui).",
+      "_note": "0.20.40 : 3 etapes sequentielles, entrer (0), finir le donjon en mode Histoire, ce qui donne le fragment (1), l'apporter a Ezra (2). Decision Charleston du 08/11 : le fragment est donne a la fin du donjon, la marque de la salle du fond ne conditionne plus rien (ambiance seulement) ; l'etape « Recuperer le fragment » est fusionnee dans la fin du donjon plutot qu'une etape validee toute seule au meme instant. Acte I V2 (2026-10-24), etapes 09-10. Donjon des Egouts obligatoire en mode Histoire (objectif 1, verifie serveur), trace de Fissure au dernier etage (npc_rat_den_fissure, salle d'apres le Rongeur) qui donne le fragment, remise du fragment a Ezra (deliver_item, atomique). Au rendu, le serveur accepte q_main_ezra_blessure : la cinematique d'Ezra (une seule fois, validee serveur). La ronde de Varn n'a pas de cinematique. V3.2 : le rendu pose sewers_story_completed et rift_fragment_handed_in (meme transaction) ; Ezra du village disparait alors (il part avec toi aux Egouts, puis se repose chez lui).",
       "prerequisites": [
         "q_main_ezra_retrouvailles"
       ],
       "objective_items": [
         {
-          "objective": 2,
+          "objective": 1,
           "items": [
             {
               "id": "quest_eclat_trace_egouts",
