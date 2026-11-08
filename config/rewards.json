@@ -682,7 +682,27 @@
   "familiar_xp": {
     "_comment": "XP de combat du familier. Regles du proprietaire (2026-10-21) : (1) l'XP du familier depend du niveau du FAMILIER, pas de celui du maitre : elle est calculee par le meme moteur que celle d'un joueur (LootRoller::roll_experience, memes monstres tues, etoiles, groupe, evenements, guilde), avec le niveau de combat du familier a la place du niveau du joueur (penalite d'ecart de niveau comprise) ; l'ecart de niveau de la salle (room_level_gap) ne s'applique pas au familier, comme le dit multiplier_families.room_level_gap. (2) Combat GAGNE = XP, meme si le familier est mort pendant le combat. Defaite = 0. Combat abandonne = la meme XP partielle qu'un joueur (abandoned_fight.xp_ratio). Puis multipliee par xp_ratio. Le niveau reste plafonne a celui du maitre (service familiar).",
     "xp_ratio": 0.9,
-    "_history": "0.9 = la part decidee le 2026-10-02 (avant : 0.7 le 2026-05-20, 1.0 le 2026-08-03), jusqu'ici ecrite en dur dans server-combat (kFamiliarXpSharePercent) et appliquee a l'XP du MAITRE. Lu par server-combat (content_loader load_reward_multipliers), OBLIGATOIRE : absent = le service combat refuse de demarrer."
+    "_history": "0.9 = la part decidee le 2026-10-02 (avant : 0.7 le 2026-05-20, 1.0 le 2026-08-03), jusqu'ici ecrite en dur dans server-combat (kFamiliarXpSharePercent) et appliquee a l'XP du MAITRE. Lu par server-combat (content_loader load_reward_multipliers), OBLIGATOIRE : absent = le service combat refuse de demarrer.",
+    "equipped_share": {
+      "_comment": "Familiers EQUIPES mais pas actifs (les autres emplacements du loadout du personnage, character_familiar_loadouts). Decision Charleston du 2026-11-07 (0.20.40) : apres un combat, chacun gagne combat_ratio x l'XP de combat du familier ACTIF (avant le bonus de monstres plus forts, qui est ensuite applique a chacun selon son propre niveau), sans avoir participe au combat. Meme condition que l'actif : rien quand l'actif ne gagne rien (defaite, entrainement, PvP). Le niveau reste plafonne a celui du maitre. Lu par le service familiar (familiar_xp_rules), OBLIGATOIRE : absent = le service familiar refuse de demarrer.",
+      "combat_ratio": 0.5,
+      "_a_valider": "0.5 = valeur decidee le 2026-11-07, a valider en jeu par Charleston."
+    },
+    "stronger_monsters_bonus": {
+      "_comment": "Bonus quand les monstres du combat sont plus forts que le familier. Decision Charleston du 2026-11-07 (0.20.40) : +per_level par niveau d'ecart, multiplicateur plafonne a max_multiplier, pour l'actif comme pour les equipes, chacun avec son propre ecart. Multiplicateur = min(max_multiplier, 1 + per_level x max(0, niveau des monstres - niveau du familier)). Niveau des monstres = MOYENNE (arrondie vers le bas) des niveaux des monstres TUES dans le combat, ceux-la memes qui paient l'XP, publiee par server-combat dans FamiliarRoomEndEvent.monster_level. Niveau du familier = son niveau enregistre avant ce combat. Ne s'applique qu'a l'XP de combat, pas a la part de quete (owner_xp_share). Lu par le service familiar, OBLIGATOIRE.",
+      "per_level": 0.1,
+      "max_multiplier": 3.0,
+      "_a_valider": "+10 % par niveau et plafond x3 = valeurs decidees le 2026-11-07, a valider. Moyenne des monstres tues : choix de l'agent (le plus simple, un monstre fort isole dans un groupe faible ne fait pas exploser le bonus) ; alternatives possibles : maximum, ou calcul monstre par monstre."
+    },
+    "owner_xp_share": {
+      "_comment": "Part de l'XP gagnee par le JOUEUR hors combat versee a CHACUN des familiers equipes (les 4 emplacements du loadout, actif compris), pour qu'on ne change pas de familier juste avant de rendre. Decision Charleston du 2026-11-07 (0.20.40). Cle = source publiee par le service quest sur kanarion.familiar.event.owner_xp : quest (rendu de quete et XP d'etape de quete), contract (rendu de contrat), contract_chest (coffres de contrats journalier et hebdomadaire). Une source absente de cette table ne verse rien. Pas de bonus de monstres plus forts ici. Le niveau reste plafonne a celui du maitre. Idempotent (table familiar_xp_grants). Lu par le service familiar, OBLIGATOIRE.",
+      "sources": {
+        "quest": 0.2,
+        "contract": 0.2,
+        "contract_chest": 0.2
+      },
+      "_a_valider": "0.2 = valeur decidee le 2026-11-07, a valider. Non branches (choix de l'agent, a decider) : succes, arene, missions de guilde, invasions, fermeture de faille. Les coffres de zone ne donnent pas d'XP."
+    }
   },
   "rift_closing": {
     "_comment": "Recompense de FERMETURE REUSSIE d'un interieur de faille (world/rift_events.json), par palier de contribution. Lu par presence (coffres, Braises, purification) ; l'XP est versee par quest (world_event_rewards, idempotent par faille et personnage). XP = xp_level_fraction x l'XP du palier du niveau de BASE = le plus bas entre le niveau du joueur et le niveau de la faille (xp_level_basis 'min_player_rift' : un niveau 99 dans une faille de rang I touche une fraction d'un niveau 20). Coffres = world/zone_chests.json tiers[rang] (contenu), multiplies ici en nombre et en or. Embers = Braises de faille du rang (mat_rift_ember_r<rang>), reservees au Chasseur de Failles qui porte une lanterne de rang >= rang de la faille (une utilisation par fermeture). En echec : rien ici (seul le Chasseur garde une part d'XP de metier, systems/profession_xp.json rift_xp.failure_share).",
