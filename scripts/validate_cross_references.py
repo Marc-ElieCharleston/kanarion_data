@@ -3174,6 +3174,36 @@ def validate_star_roll_weights(db: Path) -> list:
     return errors
 
 
+def validate_respawn_seconds(db: Path) -> list:
+    """config/game.json spawner.respawn_seconds owns the world monster respawn delay (2026-11-08).
+
+    Same rule as presence (services/presence/src/world/respawn_window.hpp): two windows
+    world / dungeon_and_scripted, whole seconds, 0 <= min <= max <= 86400, else presence
+    refuses to start. The removed duplicates must not come back.
+    """
+    errors = []
+    spawner = load_json(db / "config" / "game.json").get("spawner", {})
+    block = spawner.get("respawn_seconds")
+    if not isinstance(block, dict):
+        return ["[game.json] spawner.respawn_seconds absent : presence refuse de demarrer"]
+    for key in ("world", "dungeon_and_scripted"):
+        w = block.get(key)
+        mn = w.get("min") if isinstance(w, dict) else None
+        mx = w.get("max") if isinstance(w, dict) else None
+        if not (_is_nonneg_int(mn) and _is_nonneg_int(mx) and mn <= mx <= 86400):
+            errors.append(f"[game.json] spawner.respawn_seconds.{key}={w!r} : {{min, max}} entiers, "
+                          f"0 <= min <= max <= 86400 attendus, sinon presence refuse de demarrer")
+    for dead in ("respawn_time_min", "respawn_time_max"):
+        if dead in spawner:
+            errors.append(f"[game.json] spawner.{dead} : doublon retire le 2026-11-08, "
+                          f"la source unique est spawner.respawn_seconds")
+    for z in load_json(db / "world" / "zones.json").get("zones", []):
+        if isinstance(z.get("spawn_config"), dict) and "respawn_delay_ms" in z["spawn_config"]:
+            errors.append(f"[zones.json] {z.get('id')}.spawn_config.respawn_delay_ms : aucun lecteur, "
+                          f"la source unique est game.json spawner.respawn_seconds")
+    return errors
+
+
 def validate_respec_cost(db: Path) -> list:
     """systems/economy.json gold_sinks.respec owns the stat / skill / passive reset price."""
     r = load_json(db / "systems" / "economy.json").get("gold_sinks", {}).get("respec")
@@ -3408,6 +3438,7 @@ SINGLE_SOURCE_CHECKS = [
     validate_level_grants,
     validate_rarity_power,
     validate_star_roll_weights,
+    validate_respawn_seconds,
     validate_respec_cost,
     validate_koro_equipment,
     validate_guild_rules,
