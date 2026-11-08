@@ -45,8 +45,14 @@
       "mp_regen_per_level": 0.015,
       "souffle_cost_multiplier": 0.35,
       "_souffle_note": "A VALIDER (proposition 2026-10-27, decision Charleston sur le Souffle des compagnons). Avant : regen plate de la classe (stats/class_base_stats.json mp_regen 1 /s, croissance 0) et couts pleins des sorts de classe : le mercenaire etait a sec en 5 a 40 s et restait inactif. Le Souffle reste conserve d'un combat a l'autre (pas de remise a plein au debut, pas d'attaque gratuite) : les potions gardent leur role. mp_regen_base + mp_regen_per_level x (niveau du mercenaire - 1) = regen en Souffle par seconde, en combat (server-combat try_spawn_mercenary_for) ET hors combat (tick de 5 s du service mercenaire) : niveau 8 = 1,3 /s, niveau 28 = 1,6 /s, niveau 58 = 2,05 /s, niveau 98 = 2,65 /s. souffle_cost_multiplier = cout des sorts de classe x 0,35 pour CE mercenaire seulement (arrondi, jamais sous 1) : les sorts sont ceux des joueurs, leur mana_cost ne bouge pas ; les recrues d'arene, les monstres et les joueurs paient le cout de la data. Calibre au simulateur (rotation au plafond, sort pret le plus cher a chaque GCD de 2 s) : kits de sous-classe a sec apres la fin d'un pack et avant la fin d'un elite (38 s / 68 s / 143 s aux niveaux joueur 10 / 30 / 60), depense 2,6 / 2,1 / 1,7 fois la regen ; kits de base (6 sorts) presque jamais a sec (1,3 / 1,05 / 0,8 fois la regen). Sans ces cles, un profil garde la regen de classe et le cout plein (profils pvp_filler_*, tutoriel).",
-      "hp_from_familiar_role": {
-        "factor": 0.6,
+      "hp_by_level": {
+        "tank_anchors": [[1, 90], [5, 100], [10, 190], [20, 930], [30, 1412], [50, 2332]],
+        "role_ratio": {
+          "tank": 1.0,
+          "attaque": 0.6,
+          "heal": 0.6,
+          "utilitaire": 0.6
+        },
         "role_by_ai_profile": {
           "tank": "tank",
           "healer": "heal",
@@ -58,7 +64,7 @@
           "bruiser": "attaque",
           "brute": "attaque"
         },
-        "_a_valider": "A VALIDER (decision Charleston 2026-11-07, 0.20.40). Le mercenaire ne grandissait presque pas (classe x hp_multiplier : tank niveau 18 = 342 PV contre ~700 pour un monstre du meme niveau). Cible de Charleston : un tank niveau 20 entre 800 et 1000 PV. PV max = PV du profil de role du familier (config/familiar_balance.json role_profiles.<role> : base_stats.hp + growth.hp x (niveau - 1)) x factor : tank niveau 20 = 952, attaque 565, soin 559, utilitaire 704. L'option a x0,9 (tank 1427) a ete refusee. Seuls les PV changent (atk, armure, Souffle : formule de classe x multiplicateurs ci-dessus). hp_multiplier n'est plus lu pour ce profil, sauf pour un ai_profile absent de role_by_ai_profile. Calcul unique : shared/gameplay/mercenary_hp.hpp, lu par server-combat (try_spawn_mercenary_for) et le service mercenaire (embauche, suivi de niveau). Les recrues d'arene (pvp_balance_profile) et les bots du tutoriel ne lisent pas ce bloc."
+        "_a_valider": "A VALIDER (decisions Charleston 2026-11-07 et 2026-11-08, 0.20.40). Le mercenaire ne grandissait presque pas (classe x hp_multiplier : tank niveau 18 = 342 PV). Cible : un juste milieu, qu'on ne prefere pas un mercenaire a un joueur mais qu'il reste utile, soit environ 80 % d'un joueur median du meme role et du meme niveau (medianes prod des joueurs actifs sur 30 jours : guerrier ~126 PV au niveau ~5, ~234 au niveau ~10, ~1168 au niveau ~20 ; non-tanks ~85-110, ~130-200, ~180-690). PV max d'un tank = tank_anchors ([niveau, PV]), interpolation lineaire entre deux ancres, au-dela de la derniere la derniere pente prolongee (46 PV par niveau). Les ancres 30 et 50 suivent le profil tank du familier x0,6 (config/familiar_balance.json role_profiles.tank). Autres roles = role_ratio x PV du tank au meme niveau. hp_multiplier n'est plus lu pour ce profil, sauf pour un ai_profile absent de role_by_ai_profile. Seuls les PV changent (atk, armure, Souffle : formule de classe x multiplicateurs ci-dessus). Calcul unique : shared/gameplay/mercenary_hp.hpp, lu par server-combat (try_spawn_mercenary_for) et le service mercenaire (embauche, suivi de niveau). Un bloc mal forme empeche les deux de demarrer. Les recrues d'arene (pvp_balance_profile) et les bots du tutoriel ne lisent pas ce bloc."
       }
     },
     "tutorial_sparring_ally_v1": {
