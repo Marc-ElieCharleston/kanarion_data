@@ -12,6 +12,7 @@
       "duel_1v1": {
         "enabled": true,
         "team_size": 1,
+        "familiars": "none",
         "bot_fill": false,
         "description": "Défi direct entre deux joueurs humains, sans bot fill."
       },
@@ -19,6 +20,7 @@
         "enabled": false,
         "planned": "PR3",
         "team_size": 2,
+        "familiars": "count_in_format",
         "bot_fill": false,
         "description": "Défi direct entre deux équipes de 2 joueurs humains, planifié PR3."
       }
@@ -37,24 +39,28 @@
       "arena_1v1": {
         "enabled": true,
         "team_size": 1,
+        "familiars": "none",
         "bot_fill": true,
-        "description": "Arene normale 1v1 (Dargo). Appariement par niveau ; recrue d'arene apres le delai de matchmaking."
+        "description": "Arene normale 1v1 (Dargo). Appariement par niveau ; recrue d'arene apres le delai de matchmaking. Aucun familier."
       },
       "arena_3v3": {
         "enabled": true,
         "team_size": 3,
+        "familiars": "count_in_format",
         "bot_fill": true,
-        "description": "Arene normale 3v3. Le format compte les joueurs et les recrues ; les familiers viennent en plus."
+        "description": "Arene normale 3v3. Le format compte les joueurs, les familiers et les recrues : 3 combattants par camp, familiers compris."
       },
       "arena_6v6": {
         "enabled": true,
         "team_size": 6,
+        "familiars": "count_in_format",
         "bot_fill": true,
-        "description": "Arene normale 6v6. Le format compte les joueurs et les recrues ; les familiers viennent en plus, dans la limite des allies par camp."
+        "description": "Arene normale 6v6. Le format compte les joueurs, les familiers et les recrues : 6 combattants par camp, familiers compris."
       },
       "arena_ranked_1v1": {
         "enabled": true,
         "team_size": 1,
+        "familiars": "none",
         "bot_fill": true,
         "ranked": true,
         "description": "Arene classee 1v1. Appariement par Elo ; recrue calee sur l'Elo apres le delai. Un match contre des recrues n'est pas note."
@@ -62,6 +68,7 @@
       "arena_ranked_3v3": {
         "enabled": true,
         "team_size": 3,
+        "familiars": "count_in_format",
         "bot_fill": true,
         "ranked": true,
         "description": "Arene classee 3v3."
@@ -69,6 +76,7 @@
       "arena_ranked_6v6": {
         "enabled": true,
         "team_size": 6,
+        "familiars": "count_in_format",
         "bot_fill": true,
         "ranked": true,
         "description": "Arene classee 6v6."
@@ -76,24 +84,28 @@
       "arena_2v2": {
         "enabled": false,
         "team_size": 2,
+        "familiars": "count_in_format",
         "bot_fill": true,
         "description": "Format ferme (1v1, 3v3 et 6v6 seulement)."
       },
       "arena_4v4": {
         "enabled": false,
         "team_size": 4,
+        "familiars": "count_in_format",
         "bot_fill": true,
         "description": "Format ferme (1v1, 3v3 et 6v6 seulement)."
       },
       "arena_8v8": {
         "enabled": false,
         "team_size": 8,
+        "familiars": "count_in_format",
         "bot_fill": true,
         "description": "Format ferme (1v1, 3v3 et 6v6 seulement)."
       },
       "arena_ranked_2v2": {
         "enabled": false,
         "team_size": 2,
+        "familiars": "count_in_format",
         "bot_fill": true,
         "ranked": true,
         "description": "Format ferme (1v1, 3v3 et 6v6 seulement)."
@@ -101,6 +113,7 @@
       "arena_ranked_4v4": {
         "enabled": false,
         "team_size": 4,
+        "familiars": "count_in_format",
         "bot_fill": true,
         "ranked": true,
         "description": "Format ferme (1v1, 3v3 et 6v6 seulement)."
@@ -121,8 +134,8 @@
     },
     "match_ready_countdown_ms": 10000,
     "queue_status_push_interval_ms": 1000,
-    "notes": "Formats 1v1, 3v3, 6v6 en entités par côté. Compagnons actifs inclus, équipe du propriétaire conservée.",
-    "_alpha_2026_10_18": "Decisions Charleston du 18/10 (lots A, B, D, F, H de l'audit PvP) : classe ouvert aux recrues, difficulte des recrues du classe selon l'Elo, aucun mercenaire en arene, familiers admis partout (hors format, plafond d'allies par camp), appariement par Elo (classe) ou par niveau (normale), duree maximale par format, penalite de deserteur en classe. Les valeurs marquees _status a_valider sont des propositions a confirmer en alpha.",
+    "notes": "Formats 1v1, 3v3, 6v6 en combattants par côté, familiers compris (aucun familier en 1v1). Équipe du propriétaire conservée.",
+    "_alpha_2026_10_18": "Decisions Charleston du 18/10 (lots A, B, D, F, H de l'audit PvP) : classe ouvert aux recrues, difficulte des recrues du classe selon l'Elo, aucun mercenaire en arene, familiers admis partout (hors format, plafond d'allies par camp ; REMPLACE le 2026-11-07 : aucun familier en 1v1, en equipe il prend une place, voir companions), appariement par Elo (classe) ou par niveau (normale), duree maximale par format, penalite de deserteur en classe. Les valeurs marquees _status a_valider sont des propositions a confirmer en alpha.",
     "_modes_owner": "PROPRIETAIRE : services/pvp lit `enabled` et `bot_fill` de chaque mode ; un mode absent ou enabled false est refuse a l'inscription (mode_not_enabled). Plus de liste en dur.",
     "matchmaking": {
       "_status": "a_valider",
@@ -148,7 +161,12 @@
     "companions": {
       "familiars_allowed": true,
       "mercenaries_allowed": false,
-      "_doc": "Decision Charleston 2026-10-18. Familiers admis dans TOUS les modes d'arene, classe compris, de facon symetrique (chacun peut amener son familier actif). Ils ne prennent pas de place de format ; le plafond d'allies par camp (combat.json entity_caps, 10) les inclut. Un camp perd quand tous ses joueurs (et recrues) sont a terre, familiers debout ou non. L'Elo ne compte pas les familiers. Aucun mercenaire en arene normale, classee, salle perso ou tournoi : refus a l'inscription (mercenary_not_allowed), et le combat ne le fait jamais apparaitre. Le mercenaire reste un compagnon de PvE. ATTENTION : il n'apparait aujourd'hui NI en salle d'entrainement (combat_host saute les salles is_training) NI dans les lecons d'arene (equipe scriptee). L'y admettre, comme Charleston l'autorise, reste a cabler."
+      "familiars_by_format": {
+        "1v1": "none",
+        "team": "count_in_format"
+      },
+      "_familiars_doc": "Decision Charleston 2026-11-07, remplace celle du 2026-10-18 (familiers hors format). Regle par format, lue par services/pvp (file, salle perso) et par server-combat (salle d'arene, duel) : `none` = aucun familier (1v1 : un contre un, pas deux contre un) ; `count_in_format` = le familier prend UNE place du format, comme un joueur ou une recrue. Chaque mode porte sa regle (arena.modes.<mode>.familiars, duel.modes.<mode>.familiars) ; familiars_by_format sert aux salles sans mode (salle perso, tournoi) et de repli : `1v1` quand aucun camp n'a plus d'un joueur, `team` sinon. Composition, la plus simple : les JOUEURS d'abord, puis les familiers de ces joueurs dans les places restantes de leur camp (ordre d'inscription), puis les recrues. Un familier ne prend jamais la place d'un joueur : dans un 3v3 complet de joueurs, les familiers restent au repos. Un joueur seul avec son familier en 3v3 occupe 2 places, la 3e va a un joueur si la file en trouve un, sinon a une recrue. Un camp ne perd que quand tous ses combattants sont a terre, familiers compris. L'Elo ignore les familiers. familiars_allowed false = aucun familier nulle part.",
+      "_doc": "Aucun mercenaire en arene normale, classee, salle perso ou tournoi : refus a l'inscription (mercenary_not_allowed), et le combat ne le fait jamais apparaitre. Le mercenaire reste un compagnon de PvE. ATTENTION : il n'apparait aujourd'hui NI en salle d'entrainement (combat_host saute les salles is_training) NI dans les lecons d'arene (equipe scriptee). L'y admettre, comme Charleston l'autorise, reste a cabler."
     },
     "deserter_penalty": {
       "_status": "a_valider",
@@ -165,61 +183,61 @@
       "level_ramp": [
         {
           "level": 1,
-          "hp_scale": 1.0,
-          "damage_scale": 0.95
+          "hp_scale": 0.4,
+          "damage_scale": 0.75
         },
         {
           "level": 10,
-          "hp_scale": 1.5,
-          "damage_scale": 1.1
+          "hp_scale": 0.8,
+          "damage_scale": 0.85
         },
         {
           "level": 20,
-          "hp_scale": 2.0,
-          "damage_scale": 1.1
+          "hp_scale": 1.0,
+          "damage_scale": 1.0
         },
         {
           "level": 30,
-          "hp_scale": 2.5,
-          "damage_scale": 1.5
+          "hp_scale": 1.2,
+          "damage_scale": 1.1
         },
         {
           "level": 40,
-          "hp_scale": 3.0,
-          "damage_scale": 1.7
+          "hp_scale": 1.5,
+          "damage_scale": 1.25
         },
         {
           "level": 50,
-          "hp_scale": 3.25,
-          "damage_scale": 1.75
+          "hp_scale": 1.65,
+          "damage_scale": 1.3
         },
         {
           "level": 60,
-          "hp_scale": 4.0,
-          "damage_scale": 2.2
+          "hp_scale": 2.0,
+          "damage_scale": 1.65
         },
         {
           "level": 70,
-          "hp_scale": 4.0,
-          "damage_scale": 2.45
+          "hp_scale": 2.0,
+          "damage_scale": 1.85
         },
         {
           "level": 80,
-          "hp_scale": 4.5,
-          "damage_scale": 2.75
+          "hp_scale": 2.25,
+          "damage_scale": 2.05
         },
         {
           "level": 90,
-          "hp_scale": 5.5,
-          "damage_scale": 3.0
+          "hp_scale": 2.75,
+          "damage_scale": 2.25
         },
         {
           "level": 100,
-          "hp_scale": 6.0,
-          "damage_scale": 3.2
+          "hp_scale": 3.0,
+          "damage_scale": 2.4
         }
       ],
-      "_level_ramp_doc": "A VALIDER EN JEU (Charleston, 2026-10-23 : on livre pour tester). Un point tous les 10 niveaux, interpole lineairement entre deux points. Une recrue n'a ni passifs, ni equipement, ni keystones, ni Koro : son renfort suit l'ecart avec un joueur de son niveau, qui se creuse avec le niveau (equipement, passifs, puis specialisation a 60). Chaque point vient de la simulation du VRAI moteur (kanarion_back server-combat/tests/unit/test_arena_recruit_spec_kits.cpp DISABLED_HumanVersusRecruitsWinRate, SIM_LEVEL=N) : humain de niveau N (barre et rangs de son niveau, 3 points de stat par niveau, passifs communs, equipement attendu du StatRoller, IA d'auto-combat 3) contre des recrues d'arene normale (IA 1), 1v1 et 3v3 (humain + 2 recrues contre 3 recrues). Cible : l'humain gagne environ 70 %. Mesure (2 graines, 768 combats par point et par format) : 1v1 68 a 78 %, 3v3 59 a 67 % (en 3v3 les deux allies du joueur sont aussi des recrues renforcees, l'ecart y est mecaniquement plus faible). Duree mediane : 26 a 37 s en 1v1, 61 a 84 s en 3v3 (reference joueur contre joueur simule : 10 a 18 s en 1v1, 14 a 28 s en 3v3). Le seuil config/rewards.json arena_match.min_combat_seconds (60 s, que 1 a 12 % seulement des 1v1 contre recrues atteignaient) est retire depuis le 2026-10-23 (0, aucun minimum). Les paliers d'Elo du classe (ranked_elo_tiers) se multiplient par-dessus, inchanges. Ancienne rampe (0.4/0.55 au niveau 1 ... 1.0/1.0 a partir de 60) : l'humain gagnait 95 a 100 % du niveau 1 au niveau 100 (1v1, 17 s de mediane au niveau 60).",
+      "_level_ramp_doc": "A VALIDER (Charleston, 2026-11-07 : « les bots sont beaucoup trop forts en stats »). Rampe recalee le 2026-11-07 sur un joueur NU ou A DEMI EQUIPE de son niveau, et non plus sur un joueur entierement equipe : l'ancienne rampe (1.0/0.95 au niveau 1, 2.0/1.1 au 20, 2.5/1.5 au 30, 3.0/1.7 au 40 ... 6.0/3.2 au 100) etait calee sur l'humain simule portant dix pieces attendues du StatRoller (370 a 570 PV au niveau 22), alors que les joueurs de la prod au niveau 20-30 ont 130 a 310 PV. Mesure du 07/11 (server-combat tests DISABLED_RecruitVersusPlayerStats et DISABLED_HumanVersusRecruitsWinRate, SIM_GEAR = part de l'equipement, 768 combats par point) : au niveau 22, ancienne rampe = recrue 931 PV en moyenne (718 a 1459) contre 292 / 395 / 497 PV pour l'humain nu / demi / equipe ; le joueur 1v1 gagnait 12 % nu, 45 % a demi, 74 % equipe. Nouvelle rampe au 22 (1.04/1.02 interpoles) : recrue ~460 PV, joueur 1v1 47 % nu, 79 % a demi ; 3v3 38 % nu, 60 % a demi. Niveau 1 (0.4/0.75) : nu 30 % (0 % avant). 10 (0.8/0.85) : nu 42 %, demi 89 %. 30 (1.2/1.1) : nu 52 %, demi 87 % (11 % et 48 % avant). 40 (1.5/1.25) : nu 47 %, demi 81 % (9 % et 41 % avant). 60 (2.0/1.65) : nu 27 %, demi 75 %. 50 et 70 a 100 : ancienne valeur x0.5 en PV et x0.75 en degats, NON mesures contre de vrais joueurs. Un point tous les 10 niveaux, interpole lineairement. Les paliers d'Elo du classe (ranked_elo_tiers) se multiplient par-dessus, inchanges. Rampe precedente (calibree le 2026-10-23 sur l'humain equipe) : A VALIDER EN JEU (Charleston, 2026-10-23 : on livre pour tester). Un point tous les 10 niveaux, interpole lineairement entre deux points. Une recrue n'a ni passifs, ni equipement, ni keystones, ni Koro : son renfort suit l'ecart avec un joueur de son niveau, qui se creuse avec le niveau (equipement, passifs, puis specialisation a 60). Chaque point vient de la simulation du VRAI moteur (kanarion_back server-combat/tests/unit/test_arena_recruit_spec_kits.cpp DISABLED_HumanVersusRecruitsWinRate, SIM_LEVEL=N) : humain de niveau N (barre et rangs de son niveau, 3 points de stat par niveau, passifs communs, equipement attendu du StatRoller, IA d'auto-combat 3) contre des recrues d'arene normale (IA 1), 1v1 et 3v3 (humain + 2 recrues contre 3 recrues). Cible : l'humain gagne environ 70 %. Mesure (2 graines, 768 combats par point et par format) : 1v1 68 a 78 %, 3v3 59 a 67 % (en 3v3 les deux allies du joueur sont aussi des recrues renforcees, l'ecart y est mecaniquement plus faible). Duree mediane : 26 a 37 s en 1v1, 61 a 84 s en 3v3 (reference joueur contre joueur simule : 10 a 18 s en 1v1, 14 a 28 s en 3v3). Le seuil config/rewards.json arena_match.min_combat_seconds (60 s, que 1 a 12 % seulement des 1v1 contre recrues atteignaient) est retire depuis le 2026-10-23 (0, aucun minimum). Les paliers d'Elo du classe (ranked_elo_tiers) se multiplient par-dessus, inchanges. Ancienne rampe (0.4/0.55 au niveau 1 ... 1.0/1.0 a partir de 60) : l'humain gagnait 95 a 100 % du niveau 1 au niveau 100 (1v1, 17 s de mediane au niveau 60).",
       "exhibition": {
         "hp_scale": 1.0,
         "damage_scale": 1.0,
