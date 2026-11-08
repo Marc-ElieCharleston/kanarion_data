@@ -91,6 +91,10 @@ ALLOWED_METADATA_FIELDS = {
     # Random pools (Cardmaster)
     "random_buffs_min", "random_buffs_max", "buff_pool",
     "random_buffs_min_at_level_5",
+    # Paliers de rang (rangs 5 et 10, Charleston 2026-11-08) : liste developpee par
+    # scripts/balance/rank_milestones.py (--check), validee au chargement par server-combat
+    # (content_loader parse_rank_milestones) et par validate_cross_references (durees).
+    "rank_milestones",
     # Schema du tirage aleatoire GELE le 2026-08-03, pour que le back code contre une
     # forme stable. Avant : deux schemas incompatibles, des `value` sur des effets
     # canoniques (interdit par le contrat Option A, et deux valeurs au-dessus du

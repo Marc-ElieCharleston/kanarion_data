@@ -3511,25 +3511,47 @@ def validate_status_duration_rule(db: Path) -> list:
         for s in walk(load_json(path)):
             sid = s["id"]
             longest = 0.0
-            spans = []   # (label, kind, rank-1 value, max-rank value)
+            spans = []   # (label, kind, shortest over the ranks, longest over the ranks)
+            # Rank milestones (config/skill_system.json skill_levels.milestone_ranks): an
+            # extra_duration adds seconds from its rank on, a cooldown_percent shortens the
+            # cooldown from its rank on. Durations are checked rank by rank with both.
+            ms = s.get("rank_milestones") or []
+
+            def extra(stat, rank):
+                return sum(float(m["value"]) for m in ms if m.get("bonus") == "extra_duration"
+                           and m.get("stat") == stat and m.get("rank", 0) <= rank)
+
+            def cd_at(rank):
+                pct = sum(float(m["value"]) for m in ms if m.get("bonus") == "cooldown_percent"
+                          and m.get("rank", 0) <= rank)
+                return float(s.get("cooldown") or 0) * (1 + pct / 100) + \
+                    float(s.get("cooldown_per_level") or 0) * (rank - 1)
+
+            longest_at = {r: 0.0 for r in range(1, ranks + 1)}
             for e in s.get("effects") or []:
                 stat = e.get("stat") or e.get("status_id")
                 if e.get("type") == "utility" or not e.get("duration"):
                     continue
                 d, dpl = float(e["duration"]), float(e.get("duration_per_level") or 0)
-                top = d + dpl * (ranks - 1)
-                longest = max(longest, d, top)
+                per_rank = [d + dpl * (r - 1) + extra(stat, r) for r in range(1, ranks + 1)]
+                for r, v in zip(range(1, ranks + 1), per_rank):
+                    longest_at[r] = max(longest_at[r], v)
+                longest = max(longest, *per_rank)
                 if category.get(stat) in excluded:
                     continue
-                spans.append((stat, "hard" if stat in hard_cc else "soft", min(d, top), max(d, top)))
+                spans.append((stat, "hard" if stat in hard_cc else "soft", min(per_rank), max(per_rank)))
             if s.get("dot_duration"):
                 d, dpl = float(s["dot_duration"]), float(s.get("dot_duration_per_level") or 0)
-                top = d + dpl * (ranks - 1)
-                longest = max(longest, d, top)
-                spans.append(("dot_duration", "soft", min(d, top), max(d, top)))
+                per_rank = [d + dpl * (r - 1) + extra(s.get("dot_type"), r) for r in range(1, ranks + 1)]
+                for r, v in zip(range(1, ranks + 1), per_rank):
+                    longest_at[r] = max(longest_at[r], v)
+                longest = max(longest, *per_rank)
+                spans.append(("dot_duration", "soft", min(per_rank), max(per_rank)))
             for k in ("random_buffs_duration", "random_debuffs_duration"):
                 if s.get(k):
                     longest = max(longest, float(s[k]))
+                    for r in longest_at:
+                        longest_at[r] = max(longest_at[r], float(s[k]))
                     spans.append((k, "soft", float(s[k]), float(s[k])))
             for stat, kind, lo_v, hi_v in spans:
                 lo, hi = soft if kind == "soft" else hard
@@ -3538,12 +3560,112 @@ def validate_status_duration_rule(db: Path) -> list:
                         f"[{path.parent.name}/skills.json] {sid} : '{stat}' dure {lo_v:g}-{hi_v:g} s "
                         f"(rangs 1-{ranks}), hors des bornes {'du controle fort' if kind == 'hard' else 'des effets doux'} "
                         f"[{lo:g}, {hi:g}] s (stats/status_effects.json _meta.duration_rule)")
-            cd = float(s.get("cooldown") or 0)
-            cd_min = min(cd, cd + float(s.get("cooldown_per_level") or 0) * (ranks - 1))
-            if longest > 0 and cd_min <= longest + eps and sid not in cd_exempt:
-                errors.append(
-                    f"[{path.parent.name}/skills.json] {sid} : cooldown {cd_min:g} s <= duree appliquee "
-                    f"{longest:g} s (le cooldown doit etre strictement plus long, _meta.duration_rule.cooldown_rule)")
+            if sid not in cd_exempt:
+                for r in range(1, ranks + 1):
+                    if longest_at[r] > 0 and cd_at(r) <= longest_at[r] + eps:
+                        errors.append(
+                            f"[{path.parent.name}/skills.json] {sid} : cooldown {cd_at(r):g} s <= duree appliquee "
+                            f"{longest_at[r]:g} s au rang {r} (le cooldown doit etre strictement plus long, "
+                            f"_meta.duration_rule.cooldown_rule ; paliers de rang compris)")
+                        break
+    return errors
+
+
+RANK_MILESTONE_BONUSES = ("extra_stacks", "extra_duration", "extra_effect", "cooldown_percent")
+
+
+def validate_rank_milestones(db: Path) -> list:
+    """Shape of the `rank_milestones` lists of the class skills (Charleston 2026-11-08), the
+    same contract server-combat content_loader enforces at load (parse_rank_milestones):
+    rank declared in config/skill_system.json skill_levels.milestone_ranks, known bonus, an
+    effect the skill applies, stacks never above the canonical max_stacks, a complement of the
+    same polarity (buff -> buff), a duration bonus only on an effect with a duration, a
+    cooldown cut in [-50, 0). Skills cast at rank 1 (familiars, max_level 1) carry none. The
+    per-skill lists themselves are expanded from the rules by scripts/balance/rank_milestones.py
+    (--check)."""
+    errors = []
+    levels = load_json(db / "config" / "skill_system.json").get("skill_levels", {})
+    ranks = levels.get("milestone_ranks")
+    if not (isinstance(ranks, list) and ranks and all(isinstance(r, int) for r in ranks)
+            and ranks == sorted(set(ranks)) and 2 <= ranks[0] and ranks[-1] <= levels.get("max_level", 0)):
+        return [f"[config/skill_system.json] skill_levels.milestone_ranks invalide ({ranks!r}) : rangs croissants dans [2, max_level]"]
+    se = load_json(db / "stats" / "status_effects.json")
+    grid = {}
+    for group, block in se["_meta"]["canonical_grid"].items():
+        if group.startswith("_") or not isinstance(block, dict):
+            continue
+        for eid, d in block.items():
+            if not eid.startswith("_") and isinstance(d, dict) and d.get("max_stacks", 0) > 0:
+                grid[eid] = d["max_stacks"]
+    polarity = {}
+    for cat, block in se.get("effects", {}).items():
+        for eid, d in (block or {}).items():
+            if not eid.startswith("_") and isinstance(d, dict):
+                polarity[eid] = d.get("polarity")
+
+    def walk(node):
+        if isinstance(node, dict):
+            if str(node.get("id", "")).startswith("skill_") and "target" in node:
+                yield node
+                return
+            for k, v in node.items():
+                if not k.startswith("_"):
+                    yield from walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                yield from walk(v)
+
+    for path in sorted((db / "classes").glob("*/skills.json")):
+        where = f"[{path.parent.name}/skills.json]"
+        for s in walk(load_json(path)):
+            ms = s.get("rank_milestones")
+            if ms is None:
+                continue
+            sid = s["id"]
+            if path.parent.name == "familiar" or s.get("max_level") == 1:
+                errors.append(f"{where} {sid} : rank_milestones sur un sort lance au rang 1")
+                continue
+            effects = {}
+            for e in s.get("effects") or []:
+                st = e.get("stat") or e.get("status_id")
+                if st and e.get("type") != "utility":
+                    effects.setdefault(st, e)
+            after = {st: (e.get("stacks_to_apply") or 0) for st, e in effects.items()}
+            cd_total = 0.0
+            for m in ms:
+                b, st, v = m.get("bonus"), m.get("stat"), m.get("value")
+                if m.get("rank") not in ranks:
+                    errors.append(f"{where} {sid} : palier au rang {m.get('rank')!r} absent de skill_levels.milestone_ranks {ranks}")
+                if b not in RANK_MILESTONE_BONUSES or not isinstance(v, (int, float)):
+                    errors.append(f"{where} {sid} : palier {m!r} invalide (bonus {RANK_MILESTONE_BONUSES})")
+                    continue
+                if b == "extra_stacks":
+                    if st not in grid or not after.get(st):
+                        errors.append(f"{where} {sid} : extra_stacks sur '{st}', pas un effet a charges du sort")
+                        continue
+                    after[st] += v
+                    if after[st] > grid[st]:
+                        errors.append(f"{where} {sid} : '{st}' atteint {after[st]} charges, au-dessus de max_stacks {grid[st]}")
+                elif b == "extra_duration":
+                    ok = (st in effects and effects[st].get("duration")) or (st == s.get("dot_type") and s.get("dot_duration"))
+                    if not ok or not 0 < v <= 4:
+                        errors.append(f"{where} {sid} : extra_duration {v!r} s sur '{st}' (effet du sort avec une duree, 0 < s <= 4)")
+                elif b == "extra_effect":
+                    w = m.get("with")
+                    if st not in grid or st in effects or w not in effects or not after.get(w):
+                        errors.append(f"{where} {sid} : extra_effect '{st}' avec '{w}' invalide (effet canonique absent du sort, avec un effet a charges du sort)")
+                        continue
+                    if polarity.get(st) != polarity.get(w) or effects[w].get("type") not in ("buff", "debuff"):
+                        errors.append(f"{where} {sid} : extra_effect '{st}' n'a pas le sens de '{w}'")
+                    after[st] = after.get(st, 0) + v
+                    if after[st] > grid[st]:
+                        errors.append(f"{where} {sid} : extra_effect '{st}' au-dessus de max_stacks {grid[st]}")
+                elif b == "cooldown_percent":
+                    cd_total += v
+                    if not (s.get("cooldown") or 0) > 0 or not -50 <= v < 0:
+                        errors.append(f"{where} {sid} : cooldown_percent {v!r} hors de [-50, 0) ou sort sans recharge")
+            if cd_total < -50:
+                errors.append(f"{where} {sid} : cooldown_percent cumule {cd_total:g} sous -50")
     return errors
 
 
@@ -3639,6 +3761,17 @@ def main():
     errs = validate_skill_patterns(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12m/12] Validating skill rank milestones (rank_milestones)...")
+    errs = validate_rank_milestones(db)
+    if errs:
+        all_errors.extend(errs)
+        for e in errs[:30]:
+            print(f"  {e}")
+        if len(errs) > 30:
+            print(f"  ... and {len(errs) - 30} more")
+    else:
+        print("  OK")
 
     print("[12s/12] Validating player skill status durations and cooldowns (duration_rule)...")
     errs = validate_status_duration_rule(db)
