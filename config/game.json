@@ -220,6 +220,20 @@
     "_board_range_keyword_note": "Une portee qui vaut cette chaine (skill range ou movement.range) veut dire TOUT LE PLATEAU, sans nombre magique : serveur (content_loader.cpp) et client (skill.gd) la resolvent en (rangs - 1) + (colonnes - 1) de combat_grids.default, la plus grande distance Manhattan du plateau (16 sur le 12x6). Utilisee par la teleportation de l'assassin (Frappe de l'Ombre) et le Pas de l'Ombre du voleur (decision 2026-10-17 : portee illimitee).",
     "_aoe_placement_floor_note": "Une zone SANS range explicite est posee a max(base_range, aoe_placement_floor). Ancien kAoePlacementFloor code en dur. Inchange au passage au 12x6 : on ne monte pas les portees (decision 2026-10-17)."
   },
+  "class_trial": {
+    "_comment": "Salle d'essai de classe (bouton Tester de l'ecran de choix de classe), decision Charleston 2026-11-08. Lu par server-combat (CombatHost, ClassTrialSettings) a la creation de la salle et a l'entree du joueur. Le niveau du kit ne vit PAS ici : il suit la colonne choisie et se lit dans config/skill_system.json skill_categories (base = niveau de creation, subclass = acces a la sous-classe, tier3 = acces a la specialisation), cote personnage ET cote combat. Bloc absent ou invalide : l'ancienne salle (un mannequin inerte) est gardee, avec une erreur au journal.",
+    "enemy_dummies": 3,
+    "_enemy_dummies_note": "Mannequins ennemis, poses au premier rang ennemi, colonnes les plus proches du joueur (meme placement que la salle d'entrainement de l'arene) : une ligne pour voir les sorts de zone, de ligne et de croix. Ils ne ripostent pas.",
+    "ally_dummies": 2,
+    "_ally_dummies_note": "Mannequins allies blesses, de part et d'autre du joueur, pour voir les soins, boucliers et renforcements (cibles alliees valides, comptes dans les soins de zone). Ils n'agissent pas.",
+    "enemy_max_hp_ratio": 5.0,
+    "ally_max_hp_ratio": 1.0,
+    "ally_start_hp_ratio": 0.4,
+    "_hp_note": "PV max des mannequins = PV max du personnage d'essai x le ratio (entiers, au moins 1). Les allies commencent a ally_start_hp_ratio de leurs PV max. Aucun mannequin ne meurt : un coup s'arrete a 1 PV.",
+    "reset_after_seconds": 4,
+    "_reset_note": "Apres ce nombre de secondes sans changement de PV (pas de degat pour un ennemi, pas de soin pour un allie), le mannequin revient a son etat de depart : PV pleins pour un ennemi, PV de depart (blesse) pour un allie. On teste sans fin.",
+    "_a_valider": "A VALIDER (2026-11-08) : nombres de mannequins, ratios de PV et delai de remise a zero sont des propositions."
+  },
   "minimap": {
     "_note": "Parametres REELS de la minimap, lus par le client. `world_radius: 300` vivait ici sans aucun lecteur pendant que minimap_panel.gd rendait avec 800 -- la meme double verite que camera/player.gd, tuee le 2026-08-28. Le backend derive son rayon d'AOI de ces valeurs : les fausser fait apparaitre des monstres sur la minimap.",
     "base_world_radius": 800.0,
