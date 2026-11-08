@@ -4856,6 +4856,8 @@
           "gated_by_objectives": [4],
           "description_fr": "Reparler à Colette",
           "description_en": "Talk to Colette again",
+          "screen_link": "familiars",
+          "_screen_link_note": "0.20.40 (decision Charleston du 07/11 : peu de joueurs savent qu'il faut activer le familier offert ; prod 08/11 : 5 familiers offerts actifs sur 11). Affichage seul : pendant cette etape, le dialogue de Colette porte un bouton qui ouvre « Mes familiers » sur le familier offert, avec « Activer » en tete. L'activation passe par le message existant (FAMILIAR_SET_ACTIVE), le serveur decide. Aucun objectif ajoute : la quete et les lignes deja en base ne bougent pas.",
           "hints": {
             "on_active": [
               {
@@ -5543,12 +5545,23 @@
       "objective_mode": "sequential",
       "objectives": [
         {
+          "template": "enter_dungeon",
+          "dungeon_id": "dungeon_rat_den",
+          "count": 1,
+          "guide_targets": [
+            "dungeon:dungeon_rat_den"
+          ],
+          "description_fr": "Entrer dans les Égouts de Havreden",
+          "description_en": "Enter the Havreden Sewers",
+          "_note": "0.20.40 (decision Charleston du 07/11) : quete en 4 etapes. enter_dungeon et non enter_zone : n'importe quelle zone du donjon compte (tout etage, la salle d'apres le boss), pas seulement l'etage 1. Ecrit par le serveur seul : presence zone_changed (zone -> dungeon_id / parent_dungeon_id de world/zones.json), la zone COURANTE a l'acceptation (un joueur qui accepte en plein donjon ne repasse pas par l'entree), et toute fin de ce donjon (DungeonCompleted : qui a fini y est entre). Une progression deja faite sur les etapes suivantes valide cette etape au realignement (quete sequentielle) : personne ne reste bloque derriere elle."
+        },
+        {
           "template": "complete_dungeon",
           "dungeon_id": "dungeon_rat_den",
           "count": 1,
           "description_fr": "Terminer les Égouts de Havreden",
           "description_en": "Complete the Havreden Sewers",
-          "_note": "Valide par le service donjon a la mort du boss du dernier etage (le Rongeur), pour toute l'equipe gagnante. Pas d'objectif enter_zone avant : un joueur qui accepte en cours de run ne repasse pas par l'etage 1 et resterait bloque (2026-09-29). Ezra ne connait pas le Rongeur : le texte ne le nomme jamais.",
+          "_note": "Valide par le service donjon a la mort du boss du dernier etage (le Rongeur), pour toute l'equipe gagnante. Ezra ne connait pas le Rongeur : le texte ne le nomme jamais. 0.20.40 : l'etape d'entree (objectif 0) ne peut pas bloquer celle-ci : les deux sont ecrites par le serveur, et une fin de donjon valide aussi l'entree.",
           "difficulty": "fissure_1",
           "_note_acte1": "2026-10-24 : difficulty fissure_1 = le mode Histoire (seul palier des Egouts, world/dungeons.json story_mode). Credite seulement par une fin de donjon serveur dans ce mode (DungeonCompleted champ 3)."
         },
@@ -5561,7 +5574,7 @@
           "npc_id": "npc_rat_den_fissure",
           "description_fr": "Récupérer le fragment",
           "description_en": "Collect the fragment",
-          "_note": "La Fissure de la salle d'apres le boss. Mode sequential : le serveur refuse ce pas tant que le donjon n'est pas termine."
+          "_note": "La marque de la salle d'apres le boss (npc_rat_den_fissure, nommee « Marque etrange » tant que le joueur ne sait pas ce que c'est). Mode sequential : le serveur refuse ce pas tant que le donjon n'est pas termine. 0.20.40 : Ezra a une replique par etape (entities/npcs.json npc_rift_scholar_ezra q_main_ezra_egouts_obj_0..2) : celle de cette etape reste vraie pour un joueur qui a fini le donjon sans ramasser le fragment."
         },
         {
           "template": "deliver_item",
@@ -5573,7 +5586,7 @@
           "hints": {
             "on_active": [
               {
-                "id": "q_main_ezra_egouts_obj2_arrow",
+                "id": "q_main_ezra_egouts_obj3_arrow",
                 "type": "arrow",
                 "target": "npc_rift_scholar_ezra",
                 "priority": 90,
@@ -5585,7 +5598,7 @@
               }
             ]
           },
-          "_note": "Acte I V2 (2026-10-24). Le fragment est donne une seule fois a la fin de l'objectif 1 (objective_items, cle d'idempotence economie). Un personnage qui avait deja cette quete en cours garde ses deux lignes : il la rend sans cette etape (pas de blocage)."
+          "_note": "Acte I V2 (2026-10-24). Le fragment est donne une seule fois a la fin de l'objectif 2 (objective_items, cle d'idempotence economie ; objectif 1 avant le passage a 4 etapes de la 0.20.40)."
         }
       ],
       "dialogue_give_fr": "Tu vas vraiment descendre ? Bon... Promets-moi de regarder ce qu'il y a tout au fond.\nLes gardes ne vont jamais aussi loin. Et moi, tu me connais, je suis meilleur avec les livres.",
@@ -5598,13 +5611,13 @@
         "xp": 4000,
         "gold": 300
       },
-      "_note": "Acte I V2 (2026-10-24), etapes 09-10. Donjon des Egouts obligatoire en mode Histoire (objectif 0, verifie serveur), trace de Fissure au dernier etage (npc_rat_den_fissure, salle d'apres le Rongeur) qui donne le fragment, remise du fragment a Ezra (deliver_item, atomique). Au rendu, le serveur accepte q_main_ezra_blessure : la cinematique d'Ezra (une seule fois, validee serveur). La ronde de Varn n'a pas de cinematique. V3.2 : le rendu pose sewers_story_completed et rift_fragment_handed_in (meme transaction) ; Ezra du village disparait alors (il part avec toi aux Egouts, puis se repose chez lui).",
+      "_note": "0.20.40 (Charleston 07/11) : 4 etapes sequentielles, entrer (0), finir le donjon (1), recuperer le fragment (2), l'apporter a Ezra (3). Acte I V2 (2026-10-24), etapes 09-10. Donjon des Egouts obligatoire en mode Histoire (objectif 1, verifie serveur), trace de Fissure au dernier etage (npc_rat_den_fissure, salle d'apres le Rongeur) qui donne le fragment, remise du fragment a Ezra (deliver_item, atomique). Au rendu, le serveur accepte q_main_ezra_blessure : la cinematique d'Ezra (une seule fois, validee serveur). La ronde de Varn n'a pas de cinematique. V3.2 : le rendu pose sewers_story_completed et rift_fragment_handed_in (meme transaction) ; Ezra du village disparait alors (il part avec toi aux Egouts, puis se repose chez lui).",
       "prerequisites": [
         "q_main_ezra_retrouvailles"
       ],
       "objective_items": [
         {
-          "objective": 1,
+          "objective": 2,
           "items": [
             {
               "id": "quest_eclat_trace_egouts",
@@ -5895,11 +5908,12 @@
         "xp": 300,
         "items": [
           {
-            "id": "chest_medium_b1",
+            "id": "expedition_vest",
             "qty": 1
           }
         ]
       },
+      "_rewards_note": "0.20.40 (decision Charleston du 07/11) : la Veste de l'expedition (expedition_vest, items/equipment.json) remplace la Veste de Cuir (chest_medium_b1). Synchronisation avec la replique d'Aldric : la quete se rend seule (drapeau tutorial) quand son dialogue q_tut_intro_01_obj_0 se FERME (notify differe a la fin du dialogue, main.gd), donc la veste arrive juste apres sa 3e bulle « Tiens, enfile cette veste avant d'approcher. ». Rendu idempotent : une seule veste.",
       "chain_next": "q_tut_intro_03",
       "_note": "Onboarding V2 (2026-09-23) : donnee par Tobin (npc_giver), independante du tour de Havreden. Garde le drapeau tutorial, donc rendu automatique au dialogue avec Aldric. auto_accept_on_zone_enter conserve : un joueur qui passe la porte de l'arriere-salle sans l'avoir prise chez Tobin la recoit quand meme, a condition d'avoir fini q_havreden_arrivee (prerequisites, verifie aussi par try_auto_accept_quest). 2026-09-29 : enchaine directement sur q_tut_intro_03. q_tut_intro_02 (equiper la veste) doublait « Equiper ton arme » de q_onb_forces : la veste devient une recompense de cette etape (XP 100 + 200 de la 02)."
     },
