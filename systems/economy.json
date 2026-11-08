@@ -26,11 +26,11 @@
   },
 
   "storage": {
-    "_banque_de_compte": "Depuis la migration 135 (decision Charleston du 2026-11-08), la BANQUE est UNE banque partagee par tous les personnages d'un compte : capacite par compte (account_storage_capacity), achats de places de banque au niveau du compte, or depose dans la banque du compte (account_bank_gold) puis repris par un autre personnage du compte. Le SAC reste par personnage. Objets lies (bound) : lies au COMPTE, deposables ; objets de quete et modeles tradeable:false restent lies au personnage et n'entrent pas en banque.",
-    "_fusion_135": "Fusion des banques existantes (migration 135, une fois) : capacite du compte = la plus grande banque du compte, plus merge_bonus_per_extra_character par personnage supplementaire a banque non vide, plafonnee a bank.max_slots, jamais sous ce qu'un personnage avait, jamais sous le nombre d'objets fusionnes. La migration recopie ces valeurs (200, 500, 50) : elle ne lit pas ce fichier.",
+    "_banque_de_compte": "Depuis la migration 135 (decision Charleston du 2026-11-08), la BANQUE est UNE banque partagee par tous les personnages d'un compte : capacite par compte (account_storage_capacity), achats de places de banque au niveau du compte (en or OU en diamants, au choix du joueur), or depose dans la banque du compte (account_bank_gold) puis repris par un autre personnage du compte. Le SAC reste par personnage. Objets lies (bound) : lies au COMPTE, deposables ; objets de quete et modeles tradeable:false restent lies au personnage et n'entrent pas en banque.",
+    "_fusion_135": "Fusion des banques existantes (migration 135, une fois, decision Charleston du 2026-11-08) : taille FIXE, sans bonus de fusion. Capacite du compte = la plus grande capacite parmi ses personnages (personne ne perd de place) ; si le compte a plus d'objets que cela, plancher = nombre d'objets arrondi a la dizaine. La migration recopie la base 200 : elle ne lit pas ce fichier.",
     "_comment": "Places de sac et de banque (decide par Charleston le 2026-10-12 ; la banque est par COMPTE depuis la migration 135). Chaque achat donne slots_per_expansion places a un PRIX FIXE, qui ne monte pas a chaque achat mais SAUTE a chaque centaine de places : price_ladder donne le prix selon la capacite APRES l'achat (up_to_slots). Lu par services/economy (StorageRules) ; un champ manquant ou incoherent ferme les achats (jamais de prix devine).",
     "_existants": "Les personnages crees avant la regle gardent leurs places (sac 100, banque 1000 : migration 112). Une capacite au-dessus de max_slots est gardee, elle ne peut juste plus grandir.",
-    "_boutique": "Une seule echelle pour toutes les monnaies : une extension achetee en diamants (plus tard) avance le MEME compteur qu'une extension achetee en or, donc payer ne coute jamais plus cher que l'or. Le prix en diamants viendra ici, par palier, quand la boutique ouvrira.",
+    "_boutique": "Une seule echelle pour toutes les monnaies : une extension achetee en diamants avance le MEME compteur qu'une extension achetee en or. Prix en diamants : champ diamonds du palier (banque seulement depuis le 2026-11-08, au choix du joueur avec l'or). Un palier sans diamonds = achat en diamants ferme a ce palier, l'or reste ouvert. Ni offer.enabled ni shop_enabled ne sont concernes : on DEPENSE des diamants deja sur le compte, debites par le chemin existant (accounts.diamonds, UPDATE ... WHERE diamonds >= prix, audit_log + cle d'idempotence).",
     "bag": {
       "base_slots": 100,
       "slots_per_expansion": 10,
@@ -41,15 +41,14 @@
       ]
     },
     "bank": {
-      "merge_bonus_per_extra_character": 50,
-      "_a_valider": "merge_bonus_per_extra_character (50) et la regle de fusion de _fusion_135 : valeurs proposees le 2026-11-08, a valider par Charleston. Utilisees une seule fois par la migration 135, aucun code ne les lit.",
+      "_a_valider": "Prix en diamants des paliers (25, 50, 100 diamants par +10 places) : proposes le 2026-11-08, a valider par Charleston. Reperes : une couleur de nom vaut 100 diamants, le Pass Premium 1000.",
       "base_slots": 200,
       "slots_per_expansion": 10,
       "max_slots": 500,
       "price_ladder": [
-        {"up_to_slots": 300, "gold": 5000},
-        {"up_to_slots": 400, "gold": 25000},
-        {"up_to_slots": 500, "gold": 100000}
+        {"up_to_slots": 300, "gold": 5000, "diamonds": 25},
+        {"up_to_slots": 400, "gold": 25000, "diamonds": 50},
+        {"up_to_slots": 500, "gold": 100000, "diamonds": 100}
       ]
     }
   },
