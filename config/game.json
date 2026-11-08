@@ -277,8 +277,18 @@
       3.0
     ],
     "star_roll_weights_note": "MIROIR pour le client, NON LU par le serveur. Poids (pas des pourcentages) de 0-star a 5-star, normalises a leur somme (100 aujourd'hui) : 5-star = 3% des packs. La source est entities/monster_variants.json star_system.roll_weights ; scripts/validate_cross_references.py exige l'egalite.",
-    "respawn_time_min": 90.0,
-    "respawn_time_max": 180.0,
+    "respawn_seconds": {
+      "_comment": "SOURCE UNIQUE du delai de reapparition des groupes de monstres du monde persistant, lue par presence (kanarion_back services/presence/src/world/respawn_window.hpp). Delai tire uniformement dans [min, max] secondes. world = groupes du monde ouvert (tires des spawn_areas de world/zones.json, ou d'une zone plate). dungeon_and_scripted = groupes d'etage de donjon ouvert (fixed_groups) et apparitions scriptees de quete avec respawn_on_death. Regle de priorite, la seule : fenetre du type de groupe, puis, pour un groupe du monde d'une aire envahie seulement, le facteur world/fissure_invasions.json effects.respawn_time_multiplier. Aucun override par zone ni par aire. Ne reapparaissent jamais : interieurs de faille, apparitions scriptees sans respawn_on_death. Cle absente ou mal formee = presence refuse de demarrer (aucune valeur de repli dans le code). Remplace le 2026-11-08 : presence.json respawn_time_min/max_seconds (60/180, la valeur reellement lue jusque-la), spawner.respawn_time_min/max (90/180, aucun lecteur) et zones.json spawn_config.respawn_delay_ms (aucun lecteur).",
+      "world": {
+        "min": 30,
+        "max": 90
+      },
+      "_world_a_valider": "A VALIDER (decision Charleston 2026-11-08, release 0.20.40) : 30 a 90 s au lieu de 60 a 180 s pour les groupes du monde ouvert. Donjons et apparitions scriptees inchanges.",
+      "dungeon_and_scripted": {
+        "min": 60,
+        "max": 180
+      }
+    },
     "max_active_monsters": 40,
     "lazy_load_distance": 600.0,
     "lazy_unload_distance": 800.0,
