@@ -24,7 +24,7 @@
     "name_fr": "Pas de l'Ombre",
     "name_en": "Shadowstep",
     "tier": "signature",
-    "target": "self",
+    "target": "enemy",
     "pattern": "single",
     "damage_type": "none",
     "base_power": 0,
@@ -34,14 +34,16 @@
     "cooldown": 25.0,
     "consumes_gcd": false,
     "unlock_at_level": 1,
+    "range": "board",
     "movement": {
-      "type": "self_move",
-      "mode": "adjacent_enemy",
-      "range": "board"
+      "type": "teleport_adjacent",
+      "range": "board",
+      "landing": "behind"
     },
+    "_assassin_a_valider": "A VALIDER (2026-11-09, retour joueur relaye par Charleston : l'assassin doit se teleporter DERRIERE sa cible pour tuer mages et soigneurs). Avant : self_move adjacent_enemy, le joueur choisissait une case libre au contact de n'importe quel ennemi, invisible 4 s ; l'IA (recrues, mercenaires, combat automatique) ne le lancait jamais, un self_move etant exclu de son choix de sorts. Apres : on designe un ENNEMI (portee : tout le plateau, sans ligne de vue) et on arrive dans son dos (movement.landing behind, room.cpp teleport_landing_cells : rang suivant en s'eloignant de son front ; pris ou hors plateau -> flanc le plus proche du lanceur, puis face, puis anneau 2), invisible 2 s au lieu de 4 (idee de Charleston : 2 ou 4 s ; 2 s = un seul sort protege, la recharge globale faisant 2 s). Recharge 25 s et 0 Souffle inchanges. Repli : remettre self_move/adjacent_enemy, target self, duree 4.",
     "vfx_type": "dash_trail",
-    "description_fr": "Applique Invisibilite pendant 4s. Le Rogue se fond dans l'ombre et reparaît sur une case adjacente à n'importe quel ennemi, invisible 4s (inciblable par les monocibles).",
-    "description_en": "Applies Invisibility for 4s. The rogue melts into shadow and reappears on a cell adjacent to any enemy, invisible for 4s (untargetable by single-target skills).",
+    "description_fr": "Choisis un ennemi : tu te glisses dans son dos, n'importe où sur le plateau, et deviens invisible 2s (aucun sort à cible unique ne peut te viser). Case prise : tu arrives sur son flanc. (provisoire)",
+    "description_en": "Pick an enemy: you slip behind it, anywhere on the board, and turn invisible for 2s (no single-target spell can target you). If that cell is taken, you land on its flank. (provisional)",
     "tags": [
       "movement",
       "gap_closer",
@@ -54,10 +56,18 @@
       {
         "type": "buff",
         "stat": "invisible",
-        "duration": 4.0,
+        "duration": 2.0,
         "target": "self"
       }
     ],
+    "targeting": {
+      "selection_mode": "entity",
+      "valid_target_team": "enemy",
+      "requires_line_of_sight": false,
+      "bypasses_los": true,
+      "requires_entity_on_target_tile": true,
+      "aoe_pattern_id": "single"
+    },
     "source_scope": "BASE"
   },
   "base_skills": [
