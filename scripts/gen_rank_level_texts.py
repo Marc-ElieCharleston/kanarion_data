@@ -15,8 +15,11 @@ une tranche = la changer la-bas, puis relancer ce script.
 TEXTES PRODUITS (seule la partie « niveau » est reecrite, le reste de la phrase
 est garde tel quel)
   - items/materials.json enhancement_stones[] (stone_rank rank_N) :
-      description_fr « ..., sur un objet de niveau <max> ou moins. »
-      description_en « ..., on an item of level <max> or lower. »
+      description_fr « .... Utilisable sur les objets de niveau <max> ou moins. »
+      description_en « .... Usable on items of level <max> or lower. »
+      <max> = plus haut niveau REQUIS accepte par le serveur
+      (systems/enhancement_system.json equipment_rank_gate, verifie egal aux
+      tranches ci-dessus)
   - items/profession_recipes.json new_items[] mat_rift_ember_r<N> (rank N) :
       description_fr « ... en refermant une faille de niveau <min> a <max>. »
       description_en « ... while sealing a level <min> to <max> rift. »
@@ -50,8 +53,8 @@ ROOT = Path(__file__).resolve().parent.parent
 ROMAN = r"(?:I|II|III|IV|V)"
 NUM = r"\d+"
 
-STONE_FR = re.compile(r"sur un objet de (?:rang " + ROMAN + r"(?: ou inférieur)?|niveau " + NUM + r" ou moins)\.$")
-STONE_EN = re.compile(r"on an item of (?:rank " + ROMAN + r"(?: or lower)?|level " + NUM + r" or lower)\.$")
+STONE_FR = re.compile(r"(?:, sur un objet de (?:rang " + ROMAN + r"(?: ou inférieur)?|niveau " + NUM + r" ou moins)|\. Utilisable sur les objets de niveau " + NUM + r" ou moins)\.$")
+STONE_EN = re.compile(r"(?:, on an item of (?:rank " + ROMAN + r"(?: or lower)?|level " + NUM + r" or lower)|\. Usable on items of level " + NUM + r" or lower)\.$")
 EMBER_FR = re.compile(r"une faille de (?:rang " + ROMAN + r"|niveau " + NUM + r" à " + NUM + r")\.$")
 EMBER_EN = re.compile(r"sealing a (?:rank " + ROMAN + r"|level " + NUM + r" to " + NUM + r") rift\.$")
 EMBER_SRC = re.compile(r"interieur de faille de (?:rang " + ROMAN + r"|niveau " + NUM + r" a " + NUM + r")$")
@@ -71,6 +74,28 @@ def bands():
     return out
 
 
+def stone_level_caps():
+    """Plus haut NIVEAU REQUIS d'objet qu'une pierre de rang N accepte.
+
+    C'est la valeur que compare le serveur (economy handle_enhance_item :
+    EnhancementRules::required_rank(level_req, +N)) : le niveau requis de l'objet
+    (level_req) donne un rang de pierre minimum par systems/enhancement_system.json
+    equipment_rank_gate.min_stone_rank_by_level_req. Une pierre de rang N passe
+    donc tout objet dont le niveau requis est sous le seuil du rang N+1 (la tranche
+    du +N vise peut encore exiger plus : c'est le « jusqu'a +8 » de la phrase).
+    Le dernier rang va jusqu'au bout de sa tranche. Les seuils doivent etre ceux des
+    tranches de rank_system, sinon le script s'arrete (deux sources divergentes).
+    """
+    b = bands()
+    gate = load("systems/enhancement_system.json")["equipment_rank_gate"]["min_stone_rank_by_level_req"]
+    mins = {int(str(g["stone_rank"]).replace("rank_", "")): int(g["min_level_req"]) for g in gate}
+    for n in range(1, 6):
+        if mins.get(n) != b[n][0]:
+            raise SystemExit("systems/enhancement_system.json equipment_rank_gate rank_%d (%s) != debut de la "
+                             "tranche items/panoplies.json rang_%d (%d)" % (n, mins.get(n), n, b[n][0]))
+    return {n: (mins[n + 1] - 1 if n + 1 in mins else b[n][1]) for n in range(1, 6)}
+
+
 def sub_one(rx, text, repl, where):
     new, count = rx.subn(repl, text)
     if count != 1:
@@ -83,14 +108,15 @@ def expected():
     b = bands()
     out = []
 
+    caps = stone_level_caps()
     for s in load("items/materials.json")["enhancement_stones"]:
         n = int(str(s["stone_rank"]).replace("rank_", ""))
-        hi = b[n][1]
+        hi = caps[n]
         where = "items/materials.json %s" % s["id"]
         out.append(("items/materials.json", s["description_fr"],
-                    sub_one(STONE_FR, s["description_fr"], "sur un objet de niveau %d ou moins." % hi, where), where))
+                    sub_one(STONE_FR, s["description_fr"], ". Utilisable sur les objets de niveau %d ou moins." % hi, where), where))
         out.append(("items/materials.json", s["description_en"],
-                    sub_one(STONE_EN, s["description_en"], "on an item of level %d or lower." % hi, where), where))
+                    sub_one(STONE_EN, s["description_en"], ". Usable on items of level %d or lower." % hi, where), where))
 
     for it in load("items/profession_recipes.json")["new_items"]:
         if not str(it.get("id", "")).startswith("mat_rift_ember_r"):
