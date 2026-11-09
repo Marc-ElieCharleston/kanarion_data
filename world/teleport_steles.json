@@ -1,11 +1,11 @@
 {
   "_meta": {
     "version": "2.0",
-    "last_updated": "2026-10-29",
+    "last_updated": "2026-11-09",
     "description": "Pierres de teleportation (steles, a la maniere des zaaps) d'une carte : chaque pierre posee dans la scene d'une zone est une destination pour les autres pierres de la MEME zone (Havreden est une seule grande carte). Le joueur ouvre la liste en touchant une pierre (bouton d'action, verbe Voyager), choisit une autre pierre, et arrive sur sa case d'arrivee.",
-    "owner": "services/presence (WORLD_TRANSFER 0x0219 dans la meme zone : le joueur doit etre hors combat et a portee d'une pierre de sa zone, la destination est une pierre de cette zone, la case d'arrivee vient d'ici, la position envoyee par le client sert seulement a nommer la pierre visee). zones.json arrival_stele : la pierre devant laquelle on arrive en ville sans porte connue. Le client lit ce fichier pour l'AFFICHAGE (liste, noms, prix).",
+    "owner": "services/presence (WORLD_TRANSFER 0x0219 dans la meme zone : le joueur doit etre hors combat et a portee d'une pierre de sa zone, la destination est une pierre de cette zone, la case d'arrivee vient d'ici, la position envoyee par le client sert seulement a nommer la pierre visee). zones.json arrival_stele : la pierre devant laquelle on arrive en ville sans porte connue. Decouverte (2026-11-09) : STELE_TOUCH 0x0242 decouvre la pierre touchee, presence pousse STELE_STATE 0x0243 (pierres connues) ; la table character_discovered_steles (migration 137) est ecrite par le service character. Le client lit ce fichier pour l'AFFICHAGE (liste, noms, prix).",
     "placement": "LA SCENE EST LA SOURCE (2026-10-29). Une pierre = un noeud qui porte scripts/world/teleport_stele.gd (instance de scenes/world/props/teleport_stele.tscn, ou decor existant + ce script), avec stele_id, name_fr, name_en et arrival_offset. La liste steles est GENEREE par scripts/export_teleport_steles.py (voir scenes/world/props/README_steles.md cote client) ; l'export echoue sur un id vide ou en double, un nom manquant ou une case d'arrivee non marchable. tests/test_teleport_stele.gd (client) echoue tant que la data n'est pas a jour de la scene.",
-    "a_valider": "2026-10-29 : voyage GRATUIT par defaut (rules.paid false ; true = prix du voyage existant, 50 or ou pass) ; PAS de decouverte (toutes les pierres de la zone sont connues ; rules.require_discovery n'est pas implemente et presence refuse de demarrer s'il vaut true) ; noms des pierres ; arrivee en ville devant la pierre du Passeur du Bois des Loups.",
+    "a_valider": "2026-10-29 : voyage GRATUIT par defaut (rules.paid false ; true = prix du voyage existant, 50 or ou pass) ; noms des pierres ; arrivee en ville devant la pierre du Passeur du Bois des Loups. 2026-11-09 : decouverte ACTIVEE (rules.require_discovery true, par personnage comme dans Dofus) ; Place de Havreden et Bois des Loups connues d'office (rules.known_by_default) pour que les joueurs actuels gardent leur acces ; nom anglais provisoire de la pierre des Alentours de Rochebourg (Rochebourg Outskirts).",
     "generated_by": "scripts/export_teleport_steles.py depuis les scenes de carte (noeuds portant scripts/world/teleport_stele.gd). NE PAS EDITER la liste steles a la main : poser la pierre dans la scene puis relancer."
   },
   "rules": {
@@ -18,8 +18,13 @@
     "_arrival_offset_note": "Decalage par defaut de la case d'arrivee (devant la pierre). Chaque pierre porte desormais sa propre case (arrival_x/arrival_y, reglee dans la scene par arrival_offset) ; ce decalage ne sert plus qu'a une ligne sans case.",
     "paid": false,
     "_paid_note": "false = gratuit (defaut, a valider). true = meme prix que le voyage existant : TELEPORT 0x044D du service economie (50 or, pass premium teleport_free), preleve apres validation du voyage.",
-    "require_discovery": false,
-    "_require_discovery_note": "Idee a la maniere des zaaps : ne pouvoir voyager que vers une pierre deja touchee une fois. NON IMPLEMENTEE (aucune persistance) : laisser false, presence refuse de demarrer sur true."
+    "require_discovery": true,
+    "_require_discovery_note": "Decouverte a la maniere des zaaps de Dofus (2026-11-09, a valider) : true = on ne voyage que VERS une pierre deja touchee une fois par le PERSONNAGE. Toucher une pierre (a portee selon la position serveur, hors combat) la decouvre ; la pierre de depart d'un voyage aussi. false = toutes les pierres de la zone sont connues. Presence refuse de demarrer si la regle est mal formee (valeur non booleenne).",
+    "known_by_default": [
+      "stele_havreden_passeur",
+      "stele_havreden_place"
+    ],
+    "_known_by_default_note": "Pierres connues de tous sans avoir ete touchees (ids de la liste steles). A valider : les deux pierres d'avant la decouverte, pour que les joueurs actuels ne perdent ni la Place ni le Bois des Loups. Un id inconnu ou une valeur qui n'est pas une liste d'ids refuse le demarrage de presence."
   },
   "steles": [
     {
@@ -43,6 +48,17 @@
       "name_fr": "Place de Havreden",
       "name_en": "Havreden Square",
       "source": "res://scenes/world/havreden_map.tscn :: havreden_map/teleport_waystone_001"
+    },
+    {
+      "id": "stele_rochebourg_alentours",
+      "zone_id": "village",
+      "x": 4000,
+      "y": 10300,
+      "arrival_x": 4000,
+      "arrival_y": 10340,
+      "name_fr": "Alentours de Rochebourg",
+      "name_en": "Rochebourg Outskirts",
+      "source": "res://scenes/world/havreden_map.tscn :: rochebourg_map/stele_rochebourg_alentours"
     }
   ]
 }
