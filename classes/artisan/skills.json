@@ -903,7 +903,49 @@
                 "aoe_pattern_id": "all"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_artisan_forgemaster_maneuver",
+            "name_fr": "Golem de forge",
+            "name_en": "Forge Golem",
+            "tier": "signature",
+            "target": "self",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 300.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 2,
+            "summon_template_id": "forgemaster_forge_golem",
+            "_a_valider": "A VALIDER (2026-11-11, manoeuvre de specialisation Forgemaster) : golem sur une case libre a 2 cases au plus, sans ligne de vue requise, 8 s, PV 15% des PV max du lanceur, bloque la ligne de vue du camp adverse, compte dans la limite de 6 invocations du camp. Chaque seconde (premiere action 1 s apres la pose) : si un ennemi est a son contact (1 case, haut/bas/gauche/droite), il frappe le plus proche (40% ATK physiques du Forgemaster a la pose) ; sinon il avance d'1 case vers l'ennemi le plus proche (distance de Manhattan, egalite = plus petit identifiant ; plus court chemin par les cases libres, egalite haut, droite, bas, gauche) et ne frappe pas cette seconde-la. Aucun chemin libre = il reste sur place. Disparait avec le Forgemaster. Degats 40% ATK et PV 15% : valeurs a valider. Recharge 300 s.",
+            "description_fr": "Invoque un golem de forge sur une case libre à 2 cases maximum pendant 8s. Chaque seconde, il avance d'1 case vers l'ennemi le plus proche, ou le frappe s'il est à son contact (40% ATK en dégâts physiques). Il a 15% de tes PV max et bloque la ligne de vue.",
+            "description_en": "Summon a forge golem on a free tile within 2 tiles for 8s. Every second, it moves 1 tile toward the nearest enemy, or strikes it when in contact (40% ATK as physical damage). It has 15% of your max HP and blocks line of sight.",
+            "tags": [
+              "summon",
+              "maneuver",
+              "signature",
+              "damage"
+            ],
+            "effects": [],
+            "base_class_id": "artisan",
+            "subclass_id": "blacksmith",
+            "tier3_id": "forgemaster",
+            "source_scope": "TIER3",
+            "vfx_type": "buff_aura",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "self",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": false
+            }
+          }
         },
         "breaker": {
           "identity": "Anti-boss breaker + brutal vulnerability windows",
@@ -1155,7 +1197,67 @@
                 "aoe_pattern_id": "single_plus_adjacent_2"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_artisan_breaker_maneuver",
+            "name_fr": "Bélier",
+            "name_en": "Battering Ram",
+            "tier": "signature",
+            "target": "enemy",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 180.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "movement": {
+              "type": "charge_push",
+              "range": 3,
+              "impact_status": {
+                "id": "armor_down",
+                "duration": 8,
+                "stacks": 2
+              },
+              "animations": {
+                "step_by_distance": [
+                  "charge_1",
+                  "charge_2",
+                  "charge_3"
+                ],
+                "push": "push",
+                "impact": "impact"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-11, manoeuvre de specialisation Breaker) : le joueur clique une case de sa ligne ou de sa colonne a 3 cases au plus (diagonale, propre case ou hors portee = refus sans cout) ; la charge vise cette case. Le premier ENNEMI rencontre sur le chemin (unite a PV ; invocations, leurres, objets et allies = obstacles) est pousse devant le Breaker jusqu'a la case qui suit la fin de la charge ; le Breaker s'arrete juste derriere lui. Si l'ennemi pousse heurte une unite, un obstacle ou le bord, tout s'arrete la (le Breaker juste derriere). Ancre, boss ou insensible aux controles : l'ennemi ne bouge pas, le Breaker s'arrete a son contact. L'ennemi rencontre (pousse ou non) subit ensuite Armure - 2 charges 8 s (Brisure d'armure du kit Breaker = armor_down, -5% d'armure par charge). Ligne de vue requise jusqu'a l'ennemi rencontre, sinon jusqu'a la case cliquee. Aucun ennemi sur le chemin : charge simple jusqu'a la case cliquee ou jusqu'a l'obstacle ; aucune case parcourue et aucun ennemi = refus sans cout. Aucun degat. Recharge 180 s.",
+            "description_fr": "Charge jusqu'à 3 cases en ligne droite, ligne de vue requise. Le premier ennemi sur ta route est poussé devant toi jusqu'au bout de la charge, puis subit Armure - (2 charges, 8s). Si l'ennemi heurte un obstacle, une unité ou le bord, la charge s'arrête là.",
+            "description_en": "Charge up to 3 tiles in a straight line, line of sight required. The first enemy in your path is pushed ahead of you to the end of the charge, then suffers Armor Down (2 stacks, 8s). If the enemy hits an obstacle, a unit or the edge, the charge stops there.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "movement",
+              "push",
+              "debuff"
+            ],
+            "effects": [],
+            "base_class_id": "artisan",
+            "subclass_id": "blacksmith",
+            "tier3_id": "breaker",
+            "source_scope": "TIER3",
+            "vfx_type": "impact",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "enemy",
+              "requires_line_of_sight": true,
+              "bypasses_los": false,
+              "requires_entity_on_target_tile": false
+            }
+          }
         }
       }
     },
@@ -1711,7 +1813,50 @@
                 "aoe_pattern_id": "rect_4x4"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_artisan_plague_brewer_maneuver",
+            "name_fr": "Flaque pestilentielle",
+            "name_en": "Pestilent Puddle",
+            "tier": "signature",
+            "target": "self",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 180.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 4,
+            "summon_template_id": "plague_brewer_pestilent_puddle",
+            "_a_valider": "A VALIDER (2026-11-11, manoeuvre de specialisation Plague Brewer) : case cliquee a 4 cases au plus (distance de Manhattan), ligne de vue requise, jamais la case du lanceur. La flaque couvre 2x2 cases : la case cliquee est le coin de plus petite colonne et de plus petite ligne du carre (colonnes x et x+1, lignes y et y+1) ; au bord du plateau le carre est decale vers l'interieur (colonnes x-1 et x, ou lignes y-1 et y), la case cliquee reste toujours dedans. Les cases peuvent porter des unites, des pieges ou d'autres objets : la flaque ne bloque rien et n'est pas un piege (visible de tous). 8 s ; a la pose puis chaque seconde (8 fois), chaque ENNEMI sur une case de la flaque recoit 1 charge de Poison 6 s (statut poison du catalogue, 2% des PV max par charge et par seconde ; le kit Plague Brewer utilise plutot la Toxine : choix a valider). Allies jamais touches. Ne compte pas dans la limite de 6 invocations du camp (une zone au sol, pas une creature). Disparait avec le Plague Brewer. Recharge 180 s.",
+            "description_fr": "Lance une fiole sur une case à 4 cases maximum, ligne de vue requise : une flaque toxique de 2x2 cases reste 8s. Chaque seconde, les ennemis qui s'y trouvent reçoivent 1 charge de Poison.",
+            "description_en": "Throw a vial at a tile within 4 tiles, line of sight required: a 2x2 toxic puddle stays for 8s. Every second, enemies standing in it receive 1 stack of Poison.",
+            "tags": [
+              "summon",
+              "maneuver",
+              "signature",
+              "damage",
+              "poison"
+            ],
+            "effects": [],
+            "base_class_id": "artisan",
+            "subclass_id": "alchemist",
+            "tier3_id": "plague_brewer",
+            "source_scope": "TIER3",
+            "vfx_type": "projectile",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "self",
+              "requires_line_of_sight": true,
+              "bypasses_los": false,
+              "requires_entity_on_target_tile": false
+            }
+          }
         },
         "reactionist": {
           "identity": "Detonation windows + conditional burst + chain reactions",
@@ -1966,7 +2111,64 @@
               },
               "bounce_if_adjacent": true
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_artisan_reactionist_maneuver",
+            "name_fr": "Propulsion",
+            "name_en": "Propulsion",
+            "tier": "signature",
+            "target": "self",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 120.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "movement": {
+              "type": "self_move",
+              "mode": "straight",
+              "aim": "direction",
+              "range": 3,
+              "origin_invocation": "reactionist_propulsion_blast",
+              "animations": {
+                "step_by_distance": [
+                  "fly_1",
+                  "fly_2",
+                  "fly_3"
+                ],
+                "arrive": "land"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-11, manoeuvre de specialisation Reactionist) : la case cliquee donne la DIRECTION seulement (axe dominant ; diagonale pure ou propre case = refus sans cout). Le Reactionist parcourt jusqu'a 3 cases dans cette direction, sans ligne de vue, et s'arrete juste avant la premiere unite ou le bord. Aucune case libre devant lui = refus sans cout. Etourdi ou immobilise = refus. Sur sa case de depart, une explosion (objet sans PV, ne compte pas dans la limite d'invocations) part dans le meme tic : 50% MAG en degats magiques (MAG du Reactionist au lancer, valeur a valider) et 1 charge de Brulure 6 s aux ENNEMIS adjacents a cette case (haut, bas, gauche, droite). Allies jamais touches. Recharge 120 s.",
+            "description_fr": "Fait exploser une fiole à tes pieds et te propulse jusqu'à 3 cases en ligne droite dans la direction choisie, sans ligne de vue ; un obstacle t'arrête juste avant. Les ennemis adjacents à ta case de départ subissent 50% MAG en dégâts magiques et 1 charge de Brûlure.",
+            "description_en": "Detonate a vial at your feet and propel yourself up to 3 tiles in a straight line in the chosen direction, ignoring line of sight; an obstacle stops you just before it. Enemies adjacent to your starting tile take 50% MAG as magical damage and 1 stack of Burn.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "movement",
+              "damage",
+              "burn"
+            ],
+            "effects": [],
+            "base_class_id": "artisan",
+            "subclass_id": "alchemist",
+            "tier3_id": "reactionist",
+            "source_scope": "TIER3",
+            "vfx_type": "dash_trail",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "self",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": false
+            }
+          }
         }
       },
       "signature_movement": {
