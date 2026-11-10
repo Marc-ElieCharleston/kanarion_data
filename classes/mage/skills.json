@@ -2874,7 +2874,47 @@
                 "aoe_pattern_id": "single_plus_adjacent_2"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_mage_arcane_dealer_maneuver",
+            "name_fr": "Carte piège",
+            "name_en": "Trap Card",
+            "tier": "signature",
+            "target": "self",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 180.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "ground_trap_template_id": "arcane_trap_card",
+            "description_fr": "Pose une carte sur une case libre à 3 cases maximum, sans ligne de vue, pendant 12s. Elle est invisible pour l'adversaire : le premier ennemi qui entre sur la case est étourdi 1,5s, puis la carte disparaît.",
+            "description_en": "Place a card on a free tile within 3 tiles, ignoring line of sight, for 12s. It is hidden from the enemy: the first enemy to step on the tile is stunned for 1.5s, then the card disappears.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "trap"
+            ],
+            "effects": [],
+            "base_class_id": "mage",
+            "subclass_id": "cardmaster",
+            "tier3_id": "arcane_dealer",
+            "source_scope": "TIER3",
+            "vfx_type": "buff_aura",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "self",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": false
+            }
+          }
         },
         "fate_gambler": {
           "identity": "High variance debuffs + luck manipulation + clutch plays",
@@ -3235,7 +3275,55 @@
               "random_debuffs_min_at_level_5": 3,
               "random_debuffs_min_at_level_10": 4
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_mage_fate_gambler_maneuver",
+            "name_fr": "Saut du destin",
+            "name_en": "Leap of Fate",
+            "tier": "signature",
+            "target": "self",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 90.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": "board",
+            "movement": {
+              "type": "self_move",
+              "mode": "random_board",
+              "range": "board",
+              "animations": {
+                "depart": "vanish",
+                "arrive": "arrive"
+              }
+            },
+            "description_fr": "Te téléporte sur une case libre tirée au hasard, n'importe où sur le plateau. Tu peux atterrir au milieu des ennemis ou sur un de leurs pièges.",
+            "description_en": "Teleport to a random free tile anywhere on the board. You may land among enemies or on one of their traps.",
+            "tags": [
+              "movement",
+              "maneuver",
+              "signature"
+            ],
+            "effects": [],
+            "base_class_id": "mage",
+            "subclass_id": "cardmaster",
+            "tier3_id": "fate_gambler",
+            "source_scope": "TIER3",
+            "vfx_type": "buff_aura",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "self",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": false
+            }
+          }
         }
       },
       "signature_movement": {
@@ -3821,7 +3909,74 @@
                 "aoe_pattern_id": "rect_2x2"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_mage_battlemage_maneuver",
+            "name_fr": "Rune de retour",
+            "name_en": "Return Rune",
+            "tier": "signature",
+            "target": "self",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 150.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "movement": {
+              "type": "self_move",
+              "mode": "free",
+              "range": 3,
+              "origin_invocation": "battlemage_return_rune"
+            },
+            "description_fr": "Te téléporte sur une case libre à 3 cases maximum, sans ligne de vue, et laisse une rune sur ta case de départ. Pendant 4s, tu gagnes +10% de MAG, +10% d'armure et +10% de résistance magique. Au bout des 4s, tu reviens sur la rune, ou sur la case libre la plus proche si elle est occupée.",
+            "description_en": "Teleport to a free tile within 3 tiles, ignoring line of sight, and leave a rune on your starting tile. For 4s, gain +10% MAG, +10% armor and +10% magic resistance. After 4s, you return to the rune, or to the nearest free tile if it is occupied.",
+            "tags": [
+              "movement",
+              "maneuver",
+              "signature"
+            ],
+            "effects": [
+              {
+                "type": "buff",
+                "stat": "mag_up",
+                "stacks_to_apply": 2,
+                "duration": 4,
+                "target": "self"
+              },
+              {
+                "type": "buff",
+                "stat": "armor_up",
+                "stacks_to_apply": 2,
+                "duration": 4,
+                "target": "self"
+              },
+              {
+                "type": "buff",
+                "stat": "magic_resist_up",
+                "stacks_to_apply": 2,
+                "duration": 4,
+                "target": "self"
+              }
+            ],
+            "base_class_id": "mage",
+            "subclass_id": "spellblade",
+            "tier3_id": "battlemage",
+            "source_scope": "TIER3",
+            "vfx_type": "buff_aura",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "self",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": false
+            }
+          }
         },
         "runeknight": {
           "identity": "Defensive arcane knight + wards + magic resist buffs",

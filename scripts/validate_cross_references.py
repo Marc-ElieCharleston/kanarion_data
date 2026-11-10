@@ -3480,6 +3480,8 @@ def validate_status_duration_rule(db: Path) -> list:
     excluded = set(rule.get("excluded_categories", []))
     # Skills the owner exempts from the cooldown rule (fillers keeping their 0.20.3 cooldown).
     cd_exempt = set(rule.get("cooldown_rule_exempt_skills", []))
+    # Skills the owner exempts from the soft bounds only (lot 2 maneuvers, 2026-11-10).
+    soft_exempt = set(rule.get("soft_seconds_exempt_skills", []))
     category, hard_cc = {}, set()
     for cat, group in se.get("effects", {}).items():
         if not isinstance(group, dict):
@@ -3532,6 +3534,8 @@ def validate_status_duration_rule(db: Path) -> list:
                     longest = max(longest, float(s[k]))
                     spans.append((k, "soft", float(s[k]), float(s[k])))
             for stat, kind, lo_v, hi_v in spans:
+                if kind == "soft" and sid in soft_exempt:
+                    continue
                 lo, hi = soft if kind == "soft" else hard
                 if lo_v < lo - eps or hi_v > hi + eps:
                     errors.append(

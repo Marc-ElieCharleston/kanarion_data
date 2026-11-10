@@ -21,7 +21,11 @@
       "effect.cleanse": "effect_ids dans l'ordre de priorite, max_effects par cible et par tic",
       "effect.forced_move": "direction away_from_invocation | sideways_of_travel, distance en cases ; ligne droite, arret juste avant une case occupee ou le bord ; boss et cibles insensibles aux controles jamais deplaces",
       "body.blocks_line_of_sight_both_sides": "facultatif, defaut false. true = bloque AUSSI la ligne de vue du camp du lanceur (mur de glace) ; exige blocks_line_of_sight true",
-      "trigger.selection": "pulse seulement, facultatif : all (defaut, toutes les cibles a radius) | nearest (la seule unite la plus proche, egalite = plus petit identifiant ; aucune a portee = aucun tir ni evenement ; INVOCATION_TRIGGERED porte alors la cible)"
+      "on_expire": "facultatif. recall_owner = a l'expiration, le lanceur est teleporte sur la case de l'invocation (si elle est occupee : la case libre la plus proche en distance de Manhattan, egalite = plus petite ligne puis plus petite colonne ; sa propre case compte comme libre). Exige placement movement_origin ; autorise alors un objet sans PV avec trigger none. Evenements : TELEPORTED (message = animations.recall) + POSITION_CHANGED, puis INVOCATION_ENDED raison recalled. Rien si le lanceur est mort (raison owner_dead) ; le retour a lieu meme s'il est etourdi ou immobilise.",
+  "limits.counts_in_team_limit": "facultatif, defaut true. false = ne compte pas dans global_limits.max_summons_per_team et ne fait jamais disparaitre l'invocation d'un allie (un marqueur comme la rune de retour) ; compte toujours dans entity_caps.total_max de la room",
+  "animations.owner_aura": "facultatif, lu par le client seul : boucle sur le lanceur de INVOCATION_SPAWNED a INVOCATION_ENDED de cette invocation",
+  "animations.recall": "exige avec on_expire recall_owner, recopie dans TELEPORTED",
+  "trigger.selection": "pulse seulement, facultatif : all (defaut, toutes les cibles a radius) | nearest (la seule unite la plus proche, egalite = plus petit identifiant ; aucune a portee = aucun tir ni evenement ; INVOCATION_TRIGGERED porte alors la cible)"
     }
   },
   "global_limits": {
@@ -356,6 +360,48 @@
             "base_power": 0,
             "scaling_percent": 15
           }
+        }
+      }
+    },
+    {
+      "id": "battlemage_return_rune",
+      "name_fr": "Rune de retour",
+      "name_en": "Return Rune",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "battlemage_rune_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 4,
+        "counts_in_team_limit": false
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Battlemage) : rune de 4s sur la case de depart, retour automatique a son terme (case libre la plus proche si elle est occupee), visible par tous, sans PV, ne bloque ni deplacement ni ligne de vue, n'empeche pas la pose d'un piege et ne compte pas dans le plafond d'invocations du camp.",
+        "animations": {
+          "spawn": "cast",
+          "idle": "rune_idle",
+          "recall": "recall",
+          "owner_aura": "buff_aura"
+        },
+        "body": {
+          "has_hp": false,
+          "owner_max_hp_percent": 0,
+          "blocks_line_of_sight": false,
+          "occupies_cell": false
+        },
+        "placement": {
+          "mode": "movement_origin"
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "on_expire": "recall_owner",
+        "trigger": {
+          "mode": "none",
+          "radius": 0
         }
       }
     }
