@@ -2735,7 +2735,65 @@
               },
               "bounce_if_adjacent": true
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_archer_bouncer_maneuver",
+            "name_fr": "Boule de gomme",
+            "name_en": "Gum Ball",
+            "tier": "signature",
+            "target": "enemy",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 240.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 4,
+            "movement": {
+              "type": "impact_push",
+              "range": 4,
+              "push_radius": 2,
+              "push_distance": 1,
+              "direction": "toward",
+              "affects": "enemies",
+              "zone_status": {
+                "id": "slow",
+                "duration": 2,
+                "stacks": 1
+              },
+              "animations": {
+                "push": "pull",
+                "zone_status": "stuck_idle"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Bouncer) : boule lancee sur une case a 4 cases au plus (distance de Manhattan), ligne de vue requise, case vide permise. Les ennemis du carre 5x5 centre sur l'impact (2 cases, diagonales comprises) sont attires d'1 case vers le centre, en diagonale pour ceux qui ne sont ni sur la ligne ni sur la colonne de l'impact ; le plus proche du centre bouge d'abord ; un deplacement bloque (unite, bord) ne se fait pas, sans etourdissement. Tous les ennemis du carre (deplaces, bloques ou Ancres, celui du centre compris) sont Ralentis 2 s (1 charge). Allies jamais deplaces ni ralentis ; boss, insensibles et Ancres ne bougent pas ; invocations jamais deplacees. Ralentissement 2 s sous le plancher de 6 s des effets doux : exception _meta.duration_rule.soft_seconds_exempt_skills. Recharge 240 s.",
+            "description_fr": "Lance une boule de gomme sur une case à 4 cases maximum, ligne de vue requise. Les ennemis à 2 cases ou moins du point d'impact, diagonales comprises, sont attirés d'1 case vers le centre et ralentis pendant 2s.",
+            "description_en": "Throw a gum ball at a tile within 4 tiles, line of sight required. Enemies within 2 tiles of the impact, diagonals included, are pulled 1 tile toward the centre and slowed for 2s.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "control",
+              "pull"
+            ],
+            "effects": [],
+            "base_class_id": "archer",
+            "subclass_id": "ballmaster",
+            "tier3_id": "bouncer",
+            "source_scope": "TIER3",
+            "vfx_type": "impact",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "enemy",
+              "requires_line_of_sight": true,
+              "bypasses_los": false,
+              "requires_entity_on_target_tile": false
+            }
+          }
         },
         "striker": {
           "identity": "Rapid combos + trick shots + speed burst + multi-hit",
@@ -2977,7 +3035,63 @@
                 "aoe_pattern_id": "single_plus_adjacent_2"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_archer_striker_maneuver",
+            "name_fr": "Coup de batte",
+            "name_en": "Bat Swing",
+            "tier": "signature",
+            "target": "enemy",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 240.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 2,
+            "movement": {
+              "type": "push",
+              "range": 2,
+              "push_distance": 3,
+              "diagonal_only": true,
+              "collide_status": {
+                "id": "stun",
+                "duration": 1,
+                "blocker": true
+              },
+              "animations": {
+                "push": "launch",
+                "collide": "collide_stun"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Striker) : un ennemi sur une case touchant le Striker EN DIAGONALE (|dx| = |dy| = 1), sans ligne de vue ; aucun degat. Il est projete de 3 cases dans le prolongement de la diagonale. S'il heurte une unite, un obstacle ou le bord, il s'arrete juste avant (0 a 2 cases parcourues) et il est Etourdi 1 s ; l'unite heurtee (alliee ou ennemie du Striker, invocations exclues) est Etourdie 1 s elle aussi. Cible Ancree, boss ou insensible : elle ne bouge pas, personne n'est etourdi. Cible hors diagonale : refus sans cout. Etourdissement 1 s sous le plancher de 2 s des gros controles : exception _meta.duration_rule.hard_cc_seconds_exempt_skills. Recharge 240 s.",
+            "description_fr": "Frappe un ennemi placé en diagonale de toi et le projette de 3 cases dans cette diagonale. S'il heurte une unité, un obstacle ou le bord, il s'arrête avant et il est étourdi 1s, comme l'unité heurtée.",
+            "description_en": "Strike an enemy diagonal to you and knock it 3 tiles along that diagonal. If it hits a unit, an obstacle or the edge, it stops short and is stunned for 1s, along with the unit it hit.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "control",
+              "push"
+            ],
+            "effects": [],
+            "base_class_id": "archer",
+            "subclass_id": "ballmaster",
+            "tier3_id": "striker",
+            "source_scope": "TIER3",
+            "vfx_type": "impact",
+            "targeting": {
+              "selection_mode": "entity",
+              "valid_target_team": "enemy",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": true
+            }
+          }
         }
       },
       "signature_movement": {
@@ -3548,7 +3662,58 @@
                 "aoe_pattern_id": "rect_4x4"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_archer_quickshot_maneuver",
+            "name_fr": "Barrage",
+            "name_en": "Barrage",
+            "tier": "signature",
+            "target": "all",
+            "pattern": "single",
+            "damage_type": "physical",
+            "scaling_stat": "atk",
+            "base_power": 0,
+            "scaling_percent": 40,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 180.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "movement": {
+              "type": "line_push",
+              "range": 3,
+              "push_distance": 1,
+              "affects": "enemies",
+              "animations": {
+                "push": "push"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Quickshot) : le joueur choisit une direction (sa ligne ou sa colonne : case cliquee, axe dominant, diagonale pure refusee sans cout, comme l'Appel de la terreur du lot 4) ; la salve couvre les 3 cases qui partent du Quickshot dans cette direction, sans ligne de vue. Chaque ennemi de ces cases (invocations exclues) subit 40% ATK en degats physiques et recule d'1 case en s'eloignant du Quickshot, le plus eloigne d'abord. Recul bloque, Ancre, boss ou insensible : il ne bouge pas, les degats restent. Allies ni touches ni deplaces. Recharge 180 s.",
+            "description_fr": "Tire une salve sur les 3 cases devant toi, en ligne ou en colonne. Chaque ennemi touché subit 40% ATK en dégâts physiques et recule d'1 case.",
+            "description_en": "Fire a volley over the 3 tiles in front of you, along your row or column. Each enemy hit takes 40% ATK as physical damage and is knocked back 1 tile.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "damage",
+              "push"
+            ],
+            "effects": [],
+            "base_class_id": "archer",
+            "subclass_id": "gunslinger",
+            "tier3_id": "quickshot",
+            "source_scope": "TIER3",
+            "vfx_type": "projectile",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "any",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": false
+            }
+          }
         },
         "deadeye": {
           "identity": "Extreme precision + execution shots + crit windows + finisher specialist",
@@ -3789,7 +3954,58 @@
                 "aoe_pattern_id": "single"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_archer_deadeye_maneuver",
+            "name_fr": "Tir dévastateur",
+            "name_en": "Devastating Shot",
+            "tier": "signature",
+            "target": "enemy",
+            "pattern": "single",
+            "damage_type": "physical",
+            "scaling_stat": "atk",
+            "base_power": 0,
+            "scaling_percent": 200,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 120.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 5,
+            "movement": {
+              "type": "push",
+              "range": 5,
+              "push_distance": 1,
+              "line_only": false,
+              "animations": {
+                "push": "impact"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Deadeye) : un ennemi a 5 cases au plus (distance de Manhattan), ligne de vue requise ; 200% ATK en degats physiques ; la cible recule d'1 case en s'eloignant du Deadeye, sur l'axe dominant (ligne ou colonne) ; a egalite parfaite (diagonale pure), elle recule en diagonale. Recul bloque (unite, bord), cible Ancree, boss ou insensible : elle ne bouge pas, les degats restent. Recharge 120 s.",
+            "description_fr": "Un tir très puissant sur un ennemi à 5 cases maximum, ligne de vue requise : 200% ATK en dégâts physiques. La cible recule d'1 case en s'éloignant de toi, si la case est libre.",
+            "description_en": "A very powerful shot at an enemy within 5 tiles, line of sight required: 200% ATK as physical damage. The target is knocked back 1 tile away from you, if the tile is free.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "damage",
+              "push"
+            ],
+            "effects": [],
+            "base_class_id": "archer",
+            "subclass_id": "gunslinger",
+            "tier3_id": "deadeye",
+            "source_scope": "TIER3",
+            "vfx_type": "projectile",
+            "targeting": {
+              "selection_mode": "entity",
+              "valid_target_team": "enemy",
+              "requires_line_of_sight": true,
+              "bypasses_los": false,
+              "requires_entity_on_target_tile": true
+            }
+          }
         }
       },
       "signature_movement": {
