@@ -23,13 +23,14 @@
       "_koro_note": "Charleston 2026-10-21 : une carte Koro multiplie la duree du sort par rank_percent / 100 (rang C x0,5). Plancher pour les effets doux : jamais sous koro_soft_floor_seconds. Un controle fort garde la duree du sort (regle des 4 s), sans facteur de rang. Les categories de excluded_categories (immunites) ne sont pas concernees. Lu par server-combat (StatusManager, room.cpp apply_skill_effects).",
       "cooldown_rule_exempt_skills": ["skill_archer_precise_shot", "skill_artisan_musician_riff", "skill_healer_smite", "skill_mage_magic_bolt", "skill_mage_occ_dark_bolt", "skill_rogue_quick_stab", "skill_warrior_heavy_strike"],
       "_cooldown_rule_exempt_note": "Charleston 2026-10-21 (0.20.4, reco validee) : les sorts de remplissage gardent leur recharge 0.20.3 (4-5,5 s) ; leur effet de 6-8 s se rafraichit a chaque lancer, comme avant la regle. Exemptes de cooldown_rule seulement : leurs durees restent dans les bornes. Lu par scripts/validate_cross_references.py (etape 12s) et server-combat test_status_duration_rule.cpp.",
-      "soft_seconds_exempt_skills": ["skill_mage_battlemage_maneuver"],
-      "_soft_seconds_exempt_note": "Charleston 2026-11-10 (lot 2 des manoeuvres, chiffres A VALIDER) : les bonus de la Rune de retour durent 4 s, comme la rune, sous le plancher des effets doux. Exemptes de soft_seconds seulement (hard_cc_seconds et cooldown_rule s'appliquent toujours). Lu par scripts/validate_cross_references.py (etape 12s) et server-combat test_status_duration_rule.cpp.",
+      "soft_seconds_exempt_skills": ["skill_healer_covenant_maneuver", "skill_mage_battlemage_maneuver"],
+      "_soft_seconds_exempt_note": "Charleston 2026-11-10 (lot 2 des manoeuvres, chiffres A VALIDER) : les bonus de la Rune de retour durent 4 s, comme la rune, sous le plancher des effets doux. Lot 6 (Charleston 2026-11-10, A VALIDER) : le bouclier du Lien d'echange (Covenant) dure 4 s. Exemptes de soft_seconds seulement (hard_cc_seconds et cooldown_rule s'appliquent toujours). Lu par scripts/validate_cross_references.py (etape 12s) et server-combat test_status_duration_rule.cpp.",
       "hard_cc_seconds_exempt_skills": [
+        "skill_healer_requiem_maneuver",
         "skill_warrior_dual_axe_reaver_maneuver",
         "skill_warrior_hammer_lord_maneuver"
       ],
-      "_hard_cc_seconds_exempt_note": "Charleston 2026-11-10 (lot 4 des manoeuvres, chiffres A VALIDER) : l'Etourdissement du Marteau tellurique dure 1,5 s (sous le plancher de 2 s), l'Entrave du Crochet dure 6 s (au-dessus du plafond de 4 s). Exemptes de hard_cc_seconds seulement (soft_seconds et cooldown_rule s'appliquent toujours). L'Etourdissement au heurt du Marteau (movement.collide_status) a la meme duree. Lu par scripts/validate_cross_references.py (etape 12s) et server-combat test_status_duration_rule.cpp."
+      "_hard_cc_seconds_exempt_note": "Charleston 2026-11-10 (lot 4 des manoeuvres, chiffres A VALIDER) : l'Etourdissement du Marteau tellurique dure 1,5 s (sous le plancher de 2 s), l'Entrave du Crochet dure 6 s (au-dessus du plafond de 4 s). Lot 6 (A VALIDER) : le Silence du Bannissement (Requiem) dure 1,5 s. Exemptes de hard_cc_seconds seulement (soft_seconds et cooldown_rule s'appliquent toujours). L'Etourdissement au heurt du Marteau (movement.collide_status) a la meme duree. Lu par scripts/validate_cross_references.py (etape 12s) et server-combat test_status_duration_rule.cpp."
     },
     "last_updated": "2026-04-30",
     "description": "Tous les buffs/debuffs/DoTs du jeu. Option A canonique (CTO 2026-04-30): pour les stat_modifier stackables generiques, 1 effect_id = 1 icone, 1 stack = value_per_stack fixe. Skills appliquent stacks_to_apply (1, 2, 3...), pas de value/value_override arbitraire.",
@@ -2052,6 +2053,35 @@
           "_client_note": "stat_mods.shield='power' is a marker key required by client (pve_combat_manager.gd routes shield_amount only if mods.has('shield')). The string 'power' is replaced by the server-computed numeric absorb at runtime in combat_event_router.gd. Removing this breaks client display."
         }
       },
+      "shield_target_max_hp": {
+        "name_fr": "Bouclier (PV max de la cible)",
+        "name_en": "Shield (Target Max HP)",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "impl": "done",
+        "formula": "absorb = value + (target_max_hp * pct / 100). value=base flat, pct=% des PV max de l'unite qui RECOIT le bouclier (pas du lanceur). Lot 6 des manoeuvres, 2026-11-10.",
+        "tooltip_fr": "Absorbe des dégâts proportionnels à tes PV max.",
+        "tooltip_en": "Absorbs damage scaled with your max HP.",
+        "description_fr": "Variante du bouclier calculée sur les PV max de celui qui le reçoit. Absorption = valeur de base (value) + un pourcentage de ses PV max (pct).",
+        "description_en": "Shield variant scaled with the recipient's max HP. Absorption = flat value + pct% of the recipient's max HP.",
+        "sources": [
+          "Healer (Covenant, Lien d'échange)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "absorb_formula": "value + (target.max_hp * instance.pct) / 100",
+          "scaling_stat": "target_max_hp",
+          "scaling_source": "instance.pct",
+          "scaling_behavior": "flat_plus_scaling",
+          "stat_mods": {
+            "shield": "power"
+          },
+          "vfx_type": "shield_aura",
+          "_client_note": "stat_mods.shield='power' is the same marker as the other typed shields: the server sends the computed absorb, the client never derives it."
+        }
+      },
       "cover": {
         "name_fr": "Couverture",
         "name_en": "Cover",
@@ -3058,10 +3088,10 @@
     }
   },
   "_summary": {
-    "total": 109,
+    "total": 110,
     "categories": 9,
     "by_polarity": {
-      "buff": 58,
+      "buff": 59,
       "debuff": 51
     },
     "breakdown": {
@@ -3070,7 +3100,7 @@
       "stat_modifiers": 34,
       "tempo": 2,
       "control": 12,
-      "defensive": 11,
+      "defensive": 12,
       "immunity": 6,
       "aggro": 1,
       "special": 30
