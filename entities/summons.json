@@ -25,6 +25,7 @@
   "limits.counts_in_team_limit": "facultatif, defaut true. false = ne compte pas dans global_limits.max_summons_per_team et ne fait jamais disparaitre l'invocation d'un allie (un marqueur comme la rune de retour) ; compte toujours dans entity_caps.total_max de la room",
   "animations.owner_aura": "facultatif, lu par le client seul : boucle sur le lanceur de INVOCATION_SPAWNED a INVOCATION_ENDED de cette invocation",
   "animations.recall": "exige avec on_expire recall_owner, recopie dans TELEPORTED",
+  "trigger.max_activations": "facultatif (lot 9, 2026-11-10), pulse seulement, entier >= 1 : apres sa N-ieme activation l'invocation disparait (INVOCATION_ENDED raison spent) ; une activation due au tic meme de la fin de vie passe AVANT l'expiration (leurre explosif du Blinker : duration_sec 1, interval_sec 1, on_spawn false = une seule explosion 1 s apres la pose). Sans la cle : aucune limite, et l'expiration passe avant une activation du meme tic (comportement inchange)",
   "trigger.selection": "pulse seulement, facultatif : all (defaut, toutes les cibles a radius) | nearest (la seule unite la plus proche, egalite = plus petit identifiant ; aucune a portee = aucun tir ni evenement ; INVOCATION_TRIGGERED porte alors la cible)",
   "aura[]": "lot 4 (2026-11-10) : aura peut aussi etre une LISTE d'entrees {status, radius, distance, targets}. targets = allies (defaut, invocations exclues, le lanceur compris) | enemies (unites ennemies vivantes, invocations exclues). Chaque entree est appliquee et retiree independamment (etendard du Commander : trois statuts pour les allies, un pour les ennemis).",
   "on_spawn.pull": "facultatif (lot 4, 2026-11-10). {line row_or_column, radius, distance, targets all|allies|enemies, animation} : a l'apparition, chaque unite vivante (invocations exclues) alignee avec l'invocation (meme ligne ou meme colonne) a 2..radius cases est attiree de distance cases vers elle, la plus proche d'abord ; arret avant le premier corps. Une unite deja au contact ne bouge pas et n'emet rien. Boss et insensibles : FORCED_MOVE message immune ; Ancre : FORCED_MOVE_RESISTED. Evenement par unite : FORCED_MOVE (source = l'invocation, effect_id = animation, value = case de depart, position = case d'arrivee, absorbed_damage = cases parcourues).",
@@ -732,6 +733,64 @@
               "effect_id": "revealed",
               "stacks": 1,
               "duration_sec": 6
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "blinker_exploding_decoy",
+      "name_fr": "Leurre explosif",
+      "name_en": "Exploding Decoy",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "blinker_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 1,
+        "counts_in_team_limit": false
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Blinker) : leurre sur la case de depart du Blinker, objet sans PV (jamais cible ni touche), ne bloque ni la ligne de vue ni le passage, ne compte pas dans le plafond d'invocations du camp. Une seule explosion 1 s apres la pose (trigger.max_activations 1 : l'explosion passe avant la fin de vie au meme tic, puis le leurre disparait, raison spent) : 30% ATK physiques et Aveuglement 2 s aux ennemis a 1 case au plus (Manhattan, la case du leurre comprise). Aucun ennemi = explosion quand meme (evenement), personne n'est touche. Disparait avec le Blinker.",
+        "animations": {
+          "spawn": "decoy_idle",
+          "idle": "decoy_idle",
+          "trigger": "decoy_explode"
+        },
+        "body": {
+          "has_hp": false,
+          "owner_max_hp_percent": 0,
+          "blocks_line_of_sight": false,
+          "occupies_cell": false
+        },
+        "placement": {
+          "mode": "movement_origin"
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 1,
+          "interval_sec": 1,
+          "on_spawn": false,
+          "max_activations": 1
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "physical",
+            "base_power": 0,
+            "scaling_percent": 30
+          },
+          "statuses": [
+            {
+              "effect_id": "blind",
+              "stacks": 1,
+              "duration_sec": 2
             }
           ]
         }

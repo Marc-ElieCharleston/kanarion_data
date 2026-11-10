@@ -814,7 +814,56 @@
                 "aoe_pattern_id": "single"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_rogue_nightstalker_maneuver",
+            "name_fr": "Voile partagé",
+            "name_en": "Shared Veil",
+            "tier": "signature",
+            "target": "ally",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 180.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 4,
+            "exclude_caster": true,
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Nightstalker) : un allie a 4 cases au plus, sans ligne de vue, devient Invisible 3 s (statut existant : plus aucun sort a cible unique ne le vise, allies compris ; les zones le touchent ; Revele l'annule). Le Nightstalker lui-meme est refuse sans cout (exclude_caster). Recharge 180 s.",
+            "description_fr": "Rend un allié à 4 cases maximum Invisible pendant 3s, sans ligne de vue. Ne peut pas te viser toi-même.",
+            "description_en": "Make an ally within 4 tiles Invisible for 3s, ignoring line of sight. Cannot target yourself.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "support",
+              "stealth",
+              "invisible"
+            ],
+            "effects": [
+              {
+                "type": "buff",
+                "stat": "invisible",
+                "duration": 3
+              }
+            ],
+            "base_class_id": "rogue",
+            "subclass_id": "shadowblade",
+            "tier3_id": "nightstalker",
+            "source_scope": "TIER3",
+            "vfx_type": "buff_aura",
+            "targeting": {
+              "selection_mode": "entity",
+              "valid_target_team": "ally",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": true
+            }
+          }
         },
         "assassin": {
           "identity": "Execution bursts + bleed stacking + finisher specialist",
@@ -1066,7 +1115,72 @@
                 "aoe_pattern_id": "single"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_rogue_assassin_maneuver",
+            "name_fr": "Dague de l'ombre",
+            "name_en": "Shadow Dagger",
+            "tier": "signature",
+            "target": "enemy",
+            "pattern": "single",
+            "damage_type": "physical",
+            "scaling_stat": "atk",
+            "base_power": 0,
+            "scaling_percent": 60,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 150.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 4,
+            "movement": {
+              "type": "teleport_adjacent",
+              "range": 4,
+              "landing": "contact",
+              "landing_fallback": "stay",
+              "arrival_status": {
+                "id": "invisible",
+                "duration": 2
+              },
+              "animations": {
+                "depart": "vanish",
+                "arrive": "arrive"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Assassin) : dague sur un ennemi a 4 cases au plus, ligne de vue requise ; 60% ATK en degats physiques et 1 charge de Saignement 6 s. L'Assassin se teleporte ensuite sur la case libre qui touche la cible (haut, bas, gauche, droite ; la plus proche de lui, egalite dans l'ordre haut, droite, bas, gauche) et devient Invisible 2 s ; deja au contact = il reste sur sa case et devient Invisible. Aucune case de contact libre : la dague touche quand meme, l'Assassin ne bouge pas et ne devient PAS invisible (le voile est le prix de l'arrivee). Recharge 150 s.",
+            "description_fr": "Lance une dague sur un ennemi à 4 cases maximum, ligne de vue requise : 60% ATK en dégâts physiques et 1 charge de Saignement pendant 6s. Tu réapparais ensuite au contact de la cible et deviens Invisible pendant 2s. Si aucune case n'est libre autour d'elle, la dague touche mais tu restes sur place, sans Invisibilité.",
+            "description_en": "Throw a dagger at an enemy within 4 tiles, line of sight required: 60% ATK as physical damage and 1 Bleed stack for 6s. You then reappear in contact with the target and become Invisible for 2s. If no tile around it is free, the dagger still hits but you stay where you are, without Invisibility.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "damage",
+              "bleed",
+              "gap_closer",
+              "stealth"
+            ],
+            "effects": [
+              {
+                "type": "debuff",
+                "stat": "bleed",
+                "stacks_to_apply": 1,
+                "duration": 6
+              }
+            ],
+            "base_class_id": "rogue",
+            "subclass_id": "shadowblade",
+            "tier3_id": "assassin",
+            "source_scope": "TIER3",
+            "vfx_type": "projectile",
+            "targeting": {
+              "selection_mode": "entity",
+              "valid_target_team": "enemy",
+              "requires_line_of_sight": true,
+              "bypasses_los": false,
+              "requires_entity_on_target_tile": true
+            }
+          }
         }
       },
       "signature_movement": {
@@ -1667,7 +1781,57 @@
                 "aoe_pattern_id": "single"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_rogue_debuffer_maneuver",
+            "name_fr": "Pantin",
+            "name_en": "Puppet",
+            "tier": "signature",
+            "target": "enemy",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 180.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "movement": {
+              "type": "push",
+              "aim": "arrival_cell",
+              "range": 3,
+              "push_distance": 2,
+              "animations": {
+                "push": "drag"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Debuffer) : le joueur clique la case d'ARRIVEE voulue. Le serveur cherche un ennemi a exactement 2 cases de cette case en ligne droite (meme ligne ou meme colonne), a 3 cases au plus du Debuffer, en ligne de vue, ciblable (un invisible ne compte pas, invocations exclues) ; plusieurs = le plus proche du Debuffer, egalite = plus petit identifiant ; aucun = refus sans cout. L'ennemi est traine de 2 cases vers la case cliquee (le sens est donc celui que le joueur a choisi) ; chemin bloque = arret juste avant l'obstacle (le sort part quand meme) ; Ancre = FORCED_MOVE_RESISTED ; boss / insensible = ne bouge pas. Un piege ennemi sur le trajet d'arrivee se declenche. Aucun degat. Recharge 180 s.",
+            "description_fr": "Choisis une case : un ennemi à 2 cases de cette case, en ligne droite, et à 3 cases maximum de toi, ligne de vue requise, est traîné de 2 cases jusqu'à elle. S'il rencontre un obstacle, il s'arrête juste avant.",
+            "description_en": "Pick a tile: an enemy 2 tiles away from it in a straight line, and within 3 tiles of you, line of sight required, is dragged 2 tiles onto it. If it meets an obstacle, it stops just before it.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "control",
+              "pull"
+            ],
+            "effects": [],
+            "base_class_id": "rogue",
+            "subclass_id": "trickster",
+            "tier3_id": "debuffer",
+            "source_scope": "TIER3",
+            "vfx_type": "projectile",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "enemy",
+              "requires_line_of_sight": true,
+              "bypasses_los": false,
+              "requires_entity_on_target_tile": false
+            }
+          }
         },
         "blinker": {
           "identity": "Teleportation + hit & run + evasion windows + untargetable specialist",
@@ -1911,7 +2075,59 @@
                 "aoe_pattern_id": "single"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_rogue_blinker_maneuver",
+            "name_fr": "Leurre explosif",
+            "name_en": "Exploding Decoy",
+            "tier": "signature",
+            "target": "self",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 120.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "movement": {
+              "type": "self_move",
+              "mode": "free",
+              "range": 3,
+              "origin_invocation": "blinker_exploding_decoy",
+              "animations": {
+                "depart": "blink_out",
+                "arrive": "blink_in"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Blinker) : teleportation sur une case libre a 3 cases au plus, sans ligne de vue. Sur la case de depart, un leurre (objet sans PV, ne bloque ni la ligne de vue ni le passage) explose 1 s plus tard : 30% ATK en degats physiques (ATK du Blinker au lancer) et Aveuglement 2 s (75% de precision en moins : le leurre ne porte pas de valeur, defaut du statut) aux ennemis a 1 case au plus de la case du leurre (haut, bas, gauche, droite, et la case du leurre elle-meme). Le leurre ne compte pas dans la limite de 6 invocations du camp ; mort du Blinker avant l'explosion = pas d'explosion. Recharge 120 s.",
+            "description_fr": "Téléporte-toi sur une case libre à 3 cases maximum, sans ligne de vue. Tu laisses un leurre sur ta case de départ : 1s plus tard il explose, inflige 30% ATK en dégâts physiques et Aveugle pendant 2s les ennemis adjacents.",
+            "description_en": "Teleport to a free tile within 3 tiles, ignoring line of sight. You leave a decoy on your starting tile: 1s later it explodes, dealing 30% ATK as physical damage and Blinding adjacent enemies for 2s.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "movement",
+              "summon",
+              "blind"
+            ],
+            "effects": [],
+            "base_class_id": "rogue",
+            "subclass_id": "trickster",
+            "tier3_id": "blinker",
+            "source_scope": "TIER3",
+            "vfx_type": "dash_trail",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "self",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": false
+            }
+          }
         }
       },
       "signature_movement": {
