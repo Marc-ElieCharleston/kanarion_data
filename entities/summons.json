@@ -8,18 +8,20 @@
       "limits.max_per_owner": "au-dela, la plus ancienne du meme modele de ce lanceur disparait (raison replaced)",
       "global_limits.max_summons_per_team": "plafond par camp, invocations + doubles d'ombre ; despawn_oldest_if_limit=true fait disparaitre la plus ancienne invocation du camp, sinon le lancer est refuse",
       "visual_id": "jeu d'animations (assets/vfx/concepts/valide/<visual_id>), lu par le client",
-      "animations": "cles d'animation que le serveur recopie dans ses evenements : spawn, idle, trigger",
+      "animations": "cles d'animation que le serveur recopie dans ses evenements : spawn (INVOCATION_SPAWNED, une fois par bloc), idle (INVOCATION_MOVED), trigger (INVOCATION_TRIGGERED, absent si trigger.mode none). Facultatives, lues par le client seul : destroyed (INVOCATION_ENDED raison destroyed) et end (toute autre raison)",
       "body.has_hp": "true = unite ciblable et tuable (PV = owner_max_hp_percent des PV max du lanceur), false = objet sans PV, jamais ciblable ni touche",
       "body.blocks_line_of_sight": "bloque la ligne de vue du camp adverse (les allies restent transparents, regle du plateau)",
       "body.occupies_cell": "true = personne ne peut entrer sur sa case ; false = elle ne bloque aucun deplacement",
-      "placement.mode": "adjacent_to_caster (case adjacente libre ; celle du client si valide, sinon choisie par le serveur) | cell_in_range (case du client a placement.range au plus ; sans case, le serveur choisit) | line_from_caster (case voisine dans la direction de la case cliquee, axe dominant)",
+      "placement.mode": "adjacent_to_caster (case adjacente libre ; celle du client si valide, sinon choisie par le serveur) | cell_in_range (case du client a placement.range au plus ; sans case, le serveur choisit) | line_from_caster (case voisine dans la direction de la case cliquee, axe dominant) | wall_perpendicular (placement.length cases, nombre impair, centrees sur la case du client a placement.range au plus, libre ; perpendiculaire a l'axe lanceur -> case (axe dominant, egalite = le mur suit la ligne) ; un bloc lateral sur une case occupee ou hors plateau est omis ; sans case, le serveur prend 2 puis 1 case droit devant ; les blocs comptent pour UNE invocation dans les limites) | movement_origin (uniquement via movement.origin_invocation d'une manoeuvre de deplacement : la case que le lanceur vient de quitter)",
       "motion.mode": "static | line (une case toutes les step_interval_sec dans la direction du lancer ; traverse les cases ennemies si passes_through=enemies ; s'arrete avant toute autre case occupee ou le bord ; on_blocked = end | stay)",
-      "trigger.mode": "enemy_enters_adjacent (un ennemi arrive a moins de radius cases, au plus une fois par per_target_cooldown_sec et par cible ; deja a cote a l'apparition = arrivee) | pulse (toutes les interval_sec, on_spawn = premier tic a l'apparition, cibles a radius cases au plus) | on_pass (l'ennemi sur la case ou elle entre)",
+      "trigger.mode": "enemy_enters_adjacent (un ennemi arrive a moins de radius cases, au plus une fois par per_target_cooldown_sec et par cible ; deja a cote a l'apparition = arrivee) | pulse (toutes les interval_sec, on_spawn = premier tic a l'apparition, cibles a radius cases au plus) | on_pass (l'ennemi sur la case ou elle entre) | none (aucun effet, pas de bloc effect : un corps qui ne fait que se tenir la, exige has_hp)",
       "effect.targets": "enemies | allies (les unites vivantes du camp, invocations exclues)",
       "effect.damage": "damage_type physical|magical (ATK ou MAG du lanceur, photographiees a l'invocation), base_power, scaling_percent",
       "effect.heal": "base_heal, heal_scaling_percent (MAG du lanceur), reductions de soins de la cible appliquees",
       "effect.cleanse": "effect_ids dans l'ordre de priorite, max_effects par cible et par tic",
-      "effect.forced_move": "direction away_from_invocation | sideways_of_travel, distance en cases ; ligne droite, arret juste avant une case occupee ou le bord ; boss et cibles insensibles aux controles jamais deplaces"
+      "effect.forced_move": "direction away_from_invocation | sideways_of_travel, distance en cases ; ligne droite, arret juste avant une case occupee ou le bord ; boss et cibles insensibles aux controles jamais deplaces",
+      "body.blocks_line_of_sight_both_sides": "facultatif, defaut false. true = bloque AUSSI la ligne de vue du camp du lanceur (mur de glace) ; exige blocks_line_of_sight true",
+      "trigger.selection": "pulse seulement, facultatif : all (defaut, toutes les cibles a radius) | nearest (la seule unite la plus proche, egalite = plus petit identifiant ; aucune a portee = aucun tir ni evenement ; INVOCATION_TRIGGERED porte alors la cible)"
     }
   },
   "global_limits": {
@@ -258,6 +260,101 @@
           "forced_move": {
             "direction": "sideways_of_travel",
             "distance": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "frost_wall",
+      "name_fr": "Mur de glace",
+      "name_en": "Ice Wall",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "frostcaller_summon_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Frostcaller) : 3 blocs, 15% des PV max du lanceur par bloc, centre a 3 cases au plus, 8s, bloque la ligne de vue des deux camps. Compte pour UNE invocation dans la limite de 6 par camp. Case centrale occupee = refus ; bloc lateral sur une case occupee ou hors plateau = omis (mur partiel). Clic en diagonale exacte = le mur suit la ligne.",
+        "animations": {
+          "spawn": "wall_rise",
+          "idle": "wall_idle",
+          "destroyed": "wall_break",
+          "end": "wall_fade"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 15,
+          "blocks_line_of_sight": true,
+          "blocks_line_of_sight_both_sides": true,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "wall_perpendicular",
+          "range": 3,
+          "length": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "none",
+          "radius": 0
+        }
+      }
+    },
+    {
+      "id": "energy_orb",
+      "name_fr": "Orbe d'énergie",
+      "name_en": "Energy Orb",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "sorcerer_summon_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Sorcerer) : 8% des PV max du lanceur, un tir par seconde (premier tir 1s apres la pose, 8 tirs) sur l'ennemi le plus proche a 3 cases, 15% MAG magique, sans ligne de vue requise, ne bloque pas la ligne de vue.",
+        "animations": {
+          "spawn": "cast",
+          "idle": "orb_idle",
+          "trigger": "orb_shot",
+          "destroyed": "orb_break",
+          "end": "orb_fade"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 8,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "movement_origin"
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 3,
+          "interval_sec": 1,
+          "on_spawn": false,
+          "selection": "nearest"
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "magical",
+            "base_power": 0,
+            "scaling_percent": 15
           }
         }
       }

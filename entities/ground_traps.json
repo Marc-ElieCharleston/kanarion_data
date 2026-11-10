@@ -1,0 +1,49 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "description": "Modeles de pieges au sol : un effet pose sur UNE case par une competence, sans corps (ni PV, ni case occupee, ne bloque ni deplacement ni ligne de vue). Lu par server-combat (content_loader.cpp load_ground_trap_template, combat/room_ground_traps.cpp). Strict : une valeur ou une cle d'effet inconnue fait refuser le demarrage du service.",
+    "rules": "Regles du plateau (Charleston, valables pour tous les pieges) : 1. un seul effet au sol par case, jamais sur une case qui porte deja un piege (allie ou ennemi) ni sur une unite, le serveur refuse ; 2. max_per_owner pieges actifs par lanceur et par modele, en reposer un retire le plus ancien ; 3. seuls les ennemis le declenchent (unites vivantes avec PV, invocations ennemies avec PV comprises, objets sans PV jamais) ; 4. un deplacement force (pousse, attire, echange, teleporte) sur le piege le declenche ; 5. visibility owner_side : jamais envoye au camp adverse avant son declenchement. Les zones de degats des sorts ne sont pas des pieges et peuvent recouvrir une case piegee.",
+    "placement": "Decidee par la competence, pas par le modele. Aujourd'hui : movement.origin_trap d'une manoeuvre self_move (la case de depart, verifiee AVANT le deplacement : un refus ne coute rien).",
+    "schema": {
+      "id": "identifiant, reference par movement.origin_trap",
+      "visual_id": "jeu d'animations du client",
+      "animations.idle": "cle recopiee dans GROUND_TRAP_PLACED (boucle tant qu'il est pose)",
+      "animations.trigger": "cle recopiee dans GROUND_TRAP_TRIGGERED",
+      "duration_sec": "duree de vie en secondes",
+      "max_per_owner": "pieges actifs de ce modele par lanceur",
+      "ends_with_owner": "true = s'eteint a la mort du lanceur (raison owner_dead)",
+      "visibility": "owner_side (invisible pour le camp adverse jusqu'au declenchement) | everyone",
+      "triggered_by": "enemies (seule valeur)",
+      "charges": "declenchements avant extinction ; une unite qui l'a declenche ne le redeclenche pas avant d'avoir quitte la case",
+      "effect.statuses": "liste {effect_id (stats/status_effects.json), stacks >= 1, duration_sec > 0}, appliques a l'unite qui le declenche, source = le lanceur. Aucune autre cle d'effet n'est lue aujourd'hui (le serveur refuse)"
+    }
+  },
+  "traps": [
+    {
+      "id": "magma_fire_cell",
+      "name_fr": "Case de feu",
+      "name_en": "Fire Tile",
+      "visual_id": "magma_sage_trap_v1",
+      "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Magma Sage) : 12s, une seule charge, 2 charges de Brulure de 6s, s'eteint a la mort du lanceur, invisible pour l'adversaire.",
+      "animations": {
+        "idle": "fire_cell_idle",
+        "trigger": "fire_cell_trigger"
+      },
+      "duration_sec": 12,
+      "max_per_owner": 1,
+      "ends_with_owner": true,
+      "visibility": "owner_side",
+      "triggered_by": "enemies",
+      "charges": 1,
+      "effect": {
+        "statuses": [
+          {
+            "effect_id": "burn",
+            "stacks": 2,
+            "duration_sec": 6
+          }
+        ]
+      }
+    }
+  ]
+}
