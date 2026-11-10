@@ -14,7 +14,7 @@
       "body.occupies_cell": "true = personne ne peut entrer sur sa case ; false = elle ne bloque aucun deplacement",
       "placement.mode": "adjacent_to_caster (case adjacente libre ; celle du client si valide, sinon choisie par le serveur) | cell_in_range (case du client a placement.range au plus ; sans case, le serveur choisit) | line_from_caster (case voisine dans la direction de la case cliquee, axe dominant) | wall_perpendicular (placement.length cases, nombre impair, centrees sur la case du client a placement.range au plus, libre ; perpendiculaire a l'axe lanceur -> case (axe dominant, egalite = le mur suit la ligne) ; un bloc lateral sur une case occupee ou hors plateau est omis ; sans case, le serveur prend 2 puis 1 case droit devant ; les blocs comptent pour UNE invocation dans les limites) | movement_origin (uniquement via movement.origin_invocation d'une manoeuvre de deplacement : la case que le lanceur vient de quitter)",
       "motion.mode": "static | line (une case toutes les step_interval_sec dans la direction du lancer ; traverse les cases ennemies si passes_through=enemies ; s'arrete avant toute autre case occupee ou le bord ; on_blocked = end | stay)",
-      "trigger.mode": "enemy_enters_adjacent (un ennemi arrive a moins de radius cases, au plus une fois par per_target_cooldown_sec et par cible ; deja a cote a l'apparition = arrivee) | pulse (toutes les interval_sec, on_spawn = premier tic a l'apparition, cibles a radius cases au plus) | on_pass (l'ennemi sur la case ou elle entre) | none (aucun effet, pas de bloc effect : un corps qui ne fait que se tenir la, exige has_hp)",
+      "trigger.mode": "enemy_enters_adjacent (un ennemi arrive a moins de radius cases, au plus une fois par per_target_cooldown_sec et par cible ; deja a cote a l'apparition = arrivee) | pulse (toutes les interval_sec, on_spawn = premier tic a l'apparition, cibles a radius cases au plus) | on_pass (l'ennemi sur la case ou elle entre) | none (aucun effet, pas de bloc effect : un corps qui ne fait que se tenir la ; exige has_hp, on_expire, ou, depuis le lot 5, un objet qui bloque la ligne de vue ou occupe sa case : barriere du Sanctifier)",
       "effect.targets": "enemies | allies (les unites vivantes du camp, invocations exclues)",
       "effect.damage": "damage_type physical|magical (ATK ou MAG du lanceur, photographiees a l'invocation), base_power, scaling_percent",
       "effect.heal": "base_heal, heal_scaling_percent (MAG du lanceur), reductions de soins de la cible appliquees",
@@ -530,6 +530,97 @@
             "targets": "enemies"
           }
         ]
+      }
+    },
+    {
+      "id": "druidic_life_seed",
+      "name_fr": "Graine de vie",
+      "name_en": "Life Seed",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "druidic_healer_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Druidic Healer) : 8 s, PV 10% des PV max du lanceur (l'adversaire peut la detruire), case libre a 3 cases au plus sans ligne de vue requise, ne bloque pas la ligne de vue ; a la pose puis chaque seconde, soin de 8% MAG aux allies adjacents (Manhattan 1, invocations exclues). Compte dans la limite de 6 invocations par camp.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "trigger": "heal_pulse",
+          "hit": "summon_hit",
+          "destroyed": "summon_break",
+          "end": "summon_fade"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 10,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 1,
+          "interval_sec": 1,
+          "on_spawn": true
+        },
+        "effect": {
+          "targets": "allies",
+          "heal": {
+            "base_heal": 0,
+            "heal_scaling_percent": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "sanctifier_sacred_shield",
+      "name_fr": "Bouclier sacré",
+      "name_en": "Sacred Shield",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "sanctifier_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 6
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Sanctifier) : objet sans PV (jamais cible, touche ni detruit) sur une case libre a 3 cases au plus sans ligne de vue requise, 6 s. A sens unique : bloque la ligne de vue du camp adverse seulement (regle des objets : invocation_object_blocks), le camp du lanceur voit au travers. Occupe sa case : personne n'y entre. Compte dans la limite de 6 invocations par camp. Aucun evenement de projectile brise : un sort adverse qui exige la ligne de vue est refuse a la validation.",
+        "animations": {
+          "spawn": "cast",
+          "idle": "barrier_idle"
+        },
+        "body": {
+          "has_hp": false,
+          "owner_max_hp_percent": 0,
+          "blocks_line_of_sight": true,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "none",
+          "radius": 0
+        }
       }
     }
   ]
