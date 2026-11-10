@@ -29,7 +29,11 @@
   "aura[]": "lot 4 (2026-11-10) : aura peut aussi etre une LISTE d'entrees {status, radius, distance, targets}. targets = allies (defaut, invocations exclues, le lanceur compris) | enemies (unites ennemies vivantes, invocations exclues). Chaque entree est appliquee et retiree independamment (etendard du Commander : trois statuts pour les allies, un pour les ennemis).",
   "on_spawn.pull": "facultatif (lot 4, 2026-11-10). {line row_or_column, radius, distance, targets all|allies|enemies, animation} : a l'apparition, chaque unite vivante (invocations exclues) alignee avec l'invocation (meme ligne ou meme colonne) a 2..radius cases est attiree de distance cases vers elle, la plus proche d'abord ; arret avant le premier corps. Une unite deja au contact ne bouge pas et n'emet rien. Boss et insensibles : FORCED_MOVE message immune ; Ancre : FORCED_MOVE_RESISTED. Evenement par unite : FORCED_MOVE (source = l'invocation, effect_id = animation, value = case de depart, position = case d'arrivee, absorbed_damage = cases parcourues).",
   "aura": "facultatif (lot 3, 2026-11-10). {status, radius, distance manhattan|chebyshev} : tant que l'invocation vit, chaque unite alliee vivante a radius cases au plus (invocations exclues, le lanceur compris) porte le statut `status` (stats/status_effects.json), applique et retire par le serveur a chaque deplacement (STATUS_APPLIED / STATUS_REMOVED, source = l'invocation, duree = vie restante). Meme moteur que runtime.aura d'un statut. Seul effet permis avec trigger none.",
-  "animations.hit": "facultatif, lu par le client seul : coup encaisse par une invocation a PV (evenement DAMAGE dont la cible est l'invocation)"
+  "animations.hit": "facultatif, lu par le client seul : coup encaisse par une invocation a PV (evenement DAMAGE dont la cible est l'invocation)",
+  "animations.aura_pulse": "facultatif (lot 7, 2026-11-10), lu par le client seul : joue sur l'invocation a chaque tick ou le serveur envoie au moins un STATUS_APPLIED d'un statut de son aura dont la source est cette invocation (une ou plusieurs unites viennent d'entrer dans l'aura)",
+  "animations.aura_mark": "facultatif (lot 7, 2026-11-10), lu par le client seul : boucle sur chaque unite qui porte un statut de l'aura de cette invocation, du STATUS_APPLIED (source = l'invocation) au STATUS_REMOVED du meme statut",
+  "effect.statuses": "facultatif (lot 7, 2026-11-10). Liste {effect_id (stats/status_effects.json), stacks >= 1, duration_sec > 0}, appliques a chaque unite touchee apres les degats (source = le lanceur), meme schema que les pieges au sol. Revele = retire l'invisibilite (Ronde du faucon).",
+  "trigger.pulse_center": "regle (lot 7, 2026-11-10) : un pulse d'une invocation qui n'occupe pas sa case (occupies_cell false) atteint aussi l'unite qui se tient SUR sa case (distance 0) ; une invocation qui occupe sa case vise de 1 a radius cases. selection nearest prend alors d'abord l'unite sur la case"
     }
   },
   "global_limits": {
@@ -620,6 +624,116 @@
         "trigger": {
           "mode": "none",
           "radius": 0
+        }
+      }
+    },
+    {
+      "id": "sharpshooter_scarecrow",
+      "name_fr": "Épouvantail",
+      "name_en": "Scarecrow",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "sharpshooter_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Sharpshooter) : 8 s, PV 15% des PV max du lanceur (l'adversaire peut le detruire), case libre a 3 cases au plus sans ligne de vue requise, bloque la ligne de vue du camp adverse ; aura : ennemis a 2 cases au plus (Manhattan, invocations exclues) provoques (taunt_scarecrow, source = l'epouvantail) tant qu'ils y restent : leurs sorts a cible unique le visent. Plus de provocation des qu'il est detruit ou a expire. Compte dans la limite de 6 invocations par camp.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "hit": "summon_hit",
+          "destroyed": "summon_break",
+          "end": "summon_fade",
+          "aura_pulse": "taunt_pulse",
+          "aura_mark": "taunt_mark"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 15,
+          "blocks_line_of_sight": true,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "none",
+          "radius": 0
+        },
+        "aura": [
+          {
+            "status": "taunt_scarecrow",
+            "radius": 2,
+            "distance": "manhattan",
+            "targets": "enemies"
+          }
+        ]
+      }
+    },
+    {
+      "id": "falcon_striker_hawk_round",
+      "name_fr": "Faucon",
+      "name_en": "Falcon",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "falcon_striker_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Falcon Striker) : objet sans PV (jamais cible ni touche), ne bloque ni la ligne de vue ni le passage, au-dessus d'une case a 4 cases au plus sans ligne de vue requise, 8 s. Chaque seconde (premier pique 1 s apres la pose), pique sur UN ennemi : celui de la case survolee, sinon le plus proche a 1 case (egalite = plus petit identifiant), 15% ATK physiques, puis Revele 6 s (retire l'invisibilite et l'empeche). Aucun ennemi a portee = aucun pique. Compte dans la limite de 6 invocations par camp.",
+        "animations": {
+          "spawn": "cast",
+          "idle": "circle_idle",
+          "trigger": "dive"
+        },
+        "body": {
+          "has_hp": false,
+          "owner_max_hp_percent": 0,
+          "blocks_line_of_sight": false,
+          "occupies_cell": false
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 4
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 1,
+          "interval_sec": 1,
+          "on_spawn": false,
+          "selection": "nearest"
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "physical",
+            "base_power": 0,
+            "scaling_percent": 15
+          },
+          "statuses": [
+            {
+              "effect_id": "revealed",
+              "stacks": 1,
+              "duration_sec": 6
+            }
+          ]
         }
       }
     }

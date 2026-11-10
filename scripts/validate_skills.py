@@ -170,6 +170,8 @@ ALLOWED_METADATA_FIELDS = {
                            # sous `movement`, invocation de specialisation sans `movement`)
     "ground_trap_template_id",  # LU — content_loader.cpp : modele de entities/ground_traps.json pose
                                 # sur la case visee (competence sans `movement`, lot 2 2026-11-10)
+    "ground_trap_shape",  # LU — content_loader.cpp : piege sur plusieurs cases en ligne (corde du
+                          # Skirmisher, lot 7 2026-11-10), exige ground_trap_template_id
     "consumes_gcd",      # LU — content_loader.cpp
     "max_level",         # LU — combat_host.cpp + client balance_config.gd
     "detonates_marks",   # LU — content_loader.cpp

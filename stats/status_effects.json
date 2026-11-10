@@ -2371,6 +2371,33 @@
           "vfx_type": "taunt_aura"
         },
         "_audit_note": "2026-08-06: ajout de runtime.cc_type. Le serveur derivait deja le type TAUNT de la categorie aggro, mais le client lit exclusivement cc_type pour peupler StatusEffect.cc_type. Sans lui, la provocation s'affichait comme un debuff neutre, sans marquage CC dans le HUD."
+      },
+      "taunt_scarecrow": {
+        "name_fr": "Provocation (épouvantail)",
+        "name_en": "Taunt (Scarecrow)",
+        "polarity": "debuff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "impl": "done",
+        "formula": "forced target on the scarecrow while within its aura (lot 7 des manoeuvres, 2026-11-10)",
+        "tooltip_fr": "Force la cible à attaquer l'épouvantail tant qu'elle reste près de lui.",
+        "tooltip_en": "Forces the target to attack the scarecrow while it stays near it.",
+        "description_fr": "Provocation donnée par une aura (Épouvantail du Sharpshooter) aux ennemis à 2 cases au plus : leurs sorts à cible unique visent l'épouvantail. Retirée dès qu'ils s'éloignent ou que l'épouvantail disparaît.",
+        "description_en": "Taunt granted by an aura (the Sharpshooter's Scarecrow) to enemies within 2 tiles: their single-target spells hit the scarecrow. Removed as soon as they move away or the scarecrow is gone.",
+        "sources": [
+          "Archer (Sharpshooter, Épouvantail)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "forces_target_on_source": true,
+          "cc_type": "taunt",
+          "stat_mods": {
+            "taunted": 1
+          },
+          "vfx_type": "taunt_aura"
+        },
+        "_a_valider": "A VALIDER (2026-11-10, lot 7) : la source de la provocation est l'epouvantail (porteur de l'aura), pas l'archer. Statut distinct de taunt pour qu'une provocation de Guerrier ne soit jamais retiree par l'aura. Le serveur (status_manager.cpp) traite tout statut aggro de cc_type taunt comme une provocation."
       }
     },
     "special": {
@@ -3088,11 +3115,11 @@
     }
   },
   "_summary": {
-    "total": 110,
+    "total": 111,
     "categories": 9,
     "by_polarity": {
       "buff": 59,
-      "debuff": 51
+      "debuff": 52
     },
     "breakdown": {
       "dot": 9,
@@ -3102,7 +3129,7 @@
       "control": 12,
       "defensive": 12,
       "immunity": 6,
-      "aggro": 1,
+      "aggro": 2,
       "special": 30
     },
     "_audit_note": "2026-08-06: bloc recompte a partir du fichier. Il annoncait 104 effets pour 101 reels, et se trompait aussi sur tempo, defensive et special. Le total passe a 98 apres la fusion de trois doublons stricts: atk_percent_up absorbe par atk_up (meme 5%/stack, meme max 5, la grille le notait deja comme alias possible), heal_received_down absorbe par heal_reduction (meme -15%/stack, meme max 3, meme chemin runtime), et regen supprime (zero applicateur, identique a heal_over_time a 1% maxHP/s/charge)."
