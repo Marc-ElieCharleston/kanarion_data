@@ -171,6 +171,12 @@
           "max_stacks": 3,
           "total_max": "-15%"
         },
+        "damage_reduction_aura": {
+          "value_per_stack": 20,
+          "unit": "percent",
+          "max_stacks": 1,
+          "total_max": "+20% (une seule charge, donnee par une aura : egide de la Sentinelle, A VALIDER)"
+        },
         "evasion_up": {
           "value_per_stack": 3,
           "unit": "percent_points",
@@ -1278,6 +1284,31 @@
         "max_stacks": 3,
         "value_per_stack": 5
       },
+      "damage_reduction_aura": {
+        "name_fr": "Abri de l'égide",
+        "name_en": "Aegis Cover",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "value_per_stack": 20,
+        "impl": "done",
+        "formula": "+20% damage reduction (one stack)",
+        "tooltip_fr": "Réduit les dégâts subis tant que tu restes à côté de l'égide.",
+        "tooltip_en": "Reduces damage taken while you stay next to the aegis.",
+        "description_fr": "Réduit tous les dégâts reçus de 20%. Donné par une aura (égide de la Sentinelle) aux alliés adjacents, retiré dès qu'ils s'en éloignent.",
+        "description_en": "Reduces all damage taken by 20%. Granted by an aura (the Sentinel's aegis) to adjacent allies, removed as soon as they move away.",
+        "sources": [
+          "Warrior (Sentinel)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "stat_mods": {
+            "damage_reduction_percent": "value/100"
+          },
+          "vfx_type": "shield_aura"
+        }
+      },
       "crit_resistance_down": {
         "name_fr": "Résist Critique -",
         "name_en": "Crit Resistance Down",
@@ -2005,6 +2036,31 @@
           "instance_value_stat": "thorns_percent",
           "vfx_type": "shield_aura"
         }
+      },
+      "forced_move_immune_aura": {
+        "name_fr": "Aura d'ancrage",
+        "name_en": "Anchoring Aura",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "impl": "done",
+        "tooltip_fr": "Toi et les alliés à 1 case de toi êtes Ancrés : personne ne peut vous déplacer de force.",
+        "tooltip_en": "You and allies within 1 tile of you are Anchored: no one can forcibly move you.",
+        "description_fr": "Aura : tant qu'elle dure, le porteur et les alliés à 1 case de lui (distance de Manhattan) reçoivent Ancré. Un allié qui s'éloigne le perd, un allié qui s'approche le gagne. Décidé par le serveur à chaque déplacement.",
+        "description_en": "Aura: while it lasts, the bearer and allies within 1 tile of them (Manhattan distance) gain Anchored. An ally who moves away loses it, an ally who comes closer gains it. Decided by the server on every move.",
+        "sources": [
+          "Warrior (Bulwark)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "aura": {
+            "grants": "forced_move_immune",
+            "radius": 1,
+            "distance": "manhattan",
+            "include_carrier": true
+          },
+          "vfx_type": "aura_idle"
+        }
       }
     },
     "immunity": {
@@ -2106,6 +2162,27 @@
         "description_fr": "Crée une zone. Alliés dans la zone immuns aux contrôles. Zone fixe, ne bouge pas. Compétence de Healer.",
         "description_en": "Creates a zone. Allies inside immune to CC. Zone is fixed, doesn't move. Healer/Support skill.",
         "_pr_a2_note": "Flag corrected 2026-05-02 — code path verified wired in audit."
+      },
+      "forced_move_immune": {
+        "name_fr": "Ancré",
+        "name_en": "Anchored",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "impl": "done",
+        "tooltip_fr": "Ne peut pas être déplacé de force : ni attiré, ni repoussé, ni échangé, ni téléporté par un autre.",
+        "tooltip_en": "Cannot be forcibly moved: not pulled, pushed, swapped or teleported by someone else.",
+        "description_fr": "Insensible aux déplacements forcés. Une attraction, une poussée, un échange ou une téléportation imposée échoue sur lui ; la compétence garde ses autres effets. Ne protège pas des déplacements qu'il fait lui-même.",
+        "description_en": "Immune to forced movement. A pull, push, swap or imposed teleport fails on them; the skill keeps its other effects. Does not affect movement they make themselves.",
+        "sources": [
+          "Warrior"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "blocks_forced_movement": true,
+          "resist_animation": "resist",
+          "vfx_type": "ally_anchor"
+        }
       }
     },
     "aggro": {
@@ -2849,20 +2926,20 @@
     }
   },
   "_summary": {
-    "total": 102,
+    "total": 105,
     "categories": 9,
     "by_polarity": {
-      "buff": 52,
+      "buff": 55,
       "debuff": 50
     },
     "breakdown": {
       "dot": 9,
       "hot": 3,
-      "stat_modifiers": 30,
+      "stat_modifiers": 31,
       "tempo": 2,
       "control": 12,
-      "defensive": 10,
-      "immunity": 5,
+      "defensive": 11,
+      "immunity": 6,
       "aggro": 1,
       "special": 30
     },

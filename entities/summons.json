@@ -25,7 +25,9 @@
   "limits.counts_in_team_limit": "facultatif, defaut true. false = ne compte pas dans global_limits.max_summons_per_team et ne fait jamais disparaitre l'invocation d'un allie (un marqueur comme la rune de retour) ; compte toujours dans entity_caps.total_max de la room",
   "animations.owner_aura": "facultatif, lu par le client seul : boucle sur le lanceur de INVOCATION_SPAWNED a INVOCATION_ENDED de cette invocation",
   "animations.recall": "exige avec on_expire recall_owner, recopie dans TELEPORTED",
-  "trigger.selection": "pulse seulement, facultatif : all (defaut, toutes les cibles a radius) | nearest (la seule unite la plus proche, egalite = plus petit identifiant ; aucune a portee = aucun tir ni evenement ; INVOCATION_TRIGGERED porte alors la cible)"
+  "trigger.selection": "pulse seulement, facultatif : all (defaut, toutes les cibles a radius) | nearest (la seule unite la plus proche, egalite = plus petit identifiant ; aucune a portee = aucun tir ni evenement ; INVOCATION_TRIGGERED porte alors la cible)",
+  "aura": "facultatif (lot 3, 2026-11-10). {status, radius, distance manhattan|chebyshev} : tant que l'invocation vit, chaque unite alliee vivante a radius cases au plus (invocations exclues, le lanceur compris) porte le statut `status` (stats/status_effects.json), applique et retire par le serveur a chaque deplacement (STATUS_APPLIED / STATUS_REMOVED, source = l'invocation, duree = vie restante). Meme moteur que runtime.aura d'un statut. Seul effet permis avec trigger none.",
+  "animations.hit": "facultatif, lu par le client seul : coup encaisse par une invocation a PV (evenement DAMAGE dont la cible est l'invocation)"
     }
   },
   "global_limits": {
@@ -402,6 +404,53 @@
         "trigger": {
           "mode": "none",
           "radius": 0
+        }
+      }
+    },
+    {
+      "id": "sentinel_aegis",
+      "name_fr": "Égide",
+      "name_en": "Aegis",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "sentinel_summon_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 10
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Sentinel) : 10 s, PV 20% des PV max du lanceur, case libre a 3 cases au plus sans ligne de vue requise, bloque la ligne de vue du camp adverse ; aura : allies adjacents (Manhattan 1, le lanceur compris s'il est adjacent, invocations exclues) -20% de degats subis (damage_reduction_aura) tant qu'ils restent adjacents. Compte dans la limite de 6 invocations par camp.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "hit": "summon_hit",
+          "destroyed": "summon_break",
+          "end": "summon_fade"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 20,
+          "blocks_line_of_sight": true,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "none",
+          "radius": 0
+        },
+        "aura": {
+          "status": "damage_reduction_aura",
+          "radius": 1,
+          "distance": "manhattan"
         }
       }
     }

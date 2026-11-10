@@ -910,7 +910,53 @@
                 "aoe_pattern_id": "single"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_warrior_bulwark_maneuver",
+            "name_fr": "Muraille",
+            "name_en": "Rampart",
+            "tier": "signature",
+            "target": "self",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 300.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Bulwark) : 10 s, toi et les allies a 1 case (distance de Manhattan, 4 cases : la zone suit le lanceur) ne peuvent etre ni attires, ni repousses, ni echanges, ni teleportes de force. Recharge 300 s. Le lanceur ne bouge pas.",
+            "description_fr": "Pendant 10s, toi et les alliés à 1 case de toi ne pouvez pas être déplacés de force : ni attirés, ni repoussés, ni échangés, ni téléportés. La zone te suit ; un allié qui s'éloigne n'est plus protégé.",
+            "description_en": "For 10s, you and allies within 1 tile of you cannot be forcibly moved: not pulled, pushed, swapped or teleported. The area follows you; an ally who moves away is no longer protected.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "defense"
+            ],
+            "effects": [
+              {
+                "type": "buff",
+                "stat": "forced_move_immune_aura",
+                "duration": 10,
+                "target": "self"
+              }
+            ],
+            "base_class_id": "warrior",
+            "subclass_id": "guardian",
+            "tier3_id": "bulwark",
+            "source_scope": "TIER3",
+            "vfx_type": "shield",
+            "targeting": {
+              "selection_mode": "self",
+              "valid_target_team": "self",
+              "requires_line_of_sight": false,
+              "bypasses_los": false,
+              "requires_entity_on_target_tile": false
+            }
+          }
         },
         "sentinel": {
           "identity": "Guardian angel + ally protection specialist + damage redirection",
@@ -1182,7 +1228,48 @@
                 "aoe_pattern_id": "all"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_warrior_sentinel_maneuver",
+            "name_fr": "Égide",
+            "name_en": "Aegis",
+            "tier": "signature",
+            "target": "self",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 300.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "summon_template_id": "sentinel_aegis",
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Sentinel) : Egide sur une case libre a 3 cases au plus, sans ligne de vue requise, 10 s, PV 20% des PV max du lanceur, bloque la ligne de vue adverse ; allies adjacents (Manhattan 1) : -20% de degats subis tant qu'ils sont adjacents. Recharge 300 s.",
+            "description_fr": "Plante une égide sur une case libre à 3 cases maximum, pendant 10s. Les alliés adjacents à l'égide subissent 20% de dégâts en moins. L'égide bloque la ligne de vue et a 20% de tes PV max.",
+            "description_en": "Plant an aegis on a free tile within 3 tiles, for 10s. Allies adjacent to the aegis take 20% less damage. The aegis blocks line of sight and has 20% of your max HP.",
+            "tags": [
+              "summon",
+              "maneuver",
+              "signature"
+            ],
+            "effects": [],
+            "base_class_id": "warrior",
+            "subclass_id": "guardian",
+            "tier3_id": "sentinel",
+            "source_scope": "TIER3",
+            "vfx_type": "shield",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "self",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": false
+            }
+          }
         }
       },
       "signature_movement": {
@@ -1796,7 +1883,65 @@
                 "aoe_pattern_id": "cone_2x3"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_warrior_bloodrage_maneuver",
+            "name_fr": "Bond sanglant",
+            "name_en": "Blood Leap",
+            "tier": "signature",
+            "target": "enemy",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 120.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "movement": {
+              "type": "teleport_adjacent",
+              "range": 3,
+              "target_selection": "lowest_hp_percent",
+              "landing": "contact",
+              "animations": {
+                "depart": "leap",
+                "arrive": "impact"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Bloodrage) : bond sur l'ennemi au plus bas % de PV a 3 cases au plus (egalite : le plus proche, puis le plus petit identifiant), sans ligne de vue, case de contact libre obligatoire sinon refus sans cout ; 1 charge de Saignement 6 s. Recharge 120 s.",
+            "description_fr": "Bondis au contact de l'ennemi le plus blessé à 3 cases maximum, par-dessus les autres et sans ligne de vue. À l'arrivée, il saigne pendant 6s (1 charge de Saignement).",
+            "description_en": "Leap next to the most wounded enemy within 3 tiles, over other units and ignoring line of sight. On landing, it bleeds for 6s (1 Bleed stack).",
+            "tags": [
+              "movement",
+              "gap_closer",
+              "maneuver",
+              "signature"
+            ],
+            "effects": [
+              {
+                "type": "debuff",
+                "stat": "bleed",
+                "stacks_to_apply": 1,
+                "duration": 6
+              }
+            ],
+            "base_class_id": "warrior",
+            "subclass_id": "berserker",
+            "tier3_id": "bloodrage",
+            "source_scope": "TIER3",
+            "vfx_type": "dash_trail",
+            "targeting": {
+              "selection_mode": "self",
+              "valid_target_team": "enemy",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": false
+            }
+          }
         },
         "frenzied": {
           "identity": "Speed demon + multi-hit attacks + damage buffs",
@@ -2050,7 +2195,56 @@
                 "aoe_pattern_id": "ring_1_center"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_warrior_frenzied_maneuver",
+            "name_fr": "Ruée",
+            "name_en": "Rush",
+            "tier": "signature",
+            "target": "self",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 90.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "movement": {
+              "type": "self_move",
+              "mode": "straight",
+              "range": 3,
+              "animations": {
+                "depart": "dash",
+                "arrive": "arrive"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Frenzied) : ruee jusqu'a 3 cases en ligne ou en colonne, chemin libre, ligne de vue requise, aucune poussee a l'arrivee. Recharge 90 s.",
+            "description_fr": "Fonce jusqu'à 3 cases en ligne droite, en ligne ou en colonne, avec ligne de vue et sans traverser personne. Aucune poussée à l'arrivée.",
+            "description_en": "Rush up to 3 tiles in a straight line, along a row or a column, with line of sight and without passing through anyone. No push on arrival.",
+            "tags": [
+              "movement",
+              "maneuver",
+              "signature"
+            ],
+            "effects": [],
+            "base_class_id": "warrior",
+            "subclass_id": "berserker",
+            "tier3_id": "frenzied",
+            "source_scope": "TIER3",
+            "vfx_type": "dash_trail",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "self",
+              "requires_line_of_sight": true,
+              "bypasses_los": false,
+              "requires_entity_on_target_tile": false
+            }
+          }
         }
       },
       "signature_movement": {
