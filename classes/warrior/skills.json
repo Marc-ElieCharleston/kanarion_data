@@ -2828,7 +2828,69 @@
                 "aoe_pattern_id": "ring_1_center"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_warrior_hammer_lord_maneuver",
+            "name_fr": "Marteau tellurique",
+            "name_en": "Telluric Hammer",
+            "tier": "signature",
+            "target": "enemy",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 240.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "movement": {
+              "type": "impact_push",
+              "range": 3,
+              "push_radius": 1,
+              "push_distance": 1,
+              "affects": "enemies",
+              "collide_status": {
+                "id": "stun",
+                "duration": 1.5
+              },
+              "animations": {
+                "push": "push",
+                "collide": "stun_collide"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Hammer Lord) : marteau lance sur une case a 3 cases au plus (distance de Manhattan), ligne de vue requise ; l'ennemi sur la case centrale est etourdi 1,5 s ; les ennemis des 8 cases autour (diagonales comprises) sont repousses d'1 case en s'eloignant du point d'impact (en diagonale pour ceux des coins) ; celui qui heurte un obstacle, le bord ou une autre unite ne bouge pas et est etourdi 1,5 s. Allies jamais deplaces ni etourdis. Boss, cibles insensibles aux controles et unites Ancrees : ni deplaces ni etourdis au heurt. Etourdissement 1,5 s sous le plancher de 2 s des gros controles : exception _meta.duration_rule.hard_cc_seconds_exempt_skills. Recharge 240 s.",
+            "description_fr": "Lance ton marteau sur une case à 3 cases maximum. L'ennemi sur la case est étourdi 1,5s. Les ennemis autour sont repoussés d'1 case ; celui qui heurte un obstacle, le bord ou une autre unité est étourdi 1,5s à la place.",
+            "description_en": "Throw your hammer at a tile within 3 tiles. The enemy on that tile is stunned for 1.5s. Enemies around it are pushed back 1 tile; one that hits an obstacle, the edge or another unit is stunned for 1.5s instead.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "control",
+              "push"
+            ],
+            "effects": [
+              {
+                "type": "debuff",
+                "stat": "stun",
+                "duration": 1.5
+              }
+            ],
+            "base_class_id": "warrior",
+            "subclass_id": "weaponmaster",
+            "tier3_id": "hammer_lord",
+            "source_scope": "TIER3",
+            "vfx_type": "impact",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "enemy",
+              "requires_line_of_sight": true,
+              "bypasses_los": false,
+              "requires_entity_on_target_tile": false
+            }
+          }
         },
         "dual_axe_reaver": {
           "identity": "Twin weapon specialist + bleed stacking + brutal multi-hit",
@@ -3090,7 +3152,66 @@
                 "aoe_pattern_id": "single"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_warrior_dual_axe_reaver_maneuver",
+            "name_fr": "Crochet",
+            "name_en": "Hook",
+            "tier": "signature",
+            "target": "enemy",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 180.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "movement": {
+              "type": "pull",
+              "range": 3,
+              "pull_distance": 1,
+              "line_only": true,
+              "caster_advance": 1,
+              "animations": {
+                "pull": "pull",
+                "step": "step"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Dual Axe Reaver) : un ennemi sur la meme ligne ou la meme colonne a 3 cases au plus, sans ligne de vue ; il est attire d'1 case vers le Reaver, puis le Reaver avance d'1 case vers lui (jamais au-dela du contact) ; Entrave 6 s (ne peut plus se deplacer, peut lancer des sorts). Ennemi Ancre, boss ou insensible : il ne bouge pas, mais le Reaver avance quand meme et l'Entrave s'applique. Entrave 6 s au-dessus du plafond de 4 s des gros controles : exception _meta.duration_rule.hard_cc_seconds_exempt_skills. Recharge 180 s.",
+            "description_fr": "Accroche un ennemi en ligne droite à 3 cases maximum, sans ligne de vue. Il est attiré d'1 case vers toi et tu avances d'1 case vers lui. Il est immobilisé 6s (Entrave) : il ne peut plus se déplacer mais peut lancer des sorts.",
+            "description_en": "Hook an enemy in a straight line within 3 tiles, ignoring line of sight. It is pulled 1 tile toward you and you step 1 tile toward it. It is rooted for 6s: it cannot move but can still cast.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "control",
+              "pull",
+              "gap_closer"
+            ],
+            "effects": [
+              {
+                "type": "debuff",
+                "stat": "root",
+                "duration": 6
+              }
+            ],
+            "base_class_id": "warrior",
+            "subclass_id": "weaponmaster",
+            "tier3_id": "dual_axe_reaver",
+            "source_scope": "TIER3",
+            "vfx_type": "dash_trail",
+            "targeting": {
+              "selection_mode": "entity",
+              "valid_target_team": "enemy",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": true
+            }
+          }
         }
       },
       "signature_movement": {
@@ -3744,7 +3865,49 @@
                 "aoe_pattern_id": "all"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_warrior_commander_banner_maneuver",
+            "name_fr": "Étendard de guerre",
+            "name_en": "War Banner",
+            "tier": "signature",
+            "target": "self",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 360.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "summon_template_id": "commander_war_banner",
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Commander) : etendard sur une case libre a 3 cases au plus, sans ligne de vue requise, 8 s, PV 15% des PV max du lanceur, ne bloque pas la ligne de vue ; zone de 2 cases (distance de Manhattan). A la pose, les unites (allies et ennemis, le lanceur compris) de la zone situees sur sa ligne ou sa colonne sont attirees d'1 case vers lui ; celles en diagonale ne bougent pas. Dans la zone : allies armure +15%, degats infliges +10% (physiques et magiques), soin 2% des PV max par seconde ; ennemis ATQ -15%. L'effet s'arrete des qu'on sort de la zone. Identifiant distinct de skill_warrior_commander_maneuver, deja pris par le sort de specialisation Manoeuvre. Recharge 360 s.",
+            "description_fr": "Plante un étendard sur une case libre à 3 cases maximum, pendant 8s. À la pose, les unités alignées avec lui à 2 cases sont attirées d'1 case vers lui. À 2 cases de l'étendard, tes alliés gagnent 15% d'armure, 10% de dégâts et 2% de leurs PV max par seconde ; tes ennemis perdent 15% d'ATQ. L'étendard a 15% de tes PV max.",
+            "description_en": "Plant a banner on a free tile within 3 tiles, for 8s. When planted, units lined up with it within 2 tiles are pulled 1 tile toward it. Within 2 tiles of the banner, your allies gain 15% armor, 10% damage and 2% of their max HP per second; your enemies lose 15% ATK. The banner has 15% of your max HP.",
+            "tags": [
+              "summon",
+              "maneuver",
+              "signature",
+              "support"
+            ],
+            "effects": [],
+            "base_class_id": "warrior",
+            "subclass_id": "warlord",
+            "tier3_id": "commander",
+            "source_scope": "TIER3",
+            "vfx_type": "buff_aura",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "self",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": false
+            }
+          }
         },
         "dreadlord": {
           "identity": "Fear and intimidation + enemy debuffer + psychological warfare",
@@ -4040,7 +4203,60 @@
                 "aoe_pattern_id": "rect_4x4"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_warrior_dreadlord_maneuver",
+            "name_fr": "Appel de la terreur",
+            "name_en": "Call of Dread",
+            "tier": "signature",
+            "target": "all",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 240.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "movement": {
+              "type": "line_pull",
+              "range": 3,
+              "affects": "all",
+              "animations": {
+                "pull_by_distance": [
+                  "pull_1",
+                  "pull_2",
+                  "pull_3"
+                ]
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Dreadlord) : le joueur choisit une direction (sa ligne ou sa colonne : case cliquee, axe dominant, diagonale pure refusee) ; toutes les unites de cette ligne a 3 cases au plus, allies et ennemis, sont attirees vers le Dreadlord, la plus proche d'abord, chacune jusqu'a la case libre la plus proche de lui (arret avant le premier corps). Sans ligne de vue. Boss, insensibles et unites Ancrees ne bougent pas ; invocations jamais deplacees. Recharge 240 s.",
+            "description_fr": "Choisis une direction : toutes les unités alignées avec toi dans cette direction à 3 cases maximum, alliées comme ennemies, sont attirées vers toi, chacune jusqu'à la case libre la plus proche.",
+            "description_en": "Pick a direction: every unit lined up with you in that direction within 3 tiles, ally or enemy, is pulled toward you, each up to the nearest free tile.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "control",
+              "pull"
+            ],
+            "effects": [],
+            "base_class_id": "warrior",
+            "subclass_id": "warlord",
+            "tier3_id": "dreadlord",
+            "source_scope": "TIER3",
+            "vfx_type": "dark_aura",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "any",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": false
+            }
+          }
         }
       },
       "signature_movement": {

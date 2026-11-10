@@ -26,6 +26,8 @@
   "animations.owner_aura": "facultatif, lu par le client seul : boucle sur le lanceur de INVOCATION_SPAWNED a INVOCATION_ENDED de cette invocation",
   "animations.recall": "exige avec on_expire recall_owner, recopie dans TELEPORTED",
   "trigger.selection": "pulse seulement, facultatif : all (defaut, toutes les cibles a radius) | nearest (la seule unite la plus proche, egalite = plus petit identifiant ; aucune a portee = aucun tir ni evenement ; INVOCATION_TRIGGERED porte alors la cible)",
+  "aura[]": "lot 4 (2026-11-10) : aura peut aussi etre une LISTE d'entrees {status, radius, distance, targets}. targets = allies (defaut, invocations exclues, le lanceur compris) | enemies (unites ennemies vivantes, invocations exclues). Chaque entree est appliquee et retiree independamment (etendard du Commander : trois statuts pour les allies, un pour les ennemis).",
+  "on_spawn.pull": "facultatif (lot 4, 2026-11-10). {line row_or_column, radius, distance, targets all|allies|enemies, animation} : a l'apparition, chaque unite vivante (invocations exclues) alignee avec l'invocation (meme ligne ou meme colonne) a 2..radius cases est attiree de distance cases vers elle, la plus proche d'abord ; arret avant le premier corps. Une unite deja au contact ne bouge pas et n'emet rien. Boss et insensibles : FORCED_MOVE message immune ; Ancre : FORCED_MOVE_RESISTED. Evenement par unite : FORCED_MOVE (source = l'invocation, effect_id = animation, value = case de depart, position = case d'arrivee, absorbed_damage = cases parcourues).",
   "aura": "facultatif (lot 3, 2026-11-10). {status, radius, distance manhattan|chebyshev} : tant que l'invocation vit, chaque unite alliee vivante a radius cases au plus (invocations exclues, le lanceur compris) porte le statut `status` (stats/status_effects.json), applique et retire par le serveur a chaque deplacement (STATUS_APPLIED / STATUS_REMOVED, source = l'invocation, duree = vie restante). Meme moteur que runtime.aura d'un statut. Seul effet permis avec trigger none.",
   "animations.hit": "facultatif, lu par le client seul : coup encaisse par une invocation a PV (evenement DAMAGE dont la cible est l'invocation)"
     }
@@ -452,6 +454,82 @@
           "radius": 1,
           "distance": "manhattan"
         }
+      }
+    },
+    {
+      "id": "commander_war_banner",
+      "name_fr": "Étendard de guerre",
+      "name_en": "War Banner",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "commander_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Commander) : 8 s, PV 15% des PV max du lanceur, case libre a 3 cases au plus sans ligne de vue requise, ne bloque pas la ligne de vue ; a la pose, attire d'1 case vers lui les unites (allies et ennemis, le lanceur compris, invocations exclues) alignees avec lui (ligne ou colonne) a 2 cases ; zone de 2 cases (Manhattan) : allies armure +15% (armor_up_banner), degats infliges +10% (damage_percent_up_banner), soin 2% des PV max par seconde (heal_over_time_banner) ; ennemis ATQ -15% (atk_down_banner). Compte dans la limite de 6 invocations par camp.",
+        "animations": {
+          "spawn": "plant",
+          "idle": "banner_idle",
+          "destroyed": "banner_break",
+          "end": "banner_break"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 15,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "none",
+          "radius": 0
+        },
+        "on_spawn": {
+          "pull": {
+            "line": "row_or_column",
+            "radius": 2,
+            "distance": 1,
+            "targets": "all",
+            "animation": "pull"
+          }
+        },
+        "aura": [
+          {
+            "status": "armor_up_banner",
+            "radius": 2,
+            "distance": "manhattan",
+            "targets": "allies"
+          },
+          {
+            "status": "damage_percent_up_banner",
+            "radius": 2,
+            "distance": "manhattan",
+            "targets": "allies"
+          },
+          {
+            "status": "heal_over_time_banner",
+            "radius": 2,
+            "distance": "manhattan",
+            "targets": "allies"
+          },
+          {
+            "status": "atk_down_banner",
+            "radius": 2,
+            "distance": "manhattan",
+            "targets": "enemies"
+          }
+        ]
       }
     }
   ]

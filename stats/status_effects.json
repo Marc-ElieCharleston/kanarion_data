@@ -24,7 +24,12 @@
       "cooldown_rule_exempt_skills": ["skill_archer_precise_shot", "skill_artisan_musician_riff", "skill_healer_smite", "skill_mage_magic_bolt", "skill_mage_occ_dark_bolt", "skill_rogue_quick_stab", "skill_warrior_heavy_strike"],
       "_cooldown_rule_exempt_note": "Charleston 2026-10-21 (0.20.4, reco validee) : les sorts de remplissage gardent leur recharge 0.20.3 (4-5,5 s) ; leur effet de 6-8 s se rafraichit a chaque lancer, comme avant la regle. Exemptes de cooldown_rule seulement : leurs durees restent dans les bornes. Lu par scripts/validate_cross_references.py (etape 12s) et server-combat test_status_duration_rule.cpp.",
       "soft_seconds_exempt_skills": ["skill_mage_battlemage_maneuver"],
-      "_soft_seconds_exempt_note": "Charleston 2026-11-10 (lot 2 des manoeuvres, chiffres A VALIDER) : les bonus de la Rune de retour durent 4 s, comme la rune, sous le plancher des effets doux. Exemptes de soft_seconds seulement (hard_cc_seconds et cooldown_rule s'appliquent toujours). Lu par scripts/validate_cross_references.py (etape 12s) et server-combat test_status_duration_rule.cpp."
+      "_soft_seconds_exempt_note": "Charleston 2026-11-10 (lot 2 des manoeuvres, chiffres A VALIDER) : les bonus de la Rune de retour durent 4 s, comme la rune, sous le plancher des effets doux. Exemptes de soft_seconds seulement (hard_cc_seconds et cooldown_rule s'appliquent toujours). Lu par scripts/validate_cross_references.py (etape 12s) et server-combat test_status_duration_rule.cpp.",
+      "hard_cc_seconds_exempt_skills": [
+        "skill_warrior_dual_axe_reaver_maneuver",
+        "skill_warrior_hammer_lord_maneuver"
+      ],
+      "_hard_cc_seconds_exempt_note": "Charleston 2026-11-10 (lot 4 des manoeuvres, chiffres A VALIDER) : l'Etourdissement du Marteau tellurique dure 1,5 s (sous le plancher de 2 s), l'Entrave du Crochet dure 6 s (au-dessus du plafond de 4 s). Exemptes de hard_cc_seconds seulement (soft_seconds et cooldown_rule s'appliquent toujours). L'Etourdissement au heurt du Marteau (movement.collide_status) a la meme duree. Lu par scripts/validate_cross_references.py (etape 12s) et server-combat test_status_duration_rule.cpp."
     },
     "last_updated": "2026-04-30",
     "description": "Tous les buffs/debuffs/DoTs du jeu. Option A canonique (CTO 2026-04-30): pour les stat_modifier stackables generiques, 1 effect_id = 1 icone, 1 stack = value_per_stack fixe. Skills appliquent stacks_to_apply (1, 2, 3...), pas de value/value_override arbitraire.",
@@ -132,6 +137,18 @@
           "unit": "percent_points",
           "max_stacks": 5,
           "total_max": "-25%"
+        },
+        "damage_percent_up_banner": {
+          "value_per_stack": 10,
+          "unit": "percent_dmg_dealt",
+          "max_stacks": 1,
+          "total_max": "+10% (une seule charge, donnee par une aura : etendard du Commander, A VALIDER)"
+        },
+        "atk_down_banner": {
+          "value_per_stack": 15,
+          "unit": "percent",
+          "max_stacks": 1,
+          "total_max": "-15% (une seule charge, donnee par une aura : etendard du Commander, A VALIDER)"
         }
       },
       "defensifs": {
@@ -176,6 +193,12 @@
           "unit": "percent",
           "max_stacks": 1,
           "total_max": "+20% (une seule charge, donnee par une aura : egide de la Sentinelle, A VALIDER)"
+        },
+        "armor_up_banner": {
+          "value_per_stack": 15,
+          "unit": "percent",
+          "max_stacks": 1,
+          "total_max": "+15% (une seule charge, donnee par une aura : etendard du Commander, A VALIDER)"
         },
         "evasion_up": {
           "value_per_stack": 3,
@@ -259,6 +282,13 @@
           "unit": "percent_max_hp_per_sec",
           "max_stacks": 3,
           "total_max": "+3% maxHP/s",
+          "_note": "scaling=max_hp, tick=1.0s"
+        },
+        "heal_over_time_banner": {
+          "value_per_stack": 2,
+          "unit": "percent_max_hp_per_sec",
+          "max_stacks": 1,
+          "total_max": "+2% maxHP/s (une seule charge, donnee par une aura : etendard du Commander, A VALIDER)",
           "_note": "scaling=max_hp, tick=1.0s"
         },
         "mana_regen": {
@@ -676,6 +706,33 @@
         },
         "value_per_stack": 1,
         "_audit_note": "2026-08-06: l'effet soignait ZERO. Aucune branche moteur ne le traitait (seuls heal_over_time_mag et heal_over_time_max_hp en avaient une), et StatusEffectData.tick_value n'est jamais renseigne au chargement, donc la valeur par tick valait toujours 0. Les deux skills familiers qui l'appliquent (regen_wave, mending_pulse) ne soignaient rien. Le moteur derive desormais le tick de la grille canonique pour l'unite percent_max_hp_per_sec. L'ancienne formula heal_power*0.2 et le scaling_percent 0.02 du bloc runtime etaient tous deux faux par rapport a la grille (1%/s/charge), ils sont supprimes."
+      },
+      "heal_over_time_banner": {
+        "name_fr": "Soin de l'étendard",
+        "name_en": "Banner Mending",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "value_per_stack": 2,
+        "impl": "done",
+        "formula": "2% des PV max de la cible par seconde (une charge)",
+        "tick_interval": 1.0,
+        "tooltip_fr": "Soigne chaque seconde tant que tu restes près de l'étendard.",
+        "tooltip_en": "Heals every second while you stay near the banner.",
+        "description_fr": "Soigne 2% des PV max par seconde. Donné par une aura (étendard du Commander) aux alliés à 2 cases au plus, retiré dès qu'ils s'en éloignent.",
+        "description_en": "Heals 2% of max HP per second. Granted by an aura (the Commander's banner) to allies within 2 tiles, removed as soon as they move away.",
+        "sources": [
+          "Warrior (Commander)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "tick_heal": "target_max_hp_percent",
+          "tick_percent": 0.02,
+          "tick_rate": 1.0,
+          "scaling_stat": "target_max_hp",
+          "vfx_type": "zone_ally"
+        }
       },
       "heal_over_time_mag": {
         "name_fr": "Soin Continu Magique",
@@ -1307,6 +1364,81 @@
             "damage_reduction_percent": "value/100"
           },
           "vfx_type": "shield_aura"
+        }
+      },
+      "armor_up_banner": {
+        "name_fr": "Rempart de l'étendard",
+        "name_en": "Banner Bulwark",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "value_per_stack": 15,
+        "impl": "done",
+        "formula": "+15% armor (one stack)",
+        "tooltip_fr": "Augmente l'armure tant que tu restes près de l'étendard.",
+        "tooltip_en": "Increases armor while you stay near the banner.",
+        "description_fr": "Augmente l'armure de 15%. Donné par une aura (étendard du Commander) aux alliés à 2 cases au plus, retiré dès qu'ils s'en éloignent.",
+        "description_en": "Increases armor by 15%. Granted by an aura (the Commander's banner) to allies within 2 tiles, removed as soon as they move away.",
+        "sources": [
+          "Warrior (Commander)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "stat_mods": {
+            "armor_percent": "value/100"
+          },
+          "vfx_type": "zone_ally"
+        }
+      },
+      "damage_percent_up_banner": {
+        "name_fr": "Élan de l'étendard",
+        "name_en": "Banner Drive",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "value_per_stack": 10,
+        "impl": "done",
+        "formula": "+10% damage dealt (one stack)",
+        "tooltip_fr": "Augmente les dégâts infligés tant que tu restes près de l'étendard.",
+        "tooltip_en": "Increases damage dealt while you stay near the banner.",
+        "description_fr": "Augmente de 10% les dégâts infligés, physiques comme magiques. Donné par une aura (étendard du Commander) aux alliés à 2 cases au plus, retiré dès qu'ils s'en éloignent.",
+        "description_en": "Increases damage dealt by 10%, physical and magical alike. Granted by an aura (the Commander's banner) to allies within 2 tiles, removed as soon as they move away.",
+        "sources": [
+          "Warrior (Commander)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "stat_mods": {
+            "damage_dealt_percent": "value/100"
+          },
+          "vfx_type": "zone_ally"
+        }
+      },
+      "atk_down_banner": {
+        "name_fr": "Ombre de l'étendard",
+        "name_en": "Banner Dread",
+        "polarity": "debuff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "value_per_stack": 15,
+        "impl": "done",
+        "formula": "-15% ATK (one stack)",
+        "tooltip_fr": "Réduit l'attaque physique tant que tu restes près de l'étendard ennemi.",
+        "tooltip_en": "Reduces physical attack while you stay near the enemy banner.",
+        "description_fr": "Réduit l'ATQ de 15%. Donné par une aura (étendard du Commander) aux ennemis à 2 cases au plus, retiré dès qu'ils s'en éloignent.",
+        "description_en": "Reduces ATK by 15%. Granted by an aura (the Commander's banner) to enemies within 2 tiles, removed as soon as they move away.",
+        "sources": [
+          "Warrior (Commander)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "stat_mods": {
+            "atk_percent": "-value/100"
+          },
+          "vfx_type": "zone_enemy"
         }
       },
       "crit_resistance_down": {
@@ -2926,16 +3058,16 @@
     }
   },
   "_summary": {
-    "total": 105,
+    "total": 109,
     "categories": 9,
     "by_polarity": {
-      "buff": 55,
-      "debuff": 50
+      "buff": 58,
+      "debuff": 51
     },
     "breakdown": {
       "dot": 9,
-      "hot": 3,
-      "stat_modifiers": 31,
+      "hot": 4,
+      "stat_modifiers": 34,
       "tempo": 2,
       "control": 12,
       "defensive": 11,
