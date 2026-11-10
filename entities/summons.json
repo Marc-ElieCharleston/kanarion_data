@@ -34,7 +34,12 @@
   "animations.aura_pulse": "facultatif (lot 7, 2026-11-10), lu par le client seul : joue sur l'invocation a chaque tick ou le serveur envoie au moins un STATUS_APPLIED d'un statut de son aura dont la source est cette invocation (une ou plusieurs unites viennent d'entrer dans l'aura)",
   "animations.aura_mark": "facultatif (lot 7, 2026-11-10), lu par le client seul : boucle sur chaque unite qui porte un statut de l'aura de cette invocation, du STATUS_APPLIED (source = l'invocation) au STATUS_REMOVED du meme statut",
   "effect.statuses": "facultatif (lot 7, 2026-11-10). Liste {effect_id (stats/status_effects.json), stacks >= 1, duration_sec > 0}, appliques a chaque unite touchee apres les degats (source = le lanceur), meme schema que les pieges au sol. Revele = retire l'invisibilite (Ronde du faucon).",
-  "trigger.pulse_center": "regle (lot 7, 2026-11-10) : un pulse d'une invocation qui n'occupe pas sa case (occupies_cell false) atteint aussi l'unite qui se tient SUR sa case (distance 0) ; une invocation qui occupe sa case vise de 1 a radius cases. selection nearest prend alors d'abord l'unite sur la case"
+  "trigger.pulse_center": "regle (lot 7, 2026-11-10) : un pulse d'une invocation qui n'occupe pas sa case (occupies_cell false) atteint aussi l'unite qui se tient SUR sa case (distance 0) ; une invocation qui occupe sa case vise de 1 a radius cases. selection nearest prend alors d'abord l'unite sur la case",
+  "trigger.distance": "facultatif (lot 10, 2026-11-10), pulse seulement : manhattan (defaut) | chebyshev (carre : radius 1 = les 8 cases voisines, baril du Cutthroat)",
+  "trigger.fires_when_struck": "facultatif (lot 10), pulse d'une invocation a PV : le premier coup de competence d'un ennemi qui la touche (degats, meme 0 ou mortels ; esquive et parade ne comptent pas) declenche une activation tout de suite, dans le meme tic (elle compte pour max_activations). Une invocation tuee par ce coup s'active quand meme puis disparait (raison spent si max_activations est atteint, sinon destroyed)",
+  "effect.forced_move.diagonal": "facultatif (lot 10), avec away_from_invocation : l'unite s'eloigne sur les DEUX axes (une unite en coin recule en diagonale) ; sans la cle, axe dominant",
+  "effect.forced_move.animation": "facultatif (lot 10) : cle recopiee dans FORCED_MOVE.effect_id (defaut : l'id du modele)",
+  "trigger.mode owner_strike_echo": "lot 10 (2026-11-10) : aucun bloc effect. Chaque coup de corps a corps du LANCEUR qui inflige des degats a un ennemi fait frapper l'invocation sur la meme cible pour echo_percent (1-100) % des degats que ce coup a infliges (apres armure, bouclier et multiplicateurs ; sans jet de critique ni d'esquive ; invulnerable = 0). Corps a corps = competence a cible unique (target_type ennemi, pas une zone) dont la portee reelle (portee du sort, sinon portee de base du lanceur) vaut au plus strike_max_range. Un coup = une frappe en echo (un sort a 3 coups en fait 3). Evenements, dans le meme tic que le coup : INVOCATION_TRIGGERED (source = l'invocation, target = la cible, message = animations.trigger, value = degats de l'echo) puis DAMAGE (source = l'invocation)"
     }
   },
   "global_limits": {
@@ -793,6 +798,113 @@
               "duration_sec": 2
             }
           ]
+        }
+      }
+    },
+    {
+      "id": "cutthroat_powder_keg",
+      "name_fr": "Baril de poudre",
+      "name_en": "Powder Keg",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "cutthroat_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 4
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Cutthroat) : 4 s, PV 5% des PV max du lanceur, case libre a 3 cases au plus, ne bloque pas la ligne de vue. Une seule explosion (trigger.max_activations 1) : au premier coup d'un ennemi qui le touche (trigger.fires_when_struck, meme mortel), sinon au bout de 4 s (pulse 4 s, l'explosion passe avant la fin de vie au meme tic). 120% ATK physiques aux ennemis du carre 3x3 autour de lui (trigger.distance chebyshev, radius 1 : les 8 cases voisines), puis recul d'1 case en s'eloignant du baril, en diagonale depuis un coin (forced_move.diagonal). Degats 120% ATK et PV 5% : valeurs a valider. Disparait avec le Cutthroat (pas d'explosion).",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "trigger": "explode",
+          "hit": "summon_hit",
+          "destroyed": "summon_break",
+          "end": "summon_fade"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 5,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 1,
+          "distance": "chebyshev",
+          "interval_sec": 4,
+          "on_spawn": false,
+          "max_activations": 1,
+          "fires_when_struck": true
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "physical",
+            "base_power": 0,
+            "scaling_percent": 120
+          },
+          "forced_move": {
+            "direction": "away_from_invocation",
+            "distance": 1,
+            "diagonal": true,
+            "animation": "push"
+          }
+        }
+      }
+    },
+    {
+      "id": "blade_dancer_dance_partner",
+      "name_fr": "Partenaire de danse",
+      "name_en": "Dance Partner",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "blade_dancer_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Blade Dancer) : double immobile 8 s, PV 10% des PV max du lanceur, case libre adjacente, ne bloque pas la ligne de vue. trigger.mode owner_strike_echo : chaque coup de corps a corps du lanceur qui inflige des degats a un ennemi (competence a cible unique, pas une zone, portee reelle <= strike_max_range 2) fait frapper le double sur la meme cible pour echo_percent 25% de ces degats (apres armure et bouclier, sans jet). Un evenement INVOCATION_TRIGGERED (message echo_strike) puis un DAMAGE par frappe en echo.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "trigger": "echo_strike",
+          "hit": "summon_hit",
+          "destroyed": "summon_break",
+          "end": "summon_fade"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 10,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "adjacent_to_caster",
+          "range": 1
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "owner_strike_echo",
+          "radius": 0,
+          "echo_percent": 25,
+          "strike_max_range": 2
         }
       }
     }
