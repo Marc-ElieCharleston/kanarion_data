@@ -1,7 +1,26 @@
 {
   "_meta": {
     "version": "1.0",
-    "description": "Summon entity templates — spawned by skills during combat, never in PartyManager"
+    "description": "Summon entity templates — spawned by skills during combat, never in PartyManager",
+    "invocation_schema": {
+      "_doc": "Bloc `invocation` d'un modele : invocation de joueur creee par une competence qui porte `summon_template_id` SANS bloc `movement` (manoeuvres de specialisation, niveau 60). Lu par server-combat (content_loader.cpp parse_invocation_template, combat/room_invocations.cpp). Le serveur refuse de demarrer sur une valeur inconnue. Le client n'affiche que ce que le serveur emet (evenements INVOCATION_*, FORCED_MOVE).",
+      "limits.duration_sec": "duree de vie en secondes",
+      "limits.max_per_owner": "au-dela, la plus ancienne du meme modele de ce lanceur disparait (raison replaced)",
+      "global_limits.max_summons_per_team": "plafond par camp, invocations + doubles d'ombre ; despawn_oldest_if_limit=true fait disparaitre la plus ancienne invocation du camp, sinon le lancer est refuse",
+      "visual_id": "jeu d'animations (assets/vfx/concepts/valide/<visual_id>), lu par le client",
+      "animations": "cles d'animation que le serveur recopie dans ses evenements : spawn, idle, trigger",
+      "body.has_hp": "true = unite ciblable et tuable (PV = owner_max_hp_percent des PV max du lanceur), false = objet sans PV, jamais ciblable ni touche",
+      "body.blocks_line_of_sight": "bloque la ligne de vue du camp adverse (les allies restent transparents, regle du plateau)",
+      "body.occupies_cell": "true = personne ne peut entrer sur sa case ; false = elle ne bloque aucun deplacement",
+      "placement.mode": "adjacent_to_caster (case adjacente libre ; celle du client si valide, sinon choisie par le serveur) | cell_in_range (case du client a placement.range au plus ; sans case, le serveur choisit) | line_from_caster (case voisine dans la direction de la case cliquee, axe dominant)",
+      "motion.mode": "static | line (une case toutes les step_interval_sec dans la direction du lancer ; traverse les cases ennemies si passes_through=enemies ; s'arrete avant toute autre case occupee ou le bord ; on_blocked = end | stay)",
+      "trigger.mode": "enemy_enters_adjacent (un ennemi arrive a moins de radius cases, au plus une fois par per_target_cooldown_sec et par cible ; deja a cote a l'apparition = arrivee) | pulse (toutes les interval_sec, on_spawn = premier tic a l'apparition, cibles a radius cases au plus) | on_pass (l'ennemi sur la case ou elle entre)",
+      "effect.targets": "enemies | allies (les unites vivantes du camp, invocations exclues)",
+      "effect.damage": "damage_type physical|magical (ATK ou MAG du lanceur, photographiees a l'invocation), base_power, scaling_percent",
+      "effect.heal": "base_heal, heal_scaling_percent (MAG du lanceur), reductions de soins de la cible appliquees",
+      "effect.cleanse": "effect_ids dans l'ordre de priorite, max_effects par cible et par tic",
+      "effect.forced_move": "direction away_from_invocation | sideways_of_travel, distance en cases ; ligne droite, arret juste avant une case occupee ou le bord ; boss et cibles insensibles aux controles jamais deplaces"
+    }
   },
   "global_limits": {
     "max_summons_per_team": 6,
@@ -77,6 +96,170 @@
       "limits": {
         "max_per_owner": 1,
         "duration_sec": 20
+      }
+    },
+    {
+      "id": "runic_sentinel",
+      "name_fr": "Sentinelle runique",
+      "name_en": "Runic Sentinel",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "runeknight_summon_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 10
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Runeknight) : PV 15% du lanceur, 30% MAG, repousse 2 cases, 1 fois par seconde et par ennemi.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "trigger": "summon_repel"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 15,
+          "blocks_line_of_sight": true,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "adjacent_to_caster",
+          "range": 1
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "enemy_enters_adjacent",
+          "radius": 1,
+          "per_target_cooldown_sec": 1
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "magical",
+            "base_power": 0,
+            "scaling_percent": 30
+          },
+          "forced_move": {
+            "direction": "away_from_invocation",
+            "distance": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "simmering_pot",
+      "name_fr": "Marmite fumante",
+      "name_en": "Simmering Pot",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "battle_cook_summon_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 10
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Battle Cook) : soin 25% MAG par tic, tic a la pose puis toutes les 2s (5 tics), retire 1 Ralentissement ou Poison par allie et par tic.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "trigger": "summon_pulse"
+        },
+        "body": {
+          "has_hp": false,
+          "owner_max_hp_percent": 0,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 1,
+          "interval_sec": 2,
+          "on_spawn": true
+        },
+        "effect": {
+          "targets": "allies",
+          "heal": {
+            "base_heal": 0,
+            "heal_scaling_percent": 25
+          },
+          "cleanse": {
+            "effect_ids": [
+              "slow",
+              "poison"
+            ],
+            "max_effects": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "wind_tornado",
+      "name_fr": "Tornade",
+      "name_en": "Tornado",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "wind_hunter_summon_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 6
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Wind Hunter) : 30% ATK par ennemi traverse, recul d'une case sur le cote, objet sans PV, disparait au premier obstacle.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "trigger": "summon_pass"
+        },
+        "body": {
+          "has_hp": false,
+          "owner_max_hp_percent": 0,
+          "blocks_line_of_sight": false,
+          "occupies_cell": false
+        },
+        "placement": {
+          "mode": "line_from_caster",
+          "range": 1
+        },
+        "motion": {
+          "mode": "line",
+          "step_interval_sec": 1,
+          "passes_through": "enemies",
+          "on_blocked": "end"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "on_pass",
+          "radius": 0
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "physical",
+            "base_power": 0,
+            "scaling_percent": 30
+          },
+          "forced_move": {
+            "direction": "sideways_of_travel",
+            "distance": 1
+          }
+        }
       }
     }
   ]

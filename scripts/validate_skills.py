@@ -166,6 +166,8 @@ ALLOWED_METADATA_FIELDS = {
     # sous la cle `signature_movement`, que extract_all_skills ne parcourait pas : ils
     # n'ont jamais ete valides. Verifie champ par champ avant whitelist :
     "movement",          # LU — content_loader.cpp:682 + client skill_loader.gd
+    "summon_template_id",  # LU — content_loader.cpp : modele de entities/summons.json (double d'ombre
+                           # sous `movement`, invocation de specialisation sans `movement`)
     "consumes_gcd",      # LU — content_loader.cpp
     "max_level",         # LU — combat_host.cpp + client balance_config.gd
     "detonates_marks",   # LU — content_loader.cpp
