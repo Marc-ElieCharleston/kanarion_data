@@ -910,7 +910,53 @@
                 "aoe_pattern_id": "single"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_warrior_bulwark_maneuver",
+            "name_fr": "Muraille",
+            "name_en": "Rampart",
+            "tier": "signature",
+            "target": "self",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 300.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Bulwark) : 10 s, toi et les allies a 1 case (distance de Manhattan, 4 cases : la zone suit le lanceur) ne peuvent etre ni attires, ni repousses, ni echanges, ni teleportes de force. Recharge 300 s. Le lanceur ne bouge pas.",
+            "description_fr": "Pendant 10s, toi et les alliés sur les 4 cases directement à côté de toi devenez Ancrés : vous ne pouvez plus être repoussés, attirés ou déplacés de force par un adversaire. La protection suit tes déplacements et disparaît pour les alliés qui s'éloignent.",
+            "description_en": "For 10s, you and allies on the 4 tiles directly next to you become Anchored: enemies cannot push, pull or forcibly move you. The protection follows you and ends for allies who move away.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "defense"
+            ],
+            "effects": [
+              {
+                "type": "buff",
+                "stat": "forced_move_immune_aura",
+                "duration": 10,
+                "target": "self"
+              }
+            ],
+            "base_class_id": "warrior",
+            "subclass_id": "guardian",
+            "tier3_id": "bulwark",
+            "source_scope": "TIER3",
+            "vfx_type": "shield",
+            "targeting": {
+              "selection_mode": "self",
+              "valid_target_team": "self",
+              "requires_line_of_sight": false,
+              "bypasses_los": false,
+              "requires_entity_on_target_tile": false
+            }
+          }
         },
         "sentinel": {
           "identity": "Guardian angel + ally protection specialist + damage redirection",
@@ -1182,7 +1228,48 @@
                 "aoe_pattern_id": "all"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_warrior_sentinel_maneuver",
+            "name_fr": "Égide",
+            "name_en": "Aegis",
+            "tier": "signature",
+            "target": "self",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 300.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "summon_template_id": "sentinel_aegis",
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Sentinel) : Egide sur une case libre a 3 cases au plus, sans ligne de vue requise, 10 s, PV 20% des PV max du lanceur, bloque la ligne de vue adverse ; allies adjacents (Manhattan 1) : -20% de degats subis tant qu'ils sont adjacents. Recharge 300 s.",
+            "description_fr": "Plante une égide sur une case libre à 3 cases maximum pour 10s. Les alliés directement à côté subissent 20 % de dégâts en moins. L'égide possède 20 % de tes PV max, peut être détruite et bloque la ligne de vue ennemie.",
+            "description_en": "Place an aegis on a free tile within 3 tiles for 10s. Allies directly next to it take 20% less damage. The aegis has 20% of your max HP, can be destroyed and blocks enemy line of sight.",
+            "tags": [
+              "summon",
+              "maneuver",
+              "signature"
+            ],
+            "effects": [],
+            "base_class_id": "warrior",
+            "subclass_id": "guardian",
+            "tier3_id": "sentinel",
+            "source_scope": "TIER3",
+            "vfx_type": "shield",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "self",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": false
+            }
+          }
         }
       },
       "signature_movement": {
@@ -1796,7 +1883,65 @@
                 "aoe_pattern_id": "cone_2x3"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_warrior_bloodrage_maneuver",
+            "name_fr": "Bond sanglant",
+            "name_en": "Blood Leap",
+            "tier": "signature",
+            "target": "enemy",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 120.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "movement": {
+              "type": "teleport_adjacent",
+              "range": 3,
+              "target_selection": "lowest_hp_percent",
+              "landing": "contact",
+              "animations": {
+                "depart": "leap",
+                "arrive": "impact"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Bloodrage) : bond sur l'ennemi au plus bas % de PV a 3 cases au plus (egalite : le plus proche, puis le plus petit identifiant), sans ligne de vue, case de contact libre obligatoire sinon refus sans cout ; 1 charge de Saignement 6 s. Recharge 120 s.",
+            "description_fr": "Bondis au contact de l'ennemi le plus blessé à 3 cases maximum, choisi automatiquement. À l'arrivée, tu lui appliques 1 charge de Saignement pendant 6s. Si aucune case n'est libre près de lui, le bond échoue sans déclencher la recharge.",
+            "description_en": "Leap next to the most wounded enemy within 3 tiles, selected automatically. On landing, apply 1 stack of Bleed for 6s. If no adjacent tile is free, the leap fails without triggering the cooldown.",
+            "tags": [
+              "movement",
+              "gap_closer",
+              "maneuver",
+              "signature"
+            ],
+            "effects": [
+              {
+                "type": "debuff",
+                "stat": "bleed",
+                "stacks_to_apply": 1,
+                "duration": 6
+              }
+            ],
+            "base_class_id": "warrior",
+            "subclass_id": "berserker",
+            "tier3_id": "bloodrage",
+            "source_scope": "TIER3",
+            "vfx_type": "dash_trail",
+            "targeting": {
+              "selection_mode": "self",
+              "valid_target_team": "enemy",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": false
+            }
+          }
         },
         "frenzied": {
           "identity": "Speed demon + multi-hit attacks + damage buffs",
@@ -2050,7 +2195,56 @@
                 "aoe_pattern_id": "ring_1_center"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_warrior_frenzied_maneuver",
+            "name_fr": "Ruée",
+            "name_en": "Rush",
+            "tier": "signature",
+            "target": "self",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 90.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "movement": {
+              "type": "self_move",
+              "mode": "straight",
+              "range": 3,
+              "animations": {
+                "depart": "dash",
+                "arrive": "arrive"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Frenzied) : ruee jusqu'a 3 cases en ligne ou en colonne, chemin libre, ligne de vue requise, aucune poussee a l'arrivee. Recharge 90 s.",
+            "description_fr": "Fonce jusqu'à 3 cases en ligne droite, horizontalement ou verticalement. Tu ne peux pas traverser les unités et la trajectoire doit être dégagée.",
+            "description_en": "Rush up to 3 tiles in a straight line, horizontally or vertically. You cannot pass through units, and the path must be clear.",
+            "tags": [
+              "movement",
+              "maneuver",
+              "signature"
+            ],
+            "effects": [],
+            "base_class_id": "warrior",
+            "subclass_id": "berserker",
+            "tier3_id": "frenzied",
+            "source_scope": "TIER3",
+            "vfx_type": "dash_trail",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "self",
+              "requires_line_of_sight": true,
+              "bypasses_los": false,
+              "requires_entity_on_target_tile": false
+            }
+          }
         }
       },
       "signature_movement": {
@@ -2634,7 +2828,69 @@
                 "aoe_pattern_id": "ring_1_center"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_warrior_hammer_lord_maneuver",
+            "name_fr": "Marteau tellurique",
+            "name_en": "Telluric Hammer",
+            "tier": "signature",
+            "target": "enemy",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 240.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "movement": {
+              "type": "impact_push",
+              "range": 3,
+              "push_radius": 1,
+              "push_distance": 1,
+              "affects": "enemies",
+              "collide_status": {
+                "id": "stun",
+                "duration": 1.5
+              },
+              "animations": {
+                "push": "push",
+                "collide": "stun_collide"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Hammer Lord) : marteau lance sur une case a 3 cases au plus (distance de Manhattan), ligne de vue requise ; l'ennemi sur la case centrale est etourdi 1,5 s ; les ennemis des 8 cases autour (diagonales comprises) sont repousses d'1 case en s'eloignant du point d'impact (en diagonale pour ceux des coins) ; celui qui heurte un obstacle, le bord ou une autre unite ne bouge pas et est etourdi 1,5 s. Allies jamais deplaces ni etourdis. Boss, cibles insensibles aux controles et unites Ancrees : ni deplaces ni etourdis au heurt. Etourdissement 1,5 s sous le plancher de 2 s des gros controles : exception _meta.duration_rule.hard_cc_seconds_exempt_skills. Recharge 240 s.",
+            "description_fr": "Lance ton marteau sur une case à 3 cases maximum. L'ennemi touché est étourdi 1,5s et les ennemis autour sont repoussés d'une case, diagonales comprises. Ceux qui heurtent un obstacle sont étourdis 1,5s à la place. Les alliés ne sont pas touchés.",
+            "description_en": "Throw your hammer at a tile within 3 tiles. The enemy hit is stunned for 1.5s, while surrounding enemies are pushed back 1 tile, including diagonals. Enemies blocked by an obstacle are stunned for 1.5s instead. Allies are unaffected.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "control",
+              "push"
+            ],
+            "effects": [
+              {
+                "type": "debuff",
+                "stat": "stun",
+                "duration": 1.5
+              }
+            ],
+            "base_class_id": "warrior",
+            "subclass_id": "weaponmaster",
+            "tier3_id": "hammer_lord",
+            "source_scope": "TIER3",
+            "vfx_type": "impact",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "enemy",
+              "requires_line_of_sight": true,
+              "bypasses_los": false,
+              "requires_entity_on_target_tile": false
+            }
+          }
         },
         "dual_axe_reaver": {
           "identity": "Twin weapon specialist + bleed stacking + brutal multi-hit",
@@ -2896,7 +3152,66 @@
                 "aoe_pattern_id": "single"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_warrior_dual_axe_reaver_maneuver",
+            "name_fr": "Crochet",
+            "name_en": "Hook",
+            "tier": "signature",
+            "target": "enemy",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 180.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "movement": {
+              "type": "pull",
+              "range": 3,
+              "pull_distance": 1,
+              "line_only": true,
+              "caster_advance": 1,
+              "animations": {
+                "pull": "pull",
+                "step": "step"
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Dual Axe Reaver) : un ennemi sur la meme ligne ou la meme colonne a 3 cases au plus, sans ligne de vue ; il est attire d'1 case vers le Reaver, puis le Reaver avance d'1 case vers lui (jamais au-dela du contact) ; Entrave 6 s (ne peut plus se deplacer, peut lancer des sorts). Ennemi Ancre, boss ou insensible : il ne bouge pas, mais le Reaver avance quand meme et l'Entrave s'applique. Entrave 6 s au-dessus du plafond de 4 s des gros controles : exception _meta.duration_rule.hard_cc_seconds_exempt_skills. Recharge 180 s.",
+            "description_fr": "Accroche un ennemi à 3 cases maximum sur ta ligne ou ta colonne. Attire-le d'une case, puis avance d'une case vers lui. Il subit Entrave pendant 6s et ne peut plus se déplacer, mais peut toujours attaquer et lancer des sorts.",
+            "description_en": "Hook an enemy within 3 tiles on the same row or column. Pull them 1 tile closer, then move 1 tile toward them. They are Rooted for 6s and cannot move, but can still attack and cast skills.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "control",
+              "pull",
+              "gap_closer"
+            ],
+            "effects": [
+              {
+                "type": "debuff",
+                "stat": "root",
+                "duration": 6
+              }
+            ],
+            "base_class_id": "warrior",
+            "subclass_id": "weaponmaster",
+            "tier3_id": "dual_axe_reaver",
+            "source_scope": "TIER3",
+            "vfx_type": "dash_trail",
+            "targeting": {
+              "selection_mode": "entity",
+              "valid_target_team": "enemy",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": true
+            }
+          }
         }
       },
       "signature_movement": {
@@ -3550,7 +3865,49 @@
                 "aoe_pattern_id": "all"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_warrior_commander_banner_maneuver",
+            "name_fr": "Étendard de guerre",
+            "name_en": "War Banner",
+            "tier": "signature",
+            "target": "self",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 360.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "summon_template_id": "commander_war_banner",
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Commander) : etendard sur une case libre a 3 cases au plus, sans ligne de vue requise, 8 s, PV 15% des PV max du lanceur, ne bloque pas la ligne de vue ; zone de 2 cases (distance de Manhattan). A la pose, les unites (allies et ennemis, le lanceur compris) de la zone situees sur sa ligne ou sa colonne sont attirees d'1 case vers lui ; celles en diagonale ne bougent pas. Dans la zone : allies armure +15%, degats infliges +10% (physiques et magiques), soin 2% des PV max par seconde ; ennemis ATQ -15%. L'effet s'arrete des qu'on sort de la zone. Identifiant distinct de skill_warrior_commander_maneuver, deja pris par le sort de specialisation Manoeuvre. Recharge 360 s.",
+            "description_fr": "Plante un étendard à 3 cases maximum pour 8s. À la pose, il attire d'une case les unités alignées à 2 cases, alliés compris. Dans sa zone, les alliés gagnent 15 % d'armure, 10 % de dégâts et récupèrent 2 % de leurs PV max par seconde. Les ennemis perdent 15 % d'ATQ.",
+            "description_en": "Plant a war banner within 3 tiles for 8s. On placement, it pulls aligned units within 2 tiles 1 tile closer, including allies. In its area, allies gain 15% armor, deal 10% more damage and recover 2% of their max HP per second. Enemies lose 15% ATK.",
+            "tags": [
+              "summon",
+              "maneuver",
+              "signature",
+              "support"
+            ],
+            "effects": [],
+            "base_class_id": "warrior",
+            "subclass_id": "warlord",
+            "tier3_id": "commander",
+            "source_scope": "TIER3",
+            "vfx_type": "buff_aura",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "self",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": false
+            }
+          }
         },
         "dreadlord": {
           "identity": "Fear and intimidation + enemy debuffer + psychological warfare",
@@ -3846,7 +4203,60 @@
                 "aoe_pattern_id": "rect_4x4"
               }
             }
-          ]
+          ],
+          "signature_movement": {
+            "id": "skill_warrior_dreadlord_maneuver",
+            "name_fr": "Appel de la terreur",
+            "name_en": "Call of Dread",
+            "tier": "signature",
+            "target": "all",
+            "pattern": "single",
+            "damage_type": "none",
+            "base_power": 0,
+            "scaling_percent": 0,
+            "mana_cost": 0,
+            "mana_cost_per_level": 0,
+            "cooldown": 240.0,
+            "cast_time": 0,
+            "consumes_gcd": false,
+            "unlock_at_level": 60,
+            "max_level": 1,
+            "range": 3,
+            "movement": {
+              "type": "line_pull",
+              "range": 3,
+              "affects": "all",
+              "animations": {
+                "pull_by_distance": [
+                  "pull_1",
+                  "pull_2",
+                  "pull_3"
+                ]
+              }
+            },
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Dreadlord) : le joueur choisit une direction (sa ligne ou sa colonne : case cliquee, axe dominant, diagonale pure refusee) ; toutes les unites de cette ligne a 3 cases au plus, allies et ennemis, sont attirees vers le Dreadlord, la plus proche d'abord, chacune jusqu'a la case libre la plus proche de lui (arret avant le premier corps). Sans ligne de vue. Boss, insensibles et unites Ancrees ne bougent pas ; invocations jamais deplacees. Recharge 240 s.",
+            "description_fr": "Attire vers toi toutes les unités alignées à 3 cases maximum dans la direction choisie, sur ta ligne ou ta colonne. Les alliés sont également attirés. Chaque unité avance jusqu'à la case libre la plus proche de toi, sans traverser les autres.",
+            "description_en": "Pull all units aligned with you within 3 tiles in the chosen direction, along your row or column. Allies are pulled too. Each unit moves to the nearest available tile toward you without passing through other units.",
+            "tags": [
+              "maneuver",
+              "signature",
+              "control",
+              "pull"
+            ],
+            "effects": [],
+            "base_class_id": "warrior",
+            "subclass_id": "warlord",
+            "tier3_id": "dreadlord",
+            "source_scope": "TIER3",
+            "vfx_type": "dark_aura",
+            "targeting": {
+              "selection_mode": "tile",
+              "valid_target_team": "any",
+              "requires_line_of_sight": false,
+              "bypasses_los": true,
+              "requires_entity_on_target_tile": false
+            }
+          }
         }
       },
       "signature_movement": {

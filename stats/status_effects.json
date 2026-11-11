@@ -22,7 +22,16 @@
       "koro_soft_floor_seconds": 6,
       "_koro_note": "Charleston 2026-10-21 : une carte Koro multiplie la duree du sort par rank_percent / 100 (rang C x0,5). Plancher pour les effets doux : jamais sous koro_soft_floor_seconds. Un controle fort garde la duree du sort (regle des 4 s), sans facteur de rang. Les categories de excluded_categories (immunites) ne sont pas concernees. Lu par server-combat (StatusManager, room.cpp apply_skill_effects).",
       "cooldown_rule_exempt_skills": ["skill_archer_precise_shot", "skill_artisan_musician_riff", "skill_healer_smite", "skill_mage_magic_bolt", "skill_mage_occ_dark_bolt", "skill_rogue_quick_stab", "skill_warrior_heavy_strike"],
-      "_cooldown_rule_exempt_note": "Charleston 2026-10-21 (0.20.4, reco validee) : les sorts de remplissage gardent leur recharge 0.20.3 (4-5,5 s) ; leur effet de 6-8 s se rafraichit a chaque lancer, comme avant la regle. Exemptes de cooldown_rule seulement : leurs durees restent dans les bornes. Lu par scripts/validate_cross_references.py (etape 12s) et server-combat test_status_duration_rule.cpp."
+      "_cooldown_rule_exempt_note": "Charleston 2026-10-21 (0.20.4, reco validee) : les sorts de remplissage gardent leur recharge 0.20.3 (4-5,5 s) ; leur effet de 6-8 s se rafraichit a chaque lancer, comme avant la regle. Exemptes de cooldown_rule seulement : leurs durees restent dans les bornes. Lu par scripts/validate_cross_references.py (etape 12s) et server-combat test_status_duration_rule.cpp.",
+      "soft_seconds_exempt_skills": ["skill_archer_bouncer_maneuver", "skill_archer_skirmisher_maneuver", "skill_artisan_spice_master_maneuver", "skill_healer_covenant_maneuver", "skill_mage_battlemage_maneuver"],
+      "_soft_seconds_exempt_note": "Charleston 2026-11-10 (lot 2 des manoeuvres, chiffres A VALIDER) : les bonus de la Rune de retour durent 4 s, comme la rune, sous le plancher des effets doux. Lot 6 (Charleston 2026-11-10, A VALIDER) : le bouclier du Lien d'echange (Covenant) dure 4 s. Lot 8 (A VALIDER) : le Ralentissement de la Boule de gomme (Bouncer, movement.zone_status) dure 2 s. Lot 12 (A VALIDER) : l'Aveuglement du Nuage de piment (Spice Master, movement.zone_status) dure 2 s. Lot 13 (Charleston 2026-11-11, chiffres A VALIDER) : le Ralentissement du Tir de harcelement (Skirmisher, remplace la Corde tendue) dure 2 s. Exemptes de soft_seconds seulement (hard_cc_seconds et cooldown_rule s'appliquent toujours). Lu par scripts/validate_cross_references.py (etape 12s) et server-combat test_status_duration_rule.cpp.",
+      "hard_cc_seconds_exempt_skills": [
+        "skill_archer_striker_maneuver",
+        "skill_healer_requiem_maneuver",
+        "skill_warrior_dual_axe_reaver_maneuver",
+        "skill_warrior_hammer_lord_maneuver"
+      ],
+      "_hard_cc_seconds_exempt_note": "Charleston 2026-11-10 (lot 4 des manoeuvres, chiffres A VALIDER) : l'Etourdissement du Marteau tellurique dure 1,5 s (sous le plancher de 2 s), l'Entrave du Crochet dure 6 s (au-dessus du plafond de 4 s). Lot 6 (A VALIDER) : le Silence du Bannissement (Requiem) dure 1,5 s. Exemptes de hard_cc_seconds seulement (soft_seconds et cooldown_rule s'appliquent toujours). L'Etourdissement au heurt du Marteau (movement.collide_status) a la meme duree. Lot 8 (A VALIDER) : l'Etourdissement au heurt du Coup de batte (Striker, movement.collide_status) dure 1 s. Lu par scripts/validate_cross_references.py (etape 12s) et server-combat test_status_duration_rule.cpp."
     },
     "last_updated": "2026-04-30",
     "description": "Tous les buffs/debuffs/DoTs du jeu. Option A canonique (CTO 2026-04-30): pour les stat_modifier stackables generiques, 1 effect_id = 1 icone, 1 stack = value_per_stack fixe. Skills appliquent stacks_to_apply (1, 2, 3...), pas de value/value_override arbitraire.",
@@ -130,6 +139,24 @@
           "unit": "percent_points",
           "max_stacks": 5,
           "total_max": "-25%"
+        },
+        "damage_percent_up_banner": {
+          "value_per_stack": 10,
+          "unit": "percent_dmg_dealt",
+          "max_stacks": 1,
+          "total_max": "+10% (une seule charge, donnee par une aura : etendard du Commander, A VALIDER)"
+        },
+        "atk_down_banner": {
+          "value_per_stack": 15,
+          "unit": "percent",
+          "max_stacks": 1,
+          "total_max": "-15% (une seule charge, donnee par une aura : etendard du Commander, A VALIDER)"
+        },
+        "damage_percent_up_amp": {
+          "value_per_stack": 10,
+          "unit": "percent_dmg_dealt",
+          "max_stacks": 1,
+          "total_max": "+10% (une seule charge, 2 s, donnee a chaque onde de l'ampli du Guitarist, A VALIDER)"
         }
       },
       "defensifs": {
@@ -168,6 +195,18 @@
           "unit": "percent",
           "max_stacks": 3,
           "total_max": "-15%"
+        },
+        "damage_reduction_aura": {
+          "value_per_stack": 20,
+          "unit": "percent",
+          "max_stacks": 1,
+          "total_max": "+20% (une seule charge, donnee par une aura : egide de la Sentinelle, A VALIDER)"
+        },
+        "armor_up_banner": {
+          "value_per_stack": 15,
+          "unit": "percent",
+          "max_stacks": 1,
+          "total_max": "+15% (une seule charge, donnee par une aura : etendard du Commander, A VALIDER)"
         },
         "evasion_up": {
           "value_per_stack": 3,
@@ -213,6 +252,12 @@
           "max_stacks": 5,
           "total_max": "-25%"
         },
+        "cast_speed_up_drum": {
+          "value_per_stack": 10,
+          "unit": "percent",
+          "max_stacks": 1,
+          "total_max": "+10% (une seule charge, 6 s, donnee par le Tambour de ralliement du War Drummer, A VALIDER)"
+        },
         "slow": {
           "value_per_stack": 0.3,
           "unit": "seconds_added_to_gcd",
@@ -251,6 +296,13 @@
           "unit": "percent_max_hp_per_sec",
           "max_stacks": 3,
           "total_max": "+3% maxHP/s",
+          "_note": "scaling=max_hp, tick=1.0s"
+        },
+        "heal_over_time_banner": {
+          "value_per_stack": 2,
+          "unit": "percent_max_hp_per_sec",
+          "max_stacks": 1,
+          "total_max": "+2% maxHP/s (une seule charge, donnee par une aura : etendard du Commander, A VALIDER)",
           "_note": "scaling=max_hp, tick=1.0s"
         },
         "mana_regen": {
@@ -668,6 +720,33 @@
         },
         "value_per_stack": 1,
         "_audit_note": "2026-08-06: l'effet soignait ZERO. Aucune branche moteur ne le traitait (seuls heal_over_time_mag et heal_over_time_max_hp en avaient une), et StatusEffectData.tick_value n'est jamais renseigne au chargement, donc la valeur par tick valait toujours 0. Les deux skills familiers qui l'appliquent (regen_wave, mending_pulse) ne soignaient rien. Le moteur derive desormais le tick de la grille canonique pour l'unite percent_max_hp_per_sec. L'ancienne formula heal_power*0.2 et le scaling_percent 0.02 du bloc runtime etaient tous deux faux par rapport a la grille (1%/s/charge), ils sont supprimes."
+      },
+      "heal_over_time_banner": {
+        "name_fr": "Soin de l'étendard",
+        "name_en": "Banner Mending",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "value_per_stack": 2,
+        "impl": "done",
+        "formula": "2% des PV max de la cible par seconde (une charge)",
+        "tick_interval": 1.0,
+        "tooltip_fr": "Récupère 2 % de tes PV max chaque seconde près de l'étendard.",
+        "tooltip_en": "Recover 2% of your max HP each second near the banner.",
+        "description_fr": "Restaure 2 % de tes PV max par seconde tant que tu restes dans la zone de l'étendard.",
+        "description_en": "Restores 2% of your max HP per second while you remain within the banner's area.",
+        "sources": [
+          "Warrior (Commander)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "tick_heal": "target_max_hp_percent",
+          "tick_percent": 0.02,
+          "tick_rate": 1.0,
+          "scaling_stat": "target_max_hp",
+          "vfx_type": "zone_ally"
+        }
       },
       "heal_over_time_mag": {
         "name_fr": "Soin Continu Magique",
@@ -1276,6 +1355,131 @@
         "max_stacks": 3,
         "value_per_stack": 5
       },
+      "damage_reduction_aura": {
+        "name_fr": "Abri de l'égide",
+        "name_en": "Aegis Cover",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "value_per_stack": 20,
+        "impl": "done",
+        "formula": "+20% damage reduction (one stack)",
+        "tooltip_fr": "Dégâts subis réduits de 20 % près de l'égide.",
+        "tooltip_en": "Take 20% less damage while next to the aegis.",
+        "description_fr": "Réduit de 20 % les dégâts subis tant que tu restes directement à côté de l'égide.",
+        "description_en": "Reduces damage taken by 20% while you remain directly adjacent to the aegis.",
+        "sources": [
+          "Warrior (Sentinel)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "stat_mods": {
+            "damage_reduction_percent": "value/100"
+          },
+          "vfx_type": "shield_aura"
+        }
+      },
+      "armor_up_banner": {
+        "name_fr": "Rempart de l'étendard",
+        "name_en": "Banner Bulwark",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "value_per_stack": 15,
+        "impl": "done",
+        "formula": "+15% armor (one stack)",
+        "tooltip_fr": "Armure augmentée de 15 % près de l'étendard.",
+        "tooltip_en": "Armor increased by 15% near the banner.",
+        "description_fr": "Augmente l'armure de 15 % tant que tu restes dans la zone de l'étendard.",
+        "description_en": "Increases armor by 15% while you remain within the banner's area.",
+        "sources": [
+          "Warrior (Commander)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "stat_mods": {
+            "armor_percent": "value/100"
+          },
+          "vfx_type": "zone_ally"
+        }
+      },
+      "damage_percent_up_banner": {
+        "name_fr": "Élan de l'étendard",
+        "name_en": "Banner Drive",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "value_per_stack": 10,
+        "impl": "done",
+        "formula": "+10% damage dealt (one stack)",
+        "tooltip_fr": "Dégâts infligés augmentés de 10 % près de l'étendard.",
+        "tooltip_en": "Deal 10% more damage near the banner.",
+        "description_fr": "Augmente de 10 % les dégâts physiques et magiques infligés dans la zone de l'étendard.",
+        "description_en": "Increases physical and magical damage dealt by 10% within the banner's area.",
+        "sources": [
+          "Warrior (Commander)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "stat_mods": {
+            "damage_dealt_percent": "value/100"
+          },
+          "vfx_type": "zone_ally"
+        }
+      },
+      "damage_percent_up_amp": {
+        "name_fr": "Onde de l'ampli",
+        "name_en": "Amp Wave",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "value_per_stack": 10,
+        "impl": "done",
+        "formula": "+10% damage dealt (one stack)",
+        "tooltip_fr": "Dégâts infligés augmentés de 10 % pendant 2s.",
+        "tooltip_en": "Deal 10% more damage for 2s.",
+        "description_fr": "L'onde de l'ampli augmente les dégâts infligés de 10 % pendant 2s.",
+        "description_en": "The amplifier wave increases damage dealt by 10% for 2s.",
+        "sources": [
+          "Artisan (Guitarist)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "stat_mods": {
+            "damage_dealt_percent": "value/100"
+          },
+          "vfx_type": "power_aura"
+        }
+      },
+      "atk_down_banner": {
+        "name_fr": "Ombre de l'étendard",
+        "name_en": "Banner Dread",
+        "polarity": "debuff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "value_per_stack": 15,
+        "impl": "done",
+        "formula": "-15% ATK (one stack)",
+        "tooltip_fr": "ATQ réduite de 15 % près de l'étendard ennemi.",
+        "tooltip_en": "ATK reduced by 15% near an enemy banner.",
+        "description_fr": "Réduit ton ATQ de 15 % tant que tu restes dans la zone de l'étendard ennemi.",
+        "description_en": "Reduces your ATK by 15% while you remain within an enemy banner's area.",
+        "sources": [
+          "Warrior (Commander)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "stat_mods": {
+            "atk_percent": "-value/100"
+          },
+          "vfx_type": "zone_enemy"
+        }
+      },
       "crit_resistance_down": {
         "name_fr": "Résist Critique -",
         "name_en": "Crit Resistance Down",
@@ -1465,6 +1669,31 @@
         },
         "max_stacks": 5,
         "value_per_stack": 5
+      },
+      "cast_speed_up_drum": {
+        "name_fr": "Rythme de ralliement",
+        "name_en": "Rallying Rhythm",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "value_per_stack": 10,
+        "impl": "done",
+        "formula": "+10% cast speed (one stack)",
+        "tooltip_fr": "Vitesse d'incantation augmentée de 10 % pendant 6s.",
+        "tooltip_en": "Cast speed increased by 10% for 6s.",
+        "description_fr": "Le Tambour de ralliement augmente la vitesse d'incantation de 10 % pendant 6s.",
+        "description_en": "Rallying Drum increases cast speed by 10% for 6s.",
+        "sources": [
+          "Artisan (War Drummer)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "stat_mods": {
+            "cast_speed_percent": "value/100"
+          },
+          "vfx_type": "haste_aura"
+        }
       }
     },
     "control": {
@@ -1887,6 +2116,35 @@
           "_client_note": "stat_mods.shield='power' is a marker key required by client (pve_combat_manager.gd routes shield_amount only if mods.has('shield')). The string 'power' is replaced by the server-computed numeric absorb at runtime in combat_event_router.gd. Removing this breaks client display."
         }
       },
+      "shield_target_max_hp": {
+        "name_fr": "Bouclier d'échange",
+        "name_en": "Exchange Shield",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "impl": "done",
+        "formula": "absorb = value + (target_max_hp * pct / 100). value=base flat, pct=% des PV max de l'unite qui RECOIT le bouclier (pas du lanceur). Lot 6 des manoeuvres, 2026-11-10.",
+        "tooltip_fr": "Absorbe des dégâts à hauteur de 10 % de tes PV max.",
+        "tooltip_en": "Absorbs damage equal to 10% of your max HP.",
+        "description_fr": "Bouclier accordé par Lien d'échange. Absorbe des dégâts équivalents à 10 % de tes propres PV max pendant 4s.",
+        "description_en": "Shield granted by Exchange Bond. Absorbs damage equal to 10% of your own max HP for 4s.",
+        "sources": [
+          "Healer (Covenant, Lien d'échange)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "absorb_formula": "value + (target.max_hp * instance.pct) / 100",
+          "scaling_stat": "target_max_hp",
+          "scaling_source": "instance.pct",
+          "scaling_behavior": "flat_plus_scaling",
+          "stat_mods": {
+            "shield": "power"
+          },
+          "vfx_type": "shield_aura",
+          "_client_note": "stat_mods.shield='power' is the same marker as the other typed shields: the server sends the computed absorb, the client never derives it."
+        }
+      },
       "cover": {
         "name_fr": "Couverture",
         "name_en": "Cover",
@@ -2003,6 +2261,31 @@
           "instance_value_stat": "thorns_percent",
           "vfx_type": "shield_aura"
         }
+      },
+      "forced_move_immune_aura": {
+        "name_fr": "Aura d'ancrage",
+        "name_en": "Anchoring Aura",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "impl": "done",
+        "tooltip_fr": "Protège des déplacements forcés toi et les alliés directement à côté.",
+        "tooltip_en": "Protects you and directly adjacent allies from forced movement.",
+        "description_fr": "Toi et les alliés sur les 4 cases directement à côté bénéficiez d'Ancré tant qu'ils restent à portée.",
+        "description_en": "You and allies on the 4 directly adjacent tiles gain Anchored while they remain nearby.",
+        "sources": [
+          "Warrior (Bulwark)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "aura": {
+            "grants": "forced_move_immune",
+            "radius": 1,
+            "distance": "manhattan",
+            "include_carrier": true
+          },
+          "vfx_type": "aura_idle"
+        }
       }
     },
     "immunity": {
@@ -2104,6 +2387,53 @@
         "description_fr": "Crée une zone. Alliés dans la zone immuns aux contrôles. Zone fixe, ne bouge pas. Compétence de Healer.",
         "description_en": "Creates a zone. Allies inside immune to CC. Zone is fixed, doesn't move. Healer/Support skill.",
         "_pr_a2_note": "Flag corrected 2026-05-02 — code path verified wired in audit."
+      },
+      "counter_step_guard": {
+        "name_fr": "Garde du contre-pas",
+        "name_en": "Counter Step Guard",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "impl": "done",
+        "tooltip_fr": "Annule la prochaine attaque ennemie à cible unique.",
+        "tooltip_en": "Negates the next enemy single-target attack.",
+        "description_fr": "Pendant 4s, annule une attaque ennemie à cible unique, dégâts et effets compris, puis tente de te déplacer au contact de l'attaquant.",
+        "description_en": "For 4s, negates one enemy single-target attack, including its damage and effects, then attempts to move you next to the attacker.",
+        "sources": [
+          "Rogue"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "negates_next_single_target_attack": true,
+          "counter_animation": "counter",
+          "counter_relocate": "adjacent_to_attacker",
+          "counter_relocate_animations": {
+            "depart": "vanish",
+            "arrive": "arrive"
+          },
+          "vfx_type": "guard_idle"
+        }
+      },
+      "forced_move_immune": {
+        "name_fr": "Ancré",
+        "name_en": "Anchored",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "impl": "done",
+        "tooltip_fr": "Immunisé aux déplacements forcés.",
+        "tooltip_en": "Immune to forced movement.",
+        "description_fr": "Ne peut pas être repoussé, attiré ou déplacé de force par un adversaire. Les autres effets des sorts restent possibles.",
+        "description_en": "Cannot be pushed, pulled or forcibly moved by enemies. Other skill effects can still apply.",
+        "sources": [
+          "Warrior"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "blocks_forced_movement": true,
+          "resist_animation": "resist",
+          "vfx_type": "ally_anchor"
+        }
       }
     },
     "aggro": {
@@ -2130,6 +2460,33 @@
           "vfx_type": "taunt_aura"
         },
         "_audit_note": "2026-08-06: ajout de runtime.cc_type. Le serveur derivait deja le type TAUNT de la categorie aggro, mais le client lit exclusivement cc_type pour peupler StatusEffect.cc_type. Sans lui, la provocation s'affichait comme un debuff neutre, sans marquage CC dans le HUD."
+      },
+      "taunt_scarecrow": {
+        "name_fr": "Provoqué par l'épouvantail",
+        "name_en": "Scarecrow Taunt",
+        "polarity": "debuff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "impl": "done",
+        "formula": "forced target on the scarecrow while within its aura (lot 7 des manoeuvres, 2026-11-10)",
+        "tooltip_fr": "Tes sorts à cible unique visent l'épouvantail.",
+        "tooltip_en": "Your single-target skills target the scarecrow.",
+        "description_fr": "Tant que tu restes à 2 cases ou moins de l'épouvantail, tes sorts à cible unique le visent à la place de leur cible habituelle.",
+        "description_en": "While you remain within 2 tiles of the scarecrow, your single-target skills target it instead of their usual target.",
+        "sources": [
+          "Archer (Sharpshooter, Épouvantail)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "forces_target_on_source": true,
+          "cc_type": "taunt",
+          "stat_mods": {
+            "taunted": 1
+          },
+          "vfx_type": "taunt_aura"
+        },
+        "_a_valider": "A VALIDER (2026-11-10, lot 7) : la source de la provocation est l'epouvantail (porteur de l'aura), pas l'archer. Statut distinct de taunt pour qu'une provocation de Guerrier ne soit jamais retiree par l'aura. Le serveur (status_manager.cpp) traite tout statut aggro de cc_type taunt comme une provocation."
       }
     },
     "special": {
@@ -2847,21 +3204,21 @@
     }
   },
   "_summary": {
-    "total": 102,
+    "total": 113,
     "categories": 9,
     "by_polarity": {
-      "buff": 52,
-      "debuff": 50
+      "buff": 61,
+      "debuff": 52
     },
     "breakdown": {
       "dot": 9,
-      "hot": 3,
-      "stat_modifiers": 30,
-      "tempo": 2,
+      "hot": 4,
+      "stat_modifiers": 35,
+      "tempo": 3,
       "control": 12,
-      "defensive": 10,
-      "immunity": 5,
-      "aggro": 1,
+      "defensive": 12,
+      "immunity": 6,
+      "aggro": 2,
       "special": 30
     },
     "_audit_note": "2026-08-06: bloc recompte a partir du fichier. Il annoncait 104 effets pour 101 reels, et se trompait aussi sur tempo, defensive et special. Le total passe a 98 apres la fusion de trois doublons stricts: atk_percent_up absorbe par atk_up (meme 5%/stack, meme max 5, la grille le notait deja comme alias possible), heal_received_down absorbe par heal_reduction (meme -15%/stack, meme max 3, meme chemin runtime), et regen supprime (zero applicateur, identique a heal_over_time a 1% maxHP/s/charge)."

@@ -1,7 +1,50 @@
 {
   "_meta": {
     "version": "1.0",
-    "description": "Summon entity templates — spawned by skills during combat, never in PartyManager"
+    "description": "Summon entity templates — spawned by skills during combat, never in PartyManager",
+    "invocation_schema": {
+      "_doc": "Bloc `invocation` d'un modele : invocation de joueur creee par une competence qui porte `summon_template_id` SANS bloc `movement` (manoeuvres de specialisation, niveau 60). Lu par server-combat (content_loader.cpp parse_invocation_template, combat/room_invocations.cpp). Le serveur refuse de demarrer sur une valeur inconnue. Le client n'affiche que ce que le serveur emet (evenements INVOCATION_*, FORCED_MOVE).",
+      "limits.duration_sec": "duree de vie en secondes",
+      "limits.max_per_owner": "au-dela, la plus ancienne du meme modele de ce lanceur disparait (raison replaced)",
+      "global_limits.max_summons_per_team": "plafond par camp, invocations + doubles d'ombre ; despawn_oldest_if_limit=true fait disparaitre la plus ancienne invocation du camp, sinon le lancer est refuse",
+      "visual_id": "jeu d'animations (assets/vfx/concepts/valide/<visual_id>), lu par le client",
+      "animations": "cles d'animation que le serveur recopie dans ses evenements : spawn (INVOCATION_SPAWNED, une fois par bloc), idle (INVOCATION_MOVED), trigger (INVOCATION_TRIGGERED, absent si trigger.mode none). Facultatives, lues par le client seul : destroyed (INVOCATION_ENDED raison destroyed) et end (toute autre raison)",
+      "body.has_hp": "true = unite ciblable et tuable (PV = owner_max_hp_percent des PV max du lanceur), false = objet sans PV, jamais ciblable ni touche",
+      "body.blocks_line_of_sight": "bloque la ligne de vue du camp adverse (les allies restent transparents, regle du plateau)",
+      "body.occupies_cell": "true = personne ne peut entrer sur sa case ; false = elle ne bloque aucun deplacement",
+      "placement.mode": "adjacent_to_caster (case adjacente libre ; celle du client si valide, sinon choisie par le serveur) | cell_in_range (case du client a placement.range au plus ; sans case, le serveur choisit) | line_from_caster (case voisine dans la direction de la case cliquee, axe dominant) | wall_perpendicular (placement.length cases, nombre impair, centrees sur la case du client a placement.range au plus, libre ; perpendiculaire a l'axe lanceur -> case (axe dominant, egalite = le mur suit la ligne) ; un bloc lateral sur une case occupee ou hors plateau est omis ; sans case, le serveur prend 2 puis 1 case droit devant ; les blocs comptent pour UNE invocation dans les limites) | movement_origin (uniquement via movement.origin_invocation d'une manoeuvre de deplacement : la case que le lanceur vient de quitter)",
+      "motion.mode": "static | line (une case toutes les step_interval_sec dans la direction du lancer ; traverse les cases ennemies si passes_through=enemies ; s'arrete avant toute autre case occupee ou le bord ; on_blocked = end | stay)",
+      "trigger.mode": "enemy_enters_adjacent (un ennemi arrive a moins de radius cases, au plus une fois par per_target_cooldown_sec et par cible ; deja a cote a l'apparition = arrivee) | pulse (toutes les interval_sec, on_spawn = premier tic a l'apparition, cibles a radius cases au plus) | on_pass (l'ennemi sur la case ou elle entre) | none (aucun effet, pas de bloc effect : un corps qui ne fait que se tenir la ; exige has_hp, on_expire, ou, depuis le lot 5, un objet qui bloque la ligne de vue ou occupe sa case : barriere du Sanctifier)",
+      "effect.targets": "enemies | allies (les unites vivantes du camp, invocations exclues)",
+      "effect.damage": "damage_type physical|magical (ATK ou MAG du lanceur, photographiees a l'invocation), base_power, scaling_percent",
+      "effect.heal": "base_heal, heal_scaling_percent (MAG du lanceur), reductions de soins de la cible appliquees",
+      "effect.cleanse": "effect_ids dans l'ordre de priorite, max_effects par cible et par tic",
+      "effect.forced_move": "direction away_from_invocation | sideways_of_travel, distance en cases ; ligne droite, arret juste avant une case occupee ou le bord ; boss et cibles insensibles aux controles jamais deplaces",
+      "body.blocks_line_of_sight_both_sides": "facultatif, defaut false. true = bloque AUSSI la ligne de vue du camp du lanceur (mur de glace) ; exige blocks_line_of_sight true",
+      "on_expire": "facultatif. recall_owner = a l'expiration, le lanceur est teleporte sur la case de l'invocation (si elle est occupee : la case libre la plus proche en distance de Manhattan, egalite = plus petite ligne puis plus petite colonne ; sa propre case compte comme libre). Exige placement movement_origin ; autorise alors un objet sans PV avec trigger none. Evenements : TELEPORTED (message = animations.recall) + POSITION_CHANGED, puis INVOCATION_ENDED raison recalled. Rien si le lanceur est mort (raison owner_dead) ; le retour a lieu meme s'il est etourdi ou immobilise.",
+  "limits.counts_in_team_limit": "facultatif, defaut true. false = ne compte pas dans global_limits.max_summons_per_team et ne fait jamais disparaitre l'invocation d'un allie (un marqueur comme la rune de retour) ; compte toujours dans entity_caps.total_max de la room",
+  "animations.owner_aura": "facultatif, lu par le client seul : boucle sur le lanceur de INVOCATION_SPAWNED a INVOCATION_ENDED de cette invocation",
+  "animations.recall": "exige avec on_expire recall_owner, recopie dans TELEPORTED",
+  "trigger.max_activations": "facultatif (lot 9, 2026-11-10), pulse seulement, entier >= 1 : apres sa N-ieme activation l'invocation disparait (INVOCATION_ENDED raison spent) ; une activation due au tic meme de la fin de vie passe AVANT l'expiration (leurre explosif du Blinker : duration_sec 1, interval_sec 1, on_spawn false = une seule explosion 1 s apres la pose). Sans la cle : aucune limite, et l'expiration passe avant une activation du meme tic (comportement inchange)",
+  "trigger.selection": "pulse seulement, facultatif : all (defaut, toutes les cibles a radius) | nearest (la seule unite la plus proche, egalite = plus petit identifiant ; aucune a portee = aucun tir ni evenement ; INVOCATION_TRIGGERED porte alors la cible)",
+  "aura[]": "lot 4 (2026-11-10) : aura peut aussi etre une LISTE d'entrees {status, radius, distance, targets}. targets = allies (defaut, invocations exclues, le lanceur compris) | enemies (unites ennemies vivantes, invocations exclues). Chaque entree est appliquee et retiree independamment (etendard du Commander : trois statuts pour les allies, un pour les ennemis).",
+  "on_spawn.pull": "facultatif (lot 4, 2026-11-10). {line row_or_column, radius, distance, targets all|allies|enemies, animation} : a l'apparition, chaque unite vivante (invocations exclues) alignee avec l'invocation (meme ligne ou meme colonne) a 2..radius cases est attiree de distance cases vers elle, la plus proche d'abord ; arret avant le premier corps. Une unite deja au contact ne bouge pas et n'emet rien. Boss et insensibles : FORCED_MOVE message immune ; Ancre : FORCED_MOVE_RESISTED. Evenement par unite : FORCED_MOVE (source = l'invocation, effect_id = animation, value = case de depart, position = case d'arrivee, absorbed_damage = cases parcourues).",
+  "aura": "facultatif (lot 3, 2026-11-10). {status, radius, distance manhattan|chebyshev} : tant que l'invocation vit, chaque unite alliee vivante a radius cases au plus (invocations exclues, le lanceur compris) porte le statut `status` (stats/status_effects.json), applique et retire par le serveur a chaque deplacement (STATUS_APPLIED / STATUS_REMOVED, source = l'invocation, duree = vie restante). Meme moteur que runtime.aura d'un statut. Seul effet permis avec trigger none.",
+  "animations.hit": "facultatif, lu par le client seul : coup encaisse par une invocation a PV (evenement DAMAGE dont la cible est l'invocation)",
+  "animations.aura_pulse": "facultatif (lot 7, 2026-11-10), lu par le client seul : joue sur l'invocation a chaque tick ou le serveur envoie au moins un STATUS_APPLIED d'un statut de son aura dont la source est cette invocation (une ou plusieurs unites viennent d'entrer dans l'aura)",
+  "animations.aura_mark": "facultatif (lot 7, 2026-11-10), lu par le client seul : boucle sur chaque unite qui porte un statut de l'aura de cette invocation, du STATUS_APPLIED (source = l'invocation) au STATUS_REMOVED du meme statut",
+  "effect.statuses": "facultatif (lot 7, 2026-11-10). Liste {effect_id (stats/status_effects.json), stacks >= 1, duration_sec > 0}, appliques a chaque unite touchee apres les degats (source = le lanceur), meme schema que les pieges au sol. Revele = retire l'invisibilite (Ronde du faucon). Lot 13 (2026-11-11) : value facultative (entier >= 1), la puissance de l'effet quand le statut en lit une (Aveuglement : % de precision retiree, 20 pour le Leurre explosif comme les autres aveuglements du Voleur ; sans value, defaut du statut).",
+  "trigger.pulse_center": "regle (lot 7, 2026-11-10) : un pulse d'une invocation qui n'occupe pas sa case (occupies_cell false) atteint aussi l'unite qui se tient SUR sa case (distance 0) ; une invocation qui occupe sa case vise de 1 a radius cases. selection nearest prend alors d'abord l'unite sur la case",
+  "trigger.distance": "facultatif (lot 10, 2026-11-10), pulse seulement : manhattan (defaut) | chebyshev (carre : radius 1 = les 8 cases voisines, baril du Cutthroat)",
+  "trigger.fires_when_struck": "facultatif (lot 10), pulse d'une invocation a PV : le premier coup de competence d'un ennemi qui la touche (degats, meme 0 ou mortels ; esquive et parade ne comptent pas) declenche une activation tout de suite, dans le meme tic (elle compte pour max_activations). Une invocation tuee par ce coup s'active quand meme puis disparait (raison spent si max_activations est atteint, sinon destroyed)",
+  "effect.forced_move.diagonal": "facultatif (lot 10), avec away_from_invocation : l'unite s'eloigne sur les DEUX axes (une unite en coin recule en diagonale) ; sans la cle, axe dominant",
+  "effect.forced_move.animation": "facultatif (lot 10) : cle recopiee dans FORCED_MOVE.effect_id (defaut : l'id du modele)",
+  "trigger.mode owner_strike_echo": "lot 10 (2026-11-10) : aucun bloc effect. Chaque coup de corps a corps du LANCEUR qui inflige des degats a un ennemi fait frapper l'invocation sur la meme cible pour echo_percent (1-100) % des degats que ce coup a infliges (apres armure, bouclier et multiplicateurs ; sans jet de critique ni d'esquive ; invulnerable = 0). Corps a corps = competence a cible unique (target_type ennemi, pas une zone) dont la portee reelle (portee du sort, sinon portee de base du lanceur) vaut au plus strike_max_range. Un coup = une frappe en echo (un sort a 3 coups en fait 3). Evenements, dans le meme tic que le coup : INVOCATION_TRIGGERED (source = l'invocation, target = la cible, message = animations.trigger, value = degats de l'echo) puis DAMAGE (source = l'invocation)",
+  "motion.mode chase": "lot 11 (2026-11-11) : motion {mode chase, target nearest_enemy}. Exige un corps qui occupe sa case et un trigger pulse (selection nearest, radius >= 1) : c'est son coup. Toutes les trigger.interval_sec : si un ENNEMI (unite vivante a PV, invocations et leurres exclus) est a trigger.radius ou moins, le pulse frappe le plus proche ; sinon l'invocation avance d'1 case vers l'ennemi le plus proche (Manhattan, egalite = plus petit identifiant) par le plus court chemin de cases libres (egalite : haut, droite, bas, gauche) et le pulse de ce tic ne part pas. Aucun chemin = elle reste sur place, aucun evenement. Evenements : INVOCATION_MOVED (source = l'invocation, target = l'ennemi poursuivi, value = case de depart, position = case d'arrivee, message = animations.move) + POSITION_CHANGED ; le coup = INVOCATION_TRIGGERED (target = l'ennemi frappe) + DAMAGE",
+  "animations.move": "facultatif (lot 11) : cle recopiee dans INVOCATION_MOVED.message (defaut animations.idle), golem du Forgemaster : walk",
+  "placement.footprint": "facultatif (lot 11), avec placement.mode cell_in_range et un objet qui n'occupe pas sa case : {shape square, size N}. La case du client (a placement.range, ligne de vue si la competence l'exige) est le coin de plus petite colonne et de plus petite ligne du carre N x N ; au bord du plateau le carre est decale vers l'interieur (la case du client reste dedans). Un objet par case, tous du meme groupe : ils comptent pour UNE invocation dans les limites et disparaissent ensemble. Un INVOCATION_SPAWNED par case (flaque du Plague Brewer)",
+  "ally_effect": "facultatif (lot 12, 2026-11-11), avec trigger.mode pulse (selection all) et effect.targets enemies : {statuses [{effect_id, stacks >= 1, duration_sec > 0}], animation}. A chaque activation, apres l'effet sur les ennemis, les unites vivantes du camp du lanceur a la meme portee (radius, distance ; invocations et leurres exclus, le lanceur compris) recoivent ces statuts (source = le lanceur) ; chaque STATUS_APPLIED porte skill_id et message = animation (ampli du Guitarist : buff_hit)."
+    }
   },
   "global_limits": {
     "max_summons_per_team": 6,
@@ -77,6 +120,1031 @@
       "limits": {
         "max_per_owner": 1,
         "duration_sec": 20
+      }
+    },
+    {
+      "id": "runic_sentinel",
+      "name_fr": "Sentinelle runique",
+      "name_en": "Runic Sentinel",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "runeknight_summon_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 10
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Runeknight) : PV 15% du lanceur, 30% MAG, repousse 2 cases, 1 fois par seconde et par ennemi.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "trigger": "summon_repel"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 15,
+          "blocks_line_of_sight": true,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "adjacent_to_caster",
+          "range": 1
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "enemy_enters_adjacent",
+          "radius": 1,
+          "per_target_cooldown_sec": 1
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "magical",
+            "base_power": 0,
+            "scaling_percent": 30
+          },
+          "forced_move": {
+            "direction": "away_from_invocation",
+            "distance": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "simmering_pot",
+      "name_fr": "Marmite fumante",
+      "name_en": "Simmering Pot",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "battle_cook_summon_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 10
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Battle Cook) : soin 25% MAG par tic, tic a la pose puis toutes les 2s (5 tics), retire 1 Ralentissement ou Poison par allie et par tic.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "trigger": "summon_pulse"
+        },
+        "body": {
+          "has_hp": false,
+          "owner_max_hp_percent": 0,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 1,
+          "interval_sec": 2,
+          "on_spawn": true
+        },
+        "effect": {
+          "targets": "allies",
+          "heal": {
+            "base_heal": 0,
+            "heal_scaling_percent": 25
+          },
+          "cleanse": {
+            "effect_ids": [
+              "slow",
+              "poison"
+            ],
+            "max_effects": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "wind_tornado",
+      "name_fr": "Tornade",
+      "name_en": "Tornado",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "wind_hunter_summon_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 6
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Wind Hunter) : 30% ATK par ennemi traverse, recul d'une case sur le cote, objet sans PV, disparait au premier obstacle.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "trigger": "summon_pass"
+        },
+        "body": {
+          "has_hp": false,
+          "owner_max_hp_percent": 0,
+          "blocks_line_of_sight": false,
+          "occupies_cell": false
+        },
+        "placement": {
+          "mode": "line_from_caster",
+          "range": 1
+        },
+        "motion": {
+          "mode": "line",
+          "step_interval_sec": 1,
+          "passes_through": "enemies",
+          "on_blocked": "end"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "on_pass",
+          "radius": 0
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "physical",
+            "base_power": 0,
+            "scaling_percent": 30
+          },
+          "forced_move": {
+            "direction": "sideways_of_travel",
+            "distance": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "frost_wall",
+      "name_fr": "Mur de glace",
+      "name_en": "Ice Wall",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "frostcaller_summon_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Frostcaller) : 3 blocs, 15% des PV max du lanceur par bloc, centre a 3 cases au plus, 8s, bloque la ligne de vue des deux camps. Compte pour UNE invocation dans la limite de 6 par camp. Case centrale occupee = refus ; bloc lateral sur une case occupee ou hors plateau = omis (mur partiel). Clic en diagonale exacte = le mur suit la ligne.",
+        "animations": {
+          "spawn": "wall_rise",
+          "idle": "wall_idle",
+          "destroyed": "wall_break",
+          "end": "wall_fade"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 15,
+          "blocks_line_of_sight": true,
+          "blocks_line_of_sight_both_sides": true,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "wall_perpendicular",
+          "range": 3,
+          "length": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "none",
+          "radius": 0
+        }
+      }
+    },
+    {
+      "id": "energy_orb",
+      "name_fr": "Orbe d'énergie",
+      "name_en": "Energy Orb",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "sorcerer_summon_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Sorcerer) : 8% des PV max du lanceur, un tir par seconde (premier tir 1s apres la pose, 8 tirs) sur l'ennemi le plus proche a 3 cases, 15% MAG magique, sans ligne de vue requise, ne bloque pas la ligne de vue.",
+        "animations": {
+          "spawn": "cast",
+          "idle": "orb_idle",
+          "trigger": "orb_shot",
+          "destroyed": "orb_break",
+          "end": "orb_fade"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 8,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "movement_origin"
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 3,
+          "interval_sec": 1,
+          "on_spawn": false,
+          "selection": "nearest"
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "magical",
+            "base_power": 0,
+            "scaling_percent": 15
+          }
+        }
+      }
+    },
+    {
+      "id": "battlemage_return_rune",
+      "name_fr": "Rune de retour",
+      "name_en": "Return Rune",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "battlemage_rune_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 4,
+        "counts_in_team_limit": false
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Battlemage) : rune de 4s sur la case de depart, retour automatique a son terme (case libre la plus proche si elle est occupee), visible par tous, sans PV, ne bloque ni deplacement ni ligne de vue, n'empeche pas la pose d'un piege et ne compte pas dans le plafond d'invocations du camp.",
+        "animations": {
+          "spawn": "cast",
+          "idle": "rune_idle",
+          "recall": "recall",
+          "owner_aura": "buff_aura"
+        },
+        "body": {
+          "has_hp": false,
+          "owner_max_hp_percent": 0,
+          "blocks_line_of_sight": false,
+          "occupies_cell": false
+        },
+        "placement": {
+          "mode": "movement_origin"
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "on_expire": "recall_owner",
+        "trigger": {
+          "mode": "none",
+          "radius": 0
+        }
+      }
+    },
+    {
+      "id": "sentinel_aegis",
+      "name_fr": "Égide",
+      "name_en": "Aegis",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "sentinel_summon_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 10
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Sentinel) : 10 s, PV 20% des PV max du lanceur, case libre a 3 cases au plus sans ligne de vue requise, bloque la ligne de vue du camp adverse ; aura : allies adjacents (Manhattan 1, le lanceur compris s'il est adjacent, invocations exclues) -20% de degats subis (damage_reduction_aura) tant qu'ils restent adjacents. Compte dans la limite de 6 invocations par camp.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "hit": "summon_hit",
+          "destroyed": "summon_break",
+          "end": "summon_fade"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 20,
+          "blocks_line_of_sight": true,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "none",
+          "radius": 0
+        },
+        "aura": {
+          "status": "damage_reduction_aura",
+          "radius": 1,
+          "distance": "manhattan"
+        }
+      }
+    },
+    {
+      "id": "commander_war_banner",
+      "name_fr": "Étendard de guerre",
+      "name_en": "War Banner",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "commander_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Commander) : 8 s, PV 15% des PV max du lanceur, case libre a 3 cases au plus sans ligne de vue requise, ne bloque pas la ligne de vue ; a la pose, attire d'1 case vers lui les unites (allies et ennemis, le lanceur compris, invocations exclues) alignees avec lui (ligne ou colonne) a 2 cases ; zone de 2 cases (Manhattan) : allies armure +15% (armor_up_banner), degats infliges +10% (damage_percent_up_banner), soin 2% des PV max par seconde (heal_over_time_banner) ; ennemis ATQ -15% (atk_down_banner). Compte dans la limite de 6 invocations par camp.",
+        "animations": {
+          "spawn": "plant",
+          "idle": "banner_idle",
+          "destroyed": "banner_break",
+          "end": "banner_break"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 15,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "none",
+          "radius": 0
+        },
+        "on_spawn": {
+          "pull": {
+            "line": "row_or_column",
+            "radius": 2,
+            "distance": 1,
+            "targets": "all",
+            "animation": "pull"
+          }
+        },
+        "aura": [
+          {
+            "status": "armor_up_banner",
+            "radius": 2,
+            "distance": "manhattan",
+            "targets": "allies"
+          },
+          {
+            "status": "damage_percent_up_banner",
+            "radius": 2,
+            "distance": "manhattan",
+            "targets": "allies"
+          },
+          {
+            "status": "heal_over_time_banner",
+            "radius": 2,
+            "distance": "manhattan",
+            "targets": "allies"
+          },
+          {
+            "status": "atk_down_banner",
+            "radius": 2,
+            "distance": "manhattan",
+            "targets": "enemies"
+          }
+        ]
+      }
+    },
+    {
+      "id": "druidic_life_seed",
+      "name_fr": "Graine de vie",
+      "name_en": "Life Seed",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "druidic_healer_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Druidic Healer) : 8 s, PV 10% des PV max du lanceur (l'adversaire peut la detruire), case libre a 3 cases au plus sans ligne de vue requise, ne bloque pas la ligne de vue ; a la pose puis chaque seconde, soin de 8% MAG aux allies adjacents (Manhattan 1, invocations exclues). Compte dans la limite de 6 invocations par camp.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "trigger": "heal_pulse",
+          "hit": "summon_hit",
+          "destroyed": "summon_break",
+          "end": "summon_fade"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 10,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 1,
+          "interval_sec": 1,
+          "on_spawn": true
+        },
+        "effect": {
+          "targets": "allies",
+          "heal": {
+            "base_heal": 0,
+            "heal_scaling_percent": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "sanctifier_sacred_shield",
+      "name_fr": "Bouclier sacré",
+      "name_en": "Sacred Shield",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "sanctifier_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 6
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Sanctifier) : objet sans PV (jamais cible, touche ni detruit) sur une case libre a 3 cases au plus sans ligne de vue requise, 6 s. A sens unique : bloque la ligne de vue du camp adverse seulement (regle des objets : invocation_object_blocks), le camp du lanceur voit au travers. Occupe sa case : personne n'y entre. Compte dans la limite de 6 invocations par camp. Aucun evenement de projectile brise : un sort adverse qui exige la ligne de vue est refuse a la validation.",
+        "animations": {
+          "spawn": "cast",
+          "idle": "barrier_idle"
+        },
+        "body": {
+          "has_hp": false,
+          "owner_max_hp_percent": 0,
+          "blocks_line_of_sight": true,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "none",
+          "radius": 0
+        }
+      }
+    },
+    {
+      "id": "sharpshooter_scarecrow",
+      "name_fr": "Épouvantail",
+      "name_en": "Scarecrow",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "sharpshooter_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Sharpshooter) : 8 s, PV 15% des PV max du lanceur (l'adversaire peut le detruire), case libre a 3 cases au plus sans ligne de vue requise, bloque la ligne de vue du camp adverse ; aura : ennemis a 2 cases au plus (Manhattan, invocations exclues) provoques (taunt_scarecrow, source = l'epouvantail) tant qu'ils y restent : leurs sorts a cible unique le visent. Plus de provocation des qu'il est detruit ou a expire. Compte dans la limite de 6 invocations par camp.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "hit": "summon_hit",
+          "destroyed": "summon_break",
+          "end": "summon_fade",
+          "aura_pulse": "taunt_pulse",
+          "aura_mark": "taunt_mark"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 15,
+          "blocks_line_of_sight": true,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "none",
+          "radius": 0
+        },
+        "aura": [
+          {
+            "status": "taunt_scarecrow",
+            "radius": 2,
+            "distance": "manhattan",
+            "targets": "enemies"
+          }
+        ]
+      }
+    },
+    {
+      "id": "falcon_striker_hawk_round",
+      "name_fr": "Faucon",
+      "name_en": "Falcon",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "falcon_striker_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Falcon Striker) : objet sans PV (jamais cible ni touche), ne bloque ni la ligne de vue ni le passage, au-dessus d'une case a 4 cases au plus sans ligne de vue requise, 8 s. Chaque seconde (premier pique 1 s apres la pose), pique sur UN ennemi : celui de la case survolee, sinon le plus proche a 1 case (egalite = plus petit identifiant), 15% ATK physiques, puis Revele 6 s (retire l'invisibilite et l'empeche). Aucun ennemi a portee = aucun pique. Compte dans la limite de 6 invocations par camp.",
+        "animations": {
+          "spawn": "cast",
+          "idle": "circle_idle",
+          "trigger": "dive"
+        },
+        "body": {
+          "has_hp": false,
+          "owner_max_hp_percent": 0,
+          "blocks_line_of_sight": false,
+          "occupies_cell": false
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 4
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 1,
+          "interval_sec": 1,
+          "on_spawn": false,
+          "selection": "nearest"
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "physical",
+            "base_power": 0,
+            "scaling_percent": 15
+          },
+          "statuses": [
+            {
+              "effect_id": "revealed",
+              "stacks": 1,
+              "duration_sec": 6
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "blinker_exploding_decoy",
+      "name_fr": "Leurre explosif",
+      "name_en": "Exploding Decoy",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "blinker_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 1,
+        "counts_in_team_limit": false
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Blinker) : leurre sur la case de depart du Blinker, objet sans PV (jamais cible ni touche), ne bloque ni la ligne de vue ni le passage, ne compte pas dans le plafond d'invocations du camp. Une seule explosion 1 s apres la pose (trigger.max_activations 1 : l'explosion passe avant la fin de vie au meme tic, puis le leurre disparait, raison spent) : 30% ATK physiques et Aveuglement 2 s aux ennemis a 1 case au plus (Manhattan, la case du leurre comprise). VALIDE Charleston 11/11 : l'Aveuglement retire 20% de precision (value 20), comme les autres aveuglements du Voleur. Aucun ennemi = explosion quand meme (evenement), personne n'est touche. Disparait avec le Blinker.",
+        "animations": {
+          "spawn": "decoy_idle",
+          "idle": "decoy_idle",
+          "trigger": "decoy_explode"
+        },
+        "body": {
+          "has_hp": false,
+          "owner_max_hp_percent": 0,
+          "blocks_line_of_sight": false,
+          "occupies_cell": false
+        },
+        "placement": {
+          "mode": "movement_origin"
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 1,
+          "interval_sec": 1,
+          "on_spawn": false,
+          "max_activations": 1
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "physical",
+            "base_power": 0,
+            "scaling_percent": 30
+          },
+          "statuses": [
+            {
+              "effect_id": "blind",
+              "stacks": 1,
+              "duration_sec": 2,
+              "value": 20
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cutthroat_powder_keg",
+      "name_fr": "Baril de poudre",
+      "name_en": "Powder Keg",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "cutthroat_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 4
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Cutthroat) : 4 s, PV 5% des PV max du lanceur, case libre a 3 cases au plus, ne bloque pas la ligne de vue. Une seule explosion (trigger.max_activations 1) : au premier coup d'un ennemi qui le touche (trigger.fires_when_struck, meme mortel), sinon au bout de 4 s (pulse 4 s, l'explosion passe avant la fin de vie au meme tic). 120% ATK physiques aux ennemis du carre 3x3 autour de lui (trigger.distance chebyshev, radius 1 : les 8 cases voisines), puis recul d'1 case en s'eloignant du baril, en diagonale depuis un coin (forced_move.diagonal). Degats 120% ATK et PV 5% : valeurs a valider. Disparait avec le Cutthroat (pas d'explosion).",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "trigger": "explode",
+          "hit": "summon_hit",
+          "destroyed": "summon_break",
+          "end": "summon_fade"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 5,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 1,
+          "distance": "chebyshev",
+          "interval_sec": 4,
+          "on_spawn": false,
+          "max_activations": 1,
+          "fires_when_struck": true
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "physical",
+            "base_power": 0,
+            "scaling_percent": 120
+          },
+          "forced_move": {
+            "direction": "away_from_invocation",
+            "distance": 1,
+            "diagonal": true,
+            "animation": "push"
+          }
+        }
+      }
+    },
+    {
+      "id": "blade_dancer_dance_partner",
+      "name_fr": "Partenaire de danse",
+      "name_en": "Dance Partner",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "blade_dancer_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Blade Dancer) : double immobile 8 s, PV 10% des PV max du lanceur, case libre adjacente, ne bloque pas la ligne de vue. trigger.mode owner_strike_echo : chaque coup de corps a corps du lanceur qui inflige des degats a un ennemi (competence a cible unique, pas une zone, portee reelle <= strike_max_range 2) fait frapper le double sur la meme cible pour echo_percent 25% de ces degats (apres armure et bouclier, sans jet). Un evenement INVOCATION_TRIGGERED (message echo_strike) puis un DAMAGE par frappe en echo.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "trigger": "echo_strike",
+          "hit": "summon_hit",
+          "destroyed": "summon_break",
+          "end": "summon_fade"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 10,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "adjacent_to_caster",
+          "range": 1
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "owner_strike_echo",
+          "radius": 0,
+          "echo_percent": 25,
+          "strike_max_range": 2
+        }
+      }
+    },
+    {
+      "id": "forgemaster_forge_golem",
+      "name_fr": "Golem de forge",
+      "name_en": "Forge Golem",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "forgemaster_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-11, manoeuvre de specialisation Forgemaster) : golem 8 s, PV 15% des PV max du lanceur, case libre a 2 cases au plus, bloque la ligne de vue du camp adverse. motion chase (nouveau, lot 11) : chaque interval_sec (1 s), s'il a un ennemi a trigger.radius (1) il frappe le plus proche (selection nearest, 40% ATK physiques a valider) ; sinon il avance d'1 case vers l'ennemi le plus proche par le plus court chemin libre et ne frappe pas cette seconde-la. Un INVOCATION_MOVED (message walk, target = l'ennemi poursuivi) par case, un INVOCATION_TRIGGERED (message strike, target = l'ennemi frappe) par coup.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "move": "walk",
+          "trigger": "strike",
+          "hit": "summon_hit",
+          "destroyed": "summon_break"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 15,
+          "blocks_line_of_sight": true,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 2
+        },
+        "motion": {
+          "mode": "chase",
+          "target": "nearest_enemy"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 1,
+          "interval_sec": 1,
+          "on_spawn": false,
+          "selection": "nearest"
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "physical",
+            "base_power": 0,
+            "scaling_percent": 40
+          }
+        }
+      }
+    },
+    {
+      "id": "plague_brewer_pestilent_puddle",
+      "name_fr": "Flaque pestilentielle",
+      "name_en": "Pestilent Puddle",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "plague_brewer_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8,
+        "counts_in_team_limit": false
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-11, manoeuvre de specialisation Plague Brewer) : flaque de 2x2 cases (placement.footprint square 2 : la case cliquee est le coin de plus petite colonne et plus petite ligne, carre decale vers l'interieur au bord), objet sans PV, ne bloque ni la ligne de vue ni le passage, peut recouvrir une unite ou un piege, visible de tous. 8 s ; a la pose puis chaque seconde, chaque ENNEMI sur une case de la flaque recoit 1 charge de Poison 6 s (une case = un objet du groupe, trigger radius 0 selection nearest : un evenement par ennemi touche). Ne compte pas dans la limite de 6 invocations du camp ; les 4 cases comptent pour UNE flaque (max_per_owner).",
+        "animations": {
+          "spawn": "throw",
+          "idle": "puddle_idle",
+          "trigger": "tick"
+        },
+        "body": {
+          "has_hp": false,
+          "owner_max_hp_percent": 0,
+          "blocks_line_of_sight": false,
+          "occupies_cell": false
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 4,
+          "footprint": {
+            "shape": "square",
+            "size": 2
+          }
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 0,
+          "interval_sec": 1,
+          "on_spawn": true,
+          "selection": "nearest"
+        },
+        "effect": {
+          "targets": "enemies",
+          "statuses": [
+            {
+              "effect_id": "poison",
+              "stacks": 1,
+              "duration_sec": 6
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "reactionist_propulsion_blast",
+      "name_fr": "Explosion de propulsion",
+      "name_en": "Propulsion Blast",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "reactionist_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 1,
+        "counts_in_team_limit": false
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-11, manoeuvre de specialisation Reactionist) : explosion sur la case de depart du Reactionist (movement_origin), objet sans PV qui ne bloque rien et ne compte pas dans la limite du camp. Une seule activation, dans le tic meme du lancer (on_spawn, max_activations 1) : 50% MAG magiques (MAG du Reactionist au lancer) et 1 charge de Brulure 6 s aux ENNEMIS a 1 case (haut, bas, gauche, droite ; la case de depart elle-meme, vide, comprise). Aucun ennemi = l'explosion part quand meme (INVOCATION_TRIGGERED value 0). spawn et idle vides : rien a afficher avant l'explosion, le client joue blast sur INVOCATION_TRIGGERED.",
+        "animations": {
+          "spawn": "",
+          "idle": "",
+          "trigger": "blast"
+        },
+        "body": {
+          "has_hp": false,
+          "owner_max_hp_percent": 0,
+          "blocks_line_of_sight": false,
+          "occupies_cell": false
+        },
+        "placement": {
+          "mode": "movement_origin"
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 1,
+          "interval_sec": 1,
+          "on_spawn": true,
+          "max_activations": 1
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "magical",
+            "base_power": 0,
+            "scaling_percent": 50
+          },
+          "statuses": [
+            {
+              "effect_id": "burn",
+              "stacks": 1,
+              "duration_sec": 6
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guitarist_amp",
+      "name_fr": "Ampli",
+      "name_en": "Amplifier",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "guitarist_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-11, manoeuvre de specialisation Guitarist) : ampli 8 s, PV 5% des PV max du lanceur (l'adversaire peut le detruire), case libre a 2 cases au plus sans ligne de vue requise, ne bloque pas la ligne de vue, compte dans la limite de 6 invocations du camp. Une onde a la pose puis toutes les 2 s (4 ondes, comme la Marmite fumante) : les ennemis adjacents (distance de Manhattan 1) reculent d'1 case en s'eloignant de l'ampli (forced_move, Ancres non deplaces) ; les allies adjacents (invocations exclues, le Guitarist compris s'il est adjacent) recoivent damage_percent_up_amp (+10% de degats infliges, une charge, 2 s, rafraichie a chaque onde) par la nouvelle cle ally_effect.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "trigger": "pulse",
+          "hit": "summon_hit",
+          "destroyed": "summon_break",
+          "end": "summon_fade"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 5,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 2
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 1,
+          "interval_sec": 2,
+          "on_spawn": true
+        },
+        "effect": {
+          "targets": "enemies",
+          "forced_move": {
+            "direction": "away_from_invocation",
+            "distance": 1,
+            "animation": "push"
+          }
+        },
+        "ally_effect": {
+          "statuses": [
+            {
+              "effect_id": "damage_percent_up_amp",
+              "stacks": 1,
+              "duration_sec": 2
+            }
+          ],
+          "animation": "buff_hit"
+        }
       }
     }
   ]
