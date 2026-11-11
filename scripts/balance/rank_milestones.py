@@ -149,8 +149,17 @@ def kind(e, s=None):
     return None
 
 
+# Invocation templates whose duration grows with the rank of their skill (Summoner, 2026-11-11):
+# limits.duration_sec_at_rank in entities/summons.json. Such a skill grows linearly (its
+# invocation lasts longer at each rank), so it takes no "no growth" cooldown cut.
+RANK_SCALED_TEMPLATES = {t["id"] for t in load("entities/summons.json")["summons"]
+                         if (t.get("limits") or {}).get("duration_sec_at_rank")}
+
+
 def has_linear_growth(s):
     if (s.get("percent_per_level") or 0) > 0 and s.get("rank_scaling_enabled"):
+        return True
+    if s.get("summon_template_id") in RANK_SCALED_TEMPLATES:
         return True
     for e in s.get("effects") or []:
         if any((e.get(k) or 0) > 0 for k in ("duration_per_level", "pct_per_level", "value_per_level")):

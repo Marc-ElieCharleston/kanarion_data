@@ -2353,13 +2353,15 @@
               "cooldown": 12.0,
               "generates_charges": 1,
               "vfx_type": "debuff_aura",
-              "description_fr": "Inflige 150% MAG (+10%/niv). Augmente les dégâts subis de 10% pendant 8s. Le Summoner appelle un fragment d'esprit qui s'accroche à la cible et la laisse Marquée. Accumule les Charges Arcaniques.",
-              "description_en": "Deals 150% MAG (+10%/lvl). Increases damage taken by 10% for 8s. The Summoner calls a spirit fragment that clings to the target and leaves them Marked. Builds Arcane Charges.",
+              "description_fr": "Inflige 150% MAG (+10%/niv). Augmente les dégâts subis de 10% pendant 8s et applique 1 charge de Corruption (max 5). Le Summoner appelle un fragment d'esprit qui s'accroche à la cible et la laisse Marquée : ses invocations la prennent pour cible en priorité et lui infligent 15% de dégâts en plus. Accumule les Charges Arcaniques.",
+              "description_en": "Deals 150% MAG (+10%/lvl). Increases damage taken by 10% for 8s and applies 1 stack of Corruption (max 5). The Summoner calls a spirit fragment that clings to the target and leaves them Marked: their summons target it first and deal 15% more damage to it. Builds Arcane Charges.",
               "tags": [
                 "damage",
                 "filler",
                 "mark",
-                "charge_generator"
+                "corruption",
+                "charge_generator",
+                "summon_command"
               ],
               "effects": [
                 {
@@ -2367,21 +2369,26 @@
                   "stat": "marked",
                   "stacks_to_apply": 1,
                   "duration": 8.0
+                },
+                {
+                  "type": "debuff",
+                  "stat": "corruption",
+                  "stacks_to_apply": 1,
+                  "duration": 8.0
                 }
               ],
               "rank_milestones": [
                 {
                   "rank": 5,
-                  "bonus": "extra_duration",
-                  "stat": "marked",
-                  "value": 2
+                  "bonus": "extra_stacks",
+                  "stat": "corruption",
+                  "value": 1
                 },
                 {
                   "rank": 10,
-                  "bonus": "extra_effect",
-                  "stat": "vulnerable",
-                  "value": 1,
-                  "with": "marked"
+                  "bonus": "extra_stacks",
+                  "stat": "corruption",
+                  "value": 1
                 }
               ],
               "base_class_id": "mage",
@@ -2396,274 +2403,213 @@
                 "requires_entity_on_target_tile": false,
                 "aoe_pattern_id": "single"
               },
-              "cast_time": 0.0
+              "cast_time": 0.0,
+              "_a_valider": "A VALIDER (2026-11-11, refonte du Summoner, decisions Charleston du 11/11) : Manifestation garde ses degats et sa Marque (8 s) et pose 1 charge de Corruption (8 s). La Marque qu'ELLE pose (source = le Summoner) designe la cible prioritaire de ses invocations, qui lui infligent +15 % de degats (entities/summons.json, effect.priority_bonus_percent)."
             },
             {
               "id": "skill_mage_summoner_echo_flight",
-              "name_en": "Echo Flight",
-              "name_fr": "Vol d'Échos",
+              "name_fr": "Lien d'échos",
+              "name_en": "Echo Link",
               "tier": "advanced",
-              "target": "enemies",
-              "pattern": "row_3",
-              "damage_type": "magical",
-              "scaling_stat": "mag",
+              "target": "self",
+              "pattern": "single",
+              "damage_type": "none",
               "base_power": 0,
-              "scaling_percent": 220,
-              "percent_per_level": 14.7,
-              "rank_scaling_enabled": true,
+              "scaling_percent": 0,
               "mana_cost": 40,
-              "mana_cost_per_level": 3,
+              "mana_cost_per_level": 0,
               "_souffle_a_valider": "A VALIDER (2026-11-06, decision Charleston, reequilibrage du Souffle A+B+C) : mana_cost 33 -> 40, mana_cost_per_level 2 -> 3 (sort de specialisation x1,2 au rang 1, arrondi, pour garder la regle tier_order (skill_system.json mana_cost_scaling) avec les sorts de sous-classe x1,2, option B).",
-              "cooldown": 80.0,
-              "cast_time": 2.5,
+              "cooldown": 45.0,
+              "cast_time": 0,
               "generates_charges": 1,
-              "vfx_type": "debuff_aura",
-              "description_fr": "Inflige 220% MAG (+14.7%/niv). Augmente les dégâts subis de 10% pendant 8s. Une nuée d'échos traverse une ligne ennemie et laisse chaque cible touchée Marquée.",
-              "description_en": "Deals 220% MAG (+14.7%/lvl). Increases damage taken by 10% for 8s. A flight of echoes crosses an enemy line and leaves each struck target Marked.",
+              "empower_invocations": {
+                "statuses": [
+                  {
+                    "effect_id": "atk_up",
+                    "stacks": 5,
+                    "duration_sec": 8
+                  },
+                  {
+                    "effect_id": "mag_up",
+                    "stacks": 5,
+                    "duration_sec": 8
+                  },
+                  {
+                    "effect_id": "armor_up",
+                    "stacks": 5,
+                    "duration_sec": 8
+                  },
+                  {
+                    "effect_id": "magic_resist_up",
+                    "stacks": 5,
+                    "duration_sec": 8
+                  }
+                ],
+                "heal_max_hp_percent": 25,
+                "extend_sec": 3,
+                "caster_shield_max_hp_percent_per_invocation": 5,
+                "caster_shield_duration_sec": 8,
+                "animation": "echo_link"
+              },
+              "_a_valider": "A VALIDER (2026-11-11, refonte du Summoner, decisions Charleston du 11/11) : instantane, sans cible. Pendant 8 s, toutes les invocations du Summoner gagnent +25% d'attaque (atk_up ET mag_up 5 charges : leurs coups se calculent sur l'ATQ ou la MAG) et +25% d'armure et de resistance magique (armor_up et magic_resist_up 5 charges ; le brief disait def_up, qui n'ajoute que 5 points d'armure fixes par charge). Elles se soignent de 25% de leurs PV max et leur duree restante est prolongee de 3 s. Le Summoner gagne un bouclier de 5% de ses PV max par invocation presente (8 s, aucun sans invocation).",
+              "description_fr": "Instantané. Pendant 8s, tes invocations gagnent +25% d'attaque, +25% d'armure et +25% de résistance magique. Elles récupèrent 25% de leurs PV max et restent 3s de plus. Tu gagnes un bouclier de 5% de tes PV max par invocation présente pendant 8s.",
+              "description_en": "Instant. For 8s, your summons gain +25% attack, +25% armor and +25% magic resistance. They recover 25% of their max HP and stay 3s longer. You gain a shield worth 5% of your max HP per summon present for 8s.",
               "tags": [
-                "damage",
-                "aoe",
-                "mark",
+                "buff",
+                "summon_support",
+                "shield",
                 "charge_generator"
               ],
-              "effects": [
-                {
-                  "type": "debuff",
-                  "stat": "marked",
-                  "stacks_to_apply": 1,
-                  "duration": 8.0
-                }
-              ],
+              "effects": [],
               "rank_milestones": [
                 {
-                  "rank": 5,
-                  "bonus": "extra_duration",
-                  "stat": "marked",
-                  "value": 2
-                },
-                {
                   "rank": 10,
-                  "bonus": "extra_effect",
-                  "stat": "vulnerable",
-                  "value": 1,
-                  "with": "marked"
+                  "bonus": "cooldown_percent",
+                  "value": -15
                 }
               ],
               "base_class_id": "mage",
               "subclass_id": "occultist",
               "tier3_id": "summoner",
               "source_scope": "TIER3",
+              "vfx_type": "buff_aura",
               "targeting": {
-                "selection_mode": "tile",
-                "valid_target_team": "enemy",
+                "selection_mode": "self",
+                "valid_target_team": "self",
                 "requires_line_of_sight": false,
-                "bypasses_los": false,
-                "requires_entity_on_target_tile": false,
-                "aoe_pattern_id": "row_3"
+                "bypasses_los": true,
+                "requires_entity_on_target_tile": false
               }
             },
             {
               "id": "skill_mage_summoner_haunting",
-              "name_en": "Haunting",
-              "name_fr": "Hantise",
+              "name_fr": "Gelée d'ectoplasme",
+              "name_en": "Ectoplasm Slime",
               "tier": "advanced",
-              "target": "enemy",
+              "target": "self",
               "pattern": "single",
-              "damage_type": "magical",
-              "scaling_stat": "mag",
+              "damage_type": "none",
               "base_power": 0,
-              "scaling_percent": 200,
-              "percent_per_level": 13.3,
-              "rank_scaling_enabled": true,
+              "scaling_percent": 0,
               "mana_cost": 36,
-              "mana_cost_per_level": 2,
+              "mana_cost_per_level": 0,
               "_souffle_a_valider": "A VALIDER (2026-11-06, decision Charleston, reequilibrage du Souffle A+B+C) : mana_cost 30 -> 36, mana_cost_per_level 2 -> 2 (sort de specialisation x1,2 au rang 1, arrondi, pour garder la regle tier_order (skill_system.json mana_cost_scaling) avec les sorts de sous-classe x1,2, option B).",
               "cooldown": 30.0,
-              "generates_charges": 1,
-              "vfx_type": "debuff_aura",
-              "description_fr": "Inflige 200% MAG (+13.3%/niv). Augmente les dégâts subis de 10% pendant 8s, réduit la résistance magique de 15% pendant 8s. Le Summoner ancre une présence dans l'aura de la cible : il la laisse Marquée et réduit sa résistance magique.",
-              "description_en": "Deals 200% MAG (+13.3%/lvl). Increases damage taken by 10% for 8s, reduces magic resistance by 15% for 8s. The Summoner anchors a presence in the target's aura: it leaves them Marked and reduces their magic resistance.",
+              "cast_time": 2.0,
+              "range": 3,
+              "summon_template_id": "summoner_ectoplasm_slime",
+              "_a_valider": "A VALIDER (2026-11-11, refonte du Summoner, decisions Charleston du 11/11) : gelee sur une case libre a 3 cases au plus (sans ligne de vue requise), incantation 2 s, duree 12 s au rang 1 -> 20 s au rang 10, PV 10% des PV max du Summoner, ne bloque pas la ligne de vue. Toutes les 2 s, Crachat sur l'ennemi Marque par le Summoner s'il est a 3 cases, sinon le plus proche : 60% MAG magiques, Resistance magique -15% (3 charges, 8 s), 1 charge de Corruption (8 s). Toutes les 3 attaques, Flaque collante : Ralenti (1 charge) 2 s. Rang 10 : flaque toutes les 2 attaques (effet de palier provisoire).",
+              "description_fr": "Incantation 2s. Invoque une gelée d'ectoplasme sur une case libre à 3 cases maximum pour 12s (20s au rang 10). Toutes les 2s, elle crache sur l'ennemi Marqué à 3 cases, sinon sur le plus proche : 60% MAG, réduit sa résistance magique de 15% pendant 8s et applique 1 charge de Corruption. Toutes les 3 attaques, elle laisse une flaque collante qui Ralentit la cible pendant 2s (toutes les 2 attaques au rang 10). Elle a peu de PV et ne bloque pas la ligne de vue.",
+              "description_en": "Cast time 2s. Summons an ectoplasm slime on a free tile within 3 tiles for 12s (20s at rank 10). Every 2s, it spits at the Marked enemy within 3 tiles, otherwise at the nearest one: 60% MAG, reduces its magic resistance by 15% for 8s and applies 1 stack of Corruption. Every 3 attacks, it leaves a sticky puddle that Slows the target for 2s (every 2 attacks at rank 10). It has low HP and does not block line of sight.",
               "tags": [
+                "summon",
+                "invocation",
                 "damage",
-                "mark",
+                "corruption",
                 "magic_resist_down",
+                "slow",
                 "charge_generator"
               ],
-              "effects": [
-                {
-                  "type": "debuff",
-                  "stat": "marked",
-                  "stacks_to_apply": 1,
-                  "duration": 8.0
-                },
-                {
-                  "type": "debuff",
-                  "stat": "magic_resist_down",
-                  "stacks_to_apply": 3,
-                  "duration": 8.0
-                }
-              ],
-              "rank_milestones": [
-                {
-                  "rank": 5,
-                  "bonus": "extra_stacks",
-                  "stat": "magic_resist_down",
-                  "value": 1
-                },
-                {
-                  "rank": 10,
-                  "bonus": "extra_stacks",
-                  "stat": "magic_resist_down",
-                  "value": 1
-                }
-              ],
+              "effects": [],
               "base_class_id": "mage",
               "subclass_id": "occultist",
               "tier3_id": "summoner",
               "source_scope": "TIER3",
+              "vfx_type": "debuff_aura",
               "targeting": {
-                "selection_mode": "entity",
-                "valid_target_team": "enemy",
-                "requires_line_of_sight": true,
-                "bypasses_los": false,
-                "requires_entity_on_target_tile": false,
-                "aoe_pattern_id": "single"
+                "selection_mode": "tile",
+                "valid_target_team": "self",
+                "requires_line_of_sight": false,
+                "bypasses_los": true,
+                "requires_entity_on_target_tile": false
               },
-              "cast_time": 2.5
+              "generates_charges": 1
             },
             {
               "id": "skill_mage_summoner_apparition",
-              "name_en": "Apparition",
-              "name_fr": "Apparition",
+              "name_fr": "Loup d'écho",
+              "name_en": "Echo Wolf",
               "tier": "advanced",
-              "target": "enemies",
-              "pattern": "row_4",
-              "damage_type": "magical",
-              "scaling_stat": "mag",
+              "target": "self",
+              "pattern": "single",
+              "damage_type": "none",
               "base_power": 0,
-              "scaling_percent": 320,
-              "percent_per_level": 21.3,
-              "rank_scaling_enabled": true,
+              "scaling_percent": 0,
               "mana_cost": 50,
-              "mana_cost_per_level": 3,
+              "mana_cost_per_level": 0,
               "_souffle_a_valider": "A VALIDER (2026-11-06, decision Charleston, reequilibrage du Souffle A+B+C) : mana_cost 42 -> 50, mana_cost_per_level 3 -> 3 (sort de specialisation x1,2 au rang 1, arrondi, pour garder la regle tier_order (skill_system.json mana_cost_scaling) avec les sorts de sous-classe x1,2, option B).",
-              "cooldown": 90.0,
-              "vfx_type": "magic_bolt",
-              "description_fr": "Inflige 320% MAG (+21.3%/niv). Incantation 4s. Applique Peur pendant 4s. Des apparitions se manifestent au coeur des lignes arrieres ennemies, la ou nul ne les attend.",
-              "description_en": "Deals 320% MAG (+21.3%/lvl). Cast time 4s. Applies Fear for 4s. Apparitions manifest deep in the enemy's rear lines, where none expect them.",
+              "cooldown": 30.0,
+              "cast_time": 2.0,
+              "range": 5,
+              "summon_template_id": "summoner_echo_wolf",
+              "_a_valider": "A VALIDER (2026-11-11, refonte du Summoner, decisions Charleston du 11/11) : loup sur la case libre a 5 cases au plus (sans ligne de vue) la plus proche de l'ennemi Marque par le Summoner (sinon de la case visee, sinon de l'ennemi le plus proche), incantation 2 s, duree 8 s au rang 1 -> 12 s au rang 10, PV 25% des PV max du Summoner. Bond a l'apparition : Peur 2 s aux ennemis des 8 cases autour. Il court (une case toutes les 0,5 s) au contact de l'ennemi Marque, sinon du plus proche, et mord toutes les 2 s : 80% MAG en degats PHYSIQUES (le Summoner n'a pas d'ATQ), Silence 1 s. Rang 10 : Peur du Bond 3 s (effet de palier provisoire).",
+              "description_fr": "Incantation 2s. Un loup d'écho surgit sur la case libre à 5 cases maximum la plus proche de l'ennemi Marqué, sans ligne de vue requise, pour 8s (12s au rang 10). En surgissant, il Effraie les ennemis autour de lui pendant 2s (3s au rang 10). Il court au contact de l'ennemi Marqué, sinon du plus proche, et le mord toutes les 2s : 80% MAG en dégâts physiques et Silence pendant 1s.",
+              "description_en": "Cast time 2s. An echo wolf bursts out on the free tile within 5 tiles closest to the Marked enemy, without line of sight, for 8s (12s at rank 10). As it appears, it Fears the enemies around it for 2s (3s at rank 10). It runs to the Marked enemy, otherwise the nearest one, and bites it every 2s: 80% MAG as physical damage and Silence for 1s.",
               "tags": [
+                "summon",
+                "invocation",
                 "damage",
                 "fear",
+                "silence",
                 "cc"
               ],
-              "effects": [
-                {
-                  "type": "debuff",
-                  "stat": "fear",
-                  "value": 1,
-                  "duration": 4.0
-                }
-              ],
-              "rank_milestones": [
-                {
-                  "rank": 10,
-                  "bonus": "cooldown_percent",
-                  "value": -15
-                }
-              ],
+              "effects": [],
               "base_class_id": "mage",
               "subclass_id": "occultist",
               "tier3_id": "summoner",
               "source_scope": "TIER3",
+              "vfx_type": "magic_bolt",
               "targeting": {
-                "selection_mode": "entity",
-                "valid_target_team": "enemy",
-                "requires_line_of_sight": true,
-                "bypasses_los": false,
-                "requires_entity_on_target_tile": false,
-                "aoe_pattern_id": "row_4"
-              },
-              "cast_time": 4.0
+                "selection_mode": "tile",
+                "valid_target_team": "self",
+                "requires_line_of_sight": false,
+                "bypasses_los": true,
+                "requires_entity_on_target_tile": false
+              }
             },
             {
               "id": "skill_mage_summoner_emergence",
-              "name_en": "Emergence",
-              "name_fr": "Émergence",
+              "name_fr": "Gardien de l'Abysse",
+              "name_en": "Abyss Guardian",
               "tier": "signature",
-              "target": "enemies",
-              "pattern": "rect_4x4",
-              "damage_type": "magical",
-              "scaling_stat": "mag",
+              "target": "self",
+              "pattern": "single",
+              "damage_type": "none",
               "base_power": 0,
-              "scaling_percent": 220,
-              "percent_per_level": 17.1,
-              "rank_scaling_enabled": true,
-              "consumes_charges": true,
-              "max_charges_consumed": 3,
-              "bonus_per_charge": 25,
+              "scaling_percent": 0,
               "mana_cost": 90,
-              "mana_cost_per_level": 7,
+              "mana_cost_per_level": 0,
               "_souffle_a_valider": "A VALIDER (2026-11-06, decision Charleston, reequilibrage du Souffle A+B+C) : mana_cost 75 -> 90, mana_cost_per_level 6 -> 7 (sort de specialisation x1,2 au rang 1, arrondi, pour garder la regle tier_order (skill_system.json mana_cost_scaling) avec les sorts de sous-classe x1,2, option B).",
-              "cooldown": 120.0,
-              "cast_time": 3.0,
-              "is_signature": true,
-              "vfx_type": "aoe_pulse",
-              "description_fr": "Inflige 220% MAG (+17.1%/niv). Incantation 3s. Applique Peur pendant 4s, augmente les dégâts subis de 10% pendant 8s. Le Summoner consume ses Charges Arcaniques pour ouvrir une brèche sur l'Abysse : l'Émergence frappe tous les ennemis, les laisse Marqués et leur inflige Peur.",
-              "description_en": "Deals 220% MAG (+17.1%/lvl). Cast time 3s. Applies Fear for 4s, increases damage taken by 10% for 8s. The Summoner consumes their Arcane Charges to tear open a rift to the Abyss: the Emergence strikes all enemies, leaves them Marked and inflicts Fear.",
+              "cooldown": 45.0,
+              "cast_time": 2.0,
+              "range": 2,
+              "summon_template_id": "summoner_abyss_guardian",
+              "_a_valider": "A VALIDER (2026-11-11, refonte du Summoner, decisions Charleston du 11/11) : golem sur une case libre a 2 cases au plus, incantation 2 s, duree 15 s au rang 1 -> 25 s au rang 10, +1 s par Charge Arcanique du Summoner, toutes consommees a la pose (decision Charleston du 11/11). PV 80% des PV max du Summoner a la pose, Peau de pierre -15% de degats subis, bloque la ligne de vue adverse. Il marche (une case par seconde) vers l'ennemi Marque, sinon le plus proche. Ecrasement toutes les 4 s : les 8 cases autour de lui, ennemis seulement, 70% MAG magiques et 1 charge de Corruption (8 s) ; bouclier de 5% de ses PV max par ennemi touche, 15% au plus, 4 s, remplace a chaque Ecrasement, aucun s'il ne touche personne. Provocation toutes les 8 s : ennemis des 8 cases autour provoques 2 s. Rang 10 : Provocation a 2 cases (effet de palier provisoire).",
+              "description_fr": "Incantation 2s. Fait surgir un Gardien de l'Abysse sur une case libre à 2 cases maximum pour 15s (25s au rang 10), prolongé de 1s par Charge Arcanique consommée. Il a 80% de tes PV max, subit 15% de dégâts en moins et bloque la ligne de vue adverse. Il marche vers l'ennemi Marqué, sinon le plus proche. Toutes les 4s, Écrasement : 70% MAG aux ennemis des 8 cases autour de lui, 1 charge de Corruption, et un bouclier de 5% de ses PV max par ennemi touché (15% max) pendant 4s. Toutes les 8s, il Provoque les ennemis autour de lui pendant 2s (à 2 cases au rang 10).",
+              "description_en": "Cast time 2s. Raises an Abyss Guardian on a free tile within 2 tiles for 15s (25s at rank 10), extended by 1s per Arcane Charge consumed. It has 80% of your max HP, takes 15% less damage and blocks enemy line of sight. It walks toward the Marked enemy, otherwise the nearest one. Every 4s, Crush: 70% MAG to the enemies on the 8 tiles around it, 1 stack of Corruption, and a shield worth 5% of its max HP per enemy hit (15% max) for 4s. Every 8s, it Taunts the enemies around it for 2s (within 2 tiles at rank 10).",
               "tags": [
+                "summon",
+                "invocation",
                 "damage",
-                "all",
-                "fear",
-                "mark",
+                "taunt",
+                "corruption",
                 "signature",
                 "charge_consumer"
               ],
-              "effects": [
-                {
-                  "type": "debuff",
-                  "stat": "fear",
-                  "value": 1,
-                  "duration": 4.0
-                },
-                {
-                  "type": "debuff",
-                  "stat": "marked",
-                  "stacks_to_apply": 1,
-                  "duration": 8.0
-                }
-              ],
-              "rank_milestones": [
-                {
-                  "rank": 5,
-                  "bonus": "extra_duration",
-                  "stat": "marked",
-                  "value": 2
-                },
-                {
-                  "rank": 10,
-                  "bonus": "extra_effect",
-                  "stat": "vulnerable",
-                  "value": 1,
-                  "with": "marked"
-                },
-                {
-                  "rank": 10,
-                  "bonus": "cooldown_percent",
-                  "value": -15
-                }
-              ],
+              "effects": [],
               "base_class_id": "mage",
               "subclass_id": "occultist",
               "tier3_id": "summoner",
               "source_scope": "TIER3",
+              "vfx_type": "aoe_pulse",
               "targeting": {
                 "selection_mode": "tile",
-                "valid_target_team": "enemy",
+                "valid_target_team": "self",
                 "requires_line_of_sight": false,
-                "bypasses_los": false,
-                "requires_entity_on_target_tile": false,
-                "aoe_pattern_id": "rect_4x4"
-              }
+                "bypasses_los": true,
+                "requires_entity_on_target_tile": false
+              },
+              "is_signature": true
             }
           ],
           "signature_movement": {
