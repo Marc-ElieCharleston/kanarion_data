@@ -1474,8 +1474,16 @@ def validate_teleport_steles(db: Path) -> list:
             errors.append(f"[teleport_steles.json] {sid} : name_fr et name_en obligatoires")
         if ("arrival_x" in s) != ("arrival_y" in s):
             errors.append(f"[teleport_steles.json] {sid} : arrival_x et arrival_y vont ensemble")
-    if rules.get("require_discovery"):
-        errors.append("[teleport_steles.json] rules.require_discovery n'est pas implemente (laisser false)")
+    # Decouverte (2026-11-09) : geree par presence ; une regle mal formee refuse son demarrage.
+    if not isinstance(rules.get("require_discovery", False), bool):
+        errors.append("[teleport_steles.json] rules.require_discovery doit etre un booleen")
+    kd = rules.get("known_by_default", [])
+    if not isinstance(kd, list) or not all(isinstance(v, str) and v for v in kd):
+        errors.append("[teleport_steles.json] rules.known_by_default doit etre une liste d'ids de pierres")
+    else:
+        for sid in kd:
+            if sid not in seen:
+                errors.append(f"[teleport_steles.json] rules.known_by_default : pierre inconnue '{sid}'")
     if not isinstance(rules.get("paid", False), bool):
         errors.append("[teleport_steles.json] rules.paid doit etre un booleen")
     # zones.json arrival_stele : une pierre connue de la meme zone.
