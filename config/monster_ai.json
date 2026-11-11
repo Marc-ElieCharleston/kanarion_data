@@ -130,7 +130,7 @@
       "missing_hp_weight": 4.0
     },
     "pursuit": {
-      "_comment": "Bond de poursuite : competence self_move mode straight portant pursuit_skill_tag. L'IA la lance quand la cible qu'elle a choisie est hors de portee de toutes ses competences et qu'elle a deja agi dans ce combat (pas a l'ouverture : la cible s'est enfuie). Le serveur choisit la case : en ligne droite vers la cible, sans la depasser ni s'arreter dessus, toutes les cases du trajet libres.",
+      "_comment": "Competences de poursuite : portent pursuit_skill_tag, soit un self_move mode straight (bond de poursuite generique, charge des brutes), soit un teleport_adjacent sur un ennemi (bond des berserkers, landing behind). L'IA les lance quand la cible qu'elle a choisie est hors de portee et qu'elle a deja agi dans ce combat (pas a l'ouverture : la cible s'est enfuie). Ligne droite : le serveur choisit la case (vers la cible, sans la depasser ni s'arreter dessus, trajet libre) ; si la competence exige la ligne de vue et que la case est masquee, le monstre marche. Saut : le serveur le pose dans le dos de la cible.",
       "pursuit_skill_tag": "ai_pursuit"
     },
     "level_skills": [
@@ -151,11 +151,31 @@
       },
       {
         "id": "melee_pursuit_60",
-        "_a_valider": "tous les monstres de melee (tag melee, ni caster ni ranged) de niveau 60+, assassins compris : bond de 2 cases, recharge 12 s",
+        "_a_valider": "les monstres de melee (tag melee, ni caster ni ranged) de niveau 60+ qui ne sont pas des cogneurs (tanks, assassins...) : bond de 2 cases, recharge 12 s",
+        "tags": ["melee"],
+        "exclude_tags": ["caster", "ranged"],
+        "exclude_roles": ["brute", "bruiser", "berserker"],
+        "min_level": 60,
+        "add_skills": ["skill_mob_bond_poursuite"]
+      },
+      {
+        "id": "bruiser_charge_60",
+        "_decision": "Charleston 2026-11-11 : « les bruisers doivent avoir un dash en ligne droite OU un bond ». Repartition proposee par role (UN seul des deux, jamais les deux) : brutes (lourdes) et cogneurs = charge en ligne droite avec ligne de vue ; berserkers (agiles) = bond sans ligne de vue. Remplace le bond de poursuite generique pour ces roles.",
+        "_a_valider": "repartition par role, charge 3 cases avec ligne de vue, recharge 12 s, seuil 60 (Charleston doit confirmer s'il la veut des un niveau plus bas)",
+        "roles": ["brute", "bruiser"],
         "tags": ["melee"],
         "exclude_tags": ["caster", "ranged"],
         "min_level": 60,
-        "add_skills": ["skill_mob_bond_poursuite"]
+        "add_skills": ["skill_mob_bruiser_charge"]
+      },
+      {
+        "id": "berserker_bond_60",
+        "_a_valider": "bond sans ligne de vue dans le dos d'une cible a 2 cases au plus, recharge 12 s, seuil 60 (Charleston doit confirmer s'il le veut des un niveau plus bas)",
+        "roles": ["berserker"],
+        "tags": ["melee"],
+        "exclude_tags": ["caster", "ranged"],
+        "min_level": 60,
+        "add_skills": ["skill_mob_bruiser_bond"]
       },
       {
         "id": "tank_roots_60",

@@ -3289,6 +3289,45 @@
     "brute": {
       "pool": [
         {
+          "id": "skill_mob_bruiser_charge",
+          "source_scope": "MONSTER",
+          "name_fr": "Charge Brutale",
+          "name_en": "Brutal Charge",
+          "tier": "advanced",
+          "target": "self",
+          "pattern": "single",
+          "damage_type": "none",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 0,
+          "cooldown": 12.0,
+          "cast_time": 0.0,
+          "consumes_gcd": false,
+          "vfx_type": "dash_trail",
+          "description_fr": "Quand sa proie s'enfuit hors de portée, la brute charge jusqu'à 3 cases en ligne droite vers elle, si rien ne lui barre la route ni ne lui cache sa cible. Recharge 12 s.",
+          "description_en": "When its prey flees out of reach, the brute charges up to 3 tiles in a straight line toward it, if nothing blocks its path or hides its target. 12 s cooldown.",
+          "tags": [
+            "movement",
+            "gap_closer",
+            "charge",
+            "ai_pursuit"
+          ],
+          "movement": {
+            "type": "self_move",
+            "mode": "straight",
+            "range": 3
+          },
+          "targeting": {
+            "selection_mode": "tile",
+            "valid_target_team": "self",
+            "requires_line_of_sight": true,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false
+          },
+          "effects": [],
+          "_note_2026_11": "0.21.6 (Charleston 2026-11-11 : « les bruisers doivent avoir un dash en ligne droite OU un bond ») : meme forme que la ruee du Frenetique (skill_warrior_frenzied_maneuver : self_move straight 3, ligne de vue exigee, trajet libre). Donnee aux monstres de role brute / bruiser de melee niveau 60+ par config/monster_ai.json ai_maneuvers.level_skills, a la place du bond de poursuite generique. Tag ai_pursuit : l'IA la lance quand sa cible est hors de portee ; case choisie par le serveur (ai/maneuver_cells.hpp pursuit_cell : la plus proche de la cible sans la depasser, donc au contact quand c'est possible) ; sans ligne de vue, le monstre marche. A VALIDER : 3 cases, recharge 12 s, aucun degat a l'impact, seuil 60."
+        },
+        {
           "id": "skill_mob_brute_heavy_slam",
           "source_scope": "MONSTER",
           "name_en": "Heavy Slam",
@@ -5044,6 +5083,47 @@
     },
     "berserker": {
       "pool": [
+        {
+          "id": "skill_mob_bruiser_bond",
+          "source_scope": "MONSTER",
+          "name_fr": "Bond Sauvage",
+          "name_en": "Savage Leap",
+          "tier": "advanced",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "none",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 0,
+          "cooldown": 12.0,
+          "cast_time": 0.0,
+          "consumes_gcd": false,
+          "vfx_type": "dash_trail",
+          "description_fr": "Quand sa proie s'enfuit hors de portée, le monstre bondit par-dessus la mêlée et retombe dans son dos (cible à 2 cases maximum). Recharge 12 s.",
+          "description_en": "When its prey flees out of reach, the monster leaps over the fray and lands behind it (target up to 2 tiles away). 12 s cooldown.",
+          "tags": [
+            "movement",
+            "gap_closer",
+            "leap",
+            "ai_pursuit"
+          ],
+          "range": 2,
+          "movement": {
+            "type": "teleport_adjacent",
+            "range": 2,
+            "landing": "behind"
+          },
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": false,
+            "bypasses_los": true,
+            "requires_entity_on_target_tile": true,
+            "aoe_pattern_id": "single"
+          },
+          "effects": [],
+          "_note_2026_11": "0.21.6 (Charleston 2026-11-11 : « dash en ligne droite OU bond ») : saut sans ligne de vue par-dessus les occupants, case d'arrivee choisie par le serveur avec la regle « dans le dos » de Pas de l'ombre (movement.landing behind : dos de la cible, sinon flanc le plus proche, face, anneau 2 ; room.cpp teleport_landing_cells). Donnee aux monstres de role berserker de melee niveau 60+ par config/monster_ai.json ai_maneuvers.level_skills, a la place du bond de poursuite generique. Tag ai_pursuit : l'IA la lance quand sa cible est hors de portee. movement.range 2 = la cible est a 2 cases au plus (le saut lui-meme peut couvrir 3 cases pour retomber dans son dos). A VALIDER : portee 2, recharge 12 s, aucun degat a l'impact, seuil 60."
+        },
         {
           "id": "skill_mob_berserker_wild_swing",
           "source_scope": "MONSTER",
