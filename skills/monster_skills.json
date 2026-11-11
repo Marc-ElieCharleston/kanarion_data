@@ -3548,7 +3548,7 @@
           "name_fr": "Plongée de l'Ombre",
           "name_en": "Shadow Dive",
           "tier": "advanced",
-          "target": "self",
+          "target": "enemy",
           "pattern": "single",
           "damage_type": "none",
           "base_power": 0,
@@ -3558,8 +3558,8 @@
           "cast_time": 0.0,
           "consumes_gcd": false,
           "vfx_type": "dash_trail",
-          "description_fr": "L'assassin disparaît et réapparaît au contact du combattant le plus exposé de ta ligne arrière (soigneur, mage ou archer en priorité). Recharge 20 s.",
-          "description_en": "The assassin vanishes and reappears next to the most exposed fighter of your back line (healer, mage or archer first). 20 s cooldown.",
+          "description_fr": "L'assassin disparaît et réapparaît dans le dos du combattant le plus exposé de ta ligne arrière (soigneur, mage ou archer en priorité). Recharge 20 s.",
+          "description_en": "The assassin vanishes and reappears behind the most exposed fighter of your back line (healer, mage or archer first). 20 s cooldown.",
           "tags": [
             "movement",
             "gap_closer",
@@ -3567,13 +3567,22 @@
             "assassin",
             "backline"
           ],
+          "range": "board",
           "movement": {
-            "type": "self_move",
-            "mode": "adjacent_enemy",
-            "range": "board"
+            "type": "teleport_adjacent",
+            "range": "board",
+            "landing": "behind"
+          },
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": false,
+            "bypasses_los": true,
+            "requires_entity_on_target_tile": true,
+            "aoe_pattern_id": "single"
           },
           "effects": [],
-          "_note_2026_11": "0.21.6 (Charleston 2026-11-11) : meme mecanique que Pas de l'ombre du Rogue (skill_rogue_shadowstep). Donnee aux assassins de niveau 30 a 59 par config/monster_ai.json ai_maneuvers.level_skills ; aucun monstre ne la porte dans entities/monsters.json. Cible et case choisies par le serveur. A VALIDER : recharge 20 s, seuil 30. Instantanee (cast_time 0) : une teleportation avec incantation n'est pas testee."
+          "_note_2026_11": "0.21.6 (Charleston 2026-11-11) : meme mecanique que Pas de l'ombre du Rogue (skill_rogue_shadowstep, branche balance/assassin-gap-closer : teleport_adjacent sur un ennemi, movement.landing behind = dans son dos, sinon flanc, face, anneau 2 ; room.cpp teleport_landing_cells). Donnee aux assassins de niveau 30 a 59 par config/monster_ai.json ai_maneuvers.level_skills ; aucun monstre ne la porte dans entities/monsters.json. Cible choisie par l'IA (ai_maneuvers.dive), case par le serveur. A VALIDER : recharge 20 s, seuil 30. Instantanee (cast_time 0) : une teleportation avec incantation n'est pas testee."
         },
         {
           "id": "skill_mob_assassin_plongee_ombre",
@@ -3581,7 +3590,7 @@
           "name_fr": "Plongée des Ténèbres",
           "name_en": "Darkness Dive",
           "tier": "advanced",
-          "target": "self",
+          "target": "enemy",
           "pattern": "single",
           "damage_type": "none",
           "base_power": 0,
@@ -3591,8 +3600,8 @@
           "cast_time": 0.0,
           "consumes_gcd": false,
           "vfx_type": "dash_trail",
-          "description_fr": "L'assassin se fond dans l'ombre et réapparaît au contact du combattant le plus exposé de ta ligne arrière (soigneur, mage ou archer en priorité), invisible 3 s (inciblable par les monocibles). Recharge 20 s.",
-          "description_en": "The assassin melts into shadow and reappears next to the most exposed fighter of your back line (healer, mage or archer first), invisible for 3 s (untargetable by single-target skills). 20 s cooldown.",
+          "description_fr": "L'assassin se fond dans l'ombre et réapparaît dans le dos du combattant le plus exposé de ta ligne arrière (soigneur, mage ou archer en priorité), invisible 3 s (inciblable par les monocibles). Recharge 20 s.",
+          "description_en": "The assassin melts into shadow and reappears behind the most exposed fighter of your back line (healer, mage or archer first), invisible for 3 s (untargetable by single-target skills). 20 s cooldown.",
           "tags": [
             "movement",
             "gap_closer",
@@ -3602,10 +3611,19 @@
             "assassin",
             "backline"
           ],
+          "range": "board",
           "movement": {
-            "type": "self_move",
-            "mode": "adjacent_enemy",
-            "range": "board"
+            "type": "teleport_adjacent",
+            "range": "board",
+            "landing": "behind"
+          },
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": false,
+            "bypasses_los": true,
+            "requires_entity_on_target_tile": true,
+            "aoe_pattern_id": "single"
           },
           "effects": [
             {
@@ -3615,7 +3633,7 @@
               "target": "self"
             }
           ],
-          "_note_2026_11": "0.21.6 (Charleston 2026-11-11) : Plongee de l'Ombre + Invisibilite, comme Pas de l'ombre. Donnee aux assassins de niveau 60+ par config/monster_ai.json ai_maneuvers.level_skills. A VALIDER : invisibilite 3 s, recharge 20 s, seuil 60."
+          "_note_2026_11": "0.21.6 (Charleston 2026-11-11) : Plongee de l'Ombre (dans le dos de la cible) + Invisibilite, comme Pas de l'ombre. Donnee aux assassins de niveau 60+ par config/monster_ai.json ai_maneuvers.level_skills. A VALIDER : invisibilite 3 s, recharge 20 s, seuil 60."
         },
         {
           "id": "skill_mob_bond_poursuite",
