@@ -6,7 +6,14 @@ Rules (owner: config/skill_system.json mana_cost_scaling; note: _meta/carnet/sou
                   G = power gain of the skill from rank 1 to max rank, from the per-rank
                   fields the server applies (percent_per_level on scaling_percent or
                   heal_scaling_percent; pct/value/duration_per_level of each effect; the
-                  largest). A skill carrying percent_per_level carries rank_scaling_enabled
+                  largest), rank milestones included on the skills whose power IS their
+                  effects (no scaling_percent / heal_scaling_percent: buffs, debuffs, DoTs,
+                  controls; rank_milestones, 2026-11-08): an extra_stacks or extra_effect
+                  counts as stacks added to its effect, an extra_duration as seconds added
+                  to its duration. On a damage or heal skill the milestones of its secondary
+                  effects are not counted (a third bleed stack on a strike does not make the
+                  whole strike x3), and a cooldown_percent never counts (a cast is not
+                  stronger, it only comes back sooner). A VALIDER (2026-11-08). A skill carrying percent_per_level carries rank_scaling_enabled
                   (room.cpp effective_scaling ignores the gain without it).
   tier_order      at rank 1, within a kit (base + subclass + specialization), a skill costs
                   strictly less than the most expensive skill of its family at the nearest
@@ -125,13 +132,22 @@ def power_gain(s):
     ppl = s.get("percent_per_level") or 0
     if main > 0 and ppl > 0:
         g = max(g, (main + (MAX_RANK - 1) * ppl) / main)
+    ms = [] if main > 0 else (s.get("rank_milestones") or [])
     for e in s.get("effects") or []:
         eg = 1.0
+        stat = e.get("stat") or e.get("status_id")
+        extra_s = sum(m["value"] for m in ms if m["bonus"] == "extra_duration" and m.get("stat") == stat)
         for base_key, per_key in (("pct", "pct_per_level"), ("value", "value_per_level"),
                                   ("duration", "duration_per_level")):
             base, per = e.get(base_key) or 0, e.get(per_key) or 0
-            if isinstance(base, (int, float)) and base > 0 and per:
-                eg *= (base + (MAX_RANK - 1) * per) / base
+            extra = extra_s if base_key == "duration" else 0
+            if isinstance(base, (int, float)) and base > 0 and (per or extra):
+                eg *= (base + (MAX_RANK - 1) * per + extra) / base
+        stacks = e.get("stacks_to_apply") or 0
+        if stacks > 0:
+            added = sum(m["value"] for m in ms if (m["bonus"] == "extra_stacks" and m.get("stat") == stat)
+                        or (m["bonus"] == "extra_effect" and m.get("with") == stat))
+            eg *= (stacks + added) / stacks
         g = max(g, eg)
     return g
 
