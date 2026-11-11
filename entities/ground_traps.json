@@ -16,8 +16,7 @@
       "triggered_by": "enemies (seule valeur)",
       "charges": "declenchements avant extinction ; une unite qui l'a declenche ne le redeclenche pas avant d'avoir quitte la case",
       "effect.statuses": "liste {effect_id (stats/status_effects.json), stacks >= 1, duration_sec > 0}, appliques a l'unite qui le declenche, source = le lanceur. Aucune autre cle d'effet n'est lue aujourd'hui (le serveur refuse)"
-    },
-    "shape": "Lot 7 (2026-11-10) : une competence peut poser un piege sur PLUSIEURS cases avec la cle de competence ground_trap_shape {mode line_perpendicular, length impair >= 1} (la forme appartient a la competence, pas au modele). La case visee est le centre ; la ligne est perpendiculaire a l'axe lanceur -> case (axe dominant ; clic en diagonale exacte = la ligne suit la rangee, comme le mur de glace). Centre invalide (hors portee, unite, case deja piegee) = refus sans cout ; une case laterale hors plateau, occupee par une unite ou deja piegee est omise (ligne de 1 a length cases). Toutes les cases forment UN piege : une seule charge partagee, max_per_owner compte les pieges (pas les cases), le premier ennemi qui entre sur l'une d'elles le declenche et TOUTES les cases disparaissent. Evenements 26-28 : un par case ; pour un piege en ligne, absorbed_damage = longueur L, blocked_damage = rang de la case dans la ligne (0 = plus petite colonne ou ligne), reflected_damage = axe (1 = rangee, les cases partagent y ; 2 = colonne, elles partagent x). GROUND_TRAP_TRIGGERED porte la case declenchee ; les GROUND_TRAP_ENDED (raison triggered) de toutes les cases partent alors a tout le monde."
+    }
   },
   "traps": [
     {
@@ -68,32 +67,6 @@
             "effect_id": "stun",
             "stacks": 1,
             "duration_sec": 1.5
-          }
-        ]
-      }
-    },
-    {
-      "id": "skirmisher_trip_rope",
-      "name_fr": "Corde tendue",
-      "name_en": "Trip Rope",
-      "visual_id": "skirmisher_trap_v1",
-      "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Skirmisher) : 10s, une seule charge pour toute la corde, Etourdissement 1s, s'eteint a la mort du lanceur, invisible pour l'adversaire. Corde de 3 cases au plus (ground_trap_shape de la competence), perpendiculaire a l'axe lanceur -> case visee.",
-      "animations": {
-        "idle": "rope_idle_owner",
-        "trigger": "rope_trigger"
-      },
-      "duration_sec": 10,
-      "max_per_owner": 1,
-      "ends_with_owner": true,
-      "visibility": "owner_side",
-      "triggered_by": "enemies",
-      "charges": 1,
-      "effect": {
-        "statuses": [
-          {
-            "effect_id": "stun",
-            "stacks": 1,
-            "duration_sec": 1
           }
         ]
       }

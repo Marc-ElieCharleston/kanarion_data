@@ -33,7 +33,7 @@
   "animations.hit": "facultatif, lu par le client seul : coup encaisse par une invocation a PV (evenement DAMAGE dont la cible est l'invocation)",
   "animations.aura_pulse": "facultatif (lot 7, 2026-11-10), lu par le client seul : joue sur l'invocation a chaque tick ou le serveur envoie au moins un STATUS_APPLIED d'un statut de son aura dont la source est cette invocation (une ou plusieurs unites viennent d'entrer dans l'aura)",
   "animations.aura_mark": "facultatif (lot 7, 2026-11-10), lu par le client seul : boucle sur chaque unite qui porte un statut de l'aura de cette invocation, du STATUS_APPLIED (source = l'invocation) au STATUS_REMOVED du meme statut",
-  "effect.statuses": "facultatif (lot 7, 2026-11-10). Liste {effect_id (stats/status_effects.json), stacks >= 1, duration_sec > 0}, appliques a chaque unite touchee apres les degats (source = le lanceur), meme schema que les pieges au sol. Revele = retire l'invisibilite (Ronde du faucon).",
+  "effect.statuses": "facultatif (lot 7, 2026-11-10). Liste {effect_id (stats/status_effects.json), stacks >= 1, duration_sec > 0}, appliques a chaque unite touchee apres les degats (source = le lanceur), meme schema que les pieges au sol. Revele = retire l'invisibilite (Ronde du faucon). Lot 13 (2026-11-11) : value facultative (entier >= 1), la puissance de l'effet quand le statut en lit une (Aveuglement : % de precision retiree, 20 pour le Leurre explosif comme les autres aveuglements du Voleur ; sans value, defaut du statut).",
   "trigger.pulse_center": "regle (lot 7, 2026-11-10) : un pulse d'une invocation qui n'occupe pas sa case (occupies_cell false) atteint aussi l'unite qui se tient SUR sa case (distance 0) ; une invocation qui occupe sa case vise de 1 a radius cases. selection nearest prend alors d'abord l'unite sur la case",
   "trigger.distance": "facultatif (lot 10, 2026-11-10), pulse seulement : manhattan (defaut) | chebyshev (carre : radius 1 = les 8 cases voisines, baril du Cutthroat)",
   "trigger.fires_when_struck": "facultatif (lot 10), pulse d'une invocation a PV : le premier coup de competence d'un ennemi qui la touche (degats, meme 0 ou mortels ; esquive et parade ne comptent pas) declenche une activation tout de suite, dans le meme tic (elle compte pour max_activations). Une invocation tuee par ce coup s'active quand meme puis disparait (raison spent si max_activations est atteint, sinon destroyed)",
@@ -762,7 +762,7 @@
         "counts_in_team_limit": false
       },
       "invocation": {
-        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Blinker) : leurre sur la case de depart du Blinker, objet sans PV (jamais cible ni touche), ne bloque ni la ligne de vue ni le passage, ne compte pas dans le plafond d'invocations du camp. Une seule explosion 1 s apres la pose (trigger.max_activations 1 : l'explosion passe avant la fin de vie au meme tic, puis le leurre disparait, raison spent) : 30% ATK physiques et Aveuglement 2 s aux ennemis a 1 case au plus (Manhattan, la case du leurre comprise). Aucun ennemi = explosion quand meme (evenement), personne n'est touche. Disparait avec le Blinker.",
+        "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Blinker) : leurre sur la case de depart du Blinker, objet sans PV (jamais cible ni touche), ne bloque ni la ligne de vue ni le passage, ne compte pas dans le plafond d'invocations du camp. Une seule explosion 1 s apres la pose (trigger.max_activations 1 : l'explosion passe avant la fin de vie au meme tic, puis le leurre disparait, raison spent) : 30% ATK physiques et Aveuglement 2 s aux ennemis a 1 case au plus (Manhattan, la case du leurre comprise). VALIDE Charleston 11/11 : l'Aveuglement retire 20% de precision (value 20), comme les autres aveuglements du Voleur. Aucun ennemi = explosion quand meme (evenement), personne n'est touche. Disparait avec le Blinker.",
         "animations": {
           "spawn": "decoy_idle",
           "idle": "decoy_idle",
@@ -799,7 +799,8 @@
             {
               "effect_id": "blind",
               "stacks": 1,
-              "duration_sec": 2
+              "duration_sec": 2,
+              "value": 20
             }
           ]
         }

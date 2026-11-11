@@ -1162,47 +1162,61 @@
           ],
           "signature_movement": {
             "id": "skill_archer_skirmisher_maneuver",
-            "name_fr": "Corde tendue",
-            "name_en": "Trip Rope",
+            "name_fr": "Tir de harcèlement",
+            "name_en": "Harassing Shot",
             "tier": "signature",
-            "target": "self",
+            "target": "enemy",
             "pattern": "single",
-            "damage_type": "none",
+            "damage_type": "physical",
+            "scaling_stat": "atk",
             "base_power": 0,
-            "scaling_percent": 0,
+            "scaling_percent": 80,
+            "percent_per_level": 0,
             "mana_cost": 0,
             "mana_cost_per_level": 0,
-            "cooldown": 180.0,
+            "cooldown": 150.0,
             "cast_time": 0,
             "consumes_gcd": false,
             "unlock_at_level": 60,
             "max_level": 1,
-            "range": 3,
-            "ground_trap_template_id": "skirmisher_trip_rope",
-            "ground_trap_shape": {
-              "mode": "line_perpendicular",
-              "length": 3
+            "range": 4,
+            "movement": {
+              "type": "recoil",
+              "range": 4,
+              "recoil_distance": 2,
+              "on_blocked": "stop",
+              "animations": {
+                "step": "retreat"
+              }
             },
-            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Skirmisher) : le client n'envoie qu'UNE case ; la corde est centree sur elle (portee 3) et perpendiculaire a l'axe lanceur -> case, 3 cases au plus (cases laterales hors plateau, occupees ou deja piegees omises). 10 s, Etourdissement 1 s, une seule corde par lanceur, invisible pour l'adversaire. Recharge 180 s.",
-            "description_fr": "Tend une corde au sol sur 3 cases maximum, centrée sur une case libre à 3 cases maximum, sans ligne de vue, pendant 10s. Elle est invisible pour l'adversaire : le premier ennemi qui entre sur une de ses cases est étourdi 1s, puis toute la corde disparaît.",
-            "description_en": "Stretch a rope on the ground over up to 3 tiles, centred on a free tile within 3 tiles, ignoring line of sight, for 10s. It is hidden from the enemy: the first enemy to step on one of its tiles is stunned for 1s, then the whole rope disappears.",
+            "_a_valider": "VALIDE Charleston 11/11 : la Corde tendue est remplacee par le Tir de harcelement (meme identifiant), uniquement des mecanismes existants (recul du lanceur, Ralentissement). Chiffres A VALIDER (2026-11-11, lot 13) : un ennemi a 4 cases au plus (distance de Manhattan), ligne de vue requise ; 80% ATK en degats physiques et Ralentissement 2 s (1 charge) ; puis le Skirmisher recule de 2 cases en s'eloignant de la cible, sur l'axe dominant (egalite parfaite : le long de la ligne, comme le Tir de recul) ; une unite ou le bord l'arrete juste avant (0 case = le tir part quand meme). Ancre ne l'empeche pas de reculer (son propre mouvement) ; enracine ou etourdi, il ne peut pas lancer la manoeuvre (comme les autres deplacements du lanceur), rien n'est paye. Recharge 150 s.",
+            "description_fr": "Tire sur un ennemi à 4 cases maximum avec ligne de vue pour 80% ATQ et le ralentit 2s, puis recule de 2 cases en s'éloignant de lui. Le recul s'arrête avant une unité ou le bord du plateau.",
+            "description_en": "Shoot an enemy within 4 tiles with line of sight for 80% ATK and slow it for 2s, then back away 2 tiles from it. The retreat stops before a unit or the edge of the board.",
             "tags": [
+              "movement",
               "maneuver",
               "signature",
-              "trap"
+              "damage"
             ],
-            "effects": [],
+            "effects": [
+              {
+                "type": "debuff",
+                "stat": "slow",
+                "stacks_to_apply": 1,
+                "duration": 2.0
+              }
+            ],
             "base_class_id": "archer",
             "subclass_id": "ranger",
             "tier3_id": "skirmisher",
             "source_scope": "TIER3",
-            "vfx_type": "buff_aura",
+            "vfx_type": "projectile",
             "targeting": {
-              "selection_mode": "tile",
-              "valid_target_team": "self",
-              "requires_line_of_sight": false,
-              "bypasses_los": true,
-              "requires_entity_on_target_tile": false
+              "selection_mode": "entity",
+              "valid_target_team": "enemy",
+              "requires_line_of_sight": true,
+              "bypasses_los": false,
+              "requires_entity_on_target_tile": true
             }
           }
         }
@@ -3062,16 +3076,16 @@
               "collide_status": {
                 "id": "stun",
                 "duration": 1,
-                "blocker": true
+                "blocker": "enemies"
               },
               "animations": {
                 "push": "launch",
                 "collide": "collide_stun"
               }
             },
-            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Striker) : un ennemi sur une case touchant le Striker EN DIAGONALE (|dx| = |dy| = 1), sans ligne de vue ; aucun degat. Il est projete de 3 cases dans le prolongement de la diagonale. S'il heurte une unite, un obstacle ou le bord, il s'arrete juste avant (0 a 2 cases parcourues) et il est Etourdi 1 s ; l'unite heurtee (alliee ou ennemie du Striker, invocations exclues) est Etourdie 1 s elle aussi. Cible Ancree, boss ou insensible : elle ne bouge pas, personne n'est etourdi. Cible hors diagonale : refus sans cout. Etourdissement 1 s sous le plancher de 2 s des gros controles : exception _meta.duration_rule.hard_cc_seconds_exempt_skills. Recharge 240 s.",
-            "description_fr": "Frappe un ennemi placé en diagonale de toi et le projette de 3 cases dans cette diagonale. S'il heurte une unité, un obstacle ou le bord, il s'arrête avant et il est étourdi 1s, comme l'unité heurtée.",
-            "description_en": "Strike an enemy diagonal to you and knock it 3 tiles along that diagonal. If it hits a unit, an obstacle or the edge, it stops short and is stunned for 1s, along with the unit it hit.",
+            "_a_valider": "A VALIDER (2026-11-10, manoeuvre de specialisation Striker) : un ennemi sur une case touchant le Striker EN DIAGONALE (|dx| = |dy| = 1), sans ligne de vue ; aucun degat. Il est projete de 3 cases dans le prolongement de la diagonale. S'il heurte une unite, un obstacle ou le bord, il s'arrete juste avant (0 a 2 cases parcourues) et il est Etourdi 1 s ; VALIDE Charleston 11/11 : l'unite heurtee n'est Etourdie 1 s elle aussi que si c'est un ENNEMI du Striker (blocker enemies ; un allie heurte n'est jamais etourdi, invocations exclues), sans degats ajoutes. Cible Ancree, boss ou insensible : elle ne bouge pas, personne n'est etourdi. Cible hors diagonale : refus sans cout. Etourdissement 1 s sous le plancher de 2 s des gros controles : exception _meta.duration_rule.hard_cc_seconds_exempt_skills. Recharge 240 s.",
+            "description_fr": "Frappe un ennemi placé en diagonale de toi et le projette de 3 cases dans cette diagonale. S'il heurte une unité, un obstacle ou le bord, il s'arrête avant et il est étourdi 1s ; une unité ennemie heurtée est étourdie elle aussi.",
+            "description_en": "Strike an enemy diagonal to you and knock it 3 tiles along that diagonal. If it hits a unit, an obstacle or the edge, it stops short and is stunned for 1s; an enemy unit it hits is stunned too.",
             "tags": [
               "maneuver",
               "signature",

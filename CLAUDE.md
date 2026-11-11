@@ -49,7 +49,7 @@ Validation happens at three levels:
 - **`entities/`** — Monsters (`monsters.json`), NPCs, boss mechanics, summons (`summons.json`: max 6/team), monster variants, healer/support monsters
 - **`items/`** — Equipment (10 slots, 5 rarities, T1-T5 scaling), consumables, materials, affixes, panoplies (25 sets with intentional Hebrew names), loot tables, currencies, substat crafting system
 - **`stats/`** — 40+ stat definitions, class base stats, growth rates, status effect definitions with IDs (`stats/status_effects.json` is the single canonical source for all status effects — definitions, balance rules, durations, stacking, formulas)
-- **`systems/`** — Economy, guilds, achievements, PvP, leaderboards, enhancement, keystones (max 1 active, radical gameplay modifiers), Koro cards (cross-class skills, C/B/A/S/SS ranks), encounter stars (0-5 difficulty), boutique/battle pass, daily rewards, social, progression
+- **`systems/`** — Economy, guilds, achievements, PvP, leaderboards, enhancement, keystones (max 1 active, radical gameplay modifiers), Koro cards (cross-class skills, C/B/A/S/SS ranks ; AUCUNE carte pour les manoeuvres de specialisation niveau 60, decision Charleston 11/11, `systems/koro.json card_generation.excluded_tier3_signature_movement`), encounter stars (0-5 difficulty), boutique/battle pass, daily rewards, social, progression
 - **`ui/`** — Cosmetics (`cosmetics.json`), emotes (`emotes.json`)
 - **`world/`** — Zones, quests, dungeons, lore, whispers (found-text), world map
   - **Donjons ouverts** (`dungeons.json` `spawn_model: fixed_groups`) : procédure, règles de parcours et pièges dans `world/DONJONS_OUVERTS.md` ; validateur `scripts/dungeon_content.py` (lancé par la CI).

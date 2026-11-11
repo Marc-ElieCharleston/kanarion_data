@@ -15,15 +15,16 @@ ROOT = Path(__file__).resolve().parents[1]
 DISPLAY = {'C': 'D', 'B': 'C', 'A': 'B', 'S': 'A', 'SS': 'S'}
 
 
-def active_skills(node, in_tier3=False):
-    """Yield (skill, in_tier3). in_tier3: the skill sits under a `tier3` specialization block."""
+def active_skills(node, in_tier3=False, key=None):
+    """Yield (skill, in_tier3, key). in_tier3: the skill sits under a `tier3` specialization block;
+    key: the key holding it (None inside a list), e.g. `signature_movement`."""
     if isinstance(node, dict):
         if str(node.get('id', '')).startswith('skill_') and 'target' in node:
-            yield node, in_tier3
+            yield node, in_tier3, key
             return
-        for key, value in node.items():
-            if not key.startswith('_'):
-                yield from active_skills(value, in_tier3 or key == 'tier3')
+        for k, value in node.items():
+            if not k.startswith('_'):
+                yield from active_skills(value, in_tier3 or k == 'tier3', k)
     elif isinstance(node, list):
         for value in node:
             yield from active_skills(value, in_tier3)
@@ -43,10 +44,14 @@ def generate():
     for path in sorted((ROOT / 'classes').glob('*/skills.json')):
         if path.parent.name in excluded:
             continue
-        for skill, in_tier3 in active_skills(json.loads(path.read_text(encoding='utf8'))):
+        for skill, in_tier3, key in active_skills(json.loads(path.read_text(encoding='utf8'))):
             sid = skill['id']
             if sid in seen:
                 raise ValueError(f'duplicate active skill: {sid}')
+            # Charleston 2026-11-11: no card for a level-60 specialisation maneuver (the
+            # `signature_movement` of a tier3 block). Rule: systems/koro.json.
+            if in_tier3 and key == 'signature_movement' and generation.get('excluded_tier3_signature_movement'):
+                continue
             seen.add(sid)
             for rank, percent in generation['rank_percents'].items():
                 key = sid + ':' + rank
