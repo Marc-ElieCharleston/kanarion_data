@@ -23,8 +23,8 @@
       "_koro_note": "Charleston 2026-10-21 : une carte Koro multiplie la duree du sort par rank_percent / 100 (rang C x0,5). Plancher pour les effets doux : jamais sous koro_soft_floor_seconds. Un controle fort garde la duree du sort (regle des 4 s), sans facteur de rang. Les categories de excluded_categories (immunites) ne sont pas concernees. Lu par server-combat (StatusManager, room.cpp apply_skill_effects).",
       "cooldown_rule_exempt_skills": ["skill_archer_precise_shot", "skill_artisan_musician_riff", "skill_healer_smite", "skill_mage_magic_bolt", "skill_mage_occ_dark_bolt", "skill_rogue_quick_stab", "skill_warrior_heavy_strike"],
       "_cooldown_rule_exempt_note": "Charleston 2026-10-21 (0.20.4, reco validee) : les sorts de remplissage gardent leur recharge 0.20.3 (4-5,5 s) ; leur effet de 6-8 s se rafraichit a chaque lancer, comme avant la regle. Exemptes de cooldown_rule seulement : leurs durees restent dans les bornes. Lu par scripts/validate_cross_references.py (etape 12s) et server-combat test_status_duration_rule.cpp.",
-      "soft_seconds_exempt_skills": ["skill_archer_bouncer_maneuver", "skill_healer_covenant_maneuver", "skill_mage_battlemage_maneuver"],
-      "_soft_seconds_exempt_note": "Charleston 2026-11-10 (lot 2 des manoeuvres, chiffres A VALIDER) : les bonus de la Rune de retour durent 4 s, comme la rune, sous le plancher des effets doux. Lot 6 (Charleston 2026-11-10, A VALIDER) : le bouclier du Lien d'echange (Covenant) dure 4 s. Lot 8 (A VALIDER) : le Ralentissement de la Boule de gomme (Bouncer, movement.zone_status) dure 2 s. Exemptes de soft_seconds seulement (hard_cc_seconds et cooldown_rule s'appliquent toujours). Lu par scripts/validate_cross_references.py (etape 12s) et server-combat test_status_duration_rule.cpp.",
+      "soft_seconds_exempt_skills": ["skill_archer_bouncer_maneuver", "skill_artisan_spice_master_maneuver", "skill_healer_covenant_maneuver", "skill_mage_battlemage_maneuver"],
+      "_soft_seconds_exempt_note": "Charleston 2026-11-10 (lot 2 des manoeuvres, chiffres A VALIDER) : les bonus de la Rune de retour durent 4 s, comme la rune, sous le plancher des effets doux. Lot 6 (Charleston 2026-11-10, A VALIDER) : le bouclier du Lien d'echange (Covenant) dure 4 s. Lot 8 (A VALIDER) : le Ralentissement de la Boule de gomme (Bouncer, movement.zone_status) dure 2 s. Lot 12 (A VALIDER) : l'Aveuglement du Nuage de piment (Spice Master, movement.zone_status) dure 2 s. Exemptes de soft_seconds seulement (hard_cc_seconds et cooldown_rule s'appliquent toujours). Lu par scripts/validate_cross_references.py (etape 12s) et server-combat test_status_duration_rule.cpp.",
       "hard_cc_seconds_exempt_skills": [
         "skill_archer_striker_maneuver",
         "skill_healer_requiem_maneuver",
@@ -151,6 +151,12 @@
           "unit": "percent",
           "max_stacks": 1,
           "total_max": "-15% (une seule charge, donnee par une aura : etendard du Commander, A VALIDER)"
+        },
+        "damage_percent_up_amp": {
+          "value_per_stack": 10,
+          "unit": "percent_dmg_dealt",
+          "max_stacks": 1,
+          "total_max": "+10% (une seule charge, 2 s, donnee a chaque onde de l'ampli du Guitarist, A VALIDER)"
         }
       },
       "defensifs": {
@@ -245,6 +251,12 @@
           "unit": "percent",
           "max_stacks": 5,
           "total_max": "-25%"
+        },
+        "cast_speed_up_drum": {
+          "value_per_stack": 10,
+          "unit": "percent",
+          "max_stacks": 1,
+          "total_max": "+10% (une seule charge, 6 s, donnee par le Tambour de ralliement du War Drummer, A VALIDER)"
         },
         "slow": {
           "value_per_stack": 0.3,
@@ -1418,6 +1430,31 @@
           "vfx_type": "zone_ally"
         }
       },
+      "damage_percent_up_amp": {
+        "name_fr": "Onde de l'ampli",
+        "name_en": "Amp Wave",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "value_per_stack": 10,
+        "impl": "done",
+        "formula": "+10% damage dealt (one stack)",
+        "tooltip_fr": "Augmente les dégâts infligés.",
+        "tooltip_en": "Increases damage dealt.",
+        "description_fr": "Augmente de 10% les dégâts infligés, physiques comme magiques. Donné pendant 2s aux alliés adjacents à chaque onde de l'ampli du Guitarist.",
+        "description_en": "Increases damage dealt by 10%, physical and magical alike. Granted for 2s to adjacent allies by each wave of the Guitarist's amplifier.",
+        "sources": [
+          "Artisan (Guitarist)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "stat_mods": {
+            "damage_dealt_percent": "value/100"
+          },
+          "vfx_type": "power_aura"
+        }
+      },
       "atk_down_banner": {
         "name_fr": "Ombre de l'étendard",
         "name_en": "Banner Dread",
@@ -1632,6 +1669,31 @@
         },
         "max_stacks": 5,
         "value_per_stack": 5
+      },
+      "cast_speed_up_drum": {
+        "name_fr": "Rythme de ralliement",
+        "name_en": "Rallying Rhythm",
+        "polarity": "buff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "value_per_stack": 10,
+        "impl": "done",
+        "formula": "+10% cast speed (one stack)",
+        "tooltip_fr": "Réduit le temps d'incantation des compétences.",
+        "tooltip_en": "Reduces skill cast time.",
+        "description_fr": "Réduit de 10% le temps d'incantation des sorts. Donné pendant 6s au War Drummer et à ses alliés adjacents par le Tambour de ralliement.",
+        "description_en": "Reduces spell cast time by 10%. Granted for 6s to the War Drummer and his adjacent allies by the Rallying Drum.",
+        "sources": [
+          "Artisan (War Drummer)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "stat_mods": {
+            "cast_speed_percent": "value/100"
+          },
+          "vfx_type": "haste_aura"
+        }
       }
     },
     "control": {
@@ -3142,17 +3204,17 @@
     }
   },
   "_summary": {
-    "total": 111,
+    "total": 113,
     "categories": 9,
     "by_polarity": {
-      "buff": 59,
+      "buff": 61,
       "debuff": 52
     },
     "breakdown": {
       "dot": 9,
       "hot": 4,
-      "stat_modifiers": 34,
-      "tempo": 2,
+      "stat_modifiers": 35,
+      "tempo": 3,
       "control": 12,
       "defensive": 12,
       "immunity": 6,

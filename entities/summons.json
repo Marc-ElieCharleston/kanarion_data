@@ -42,7 +42,8 @@
   "trigger.mode owner_strike_echo": "lot 10 (2026-11-10) : aucun bloc effect. Chaque coup de corps a corps du LANCEUR qui inflige des degats a un ennemi fait frapper l'invocation sur la meme cible pour echo_percent (1-100) % des degats que ce coup a infliges (apres armure, bouclier et multiplicateurs ; sans jet de critique ni d'esquive ; invulnerable = 0). Corps a corps = competence a cible unique (target_type ennemi, pas une zone) dont la portee reelle (portee du sort, sinon portee de base du lanceur) vaut au plus strike_max_range. Un coup = une frappe en echo (un sort a 3 coups en fait 3). Evenements, dans le meme tic que le coup : INVOCATION_TRIGGERED (source = l'invocation, target = la cible, message = animations.trigger, value = degats de l'echo) puis DAMAGE (source = l'invocation)",
   "motion.mode chase": "lot 11 (2026-11-11) : motion {mode chase, target nearest_enemy}. Exige un corps qui occupe sa case et un trigger pulse (selection nearest, radius >= 1) : c'est son coup. Toutes les trigger.interval_sec : si un ENNEMI (unite vivante a PV, invocations et leurres exclus) est a trigger.radius ou moins, le pulse frappe le plus proche ; sinon l'invocation avance d'1 case vers l'ennemi le plus proche (Manhattan, egalite = plus petit identifiant) par le plus court chemin de cases libres (egalite : haut, droite, bas, gauche) et le pulse de ce tic ne part pas. Aucun chemin = elle reste sur place, aucun evenement. Evenements : INVOCATION_MOVED (source = l'invocation, target = l'ennemi poursuivi, value = case de depart, position = case d'arrivee, message = animations.move) + POSITION_CHANGED ; le coup = INVOCATION_TRIGGERED (target = l'ennemi frappe) + DAMAGE",
   "animations.move": "facultatif (lot 11) : cle recopiee dans INVOCATION_MOVED.message (defaut animations.idle), golem du Forgemaster : walk",
-  "placement.footprint": "facultatif (lot 11), avec placement.mode cell_in_range et un objet qui n'occupe pas sa case : {shape square, size N}. La case du client (a placement.range, ligne de vue si la competence l'exige) est le coin de plus petite colonne et de plus petite ligne du carre N x N ; au bord du plateau le carre est decale vers l'interieur (la case du client reste dedans). Un objet par case, tous du meme groupe : ils comptent pour UNE invocation dans les limites et disparaissent ensemble. Un INVOCATION_SPAWNED par case (flaque du Plague Brewer)"
+  "placement.footprint": "facultatif (lot 11), avec placement.mode cell_in_range et un objet qui n'occupe pas sa case : {shape square, size N}. La case du client (a placement.range, ligne de vue si la competence l'exige) est le coin de plus petite colonne et de plus petite ligne du carre N x N ; au bord du plateau le carre est decale vers l'interieur (la case du client reste dedans). Un objet par case, tous du meme groupe : ils comptent pour UNE invocation dans les limites et disparaissent ensemble. Un INVOCATION_SPAWNED par case (flaque du Plague Brewer)",
+  "ally_effect": "facultatif (lot 12, 2026-11-11), avec trigger.mode pulse (selection all) et effect.targets enemies : {statuses [{effect_id, stacks >= 1, duration_sec > 0}], animation}. A chaque activation, apres l'effet sur les ennemis, les unites vivantes du camp du lanceur a la meme portee (radius, distance ; invocations et leurres exclus, le lanceur compris) recoivent ces statuts (source = le lanceur) ; chaque STATUS_APPLIED porte skill_id et message = animation (ampli du Guitarist : buff_hit)."
     }
   },
   "global_limits": {
@@ -1079,6 +1080,69 @@
               "duration_sec": 6
             }
           ]
+        }
+      }
+    },
+    {
+      "id": "guitarist_amp",
+      "name_fr": "Ampli",
+      "name_en": "Amplifier",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "guitarist_maneuver_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-11, manoeuvre de specialisation Guitarist) : ampli 8 s, PV 5% des PV max du lanceur (l'adversaire peut le detruire), case libre a 2 cases au plus sans ligne de vue requise, ne bloque pas la ligne de vue, compte dans la limite de 6 invocations du camp. Une onde a la pose puis toutes les 2 s (4 ondes, comme la Marmite fumante) : les ennemis adjacents (distance de Manhattan 1) reculent d'1 case en s'eloignant de l'ampli (forced_move, Ancres non deplaces) ; les allies adjacents (invocations exclues, le Guitarist compris s'il est adjacent) recoivent damage_percent_up_amp (+10% de degats infliges, une charge, 2 s, rafraichie a chaque onde) par la nouvelle cle ally_effect.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "trigger": "pulse",
+          "hit": "summon_hit",
+          "destroyed": "summon_break",
+          "end": "summon_fade"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 5,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 2
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 1,
+          "interval_sec": 2,
+          "on_spawn": true
+        },
+        "effect": {
+          "targets": "enemies",
+          "forced_move": {
+            "direction": "away_from_invocation",
+            "distance": 1,
+            "animation": "push"
+          }
+        },
+        "ally_effect": {
+          "statuses": [
+            {
+              "effect_id": "damage_percent_up_amp",
+              "stacks": 1,
+              "duration_sec": 2
+            }
+          ],
+          "animation": "buff_hit"
         }
       }
     }
