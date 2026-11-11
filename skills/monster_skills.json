@@ -3543,6 +3543,112 @@
     "assassin": {
       "pool": [
         {
+          "id": "skill_mob_assassin_plongee",
+          "source_scope": "MONSTER",
+          "name_fr": "Plongée de l'Ombre",
+          "name_en": "Shadow Dive",
+          "tier": "advanced",
+          "target": "self",
+          "pattern": "single",
+          "damage_type": "none",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 0,
+          "cooldown": 20.0,
+          "cast_time": 0.0,
+          "consumes_gcd": false,
+          "vfx_type": "dash_trail",
+          "description_fr": "L'assassin disparaît et réapparaît au contact du combattant le plus exposé de ta ligne arrière (soigneur, mage ou archer en priorité). Recharge 20 s.",
+          "description_en": "The assassin vanishes and reappears next to the most exposed fighter of your back line (healer, mage or archer first). 20 s cooldown.",
+          "tags": [
+            "movement",
+            "gap_closer",
+            "teleport",
+            "assassin",
+            "backline"
+          ],
+          "movement": {
+            "type": "self_move",
+            "mode": "adjacent_enemy",
+            "range": "board"
+          },
+          "effects": [],
+          "_note_2026_11": "0.21.6 (Charleston 2026-11-11) : meme mecanique que Pas de l'ombre du Rogue (skill_rogue_shadowstep). Donnee aux assassins de niveau 30 a 59 par config/monster_ai.json ai_maneuvers.level_skills ; aucun monstre ne la porte dans entities/monsters.json. Cible et case choisies par le serveur. A VALIDER : recharge 20 s, seuil 30. Instantanee (cast_time 0) : une teleportation avec incantation n'est pas testee."
+        },
+        {
+          "id": "skill_mob_assassin_plongee_ombre",
+          "source_scope": "MONSTER",
+          "name_fr": "Plongée des Ténèbres",
+          "name_en": "Darkness Dive",
+          "tier": "advanced",
+          "target": "self",
+          "pattern": "single",
+          "damage_type": "none",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 0,
+          "cooldown": 20.0,
+          "cast_time": 0.0,
+          "consumes_gcd": false,
+          "vfx_type": "dash_trail",
+          "description_fr": "L'assassin se fond dans l'ombre et réapparaît au contact du combattant le plus exposé de ta ligne arrière (soigneur, mage ou archer en priorité), invisible 3 s (inciblable par les monocibles). Recharge 20 s.",
+          "description_en": "The assassin melts into shadow and reappears next to the most exposed fighter of your back line (healer, mage or archer first), invisible for 3 s (untargetable by single-target skills). 20 s cooldown.",
+          "tags": [
+            "movement",
+            "gap_closer",
+            "teleport",
+            "stealth",
+            "invisible",
+            "assassin",
+            "backline"
+          ],
+          "movement": {
+            "type": "self_move",
+            "mode": "adjacent_enemy",
+            "range": "board"
+          },
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "invisible",
+              "duration": 3.0,
+              "target": "self"
+            }
+          ],
+          "_note_2026_11": "0.21.6 (Charleston 2026-11-11) : Plongee de l'Ombre + Invisibilite, comme Pas de l'ombre. Donnee aux assassins de niveau 60+ par config/monster_ai.json ai_maneuvers.level_skills. A VALIDER : invisibilite 3 s, recharge 20 s, seuil 60."
+        },
+        {
+          "id": "skill_mob_bond_poursuite",
+          "source_scope": "MONSTER",
+          "name_fr": "Bond de Poursuite",
+          "name_en": "Pursuit Leap",
+          "tier": "advanced",
+          "target": "self",
+          "pattern": "single",
+          "damage_type": "none",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 0,
+          "cooldown": 12.0,
+          "cast_time": 0.0,
+          "consumes_gcd": false,
+          "vfx_type": "dash_trail",
+          "description_fr": "Quand sa proie s'enfuit hors de portée, le monstre bondit de 2 cases en ligne droite vers elle. Recharge 12 s.",
+          "description_en": "When its prey flees out of reach, the monster leaps 2 tiles in a straight line toward it. 12 s cooldown.",
+          "tags": [
+            "movement",
+            "gap_closer",
+            "ai_pursuit"
+          ],
+          "movement": {
+            "type": "self_move",
+            "mode": "straight",
+            "range": 2
+          },
+          "effects": [],
+          "_note_2026_11": "0.21.6 (Charleston 2026-11-11, decision « go » sur le kite) : donnee a tous les monstres de melee de niveau 60+ (assassins compris) par config/monster_ai.json ai_maneuvers.level_skills, quel que soit leur archetype (rangee ici dans le pool assassin par commodite). Le tag ai_pursuit (ai_maneuvers.pursuit.pursuit_skill_tag) dit a l'IA de s'en servir pour rattraper une cible hors de portee ; la case est choisie par le serveur. A VALIDER : 2 cases, recharge 12 s, seuil 60."
+        },
+        {
           "id": "skill_mob_assassin_quick_strike",
           "source_scope": "MONSTER",
           "name_en": "Quick Strike",
