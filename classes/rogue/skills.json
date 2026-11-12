@@ -587,6 +587,65 @@
           "rank_scaling_enabled": true
         },
         {
+          "id": "skill_rogue_shadowblade_silencing_strike",
+          "name_en": "Silencing Strike",
+          "name_fr": "Coup muet",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 55,
+          "percent_per_level": 1.6,
+          "rank_scaling_enabled": true,
+          "mana_cost": 26,
+          "mana_cost_per_level": 1,
+          "cooldown": 20.0,
+          "cast_time": 0,
+          "range": 2,
+          "vfx_type": "melee_slash",
+          "description_fr": "Inflige 55% ATQ (+1,6 point par rang) à un ennemi au contact et le réduit au Silence pendant 4s. Nécessite une ligne de vue. (provisoire)",
+          "description_en": "Deals 55% ATK (+1.6 percentage points per rank) to an adjacent enemy and Silences them for 4s. Requires line of sight. (provisional)",
+          "tags": [
+            "damage",
+            "melee",
+            "silence",
+            "cc"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "silence",
+              "value": 1,
+              "duration": 4.0
+            }
+          ],
+          "rank_milestones": [
+            {
+              "rank": 10,
+              "bonus": "cooldown_percent",
+              "value": -15
+            }
+          ],
+          "base_class_id": "rogue",
+          "subclass_id": "shadowblade",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": true,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "single"
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_mecanique_note": "Silence (stats/status_effects.json effects.control.silence, is_hard_cc) pose par un effet debuff, meme forme que l'Hymne de bannissement du Requiem : room.cpp apply_skill_effects l'applique apres les degats ; status_manager.cpp tire la resistance (effect_resist contre effect_chance, plafond effect_apply_max des controles forts) puis la tenacite raccourcit la duree. 4 s = regle des controles forts (duration_rule.hard_cc_seconds). Portee 2 comme toute la melee du Voleur (distance Manhattan : la diagonale compte 2).",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s pour tous ces sorts) : 55 % ATQ (+1,6 point par rang) sur un ennemi au contact (portee 2 comme la melee du Voleur), Silence 4 s ; recharge 20 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
+        },
+        {
           "id": "skill_rogue_shadowblade_death_blossom",
           "name_en": "Death Blossom",
           "name_fr": "Floraison Mortelle",
@@ -2845,6 +2904,58 @@
           "rank_scaling_enabled": true
         },
         {
+          "id": "skill_rogue_corsair_hook",
+          "name_en": "Hook",
+          "name_fr": "Crochet",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 40,
+          "percent_per_level": 1.2,
+          "rank_scaling_enabled": true,
+          "mana_cost": 22,
+          "mana_cost_per_level": 1,
+          "cooldown": 18.0,
+          "cast_time": 0,
+          "range": 4,
+          "vfx_type": "projectile",
+          "description_fr": "Inflige 40% ATQ (+1,2 point par rang) à un ennemi à 4 cases maximum et lui vole au plus un buff volable pour 6s maximum, sans prolonger sa durée restante. Nécessite une ligne de vue. (provisoire)",
+          "description_en": "Deals 40% ATK (+1.2 percentage points per rank) to an enemy within 4 tiles and steals at most one stealable buff from them for up to 6s, without extending its remaining duration. Requires line of sight. (provisional)",
+          "tags": [
+            "damage",
+            "ranged",
+            "buff_steal"
+          ],
+          "effects": [
+            {
+              "type": "utility",
+              "stat": "steal_buff",
+              "value": 1,
+              "duration": 6,
+              "duration_per_level": 0
+            }
+          ],
+          "base_class_id": "rogue",
+          "subclass_id": "corsair",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": true,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "single"
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_mecanique_note": "Vol de buff = utilitaire steal_buff, meme forme que Pillage (skill_rogue_corsair_plunder) : room.cpp (UTILITY EFFECTS) le joue une fois par lancer sur la cible principale, apres les degats ; value = nombre de buffs voles (1), duration = duree maximale du buff vole (6 s, jamais plus que sa duree restante). Seuls les effets marques stealable passent.",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s pour tous ces sorts) : 40 % ATQ (+1,2 point par rang) a 4 cases, vol d'1 buff (6 s au plus) ; recharge 18 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
+        },
+        {
           "id": "skill_rogue_corsair_raid",
           "name_en": "Raid",
           "name_fr": "Raid Pirate",
@@ -3951,6 +4062,51 @@
           "range": 2,
           "rank_scaling_enabled": true,
           "_rang_a_valider": "A VALIDER (2026-11-08, decision Charleston, paliers de rang etape 0) : percent_per_level 2.7 ajoute (gain +60 % au rang 10, mediane des sorts de degats/soin qui progressent), rank_scaling_enabled."
+        },
+        {
+          "id": "skill_rogue_duelist_piercing_thrust",
+          "name_en": "Piercing Thrust",
+          "name_fr": "Estoc perçant",
+          "tier": "basic",
+          "target": "enemies",
+          "pattern": "col_3",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 55,
+          "percent_per_level": 1.6,
+          "rank_scaling_enabled": true,
+          "mana_cost": 24,
+          "mana_cost_per_level": 1,
+          "cooldown": 16.0,
+          "cast_time": 0,
+          "range": 2,
+          "vfx_type": "melee_slash",
+          "description_fr": "Inflige 55% ATQ (+1,6 point par rang) à chaque ennemi d'une ligne de 3 cases devant le lanceur. Transperce la ligne de front et ignore la ligne de vue. (provisoire)",
+          "description_en": "Deals 55% ATK (+1.6 percentage points per rank) to each enemy in a 3-tile line in front of the caster. Pierces the front line and ignores line of sight. (provisional)",
+          "tags": [
+            "damage",
+            "melee",
+            "aoe",
+            "line",
+            "pierce"
+          ],
+          "base_class_id": "rogue",
+          "subclass_id": "duelist",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "tile",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": false,
+            "bypasses_los": true,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "col_3"
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_mecanique_note": "Ligne de 3 cases = motif col_3 de combat/targeting.json ([-1,0],[0,0],[1,0], 3 cases dans l'axe des rangees, celui qui separe les deux camps), deja utilise par Fleche percante et Volee (Archer). Pose sur une case (selection tile) a portee 2 : visee 2 cases devant, la colonne couvre les cases 1 a 3 devant le lanceur. Visee de cote, la colonne part de cette case (pas de motif oriente depuis le lanceur sans nouveau code). bypasses_los / requires_line_of_sight false : room.cpp ne filtre pas les cibles cachees par la ligne de front (sinon l'ennemi derriere le premier serait retire, P1-6 / B3), d'ou 'transperce'.",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s pour tous ces sorts) : 55 % ATQ (+1,6 point par rang) a chaque ennemi d'une ligne de 3 cases (col_3, portee 2, ignore la ligne de vue) ; recharge 16 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
         },
         {
           "id": "skill_rogue_duelist_coup_de_grace",
