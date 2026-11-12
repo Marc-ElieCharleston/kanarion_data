@@ -3740,13 +3740,14 @@
           "mana_cost": 22,
           "cooldown": 24.0,
           "vfx_type": "life_steal",
-          "description_fr": "Inflige 6% des PV max du lanceur (+0,2 point par rang) et récupère 30% des dégâts en soin, augmenté de 20% sous 50% PV. Portée 2, LoS requise.",
-          "description_en": "Deals 6% of the caster’s max HP (+0.2 percentage points per rank) and heals for 30% of damage, increased by 20% below 50% HP. Range 2, requires LoS.",
+          "description_fr": "Inflige 6% des PV max du lanceur (+0,2 point par rang) et récupère 30% des dégâts en soin, augmenté de 20% sous 50% PV. Le lanceur gagne une charge de Régénération de Souffle pendant 6s (2% de son Souffle max par seconde). Portée 2, LoS requise.",
+          "description_en": "Deals 6% of the caster’s max HP (+0.2 percentage points per rank) and heals for 30% of damage, increased by 20% below 50% HP. The caster gains one Breath Regen stack for 6s (2% of their max Breath per second). Range 2, requires LoS.",
           "tags": [
             "damage",
             "heal",
             "lifesteal",
-            "conditional"
+            "conditional",
+            "mana_regen"
           ],
           "effects": [
             {
@@ -3755,8 +3756,17 @@
               "target": "self",
               "value": 30,
               "duration_per_level": 0
+            },
+            {
+              "type": "buff",
+              "stat": "mana_regen",
+              "target": "self",
+              "stacks_to_apply": 1,
+              "duration": 6,
+              "duration_per_level": 0
             }
           ],
+          "_mana_regen_a_valider": "A VALIDER (decision Charleston du 2026-11-13) : le lanceur gagne 1 charge du statut mana_regen pendant 6 s (2 % du Souffle max par seconde, stats/status_effects.json), a chaque lancer, que la frappe touche ou non.",
           "base_class_id": "healer",
           "subclass_id": "martyr",
           "tier3_id": "",
