@@ -132,6 +132,7 @@ Players choose a faction at level 60. Subclass lore must NOT lock players into a
 - **Per character:** 15 skills (5 base + 5 subclass + 5 tier3), max 100 skill points, 150 needed to max all (intentional -50 deficit forcing build choices)
 - **Skill levels:** 0-10, 1 point each
 - **Rogue subclass kits (2026-11-12, a valider):** Shadowblade, Duelist and Corsair each have 6 subclass skills (Silencing Strike, Piercing Thrust, Hook added before the ultimate, nothing removed), so 16 skills, 160 to max all, deficit -60. Trickster stays at 5 until its random-displacement skill (skill_rogue_trickster_scramble) is coded server-side. Never assume a fixed subclass kit size in code: derive it from `classes/<class>/skills.json`
+- **Artisan subclass kits (2026-11-12, a valider):** Blacksmith, Alchemist, Chef and Musician each have 6 subclass skills (Whetting, Healing Potion, Pan Toss, Breath Song added before the ultimate, nothing removed), so 16 skills, 160 to max all, deficit -60. Never assume a fixed subclass kit size in code: derive it from `classes/<class>/skills.json`
 - **Formula:** `damage = base_power + (scaling_percent% * scaling_stat)`
 - **Required fields:** `id`, `name_fr`, `name_en`, `tier`, `target`, `pattern`, `damage_type`, `scaling_stat`, `base_power`, `scaling_percent`, `mana_cost`, `cooldown`, `description_fr`, `description_en`, `tags`
 - **Optional fields:** `effect`, `effect_duration`, `buff`, `debuff`, `heal_power`, `shield_value`, `vfx_type`
