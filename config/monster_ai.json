@@ -115,6 +115,77 @@
     "melee_tags": ["melee"],
     "exclude_tags": ["caster", "ranged"]
   },
+  "ai_maneuvers": {
+    "_decision": "Charleston 2026-11-11 (0.21.6) : les assassins de niveau 30+ plongent sur la ligne arriere (teleportation DANS LE DOS de la cible, movement.landing behind, regle ecrite pour Pas de l'ombre dans balance/assassin-gap-closer ; le Pas de l'ombre joueur est revenu a la 0.21.4 en 0.21.6 : une case libre au contact, que les recrues et mercenaires Rogue lancent avec ce meme ciblage, case choisie par le serveur, rangee arriere d'abord), invisibles en plus au niveau 60+ ; deplacement d'une case des assassins plus rapide ; bond de poursuite de 2 cases pour les monstres de melee de niveau 60+ ; Racines fletries pour les tanks de niveau 60+. Les recrues d'arene et mercenaires Rogue lancent aussi Pas de l'ombre avec le meme ciblage.",
+    "_a_valider": "TOUTES les valeurs de ce bloc sont des propositions, a valider en jeu par Charleston : seuils 30 / 60, recharge du saut 20 s, invisibilite 3 s, deplacement assassin 7 s, bond 2 cases recharge 12 s, Racines fletries aux tanks 60+, poids de fragilite 4.",
+    "_comment": "Lu par server-combat (ai/monster_ai.cpp, CLE OBLIGATOIRE : absente = le combat refuse de demarrer). Le niveau est celui du SPAWN (niveau effectif tire dans level_range, ou impose par la zone / le donjon / l'invocation), pas le base_level : le kit est complete une fois pour toutes par RoomManager::build_monster, chemin commun des rencontres et des invocations.",
+    "role_movement_cooldown_seconds": {
+      "_comment": "Recharge du deplacement d'une case par role d'IA (ai_role du monstre). Prime sur melee_movement. Role absent = melee_movement ou recharge commune.",
+      "assassin": 7.0
+    },
+    "dive": {
+      "_comment": "Plongee (competence teleport_adjacent sur un ennemi avec movement.landing behind) : l'IA choisit la cible, le serveur la case (son dos, sinon le flanc le plus proche du lanceur, la face, puis l'anneau 2 : Room::teleport_landing_cells). Cible : un ennemi de classe de base target_base_classes (joueur, recrue, mercenaire) ou de role target_ai_roles (monstre) ; s'il n'y en a aucun, n'importe quel ennemi. Parmi eux : le plus en arriere dans son camp d'abord (meme ordre que l'Appel de la Meute du Rongeur), puis le plus haut score = distance au lanceur (cases) + missing_hp_weight x part de PV manquants. Jamais une cible deja au contact, inciblable (invisible) ou une invocation.",
+      "target_base_classes": ["healer", "mage", "archer"],
+      "target_ai_roles": ["healer", "support", "artillery", "caster"],
+      "missing_hp_weight": 4.0
+    },
+    "pursuit": {
+      "_comment": "Competences de poursuite : portent pursuit_skill_tag, soit un self_move mode straight (bond de poursuite generique, charge des brutes), soit un teleport_adjacent sur un ennemi (bond des berserkers, landing behind). L'IA les lance quand la cible qu'elle a choisie est hors de portee et qu'elle a deja agi dans ce combat (pas a l'ouverture : la cible s'est enfuie). Ligne droite : le serveur choisit la case (vers la cible, sans la depasser ni s'arreter dessus, trajet libre) ; si la competence exige la ligne de vue et que la case est masquee, le monstre marche. Saut : le serveur le pose dans le dos de la cible.",
+      "pursuit_skill_tag": "ai_pursuit"
+    },
+    "level_skills": [
+      {
+        "id": "assassin_dive_30",
+        "_a_valider": "seuil 30, saut sans invisibilite, recharge 20 s",
+        "roles": ["assassin"],
+        "min_level": 30,
+        "max_level": 59,
+        "add_skills": ["skill_mob_assassin_plongee"]
+      },
+      {
+        "id": "assassin_dive_60",
+        "_a_valider": "seuil 60, saut + invisibilite 3 s, recharge 20 s",
+        "roles": ["assassin"],
+        "min_level": 60,
+        "add_skills": ["skill_mob_assassin_plongee_ombre"]
+      },
+      {
+        "id": "melee_pursuit_60",
+        "_a_valider": "les monstres de melee (tag melee, ni caster ni ranged) de niveau 60+ qui ne sont pas des cogneurs (tanks, assassins...) : bond de 2 cases, recharge 12 s",
+        "tags": ["melee"],
+        "exclude_tags": ["caster", "ranged"],
+        "exclude_roles": ["brute", "bruiser", "berserker"],
+        "min_level": 60,
+        "add_skills": ["skill_mob_bond_poursuite"]
+      },
+      {
+        "id": "bruiser_charge_60",
+        "_decision": "Charleston 2026-11-11 : « les bruisers doivent avoir un dash en ligne droite OU un bond ». Repartition proposee par role (UN seul des deux, jamais les deux) : brutes (lourdes) et cogneurs = charge en ligne droite avec ligne de vue ; berserkers (agiles) = bond sans ligne de vue. Remplace le bond de poursuite generique pour ces roles.",
+        "_a_valider": "repartition par role, charge 3 cases avec ligne de vue, recharge 12 s, seuil 60 (Charleston doit confirmer s'il la veut des un niveau plus bas)",
+        "roles": ["brute", "bruiser"],
+        "tags": ["melee"],
+        "exclude_tags": ["caster", "ranged"],
+        "min_level": 60,
+        "add_skills": ["skill_mob_bruiser_charge"]
+      },
+      {
+        "id": "berserker_bond_60",
+        "_a_valider": "bond sans ligne de vue dans le dos d'une cible a 2 cases au plus, recharge 12 s, seuil 60 (Charleston doit confirmer s'il le veut des un niveau plus bas)",
+        "roles": ["berserker"],
+        "tags": ["melee"],
+        "exclude_tags": ["caster", "ranged"],
+        "min_level": 60,
+        "add_skills": ["skill_mob_bruiser_bond"]
+      },
+      {
+        "id": "tank_roots_60",
+        "_a_valider": "Racines fletries (competence existante, rangee entiere, entrave 2 s, incantation 3,5 s) pour les monstres de role tank de niveau 60+",
+        "roles": ["tank"],
+        "min_level": 60,
+        "add_skills": ["skill_mob_withered_roots"]
+      }
+    ]
+  },
   "ai_roles": {
     "brute": {
       "name_fr": "Brute",

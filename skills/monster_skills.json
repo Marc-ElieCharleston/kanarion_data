@@ -3289,6 +3289,45 @@
     "brute": {
       "pool": [
         {
+          "id": "skill_mob_bruiser_charge",
+          "source_scope": "MONSTER",
+          "name_fr": "Charge Brutale",
+          "name_en": "Brutal Charge",
+          "tier": "advanced",
+          "target": "self",
+          "pattern": "single",
+          "damage_type": "none",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 0,
+          "cooldown": 12.0,
+          "cast_time": 0.0,
+          "consumes_gcd": false,
+          "vfx_type": "dash_trail",
+          "description_fr": "Quand sa proie s'enfuit hors de portée, la brute charge jusqu'à 3 cases en ligne droite vers elle, si rien ne lui barre la route ni ne lui cache sa cible. Recharge 12 s.",
+          "description_en": "When its prey flees out of reach, the brute charges up to 3 tiles in a straight line toward it, if nothing blocks its path or hides its target. 12 s cooldown.",
+          "tags": [
+            "movement",
+            "gap_closer",
+            "charge",
+            "ai_pursuit"
+          ],
+          "movement": {
+            "type": "self_move",
+            "mode": "straight",
+            "range": 3
+          },
+          "targeting": {
+            "selection_mode": "tile",
+            "valid_target_team": "self",
+            "requires_line_of_sight": true,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false
+          },
+          "effects": [],
+          "_note_2026_11": "0.21.6 (Charleston 2026-11-11 : « les bruisers doivent avoir un dash en ligne droite OU un bond ») : meme forme que la ruee du Frenetique (skill_warrior_frenzied_maneuver : self_move straight 3, ligne de vue exigee, trajet libre). Donnee aux monstres de role brute / bruiser de melee niveau 60+ par config/monster_ai.json ai_maneuvers.level_skills, a la place du bond de poursuite generique. Tag ai_pursuit : l'IA la lance quand sa cible est hors de portee ; case choisie par le serveur (ai/maneuver_cells.hpp pursuit_cell : la plus proche de la cible sans la depasser, donc au contact quand c'est possible) ; sans ligne de vue, le monstre marche. A VALIDER : 3 cases, recharge 12 s, aucun degat a l'impact, seuil 60."
+        },
+        {
           "id": "skill_mob_brute_heavy_slam",
           "source_scope": "MONSTER",
           "name_en": "Heavy Slam",
@@ -3542,6 +3581,130 @@
     },
     "assassin": {
       "pool": [
+        {
+          "id": "skill_mob_assassin_plongee",
+          "source_scope": "MONSTER",
+          "name_fr": "Plongée de l'Ombre",
+          "name_en": "Shadow Dive",
+          "tier": "advanced",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "none",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 0,
+          "cooldown": 20.0,
+          "cast_time": 0.0,
+          "consumes_gcd": false,
+          "vfx_type": "dash_trail",
+          "description_fr": "L'assassin disparaît et réapparaît dans le dos du combattant le plus exposé de ta ligne arrière (soigneur, mage ou archer en priorité). Recharge 20 s.",
+          "description_en": "The assassin vanishes and reappears behind the most exposed fighter of your back line (healer, mage or archer first). 20 s cooldown.",
+          "tags": [
+            "movement",
+            "gap_closer",
+            "teleport",
+            "assassin",
+            "backline"
+          ],
+          "range": "board",
+          "movement": {
+            "type": "teleport_adjacent",
+            "range": "board",
+            "landing": "behind"
+          },
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": false,
+            "bypasses_los": true,
+            "requires_entity_on_target_tile": true,
+            "aoe_pattern_id": "single"
+          },
+          "effects": [],
+          "_note_2026_11": "0.21.7 (Charleston 2026-11-11/12) : la regle d'arrivee « dans le dos » ecrite pour Pas de l'ombre (branche balance/assassin-gap-closer ; le Pas de l'ombre JOUEUR est revenu a la 0.21.4 en 0.21.6, seuls les assassins monstres arrivent dans le dos) : teleport_adjacent sur un ennemi, movement.landing behind = dans son dos, sinon flanc, face, anneau 2 ; room.cpp teleport_landing_cells). Donnee aux assassins de niveau 30 a 59 par config/monster_ai.json ai_maneuvers.level_skills ; aucun monstre ne la porte dans entities/monsters.json. Cible choisie par l'IA (ai_maneuvers.dive), case par le serveur. A VALIDER : recharge 20 s, seuil 30. Instantanee (cast_time 0) : une teleportation avec incantation n'est pas testee."
+        },
+        {
+          "id": "skill_mob_assassin_plongee_ombre",
+          "source_scope": "MONSTER",
+          "name_fr": "Plongée des Ténèbres",
+          "name_en": "Darkness Dive",
+          "tier": "advanced",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "none",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 0,
+          "cooldown": 20.0,
+          "cast_time": 0.0,
+          "consumes_gcd": false,
+          "vfx_type": "dash_trail",
+          "description_fr": "L'assassin se fond dans l'ombre et réapparaît dans le dos du combattant le plus exposé de ta ligne arrière (soigneur, mage ou archer en priorité), invisible 3 s (inciblable par les monocibles). Recharge 20 s.",
+          "description_en": "The assassin melts into shadow and reappears behind the most exposed fighter of your back line (healer, mage or archer first), invisible for 3 s (untargetable by single-target skills). 20 s cooldown.",
+          "tags": [
+            "movement",
+            "gap_closer",
+            "teleport",
+            "stealth",
+            "invisible",
+            "assassin",
+            "backline"
+          ],
+          "range": "board",
+          "movement": {
+            "type": "teleport_adjacent",
+            "range": "board",
+            "landing": "behind"
+          },
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": false,
+            "bypasses_los": true,
+            "requires_entity_on_target_tile": true,
+            "aoe_pattern_id": "single"
+          },
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "invisible",
+              "duration": 3.0,
+              "target": "self"
+            }
+          ],
+          "_note_2026_11": "0.21.6 (Charleston 2026-11-11) : Plongee de l'Ombre (dans le dos de la cible) + Invisibilite. Donnee aux assassins de niveau 60+ par config/monster_ai.json ai_maneuvers.level_skills. A VALIDER : invisibilite 3 s, recharge 20 s, seuil 60."
+        },
+        {
+          "id": "skill_mob_bond_poursuite",
+          "source_scope": "MONSTER",
+          "name_fr": "Bond de Poursuite",
+          "name_en": "Pursuit Leap",
+          "tier": "advanced",
+          "target": "self",
+          "pattern": "single",
+          "damage_type": "none",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 0,
+          "cooldown": 12.0,
+          "cast_time": 0.0,
+          "consumes_gcd": false,
+          "vfx_type": "dash_trail",
+          "description_fr": "Quand sa proie s'enfuit hors de portée, le monstre bondit de 2 cases en ligne droite vers elle. Recharge 12 s.",
+          "description_en": "When its prey flees out of reach, the monster leaps 2 tiles in a straight line toward it. 12 s cooldown.",
+          "tags": [
+            "movement",
+            "gap_closer",
+            "ai_pursuit"
+          ],
+          "movement": {
+            "type": "self_move",
+            "mode": "straight",
+            "range": 2
+          },
+          "effects": [],
+          "_note_2026_11": "0.21.6 (Charleston 2026-11-11, decision « go » sur le kite) : donnee a tous les monstres de melee de niveau 60+ (assassins compris) par config/monster_ai.json ai_maneuvers.level_skills, quel que soit leur archetype (rangee ici dans le pool assassin par commodite). Le tag ai_pursuit (ai_maneuvers.pursuit.pursuit_skill_tag) dit a l'IA de s'en servir pour rattraper une cible hors de portee ; la case est choisie par le serveur. A VALIDER : 2 cases, recharge 12 s, seuil 60."
+        },
         {
           "id": "skill_mob_assassin_quick_strike",
           "source_scope": "MONSTER",
@@ -4920,6 +5083,47 @@
     },
     "berserker": {
       "pool": [
+        {
+          "id": "skill_mob_bruiser_bond",
+          "source_scope": "MONSTER",
+          "name_fr": "Bond Sauvage",
+          "name_en": "Savage Leap",
+          "tier": "advanced",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "none",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 0,
+          "cooldown": 12.0,
+          "cast_time": 0.0,
+          "consumes_gcd": false,
+          "vfx_type": "dash_trail",
+          "description_fr": "Quand sa proie s'enfuit hors de portée, le monstre bondit par-dessus la mêlée et retombe dans son dos (cible à 2 cases maximum). Recharge 12 s.",
+          "description_en": "When its prey flees out of reach, the monster leaps over the fray and lands behind it (target up to 2 tiles away). 12 s cooldown.",
+          "tags": [
+            "movement",
+            "gap_closer",
+            "leap",
+            "ai_pursuit"
+          ],
+          "range": 2,
+          "movement": {
+            "type": "teleport_adjacent",
+            "range": 2,
+            "landing": "behind"
+          },
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": false,
+            "bypasses_los": true,
+            "requires_entity_on_target_tile": true,
+            "aoe_pattern_id": "single"
+          },
+          "effects": [],
+          "_note_2026_11": "0.21.6 (Charleston 2026-11-11 : « dash en ligne droite OU bond ») : saut sans ligne de vue par-dessus les occupants, case d'arrivee choisie par le serveur avec la regle « dans le dos » de Pas de l'ombre (movement.landing behind : dos de la cible, sinon flanc le plus proche, face, anneau 2 ; room.cpp teleport_landing_cells). Donnee aux monstres de role berserker de melee niveau 60+ par config/monster_ai.json ai_maneuvers.level_skills, a la place du bond de poursuite generique. Tag ai_pursuit : l'IA la lance quand sa cible est hors de portee. movement.range 2 = la cible est a 2 cases au plus (le saut lui-meme peut couvrir 3 cases pour retomber dans son dos). A VALIDER : portee 2, recharge 12 s, aucun degat a l'impact, seuil 60."
+        },
         {
           "id": "skill_mob_berserker_wild_swing",
           "source_scope": "MONSTER",
