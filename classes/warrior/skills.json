@@ -608,6 +608,62 @@
           "_rang_a_valider": "A VALIDER (2026-11-08, decision Charleston, paliers de rang etape 0) : percent_per_level 8.7 ajoute (gain +60 % au rang 10, mediane des sorts de degats/soin qui progressent), rank_scaling_enabled."
         },
         {
+          "id": "skill_warrior_guardian_hammering",
+          "name_en": "Hammering",
+          "name_fr": "Martèlement",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 60,
+          "percent_per_level": 1.8,
+          "rank_scaling_enabled": true,
+          "mana_cost": 20,
+          "mana_cost_per_level": 1,
+          "cooldown": 16.0,
+          "cast_time": 0,
+          "range": 1,
+          "vfx_type": "melee_slash",
+          "description_fr": "Inflige 60% ATQ (+1,8 point par rang) à un ennemi au contact. Dégâts augmentés de 6% par affaiblissement sur la cible (30% au maximum). Le lanceur gagne un bouclier de 8% de ses PV max pendant 4s. (provisoire)",
+          "description_en": "Deals 60% ATK (+1.8 percentage points per rank) to an adjacent enemy. Damage increases by 6% per debuff on the target (30% at most). The caster gains a shield worth 8% of their max HP for 4s. (provisional)",
+          "tags": [
+            "damage",
+            "melee",
+            "debuff_synergy",
+            "shield"
+          ],
+          "bonus_damage_per_debuff": 6,
+          "max_debuff_bonus": 30,
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "shield_max_hp",
+              "value": 0,
+              "pct": 8,
+              "duration": 4,
+              "target": "self"
+            }
+          ],
+          "base_class_id": "warrior",
+          "subclass_id": "guardian",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": true,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "single"
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_mecanique_note": "bonus_damage_per_debuff / max_debuff_bonus : room.cpp compte les statuts de type DEBUFF de la cible au moment de la frappe (+6 % chacun, plafond 30 %, multiplicatif sur les degats). Le bouclier shield_max_hp (8 % des PV max du lanceur) part sur le lanceur seul : routage par effet target self (room.cpp, effect_target = actor). Bouclier de 4 s sous le plancher de 6 s des effets doux : stats/status_effects.json _meta.duration_rule.soft_seconds_exempt_skills.",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement) : 60 % ATQ (+1,8 point par rang) sur un ennemi au contact, +6 % par affaiblissement sur la cible (30 % au plus), bouclier 8 % des PV max du lanceur 4 s sur lui ; recharge 16 s (Charleston 2026-11-12 : 16 a 20 s pour tous les sorts basiques ajoutes, 8 s au depart), sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
+        },
+        {
           "id": "skill_warrior_guardian_aegis_of_the_realm",
           "name_en": "Aegis of the Realm",
           "name_fr": "Égide du Royaume",
@@ -1780,6 +1836,55 @@
           "range": 0
         },
         {
+          "id": "skill_warrior_berserker_quarry",
+          "name_en": "Quarry",
+          "name_fr": "Curée",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 65,
+          "percent_per_level": 2.0,
+          "rank_scaling_enabled": true,
+          "mana_cost": 20,
+          "mana_cost_per_level": 1,
+          "cooldown": 18.0,
+          "cast_time": 0,
+          "range": 1,
+          "vfx_type": "melee_slash",
+          "description_fr": "Inflige 65% ATQ (+2 points par rang) à un ennemi au contact, augmentés de 20% par charge de Saignement sur la cible, puis consomme tous ses Saignements. Dégâts augmentés de 25% si la cible a moins de 30% de ses PV. (provisoire)",
+          "description_en": "Deals 65% ATK (+2 percentage points per rank) to an adjacent enemy, increased by 20% per Bleed stack on the target, then consumes all its Bleed stacks. Damage increases by 25% if the target is below 30% HP. (provisional)",
+          "tags": [
+            "damage",
+            "melee",
+            "execute",
+            "bleed_synergy",
+            "bleed_consumer"
+          ],
+          "damage_per_bleed_stack": 20,
+          "consumes_bleed_stacks": true,
+          "execute_threshold": 30,
+          "execute_bonus_percent": 25,
+          "base_class_id": "warrior",
+          "subclass_id": "berserker",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": true,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "single"
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_mecanique_note": "Meme montage que Execution du Reaver (skill_warrior_dual_axe_reaver_execution) : damage_per_bleed_stack (+20 % par charge de Saignement, lue AVANT la frappe, 3 charges au plus soit +60 %) puis consumes_bleed_stacks retire le Saignement apres les frappes (bloc REAVER de room.cpp ; sans bleed_consume_remaining_percent la condition bleed_burst_landed ne joue pas). PAS de bleed_consume_damage_per_stack : room.cpp le multiplie par skill.base_damage (= base_power, 0 ici), il n'aurait rien inflige. execute_threshold 30 lu en pourcentage (room.cpp le divise par 100 au-dessus de 1).",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement) : 65 % ATQ (+2 points par rang) sur un ennemi au contact, +20 % par charge de Saignement (3 au plus), Saignements consommes, +25 % sous 30 % de PV de la cible ; recharge 18 s (Charleston 2026-11-12 : 16 a 20 s pour tous les sorts basiques ajoutes, 8 s au depart), sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
+        },
+        {
           "id": "skill_warrior_berserker_fracture",
           "name_en": "Fracture",
           "name_fr": "Fracture",
@@ -2903,6 +3008,75 @@
           "_souffle_a_valider": "A VALIDER (2026-11-06, decision Charleston, reequilibrage du Souffle A+B+C) : mana_cost 27 -> 32, mana_cost_per_level 1 -> 1 (sort de sous-classe x1,2 au rang 1, arrondi, option B).",
           "percent_per_level": 0,
           "range": 0
+        },
+        {
+          "id": "skill_warrior_weaponmaster_breach",
+          "name_en": "Breach",
+          "name_fr": "Brèche",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 65,
+          "percent_per_level": 2.0,
+          "rank_scaling_enabled": true,
+          "mana_cost": 20,
+          "mana_cost_per_level": 1,
+          "cooldown": 18.0,
+          "cast_time": 0,
+          "range": 1,
+          "vfx_type": "melee_slash",
+          "description_fr": "Inflige 65% ATQ (+2 points par rang) à un ennemi au contact et réduit son armure de 5% pendant 6s. Dégâts augmentés de 30% si son armure est déjà brisée (Armure - au maximum de charges) et de 15% s'il est marqué. (provisoire)",
+          "description_en": "Deals 65% ATK (+2 percentage points per rank) to an adjacent enemy and reduces its armor by 5% for 6s. Damage increases by 30% if its armor is already broken (Armor Down at maximum stacks) and by 15% if it is marked. (provisional)",
+          "tags": [
+            "damage",
+            "melee",
+            "armor_down",
+            "armor_break",
+            "debuff"
+          ],
+          "bonus_if_armor_broken": 30,
+          "marked_bonus_percent": 15,
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "armor_down",
+              "stacks_to_apply": 1,
+              "duration": 6.0
+            }
+          ],
+          "rank_milestones": [
+            {
+              "rank": 5,
+              "bonus": "extra_stacks",
+              "stat": "armor_down",
+              "value": 1
+            },
+            {
+              "rank": 10,
+              "bonus": "extra_stacks",
+              "stat": "armor_down",
+              "value": 1
+            }
+          ],
+          "base_class_id": "warrior",
+          "subclass_id": "weaponmaster",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": true,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "single"
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_mecanique_note": "room.cpp : bonus_if_armor_broken = Armure - de la cible a son maximum de charges (max_stacks lu dans status_effects.json, 5) ; marked_bonus_percent = cible portant marked ou hunter_mark. Les deux bonus se multiplient. Ordre : les degats sont resolus AVANT les effets, la charge d'Armure - posee par ce lancer ne compte donc pas pour son propre bonus (elle compte au lancer suivant).",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement) : 65 % ATQ (+2 points par rang) sur un ennemi au contact, 1 charge d'Armure - 6 s, +30 % si l'armure est brisee, +15 % si la cible est marquee ; recharge 18 s (Charleston 2026-11-12 : 16 a 20 s pour tous les sorts basiques ajoutes, 8 s au depart), sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
         },
         {
           "id": "skill_warrior_weaponmaster_sovereign_strike",
@@ -4134,6 +4308,75 @@
           "_souffle_a_valider": "A VALIDER (2026-11-06, decision Charleston, reequilibrage du Souffle A+B+C) : mana_cost 28 -> 34, mana_cost_per_level 1 -> 1 (sort de sous-classe x1,2 au rang 1, arrondi, option B).",
           "range": 1,
           "rank_scaling_enabled": true
+        },
+        {
+          "id": "skill_warrior_warlord_kill_order",
+          "name_en": "Kill Order",
+          "name_fr": "Ordre de mise à mort",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 65,
+          "percent_per_level": 2.0,
+          "rank_scaling_enabled": true,
+          "mana_cost": 20,
+          "mana_cost_per_level": 1,
+          "cooldown": 20.0,
+          "cast_time": 0,
+          "range": 1,
+          "vfx_type": "melee_slash",
+          "description_fr": "Inflige 65% ATQ (+2 points par rang) à un ennemi au contact, augmentés de 25% s'il est marqué. Le lanceur et tous ses alliés gagnent 5% d'ATQ pendant 6s. (provisoire)",
+          "description_en": "Deals 65% ATK (+2 percentage points per rank) to an adjacent enemy, increased by 25% if it is marked. The caster and all allies gain 5% ATK for 6s. (provisional)",
+          "tags": [
+            "damage",
+            "melee",
+            "buff",
+            "support",
+            "atk_up"
+          ],
+          "marked_bonus_percent": 25,
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "atk_up",
+              "stacks_to_apply": 1,
+              "duration": 6.0,
+              "target": "allies"
+            }
+          ],
+          "rank_milestones": [
+            {
+              "rank": 5,
+              "bonus": "extra_stacks",
+              "stat": "atk_up",
+              "value": 1
+            },
+            {
+              "rank": 10,
+              "bonus": "extra_stacks",
+              "stat": "atk_up",
+              "value": 1
+            }
+          ],
+          "base_class_id": "warrior",
+          "subclass_id": "warlord",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": true,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "single"
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_mecanique_note": "Effet atk_up en target allies sur un sort qui vise un ennemi seul : room.cpp (routage par effet, enemy_only_skill) le donne UNE fois par lancer a toute l'equipe vivante du lanceur, lanceur compris, comme le Regeneration de Frappe redemptrice de l'Intercessor. Le serveur ne sait pas limiter cet effet aux allies AUTOUR du lanceur sans nouveau code : c'est toute l'equipe. Pour le reserver au lanceur, passer target a self.",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement) : 65 % ATQ (+2 points par rang) sur un ennemi au contact, +25 % si la cible est marquee, ATQ + 1 charge (5 %) 6 s pour toute l'equipe du lanceur (pas seulement autour de lui, voir _mecanique_note) ; recharge 20 s (Charleston 2026-11-12 : 16 a 20 s pour tous les sorts basiques ajoutes, 8 s au depart), sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
         },
         {
           "id": "skill_warrior_warlord_war_banner",

@@ -48,6 +48,9 @@ FIELDS = ("cooldown", "cast_time")
 # Skills whose written cooldown / cast_time the owner fixed against the rule (owner rule
 # 2026-10-21: cooldown capped at 4-5x the effect duration, no inflation by the model).
 EXCEPTIONS = tuple(T.get("exceptions", {}).get("skills", []))
+# Skills out of the kit load (timing.kit_load.unloaded_skills): neither in the bar nor in the
+# budget, so their short written cooldown never lengthens the other skills of their kits.
+UNLOADED = frozenset(LOAD.get("unloaded_skills", []))
 
 
 # ---------------------------------------------------------------- scale
@@ -203,7 +206,7 @@ def kit_scale(kit, tiers, scaled_tiers):
     lengthens the skills strong for their role (strong()), never the weak ones."""
     def load(k):
         scaled = {t: [dict(r, cooldown=cooldown_rule(r, r["net_power_r1"], k)) if t in scaled_tiers and strong(r) else r
-                      for r in kit[t]] for t in tiers}
+                      for r in kit[t] if r["id"] not in UNLOADED] for t in tiers}
         return P.kit_load(P.bar(scaled, tiers), weight=load_weight)
     if load(1.0) <= LOAD["budget"] + 1e-9:
         return 1.0
@@ -360,7 +363,7 @@ def bands(rows, cdr_of):
     for label, tiers in P.LEVEL_BARS:
         loads, share = [], []
         for *_, kit in P.kit_rows(list(scaled.values())):
-            b = P.bar(kit, tiers)
+            b = P.bar({t: [r for r in kit[t] if r["id"] not in UNLOADED] for t in tiers}, tiers)
             loads.append(P.kit_load(b, weight=load_weight))
             share.append(P.spam_fraction([(r["cooldown"], r["cast_time"], r["power"][0]) for r in b], 0.0, dur))
         out[label] = (loads, share)
@@ -454,7 +457,7 @@ def report():
     over = []
     for cls, sub, spec, kit in P.kit_rows(list(new.values())):
         for band, tiers in P.LEVEL_BARS:
-            b = P.bar(kit, tiers)
+            b = P.bar({t: [r for r in kit[t] if r["id"] not in UNLOADED] for t in tiers}, tiers)
             ld = P.kit_load(b, weight=load_weight)
             if ld > LOAD["budget"] + 1e-9:
                 over.append(f"{spec} ({band}) {ld:.2f}, dont sorts forts "

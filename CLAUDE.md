@@ -131,6 +131,7 @@ Players choose a faction at level 60. Subclass lore must NOT lock players into a
 - **Tiers:** `filler` (low CD, always usable), `basic`, `advanced`, `ultimate`
 - **Per character:** 15 skills (5 base + 5 subclass + 5 tier3), max 100 skill points, 150 needed to max all (intentional -50 deficit forcing build choices). Exception (2026-11-12, a valider): Lightbringer, Lifewarden and Falconer have 6 subclass skills (Holy Nova, Living Brambles, Great Falcon summon added, no skill removed), so 16 skills, 160 to max all, deficit -60. Never assume a fixed subclass kit size in code: derive it from `classes/<class>/skills.json`
 - **Skill levels:** 0-10, 1 point each
+- **Warrior subclass kits (2026-11-12, a valider):** Guardian, Berserker, Weaponmaster and Warlord each have 6 subclass skills (Hammering, Quarry, Breach, Kill Order added before the ultimate, nothing removed), so 16 skills, 160 to max all, deficit -60. Never assume a fixed subclass kit size in code: derive it from `classes/<class>/skills.json`
 - **Formula:** `damage = base_power + (scaling_percent% * scaling_stat)`
 - **Required fields:** `id`, `name_fr`, `name_en`, `tier`, `target`, `pattern`, `damage_type`, `scaling_stat`, `base_power`, `scaling_percent`, `mana_cost`, `cooldown`, `description_fr`, `description_en`, `tags`
 - **Optional fields:** `effect`, `effect_duration`, `buff`, `debuff`, `heal_power`, `shield_value`, `vfx_type`
