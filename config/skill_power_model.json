@@ -192,7 +192,7 @@
       "_detail": "Charleston 2026-10-21 (0.20.4) : les durees d'effets passent a 6-12 s (controle fort 4 s) ; le modele reclamait des recharges et des incantations plus longues (Tir de Pistolet 15 -> 80-100 s, Mutisme 55 -> 115 s...). Decision : chaque sort garde sa recharge et son incantation de la 0.20.3 (commit data 3ebd432) ; un sort de controle reste sous 4-5x la plus longue duree qu'il applique, sauf les ultimes et signatures deja au-dessus en 0.20.3, ; un sort ordinaire deja au-dessus de 5x en 0.20.3 est ramene a 5x (plafond, decision du 2026-10-21).",
       "_smite_2026_11_06": "Chatiment (skill_healer_smite) : recharge 7,5 s fixee par Charleston le 2026-11-06 (remplissage gratuit, +2 s) ; Feu Sacre passe a 8 s et le modele reclamait 8 s.",
       "_degats_sous_classe_2026_11_07": "Degats des sorts de sous-classe faibles releves le 2026-11-07 (decision Charleston, a valider : Fauconnier, Ballmaster, Chef, Alchimiste, Corsaire, Cartomancien), recharges inchangees : le modele reclamait une recharge plus longue pour skill_artisan_alchemist_corrosive_cloud (30 -> 45 s), gardee a 30 s.",
-      "_sorts_basiques_guerrier_2026_11_12": "Charleston 2026-11-12 (sorts basiques de groupe du Guerrier, 6e sort de sous-classe, a valider) : recharge de 8 s demandee, gardee contre la regle : Martelement, Curee, Breche, Ordre de mise a mort (le modele reclamait 15 s chacun). CONFLIT NON TRANCHE : avec ces quatre sorts a 8 s, le budget de charge des kits (timing.kit_load, barres de niveau 60) allonge 17 autres sorts du Guerrier (skill_timing.py --check echoue, rien n'a ete applique). Seuil sans effet sur les autres sorts : Martelement 20 s, Curee 45 s, Breche plus de 30 s, Ordre de mise a mort plus de 30 s (60 s pour les quatre ensemble). A arbitrer : allonger les nouveaux sorts, appliquer skill_timing.py, ou retoucher le modele.",
+      "_sorts_basiques_guerrier_2026_11_12": "Charleston 2026-11-12 (sorts basiques de groupe du Guerrier, 6e sort de sous-classe, a valider) : Martelement, Curee, Breche, Ordre de mise a mort. Recharges d'abord de 8 s (contre la regle, qui reclamait 15 s), puis relevees le meme jour a la demande de Charleston (16 a 20 s pour tous les sorts basiques ajoutes) : Martelement 16 s, Curee 18 s, Breche 18 s, Ordre de mise a mort 20 s. Elles respectent desormais la regle : les quatre sorts ne sont plus dans les exceptions. Ils restent hors de la charge des kits (timing.kit_load.unloaded_skills) : sans cela le budget allongerait encore 17 autres sorts du Guerrier (Saignee 26 -> 50 s, Cri de commandement 30 -> 40 s...), un sort AJOUTE ne devant modifier aucun sort existant.",
       "skills": [
         "skill_archer_ballmaster_bounce_shot",
         "skill_archer_ballmaster_pinball",
@@ -245,17 +245,13 @@
         "skill_rogue_throw_dagger",
         "skill_rogue_trickster_disarm",
         "skill_rogue_trickster_grand_swindle",
-        "skill_warrior_berserker_quarry",
         "skill_warrior_bulwark_anchor",
         "skill_warrior_dreadlord_reign_of_terror",
         "skill_warrior_dreadlord_terror_cry",
-        "skill_warrior_guardian_hammering",
         "skill_warrior_hammer_lord_steel_crusher",
         "skill_warrior_hammer_lord_telluric_shockwave",
         "skill_warrior_heavy_strike",
         "skill_warrior_shield_bash",
-        "skill_warrior_warlord_kill_order",
-        "skill_warrior_weaponmaster_breach",
         "skill_warrior_weaponmaster_sovereign_strike"
       ]
     },
@@ -318,7 +314,7 @@
       "reactive_roles": ["defensif"],
       "reactive_weight": 0.5,
       "unloaded_skills": ["skill_warrior_berserker_quarry", "skill_warrior_guardian_hammering", "skill_warrior_warlord_kill_order", "skill_warrior_weaponmaster_breach"],
-      "_unloaded_skills_note": "Charleston 2026-11-12 (sorts basiques de groupe du Guerrier, 6e sort de sous-classe, A VALIDER) : ces sorts sont hors de la charge des kits (ils ne comptent ni dans la barre ni dans le budget). Sans cela, leur recharge courte remplissait les barres du Guerrier et le budget allongeait 17 autres sorts du Guerrier (Saignee 26 -> 50 s, Cri de commandement 30 -> 50 s...). Ils restent dans timing.exceptions (leur recharge ecrite tient). Lu par scripts/balance/skill_timing.py (kit_scale, rapport des bandes).",
+      "_unloaded_skills_note": "Charleston 2026-11-12 (sorts basiques de groupe du Guerrier, 6e sort de sous-classe, A VALIDER) : ces sorts sont hors de la charge des kits (ils ne comptent ni dans la barre ni dans le budget). Sans cela, meme avec leurs recharges de 16 a 20 s, ils remplissent les barres du Guerrier et le budget allonge 17 autres sorts du Guerrier (Saignee 26 -> 50 s, Cri de commandement 30 -> 40 s...). Leur recharge ecrite respecte la regle (ils ne sont plus dans timing.exceptions). Lu par scripts/balance/skill_timing.py (kit_scale, rapport des bandes).",
       "_reactive_note": "Cas particuliers (2026-10-15). Un sort defensif (soin, bouclier, dissipation, provocation, buff defensif) se lance quand un allie encaisse, pas des qu'il est pret : pret sans etre lance, il n'est pas du spam. Il pese 0,5 dans la charge (convention, comme overheal_factor : sur un pack le groupe encaisse peu, sur un boss beaucoup). Sans ce poids, les kits de soigneur, faits de soins, debordaient tous et allongeaient leurs sorts de coeur.",
       "_budget_note": "0,40 propose en phase 1 renvoyait 60 % des GCD au remplissage, le jeu 'spam skill 1' que le proprietaire refuse, et n'etait tenable qu'en doublant tous les cooldowns. 0,8 : sur la pire barre, au moins un GCD sur cinq revient au remplissage sans reduction de recharge, et les gros sorts reviennent assez rarement pour qu'un combat long oblige a choisir leur moment. min_density_scale 0,5 : un kit ne divise jamais par plus de deux la densite admise ; un kit qui reste au-dessus est liste par --report. Revue des cas particuliers (2026-10-15) : un kit qui reste au-dessus ne deborde que par des sorts faibles (sous la mediane de leur role) poses sur le plancher de leur role, ses sorts forts etant deja au k minimal ou a leur borne ; la charge des sorts forts reste celle de la phase 2. Accepte : les allonger serait les nerfer (_meta/carnet/matrice_sorts.md section 8)."
     },
