@@ -684,6 +684,75 @@
           "rank_scaling_enabled": true
         },
         {
+          "id": "skill_archer_ranger_marking_arrow",
+          "name_en": "Marking Arrow",
+          "name_fr": "Flèche de désignation",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 55,
+          "percent_per_level": 1.6,
+          "rank_scaling_enabled": true,
+          "mana_cost": 24,
+          "mana_cost_per_level": 1,
+          "cooldown": 16.0,
+          "cast_time": 0,
+          "range": 6,
+          "vfx_type": "projectile",
+          "description_fr": "Inflige 55% ATQ (+1,6 point par rang) à un ennemi à 6 cases maximum et le marque pendant 8s : il subit 10% de dégâts en plus. Nécessite une ligne de vue. (provisoire)",
+          "description_en": "Deals 55% ATK (+1.6 percentage points per rank) to an enemy within 6 tiles and marks them for 8s: they take 10% more damage. Requires line of sight. (provisional)",
+          "tags": [
+            "damage",
+            "ranged",
+            "single",
+            "mark",
+            "marked_synergy",
+            "debuff"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "marked",
+              "stacks_to_apply": 1,
+              "duration": 8.0
+            }
+          ],
+          "rank_milestones": [
+            {
+              "rank": 5,
+              "bonus": "extra_duration",
+              "stat": "marked",
+              "value": 2
+            },
+            {
+              "rank": 10,
+              "bonus": "extra_effect",
+              "stat": "vulnerable",
+              "value": 1,
+              "with": "marked"
+            }
+          ],
+          "base_class_id": "archer",
+          "subclass_id": "ranger",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": true,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "single"
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_mecanique_note": "Tir a longue portee du Ranger (portee 6 comme Tir de precision, Coup fatal et Tir en pleine tete), degats physiques ATQ, ligne de vue exigee (targeting.requires_line_of_sight, room.cpp skill_needs_los). Statut Marque (stats/status_effects.json effects.special.marked : +10 % de degats subis, 1 charge, rafraichi), deja pose par Marque du Faucon ; effet debuff applique a la cible par room.cpp apply_skill_effects.",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s pour tous ces sorts) : 55 % ATQ (+1,6 point par rang) a 6 cases, Marque 8 s (+10 % de degats subis) ; recharge 16 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
+        },
+        {
           "id": "skill_archer_ranger_headshot",
           "name_en": "Headshot",
           "name_fr": "Tir en Tête",
@@ -1818,6 +1887,59 @@
           "_souffle_a_valider": "A VALIDER (2026-11-06, decision Charleston, reequilibrage du Souffle A+B+C) : mana_cost 33 -> 40, mana_cost_per_level 1 -> 1 (sort de sous-classe x1,2 au rang 1, arrondi, option B).",
           "percent_per_level": 0,
           "range": 4
+        },
+        {
+          "id": "skill_archer_falconer_blinding_dive",
+          "name_en": "Blinding Dive",
+          "name_fr": "Piqué aveuglant",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 55,
+          "percent_per_level": 1.6,
+          "rank_scaling_enabled": true,
+          "mana_cost": 24,
+          "mana_cost_per_level": 1,
+          "cooldown": 18.0,
+          "cast_time": 0,
+          "range": 5,
+          "vfx_type": "falcon",
+          "description_fr": "Ton faucon pique un ennemi à 5 cases maximum : inflige 55% ATQ (+1,6 point par rang) et l'aveugle pendant 2s, sa précision baisse de 30%. Ignore la ligne de vue. (provisoire)",
+          "description_en": "Your falcon dives at an enemy within 5 tiles: deals 55% ATK (+1.6 percentage points per rank) and blinds them for 2s, lowering their accuracy by 30%. Ignores line of sight. (provisional)",
+          "tags": [
+            "damage",
+            "pet",
+            "single",
+            "blind",
+            "debuff"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "blind",
+              "value": 30,
+              "duration": 2.0
+            }
+          ],
+          "base_class_id": "archer",
+          "subclass_id": "falconer",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": false,
+            "bypasses_los": true,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "single"
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_mecanique_note": "Coup de faucon comme Frappe du Faucon : degats physiques ATQ, ignore la ligne de vue (targeting.bypasses_los, content_loader.cpp -> ignore_los). Aveuglement non canonique : value 30 = -30 % de precision (status_manager.cpp, la value du sort remplace les -75 % du gabarit), comme Bombe fumigene (value 20) et les aveuglements du Mage (25-30). Aveuglement de 2 s sous le plancher de 6 s des effets doux : stats/status_effects.json duration_rule.soft_seconds_exempt_skills.",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s pour tous ces sorts) : 55 % ATQ (+1,6 point par rang) a 5 cases, Aveuglement 2 s (-30 % de precision) ; recharge 18 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
         },
         {
           "id": "skill_archer_falconer_falcon_fury",
@@ -2985,6 +3107,69 @@
           "rank_scaling_enabled": true
         },
         {
+          "id": "skill_archer_ballmaster_glue_ball",
+          "name_en": "Glue Ball",
+          "name_fr": "Balle de glu",
+          "tier": "basic",
+          "target": "enemies",
+          "pattern": "bounce_2",
+          "damage_type": "physical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 40,
+          "percent_per_level": 1.2,
+          "rank_scaling_enabled": true,
+          "mana_cost": 22,
+          "mana_cost_per_level": 1,
+          "cooldown": 18.0,
+          "cast_time": 0,
+          "range": 4,
+          "chain_bounces": 1,
+          "bounce_if_adjacent": true,
+          "vfx_type": "ricochet",
+          "description_fr": "Inflige 40% ATQ (+1,2 point par rang) à un ennemi à 4 cases maximum, puis rebondit sur un ennemi adjacent. Chaque ennemi touché subit Ralentissement pendant 2s. Ignore la ligne de vue. (provisoire)",
+          "description_en": "Deals 40% ATK (+1.2 percentage points per rank) to an enemy within 4 tiles, then bounces to an adjacent enemy. Each enemy hit is Slowed for 2s. Ignores line of sight. (provisional)",
+          "tags": [
+            "damage",
+            "bounce",
+            "slow",
+            "debuff",
+            "2_target_specialist"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "slow",
+              "stacks_to_apply": 1,
+              "duration": 2.0
+            }
+          ],
+          "rank_milestones": [
+            {
+              "rank": 5,
+              "bonus": "extra_stacks",
+              "stat": "slow",
+              "value": 1
+            }
+          ],
+          "base_class_id": "archer",
+          "subclass_id": "ballmaster",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "tile",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": false,
+            "bypasses_los": true,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "bounce_2"
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_mecanique_note": "Meme montage que Flipper (skill_archer_ballmaster_pinball) : target enemies + bounce_2 (combat/targeting.json, categorie chain), ignore la ligne de vue, bounce_if_adjacent (le rebond ne part que vers un ennemi des 8 cases voisines, room.cpp). chain_bounces 1 OBLIGATOIRE : le motif bounce_2 n'a pas de champ bounces (pattern_registry.cpp le lit a 0), sans chain_bounces le sort ne toucherait que la premiere cible ; 1 rebond = 2 ennemis distincts (un rebond ne repart jamais de la cible courante). Ralentissement canonique 1 charge (+0,3 s de GCD) applique a chaque cible touchee par room.cpp apply_skill_effects. Ralentissement de 2 s sous le plancher de 6 s des effets doux : stats/status_effects.json duration_rule.soft_seconds_exempt_skills.",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s pour tous ces sorts) : 40 % ATQ (+1,2 point par rang) par ennemi touche, 2 ennemis (1 rebond vers un ennemi adjacent), Ralentissement 2 s sur chacun ; recharge 18 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
+        },
+        {
           "id": "skill_archer_ballmaster_endless_volley",
           "name_en": "Endless Volley",
           "name_fr": "Volée Sans Fin",
@@ -4108,6 +4293,69 @@
           "range": 4,
           "rank_scaling_enabled": true,
           "_rang_a_valider": "A VALIDER (2026-11-08, decision Charleston, paliers de rang etape 0) : percent_per_level 2.0 ajoute (gain +60 % au rang 10, mediane des sorts de degats/soin qui progressent), rank_scaling_enabled."
+        },
+        {
+          "id": "skill_archer_gunslinger_covering_fire",
+          "name_en": "Covering Fire",
+          "name_fr": "Tir de couverture",
+          "tier": "basic",
+          "target": "allies",
+          "pattern": "row_3",
+          "damage_type": "none",
+          "base_power": 0,
+          "mana_cost": 26,
+          "mana_cost_per_level": 3,
+          "cooldown": 18.0,
+          "cast_time": 0,
+          "range": 4,
+          "vfx_type": "buff_aura",
+          "description_fr": "Accorde +6% d'esquive pendant 6s aux alliés d'une rangée de 3 cases à 4 cases maximum. (provisoire)",
+          "description_en": "Grants +6% evasion for 6s to allies in a row of 3 tiles within 4 tiles. (provisional)",
+          "tags": [
+            "buff",
+            "support",
+            "aoe",
+            "evasion"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "evasion_up",
+              "stacks_to_apply": 2,
+              "duration": 6.0
+            }
+          ],
+          "rank_milestones": [
+            {
+              "rank": 5,
+              "bonus": "extra_stacks",
+              "stat": "evasion_up",
+              "value": 1
+            },
+            {
+              "rank": 10,
+              "bonus": "extra_stacks",
+              "stat": "evasion_up",
+              "value": 1
+            }
+          ],
+          "base_class_id": "archer",
+          "subclass_id": "gunslinger",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "tile",
+            "valid_target_team": "ally",
+            "requires_line_of_sight": false,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "row_3"
+          },
+          "percent_per_level": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_mecanique_note": "Rangee d'allies : target allies + row_3, meme montage que Rythme de travail (Artisan) et Chant de Souffle (Musicien). Esquive canonique evasion_up (stats/status_effects.json effects.stat_modifiers : +3 points d'esquive par charge, 5 charges au plus), 2 charges = +6 %, effet buff applique a chaque allie de la rangee par room.cpp apply_skill_effects.",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s pour tous ces sorts) : +6 % d'esquive (2 charges evasion_up) 6 s aux allies d'une rangee de 3 a 4 cases ; recharge 18 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
         },
         {
           "id": "skill_archer_gunslinger_pin_down",
