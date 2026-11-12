@@ -152,6 +152,7 @@ ALLOWED_METADATA_FIELDS = {
     # Misc skill-specific fields (also Phase 4.0 whitelist)
     "exclude_caster",   # Artisan resource_share: heal allies but not caster
     "dot_heal_percent", # Martyr intercession: % of DoT damage redirected as healing
+    "dot_scaling_stat", # top-level DoT base: "max_hp" (defaut, Intercession) ou "mag" (Ronces vivantes)
     # Familiar pool fields (whitelist 2026-08-01). Confirmes lus cote back :
     # services/familiar/src/db/loadout_roller.cpp:50-58 groupe le pool de skills par
     # `role` et mappe meme les valeurs FR ("attaque" -> "dps", "utilitaire" -> "utility").
