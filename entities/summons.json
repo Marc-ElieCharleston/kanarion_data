@@ -58,7 +58,7 @@
   "effect.self_shield": "facultatif (Summoner, golem) : {max_hp_percent_per_target, max_hp_percent_max, duration_sec}. Apres une activation qui touche N ennemis, l'invocation se pose un bouclier (shield) de N x max_hp_percent_per_target % de ses PV max, plafonne a max_hp_percent_max, qui REMPLACE le precedent ; aucun si N = 0.",
   "extra_pulses[]": "facultatif (Summoner, provocation du golem) : pulses supplementaires a statuts seulement {interval_sec, radius, distance, on_spawn, requires_target, statuses, status_source owner|invocation, animation}. Chaque activation : INVOCATION_TRIGGERED (message = animation, target NO_ENTITY, value = unites touchees) puis un STATUS_APPLIED par ennemi (message = animation).",
   "on_spawn.statuses": "facultatif (Summoner, Bond du loup) : {radius, distance, targets enemies, statuses, animation}. A l'apparition : INVOCATION_TRIGGERED (message = animation) puis les statuts (source = le lanceur, message = animation) sur chaque ennemi a portee.",
-  "rank_bonus": "facultatif (Summoner, effets de palier provisoires, a valider) : {rank, every_n_activations | on_spawn_extra_sec | extra_pulse_radius}. Quand le rang de la competence atteint `rank` : flaque plus frequente, statuts du Bond plus longs, provocation plus large.",
+  "rank_bonus": "facultatif (Summoner, effets de palier provisoires, a valider) : {rank, every_n_activations | on_spawn_extra_sec | extra_pulse_radius | max_per_owner (grand faucon, 2026-11-12 : plafond par lanceur au rang, au-dessus de limits.max_per_owner)}. Quand le rang de la competence atteint `rank` : flaque plus frequente, statuts du Bond plus longs, provocation plus large.",
   "limits.until_combat_end": "facultatif (grand faucon du Falconer, 2026-11-12) : aucune limite de temps, l'invocation reste jusqu'a sa mort ou la fin du combat ; exclut duration_sec et duration_sec_at_rank. INVOCATION_SPAWNED.value = 0.",
   "limits.refuse_at_max_per_owner": "facultatif (grand faucon) : a max_per_owner, le sort est REFUSE sans cout (au lieu de faire disparaitre la plus ancienne).",
   "body.immune_to_area": "facultatif (grand faucon), invocation a PV : seuls les sorts a une cible de l'autre camp la touchent ; un sort de zone passe sans degats ni effet sur elle.",
@@ -1502,7 +1502,7 @@
         "until_combat_end": true
       },
       "invocation": {
-        "_a_valider": "A VALIDER (brief Furie du Faucon du 2026-11-11, decisions Charleston du 11/11 et du 12/11) : au-dessus de SA case, ne bouge pas, sans limite de temps (mort ou fin du combat). PV 50 % des PV max du lanceur a la pose (stats du lanceur heritees), ne bloque pas la ligne de vue, seuls les sorts a une cible le touchent (body.immune_to_area). Jusqu'a 3 par lanceur, a 3 le sort est refuse sans cout. Toutes les 2 s (premier pique 2 s apres la pose), pique decales de 0,7 s entre les faucons du lanceur (stagger_sec). Cible : l'ennemi Marque par le lanceur (Marque du Faucon), sinon celui qui porte le plus de charges de Saignement, sinon le plus proche, a 4 cases (Tchebychev, cles dive_1..dive_4 ; decision Charleston du 2026-11-12, la portee 5 du brief est abandonnee). 40 % ATQ physiques + 1 charge de Saignement 6 s (source = le lanceur). Compte dans la limite de 6 invocations par camp.",
+        "_a_valider": "A VALIDER (brief Furie du Faucon du 2026-11-11, decisions Charleston du 11/11 et du 12/11) : au-dessus de SA case, ne bouge pas, sans limite de temps (mort ou fin du combat). PV 50 % des PV max du lanceur a la pose (stats du lanceur heritees), ne bloque pas la ligne de vue, seuls les sorts a une cible le touchent (body.immune_to_area). Jusqu'a 3 par lanceur (4 au rang 10), au-dela le sort est refuse sans cout. Toutes les 2 s (premier pique 2 s apres la pose), pique decales de 0,5 s entre les faucons du lanceur (4 au rang 10) (stagger_sec). Cible : l'ennemi Marque par le lanceur (Marque du Faucon), sinon celui qui porte le plus de charges de Saignement, sinon le plus proche, a 4 cases (Tchebychev, cles dive_1..dive_4 ; decision Charleston du 2026-11-12, la portee 5 du brief est abandonnee). 40 % ATQ physiques + 1 charge de Saignement 6 s (source = le lanceur). Compte dans la limite de 6 invocations par camp.",
         "animations": {
           "spawn": "summon_cast",
           "idle": "summon_idle",
@@ -1532,7 +1532,7 @@
           "radius": 4,
           "distance": "chebyshev",
           "interval_sec": 2,
-          "stagger_sec": 0.7,
+          "stagger_sec": 0.5,
           "on_spawn": false,
           "selection": "nearest",
           "priority_status": "marked",
@@ -1553,6 +1553,11 @@
               "duration_sec": 6
             }
           ]
+        },
+        "rank_bonus": {
+          "_a_valider": "Decision Charleston du 2026-11-12 : au rang 10 du sort, 4 grands faucons par lanceur au lieu de 3 (refus sans cout au 5e) ; le combo monte donc jusqu'a x4. Remplace le -15 % de recharge que scripts/balance/rank_milestones.py donnait a un sort sans progression.",
+          "rank": 10,
+          "max_per_owner": 4
         }
       }
     }
