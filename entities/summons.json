@@ -43,7 +43,23 @@
   "motion.mode chase": "lot 11 (2026-11-11) : motion {mode chase, target nearest_enemy}. Exige un corps qui occupe sa case et un trigger pulse (selection nearest, radius >= 1) : c'est son coup. Toutes les trigger.interval_sec : si un ENNEMI (unite vivante a PV, invocations et leurres exclus) est a trigger.radius ou moins, le pulse frappe le plus proche ; sinon l'invocation avance d'1 case vers l'ennemi le plus proche (Manhattan, egalite = plus petit identifiant) par le plus court chemin de cases libres (egalite : haut, droite, bas, gauche) et le pulse de ce tic ne part pas. Aucun chemin = elle reste sur place, aucun evenement. Evenements : INVOCATION_MOVED (source = l'invocation, target = l'ennemi poursuivi, value = case de depart, position = case d'arrivee, message = animations.move) + POSITION_CHANGED ; le coup = INVOCATION_TRIGGERED (target = l'ennemi frappe) + DAMAGE",
   "animations.move": "facultatif (lot 11) : cle recopiee dans INVOCATION_MOVED.message (defaut animations.idle), golem du Forgemaster : walk",
   "placement.footprint": "facultatif (lot 11), avec placement.mode cell_in_range et un objet qui n'occupe pas sa case : {shape square, size N}. La case du client (a placement.range, ligne de vue si la competence l'exige) est le coin de plus petite colonne et de plus petite ligne du carre N x N ; au bord du plateau le carre est decale vers l'interieur (la case du client reste dedans). Un objet par case, tous du meme groupe : ils comptent pour UNE invocation dans les limites et disparaissent ensemble. Un INVOCATION_SPAWNED par case (flaque du Plague Brewer)",
-  "ally_effect": "facultatif (lot 12, 2026-11-11), avec trigger.mode pulse (selection all) et effect.targets enemies : {statuses [{effect_id, stacks >= 1, duration_sec > 0}], animation}. A chaque activation, apres l'effet sur les ennemis, les unites vivantes du camp du lanceur a la meme portee (radius, distance ; invocations et leurres exclus, le lanceur compris) recoivent ces statuts (source = le lanceur) ; chaque STATUS_APPLIED porte skill_id et message = animation (ampli du Guitarist : buff_hit)."
+  "ally_effect": "facultatif (lot 12, 2026-11-11), avec trigger.mode pulse (selection all) et effect.targets enemies : {statuses [{effect_id, stacks >= 1, duration_sec > 0}], animation}. A chaque activation, apres l'effet sur les ennemis, les unites vivantes du camp du lanceur a la meme portee (radius, distance ; invocations et leurres exclus, le lanceur compris) recoivent ces statuts (source = le lanceur) ; chaque STATUS_APPLIED porte skill_id et message = animation (ampli du Guitarist : buff_hit).",
+  "limits.duration_sec_at_rank": "facultatif (refonte du Summoner, 2026-11-11) : {rank, duration_sec}. Duree lineaire entre duration_sec (rang 1 de la competence) et duration_sec au rang `rank`, plafonnee au-dela ; rang = rang de la competence du lanceur (SkillsComponent).",
+  "limits.duration_sec_per_arcane_charge": "facultatif (Summoner, decision Charleston du 11/11) : a la pose, TOUTES les Charges Arcaniques du lanceur sont consommees et chaque charge ajoute ces secondes a la duree. INVOCATION_SPAWNED.absorbed_damage = charges consommees.",
+  "body.inherit_owner_stats": "facultatif (Summoner) : l'invocation a PV porte les stats du lanceur photographiees a la pose (attaque, MAG, armure, resistance...) comme stats de base ; ses statuts (Lien d'echos : atk_up, mag_up, armor_up, magic_resist_up) s'y appliquent et ses coups se calculent sur ses propres stats. Sans la cle : coups sur les stats du lanceur photographiees, stats propres vides (inchange).",
+  "body.damage_taken_percent": "facultatif (Summoner, golem) : modificateur de degats subis de base (negatif = reduction, Peau de pierre -15). Exige inherit_owner_stats.",
+  "placement.mode near_priority_enemy": "Summoner (loup) : case libre a placement.range au plus du lanceur (Manhattan, sans ligne de vue), la plus proche de l'ennemi porteur du statut prioritaire pose par le lanceur (trigger.priority_status), sinon de la case visee, sinon de l'ennemi le plus proche du lanceur ; egalite = plus petit numero de case.",
+  "motion.step_interval_sec": "facultatif avec motion chase (Summoner) : l'invocation avance d'une case toutes les step_interval_sec, independamment de son coup (pulse) ; sans la cle, un pas OU un coup par intervalle du pulse (golem du Forgemaster, inchange). La portee de poursuite suit trigger.distance.",
+  "trigger.priority_status": "facultatif, pulse (Summoner : marked) : une unite qui porte ce statut POSE PAR LE LANCEUR est visee en premier (selection nearest), poursuivie en premier (motion chase) et sert d'ancre a placement near_priority_enemy.",
+  "trigger.requires_target": "facultatif, pulse : sans cible a portee, le pulse ne part pas et attend la premiere cible (aucun evenement) ; sans la cle, un pulse selection all part a vide (inchange).",
+  "effect.priority_bonus_percent": "facultatif (Summoner : 15) : degats subis +N% pour la cible qui porte le statut prioritaire pose par le lanceur.",
+  "effect.damage.scaling_stat": "facultatif : atk | mag. Statistique du lanceur qui porte les degats (defaut : atk pour physical, mag pour magical). Loup du Summoner : physique sur la MAG.",
+  "effect.every_n_activations": "facultatif (Summoner, gelee) : {n, statuses, animation}. A chaque n-ieme activation, la cible recoit aussi ces statuts (source = le lanceur) ; STATUS_APPLIED porte skill_id et message = animation (slime_puddle, case de la cible).",
+  "effect.self_shield": "facultatif (Summoner, golem) : {max_hp_percent_per_target, max_hp_percent_max, duration_sec}. Apres une activation qui touche N ennemis, l'invocation se pose un bouclier (shield) de N x max_hp_percent_per_target % de ses PV max, plafonne a max_hp_percent_max, qui REMPLACE le precedent ; aucun si N = 0.",
+  "extra_pulses[]": "facultatif (Summoner, provocation du golem) : pulses supplementaires a statuts seulement {interval_sec, radius, distance, on_spawn, requires_target, statuses, status_source owner|invocation, animation}. Chaque activation : INVOCATION_TRIGGERED (message = animation, target NO_ENTITY, value = unites touchees) puis un STATUS_APPLIED par ennemi (message = animation).",
+  "on_spawn.statuses": "facultatif (Summoner, Bond du loup) : {radius, distance, targets enemies, statuses, animation}. A l'apparition : INVOCATION_TRIGGERED (message = animation) puis les statuts (source = le lanceur, message = animation) sur chaque ennemi a portee.",
+  "rank_bonus": "facultatif (Summoner, effets de palier provisoires, a valider) : {rank, every_n_activations | on_spawn_extra_sec | extra_pulse_radius}. Quand le rang de la competence atteint `rank` : flaque plus frequente, statuts du Bond plus longs, provocation plus large.",
+  "client_visual": "facultatif, lu par le CLIENT seul (Summoner, 2026-11-11) : {sprite_frames, sprite_scale}. Planche du corps d'une invocation a PV (animations <cle>_<ne|sw>, une par cle d'animation des evenements) et son echelle d'affichage (1,3 pour le golem, decision Charleston du 11/11, a ajuster en jeu ; jamais dans un script). spawn_arc_px (loup) : a l'apparition, le corps arrive en arc (hauteur en px) pendant son animation d'apparition. cast_effect : effet dessine joue sous la case visee pendant l'incantation (CAST_STARTED). effects : cle d'evenement -> effet dessine (assets/vfx/concepts/spec_<rang 3>_v1) joue par-dessus le corps, sur sa case, ou sur la cible avec le suffixe @target. Sans la cle : socle provisoire. attacks[] / passive (gabarit, Summoner 2026-11-12) : noms et descriptions FR/EN des attaques et du passif d'une invocation, AFFICHAGE seul (textes du copywriting) ; les valeurs de jeu restent dans le bloc invocation."
     }
   },
   "global_limits": {
@@ -1144,6 +1160,362 @@
             }
           ],
           "animation": "buff_hit"
+        }
+      }
+    },
+    {
+      "id": "summoner_ectoplasm_slime",
+      "name_fr": "Gelée d'ectoplasme",
+      "name_en": "Ectoplasm Slime",
+      "attacks": [
+        {
+          "name_fr": "Crachat ectoplasmique",
+          "name_en": "Ectoplasmic Spit",
+          "description_fr": "Inflige 60 % de la MAG de l'invocateur, réduit la résistance magique de 15 % pendant 8s et applique 1 charge de Corruption.",
+          "description_en": "Deals damage equal to 60% of the summoner's MAG, reduces magic resistance by 15% for 8s and applies 1 stack of Corruption."
+        },
+        {
+          "name_fr": "Flaque collante",
+          "name_en": "Sticky Puddle",
+          "description_fr": "Toutes les 3 attaques, laisse une flaque qui Ralentit la cible pendant 2s. Se déclenche toutes les 2 attaques au rang 10.",
+          "description_en": "Every 3 attacks, leaves a puddle that Slows the target for 2s. Triggers every 2 attacks at rank 10."
+        }
+      ],
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "summoner_haunting_slime_v1",
+      "client_visual": {
+        "sprite_frames": "res://assets/animations/invocations/summoner_ectoplasm_slime_frames.tres",
+        "sprite_scale": 1.0,
+        "cast_effect": "invoke_cast"
+      },
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 12,
+        "duration_sec_at_rank": {
+          "rank": 10,
+          "duration_sec": 20
+        }
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-11, refonte du Summoner, decisions Charleston du 11/11) : gelee statique, PV 10% des PV max du Summoner, ne bloque pas la ligne de vue. Crachat toutes les 2 s (premier 2 s apres la pose) sur l'ennemi Marque par le Summoner a 3 cases, sinon le plus proche ; rien a portee = elle attend. 60% MAG magiques, +15% sur la cible Marquee, magic_resist_down 3 charges 8 s, corruption 1 charge 8 s. Toutes les 3 attaques, flaque collante : slow 1 charge 2 s. Rang 10 : flaque toutes les 2 attaques.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "trigger": "shot",
+          "hit": "summon_hit",
+          "destroyed": "summon_break",
+          "end": "summon_fade"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 10,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true,
+          "inherit_owner_stats": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 3
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 3,
+          "interval_sec": 2,
+          "on_spawn": false,
+          "selection": "nearest",
+          "priority_status": "marked",
+          "requires_target": true
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "magical",
+            "base_power": 0,
+            "scaling_percent": 60
+          },
+          "priority_bonus_percent": 15,
+          "statuses": [
+            {
+              "effect_id": "magic_resist_down",
+              "stacks": 3,
+              "duration_sec": 8
+            },
+            {
+              "effect_id": "corruption",
+              "stacks": 1,
+              "duration_sec": 8
+            }
+          ],
+          "every_n_activations": {
+            "n": 3,
+            "statuses": [
+              {
+                "effect_id": "slow",
+                "stacks": 1,
+                "duration_sec": 2
+              }
+            ],
+            "animation": "slime_puddle"
+          }
+        },
+        "rank_bonus": {
+          "rank": 10,
+          "every_n_activations": 2
+        }
+      }
+    },
+    {
+      "id": "summoner_echo_wolf",
+      "name_fr": "Loup d'écho",
+      "name_en": "Echo Wolf",
+      "attacks": [
+        {
+          "name_fr": "Bond terrifiant",
+          "name_en": "Terrifying Leap",
+          "description_fr": "À son apparition, Effraie les ennemis autour de lui pendant 2s (3s au rang 10).",
+          "description_en": "On appearing, Fears surrounding enemies for 2s (3s at rank 10)."
+        },
+        {
+          "name_fr": "Morsure du silence",
+          "name_en": "Silencing Bite",
+          "description_fr": "Inflige 80 % de la MAG de l'invocateur en dégâts physiques et applique Silence pendant 1s.",
+          "description_en": "Deals physical damage equal to 80% of the summoner's MAG and applies Silence for 1s."
+        }
+      ],
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "summoner_support_skills_v1",
+      "client_visual": {
+        "sprite_frames": "res://assets/animations/invocations/summoner_echo_wolf_frames.tres",
+        "sprite_scale": 1.0,
+        "spawn_arc_px": 48,
+        "cast_effect": "invoke_cast",
+        "effects": {
+          "leap": "wolf_summon",
+          "bite": "wolf_bite@target"
+        }
+      },
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 8,
+        "duration_sec_at_rank": {
+          "rank": 10,
+          "duration_sec": 12
+        }
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-11, refonte du Summoner, decisions Charleston du 11/11) : loup, PV 25% des PV max du Summoner. Pose : case libre a 5 cases au plus (Manhattan, sans ligne de vue) la plus proche de l'ennemi Marque par le Summoner, sinon de la case visee, sinon de l'ennemi le plus proche. Bond a l'apparition : fear 2 s aux ennemis des 8 cases autour (Tchebychev 1). Il court une case toutes les 0,5 s vers l'ennemi Marque, sinon le plus proche, et mord toutes les 2 s au contact (1 case) : 80% de la MAG du Summoner en degats physiques, +15% sur la cible Marquee, silence 1 s. Rang 10 : fear du Bond 3 s.",
+        "animations": {
+          "spawn": "leap",
+          "idle": "idle",
+          "move": "run",
+          "trigger": "bite",
+          "hit": "hit",
+          "destroyed": "death",
+          "end": "death"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 25,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true,
+          "inherit_owner_stats": true
+        },
+        "placement": {
+          "mode": "near_priority_enemy",
+          "range": 5
+        },
+        "motion": {
+          "mode": "chase",
+          "target": "nearest_enemy",
+          "step_interval_sec": 0.5
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 1,
+          "interval_sec": 2,
+          "on_spawn": false,
+          "selection": "nearest",
+          "priority_status": "marked",
+          "requires_target": true
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "physical",
+            "scaling_stat": "mag",
+            "base_power": 0,
+            "scaling_percent": 80
+          },
+          "priority_bonus_percent": 15,
+          "statuses": [
+            {
+              "effect_id": "silence",
+              "stacks": 1,
+              "duration_sec": 1
+            }
+          ]
+        },
+        "on_spawn": {
+          "statuses": {
+            "radius": 1,
+            "distance": "chebyshev",
+            "targets": "enemies",
+            "statuses": [
+              {
+                "effect_id": "fear",
+                "stacks": 1,
+                "duration_sec": 2
+              }
+            ],
+            "animation": "fear_wave"
+          }
+        },
+        "rank_bonus": {
+          "rank": 10,
+          "on_spawn_extra_sec": 1
+        }
+      }
+    },
+    {
+      "id": "summoner_abyss_guardian",
+      "name_fr": "Gardien de l'Abysse",
+      "name_en": "Abyss Guardian",
+      "attacks": [
+        {
+          "name_fr": "Écrasement abyssal",
+          "name_en": "Abyssal Crush",
+          "description_fr": "Toutes les 4s, inflige 70 % de la MAG de l'invocateur aux ennemis des 8 cases adjacentes et applique 1 charge de Corruption. Gagne un bouclier de 5 % de ses PV max par ennemi touché (15 % max.) pendant 4s.",
+          "description_en": "Every 4s, deals damage equal to 70% of the summoner's MAG to enemies on the 8 adjacent tiles and applies 1 stack of Corruption. Gains a shield equal to 5% of its max HP per enemy hit (15% max.) for 4s."
+        },
+        {
+          "name_fr": "Provocation abyssale",
+          "name_en": "Abyssal Taunt",
+          "description_fr": "Toutes les 8s, Provoque les ennemis autour du Gardien pendant 2s. Portée étendue à 2 cases au rang 10.",
+          "description_en": "Every 8s, Taunts enemies around the Guardian for 2s. Range increases to 2 tiles at rank 10."
+        }
+      ],
+      "passive": {
+        "name_fr": "Peau de pierre",
+        "name_en": "Stone Skin",
+        "description_fr": "Réduit les dégâts subis de 15 %.",
+        "description_en": "Reduces damage taken by 15%."
+      },
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "summoner_golem_skills_v1",
+      "client_visual": {
+        "sprite_frames": "res://assets/animations/invocations/summoner_abyss_guardian_frames.tres",
+        "sprite_scale": 1.3,
+        "cast_effect": "invoke_cast",
+        "effects": {
+          "summon": "golem_summon",
+          "slam": "golem_slam",
+          "taunt": "golem_taunt"
+        }
+      },
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 1,
+        "duration_sec": 15,
+        "duration_sec_at_rank": {
+          "rank": 10,
+          "duration_sec": 25
+        },
+        "duration_sec_per_arcane_charge": 1
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (2026-11-11, refonte du Summoner, decisions Charleston du 11/11) : golem, PV 80% des PV max du Summoner a la pose, Peau de pierre -15% de degats subis (body.damage_taken_percent), bloque la ligne de vue adverse. A la pose, il consomme TOUTES les Charges Arcaniques du Summoner : +1 s de duree par charge (limits.duration_sec_per_arcane_charge, decision Charleston du 11/11). Marche une case par seconde vers l'ennemi Marque, sinon le plus proche. Ecrasement toutes les 4 s des qu'un ennemi est sur les 8 cases autour (Tchebychev 1, ennemis seulement) : 70% MAG magiques, +15% sur la cible Marquee, corruption 1 charge 8 s ; bouclier de 5% de ses PV max par ennemi touche, 15% au plus, 4 s, remplace a chaque Ecrasement. Provocation toutes les 8 s des qu'un ennemi est sur les 8 cases autour : taunt 2 s (source = le golem). Rang 10 : Provocation a 2 cases.",
+        "animations": {
+          "spawn": "summon",
+          "idle": "idle",
+          "move": "walk",
+          "trigger": "slam",
+          "hit": "hit",
+          "destroyed": "death",
+          "end": "death"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 80,
+          "blocks_line_of_sight": true,
+          "occupies_cell": true,
+          "inherit_owner_stats": true,
+          "damage_taken_percent": -15
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 2
+        },
+        "motion": {
+          "mode": "chase",
+          "target": "nearest_enemy",
+          "step_interval_sec": 1
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 1,
+          "distance": "chebyshev",
+          "interval_sec": 4,
+          "on_spawn": false,
+          "selection": "all",
+          "priority_status": "marked",
+          "requires_target": true
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "magical",
+            "base_power": 0,
+            "scaling_percent": 70
+          },
+          "priority_bonus_percent": 15,
+          "statuses": [
+            {
+              "effect_id": "corruption",
+              "stacks": 1,
+              "duration_sec": 8
+            }
+          ],
+          "self_shield": {
+            "max_hp_percent_per_target": 5,
+            "max_hp_percent_max": 15,
+            "duration_sec": 4
+          }
+        },
+        "extra_pulses": [
+          {
+            "interval_sec": 8,
+            "radius": 1,
+            "distance": "chebyshev",
+            "on_spawn": false,
+            "requires_target": true,
+            "statuses": [
+              {
+                "effect_id": "taunt",
+                "stacks": 1,
+                "duration_sec": 2
+              }
+            ],
+            "status_source": "invocation",
+            "animation": "taunt"
+          }
+        ],
+        "rank_bonus": {
+          "rank": 10,
+          "extra_pulse_radius": 2
         }
       }
     }
