@@ -59,7 +59,7 @@
   "extra_pulses[]": "facultatif (Summoner, provocation du golem) : pulses supplementaires a statuts seulement {interval_sec, radius, distance, on_spawn, requires_target, statuses, status_source owner|invocation, animation}. Chaque activation : INVOCATION_TRIGGERED (message = animation, target NO_ENTITY, value = unites touchees) puis un STATUS_APPLIED par ennemi (message = animation).",
   "on_spawn.statuses": "facultatif (Summoner, Bond du loup) : {radius, distance, targets enemies, statuses, animation}. A l'apparition : INVOCATION_TRIGGERED (message = animation) puis les statuts (source = le lanceur, message = animation) sur chaque ennemi a portee.",
   "rank_bonus": "facultatif (Summoner, effets de palier provisoires, a valider) : {rank, every_n_activations | on_spawn_extra_sec | extra_pulse_radius}. Quand le rang de la competence atteint `rank` : flaque plus frequente, statuts du Bond plus longs, provocation plus large.",
-  "client_visual": "facultatif, lu par le CLIENT seul (Summoner, 2026-11-11) : {sprite_frames, sprite_scale}. Planche du corps d'une invocation a PV (animations <cle>_<ne|sw>, une par cle d'animation des evenements) et son echelle d'affichage (1,3 pour le golem, decision Charleston du 11/11, a ajuster en jeu ; jamais dans un script). spawn_arc_px (loup) : a l'apparition, le corps arrive en arc (hauteur en px) pendant son animation d'apparition. cast_effect : effet dessine joue sous la case visee pendant l'incantation (CAST_STARTED). effects : cle d'evenement -> effet dessine (assets/vfx/concepts/spec_<rang 3>_v1) joue par-dessus le corps, sur sa case, ou sur la cible avec le suffixe @target. Sans la cle : socle provisoire."
+  "client_visual": "facultatif, lu par le CLIENT seul (Summoner, 2026-11-11) : {sprite_frames, sprite_scale}. Planche du corps d'une invocation a PV (animations <cle>_<ne|sw>, une par cle d'animation des evenements) et son echelle d'affichage (1,3 pour le golem, decision Charleston du 11/11, a ajuster en jeu ; jamais dans un script). spawn_arc_px (loup) : a l'apparition, le corps arrive en arc (hauteur en px) pendant son animation d'apparition. cast_effect : effet dessine joue sous la case visee pendant l'incantation (CAST_STARTED). effects : cle d'evenement -> effet dessine (assets/vfx/concepts/spec_<rang 3>_v1) joue par-dessus le corps, sur sa case, ou sur la cible avec le suffixe @target. Sans la cle : socle provisoire. attacks[] / passive (gabarit, Summoner 2026-11-12) : noms et descriptions FR/EN des attaques et du passif d'une invocation, AFFICHAGE seul (textes du copywriting) ; les valeurs de jeu restent dans le bloc invocation."
     }
   },
   "global_limits": {
@@ -1167,6 +1167,20 @@
       "id": "summoner_ectoplasm_slime",
       "name_fr": "Gelée d'ectoplasme",
       "name_en": "Ectoplasm Slime",
+      "attacks": [
+        {
+          "name_fr": "Crachat ectoplasmique",
+          "name_en": "Ectoplasmic Spit",
+          "description_fr": "Inflige 60 % de la MAG de l'invocateur, réduit la résistance magique de 15 % pendant 8s et applique 1 charge de Corruption.",
+          "description_en": "Deals damage equal to 60% of the summoner's MAG, reduces magic resistance by 15% for 8s and applies 1 stack of Corruption."
+        },
+        {
+          "name_fr": "Flaque collante",
+          "name_en": "Sticky Puddle",
+          "description_fr": "Toutes les 3 attaques, laisse une flaque qui Ralentit la cible pendant 2s. Se déclenche toutes les 2 attaques au rang 10.",
+          "description_en": "Every 3 attacks, leaves a puddle that Slows the target for 2s. Triggers every 2 attacks at rank 10."
+        }
+      ],
       "ai_role": "invocation",
       "visual_kind": "invocation",
       "visual_id": "summoner_haunting_slime_v1",
@@ -1261,6 +1275,20 @@
       "id": "summoner_echo_wolf",
       "name_fr": "Loup d'écho",
       "name_en": "Echo Wolf",
+      "attacks": [
+        {
+          "name_fr": "Bond terrifiant",
+          "name_en": "Terrifying Leap",
+          "description_fr": "À son apparition, Effraie les ennemis autour de lui pendant 2s (3s au rang 10).",
+          "description_en": "On appearing, Fears surrounding enemies for 2s (3s at rank 10)."
+        },
+        {
+          "name_fr": "Morsure du silence",
+          "name_en": "Silencing Bite",
+          "description_fr": "Inflige 80 % de la MAG de l'invocateur en dégâts physiques et applique Silence pendant 1s.",
+          "description_en": "Deals physical damage equal to 80% of the summoner's MAG and applies Silence for 1s."
+        }
+      ],
       "ai_role": "invocation",
       "visual_kind": "invocation",
       "visual_id": "summoner_support_skills_v1",
@@ -1363,6 +1391,26 @@
       "id": "summoner_abyss_guardian",
       "name_fr": "Gardien de l'Abysse",
       "name_en": "Abyss Guardian",
+      "attacks": [
+        {
+          "name_fr": "Écrasement abyssal",
+          "name_en": "Abyssal Crush",
+          "description_fr": "Toutes les 4s, inflige 70 % de la MAG de l'invocateur aux ennemis des 8 cases adjacentes et applique 1 charge de Corruption. Gagne un bouclier de 5 % de ses PV max par ennemi touché (15 % max.) pendant 4s.",
+          "description_en": "Every 4s, deals damage equal to 70% of the summoner's MAG to enemies on the 8 adjacent tiles and applies 1 stack of Corruption. Gains a shield equal to 5% of its max HP per enemy hit (15% max.) for 4s."
+        },
+        {
+          "name_fr": "Provocation abyssale",
+          "name_en": "Abyssal Taunt",
+          "description_fr": "Toutes les 8s, Provoque les ennemis autour du Gardien pendant 2s. Portée étendue à 2 cases au rang 10.",
+          "description_en": "Every 8s, Taunts enemies around the Guardian for 2s. Range increases to 2 tiles at rank 10."
+        }
+      ],
+      "passive": {
+        "name_fr": "Peau de pierre",
+        "name_en": "Stone Skin",
+        "description_fr": "Réduit les dégâts subis de 15 %.",
+        "description_en": "Reduces damage taken by 15%."
+      },
       "ai_role": "invocation",
       "visual_kind": "invocation",
       "visual_id": "summoner_golem_skills_v1",
