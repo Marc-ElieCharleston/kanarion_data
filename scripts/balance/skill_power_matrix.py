@@ -388,9 +388,42 @@ def components(s, cls, rank):
         comp["soin"] += pct * ratio(cls, "mag") * n_receivers(s, side) * M["heal_and_shield"]["overheal_factor"]
     if s.get("self_heal_percent"):
         comp["soin"] += comp["degats"] * s["self_heal_percent"] / 100 * M["heal_and_shield"]["overheal_factor"]
-    for e in s.get("effects") or []:
+    for e in effects_at(s, rank):
         price_effect(s, e, cls, rank, comp, unpriced, comp["degats"])
     return comp, unpriced
+
+
+def effects_at(s, rank):
+    """The skill's effects as the server casts them at `rank`, rank milestones included
+    (rank_milestones, 2026-11-08; server-combat skills/rank_milestones.hpp effects_at): extra
+    stacks and extra seconds folded into each entry, then the complementary effects with the
+    duration and target of their `with` entry. A cooldown_percent changes no per-cast power."""
+    ms = [m for m in s.get("rank_milestones") or [] if m["rank"] <= rank]
+    if not ms:
+        return s.get("effects") or []
+    out = []
+    for e in s.get("effects") or []:
+        e = dict(e)
+        st = e.get("stat")
+        add = sum(m["value"] for m in ms if m["bonus"] == "extra_stacks" and m.get("stat") == st)
+        if add and e.get("stacks_to_apply"):
+            e["stacks_to_apply"] = e["stacks_to_apply"] + add
+        sec = sum(m["value"] for m in ms if m["bonus"] == "extra_duration" and m.get("stat") == st)
+        if sec and e.get("duration"):
+            e["duration"] = e["duration"] + sec
+        out.append(e)
+    extra = {}
+    for m in ms:
+        if m["bonus"] == "extra_effect":
+            extra[(m["stat"], m["with"])] = extra.get((m["stat"], m["with"]), 0) + m["value"]
+    for (stat, with_), n in extra.items():
+        parent = next((e for e in out if e.get("stat") == with_), None)
+        if parent is None:
+            continue
+        x = {k: v for k, v in parent.items() if k in ("type", "duration", "duration_per_level", "target")}
+        x.update(stat=stat, stacks_to_apply=n)
+        out.append(x)
+    return out
 
 
 def cast_cost(s, cast=None):
