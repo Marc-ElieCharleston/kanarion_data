@@ -59,6 +59,12 @@
   "extra_pulses[]": "facultatif (Summoner, provocation du golem) : pulses supplementaires a statuts seulement {interval_sec, radius, distance, on_spawn, requires_target, statuses, status_source owner|invocation, animation}. Chaque activation : INVOCATION_TRIGGERED (message = animation, target NO_ENTITY, value = unites touchees) puis un STATUS_APPLIED par ennemi (message = animation).",
   "on_spawn.statuses": "facultatif (Summoner, Bond du loup) : {radius, distance, targets enemies, statuses, animation}. A l'apparition : INVOCATION_TRIGGERED (message = animation) puis les statuts (source = le lanceur, message = animation) sur chaque ennemi a portee.",
   "rank_bonus": "facultatif (Summoner, effets de palier provisoires, a valider) : {rank, every_n_activations | on_spawn_extra_sec | extra_pulse_radius}. Quand le rang de la competence atteint `rank` : flaque plus frequente, statuts du Bond plus longs, provocation plus large.",
+  "limits.until_combat_end": "facultatif (grand faucon du Falconer, 2026-11-12) : aucune limite de temps, l'invocation reste jusqu'a sa mort ou la fin du combat ; exclut duration_sec et duration_sec_at_rank. INVOCATION_SPAWNED.value = 0.",
+  "limits.refuse_at_max_per_owner": "facultatif (grand faucon) : a max_per_owner, le sort est REFUSE sans cout (au lieu de faire disparaitre la plus ancienne).",
+  "body.immune_to_area": "facultatif (grand faucon), invocation a PV : seuls les sorts a une cible de l'autre camp la touchent ; un sort de zone passe sans degats ni effet sur elle.",
+  "trigger.prefer_most_stacks_of": "facultatif (grand faucon), pulse selection nearest : apres le statut prioritaire du lanceur, l'unite qui porte le plus de charges de ce statut (toutes sources ; bleed = celle qui saigne le plus), puis la plus proche.",
+  "trigger.stagger_sec": "facultatif (grand faucon), pulse : les invocations du meme modele et du meme lanceur frappent decalees de stagger_sec x leur rang (0, 1, 2 : premier rang libre), sur le rythme de la premiere ; < interval_sec.",
+  "summon_combo (competence)": "classes/<classe>/skills.json, pas ce fichier (grand faucon, 2026-11-12) : {template_id, damage_percent_per_summon, guaranteed_crit, crit_damage_percent_per_summon, extra_statuses [{effect_id, stacks_per_summon, duration_sec}], summon_strike_percent_per_summon, animation}. Tant que N invocations du modele du lanceur vivent, bonus multiplie par N (lineaire). Evenement SUMMON_COMBO (32) : source = l'invocation la plus proche de la cible principale, value = N, message = animation:types.",
   "client_visual": "facultatif, lu par le CLIENT seul (Summoner, 2026-11-11) : {sprite_frames, sprite_scale}. Planche du corps d'une invocation a PV (animations <cle>_<ne|sw>, une par cle d'animation des evenements) et son echelle d'affichage (1,3 pour le golem, decision Charleston du 11/11, a ajuster en jeu ; jamais dans un script). spawn_arc_px (loup) : a l'apparition, le corps arrive en arc (hauteur en px) pendant son animation d'apparition. cast_effect : effet dessine joue sous la case visee pendant l'incantation (CAST_STARTED). effects : cle d'evenement -> effet dessine (assets/vfx/concepts/spec_<rang 3>_v1) joue par-dessus le corps, sur sa case, ou sur la cible avec le suffixe @target. Sans la cle : socle provisoire."
     }
   },
@@ -1468,6 +1474,75 @@
         "rank_bonus": {
           "rank": 10,
           "extra_pulse_radius": 2
+        }
+      }
+    },
+    {
+      "id": "falconer_great_falcon",
+      "name_fr": "Grand faucon",
+      "name_en": "Great Falcon",
+      "ai_role": "invocation",
+      "visual_kind": "invocation",
+      "visual_id": "falcon_striker_great_falcon_v1",
+      "skill_ids": [],
+      "passive_ids": [],
+      "limits": {
+        "max_per_owner": 3,
+        "refuse_at_max_per_owner": true,
+        "until_combat_end": true
+      },
+      "invocation": {
+        "_a_valider": "A VALIDER (brief Furie du Faucon du 2026-11-11, decisions Charleston du 11/11 et du 12/11) : au-dessus de SA case, ne bouge pas, sans limite de temps (mort ou fin du combat). PV 50 % des PV max du lanceur a la pose (stats du lanceur heritees), ne bloque pas la ligne de vue, seuls les sorts a une cible le touchent (body.immune_to_area). Jusqu'a 3 par lanceur, a 3 le sort est refuse sans cout. Toutes les 2 s (premier pique 2 s apres la pose), pique decales de 0,7 s entre les faucons du lanceur (stagger_sec). Cible : l'ennemi Marque par le lanceur (Marque du Faucon), sinon celui qui porte le plus de charges de Saignement, sinon le plus proche, a 5 cases (Tchebychev, comme les cles dive_1..dive_5) ; portee 5 a valider (4 en option). 40 % ATQ physiques + 1 charge de Saignement 6 s (source = le lanceur). Compte dans la limite de 6 invocations par camp.",
+        "animations": {
+          "spawn": "summon_cast",
+          "idle": "summon_idle",
+          "trigger": "dive",
+          "hit": "summon_hit",
+          "destroyed": "summon_break",
+          "end": "leave"
+        },
+        "body": {
+          "has_hp": true,
+          "owner_max_hp_percent": 50,
+          "blocks_line_of_sight": false,
+          "occupies_cell": true,
+          "inherit_owner_stats": true,
+          "immune_to_area": true
+        },
+        "placement": {
+          "mode": "cell_in_range",
+          "range": 2
+        },
+        "motion": {
+          "mode": "static"
+        },
+        "ends_with_owner": true,
+        "trigger": {
+          "mode": "pulse",
+          "radius": 5,
+          "distance": "chebyshev",
+          "interval_sec": 2,
+          "stagger_sec": 0.7,
+          "on_spawn": false,
+          "selection": "nearest",
+          "priority_status": "marked",
+          "prefer_most_stacks_of": "bleed",
+          "requires_target": true
+        },
+        "effect": {
+          "targets": "enemies",
+          "damage": {
+            "damage_type": "physical",
+            "base_power": 0,
+            "scaling_percent": 40
+          },
+          "statuses": [
+            {
+              "effect_id": "bleed",
+              "stacks": 1,
+              "duration_sec": 6
+            }
+          ]
         }
       }
     }

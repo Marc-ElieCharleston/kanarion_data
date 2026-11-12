@@ -175,6 +175,7 @@ ALLOWED_METADATA_FIELDS = {
                            # sous `movement`, invocation de specialisation sans `movement`)
     "ground_trap_template_id",  # LU — content_loader.cpp : modele de entities/ground_traps.json pose
                                 # sur la case visee (competence sans `movement`, lot 2 2026-11-10)
+    "summon_combo",  # LU — content_loader.cpp : bonus des attaques du Falconer tant que ses grands faucons vivent (2026-11-12)
     "empower_invocations",  # LU — content_loader.cpp : Lien d'echos du Summoner (2026-11-11), renforce les invocations du lanceur
     "consumes_gcd",      # LU — content_loader.cpp
     "max_level",         # LU — combat_host.cpp + client balance_config.gd
