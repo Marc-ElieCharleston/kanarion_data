@@ -272,6 +272,12 @@ jobs:
       - name: Verify Breath cost rules
         run: python3 scripts/balance/souffle_per_level.py --check
 
+      # 3b'bis. Paliers de rang des sorts de classe (2026-11-08, Charleston) : regles de
+      # config/skill_system.json rank_milestones, developpees sort par sort dans
+      # rank_milestones. Echoue si une liste ne correspond plus aux regles.
+      - name: Verify skill rank milestones
+        run: python3 scripts/balance/rank_milestones.py --check
+
       # 3b''. Matrice de puissance des sorts (2026-10-15) : modele config/skill_power_model.json,
       # sortie scripts/balance/out/skill_power_matrix.json. Echoue si la matrice est perimee
       # (un sort, un statut ou un poids a change sans regenerer).
@@ -316,6 +322,12 @@ jobs:
 
       - name: Verify emote scrolls are up to date
         run: python3 scripts/gen_emote_scrolls.py --check
+
+      # Failles et objets : « rang I a V » s'ecrit en tranche de niveau, recopiee
+      # depuis items/panoplies.json _meta.rank_system. Un texte qui cite une autre
+      # tranche (ou de nouveau un rang romain) fait echouer le controle.
+      - name: Verify rank-as-level texts are up to date
+        run: python3 scripts/gen_rank_level_texts.py --check
 
       # 4. Schema version present
       - name: Verify schema_version exists
