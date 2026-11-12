@@ -704,6 +704,14 @@
       "_a_valider": "0.2 = valeur decidee le 2026-11-07, a valider. Non branches (choix de l'agent, a decider) : succes, arene, missions de guilde, invasions, fermeture de faille. Les coffres de zone ne donnent pas d'XP."
     }
   },
+  "contract_xp_band": {
+    "_comment": "Multiplicateur d'XP des contrats du Maitre Combat (quetes portant un contract_band dans world/quests.json), par plancher de bande. Decision Charleston du 2026-11-12 (0.21.6) : l'XP des contrats de niveau 60+ (bandes 61-80 et 81-100) est divisee par deux. Ce n'est PAS une famille de multiplier_families : celles-ci composent l'XP de COMBAT (LootRoller de server-combat), alors que l'XP d'un contrat est versee au rendu par le service quest. Applique par le service quest APRES le recalage sur le niveau du joueur (world/quests.json contract_xp : niveau de base min(joueur, haut de bande), puis penalite level_difference), au rendu ET dans l'XP affichee sur le panneau (QuestStateResponse champs 11-12, meme fonction). Regle : le palier retenu est celui au plus grand min_band_floor <= premier niveau de la bande du contrat ; aucun palier = x1. Les contrats d'arene (q_contract_arene_*) portent aussi un contract_band : ils suivent la meme regle. La part versee aux familiers equipes (familiar_xp.owner_xp_share.sources.contract) part de l'XP deja reduite. Lu par services/quest (contract_xp_rules.hpp parse_contract_xp_band), OBLIGATOIRE : bloc absent ou invalide = le service quest refuse de demarrer.",
+    "_why": "Releve prod du 12/11 : un niveau 96 est passe niveau 100 en 1 h 20 avec 4 contrats (429 168 XP pour un seul contrat de rang S de la bande 81-100). rewards.xp de ces contrats est calcule au MILIEU de la bande (niveau 90) ; recale sur le niveau du joueur (96 a 99), il monte de x1,37 a x1,59. Ce n'est pas un bonus cache : c'est la regle contract_xp du 2026-10-18, qui reste en place ; ce multiplicateur s'applique par-dessus.",
+    "tiers": [
+      {"min_band_floor": 61, "xp": 0.5}
+    ],
+    "_a_valider": "x0.5 a partir de la bande 61-80 = decision du 2026-11-12 (\"par deux\"), a valider en jeu par Charleston. Bandes 1-20, 21-40 et 41-60 inchangees."
+  },
   "rift_closing": {
     "_comment": "Recompense de FERMETURE REUSSIE d'un interieur de faille (world/rift_events.json), par palier de contribution. Lu par presence (coffres, Braises, purification) ; l'XP est versee par quest (world_event_rewards, idempotent par faille et personnage). XP = xp_level_fraction x l'XP du palier du niveau de BASE = le plus bas entre le niveau du joueur et le niveau de la faille (xp_level_basis 'min_player_rift' : un niveau 99 dans une faille de rang I touche une fraction d'un niveau 20). Coffres = world/zone_chests.json tiers[rang] (contenu), multiplies ici en nombre et en or. Embers = Braises de faille du rang (mat_rift_ember_r<rang>), reservees au Chasseur de Failles qui porte une lanterne de rang >= rang de la faille (une utilisation par fermeture). En echec : rien ici (seul le Chasseur garde une part d'XP de metier, systems/profession_xp.json rift_xp.failure_share).",
     "xp_level_basis": "min_player_rift",
@@ -737,7 +745,6 @@
       "4. La garde CI verifie que toute famille nommee dans families_order existe, et que toute famille declaree est nommee."
     ],
     "planned": [
-      "contract_tier (contrats du Maitre Combat)",
       "zone_corruption (Failles, phase 2 : combats d'une aire corrompue apres un echec, point d'accroche de world/rift_events.json failure)"
     ],
     "anti_pattern": "Ne JAMAIS ecrire un multiplicateur de recompense ailleurs que dans ce fichier, meme 'juste pour ce donjon'. C'est exactement comme ca que les quatre sources precedentes sont nees."
