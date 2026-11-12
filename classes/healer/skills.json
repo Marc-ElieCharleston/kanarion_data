@@ -2773,6 +2773,58 @@
           "_rang_a_valider": "A VALIDER (2026-11-08, decision Charleston, paliers de rang etape 0) : pct_per_level 2.3 sur shield_mag (bouclier +45 % au rang 10)."
         },
         {
+          "id": "skill_healer_cantor_shared_breath",
+          "name_en": "Shared Breath",
+          "name_fr": "Souffle partagé",
+          "tier": "basic",
+          "target": "ally",
+          "pattern": "single",
+          "exclude_caster": true,
+          "damage_type": "none",
+          "base_power": 0,
+          "base_heal": 0,
+          "mana_cost": 22,
+          "mana_cost_per_level": 3,
+          "cooldown": 12.0,
+          "cast_time": 0,
+          "range": 3,
+          "vfx_type": "buff_aura",
+          "description_fr": "Rend à un autre allié à 3 cases maximum 8% du Souffle maximum du lanceur (+1 point par rang), sans dépasser son maximum. Sans effet sur le lanceur. (provisoire)",
+          "description_en": "Restores 8% of the caster's maximum Breath (+1 percentage point per rank) to another ally within 3 tiles, capped at their maximum. No effect on the caster. (provisional)",
+          "tags": [
+            "support",
+            "breath",
+            "utility"
+          ],
+          "effects": [
+            {
+              "type": "utility",
+              "stat": "mana_restore",
+              "value": 8,
+              "scaling": "caster_max_mp",
+              "value_per_level": 1,
+              "duration_per_level": 0
+            }
+          ],
+          "base_class_id": "healer",
+          "subclass_id": "cantor",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "ally",
+            "requires_line_of_sight": false,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "single"
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "percent_per_level": 0,
+          "_mecanique_note": "Meme utilitaire que Partage de Souffle de l'Artisan (skill_artisan_resource_share) : mana_restore calcule sur le Souffle max du LANCEUR (scaling caster_max_mp), applique une fois par lancer a toutes les cibles retenues (room.cpp ignore le champ target de l'utilitaire) ; ici la seule cible est l'allie vise. exclude_caster : room.cpp retire le lanceur des cibles avant tout effet, donc un lancer sur soi-meme ne rend rien (le Souffle est quand meme paye).",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement) : rend 8 % du Souffle max du lanceur (+1 point par rang, entier lu par le serveur) a un allie a 3 cases, sans ligne de vue, jamais au lanceur ; 22 Souffle, recharge 12 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
+        },
+        {
           "id": "skill_healer_cantor_requiem",
           "name_en": "Requiem",
           "name_fr": "Requiem",
@@ -3898,6 +3950,58 @@
           "_souffle_a_valider": "A VALIDER (2026-11-06, decision Charleston, reequilibrage du Souffle A+B+C) : mana_cost 41 -> 49, mana_cost_per_level 1 -> 2 (sort de sous-classe x1,2 au rang 1, arrondi, option B).",
           "range": 2,
           "rank_scaling_enabled": true
+        },
+        {
+          "id": "skill_healer_martyr_transfusion",
+          "name_en": "Transfusion",
+          "name_fr": "Transfusion",
+          "tier": "basic",
+          "target": "ally",
+          "pattern": "single",
+          "exclude_caster": true,
+          "damage_type": "none",
+          "sacrifice_hp_percent": 8,
+          "conditional_bonus": {
+            "condition": "caster_below_hp_after",
+            "hp_threshold": 50,
+            "heal_bonus_percent": 50
+          },
+          "base_power": 0,
+          "base_heal": 0,
+          "heal_scaling_stat": "mag",
+          "heal_scaling_percent": 100,
+          "percent_per_level": 4,
+          "rank_scaling_enabled": true,
+          "mana_cost": 26,
+          "mana_cost_per_level": 1,
+          "cooldown": 10.0,
+          "cast_time": 0,
+          "range": 3,
+          "vfx_type": "heal",
+          "description_fr": "Sacrifie 8% de ses PV max sans mourir et soigne un autre allié à 3 cases maximum de 100% MAG (+4 points par rang). Soin augmenté de 50% si le lanceur tombe sous 50% PV après le sacrifice. (provisoire)",
+          "description_en": "Sacrifices 8% of max HP without dying and heals another ally within 3 tiles for 100% MAG (+4 percentage points per rank). Healing increased by 50% if the caster falls below 50% HP after the sacrifice. (provisional)",
+          "tags": [
+            "heal",
+            "sacrifice",
+            "conditional",
+            "single"
+          ],
+          "base_class_id": "healer",
+          "subclass_id": "martyr",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "ally",
+            "requires_line_of_sight": false,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "single"
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_mecanique_note": "Meme forme que Pacte Sacre (skill_healer_martyr_sacred_pact) : sacrifice_hp_percent 8 puis conditional_bonus caster_below_hp_after (hp_threshold 50 = 50 %, heal_bonus_percent -> applies_to heal, content_loader.cpp). Ordre room.cpp : 1. sacrifice (plafonne pour ne jamais tuer), 2. condition evaluee sur les PV APRES le sacrifice, 3. soin direct (heal_scaling_percent MAG) multiplie apres reduction/blocage. exclude_caster : le lanceur ne peut pas se soigner lui-meme avec (il paierait quand meme le sacrifice et le Souffle).",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement) : sacrifice 8 % des PV max, soin 100 % MAG (+4 points par rang) a un allie a 3 cases (pas le lanceur), +50 % si le lanceur passe sous 50 % de PV apres le sacrifice ; 26 Souffle, recharge 10 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
         },
         {
           "id": "skill_healer_martyr_redemptive_wave",
