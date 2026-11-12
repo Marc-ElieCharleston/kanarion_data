@@ -49,8 +49,11 @@ def generate():
             if sid in seen:
                 raise ValueError(f'duplicate active skill: {sid}')
             # Charleston 2026-11-11: no card for a level-60 specialisation maneuver (the
-            # `signature_movement` of a tier3 block). Rule: systems/koro.json.
-            if in_tier3 and key == 'signature_movement' and generation.get('excluded_tier3_signature_movement'):
+            # `signature_movement` of a tier3 block). Extended 2026-11-13 to every
+            # maneuver: class movement, subclass maneuver, specialisation maneuver.
+            # Rules: systems/koro.json excluded_signature_movement / excluded_tier3_signature_movement.
+            if key == 'signature_movement' and (generation.get('excluded_signature_movement')
+                    or (in_tier3 and generation.get('excluded_tier3_signature_movement'))):
                 continue
             seen.add(sid)
             for rank, percent in generation['rank_percents'].items():
