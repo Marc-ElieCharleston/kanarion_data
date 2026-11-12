@@ -357,7 +357,9 @@ ARMS["arcane"] = ("arc", {
     "rd3": N("arcane_perforation", "Perforation arcanique", "Arcane Perforation", [flat("magic_pen", 1.5)]),
     "n50a": N("archmage", "Archimage", "Archmage", [once("mag", 12, "add_percent"), once("crit_dmg", 10)]),
     "n50b": N("overload", "Surcharge", "Overload", [once("damage_percent", 10)]),
-    "side50": N("meditation", "Méditation", "Meditation", [once("mp_regen", 2)]),
+    "side50": N("meditation", "Méditation", "Meditation", [once("mp_regen", 2)],
+                desc=("+6 Souffle toutes les 5 s en combat, +2 chaque seconde hors combat.",
+                      "+6 Breath every 5 s in combat, +2 every second out of combat.")),
     "m1": N("m_arcana", "Maîtrise : arcanes", "Mastery: Arcana", [pct("mag", 2)]),
     "m2": N("m_flow", "Maîtrise : flux", "Mastery: Flow", [flat("cooldown_reduction", 1)]),
     "m3": N("m_overload", "Maîtrise : surcharge", "Mastery: Overload", [flat("damage_percent", 1.5)]),
@@ -707,6 +709,18 @@ def icon_for(node, effects):
 # ---------------------------------------------------------------------------------------------
 COSTS = src["rules"]["costs"]
 
+# Souffle secondaire dans les bras qui n'en avaient pas (Attaque, Defense, Affaiblissement) :
+# decision Charleston du 2026-11-13, A VALIDER. Deux petits noeuds par bras, un pres du centre,
+# un plus loin ; l'effet s'ajoute a la fin (l'effet principal et l'icone ne changent pas).
+SECONDARY_MP = {
+    "pt2_atk_eye", "pt2_atk_lynx",
+    "pt2_def_constitution", "pt2_def_robust",
+    "pt2_deb_venom", "pt2_deb_corruption",
+}
+SECONDARY_MP_VALUE = 5
+SECONDARY_MP_NOTE = ("Souffle secondaire +5 Souffle max par rang (decision Charleston du 2026-11-13, "
+                     "a valider)")
+
 
 def make_node(nid, kind, arm, max_rank, pos, spec, effects, choice=None, arms=None):
     node = {"id": nid, "kind": kind, "arm": arm}
@@ -719,7 +733,14 @@ def make_node(nid, kind, arm, max_rank, pos, spec, effects, choice=None, arms=No
     if choice:
         node["choice"] = choice
     per_rank = kind in ("small", "bridge_small")
+    if nid in SECONDARY_MP:
+        effects = list(effects) + [flat("mp", SECONDARY_MP_VALUE)]
+        spec = dict(spec, to_validate=SECONDARY_MP_NOTE)
     fr, en = describe(effects, per_rank and max_rank > 1, spec.get("mech"), spec.get("malus", ()))
+    # Texte ecrit a la main quand la phrase generee ne dit pas la regle (regen du Souffle
+    # en combat x0.6, 2026-11-13).
+    if spec.get("desc"):
+        fr, en = spec["desc"]
     node["name_fr"], node["name_en"] = spec["fr"], spec["en"]
     node["description_fr"], node["description_en"] = fr, en
     node["effects"] = effects
