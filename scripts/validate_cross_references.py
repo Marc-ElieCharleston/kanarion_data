@@ -3587,7 +3587,7 @@ def validate_status_duration_rule(db: Path) -> list:
     return errors
 
 
-RANK_MILESTONE_BONUSES = ("extra_stacks", "extra_duration", "extra_effect", "cooldown_percent")
+RANK_MILESTONE_BONUSES = ("extra_stacks", "extra_duration", "extra_effect", "cooldown_percent", "movement_distance")
 
 
 def validate_rank_milestones(db: Path) -> list:
@@ -3676,6 +3676,11 @@ def validate_rank_milestones(db: Path) -> list:
                     after[st] = after.get(st, 0) + v
                     if after[st] > grid[st]:
                         errors.append(f"{where} {sid} : extra_effect '{st}' au-dessus de max_stacks {grid[st]}")
+                elif b == "movement_distance":
+                    # Trickster's Scramble (2026-11-12): +v cells on movement.scramble_distance.
+                    if (s.get("movement") or {}).get("type") != "scramble" or st or v < 1 or v != int(v):
+                        errors.append(f"{where} {sid} : movement_distance {v!r} invalide (entier >= 1, sans stat, "
+                                      f"sur un sort au movement scramble)")
                 elif b == "cooldown_percent":
                     cd_total += v
                     if not (s.get("cooldown") or 0) > 0 or not -50 <= v < 0:
