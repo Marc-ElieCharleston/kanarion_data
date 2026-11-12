@@ -537,6 +537,34 @@
         },
         "_audit_note": "2026-08-01: impl 'planned' -> 'done'. Verifie de bout en bout : room.cpp:4207-4233 lit le bloc top-level dot_type/dot_percent/dot_duration (le commentaire du code nomme explicitement Martyr Intercession) et applique dot_value = caster.max_hp x dot_percent/100, ce qui correspond a la formule declaree ici. Cote statut, l'effet est en categorie 'dot' donc status_manager.cpp:79-82 lui assigne StatusType::DOT et son tick_interval generiquement. Label perime, pas l'effet."
       },
+      "living_thorns": {
+        "name_fr": "Ronces vivantes",
+        "name_en": "Living Thorns",
+        "polarity": "debuff",
+        "stacking": "refresh",
+        "max_stacks": 1,
+        "impl": "done",
+        "damage_type": "magical",
+        "true_damage": false,
+        "formula": "valeur figee a l'application : MAG du lanceur x dot_percent / 100 par tick (sort Ronces vivantes, dot_scaling_stat mag). A chaque tick, l'allie le plus blesse du lanceur (plus bas % de PV, lanceur compris, a portee du sort) recoit dot_heal_percent % des degats reellement infliges (meme mecanique que Stigmate / Intercession, status_manager.cpp heals_lowest_ally).",
+        "tick_interval": 1.0,
+        "duration_modifiable": true,
+        "tooltip_fr": "Inflige des dégâts magiques chaque seconde. Chaque pulsation soigne l'allié le plus blessé du lanceur. (provisoire)",
+        "tooltip_en": "Deals magic damage every second. Each pulse heals the caster's most wounded ally. (provisional)",
+        "description_fr": "Des ronces enserrent la cible et lui infligent des dégâts magiques chaque seconde. Une partie des dégâts revient en soin à l'allié le plus blessé du lanceur. (provisoire)",
+        "description_en": "Thorns bind the target and deal magic damage every second. Part of the damage comes back as healing to the caster's most wounded ally. (provisional)",
+        "sources": [
+          "Healer (Lifewarden)"
+        ],
+        "runtime": {
+          "is_hard_cc": false,
+          "interrupts_cast": false,
+          "tick_damage": "value",
+          "tick_rate": 1.0,
+          "scaling_stat": "mag",
+          "vfx_type": "drain_aura"
+        }
+      },
       "curse_dot": {
         "name_fr": "Malédiction",
         "name_en": "Curse",
