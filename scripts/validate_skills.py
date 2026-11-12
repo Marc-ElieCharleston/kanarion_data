@@ -58,6 +58,7 @@ ALLOWED_METADATA_FIELDS = {
     "armor_pen", "shield_break", "ignore_shields",
     # Conditional bonus (object or simple fields)
     "conditional_bonus", "bonus_condition",
+    "conditional_bonuses",  # LU : content_loader.cpp (liste : Garde magique, Rempart arcanique, Taillade de rage)
     "bonus_damage_percent", "few_targets_bonus", "few_targets_threshold",
     "bonus_if_armor_broken", "double_damage_if_armor_broken",
     "bonus_damage_vs_challenged", "damage_mult_if_challenged",
