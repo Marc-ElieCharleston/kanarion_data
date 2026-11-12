@@ -637,6 +637,88 @@
           "_rang_a_valider": "A VALIDER (2026-11-08, decision Charleston, paliers de rang etape 0) : pct_per_level 0.5 sur shield_max_hp (bouclier +45 % au rang 10)."
         },
         {
+          "id": "skill_artisan_blacksmith_whetting",
+          "name_en": "Whetting",
+          "name_fr": "Affûtage",
+          "tier": "basic",
+          "target": "allies",
+          "pattern": "ring_1_center",
+          "damage_type": "none",
+          "base_power": 0,
+          "mana_cost": 28,
+          "mana_cost_per_level": 3,
+          "cooldown": 18.0,
+          "cast_time": 0,
+          "range": 0,
+          "vfx_type": "buff_aura",
+          "description_fr": "Accorde au lanceur et aux alliés autour de lui +10% ATQ et +10 points d'armure pendant 6s. (provisoire)",
+          "description_en": "Grants the caster and allies around them +10% ATK and +10 armor points for 6s. (provisional)",
+          "tags": [
+            "buff",
+            "support",
+            "aoe",
+            "atk",
+            "armor"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "atk_up",
+              "stacks_to_apply": 2,
+              "duration": 6.0
+            },
+            {
+              "type": "buff",
+              "stat": "def_up",
+              "stacks_to_apply": 2,
+              "duration": 6.0
+            }
+          ],
+          "rank_milestones": [
+            {
+              "rank": 5,
+              "bonus": "extra_stacks",
+              "stat": "atk_up",
+              "value": 1
+            },
+            {
+              "rank": 5,
+              "bonus": "extra_stacks",
+              "stat": "def_up",
+              "value": 1
+            },
+            {
+              "rank": 10,
+              "bonus": "extra_stacks",
+              "stat": "atk_up",
+              "value": 1
+            },
+            {
+              "rank": 10,
+              "bonus": "extra_stacks",
+              "stat": "def_up",
+              "value": 1
+            }
+          ],
+          "base_class_id": "artisan",
+          "subclass_id": "blacksmith",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "tile",
+            "valid_target_team": "ally",
+            "requires_line_of_sight": false,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "ring_1_center"
+          },
+          "percent_per_level": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_mecanique_note": "Zone autour du lanceur : target allies + ring_1_center + range 0, meme montage qu'Impulsion de lumiere (Soigneur) et Rempart arcanique (Mage) ; le lanceur, au centre, est touche. atk_up = +5 % ATQ par charge, def_up = +5 points d'armure FIXES par charge (stats/status_effects.json effects.stat_modifiers ; armor_up serait le pourcentage). Effets buff appliques a toutes les cibles allies de la zone par room.cpp apply_skill_effects.",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s pour tous ces sorts) : +10 % ATQ (2 charges atk_up) et +10 points d'armure (2 charges def_up, fixe : demande de Charleston, armor_up serait en %) 6 s au lanceur et aux allies autour de lui ; recharge 18 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
+        },
+        {
           "id": "skill_artisan_blacksmith_anvil_crash",
           "name_en": "Anvil Crash",
           "name_fr": "Fracas d'Enclume",
@@ -1777,6 +1859,50 @@
           "_souffle_a_valider": "A VALIDER (2026-11-06, decision Charleston, reequilibrage du Souffle A+B+C) : mana_cost 27 -> 32, mana_cost_per_level 1 -> 1 (sort de sous-classe x1,2 au rang 1, arrondi, option B).",
           "range": 3,
           "rank_scaling_enabled": true
+        },
+        {
+          "id": "skill_artisan_alchemist_healing_potion",
+          "name_en": "Healing Potion",
+          "name_fr": "Potion de soin",
+          "tier": "basic",
+          "target": "ally",
+          "pattern": "single",
+          "damage_type": "none",
+          "heal_scaling_stat": "mag",
+          "heal_scaling_percent": 90,
+          "percent_per_level": 4,
+          "rank_scaling_enabled": true,
+          "base_power": 0,
+          "base_heal": 0,
+          "mana_cost": 26,
+          "mana_cost_per_level": 1,
+          "cooldown": 16.0,
+          "cast_time": 0,
+          "range": 3,
+          "vfx_type": "heal",
+          "description_fr": "Soigne ton personnage ou un allié à 3 cases maximum de 90% MAG (+4 points par rang). (provisoire)",
+          "description_en": "Heals you or an ally within 3 tiles for 90% MAG (+4 percentage points per rank). (provisional)",
+          "tags": [
+            "heal",
+            "single",
+            "support"
+          ],
+          "base_class_id": "artisan",
+          "subclass_id": "alchemist",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "ally",
+            "requires_line_of_sight": false,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "single"
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_mecanique_note": "Meme forme que Soin (skill_healer_heal) : target ally + single, heal_scaling_stat mag, sans exclude_caster, donc le lanceur peut se cibler (room.cpp can_target SINGLE_ALLY ne refuse le lanceur qu'avec exclude_caster). percent_per_level s'applique a heal_scaling_percent (rank_scaling_enabled).",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s pour tous ces sorts) : soin 90 % MAG (+4 points par rang) sur le lanceur ou un allie a 3 cases ; recharge 16 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
         },
         {
           "id": "skill_artisan_alchemist_catalyze",
@@ -2969,6 +3095,80 @@
           "percent_per_level": 0,
           "range": 3,
           "_rang_a_valider": "A VALIDER (2026-11-08, decision Charleston, paliers de rang etape 0) : pct_per_level 0.4 sur heal_over_time_mag (gain +60 % au rang 10)."
+        },
+        {
+          "id": "skill_artisan_chef_pan_toss",
+          "name_en": "Pan Toss",
+          "name_fr": "Lancer de poêle",
+          "tier": "basic",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "magical",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "scaling_percent": 55,
+          "percent_per_level": 1.6,
+          "rank_scaling_enabled": true,
+          "mana_cost": 24,
+          "mana_cost_per_level": 1,
+          "cooldown": 18.0,
+          "cast_time": 0,
+          "range": 4,
+          "vfx_type": "projectile",
+          "description_fr": "Inflige 55% MAG (+1,6 point par rang) à un ennemi à 4 cases maximum, applique 1 charge de Brûlure pendant 6s et l'étourdit pendant 1s. Nécessite une ligne de vue. (provisoire)",
+          "description_en": "Deals 55% MAG (+1.6 percentage points per rank) to an enemy within 4 tiles, applies 1 stack of Burn for 6s and stuns them for 1s. Requires line of sight. (provisional)",
+          "tags": [
+            "damage",
+            "ranged",
+            "burn",
+            "dot",
+            "stun",
+            "cc"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "burn",
+              "stacks_to_apply": 1,
+              "duration": 6.0
+            },
+            {
+              "type": "debuff",
+              "stat": "stun",
+              "value": 1,
+              "duration": 1.0
+            }
+          ],
+          "rank_milestones": [
+            {
+              "rank": 5,
+              "bonus": "extra_stacks",
+              "stat": "burn",
+              "value": 1
+            },
+            {
+              "rank": 10,
+              "bonus": "extra_stacks",
+              "stat": "burn",
+              "value": 1
+            }
+          ],
+          "base_class_id": "artisan",
+          "subclass_id": "chef",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": true,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "single"
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_mecanique_note": "Degats MAG comme les autres sorts du Cuisinier. Brulure + Etourdissement en effets debuff, meme forme que Choc poivre (Maitre des epices). La 'chance' d'etourdir est celle de tout controle fort : status_manager.cpp tire la resistance (effect_resist de la cible contre effect_chance du lanceur, plafond effect_apply_max), puis la tenacite raccourcit la duree (plancher effect_min_duration_s). Etourdissement de 1 s sous le plancher de 2 s des controles forts : stats/status_effects.json duration_rule.hard_cc_seconds_exempt_skills.",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s pour tous ces sorts) : 55 % MAG (+1,6 point par rang) a 4 cases, 1 charge de Brulure 6 s, Etourdissement 1 s ; recharge 18 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
         },
         {
           "id": "skill_artisan_chef_inferno_feast",
@@ -4176,6 +4376,62 @@
           "_souffle_a_valider": "A VALIDER (2026-11-06, decision Charleston, reequilibrage du Souffle A+B+C) : mana_cost 36 -> 43, mana_cost_per_level 1 -> 1 (sort de sous-classe x1,2 au rang 1, arrondi, option B).",
           "percent_per_level": 0,
           "range": 3
+        },
+        {
+          "id": "skill_artisan_musician_breath_song",
+          "name_en": "Breath Song",
+          "name_fr": "Chant de Souffle",
+          "tier": "basic",
+          "target": "allies",
+          "pattern": "row_3",
+          "damage_type": "none",
+          "base_power": 0,
+          "mana_cost": 26,
+          "mana_cost_per_level": 0,
+          "cooldown": 18.0,
+          "cast_time": 0,
+          "range": 3,
+          "vfx_type": "buff_aura",
+          "description_fr": "Les alliés de la rangée regagnent 2% de leur Souffle max par seconde pendant 6s. (provisoire)",
+          "description_en": "Allies in the row regain 2% of their max Breath per second for 6s. (provisional)",
+          "tags": [
+            "buff",
+            "support",
+            "aoe",
+            "breath"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "mana_regen",
+              "stacks_to_apply": 1,
+              "duration": 6.0
+            }
+          ],
+          "rank_milestones": [
+            {
+              "rank": 10,
+              "bonus": "cooldown_percent",
+              "value": -15
+            }
+          ],
+          "base_class_id": "artisan",
+          "subclass_id": "musician",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "tile",
+            "valid_target_team": "ally",
+            "requires_line_of_sight": false,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "row_3"
+          },
+          "percent_per_level": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_mecanique_note": "Statut Regen Souffle (stats/status_effects.json effects.special.mana_regen : 2 % du Souffle max de la cible par seconde et par charge, status_manager.cpp), celui du Pacte de sang du Mage et de l'Hymne de vigueur ; pose sur les allies d'une rangee de 3 (target allies + row_3, portee 3, comme Rythme de travail). Ce n'est pas l'utilitaire mana_restore (instantane, Souffle partage du Chantre, Partage de ressources de l'Artisan).",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe avant l'ultime, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s pour tous ces sorts) : 1 charge de Regen Souffle (2 % du Souffle max par seconde) 6 s sur une rangee d'allies a 3 cases ; recharge 18 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
         },
         {
           "id": "skill_artisan_musician_grand_performance",
