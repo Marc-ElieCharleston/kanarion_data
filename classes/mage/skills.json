@@ -607,6 +607,87 @@
           "range": 0
         },
         {
+          "id": "skill_mage_elem_frost_nova",
+          "name_en": "Frost Nova",
+          "name_fr": "Nova de givre",
+          "tier": "basic",
+          "target": "self_and_enemies",
+          "pattern": "ring_1_center",
+          "damage_type": "magical",
+          "scaling_stat": "mag",
+          "base_power": 0,
+          "scaling_percent": 50,
+          "percent_per_level": 1.5,
+          "rank_scaling_enabled": true,
+          "mana_cost": 28,
+          "mana_cost_per_level": 1,
+          "cooldown": 12.0,
+          "cast_time": 0,
+          "range": 0,
+          "vfx_type": "aoe_pulse",
+          "description_fr": "Inflige 50% MAG (+1,5 point par rang) aux ennemis sur les cases autour du lanceur, les ralentit pendant 2s et leur applique une charge de Froid pendant 6s. (provisoire)",
+          "description_en": "Deals 50% MAG (+1.5 percentage points per rank) to enemies on the tiles around the caster, slows them for 2s and applies one Chill stack for 6s. (provisional)",
+          "tags": [
+            "damage",
+            "aoe",
+            "cc",
+            "slow",
+            "ice",
+            "elemental",
+            "melee"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "slow",
+              "stacks_to_apply": 1,
+              "duration": 2.0
+            },
+            {
+              "type": "debuff",
+              "stat": "chill",
+              "stacks_to_apply": 1,
+              "duration": 6.0
+            }
+          ],
+          "rank_milestones": [
+            {
+              "rank": 5,
+              "bonus": "extra_stacks",
+              "stat": "slow",
+              "value": 1
+            },
+            {
+              "rank": 5,
+              "bonus": "extra_stacks",
+              "stat": "chill",
+              "value": 1
+            },
+            {
+              "rank": 10,
+              "bonus": "extra_stacks",
+              "stat": "chill",
+              "value": 1
+            }
+          ],
+          "base_class_id": "mage",
+          "subclass_id": "elementalist",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "tile",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": false,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "ring_1_center"
+          },
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_range_note": "Centre sur le lanceur (meme montage que Detonation arcanique du Battlemage) : target self_and_enemies + ring_1_center + range 0. Le serveur ne retient que les ennemis et le lanceur (room.cpp, SELF_AND_ENEMY) ; un effet sans cible explicite d'un sort hostile mixte ne part que sur les ennemis : ni degats, ni Ralenti, ni Froid sur un allie ou sur le lanceur.",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe, aucun sort retire, mecaniques serveur existantes seulement) : 50 % MAG (+1,5 point par rang) sur l'anneau d'une case autour du lanceur, Ralenti 1 charge 2 s, Froid 1 charge 6 s (plancher de la regle des durees des DoT), 28 Souffle, recharge 12 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
+        },
+        {
           "id": "skill_mage_elem_elemental_storm",
           "name_en": "Elemental Storm",
           "name_fr": "Tempête Élémentaire",
@@ -1877,6 +1958,77 @@
           "rank_scaling_enabled": true
         },
         {
+          "id": "skill_mage_occ_blood_pact",
+          "name_en": "Blood Pact",
+          "name_fr": "Pacte de sang",
+          "tier": "basic",
+          "target": "ally",
+          "pattern": "single",
+          "damage_type": "none",
+          "base_power": 0,
+          "mana_cost": 24,
+          "mana_cost_per_level": 4,
+          "cooldown": 14.0,
+          "cast_time": 0,
+          "range": 3,
+          "vfx_type": "life_steal",
+          "description_fr": "Un allié à 3 cases maximum gagne 10% de vol de vie pendant 6s (+0,2s par rang). Le lanceur régénère 2% de son Souffle maximum par seconde pendant 3s. (provisoire)",
+          "description_en": "An ally within 3 tiles gains 10% lifesteal for 6s (+0.2s per rank). The caster regenerates 2% of their maximum Breath per second for 3s. (provisional)",
+          "tags": [
+            "buff",
+            "support",
+            "lifesteal",
+            "breath"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "lifesteal",
+              "stacks_to_apply": 2,
+              "duration": 6.0,
+              "duration_per_level": 0.2
+            },
+            {
+              "type": "buff",
+              "stat": "mana_regen",
+              "stacks_to_apply": 1,
+              "duration": 3.0,
+              "target": "self"
+            }
+          ],
+          "rank_milestones": [
+            {
+              "rank": 5,
+              "bonus": "extra_stacks",
+              "stat": "lifesteal",
+              "value": 1
+            },
+            {
+              "rank": 10,
+              "bonus": "extra_stacks",
+              "stat": "lifesteal",
+              "value": 1
+            }
+          ],
+          "base_class_id": "mage",
+          "subclass_id": "occultist",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "ally",
+            "requires_line_of_sight": false,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "single"
+          },
+          "percent_per_level": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_souffle_rendu_note": "Le Souffle du lanceur passe par le statut mana_regen pose sur lui (target self, 2 % du Souffle max par seconde et par charge, status_manager.cpp), PAS par l'utilitaire mana_restore : room.cpp applique mana_restore a TOUTES les cibles du sort et ignore son champ target, il rendrait donc le Souffle a l'allie cible, pas au Mage. Aucune mecanique serveur nouvelle.",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe, aucun sort retire, mecaniques serveur existantes seulement) : vol de vie 2 charges (10 %) 6 s (+0,2 s par rang) sur un allie a 3 cases, sans ligne de vue ; le lanceur regagne 2 % de son Souffle max par seconde pendant 3 s (1 charge de Regen Souffle), soit environ 6 % ; 24 Souffle, recharge 14 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
+        },
+        {
           "id": "skill_mage_occ_shadow_pact",
           "name_en": "Shadow Pact",
           "name_fr": "Pacte des Ombres",
@@ -2964,6 +3116,70 @@
           "range": 3,
           "rank_scaling_enabled": true,
           "_rang_a_valider": "A VALIDER (2026-11-08, decision Charleston, paliers de rang etape 0) : percent_per_level 4.6 ajoute (gain +60 % au rang 10, mediane des sorts de degats/soin qui progressent), rank_scaling_enabled."
+        },
+        {
+          "id": "skill_mage_card_support_card",
+          "name_en": "Support Card",
+          "name_fr": "Carte d'appui",
+          "tier": "basic",
+          "target": "ally",
+          "pattern": "single",
+          "damage_type": "none",
+          "base_power": 0,
+          "mana_cost": 24,
+          "mana_cost_per_level": 4,
+          "cooldown": 12.0,
+          "cast_time": 0,
+          "range": 3,
+          "vfx_type": "buff_aura",
+          "description_fr": "Un allié à 3 cases maximum gagne 10% de chance de critique pendant 6s (+0,2s par rang). (provisoire)",
+          "description_en": "An ally within 3 tiles gains 10% critical chance for 6s (+0.2s per rank). (provisional)",
+          "tags": [
+            "buff",
+            "support",
+            "crit",
+            "card"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "crit_chance_up",
+              "stacks_to_apply": 2,
+              "duration": 6.0,
+              "duration_per_level": 0.2
+            }
+          ],
+          "rank_milestones": [
+            {
+              "rank": 5,
+              "bonus": "extra_stacks",
+              "stat": "crit_chance_up",
+              "value": 1
+            },
+            {
+              "rank": 10,
+              "bonus": "extra_effect",
+              "stat": "crit_damage_up",
+              "value": 1,
+              "with": "crit_chance_up"
+            }
+          ],
+          "base_class_id": "mage",
+          "subclass_id": "cardmaster",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "ally",
+            "requires_line_of_sight": false,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "single"
+          },
+          "percent_per_level": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe, aucun sort retire, mecaniques serveur existantes seulement) : Chance Critique + 2 charges (10 %) 6 s (+0,2 s par rang) sur un allie a 3 cases, sans ligne de vue (meme effet que Plat de puissance du Battle Cook ou Elu du Commander) ; 24 Souffle, recharge 12 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
         },
         {
           "id": "skill_mage_card_fate_flip",
@@ -4101,6 +4317,66 @@
           "_souffle_a_valider": "A VALIDER (2026-11-06, decision Charleston, reequilibrage du Souffle A+B+C) : mana_cost 36 -> 43, mana_cost_per_level 1 -> 1 (sort de sous-classe x1,2 au rang 1, arrondi, option B).",
           "range": 1,
           "rank_scaling_enabled": true
+        },
+        {
+          "id": "skill_mage_sb_arcane_rampart",
+          "name_en": "Arcane Rampart",
+          "name_fr": "Rempart arcanique",
+          "tier": "basic",
+          "target": "allies",
+          "pattern": "ring_1_center",
+          "damage_type": "none",
+          "base_power": 0,
+          "mana_cost": 30,
+          "mana_cost_per_level": 1,
+          "cooldown": 16.0,
+          "cast_time": 0,
+          "range": 0,
+          "vfx_type": "shield",
+          "description_fr": "Le lanceur et les alliés autour de lui reçoivent un bouclier de 12% du Souffle maximum du lanceur (+0,5 point par rang) pendant 6s. Absorption augmentée de 30% si le Souffle restant après paiement dépasse 70% du maximum. (provisoire)",
+          "description_en": "The caster and allies around them receive a shield worth 12% of the caster's maximum Breath (+0.5 percentage point per rank) for 6s. Absorption increases by 30% if Breath remaining after payment exceeds 70% of maximum. (provisional)",
+          "tags": [
+            "defense",
+            "shield",
+            "support",
+            "aoe",
+            "conditional"
+          ],
+          "effects": [
+            {
+              "type": "buff",
+              "stat": "shield_max_mp",
+              "value": 0,
+              "pct": 12,
+              "duration": 6,
+              "pct_per_level": 0.5
+            }
+          ],
+          "base_class_id": "mage",
+          "subclass_id": "spellblade",
+          "tier3_id": "",
+          "source_scope": "SUBCLASS",
+          "targeting": {
+            "selection_mode": "tile",
+            "valid_target_team": "ally",
+            "requires_line_of_sight": false,
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "ring_1_center"
+          },
+          "percent_per_level": 0,
+          "power_per_level": 0,
+          "effect_power_per_level": 0,
+          "conditional_bonuses": [
+            {
+              "condition": "caster_above_mp",
+              "threshold": 0.7,
+              "bonus_percent": 30,
+              "applies_to": "shield"
+            }
+          ],
+          "_shield_note": "shield_max_mp se calcule sur le Souffle max de la SOURCE du statut, le lanceur, meme pose sur un allie (status_manager.cpp, branche des boucliers types : lookup IdentityComponent == source puis ManaComponent.max). Zone : meme montage que Impulsion de lumiere (allies + ring_1_center + range 0, room.cpp recentre un sort AOE_ALLY sans case sur le lanceur).",
+          "_a_valider": "A VALIDER (2026-11-12, decision Charleston : sort basique de groupe, un role par sous-classe, S'AJOUTE en 6e sort de sous-classe, aucun sort retire, mecaniques serveur existantes seulement) : bouclier 12 % du Souffle max du lanceur (+0,5 point par rang) 6 s sur lui et les allies de l'anneau d'une case, +30 % si son Souffle restant apres paiement depasse 70 % (comme Garde magique) ; 30 Souffle, recharge 16 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-12)."
         },
         {
           "id": "skill_mage_sb_arcane_cleave",
