@@ -20,6 +20,9 @@ Entry grammar (one bonus = one entry, cumulative: every entry whose rank <= the 
         target of the `with` effect of the skill (a capped buff gains an effect, not power)
   {"rank": 10, "bonus": "cooldown_percent", "value": -15}
         cooldown x (1 + value / 100), proportional so it follows any later cooldown change
+  {"rank": 5,  "bonus": "movement_distance", "value": 1}
+        +value cells on the movement distance (Trickster's Scramble, movement scramble,
+        2026-11-12: read by the server at the draw)
 
 Rules (rank_milestones block of skill_system.json):
   stackable effect under its cap (buff, debuff, DoT)  +stack_bonus stack at each milestone rank
@@ -39,6 +42,9 @@ Rules (rank_milestones block of skill_system.json):
   skill that still grows with nothing at all          no_growth_cooldown_percent at hard_cc_rank
   damage, heal, shield, HoT                           linear (percent_per_level, pct_per_level):
                                                       no milestone
+  random displacement (movement scramble)             +scramble_distance_bonus cell at each
+                                                      milestone, cooldown_percent
+                                                      scramble_cooldown_percent at hard_cc_rank
 A duration bonus is only given when the duration stays inside stats/status_effects.json
 _meta.duration_rule at every rank and the cooldown stays strictly longer than the longest
 duration (cooldown_rule, exempt fillers excepted); a cooldown bonus only when the same holds
@@ -316,9 +322,17 @@ def milestones_for(s):
                 if try_add(s, entries, {"rank": rank, "bonus": "extra_duration", "stat": stat_of(e),
                                         "value": RULES["dot_capped_duration_seconds"]}):
                     grew = True
+    cd_rank = RULES["hard_cc_rank"]
+    # 4c. random displacement (Trickster's Scramble, 2026-11-12, a valider): the throw grows by
+    # scramble_distance_bonus cell at each milestone, the cooldown is cut at hard_cc_rank.
+    if (s.get("movement") or {}).get("type") == "scramble":
+        for rank in MILESTONES:
+            entries.append({"rank": rank, "bonus": "movement_distance", "value": RULES["scramble_distance_bonus"]})
+        if (s.get("cooldown") or 0) > 0:
+            try_add(s, entries, {"rank": cd_rank, "bonus": "cooldown_percent",
+                                 "value": RULES["scramble_cooldown_percent"]})
     # 5. hard control / immunity: proportional cooldown cut at hard_cc_rank
     kinds = {kind(e, s) for e in effects}
-    cd_rank = RULES["hard_cc_rank"]
     if (s.get("cooldown") or 0) > 0 and kinds & {"hard_cc", "immunity"}:
         try_add(s, entries, {"rank": cd_rank, "bonus": "cooldown_percent",
                              "value": RULES["hard_cc_cooldown_percent"]})
@@ -327,7 +341,7 @@ def milestones_for(s):
         try_add(s, entries, {"rank": cd_rank, "bonus": "cooldown_percent",
                              "value": RULES["no_growth_cooldown_percent"]})
     entries.sort(key=lambda m: (m["rank"], ["extra_stacks", "extra_duration", "extra_effect",
-                                            "cooldown_percent"].index(m["bonus"])))
+                                            "movement_distance", "cooldown_percent"].index(m["bonus"])))
     return entries
 
 
