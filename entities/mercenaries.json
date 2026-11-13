@@ -16,6 +16,11 @@
     "tutorial_npc": "Hestaia (PNJ tuto) propose le mercenaire de base au joueur",
     "spec_kits_note": "spec_kits (recrues d'arene seulement, 2026-10-23, a valider) : a partir du niveau d'acces des specialisations (config/skill_system.json skill_categories.tier3.unlock_at_player_level), le combat choisit UNE des deux specialisations de l'archetype (tirage serveur, stable par salle) et monte le kit qu'un joueur de ce niveau aurait sur sa barre : les 5 sorts de la specialisation (classes/<classe>/skills.json, tier3), les 5 sorts de sous-classe, et seulement les sorts de base listes dans base_kept, soit 12 sorts = config/game.json skill_bar.slots_count ; le deplacement de classe deja present dans skill_loadout reste en plus, comme la rangee de deplacement du joueur. Seuls les sorts de base sont choisis ici, le reste est derive de la data des classes : ajouter un sort a une specialisation l'ajoute au kit. Mercenaires engages (PvE), familiers, lecon d'arene et tutoriel ne lisent pas ce champ."
   },
+  "hire_unlock": {
+    "_note": "Niveau de PERSONNAGE requis pour ENGAGER un mercenaire (0x0E03), lu par le service mercenary (services/mercenary/src/db/archetype_loader.cpp) et renvoye au client dans la liste (0x0E02, required_level + is_locked). Un archetype sans subclass_id suit base_required_level, un archetype avec subclass_id suit subclass_required_level. Le niveau vient de character.get_progression, jamais du client. Un mercenaire deja engage n'est jamais retire. Ne concerne que l'engagement : les recrues d'arene et les bots du tutoriel ne passent pas par ici. Decision Charleston du 2026-11-13, valeur 60 A VALIDER.",
+    "base_required_level": 1,
+    "subclass_required_level": 60
+  },
   "mercenaries": [
     {
       "id": "merc_warrior",
