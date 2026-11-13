@@ -1744,15 +1744,6 @@ def validate_rift_events(db: Path) -> list:
         sc = sz.get("duration_scale_by_rank", {}).get(r)
         if not (isinstance(sc, (int, float)) and sc > 0):
             errors.append(f"{tag} sizes.duration_scale_by_rank.{r} doit etre > 0")
-    # 2026-11-13 (P1-4) : objectif module par le nombre de participants, optionnel. Le
-    # serveur refuse au chargement une liste vide, non croissante ou hors ]0, 1].
-    if "target_scale_by_participants" in sz:
-        ts = sz["target_scale_by_participants"]
-        if not (isinstance(ts, list) and ts
-                and all(isinstance(x, (int, float)) and 0 < x <= 1 for x in ts)
-                and all(ts[i] <= ts[i + 1] for i in range(len(ts) - 1))):
-            errors.append(f"{tag} sizes.target_scale_by_participants : liste non vide de facteurs "
-                          f"croissants dans ]0, 1]")
     lvl = data.get("visual", {}).get("level_by_size", {})
     for name in sizes:
         if lvl.get(name) not in (1, 2, 3):
