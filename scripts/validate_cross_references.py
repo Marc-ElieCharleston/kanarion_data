@@ -2460,6 +2460,11 @@ def _monster_skill_ids(db: Path) -> set:
     return ids
 
 
+# Decors de combat qu'aucune zone n'utilise parce qu'ils sont propres a la Tour (le client
+# les connait : kanarion_front scripts/combat/visuals/combat_backdrop.gd PATHS).
+TOWER_ONLY_BACKDROPS = {"tower_corrupted"}
+
+
 def validate_tower_infinite(db: Path, rules: dict, all_item_ids: set) -> list:
     """Tour infinie (2026-10-18) : presentation, segments de croissance, points de
     reprise, cycle hebdomadaire (affixes + coffre) et classement. Le serveur
@@ -2470,9 +2475,11 @@ def validate_tower_infinite(db: Path, rules: dict, all_item_ids: set) -> list:
     if pres is not None:
         backdrop = pres.get("combat_backdrop", "")
         zones_text = (db / "world" / "zones.json").read_text(encoding="utf-8")
-        if not isinstance(backdrop, str) or (backdrop and f'"combat_backdrop": "{backdrop}"' not in zones_text):
+        known = backdrop in TOWER_ONLY_BACKDROPS or f'"combat_backdrop": "{backdrop}"' in zones_text
+        if not isinstance(backdrop, str) or (backdrop and not known):
             errors.append(f"[tower.json] presentation.combat_backdrop '{backdrop}' : decor inconnu "
-                          "(aucune zone de world/zones.json ne l'utilise)")
+                          "(aucune zone de world/zones.json ne l'utilise, et ce n'est pas un decor "
+                          "propre a la Tour de TOWER_ONLY_BACKDROPS)")
     segs = diff.get("stat_growth_segments")
     if segs is not None:
         if not isinstance(segs, list) or not segs:
