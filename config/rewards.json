@@ -381,41 +381,58 @@
     }
   },
   "level_difference": {
-    "description": "Pénalité XP/gold si le joueur est trop haut niveau par rapport au mob. Le loot (items, équipement, matériaux) n'est PAS affecté — un mob drop ce qu'il drop quel que soit le niveau du joueur.",
+    "description": "Pénalité XP/or si le joueur est trop haut niveau par rapport au combat. Depuis le 13/11/2026 (décision Charleston, option « Dofus »), l'écart se mesure contre le NIVEAU DU GROUPE de monstres du combat, c'est-à-dire la SOMME des niveaux des monstres de la rencontre (tués ou non, renforts de rencontre compris), et non plus contre chaque monstre. Les invocations de monstre (ex. assassins du Rongeur), les invocations et les leurres de joueur ne comptent pas dans la somme. Un combat contre un seul monstre = son niveau : rien ne change pour lui. L'XP de base par monstre tué reste celle du niveau de CHAQUE monstre : seule la référence de la pénalité change. Mêmes règles pour l'XP partielle d'un combat abandonné et pour l'XP de combat des familiers (comparée au niveau du familier). Le butin (objets, équipement, matériaux) n'est PAS affecté. Lu par server-combat (LootRoller::penalty_reference_level, calc_level_penalty) ; les autres lecteurs de ce bloc (contrats, invasions, faille, missions de guilde) comparent à un niveau de contenu unique et ignorent `reference`.",
+    "reference": "group_level_sum",
+    "_reference_valeurs": "\"group_level_sum\" = niveau du groupe (somme des niveaux des monstres de la rencontre) ; \"per_monster\" = niveau de chaque monstre tué (règle jusqu'à la 0.21.9). Repasser à \"per_monster\" rétablit l'ancienne règle sans code. Clé obligatoire : absente ou inconnue, le service combat refuse de démarrer.",
+    "_a_valider": "Référence group_level_sum décidée par Charleston le 13/11/2026, à valider en jeu (rythme de montée en répétant un donjon). Marge, pente et plafond inchangés.",
     "no_penalty_range": 5,
     "penalty_per_level": 0.2,
     "max_penalty": 0.95,
-    "formula": "Si (player_level - mob_level) > no_penalty_range: penalty = min(max_penalty, (diff - no_penalty_range) × penalty_per_level)",
+    "formula": "niveau_ref = somme des niveaux des monstres de la rencontre (reference group_level_sum ; niveau du monstre tué si per_monster ou si la somme est inconnue). diff = player_level - niveau_ref. Si diff > no_penalty_range : penalty = min(max_penalty, (diff - no_penalty_range) × penalty_per_level), sinon 0. XP d'un monstre tué = base_xp(niveau DU monstre) × multiplicateurs × (1 - penalty) ; or idem.",
     "examples": [
       {
-        "player": 5,
-        "mob": 1,
+        "player": 20,
+        "group": "Égouts, salle du Rongeur : Rongeur 12 + 7 rats niv. 11-12, somme 93",
+        "group_level": 93,
         "penalty": 0,
-        "note": "4 niveaux d'écart, dans la marge de 5 : aucune pénalité"
+        "note": "joueur sous le niveau du groupe : aucune pénalité (avant le 13/11 : -60 à -80 % par rat)"
+      },
+      {
+        "player": 40,
+        "group_level": 93,
+        "penalty": 0,
+        "note": "Égouts, salle du boss : aucune pénalité (avant : -95 %)"
+      },
+      {
+        "player": 60,
+        "group_level": 93,
+        "penalty": 0,
+        "note": "Égouts, salle du boss : aucune pénalité (avant : -95 %)"
+      },
+      {
+        "player": 100,
+        "group_level": 93,
+        "penalty": 0.4,
+        "note": "Égouts, salle du boss : 7 niveaux au-dessus du groupe, (7-5) × 0.2 = -40 % (avant : -95 %)"
       },
       {
         "player": 20,
-        "mob": 15,
-        "penalty": 0,
-        "note": "5 niveaux, limite de la marge : aucune pénalité"
+        "group": "un seul monstre niveau 10",
+        "group_level": 10,
+        "penalty": 0.95,
+        "note": "10 niveaux d'écart, (10-5) × 0.2 = 1.0 plafonné à max_penalty : -95 %, comme avant (combat à un monstre inchangé)"
       },
       {
         "player": 7,
-        "mob": 1,
+        "group_level": 1,
         "penalty": 0.2,
-        "note": "6 niveaux, diff-5=1 × 0.2 = -20%"
+        "note": "un monstre seul niveau 1 : 6 niveaux, (6-5) × 0.2 = -20 %"
       },
       {
-        "player": 9,
-        "mob": 1,
-        "penalty": 0.6,
-        "note": "8 niveaux, diff-5=3 × 0.2 = -60%"
-      },
-      {
-        "player": 11,
-        "mob": 1,
-        "penalty": 0.95,
-        "note": "10 niveaux et plus, diff-5=5 × 0.2 = 1.0 plafonné à max_penalty : -95% (quasi rien)"
+        "player": 20,
+        "group_level": 15,
+        "penalty": 0,
+        "note": "5 niveaux, limite de la marge : aucune pénalité"
       }
     ],
     "_migrated_from": "items/loot_tables.json multipliers.level_difference"
