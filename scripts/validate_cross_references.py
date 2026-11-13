@@ -2462,7 +2462,7 @@ def _monster_skill_ids(db: Path) -> set:
 
 # Decors de combat qu'aucune zone n'utilise parce qu'ils sont propres a la Tour (le client
 # les connait : kanarion_front scripts/combat/visuals/combat_backdrop.gd PATHS).
-TOWER_ONLY_BACKDROPS = {"tower_interior"}
+TOWER_ONLY_BACKDROPS = {"tower_corrupted"}
 
 
 def validate_tower_infinite(db: Path, rules: dict, all_item_ids: set) -> list:
