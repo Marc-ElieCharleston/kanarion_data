@@ -349,6 +349,57 @@
       "effect_power_per_level": 0,
       "rank_scaling_enabled": true,
       "range": 2
+    },
+    {
+      "id": "skill_warrior_raise_shield",
+      "name_en": "Raise Shield",
+      "name_fr": "Lever le bouclier",
+      "tier": "basic",
+      "target": "self",
+      "pattern": "single",
+      "damage_type": "none",
+      "base_power": 0,
+      "mana_cost": 20,
+      "mana_cost_per_level": 1,
+      "cooldown": 18.0,
+      "cast_time": 0,
+      "range": 0,
+      "vfx_type": "shield",
+      "description_fr": "Lève ton bouclier : gagne un bouclier égal à 15% de tes PV max (+0,5 point par rang) pendant 6s. (provisoire)",
+      "description_en": "Raise your shield: gain a shield worth 15% of your max HP (+0.5 percentage points per rank) for 6s. (provisional)",
+      "tags": [
+        "defense",
+        "shield",
+        "self"
+      ],
+      "effects": [
+        {
+          "type": "buff",
+          "stat": "shield_max_hp",
+          "value": 0,
+          "pct": 15,
+          "duration": 6,
+          "duration_per_level": 0,
+          "pct_per_level": 0.5
+        }
+      ],
+      "base_class_id": "warrior",
+      "subclass_id": "",
+      "tier3_id": "",
+      "source_scope": "BASE",
+      "targeting": {
+        "selection_mode": "self",
+        "valid_target_team": "self",
+        "requires_line_of_sight": false,
+        "bypasses_los": false,
+        "requires_entity_on_target_tile": false,
+        "aoe_pattern_id": "single"
+      },
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "percent_per_level": 0,
+      "_mecanique_note": "Bouclier shield_max_hp sur le lanceur (absorption = value + PV max du lanceur x pct / 100, status_manager.cpp ; pct_per_level lu par content_loader.cpp), meme forme que Posture de fer (skill_warrior_guardian_iron_stance) et Martelement. 6 s : dans les bornes 6-12 s des effets doux.",
+      "_a_valider": "A VALIDER (2026-11-13, decision Charleston : sort de CLASSE DE BASE ajoute en 6e sort de base, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s pour tous ces sorts) : bouclier 15 % des PV max du lanceur (+0,5 point par rang) 6 s ; recharge 18 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-13). Animation : warrior_raise_shield (autre agent), la data ne porte que vfx_type shield."
     }
   ],
   "subclass_skills": {
@@ -550,21 +601,21 @@
           "target": "enemy",
           "pattern": "single",
           "damage_type": "physical",
-          "scaling_stat": "current_shield",
+          "scaling_stat": "max_hp",
           "base_power": 0,
-          "scaling_percent": 130,
-          "percent_per_level": 8.7,
+          "scaling_percent": 8,
+          "percent_per_level": 0.53,
+          "_degats_pv_max_a_valider": "A VALIDER (2026-11-13, decision Charleston : le sort faisait 0 degat sans bouclier) : scaling_stat current_shield -> max_hp (PV max du lanceur, room.cpp branche scaling_stat max_hp, comme les frappes du Martyr), scaling_percent 130 -> 8, percent_per_level 8,7 -> 0,53 (meme gain relatif, +60 % au rang 10). Calibrage : un Gardien construit tank (2 points PV pour 1 DEF, equipement rare +5, scripts/balance/pve_matrix.py) a environ 9 PV par point d'ATQ aux niveaux 20, 40 et 60 : 8 % des PV max valent 72 a 74 % ATQ, entre Martelement (60 %, 20 Souffle) et Taille enragee (85 %, 22 Souffle), pour 32 Souffle avec la reduction d'ATQ. Tag shield_scaling retire (lu par aucun code).",
           "mana_cost": 32,
           "mana_cost_per_level": 2,
           "_souffle_a_valider": "A VALIDER (2026-11-06, decision Charleston, reequilibrage du Souffle A+B+C) : mana_cost 27 -> 32, mana_cost_per_level 1 -> 2 (sort de sous-classe x1,2 au rang 1, arrondi, option B).",
           "cooldown": 22.0,
           "vfx_type": "melee_slash",
-          "description_fr": "Inflige 130% du bouclier actuel (+8,7 points de pourcentage par rang) en dégâts physiques. Réduit l'ATQ de 15% pendant 8s (+0,44s par rang). Le bouclier n'est pas consommé.",
-          "description_en": "Deals 130% of current shield (+8.7 percentage points per rank) as physical damage. Reduces ATK by 15% for 8s (+0.44s per rank). The shield is not consumed.",
+          "description_fr": "Inflige 8% des PV max du lanceur (+0,53 point de pourcentage par rang) en dégâts physiques. Réduit l'ATQ de 15% pendant 8s (+0,44s par rang).",
+          "description_en": "Deals 8% of the caster’s max HP (+0.53 percentage points per rank) as physical damage. Reduces ATK by 15% for 8s (+0.44s per rank).",
           "tags": [
             "damage",
             "melee",
-            "shield_scaling",
             "atk_down"
           ],
           "effects": [
