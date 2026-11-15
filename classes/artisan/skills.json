@@ -240,8 +240,8 @@
       "mana_cost_per_level": 7,
       "cooldown": 28.0,
       "vfx_type": "debuff_aura",
-      "description_fr": "Applique une charge de Vulnérabilité pendant 6s (+0,2s par rang). Nécessite une ligne de vue.",
-      "description_en": "Applies one Vulnerable stack for 6s (+0.2s per rank). Requires line of sight.",
+      "description_fr": "Applique une charge de Vulnérabilité et brise l'armure de la cible (5 charges d'Armure réduite, -25% d'armure) pendant 6s (+0,2s par rang). Nécessite une ligne de vue. (provisoire)",
+      "description_en": "Applies one Vulnerable stack and breaks the target's armor (5 Armor Down stacks, -25% armor) for 6s (+0.2s per rank). Requires line of sight. (provisional)",
       "tags": [
         "debuff",
         "armor_break",
@@ -252,6 +252,13 @@
           "type": "debuff",
           "stat": "vulnerable",
           "stacks_to_apply": 1,
+          "duration": 6,
+          "duration_per_level": 0.2
+        },
+        {
+          "type": "debuff",
+          "stat": "armor_down",
+          "stacks_to_apply": 5,
           "duration": 6,
           "duration_per_level": 0.2
         }
@@ -287,7 +294,8 @@
       "power_per_level": 0,
       "effect_power_per_level": 0,
       "percent_per_level": 0,
-      "range": 3
+      "range": 3,
+      "_armure_brisee_a_valider": "A VALIDER (2026-11-15, decision Charleston) : Exposer la Faille pose AUSSI armor_down, 5 charges d'un coup (status_effects.json armor_down max_stacks 5 = armure brisee, room.cpp bonus_if_armor_broken), meme duree que la Vulnerabilite (6 s, +0,2 s par rang). 5 charges en UN lancer parce que la recharge (28 s) depasse la duree (6 s) : avec 1 charge par lancer, l'Artisan seul n'aurait jamais atteint 5. Combo : Exposer la Faille puis Coup de grace de l'outil dans les 6 s = degats doubles. Effet de bord : -25 % d'armure pour tout le groupe pendant 6 s."
     },
     {
       "id": "skill_artisan_resource_share",
@@ -451,7 +459,7 @@
       },
       "power_per_level": 0,
       "effect_power_per_level": 0,
-      "_mecanique_note": "bonus_if_armor_broken (content_loader.cpp, room.cpp) : degats x (1 + 100 / 100) si la cible porte armor_down au maximum de ses charges (status_effects.json armor_down max_stacks 5, lu a l'execution). ATTENTION : Exposer la Faille pose Vulnerabilite, pas Armure reduite ; l'Artisan de base n'a AUCUNE source d'armor_down. Le bonus vient donc d'un allie (Tir Precis de l'Archer, Laceration du Voleur...). Point ouvert remonte a Charleston.",
+      "_mecanique_note": "bonus_if_armor_broken (content_loader.cpp, room.cpp) : degats x (1 + 100 / 100) si la cible porte armor_down au maximum de ses charges (status_effects.json armor_down max_stacks 5, lu a l'execution). Depuis le 2026-11-15 (decision Charleston) Exposer la Faille pose 5 charges d'armor_down d'un coup : l'Artisan seul brise l'armure en UN lancer, puis Coup de grace dans les 6 s. Les allies (Tir Precis, Laceration) peuvent aussi y mener.",
       "_a_valider": "A VALIDER (2026-11-15, decision Charleston du 2026-11-14 : 7e sort de CLASSE DE BASE, \"combo\", ajoute en fin de base_skills apres le 6e, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s). 80 % ATQ (+2,4 points par rang) a 3 cases, x2 si l'armure de la cible est brisee ; 24 Souffle (+1 par rang), recharge 18 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-15). Animation : artisan_tool_finisher (autre agent), la data ne porte que vfx_type melee_slash."
     }
   ],

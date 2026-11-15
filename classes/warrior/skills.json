@@ -262,8 +262,8 @@
       "mana_cost_per_level": 1,
       "cooldown": 28.0,
       "vfx_type": "buff_aura",
-      "description_fr": "Provoque les ennemis alignés pendant 8s (+0,133s par rang), sans ligne de vue.",
-      "description_en": "Taunts enemies in a line for 8s (+0.133s per rank), ignoring line of sight.",
+      "description_fr": "Provoque et défie les ennemis alignés pendant 8s (+0,133s par rang), sans ligne de vue. Un ennemi défié subit des dégâts doublés de ton Châtiment du défi. (provisoire)",
+      "description_en": "Taunts and challenges enemies in a line for 8s (+0.133s per rank), ignoring line of sight. A challenged enemy takes double damage from your Challenge Punish. (provisional)",
       "tags": [
         "taunt",
         "aggro",
@@ -277,6 +277,12 @@
           "value": 1,
           "duration": 8.0,
           "duration_per_level": 0.133
+        },
+        {
+          "type": "debuff",
+          "stat": "challenged",
+          "duration": 8.0,
+          "duration_per_level": 0.133
         }
       ],
       "rank_milestones": [
@@ -287,9 +293,21 @@
           "value": 1
         },
         {
+          "rank": 5,
+          "bonus": "extra_duration",
+          "stat": "challenged",
+          "value": 1
+        },
+        {
           "rank": 10,
           "bonus": "extra_duration",
           "stat": "taunt",
+          "value": 1
+        },
+        {
+          "rank": 10,
+          "bonus": "extra_duration",
+          "stat": "challenged",
           "value": 1
         }
       ],
@@ -308,7 +326,8 @@
       "power_per_level": 0,
       "effect_power_per_level": 0,
       "percent_per_level": 0,
-      "range": 2
+      "range": 2,
+      "_defi_a_valider": "A VALIDER (2026-11-15, decision Charleston, option a du combo Warrior) : le Cri pose AUSSI challenged (status_effects.json, pose par le lanceur : room.cpp ne double les degats de damage_mult_if_challenged que si challenged.source_entity est le lanceur), meme duree que la provocation (8 s, +0,133 s par rang). Le Chatiment du defi (skill_warrior_challenge_punish) en tire ses degats doubles. Ecart connu : challenged passe le jet de resistance aux effets (status_manager.cpp is_resistable), taunt non."
     },
     {
       "id": "skill_warrior_cleave",
@@ -400,6 +419,52 @@
       "percent_per_level": 0,
       "_mecanique_note": "Bouclier shield_max_hp sur le lanceur (absorption = value + PV max du lanceur x pct / 100, status_manager.cpp ; pct_per_level lu par content_loader.cpp), meme forme que Posture de fer (skill_warrior_guardian_iron_stance) et Martelement. 6 s : dans les bornes 6-12 s des effets doux.",
       "_a_valider": "A VALIDER (2026-11-13, decision Charleston : sort de CLASSE DE BASE ajoute en 6e sort de base, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s pour tous ces sorts) : bouclier 15 % des PV max du lanceur (+0,5 point par rang) 6 s ; recharge 18 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-13). Animation : warrior_raise_shield (autre agent), la data ne porte que vfx_type shield."
+    },
+    {
+      "id": "skill_warrior_challenge_punish",
+      "name_en": "Challenge Punish",
+      "name_fr": "Châtiment du défi",
+      "tier": "standard",
+      "target": "enemy",
+      "pattern": "single",
+      "damage_type": "physical",
+      "scaling_stat": "atk",
+      "base_power": 0,
+      "scaling_percent": 80,
+      "percent_per_level": 2.4,
+      "rank_scaling_enabled": true,
+      "mana_cost": 24,
+      "mana_cost_per_level": 1,
+      "cooldown": 18.0,
+      "cast_time": 0,
+      "range": 2,
+      "damage_mult_if_challenged": 2.0,
+      "vfx_type": "melee_slash",
+      "description_fr": "Inflige 80% ATQ (+2,4 points par rang) à un ennemi à 2 cases maximum. Dégâts doublés si tu l'as défié avec ton Cri de Provocation. Nécessite une ligne de vue. (provisoire)",
+      "description_en": "Deals 80% ATK (+2.4 percentage points per rank) to an enemy within 2 tiles. Damage is doubled if you challenged it with your Taunting Shout. Requires line of sight. (provisional)",
+      "tags": [
+        "damage",
+        "melee",
+        "challenge_payoff",
+        "combo"
+      ],
+      "effects": [],
+      "base_class_id": "warrior",
+      "subclass_id": "",
+      "tier3_id": "",
+      "source_scope": "BASE",
+      "targeting": {
+        "selection_mode": "entity",
+        "valid_target_team": "enemy",
+        "requires_line_of_sight": true,
+        "bypasses_los": false,
+        "requires_entity_on_target_tile": false,
+        "aoe_pattern_id": "single"
+      },
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "_mecanique_note": "damage_mult_if_challenged (content_loader.cpp, room.cpp) : degats x 2 si la cible porte challenged pose par CE lanceur (source_entity == lanceur, non expire). Le Cri de Provocation du Warrior de base pose challenged depuis le 2026-11-15. Sans Cri : 80 % ATQ ; apres le Cri : 160 % ATQ (rang 1).",
+      "_a_valider": "A VALIDER (2026-11-15, decision Charleston du 2026-11-14 et du 2026-11-15 : 7e sort de CLASSE DE BASE, \"combo\", ajoute en fin de base_skills apres le 6e, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s ; option a : le Cri de Provocation pose aussi challenged). 80 % ATQ (+2,4 points par rang) a 2 cases, x2 sur une cible defiee par le lanceur ; 24 Souffle (+1 par rang), recharge 18 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-15). Animation : warrior_challenge_punish (autre agent), la data ne porte que vfx_type melee_slash."
     }
   ],
   "subclass_skills": {
