@@ -12,9 +12,9 @@
     },
     "balance_note": "balance_profile = profil PvE (mercenaire engage par un joueur). pvp_balance_profile = override applique quand la salle est un combat PvP (arene, bot-fill). Les deux contextes lisent deux champs distincts : ne jamais mettre un pvp_filler_* dans balance_profile. Corrige 2026-08-24 : les 24 archetypes subclass portaient leur pvp_filler_<role>_v1 dans le slot PvE, donc un joueur qui en engageait un en PvE recevait un bot a x2.2-2.5 degats et x2.8-3.8 PV sans malus de niveau. Voir config/mercenary_balance.json.",
     "cost_note": "cost_gold=0 sur tous les archetypes (anti-frustration nouveaux joueurs). Augmenter sur tiers avances post-MVP.",
-    "skill_loadout_note": "Base = 3 skills basiques classe. Subclass = 5 skills base classe + 5 skills subclass = 10 skills. Le PlayerAI serveur pre-resout au ROOM_SETUP via ai_loaded_skills. Mise a jour 2026-11-14 (decision Charleston) : les 24 variantes ont les 6 sorts de leur sous-classe (7 pour le Fauconnier : Grand faucon et Pique aveuglant), ajoutes avant l ultime : 11 sorts de barre (12 pour le Fauconnier) sur une barre de 12, plus le deplacement.",
+    "skill_loadout_note": "Plus de skill_loadout ecrit a la main depuis le 2026-11-15 (decision Charleston) : le kit d'un mercenaire est DERIVE par le serveur des donnees de classe (kanarion_back shared/gameplay/class_kit.hpp, lu par les deux chargeurs : server-combat content/mercenary_data_loader.cpp et services/mercenary db/archetype_loader.cpp) : tous les base_skills de classes/<classe>/skills.json dans l'ordre, puis tous les sorts de subclass_skills.<sous-classe>.skills pour une variante, puis le signature_movement de la classe. Exactement les sorts d'un personnage de la classe (et de la sous-classe), sans limite de barre pour un bot. Un skill_loadout present est REFUSE au chargement (seconde source). Manoeuvres de sous-classe et de specialisation non incluses, comme avant. Le service mercenary envoie la liste derivee au client dans 0x0E02 (MercenaryArchetype.skill_loadout).",
     "tutorial_npc": "Hestaia (PNJ tuto) propose le mercenaire de base au joueur",
-    "spec_kits_note": "spec_kits (recrues d'arene seulement, 2026-10-23, a valider) : a partir du niveau d'acces des specialisations (config/skill_system.json skill_categories.tier3.unlock_at_player_level), le combat choisit UNE des deux specialisations de l'archetype (tirage serveur, stable par salle) et monte le kit qu'un joueur de ce niveau aurait sur sa barre : les 5 sorts de la specialisation (classes/<classe>/skills.json, tier3), les 5 sorts de sous-classe, et seulement les sorts de base listes dans base_kept, soit 12 sorts = config/game.json skill_bar.slots_count ; le deplacement de classe deja present dans skill_loadout reste en plus, comme la rangee de deplacement du joueur. Seuls les sorts de base sont choisis ici, le reste est derive de la data des classes : ajouter un sort a une specialisation l'ajoute au kit. Mercenaires engages (PvE), familiers, lecon d'arene et tutoriel ne lisent pas ce champ. subclass_left_out (2026-11-14) : sorts de sous-classe du skill_loadout que la recrue de specialisation laisse hors de sa barre de 12 (les sorts ajoutes le 2026-11-12), pour garder 2 de base + 5 de sous-classe + 5 de specialisation."
+    "spec_kits_note": "spec_kits (recrues d'arene seulement, 2026-10-23, a valider) : les ids des deux specialisations de l'archetype, chacune un objet VIDE (seules les cles de note commencant par _ y sont admises). A partir du niveau d'acces des specialisations (config/skill_system.json skill_categories.tier3.unlock_at_player_level), le combat choisit UNE des deux (tirage serveur, stable par salle). Depuis le 2026-11-15 (decision Charleston) son kit est DERIVE des donnees de classe : tous les sorts de base, tous les sorts de la sous-classe, tous ceux de la specialisation, puis le deplacement de classe, sans limite de barre (la barre de 12 du joueur ne s'applique pas aux bots). base_kept et subclass_left_out sont supprimes et refuses au chargement. Le filtrage par niveau des recrues (skill_categories.<categorie>.unlock_at_player_level) s'applique toujours au kit derive."
   },
   "hire_unlock": {
     "_note": "Niveau de PERSONNAGE requis pour ENGAGER un mercenaire (0x0E03), lu par le service mercenary (services/mercenary/src/db/archetype_loader.cpp) et renvoye au client dans la liste (0x0E02, required_level + is_locked). Un archetype sans subclass_id suit base_required_level, un archetype avec subclass_id suit subclass_required_level. Le niveau vient de character.get_progression, jamais du client. Un mercenaire deja engage n'est jamais retire. Ne concerne que l'engagement : les recrues d'arene et les bots du tutoriel ne passent pas par ici. Decision Charleston du 2026-11-13, valeur 60 A VALIDER.",
@@ -30,14 +30,6 @@
       "class_id": "warrior",
       "subclass_id": null,
       "level_offset_from_player": -2,
-      "skill_loadout": [
-        "skill_warrior_heavy_strike",
-        "skill_warrior_shield_bash",
-        "skill_warrior_defensive_stance",
-        "skill_warrior_taunting_shout",
-        "skill_warrior_cleave",
-        "skill_warrior_charge"
-      ],
       "ai_profile": "tank",
       "balance_profile": "solo_helper_v1",
       "pvp_balance_profile": "pvp_filler_tank_v1",
@@ -54,14 +46,6 @@
       "class_id": "mage",
       "subclass_id": null,
       "level_offset_from_player": -2,
-      "skill_loadout": [
-        "skill_mage_magic_bolt",
-        "skill_mage_arcane_pulse",
-        "skill_mage_arcane_cataclysm",
-        "skill_mage_mana_shield",
-        "skill_mage_arcane_siphon",
-        "skill_mage_blink"
-      ],
       "ai_profile": "caster",
       "balance_profile": "solo_helper_v1",
       "pvp_balance_profile": "pvp_filler_dps_magical_v1",
@@ -78,14 +62,6 @@
       "class_id": "healer",
       "subclass_id": null,
       "level_offset_from_player": -2,
-      "skill_loadout": [
-        "skill_healer_smite",
-        "skill_healer_heal",
-        "skill_healer_holy_shield",
-        "skill_healer_purify",
-        "skill_healer_light_pulse",
-        "skill_healer_guardian_swap"
-      ],
       "ai_profile": "healer",
       "balance_profile": "solo_helper_v1",
       "pvp_balance_profile": "pvp_filler_healer_v1",
@@ -102,14 +78,6 @@
       "class_id": "archer",
       "subclass_id": null,
       "level_offset_from_player": -2,
-      "skill_loadout": [
-        "skill_archer_precise_shot",
-        "skill_archer_volley",
-        "skill_archer_crippling_arrow",
-        "skill_archer_eagle_eye",
-        "skill_archer_hunter_mark",
-        "skill_archer_backstep"
-      ],
       "ai_profile": "artillery",
       "balance_profile": "solo_helper_v1",
       "pvp_balance_profile": "pvp_filler_dps_ranged_v1",
@@ -126,14 +94,6 @@
       "class_id": "rogue",
       "subclass_id": null,
       "level_offset_from_player": -2,
-      "skill_loadout": [
-        "skill_rogue_quick_stab",
-        "skill_rogue_throw_dagger",
-        "skill_rogue_smoke_bomb",
-        "skill_rogue_mark_target",
-        "skill_rogue_lacerate",
-        "skill_rogue_shadowstep"
-      ],
       "ai_profile": "assassin",
       "balance_profile": "solo_helper_v1",
       "pvp_balance_profile": "pvp_filler_dps_physical_v1",
@@ -150,14 +110,6 @@
       "class_id": "artisan",
       "subclass_id": null,
       "level_offset_from_player": -2,
-      "skill_loadout": [
-        "skill_artisan_tool_strike",
-        "skill_artisan_quick_patch",
-        "skill_artisan_work_rhythm",
-        "skill_artisan_expose_flaw",
-        "skill_artisan_resource_share",
-        "skill_artisan_grapple"
-      ],
       "ai_profile": "support",
       "balance_profile": "solo_helper_v1",
       "pvp_balance_profile": "pvp_filler_support_v1",
@@ -175,39 +127,9 @@
       "subclass_id": "guardian",
       "role_primary": "tank",
       "role_secondary": null,
-      "skill_loadout": [
-        "skill_warrior_heavy_strike",
-        "skill_warrior_shield_bash",
-        "skill_warrior_defensive_stance",
-        "skill_warrior_taunting_shout",
-        "skill_warrior_cleave",
-        "skill_warrior_guardian_protect_ally",
-        "skill_warrior_guardian_iron_stance",
-        "skill_warrior_guardian_barrier",
-        "skill_warrior_guardian_shield_crush",
-        "skill_warrior_guardian_hammering",
-        "skill_warrior_guardian_aegis_of_the_realm",
-        "skill_warrior_charge"
-      ],
       "spec_kits": {
-        "bulwark": {
-          "base_kept": [
-            "skill_warrior_shield_bash",
-            "skill_warrior_taunting_shout"
-          ],
-          "subclass_left_out": [
-            "skill_warrior_guardian_hammering"
-          ]
-        },
-        "sentinel": {
-          "base_kept": [
-            "skill_warrior_taunting_shout",
-            "skill_warrior_shield_bash"
-          ],
-          "subclass_left_out": [
-            "skill_warrior_guardian_hammering"
-          ]
-        }
+        "bulwark": {},
+        "sentinel": {}
       },
       "ai_profile": "tank",
       "balance_profile": "solo_helper_v1",
@@ -226,39 +148,9 @@
       "subclass_id": "berserker",
       "role_primary": "bruiser",
       "role_secondary": "dps_physical",
-      "skill_loadout": [
-        "skill_warrior_heavy_strike",
-        "skill_warrior_shield_bash",
-        "skill_warrior_defensive_stance",
-        "skill_warrior_taunting_shout",
-        "skill_warrior_cleave",
-        "skill_warrior_berserker_rage_slash",
-        "skill_warrior_berserker_bloodlust",
-        "skill_warrior_berserker_whirlwind",
-        "skill_warrior_berserker_frenzy",
-        "skill_warrior_berserker_quarry",
-        "skill_warrior_berserker_fracture",
-        "skill_warrior_charge"
-      ],
       "spec_kits": {
-        "bloodrage": {
-          "base_kept": [
-            "skill_warrior_heavy_strike",
-            "skill_warrior_cleave"
-          ],
-          "subclass_left_out": [
-            "skill_warrior_berserker_quarry"
-          ]
-        },
-        "frenzied": {
-          "base_kept": [
-            "skill_warrior_heavy_strike",
-            "skill_warrior_cleave"
-          ],
-          "subclass_left_out": [
-            "skill_warrior_berserker_quarry"
-          ]
-        }
+        "bloodrage": {},
+        "frenzied": {}
       },
       "ai_profile": "bruiser",
       "balance_profile": "solo_helper_v1",
@@ -277,39 +169,9 @@
       "subclass_id": "weaponmaster",
       "role_primary": "dps_physical",
       "role_secondary": "bruiser",
-      "skill_loadout": [
-        "skill_warrior_heavy_strike",
-        "skill_warrior_shield_bash",
-        "skill_warrior_defensive_stance",
-        "skill_warrior_taunting_shout",
-        "skill_warrior_cleave",
-        "skill_warrior_weaponmaster_weapon_combo",
-        "skill_warrior_weaponmaster_armor_break",
-        "skill_warrior_weaponmaster_sweeping_line",
-        "skill_warrior_weaponmaster_blade_stance",
-        "skill_warrior_weaponmaster_breach",
-        "skill_warrior_weaponmaster_sovereign_strike",
-        "skill_warrior_charge"
-      ],
       "spec_kits": {
-        "hammer_lord": {
-          "base_kept": [
-            "skill_warrior_shield_bash",
-            "skill_warrior_heavy_strike"
-          ],
-          "subclass_left_out": [
-            "skill_warrior_weaponmaster_breach"
-          ]
-        },
-        "dual_axe_reaver": {
-          "base_kept": [
-            "skill_warrior_heavy_strike",
-            "skill_warrior_cleave"
-          ],
-          "subclass_left_out": [
-            "skill_warrior_weaponmaster_breach"
-          ]
-        }
+        "hammer_lord": {},
+        "dual_axe_reaver": {}
       },
       "ai_profile": "brute",
       "balance_profile": "solo_helper_v1",
@@ -328,39 +190,9 @@
       "subclass_id": "warlord",
       "role_primary": "tank",
       "role_secondary": "support",
-      "skill_loadout": [
-        "skill_warrior_heavy_strike",
-        "skill_warrior_shield_bash",
-        "skill_warrior_defensive_stance",
-        "skill_warrior_taunting_shout",
-        "skill_warrior_cleave",
-        "skill_warrior_warlord_command_shout",
-        "skill_warrior_warlord_weakening_roar",
-        "skill_warrior_warlord_rally",
-        "skill_warrior_warlord_piercing_strike",
-        "skill_warrior_warlord_kill_order",
-        "skill_warrior_warlord_war_banner",
-        "skill_warrior_charge"
-      ],
       "spec_kits": {
-        "commander": {
-          "base_kept": [
-            "skill_warrior_heavy_strike",
-            "skill_warrior_shield_bash"
-          ],
-          "subclass_left_out": [
-            "skill_warrior_warlord_kill_order"
-          ]
-        },
-        "dreadlord": {
-          "base_kept": [
-            "skill_warrior_shield_bash",
-            "skill_warrior_taunting_shout"
-          ],
-          "subclass_left_out": [
-            "skill_warrior_warlord_kill_order"
-          ]
-        }
+        "commander": {},
+        "dreadlord": {}
       },
       "ai_profile": "tank",
       "balance_profile": "solo_helper_v1",
@@ -379,39 +211,9 @@
       "subclass_id": "elementalist",
       "role_primary": "dps_magical",
       "role_secondary": null,
-      "skill_loadout": [
-        "skill_mage_magic_bolt",
-        "skill_mage_arcane_pulse",
-        "skill_mage_arcane_cataclysm",
-        "skill_mage_mana_shield",
-        "skill_mage_arcane_siphon",
-        "skill_mage_elem_elemental_bolt",
-        "skill_mage_elem_inferno",
-        "skill_mage_elem_frost_spike",
-        "skill_mage_elem_elemental_focus",
-        "skill_mage_elem_frost_nova",
-        "skill_mage_elem_elemental_storm",
-        "skill_mage_blink"
-      ],
       "spec_kits": {
-        "frostcaller": {
-          "base_kept": [
-            "skill_mage_mana_shield",
-            "skill_mage_arcane_pulse"
-          ],
-          "subclass_left_out": [
-            "skill_mage_elem_frost_nova"
-          ]
-        },
-        "magma_sage": {
-          "base_kept": [
-            "skill_mage_arcane_pulse",
-            "skill_mage_arcane_cataclysm"
-          ],
-          "subclass_left_out": [
-            "skill_mage_elem_frost_nova"
-          ]
-        }
+        "frostcaller": {},
+        "magma_sage": {}
       },
       "ai_profile": "caster",
       "balance_profile": "solo_helper_v1",
@@ -430,39 +232,9 @@
       "subclass_id": "occultist",
       "role_primary": "debuffer",
       "role_secondary": "dps_magical",
-      "skill_loadout": [
-        "skill_mage_magic_bolt",
-        "skill_mage_arcane_pulse",
-        "skill_mage_arcane_cataclysm",
-        "skill_mage_mana_shield",
-        "skill_mage_arcane_siphon",
-        "skill_mage_occ_dark_bolt",
-        "skill_mage_occ_curse_of_weakness",
-        "skill_mage_occ_life_drain",
-        "skill_mage_occ_soul_rend",
-        "skill_mage_occ_blood_pact",
-        "skill_mage_occ_shadow_pact",
-        "skill_mage_blink"
-      ],
       "spec_kits": {
-        "sorcerer": {
-          "base_kept": [
-            "skill_mage_magic_bolt",
-            "skill_mage_arcane_cataclysm"
-          ],
-          "subclass_left_out": [
-            "skill_mage_occ_blood_pact"
-          ]
-        },
-        "summoner": {
-          "base_kept": [
-            "skill_mage_mana_shield",
-            "skill_mage_magic_bolt"
-          ],
-          "subclass_left_out": [
-            "skill_mage_occ_blood_pact"
-          ]
-        }
+        "sorcerer": {},
+        "summoner": {}
       },
       "ai_profile": "controller",
       "balance_profile": "solo_helper_v1",
@@ -481,39 +253,9 @@
       "subclass_id": "cardmaster",
       "role_primary": "support",
       "role_secondary": "dps_magical",
-      "skill_loadout": [
-        "skill_mage_magic_bolt",
-        "skill_mage_arcane_pulse",
-        "skill_mage_arcane_cataclysm",
-        "skill_mage_mana_shield",
-        "skill_mage_arcane_siphon",
-        "skill_mage_card_wild_card",
-        "skill_mage_card_lucky_draw",
-        "skill_mage_card_all_in",
-        "skill_mage_card_bad_luck",
-        "skill_mage_card_support_card",
-        "skill_mage_card_fate_flip",
-        "skill_mage_blink"
-      ],
       "spec_kits": {
-        "arcane_dealer": {
-          "base_kept": [
-            "skill_mage_magic_bolt",
-            "skill_mage_arcane_pulse"
-          ],
-          "subclass_left_out": [
-            "skill_mage_card_support_card"
-          ]
-        },
-        "fate_gambler": {
-          "base_kept": [
-            "skill_mage_mana_shield",
-            "skill_mage_arcane_siphon"
-          ],
-          "subclass_left_out": [
-            "skill_mage_card_support_card"
-          ]
-        }
+        "arcane_dealer": {},
+        "fate_gambler": {}
       },
       "ai_profile": "support",
       "balance_profile": "solo_helper_v1",
@@ -532,39 +274,9 @@
       "subclass_id": "spellblade",
       "role_primary": "bruiser",
       "role_secondary": "dps_magical",
-      "skill_loadout": [
-        "skill_mage_magic_bolt",
-        "skill_mage_arcane_pulse",
-        "skill_mage_arcane_cataclysm",
-        "skill_mage_mana_shield",
-        "skill_mage_arcane_siphon",
-        "skill_mage_sb_arcane_slash",
-        "skill_mage_sb_enchanted_blade",
-        "skill_mage_sb_spell_guard",
-        "skill_mage_sb_arcane_shatter",
-        "skill_mage_sb_arcane_rampart",
-        "skill_mage_sb_arcane_cleave",
-        "skill_mage_blink"
-      ],
       "spec_kits": {
-        "battlemage": {
-          "base_kept": [
-            "skill_mage_mana_shield",
-            "skill_mage_arcane_pulse"
-          ],
-          "subclass_left_out": [
-            "skill_mage_sb_arcane_rampart"
-          ]
-        },
-        "runeknight": {
-          "base_kept": [
-            "skill_mage_mana_shield",
-            "skill_mage_arcane_siphon"
-          ],
-          "subclass_left_out": [
-            "skill_mage_sb_arcane_rampart"
-          ]
-        }
+        "battlemage": {},
+        "runeknight": {}
       },
       "ai_profile": "bruiser",
       "balance_profile": "solo_helper_v1",
@@ -583,39 +295,9 @@
       "subclass_id": "lifewarden",
       "role_primary": "healer",
       "role_secondary": "support",
-      "skill_loadout": [
-        "skill_healer_smite",
-        "skill_healer_heal",
-        "skill_healer_holy_shield",
-        "skill_healer_purify",
-        "skill_healer_light_pulse",
-        "skill_healer_lifewarden_nature_heal",
-        "skill_healer_lifewarden_regrowth",
-        "skill_healer_lifewarden_vine_shield",
-        "skill_healer_lifewarden_regeneration",
-        "skill_healer_lifewarden_living_thorns",
-        "skill_healer_lifewarden_natures_blessing",
-        "skill_healer_guardian_swap"
-      ],
       "spec_kits": {
-        "druidic_healer": {
-          "base_kept": [
-            "skill_healer_heal",
-            "skill_healer_light_pulse"
-          ],
-          "subclass_left_out": [
-            "skill_healer_lifewarden_living_thorns"
-          ]
-        },
-        "grove_warden": {
-          "base_kept": [
-            "skill_healer_holy_shield",
-            "skill_healer_heal"
-          ],
-          "subclass_left_out": [
-            "skill_healer_lifewarden_living_thorns"
-          ]
-        }
+        "druidic_healer": {},
+        "grove_warden": {}
       },
       "ai_profile": "healer",
       "balance_profile": "solo_helper_v1",
@@ -634,39 +316,9 @@
       "subclass_id": "lightbringer",
       "role_primary": "healer",
       "role_secondary": null,
-      "skill_loadout": [
-        "skill_healer_smite",
-        "skill_healer_heal",
-        "skill_healer_holy_shield",
-        "skill_healer_purify",
-        "skill_healer_light_pulse",
-        "skill_healer_lightbringer_radiant_heal",
-        "skill_healer_lightbringer_sanctuary",
-        "skill_healer_lightbringer_bless",
-        "skill_healer_lightbringer_cleanse_wave",
-        "skill_healer_lightbringer_holy_nova",
-        "skill_healer_lightbringer_absolution",
-        "skill_healer_guardian_swap"
-      ],
       "spec_kits": {
-        "sanctifier": {
-          "base_kept": [
-            "skill_healer_purify",
-            "skill_healer_heal"
-          ],
-          "subclass_left_out": [
-            "skill_healer_lightbringer_holy_nova"
-          ]
-        },
-        "battle_healer": {
-          "base_kept": [
-            "skill_healer_smite",
-            "skill_healer_holy_shield"
-          ],
-          "subclass_left_out": [
-            "skill_healer_lightbringer_holy_nova"
-          ]
-        }
+        "sanctifier": {},
+        "battle_healer": {}
       },
       "ai_profile": "healer",
       "balance_profile": "solo_helper_v1",
@@ -685,39 +337,9 @@
       "subclass_id": "cantor",
       "role_primary": "support",
       "role_secondary": "healer",
-      "skill_loadout": [
-        "skill_healer_smite",
-        "skill_healer_heal",
-        "skill_healer_holy_shield",
-        "skill_healer_purify",
-        "skill_healer_light_pulse",
-        "skill_healer_cantor_hymn_of_vigor",
-        "skill_healer_cantor_war_anthem",
-        "skill_healer_cantor_hymn_of_haste",
-        "skill_healer_cantor_sacred_ward",
-        "skill_healer_cantor_shared_breath",
-        "skill_healer_cantor_requiem",
-        "skill_healer_guardian_swap"
-      ],
       "spec_kits": {
-        "requiem": {
-          "base_kept": [
-            "skill_healer_smite",
-            "skill_healer_purify"
-          ],
-          "subclass_left_out": [
-            "skill_healer_cantor_shared_breath"
-          ]
-        },
-        "choirmaster": {
-          "base_kept": [
-            "skill_healer_light_pulse",
-            "skill_healer_holy_shield"
-          ],
-          "subclass_left_out": [
-            "skill_healer_cantor_shared_breath"
-          ]
-        }
+        "requiem": {},
+        "choirmaster": {}
       },
       "ai_profile": "support",
       "balance_profile": "solo_helper_v1",
@@ -736,39 +358,9 @@
       "subclass_id": "martyr",
       "role_primary": "bruiser",
       "role_secondary": "healer",
-      "skill_loadout": [
-        "skill_healer_smite",
-        "skill_healer_heal",
-        "skill_healer_holy_shield",
-        "skill_healer_purify",
-        "skill_healer_light_pulse",
-        "skill_healer_martyr_restorative_strike",
-        "skill_healer_martyr_intercession",
-        "skill_healer_martyr_sacred_pact",
-        "skill_healer_martyr_zealous_strike",
-        "skill_healer_martyr_transfusion",
-        "skill_healer_martyr_redemptive_wave",
-        "skill_healer_guardian_swap"
-      ],
       "spec_kits": {
-        "intercessor": {
-          "base_kept": [
-            "skill_healer_smite",
-            "skill_healer_heal"
-          ],
-          "subclass_left_out": [
-            "skill_healer_martyr_transfusion"
-          ]
-        },
-        "covenant": {
-          "base_kept": [
-            "skill_healer_holy_shield",
-            "skill_healer_light_pulse"
-          ],
-          "subclass_left_out": [
-            "skill_healer_martyr_transfusion"
-          ]
-        }
+        "intercessor": {},
+        "covenant": {}
       },
       "ai_profile": "bruiser",
       "balance_profile": "solo_helper_v1",
@@ -787,39 +379,9 @@
       "subclass_id": "ranger",
       "role_primary": "dps_ranged",
       "role_secondary": null,
-      "skill_loadout": [
-        "skill_archer_precise_shot",
-        "skill_archer_volley",
-        "skill_archer_crippling_arrow",
-        "skill_archer_eagle_eye",
-        "skill_archer_hunter_mark",
-        "skill_archer_ranger_precision_shot",
-        "skill_archer_ranger_steady_aim",
-        "skill_archer_ranger_piercing_arrow",
-        "skill_archer_ranger_kill_shot",
-        "skill_archer_ranger_marking_arrow",
-        "skill_archer_ranger_headshot",
-        "skill_archer_backstep"
-      ],
       "spec_kits": {
-        "sharpshooter": {
-          "base_kept": [
-            "skill_archer_eagle_eye",
-            "skill_archer_hunter_mark"
-          ],
-          "subclass_left_out": [
-            "skill_archer_ranger_marking_arrow"
-          ]
-        },
-        "skirmisher": {
-          "base_kept": [
-            "skill_archer_volley",
-            "skill_archer_crippling_arrow"
-          ],
-          "subclass_left_out": [
-            "skill_archer_ranger_marking_arrow"
-          ]
-        }
+        "sharpshooter": {},
+        "skirmisher": {}
       },
       "ai_profile": "artillery",
       "balance_profile": "solo_helper_v1",
@@ -838,42 +400,9 @@
       "subclass_id": "falconer",
       "role_primary": "dps_ranged",
       "role_secondary": "controller",
-      "skill_loadout": [
-        "skill_archer_precise_shot",
-        "skill_archer_volley",
-        "skill_archer_crippling_arrow",
-        "skill_archer_eagle_eye",
-        "skill_archer_hunter_mark",
-        "skill_archer_falconer_falcon_strike",
-        "skill_archer_falconer_talon_rend",
-        "skill_archer_falconer_falcon_sweep",
-        "skill_archer_falconer_wing_guard",
-        "skill_archer_falconer_great_falcon_summon",
-        "skill_archer_falconer_blinding_dive",
-        "skill_archer_falconer_falcon_fury",
-        "skill_archer_backstep"
-      ],
       "spec_kits": {
-        "falcon_striker": {
-          "base_kept": [
-            "skill_archer_hunter_mark",
-            "skill_archer_precise_shot"
-          ],
-          "subclass_left_out": [
-            "skill_archer_falconer_great_falcon_summon",
-            "skill_archer_falconer_blinding_dive"
-          ]
-        },
-        "wind_hunter": {
-          "base_kept": [
-            "skill_archer_volley",
-            "skill_archer_crippling_arrow"
-          ],
-          "subclass_left_out": [
-            "skill_archer_falconer_great_falcon_summon",
-            "skill_archer_falconer_blinding_dive"
-          ]
-        }
+        "falcon_striker": {},
+        "wind_hunter": {}
       },
       "ai_profile": "artillery",
       "balance_profile": "solo_helper_v1",
@@ -892,39 +421,9 @@
       "subclass_id": "ballmaster",
       "role_primary": "dps_ranged",
       "role_secondary": "debuffer",
-      "skill_loadout": [
-        "skill_archer_precise_shot",
-        "skill_archer_volley",
-        "skill_archer_crippling_arrow",
-        "skill_archer_eagle_eye",
-        "skill_archer_hunter_mark",
-        "skill_archer_ballmaster_bounce_shot",
-        "skill_archer_ballmaster_pinball",
-        "skill_archer_ballmaster_ricochet",
-        "skill_archer_ballmaster_focused_barrage",
-        "skill_archer_ballmaster_glue_ball",
-        "skill_archer_ballmaster_endless_volley",
-        "skill_archer_backstep"
-      ],
       "spec_kits": {
-        "bouncer": {
-          "base_kept": [
-            "skill_archer_volley",
-            "skill_archer_hunter_mark"
-          ],
-          "subclass_left_out": [
-            "skill_archer_ballmaster_glue_ball"
-          ]
-        },
-        "striker": {
-          "base_kept": [
-            "skill_archer_precise_shot",
-            "skill_archer_eagle_eye"
-          ],
-          "subclass_left_out": [
-            "skill_archer_ballmaster_glue_ball"
-          ]
-        }
+        "bouncer": {},
+        "striker": {}
       },
       "ai_profile": "artillery",
       "balance_profile": "solo_helper_v1",
@@ -943,39 +442,9 @@
       "subclass_id": "gunslinger",
       "role_primary": "dps_ranged",
       "role_secondary": "dps_physical",
-      "skill_loadout": [
-        "skill_archer_precise_shot",
-        "skill_archer_volley",
-        "skill_archer_crippling_arrow",
-        "skill_archer_eagle_eye",
-        "skill_archer_hunter_mark",
-        "skill_archer_gunslinger_quickshot",
-        "skill_archer_gunslinger_double_tap",
-        "skill_archer_gunslinger_rapid_fire",
-        "skill_archer_gunslinger_suppressing_fire",
-        "skill_archer_gunslinger_covering_fire",
-        "skill_archer_gunslinger_pin_down",
-        "skill_archer_backstep"
-      ],
       "spec_kits": {
-        "quickshot": {
-          "base_kept": [
-            "skill_archer_precise_shot",
-            "skill_archer_volley"
-          ],
-          "subclass_left_out": [
-            "skill_archer_gunslinger_covering_fire"
-          ]
-        },
-        "deadeye": {
-          "base_kept": [
-            "skill_archer_eagle_eye",
-            "skill_archer_hunter_mark"
-          ],
-          "subclass_left_out": [
-            "skill_archer_gunslinger_covering_fire"
-          ]
-        }
+        "quickshot": {},
+        "deadeye": {}
       },
       "ai_profile": "artillery",
       "balance_profile": "solo_helper_v1",
@@ -994,39 +463,9 @@
       "subclass_id": "shadowblade",
       "role_primary": "dps_physical",
       "role_secondary": null,
-      "skill_loadout": [
-        "skill_rogue_quick_stab",
-        "skill_rogue_throw_dagger",
-        "skill_rogue_smoke_bomb",
-        "skill_rogue_mark_target",
-        "skill_rogue_lacerate",
-        "skill_rogue_shadowblade_backstab",
-        "skill_rogue_shadowblade_vanish",
-        "skill_rogue_shadowblade_assassinate",
-        "skill_rogue_shadowblade_shadow_strike",
-        "skill_rogue_shadowblade_silencing_strike",
-        "skill_rogue_shadowblade_death_blossom",
-        "skill_rogue_shadowstep"
-      ],
       "spec_kits": {
-        "nightstalker": {
-          "base_kept": [
-            "skill_rogue_mark_target",
-            "skill_rogue_quick_stab"
-          ],
-          "subclass_left_out": [
-            "skill_rogue_shadowblade_silencing_strike"
-          ]
-        },
-        "assassin": {
-          "base_kept": [
-            "skill_rogue_lacerate",
-            "skill_rogue_throw_dagger"
-          ],
-          "subclass_left_out": [
-            "skill_rogue_shadowblade_silencing_strike"
-          ]
-        }
+        "nightstalker": {},
+        "assassin": {}
       },
       "ai_profile": "assassin",
       "balance_profile": "solo_helper_v1",
@@ -1045,39 +484,9 @@
       "subclass_id": "trickster",
       "role_primary": "controller",
       "role_secondary": "debuffer",
-      "skill_loadout": [
-        "skill_rogue_quick_stab",
-        "skill_rogue_throw_dagger",
-        "skill_rogue_smoke_bomb",
-        "skill_rogue_mark_target",
-        "skill_rogue_lacerate",
-        "skill_rogue_trickster_confuse",
-        "skill_rogue_trickster_mislead",
-        "skill_rogue_trickster_disarm",
-        "skill_rogue_trickster_misdirection",
-        "skill_rogue_trickster_scramble",
-        "skill_rogue_trickster_grand_swindle",
-        "skill_rogue_shadowstep"
-      ],
       "spec_kits": {
-        "debuffer": {
-          "base_kept": [
-            "skill_rogue_smoke_bomb",
-            "skill_rogue_lacerate"
-          ],
-          "subclass_left_out": [
-            "skill_rogue_trickster_scramble"
-          ]
-        },
-        "blinker": {
-          "base_kept": [
-            "skill_rogue_quick_stab",
-            "skill_rogue_throw_dagger"
-          ],
-          "subclass_left_out": [
-            "skill_rogue_trickster_scramble"
-          ]
-        }
+        "debuffer": {},
+        "blinker": {}
       },
       "ai_profile": "controller",
       "balance_profile": "solo_helper_v1",
@@ -1096,39 +505,9 @@
       "subclass_id": "corsair",
       "role_primary": "dps_physical",
       "role_secondary": "debuffer",
-      "skill_loadout": [
-        "skill_rogue_quick_stab",
-        "skill_rogue_throw_dagger",
-        "skill_rogue_smoke_bomb",
-        "skill_rogue_mark_target",
-        "skill_rogue_lacerate",
-        "skill_rogue_corsair_cutlass_slash",
-        "skill_rogue_corsair_pistol_shot",
-        "skill_rogue_corsair_dirty_trick",
-        "skill_rogue_corsair_plunder",
-        "skill_rogue_corsair_hook",
-        "skill_rogue_corsair_raid",
-        "skill_rogue_shadowstep"
-      ],
       "spec_kits": {
-        "cutthroat": {
-          "base_kept": [
-            "skill_rogue_lacerate",
-            "skill_rogue_quick_stab"
-          ],
-          "subclass_left_out": [
-            "skill_rogue_corsair_hook"
-          ]
-        },
-        "gunslasher": {
-          "base_kept": [
-            "skill_rogue_throw_dagger",
-            "skill_rogue_quick_stab"
-          ],
-          "subclass_left_out": [
-            "skill_rogue_corsair_hook"
-          ]
-        }
+        "cutthroat": {},
+        "gunslasher": {}
       },
       "ai_profile": "assassin",
       "balance_profile": "solo_helper_v1",
@@ -1147,39 +526,9 @@
       "subclass_id": "duelist",
       "role_primary": "dps_physical",
       "role_secondary": "bruiser",
-      "skill_loadout": [
-        "skill_rogue_quick_stab",
-        "skill_rogue_throw_dagger",
-        "skill_rogue_smoke_bomb",
-        "skill_rogue_mark_target",
-        "skill_rogue_lacerate",
-        "skill_rogue_duelist_lunge",
-        "skill_rogue_duelist_en_garde",
-        "skill_rogue_duelist_riposte",
-        "skill_rogue_duelist_expose_weakness",
-        "skill_rogue_duelist_piercing_thrust",
-        "skill_rogue_duelist_coup_de_grace",
-        "skill_rogue_shadowstep"
-      ],
       "spec_kits": {
-        "blade_dancer": {
-          "base_kept": [
-            "skill_rogue_quick_stab",
-            "skill_rogue_mark_target"
-          ],
-          "subclass_left_out": [
-            "skill_rogue_duelist_piercing_thrust"
-          ]
-        },
-        "countermaster": {
-          "base_kept": [
-            "skill_rogue_smoke_bomb",
-            "skill_rogue_lacerate"
-          ],
-          "subclass_left_out": [
-            "skill_rogue_duelist_piercing_thrust"
-          ]
-        }
+        "blade_dancer": {},
+        "countermaster": {}
       },
       "ai_profile": "assassin",
       "balance_profile": "solo_helper_v1",
@@ -1198,39 +547,9 @@
       "subclass_id": "blacksmith",
       "role_primary": "tank",
       "role_secondary": "support",
-      "skill_loadout": [
-        "skill_artisan_tool_strike",
-        "skill_artisan_quick_patch",
-        "skill_artisan_work_rhythm",
-        "skill_artisan_expose_flaw",
-        "skill_artisan_resource_share",
-        "skill_artisan_blacksmith_heavy_swing",
-        "skill_artisan_blacksmith_armor_dent",
-        "skill_artisan_blacksmith_forged_retaliation",
-        "skill_artisan_blacksmith_metalguard",
-        "skill_artisan_blacksmith_whetting",
-        "skill_artisan_blacksmith_anvil_crash",
-        "skill_artisan_grapple"
-      ],
       "spec_kits": {
-        "forgemaster": {
-          "base_kept": [
-            "skill_artisan_quick_patch",
-            "skill_artisan_expose_flaw"
-          ],
-          "subclass_left_out": [
-            "skill_artisan_blacksmith_whetting"
-          ]
-        },
-        "breaker": {
-          "base_kept": [
-            "skill_artisan_expose_flaw",
-            "skill_artisan_tool_strike"
-          ],
-          "subclass_left_out": [
-            "skill_artisan_blacksmith_whetting"
-          ]
-        }
+        "forgemaster": {},
+        "breaker": {}
       },
       "ai_profile": "tank",
       "balance_profile": "solo_helper_v1",
@@ -1249,39 +568,9 @@
       "subclass_id": "alchemist",
       "role_primary": "debuffer",
       "role_secondary": "support",
-      "skill_loadout": [
-        "skill_artisan_tool_strike",
-        "skill_artisan_quick_patch",
-        "skill_artisan_work_rhythm",
-        "skill_artisan_expose_flaw",
-        "skill_artisan_resource_share",
-        "skill_artisan_alchemist_toxic_flask",
-        "skill_artisan_alchemist_corrosive_cloud",
-        "skill_artisan_alchemist_weakening_fumes",
-        "skill_artisan_alchemist_toxic_burst",
-        "skill_artisan_alchemist_healing_potion",
-        "skill_artisan_alchemist_catalyze",
-        "skill_artisan_grapple"
-      ],
       "spec_kits": {
-        "plague_brewer": {
-          "base_kept": [
-            "skill_artisan_expose_flaw",
-            "skill_artisan_tool_strike"
-          ],
-          "subclass_left_out": [
-            "skill_artisan_alchemist_healing_potion"
-          ]
-        },
-        "reactionist": {
-          "base_kept": [
-            "skill_artisan_expose_flaw",
-            "skill_artisan_tool_strike"
-          ],
-          "subclass_left_out": [
-            "skill_artisan_alchemist_healing_potion"
-          ]
-        }
+        "plague_brewer": {},
+        "reactionist": {}
       },
       "ai_profile": "controller",
       "balance_profile": "solo_helper_v1",
@@ -1300,39 +589,9 @@
       "subclass_id": "chef",
       "role_primary": "support",
       "role_secondary": "healer",
-      "skill_loadout": [
-        "skill_artisan_tool_strike",
-        "skill_artisan_quick_patch",
-        "skill_artisan_work_rhythm",
-        "skill_artisan_expose_flaw",
-        "skill_artisan_resource_share",
-        "skill_artisan_chef_searing_slice",
-        "skill_artisan_chef_blazing_aroma",
-        "skill_artisan_chef_energy_snack",
-        "skill_artisan_chef_warming_broth",
-        "skill_artisan_chef_pan_toss",
-        "skill_artisan_chef_inferno_feast",
-        "skill_artisan_grapple"
-      ],
       "spec_kits": {
-        "battle_cook": {
-          "base_kept": [
-            "skill_artisan_quick_patch",
-            "skill_artisan_work_rhythm"
-          ],
-          "subclass_left_out": [
-            "skill_artisan_chef_pan_toss"
-          ]
-        },
-        "spice_master": {
-          "base_kept": [
-            "skill_artisan_work_rhythm",
-            "skill_artisan_expose_flaw"
-          ],
-          "subclass_left_out": [
-            "skill_artisan_chef_pan_toss"
-          ]
-        }
+        "battle_cook": {},
+        "spice_master": {}
       },
       "ai_profile": "support",
       "balance_profile": "solo_helper_v1",
@@ -1351,39 +610,9 @@
       "subclass_id": "musician",
       "role_primary": "controller",
       "role_secondary": "support",
-      "skill_loadout": [
-        "skill_artisan_tool_strike",
-        "skill_artisan_quick_patch",
-        "skill_artisan_work_rhythm",
-        "skill_artisan_expose_flaw",
-        "skill_artisan_resource_share",
-        "skill_artisan_musician_riff",
-        "skill_artisan_musician_dissonant_chord",
-        "skill_artisan_musician_rallying_melody",
-        "skill_artisan_musician_tempo_shift",
-        "skill_artisan_musician_breath_song",
-        "skill_artisan_musician_grand_performance",
-        "skill_artisan_grapple"
-      ],
       "spec_kits": {
-        "guitarist": {
-          "base_kept": [
-            "skill_artisan_quick_patch",
-            "skill_artisan_work_rhythm"
-          ],
-          "subclass_left_out": [
-            "skill_artisan_musician_breath_song"
-          ]
-        },
-        "war_drummer": {
-          "base_kept": [
-            "skill_artisan_work_rhythm",
-            "skill_artisan_expose_flaw"
-          ],
-          "subclass_left_out": [
-            "skill_artisan_musician_breath_song"
-          ]
-        }
+        "guitarist": {},
+        "war_drummer": {}
       },
       "ai_profile": "controller",
       "balance_profile": "solo_helper_v1",

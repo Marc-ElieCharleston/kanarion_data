@@ -68,7 +68,10 @@ for group, archs in (('merc base', [a for a in M if not a.get('subclass_id')]), 
         res = []
         for a in archs:
             c = a['class_id']
-            kit = [s for s in a['skill_loadout'] if s in sk and not sk[s].get('movement')]
+            # Kit derived from the class data since 2026-11-15 (kanarion_back gameplay/class_kit.hpp).
+            cd = J(f'classes/{c}/skills.json')
+            loadout = [x['id'] for x in cd['base_skills']] + ([x['id'] for x in cd['subclass_skills'][a['subclass_id']]['skills']] if a.get('subclass_id') else [])
+            kit = [s for s in loadout if s in sk and not sk[s].get('movement')]
             mp = int(round((base[c]['mp'] + gr[c]['mp'] * (ml - 1)) * mbal['mp_multiplier']))
             rg = regen_at(mbal, ml, base[c]['mp_regen'])
             d, n, _ = sim(mp, rg, kit, GCD_M, mm)
