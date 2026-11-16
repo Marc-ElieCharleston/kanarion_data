@@ -61,6 +61,8 @@ FAMILIAR_TO_MONSTER = {
     "sanglier_braise": "braise", "taureau_braise": "braise", "chacal_faille": "hyene",
     # Boss de donjon capturables (2026-10-29) : famille a part (sprite du boss), espece du monstre.
     "rat_rongeur": "rat", "loup_alpha": "loup", "louve_matriarche": "loup",
+    # Rats a role des Egouts rendus capturables (2026-11-13) : famille a part, espece rat.
+    "rat_cuirasse": "rat", "rat_assassin": "rat",
 }
 
 # Species passive per MONSTER species: (name_fr, name_en, {stat: weight}). Tier values below are
