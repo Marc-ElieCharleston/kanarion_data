@@ -41,12 +41,7 @@
     "_why": "Tour v1 (Charleston 13/11) : une salle reservee au groupe, le groupe de monstres pose au sol par le serveur, un membre clique dessus pour lancer le combat (le temps de prendre ses consommables). Etage normal gagne = etage suivant pose au sol tout de suite. Gardien battu = on reste : coffre par joueur et deux portails par joueur (monter / sortir).",
     "engage": "click",
     "_engage": "click = le serveur attend qu'un membre lance l'etage (kanarion.dungeon.tower.engage) ; auto = le serveur lance l'etage seul apres TOWER_INTERMISSION_MS (ancien comportement, a garder tant que le client n'a pas la salle).",
-    "idle_timeout_seconds": 1800,
-    "_idle_a_valider": "Propose le 16/11 : un groupe qui ne lance pas l'etage pendant 30 min sort de la Tour comme sur un abandon (cle perdue).",
-    "landing_timeout_seconds": 600,
-    "_landing_a_valider": "Propose le 16/11 : apres un gardien, chaque joueur a 10 min pour ouvrir son coffre et choisir un portail. A l'echeance, un joueur qui n'a pas choisi SORT (le porteur garde sa cle : une coupure ne la fait jamais perdre) et un coffre ferme est perdu.",
-    "reconnect_grace_seconds": 180,
-    "_reconnect": "Coupure toleree hors combat (Charleston 13/11 : un retour sous 3 min ne fait pas perdre la cle). Meme valeur que server-combat config/combat.json timing.abandoned_room_timeout_seconds, qui couvre la coupure EN combat (l'IA joue le personnage). Un membre parti depuis plus longtemps quitte la montee au lancement de l'etage suivant."
+    "_time": "AUCUNE limite de temps dans la salle (Charleston 16/11) : ni pour lancer l'etage, ni pour ouvrir son coffre ou choisir son portail. Seule regle de temps : un membre deconnecte est attendu pendant server-combat config/combat.json timing.abandoned_room_timeout_seconds (la MEME fenetre que le combat, une seule source, lue par le service tour), au-dela il quitte la montee (le porteur perd sa cle) ; si tout le groupe est parti, la montee s'arrete et la salle disparait."
   },
   "structure": {
     "guardian_every": 5,
@@ -233,7 +228,7 @@
     "consumed_on_entry": true,
     "tradeable": true,
     "granted_to": "key_holder_on_exit",
-    "_granted_to_note": "Tour v1 (Charleston 13/11) : le porteur de la cle (le chef qui l'a consommee a l'entree, ou le chef d'un groupe entre sans cle) ne recupere une cle qu'en SORTANT par le portail d'un palier : sortie a l'etage P = cle de l'etage P. Defaite, abandon, sortie ailleurs qu'a un portail de palier ou depart de la montee : cle perdue. Une coupure suivie d'un retour sous room.reconnect_grace_seconds ne la fait pas perdre. Les autres cles ne viennent que du coffre de palier (items/loot_tables.json tower_chest key_chance)."
+    "_granted_to_note": "Tour v1 (Charleston 13/11) : le porteur de la cle (le chef qui l'a consommee a l'entree, ou le chef d'un groupe entre sans cle) ne recupere une cle qu'en SORTANT par le portail d'un palier : sortie a l'etage P = cle de l'etage P. Defaite, abandon, sortie ailleurs qu'a un portail de palier ou depart de la montee : cle perdue. Une coupure suivie d'un retour sous combat.json timing.abandoned_room_timeout_seconds ne la fait pas perdre. Une panne serveur la fait perdre aussi (Charleston 16/11). Les autres cles ne viennent que du coffre de palier (items/loot_tables.json tower_chest key_chance)."
   },
   "rewards": {
     "_per_floor": "Chaque etage gagne passe par le moteur de recompenses normal (XP, or, butin par combat selon les etoiles et la presence d'elites ou de boss).",

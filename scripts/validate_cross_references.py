@@ -2506,8 +2506,9 @@ def validate_tower_infinite(db: Path, rules: dict, all_item_ids: set) -> list:
         if room.get("engage") not in ("click", "auto"):
             errors.append(f"[tower.json] room.engage={room.get('engage')!r} : click ou auto")
         for k in ("idle_timeout_seconds", "landing_timeout_seconds", "reconnect_grace_seconds"):
-            if not isinstance(room.get(k), int) or room[k] < 1:
-                errors.append(f"[tower.json] room.{k} : entier >= 1 attendu")
+            if k in room:
+                errors.append(f"[tower.json] room.{k} : aucune limite de temps dans la salle, et la fenetre de "
+                              "reconnexion vit dans server-combat combat.json (une seule source) : cle refusee")
     entry = rules["access"].get("entry")
     if not isinstance(entry, dict):
         errors.append("[tower.json] access.entry : objet attendu (PNJ d'entree, Tour v1)")
