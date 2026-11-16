@@ -4766,5 +4766,791 @@
       "rare": 150,
       "epic": 400
     }
+  },
+  "tower_chest": {
+    "_comment": "Coffre de palier de la Tour de la Faille (Tour v1, decision Charleston du 13/11/2026). UN coffre par joueur apres chaque gardien (etages 5, 10, 15...), ouvert une seule fois. A l'ouverture le serveur tire (services/dungeon/src/tower/tower_chest.cpp) : la rarete du coffre sur la ligne de rarity_weights_by_palier dont from_floor est le plus grand <= l'etage du palier ; le nombre d'objets entre items_min et items_max de cette rarete, plus items_bonus (+per_step tous les every_floors etages, plafond max) ; chaque objet dans pools.<rarete>, pondere par weight, quantite entre min et max ; puis key_chance d'une cle de l'etage du palier (si elle existe) et la chance ultra_rare (interpolee de l'etage 5 a l'etage 100, plafonnee a cap). L'or et les jetons d'arene viennent de systems/tower.json rewards.palier_chest. Rien n'est lie au personnage.",
+    "_a_valider": "Toutes les valeurs ci-dessous sont des propositions du 16/11, a valider par Charleston (poids de rarete par palier, nombre d'objets, chance de cle 5 %, chance ultra rare 1 % a 5 %). Les familiers sortent en Empreinte de Souffle a deposer en incubation (l'oeuf), jamais en familier tout fait, pour ne pas tuer la capture. L'equipement et les uniques ne sont PAS encore dans le coffre : ils sont tires avec leurs stats par le combat (server-combat loot_roller) et aucun service ne sait encore en creer un hors combat (a proposer).",
+    "rarity_weights_by_palier": [
+      {
+        "from_floor": 5,
+        "uncommon": 70,
+        "rare": 25,
+        "epic": 5,
+        "legendary": 0
+      },
+      {
+        "from_floor": 20,
+        "uncommon": 55,
+        "rare": 32,
+        "epic": 11,
+        "legendary": 2
+      },
+      {
+        "from_floor": 40,
+        "uncommon": 40,
+        "rare": 37,
+        "epic": 18,
+        "legendary": 5
+      },
+      {
+        "from_floor": 60,
+        "uncommon": 28,
+        "rare": 38,
+        "epic": 25,
+        "legendary": 9
+      },
+      {
+        "from_floor": 80,
+        "uncommon": 18,
+        "rare": 36,
+        "epic": 32,
+        "legendary": 14
+      },
+      {
+        "from_floor": 100,
+        "uncommon": 10,
+        "rare": 32,
+        "epic": 38,
+        "legendary": 20
+      }
+    ],
+    "rarities": {
+      "uncommon": {
+        "items_min": 1,
+        "items_max": 2
+      },
+      "rare": {
+        "items_min": 2,
+        "items_max": 3
+      },
+      "epic": {
+        "items_min": 3,
+        "items_max": 4
+      },
+      "legendary": {
+        "items_min": 4,
+        "items_max": 5
+      }
+    },
+    "items_bonus": {
+      "every_floors": 30,
+      "per_step": 1,
+      "max": 3
+    },
+    "key_chance": 0.05,
+    "ultra_rare": {
+      "_comment": "Ultra rare plafonne : sinon les uniques a 1 % et les donjons perdent leur interet. En v1 : la Pierre d'etoile maximale et l'Empreinte de Souffle LEGENDAIRE des familles des gardiens (absentes du pool legendaire). Les uniques y entreront quand un service saura en creer un hors combat.",
+      "chance_at_floor_5": 0.01,
+      "chance_at_floor_100": 0.05,
+      "cap": 0.05,
+      "items": [
+        {
+          "item_id": "item_star_boost_max",
+          "weight": 3,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_gueule_faille_attaque_legendary",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_seraphin_abyssal_attaque_legendary",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_matrone_effroi_heal_legendary",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_devoreur_ames_attaque_legendary",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_archonte_abyssal_attaque_legendary",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    },
+    "pools": {
+      "uncommon": [
+        {
+          "item_id": "cons_hp_potion_t5",
+          "weight": 30,
+          "min": 2,
+          "max": 3
+        },
+        {
+          "item_id": "cons_mp_potion_t5",
+          "weight": 30,
+          "min": 2,
+          "max": 3
+        },
+        {
+          "item_id": "even_cherev_rank_2",
+          "weight": 8,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "even_magen_rank_2",
+          "weight": 8,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "even_koach_rank_2",
+          "weight": 8,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "even_neshama_rank_2",
+          "weight": 8,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "mat_void_fang",
+          "weight": 5,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "mat_void_hide",
+          "weight": 5,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "mat_void_thread",
+          "weight": 5,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "mat_void_metal",
+          "weight": 5,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "mat_rift_claw",
+          "weight": 5,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "mat_rift_plate",
+          "weight": 5,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "empreinte_souffle_larve_abysse_attaque_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_revenant_vide_attaque_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_horreur_effroi_attaque_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_sorcier_abyssal_attaque_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_gueule_faille_attaque_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_titan_vide_tank_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_moissonneur_ames_attaque_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_seraphin_abyssal_attaque_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_matrone_effroi_heal_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_rejeton_vide_attaque_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_ecumeur_abyssal_attaque_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_colosse_os_tank_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_invocateur_neant_attaque_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_traqueur_effroi_attaque_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_juggernaut_abyssal_attaque_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_pretre_vide_heal_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_devoreur_ames_attaque_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_archonte_abyssal_attaque_uncommon",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "rare": [
+        {
+          "item_id": "cons_hp_potion_t5",
+          "weight": 20,
+          "min": 3,
+          "max": 4
+        },
+        {
+          "item_id": "cons_mp_potion_t5",
+          "weight": 20,
+          "min": 3,
+          "max": 4
+        },
+        {
+          "item_id": "even_cherev_rank_3",
+          "weight": 8,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "even_magen_rank_3",
+          "weight": 8,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "even_koach_rank_3",
+          "weight": 8,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "even_neshama_rank_3",
+          "weight": 8,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "mat_soul_essence",
+          "weight": 6,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "mat_abyssal_horn",
+          "weight": 6,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "mat_abyssal_tome",
+          "weight": 6,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "mat_fissure_shard",
+          "weight": 6,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "mat_void_crystal",
+          "weight": 6,
+          "min": 1,
+          "max": 2
+        },
+        {
+          "item_id": "item_star_boost_1",
+          "weight": 4,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_larve_abysse_attaque_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_revenant_vide_attaque_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_horreur_effroi_attaque_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_sorcier_abyssal_attaque_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_gueule_faille_attaque_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_titan_vide_tank_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_moissonneur_ames_attaque_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_seraphin_abyssal_attaque_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_matrone_effroi_heal_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_rejeton_vide_attaque_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_ecumeur_abyssal_attaque_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_colosse_os_tank_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_invocateur_neant_attaque_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_traqueur_effroi_attaque_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_juggernaut_abyssal_attaque_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_pretre_vide_heal_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_devoreur_ames_attaque_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_archonte_abyssal_attaque_rare",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "epic": [
+        {
+          "item_id": "cons_hp_potion_t5",
+          "weight": 12,
+          "min": 4,
+          "max": 5
+        },
+        {
+          "item_id": "cons_mp_potion_t5",
+          "weight": 12,
+          "min": 4,
+          "max": 5
+        },
+        {
+          "item_id": "even_cherev_rank_4",
+          "weight": 8,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "even_magen_rank_4",
+          "weight": 8,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "even_koach_rank_4",
+          "weight": 8,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "even_neshama_rank_4",
+          "weight": 8,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "mat_soul_essence",
+          "weight": 5,
+          "min": 2,
+          "max": 3
+        },
+        {
+          "item_id": "mat_void_crystal",
+          "weight": 5,
+          "min": 2,
+          "max": 3
+        },
+        {
+          "item_id": "mat_fissure_shard",
+          "weight": 5,
+          "min": 2,
+          "max": 3
+        },
+        {
+          "item_id": "item_star_boost_2",
+          "weight": 4,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_larve_abysse_attaque_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_revenant_vide_attaque_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_horreur_effroi_attaque_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_sorcier_abyssal_attaque_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_gueule_faille_attaque_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_titan_vide_tank_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_moissonneur_ames_attaque_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_seraphin_abyssal_attaque_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_matrone_effroi_heal_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_rejeton_vide_attaque_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_ecumeur_abyssal_attaque_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_colosse_os_tank_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_invocateur_neant_attaque_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_traqueur_effroi_attaque_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_juggernaut_abyssal_attaque_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_pretre_vide_heal_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_devoreur_ames_attaque_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_archonte_abyssal_attaque_epic",
+          "weight": 1,
+          "min": 1,
+          "max": 1
+        }
+      ],
+      "legendary": [
+        {
+          "item_id": "cons_hp_potion_t5",
+          "weight": 8,
+          "min": 5,
+          "max": 6
+        },
+        {
+          "item_id": "cons_mp_potion_t5",
+          "weight": 8,
+          "min": 5,
+          "max": 6
+        },
+        {
+          "item_id": "even_cherev_rank_5",
+          "weight": 8,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "even_magen_rank_5",
+          "weight": 8,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "even_koach_rank_5",
+          "weight": 8,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "even_neshama_rank_5",
+          "weight": 8,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "mat_void_crystal",
+          "weight": 4,
+          "min": 3,
+          "max": 4
+        },
+        {
+          "item_id": "mat_fissure_shard",
+          "weight": 4,
+          "min": 3,
+          "max": 4
+        },
+        {
+          "item_id": "item_star_boost_3",
+          "weight": 4,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_larve_abysse_attaque_legendary",
+          "weight": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_revenant_vide_attaque_legendary",
+          "weight": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_horreur_effroi_attaque_legendary",
+          "weight": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_sorcier_abyssal_attaque_legendary",
+          "weight": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_titan_vide_tank_legendary",
+          "weight": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_moissonneur_ames_attaque_legendary",
+          "weight": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_rejeton_vide_attaque_legendary",
+          "weight": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_ecumeur_abyssal_attaque_legendary",
+          "weight": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_colosse_os_tank_legendary",
+          "weight": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_invocateur_neant_attaque_legendary",
+          "weight": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_traqueur_effroi_attaque_legendary",
+          "weight": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_juggernaut_abyssal_attaque_legendary",
+          "weight": 2,
+          "min": 1,
+          "max": 1
+        },
+        {
+          "item_id": "empreinte_souffle_pretre_vide_heal_legendary",
+          "weight": 2,
+          "min": 1,
+          "max": 1
+        }
+      ]
+    }
   }
 }
