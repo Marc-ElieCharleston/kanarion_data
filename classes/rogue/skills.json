@@ -272,14 +272,14 @@
       "mana_cost_per_level": 9,
       "cooldown": 32.0,
       "cooldown_per_level": 0,
+      "_clarte_a_valider": "A VALIDER (2026-11-13, retour joueur relaye par Charleston : sort peu clair) : tag ignore_los retire (le sort exige la ligne de vue, targeting.requires_line_of_sight ; ni le serveur ni le client ne lisent ce tag, seul le champ ignore_los ou targeting le fait), description FR/EN reecrite avec l'effet chiffre (marked +10 % de degats subis de toutes sources, exposed +10 % par charge, stats/status_effects.json, applique au damage_taken_percent de la cible par status_manager.cpp, donc pour tout attaquant). Portee 2 inchangee, a trancher par Charleston.",
       "vfx_type": "debuff_aura",
-      "description_fr": "Applique une Marque et une charge d’Exposition pendant 6s (+0,2s par rang). Nécessite une ligne de vue ; la marque ne permet pas de la contourner.",
-      "description_en": "Applies one Mark and one Exposed stack for 6s (+0.2s per rank). Requires line of sight; the mark does not bypass it.",
+      "description_fr": "Marque un ennemi et lui applique une charge d’Exposition pendant 6s (+0,2s par rang). La Marque lui fait subir +10% de dégâts de toutes les sources, chaque charge d’Exposition +10% de plus (3 charges au plus) : avec une charge, +20% de dégâts pour tout le groupe. Les sorts qui frappent plus fort une cible marquée y gagnent leur bonus. Nécessite une ligne de vue.",
+      "description_en": "Marks an enemy and applies one Exposed stack for 6s (+0.2s per rank). The Mark makes it take 10% more damage from all sources, and each Exposed stack another 10% (3 stacks at most): with one stack, +20% damage for the whole party. Skills that hit a marked target harder get their bonus against it. Requires line of sight.",
       "tags": [
         "debuff",
         "mark",
-        "team_utility",
-        "ignore_los"
+        "team_utility"
       ],
       "effects": [
         {
@@ -394,6 +394,121 @@
       "cooldown_per_level": 0,
       "range": 2,
       "rank_scaling_enabled": true
+    },
+    {
+      "id": "skill_rogue_poison_dagger",
+      "name_en": "Poisoned Dagger",
+      "name_fr": "Dague empoisonnée",
+      "tier": "basic",
+      "target": "enemy",
+      "pattern": "single",
+      "damage_type": "physical",
+      "scaling_stat": "atk",
+      "base_power": 0,
+      "scaling_percent": 50,
+      "percent_per_level": 1.5,
+      "rank_scaling_enabled": true,
+      "mana_cost": 20,
+      "mana_cost_per_level": 1,
+      "cooldown": 16.0,
+      "cast_time": 0,
+      "range": 4,
+      "vfx_type": "projectile",
+      "description_fr": "Inflige 50% ATQ (+1,5 point par rang) à un ennemi à 4 cases maximum et applique 1 charge de Toxine pendant 10s. Nécessite une ligne de vue. (provisoire)",
+      "description_en": "Deals 50% ATK (+1.5 percentage points per rank) to an enemy within 4 tiles and applies 1 Toxin stack for 10s. Requires line of sight. (provisional)",
+      "tags": [
+        "damage",
+        "ranged",
+        "toxin",
+        "dot"
+      ],
+      "effects": [
+        {
+          "type": "debuff",
+          "stat": "toxin",
+          "stacks_to_apply": 1,
+          "duration": 10,
+          "duration_per_level": 0
+        }
+      ],
+      "rank_milestones": [
+        {
+          "rank": 5,
+          "bonus": "extra_stacks",
+          "stat": "toxin",
+          "value": 1
+        },
+        {
+          "rank": 10,
+          "bonus": "extra_stacks",
+          "stat": "toxin",
+          "value": 1
+        }
+      ],
+      "base_class_id": "rogue",
+      "subclass_id": "",
+      "tier3_id": "",
+      "source_scope": "BASE",
+      "targeting": {
+        "selection_mode": "entity",
+        "valid_target_team": "enemy",
+        "requires_line_of_sight": true,
+        "bypasses_los": false,
+        "requires_entity_on_target_tile": false,
+        "aoe_pattern_id": "single"
+      },
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "cooldown_per_level": 0,
+      "_mecanique_note": "Debuff toxin (DoT magique, MAG du lanceur x 0,1 par seconde et par charge, 10 charges au plus, detonable par l'Alchimiste : stats/status_effects.json), meme forme que Fiole toxique (skill_artisan_alchemist_toxic_flask, 1 charge 10 s). ATTENTION : la Toxine scale sur la MAG du LANCEUR, faible chez un Voleur. Ligne de vue exigee.",
+      "_a_valider": "A VALIDER (2026-11-13, decision Charleston : sort de CLASSE DE BASE ajoute en 6e sort de base, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s pour tous ces sorts) : 50 % ATQ (+1,5 point par rang) a 4 cases, 1 charge de Toxine 10 s ; recharge 16 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-13). Animation : rogue_poison_dagger (autre agent), la data ne porte que vfx_type projectile."
+    },
+    {
+      "id": "skill_rogue_eviscerate",
+      "name_en": "Eviscerate",
+      "name_fr": "Éventration",
+      "tier": "standard",
+      "target": "enemy",
+      "pattern": "single",
+      "damage_type": "physical",
+      "scaling_stat": "atk",
+      "base_power": 0,
+      "scaling_percent": 70,
+      "percent_per_level": 2.1,
+      "rank_scaling_enabled": true,
+      "mana_cost": 24,
+      "mana_cost_per_level": 1,
+      "cooldown": 18.0,
+      "cast_time": 0,
+      "range": 2,
+      "consumes_bleed_stacks": true,
+      "damage_per_bleed_stack": 35,
+      "vfx_type": "melee_slash",
+      "description_fr": "Fait éclater les Saignements de la cible : inflige 70% ATQ (+2,1 points par rang), augmentés de 35% par charge de Saignement sur la cible, puis retire tous ses Saignements. Nécessite une ligne de vue. (provisoire)",
+      "description_en": "Bursts the target's Bleeds: deals 70% ATK (+2.1 percentage points per rank), increased by 35% per Bleed stack on the target, then removes all its Bleeds. Requires line of sight. (provisional)",
+      "tags": [
+        "damage",
+        "melee",
+        "bleed_consumer",
+        "combo"
+      ],
+      "effects": [],
+      "base_class_id": "rogue",
+      "subclass_id": "",
+      "tier3_id": "",
+      "source_scope": "BASE",
+      "targeting": {
+        "selection_mode": "entity",
+        "valid_target_team": "enemy",
+        "requires_line_of_sight": true,
+        "bypasses_los": false,
+        "requires_entity_on_target_tile": false,
+        "aoe_pattern_id": "single"
+      },
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "_mecanique_note": "damage_per_bleed_stack (content_loader.cpp, room.cpp) : degats bruts x (1 + 35 % x charges de Saignement de la cible), lus AVANT la consommation ; consumes_bleed_stacks (room.cpp, bloc REAVER, apres les frappes) retire ensuite tout le Saignement. PAS bleed_consume_damage_per_stack : il multiplie base_power, qui vaut 0. Saignement max 3 charges : 1 charge = 94,5 % ATQ, 3 charges = 154 % ATQ (rang 1). Source de Saignement du Voleur de base : Lancer de dague (skill_rogue_throw_dagger), PAS Laceration (qui pose Armure reduite).",
+      "_a_valider": "A VALIDER (2026-11-15, decision Charleston du 2026-11-14 : 7e sort de CLASSE DE BASE, \"combo\", ajoute en fin de base_skills apres le 6e, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s). 70 % ATQ (+2,1 points par rang) a 2 cases, +35 % par charge de Saignement consommee ; 24 Souffle (+1 par rang), recharge 18 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-15). Animation : rogue_eviscerate (autre agent), la data ne porte que vfx_type melee_slash."
     }
   ],
   "subclass_skills": {
@@ -3509,8 +3624,7 @@
               "tags": [
                 "damage",
                 "ranged",
-                "filler",
-                "ignore_los"
+                "filler"
               ],
               "base_class_id": "rogue",
               "subclass_id": "corsair",

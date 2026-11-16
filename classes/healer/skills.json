@@ -365,6 +365,113 @@
       "effect_power_per_level": 0,
       "range": 0,
       "rank_scaling_enabled": true
+    },
+    {
+      "id": "skill_healer_blessing",
+      "name_en": "Blessing",
+      "name_fr": "Bénédiction",
+      "tier": "basic",
+      "target": "ally",
+      "pattern": "single",
+      "damage_type": "none",
+      "heal_scaling_stat": "mag",
+      "base_power": 0,
+      "base_heal": 0,
+      "mana_cost": 24,
+      "mana_cost_per_level": 2,
+      "cooldown": 16.0,
+      "cast_time": 0,
+      "range": 3,
+      "vfx_type": "heal",
+      "description_fr": "Bénit ton personnage ou un allié à 3 cases maximum : soigne 8% MAG chaque seconde pendant 8s. Le soin par seconde gagne 0,5 point de pourcentage par rang. (provisoire)",
+      "description_en": "Blesses you or an ally within 3 tiles: heals 8% MAG every second for 8s. The heal per second gains 0.5 percentage points per rank. (provisional)",
+      "tags": [
+        "heal",
+        "hot",
+        "single"
+      ],
+      "effects": [
+        {
+          "type": "buff",
+          "stat": "heal_over_time_mag",
+          "value": 0,
+          "pct": 8,
+          "duration": 8,
+          "duration_per_level": 0,
+          "pct_per_level": 0.5
+        }
+      ],
+      "base_class_id": "healer",
+      "subclass_id": "",
+      "tier3_id": "",
+      "source_scope": "BASE",
+      "targeting": {
+        "selection_mode": "entity",
+        "valid_target_team": "ally",
+        "requires_line_of_sight": false,
+        "bypasses_los": false,
+        "requires_entity_on_target_tile": false,
+        "aoe_pattern_id": "single"
+      },
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "percent_per_level": 0,
+      "_mecanique_note": "Soin progressif heal_over_time_mag (tick = value + MAG du lanceur x pct / 100 chaque seconde, status_manager.cpp ; pct_per_level lu par content_loader.cpp), meme forme que le soin continu de Soin (skill_healer_heal) et Regeneration (Lifewarden, 8 % sur 8 s). Non cumulable, rafraichi : relancer Soin sur la meme cible remplace l'un par l'autre (meme effect_id).",
+      "_a_valider": "A VALIDER (2026-11-13, decision Charleston : sort de CLASSE DE BASE ajoute en 6e sort de base, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s pour tous ces sorts) : soin progressif 8 % MAG par seconde (+0,5 point par rang) pendant 8 s sur un allie a 3 cases ; recharge 16 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-13). Animation : healer_blessing (autre agent), la data ne porte que vfx_type heal."
+    },
+    {
+      "id": "skill_healer_overflowing_grace",
+      "name_en": "Overflowing Grace",
+      "name_fr": "Grâce débordante",
+      "tier": "standard",
+      "target": "ally",
+      "pattern": "single",
+      "damage_type": "none",
+      "heal_scaling_stat": "mag",
+      "heal_scaling_percent": 150,
+      "percent_per_level": 4.5,
+      "rank_scaling_enabled": true,
+      "base_power": 0,
+      "base_heal": 0,
+      "mana_cost": 30,
+      "mana_cost_per_level": 1,
+      "cooldown": 18.0,
+      "cast_time": 0,
+      "range": 3,
+      "conditional_bonuses": [
+        {
+          "condition": "caster_above_mp",
+          "threshold": 0.7,
+          "bonus_percent": 50,
+          "applies_to": "heal"
+        }
+      ],
+      "vfx_type": "heal",
+      "description_fr": "Soigne ton personnage ou un allié à 3 cases maximum : 150% MAG (+4,5 points par rang). Soin augmenté de 50% s'il te reste plus de 70% de ton Souffle après le lancer. (provisoire)",
+      "description_en": "Heals you or an ally within 3 tiles for 150% MAG (+4.5 percentage points per rank). The heal is increased by 50% if you still have more than 70% of your Breath after casting. (provisional)",
+      "tags": [
+        "heal",
+        "single",
+        "breath_synergy",
+        "combo"
+      ],
+      "effects": [],
+      "base_class_id": "healer",
+      "subclass_id": "",
+      "tier3_id": "",
+      "source_scope": "BASE",
+      "targeting": {
+        "selection_mode": "entity",
+        "valid_target_team": "ally",
+        "requires_line_of_sight": false,
+        "bypasses_los": false,
+        "requires_entity_on_target_tile": false,
+        "aoe_pattern_id": "single"
+      },
+      "power_per_level": 0,
+      "effect_power_per_level": 0,
+      "_mecanique_note": "conditional_bonuses caster_above_mp (content_loader.cpp, room.cpp) : Souffle RESTANT du lanceur a la resolution (le cout est deja paye) / Souffle max > 0,7 -> soin x 1,5 (applies_to heal, applique apres blocage et reduction de soin). Soin direct base_heal + MAG x heal_scaling_percent (heal_scaling_stat mag, seule valeur admise par le serveur).",
+      "_a_valider": "A VALIDER (2026-11-15, decision Charleston du 2026-11-14 : 7e sort de CLASSE DE BASE, \"combo\", ajoute en fin de base_skills apres le 6e, aucun sort retire, mecaniques serveur existantes seulement, recharge de 16 a 20 s). soin 150 % MAG (+4,5 points par rang) a 3 cases, +50 % si le Souffle restant depasse 70 % ; 30 Souffle (+1 par rang, souffle_per_level), recharge 18 s, sans incantation. Textes provisoires (brief copywriting du 2026-11-15). Animation : healer_overflowing_grace (autre agent), la data ne porte que vfx_type heal."
     }
   ],
   "subclass_skills": {
