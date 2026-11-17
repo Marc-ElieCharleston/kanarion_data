@@ -1,8 +1,9 @@
 {
   "_meta": {
-    "version": "1.0",
-    "owner": "Regles de la Tour de la Faille (contenu de groupe niveau 60+). Les etages 1-60 sont GENERES dans world/tower_floors.json par scripts/generate_tower.py a partir de ce fichier et du roster de entities/monsters.json ; la CI refuse un fichier d'etages perime (--check). Pour retoucher un etage a la main : floor_overrides ci-dessous, jamais world/tower_floors.json directement.",
-    "design": "Valide avec Charleston le 2026-09-30. Contenu VRAIMENT difficile : la difficulte vient des combats, et il faut optimiser tout le personnage (equipement, forge, Koro, keystones). Pas de classement solo : un tank, un soigneur ou un DPS seul ne va pas loin. Etages FIXES : meme etage = meme combat pour tout le monde, ce qui rend le classement juste."
+    "version": "2.0",
+    "owner": "Regles de la Tour de la Faille (contenu de groupe niveau 60+). Les etages 1-100 sont GENERES dans world/tower_floors.json par scripts/generate_tower.py a partir de ce fichier et du roster de entities/monsters.json ; la CI refuse un fichier d'etages perime (--check). Pour retoucher un etage a la main : floor_overrides ci-dessous, jamais world/tower_floors.json directement.",
+    "design": "Valide avec Charleston le 2026-09-30. Contenu VRAIMENT difficile : la difficulte vient des combats, et il faut optimiser tout le personnage (equipement, forge, Koro, keystones). Pas de classement solo : un tank, un soigneur ou un DPS seul ne va pas loin. Etages FIXES : meme etage = meme combat pour tout le monde, ce qui rend le classement juste.",
+    "tour_v1": "Refonte decidee par Charleston le 13/11/2026, perimetre Tour v1 du 16/11 (data + serveur) : palier tous les 5 etages (gardien, coffre par joueur, portails monter / sortir, cle du palier), difficulte par sauts, cles etage 5 a 100 rendues seulement au portail de sortie, points de reprise supprimes. Les mecaniques propres des gardiens seront concues plus tard avec Charleston : en v1, les gardiens sont des boss et elites existants du theme Faille / Abysse, renforces au palier."
   },
   "access": {
     "min_level": 60,
@@ -12,45 +13,55 @@
     "max_allies": 10,
     "max_monsters": 10,
     "solo_allowed": true,
-    "_solo": "Valide par Charleston le 2026-10-01 : un joueur sans groupe peut monter seul (avec ses compagnons dans les places libres). Il n'ira pas loin, c'est voulu."
+    "_solo": "Valide par Charleston le 2026-10-01 : un joueur sans groupe peut monter seul (avec ses compagnons dans les places libres). Il n'ira pas loin, c'est voulu.",
+    "entry": {
+      "_why": "Charleston 13/11 : le chef utilise SA cle pres de Rask et fait entrer tout le groupe d'un coup. Tous les membres doivent etre pres de Rask (position connue du SERVEUR, presence), sinon le depart est refuse avec le nom des absents.",
+      "npc_id": "npc_class_rogue",
+      "zone_id": "village",
+      "x": 3119,
+      "y": 977,
+      "_where": "NPC_rask_voleur, scenes/world/havreden_map.tscn (position globale, Entities a l'origine). Deplacer Rask dans l'editeur = reporter sa position ici.",
+      "range_px": 400,
+      "_range_px_a_valider": "Propose le 16/11, a valider : 400 px (le double des postes de fabrication, world/craft_stations.json use_range_px 200) pour qu'un groupe de 6 rassemble autour de Rask passe sans se marcher dessus."
+    }
   },
   "presentation": {
     "_combat_backdrop": "Decor de combat de la Tour, le meme pour TOUS les etages et les gardiens (2026-11-13, essai de Charleston, a valider en jeu) : fond de salle sombre (decor aux coins) + sol de plateau en pierre cendree pose sous la grille 12x6. Le service tour le passe a combat dans CreateTowerRoomRequest.combat_backdrop ; le client associe l'id a ses deux calques (kanarion_front scripts/combat/visuals/combat_backdrop.gd, assets/backgrounds/combat/live/tower_corrupted*.png). Avant : rift_void, le decor des failles, qui reste celui des failles.",
     "combat_backdrop": "tower_corrupted"
   },
   "recovery": {
-    "_why": "Aucune recuperation entre les etages : on part prepare (potions, soigneurs qui soignent en fin de combat, artisans qui rendent du Souffle). La halte apres chaque gardien evite qu'un mauvais etage 42 condamne un etage 47 ; pour durcir, espacer guardian_every ou baisser full_restore_after_guardian.",
+    "_why": "Aucune recuperation entre les etages : on part prepare (potions, soigneurs qui soignent en fin de combat, artisans qui rendent du Souffle). Soin complet apres chaque gardien, donc tous les 5 etages depuis la Tour v1 (16/11). Pour durcir, baisser full_restore_after_guardian.",
     "between_floors_hp_pct": 0,
     "between_floors_breath_pct": 0,
     "revive_after_won_floor_hp_pct": 20,
     "full_restore_after_guardian": true,
     "potions_usable_between_floors": true
   },
+  "room": {
+    "_why": "Tour v1 (Charleston 13/11) : une salle reservee au groupe, le groupe de monstres pose au sol par le serveur, un membre clique dessus pour lancer le combat (le temps de prendre ses consommables). Etage normal gagne = etage suivant pose au sol tout de suite. Gardien battu = on reste : coffre par joueur et deux portails par joueur (monter / sortir).",
+    "engage": "click",
+    "_engage": "click = le serveur attend qu'un membre lance l'etage (kanarion.dungeon.tower.engage) ; auto = le serveur lance l'etage seul apres TOWER_INTERMISSION_MS (ancien comportement, a garder tant que le client n'a pas la salle).",
+    "_time": "AUCUNE limite de temps dans la salle (Charleston 16/11) : ni pour lancer l'etage, ni pour ouvrir son coffre ou choisir son portail. Seule regle de temps : un membre deconnecte est attendu pendant server-combat config/combat.json timing.abandoned_room_timeout_seconds (la MEME fenetre que le combat, une seule source, lue par le service tour), au-dela il quitte la montee (le porteur perd sa cle) ; si tout le groupe est parti, la montee s'arrete et la salle disparait."
+  },
   "structure": {
-    "guardian_every": 10,
-    "authored_floors": 60,
-    "_beyond_authored": "Au-dela de authored_floors, l'etage f rejoue la composition de l'etage cycle_start + ((f - cycle_start) mod cycle_length), niveau plafonne a level_cap, avec des multiplicateurs qui continuent de croitre. Deterministe et identique sur tous les serveurs.",
-    "cycle_start": 41,
+    "guardian_every": 5,
+    "authored_floors": 100,
+    "_beyond_authored": "Au-dela de authored_floors (100), l'etage f rejoue la composition de l'etage cycle_start + ((f - cycle_start) mod cycle_length), niveau plafonne a level_cap, avec des multiplicateurs qui continuent de croitre. Garde tel quel en Tour v1 (16/11) : c'est le plus simple ; la generation semi-aleatoire des etages au-dela de 100 reste a concevoir.",
+    "cycle_start": 81,
     "cycle_length": 20
   },
   "difficulty": {
-    "_level": "Niveau des monstres = min(level_cap, level_base + etage). Au-dela du plafond, la difficulte passe par les multiplicateurs de stats (combat les borne a [0.1, 50]).",
+    "_level": "Niveau des monstres = min(level_cap, level_base + 1 + level_per_palier x bloc), bloc = (etage - 1) // guardian_every : 61 aux etages 1-5, 66 aux etages 6-10... plafond 100 des l'etage 41. Le niveau est le meme dans tout un bloc de 5 : il saute a chaque palier.",
     "level_base": 60,
     "level_cap": 100,
-    "growth_start_floor": 40,
-    "stat_growth_per_floor": 0.06,
+    "level_per_palier": 5,
     "stat_multiplier_cap": 50.0,
-    "_stat_growth_segments": "A VALIDER (Charleston, propose le 2026-10-18). Multiplicateur de stats de l'etage f = produit, segment par segment, de (1 + per_floor) a la puissance du nombre d'etages de f passes dans ce segment (from_floor exclu), plafonne a stat_multiplier_cap. x1,06 par etage de 40 a 80, puis x1,03 : le plafond 50 est atteint vers l'etage 133 au lieu de 107. Les etages 1-60 sont inchanges. stat_growth_per_floor reste pour compatibilite (premier segment).",
-    "stat_growth_segments": [
-      {
-        "from_floor": 40,
-        "per_floor": 0.06
-      },
-      {
-        "from_floor": 80,
-        "per_floor": 0.03
-      }
-    ],
+    "_stat_steps": "A VALIDER (Tour v1, 16/11, remplace la croissance +6 %/etage stat_growth_segments). Multiplicateur de stats de l'etage f = per_palier ^ (nombre de paliers p, multiples de guardian_every, avec from_floor <= p < f) x (1 + in_palier_per_floor) ^ (rang de f dans son bloc - 1), plafonne a stat_multiplier_cap. Faible hausse dans un bloc (x1,03 par etage), gros saut a chaque palier une fois le niveau plafonne (x1,25). Etage 40 : x1,13 ; 41 : x1,25 ; 60 : x2,75 ; 100 : x16,4 ; plafond 50 vers l'etage 125.",
+    "stat_steps": {
+      "in_palier_per_floor": 0.03,
+      "per_palier": 1.25,
+      "from_floor": 40
+    },
     "stars_by_decade": [
       1,
       2,
@@ -61,14 +72,19 @@
     ],
     "guardian_extra_stars": 1,
     "guardian_hp_multiplier": 1.5,
+    "guardian_atk_multiplier": 1.1,
+    "_guardian_a_valider": "Gardien renforce au palier (Tour v1) : PV x1,5 (inchange), attaque x1,1 (nouveau, a valider), une etoile de plus.",
     "monster_count": {
       "first_floor": 5,
-      "per_two_floors_in_decade": 1,
-      "extra_from_floor": 31,
+      "per_two_floors_in_palier": 1,
+      "extra_from_floors": [
+        31,
+        61
+      ],
       "max": 10
     },
-    "elites_from_floor_in_decade": 7,
-    "healer_from_floor_in_decade": 4,
+    "elites_from_step_in_palier": 4,
+    "healer_from_step_in_palier": 3,
     "pools": {
       "abyss": [
         "mob_abyss_swarmling",
@@ -124,58 +140,104 @@
         ]
       }
     ],
-    "guardians_by_decade": [
+    "guardians_by_palier": [
+      [
+        "mob_abyssal_seraph"
+      ],
       [
         "mob_maw_of_the_abyss"
       ],
       [
+        "mob_dread_matron"
+      ],
+      [
         "mob_abyssal_sovereign"
+      ],
+      [
+        "mob_soul_devourer"
+      ],
+      [
+        "mob_maw_of_the_abyss",
+        "mob_abyssal_sovereign"
+      ],
+      [
+        "mob_abyssal_archon"
+      ],
+      [
+        "mob_maw_of_the_abyss",
+        "mob_abyssal_seraph"
+      ],
+      [
+        "mob_soul_devourer",
+        "mob_dread_matron"
+      ],
+      [
+        "mob_maw_of_the_abyss",
+        "mob_abyssal_sovereign"
+      ],
+      [
+        "mob_abyssal_archon",
+        "mob_abyssal_seraph"
+      ],
+      [
+        "mob_abyssal_sovereign",
+        "mob_dread_matron"
+      ],
+      [
+        "mob_maw_of_the_abyss",
+        "mob_soul_devourer"
+      ],
+      [
+        "mob_abyssal_sovereign",
+        "mob_abyssal_archon"
+      ],
+      [
+        "mob_maw_of_the_abyss",
+        "mob_abyssal_seraph"
+      ],
+      [
+        "mob_abyssal_sovereign",
+        "mob_soul_devourer"
+      ],
+      [
+        "mob_maw_of_the_abyss",
+        "mob_dread_matron"
+      ],
+      [
+        "mob_abyssal_sovereign",
+        "mob_abyssal_archon"
+      ],
+      [
+        "mob_maw_of_the_abyss",
+        "mob_abyssal_seraph"
       ],
       [
         "mob_maw_of_the_abyss",
         "mob_abyssal_sovereign"
       ]
     ],
-    "_guardians": "Gardien de la dizaine n (etage 10n). Au-dela de la liste, la derniere ligne se repete ; la difficulte monte alors par le niveau, les etoiles et les multiplicateurs.",
+    "_guardians": "Gardien du palier n (etage 5n), Tour v1 (16/11) : boss et elites EXISTANTS du theme Faille / Abysse (actifs, avec leur art), renforces au palier (etoile, PV, attaque). Chaque gardien aura plus tard SA mecanique, concue avec Charleston. Au-dela de la liste, la derniere ligne se repete.",
     "seed": 4242
   },
   "keys": {
-    "_why": "Modele Albion : les etages 1-20 sont libres ; finir l'etage 20 donne a CHAQUE membre present une Cle du palier 2, qui fait entrer TOUT le groupe a l'etage 21. La cle est consommee a l'entree (un seul membre l'utilise) et s'echange a l'hotel des ventes. Les cles survivent aux saisons.",
-    "tier_size": 20,
-    "item_prefix": "key_tower_tier_",
-    "max_tier": 10,
+    "_why": "Tour v1 (Charleston 13/11) : une cle par palier de 5 etages jusqu'a l'etage 100 (20 cles, key_tower_floor_5 a key_tower_floor_100). La cle de l'etage P fait entrer TOUT le groupe a l'etage P+1 ; le chef la consomme a l'entree pres de Rask. Elle se vend et s'echange (hotel des ventes). Les cles survivent aux saisons.",
+    "tier_size": 5,
+    "item_prefix": "key_tower_floor_",
+    "_item_naming": "key_tower_floor_<P> = cle de l'etage P (P multiple de tier_size, de 5 a (max_tier - 1) x tier_size). Palier d'une entree : 1 pour l'etage 1 (sans cle), P / 5 + 1 pour l'etage P + 1.",
+    "max_tier": 21,
     "consumed_on_entry": true,
     "tradeable": true,
-    "granted_to": "key_holder_upgrade",
-    "_granted_to_note": "2026-10-13 (proprietaire) : SEULE la cle utilisee monte de niveau (comme Albion : les cles hautes sont rares et elitistes). Au clear de l etage 20.n, le porteur de la cle (le membre qui l a consommee a l entree, ou le chef si le groupe est entre sans cle aux etages 1-20) recoit la cle du palier n+1 ; les autres membres ne recoivent rien. Echec ou abandon : la cle est perdue (deja consommee a l entree). Avant : chaque membre present recevait une cle (inflation).",
-    "floor_key_drop": {
-      "_comment": "Faible chance, a chaque etage termine, que chaque membre present trouve une cle du palier de CET etage (etages 21-40 : cle du palier 2, etc. ; etages 1-20 : rien).",
-      "chance_per_member": 0.02
-    }
-  },
-  "checkpoints": {
-    "_a_valider": "Points de reprise (propose le 2026-10-18). Finir un etage gardien multiple de every debloque, pour chaque membre PRESENT, le point de reprise de cet etage pour la saison en cours (scope season = mois UTC, comme le classement). Un chef peut alors demarrer a l'etage suivant (11, 31, 51...) si SON point de reprise est au moins cet etage ; les entrees de palier (1, 21, 41...) restent les entrees normales. L'entree consomme la cle du palier de l'etage exactement comme une entree de palier (etage 11 gratuit, etage 31 cle du palier 2). Une montee partie d'un point de reprise n'est jamais classee (ranked toujours false, le serveur refuse true).",
-    "enabled": true,
-    "every": 10,
-    "scope": "season",
-    "ranked": false
+    "granted_to": "key_holder_on_exit",
+    "_granted_to_note": "Tour v1 (Charleston 13/11) : le porteur de la cle (le chef qui l'a consommee a l'entree, ou le chef d'un groupe entre sans cle) ne recupere une cle qu'en SORTANT par le portail d'un palier : sortie a l'etage P = cle de l'etage P. Defaite, abandon, sortie ailleurs qu'a un portail de palier ou depart de la montee : cle perdue. Une coupure suivie d'un retour sous combat.json timing.abandoned_room_timeout_seconds ne la fait pas perdre. Une panne serveur la fait perdre aussi (Charleston 16/11). Les autres cles ne viennent que du coffre de palier (items/loot_tables.json tower_chest key_chance)."
   },
   "rewards": {
     "_per_floor": "Chaque etage gagne passe par le moteur de recompenses normal (XP, or, butin par combat selon les etoiles et la presence d'elites ou de boss).",
-    "guardian_chest": {
+    "palier_chest": {
+      "_why": "Tour v1 (Charleston 13/11) : apres chaque gardien, UN coffre par joueur, ouvert une seule fois. A l'ouverture, le serveur tire la rarete de CE coffre (peu commun, rare, epique, legendaire) avec des chances qui montent avec le palier ; la rarete fixe le nombre d'objets et leur qualite. Coffre pas ouvert avant de passer un portail = perdu. Aucun butin lie au personnage. Remplace le coffre de gardien fixe.",
+      "loot_table": "tower_chest",
       "gold_per_floor": 150,
-      "items": [
-        {
-          "id": "cons_hp_potion_t5",
-          "qty": 3
-        },
-        {
-          "id": "cons_mp_potion_t5",
-          "qty": 3
-        }
-      ],
       "arena_tokens_per_floor": 1,
-      "_scaling": "Valide par Charleston le 2026-10-01 : l'or et les jetons du coffre sont multiplies par le numero de l'etage gardien (etage 10 = 1500 or et 10 jetons, etage 60 = 9000 or et 60 jetons). Les objets ne sont pas multiplies."
+      "_scaling": "Or et jetons d'arene du coffre multiplies par le numero de l'etage du palier, comme l'ancien coffre de gardien (valide par Charleston le 2026-10-01) : etage 5 = 750 or et 5 jetons, etage 100 = 15000 or et 100 jetons. Le reste du coffre vient de la table tower_chest."
     }
   },
   "season": {
@@ -216,7 +278,7 @@
     }
   },
   "ranking": {
-    "_a_valider": "Regles du classement de saison (proposees le 2026-10-18). Une montee n'est classee que si elle part d'une entree de palier, avec au moins min_humans joueurs de comptes distincts (distinct_accounts) et d'adresses IP distinctes (distinct_ips, IP de la session en cours ; IP inconnue = non classee). Composition figee (roster_frozen) : des qu'un membre quitte la montee, son etage classe cesse d'avancer. Le classement lit l'etage classe et le temps mis pour l'atteindre.",
+    "_a_valider": "Regles du classement de saison (proposees le 2026-10-18). Une montee n'est classee qu'avec au moins min_humans joueurs de comptes distincts (distinct_accounts) et d'adresses IP distinctes (distinct_ips, IP de la session en cours ; IP inconnue = non classee). Composition figee (roster_frozen) : des qu'un membre quitte la montee, son etage classe cesse d'avancer. Le classement lit l'etage classe et le temps mis pour l'atteindre.",
     "min_humans": 3,
     "distinct_accounts": true,
     "distinct_ips": true,

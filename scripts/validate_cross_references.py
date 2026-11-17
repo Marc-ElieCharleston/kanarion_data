@@ -2480,35 +2480,52 @@ def validate_tower_infinite(db: Path, rules: dict, all_item_ids: set) -> list:
             errors.append(f"[tower.json] presentation.combat_backdrop '{backdrop}' : decor inconnu "
                           "(aucune zone de world/zones.json ne l'utilise, et ce n'est pas un decor "
                           "propre a la Tour de TOWER_ONLY_BACKDROPS)")
-    segs = diff.get("stat_growth_segments")
-    if segs is not None:
-        if not isinstance(segs, list) or not segs:
-            errors.append("[tower.json] difficulty.stat_growth_segments : liste non vide attendue")
-        else:
-            prev = None
-            for s in segs:
-                ff, pf = s.get("from_floor"), s.get("per_floor")
-                if not isinstance(ff, int) or ff < 0 or not isinstance(pf, (int, float)) or not 0 <= pf <= 1:
-                    errors.append(f"[tower.json] stat_growth_segments : segment invalide {s}")
-                elif prev is not None and ff <= prev:
-                    errors.append("[tower.json] stat_growth_segments : from_floor strictement croissants attendus")
-                prev = ff if isinstance(ff, int) else prev
-            if segs[0].get("from_floor") != diff.get("growth_start_floor") \
-                    or segs[0].get("per_floor") != diff.get("stat_growth_per_floor"):
-                errors.append("[tower.json] stat_growth_segments[0] doit reprendre growth_start_floor / "
-                              "stat_growth_per_floor (compatibilite)")
-    tier_size = rules["keys"]["tier_size"]
-    every_g = rules["structure"]["guardian_every"]
-    cp = rules.get("checkpoints")
-    if cp is not None and cp.get("enabled", False):
-        every = cp.get("every")
-        if not isinstance(every, int) or every <= 0 or every % every_g != 0 or tier_size % every != 0:
-            errors.append(f"[tower.json] checkpoints.every={every!r} : multiple de guardian_every={every_g} "
-                          f"et diviseur de keys.tier_size={tier_size} attendu")
-        if cp.get("scope") != "season":
-            errors.append("[tower.json] checkpoints.scope : seule valeur geree 'season'")
-        if cp.get("ranked") is not False:
-            errors.append("[tower.json] checkpoints.ranked : doit valoir false (une reprise n'est jamais classee)")
+    steps = diff.get("stat_steps")
+    if not isinstance(steps, dict):
+        errors.append("[tower.json] difficulty.stat_steps : objet attendu (Tour v1, remplace stat_growth_segments)")
+    else:
+        ipf, pp, ff = steps.get("in_palier_per_floor"), steps.get("per_palier"), steps.get("from_floor")
+        if not isinstance(ipf, (int, float)) or not 0 <= ipf <= 1 or not isinstance(pp, (int, float)) \
+                or not 1 <= pp <= 5 or not isinstance(ff, int) or ff < 0:
+            errors.append(f"[tower.json] difficulty.stat_steps invalide {steps} : in_palier_per_floor dans "
+                          "[0, 1], per_palier dans [1, 5], from_floor entier >= 0")
+    for gone in ("stat_growth_segments", "growth_start_floor", "stat_growth_per_floor", "guardians_by_decade"):
+        if gone in diff:
+            errors.append(f"[tower.json] difficulty.{gone} : cle retiree en Tour v1, le serveur la refuse")
+    if "checkpoints" in rules:
+        errors.append("[tower.json] checkpoints : points de reprise supprimes en Tour v1 (16/11), le serveur refuse la cle")
+    if not isinstance(diff.get("level_per_palier"), int) or diff["level_per_palier"] < 0:
+        errors.append("[tower.json] difficulty.level_per_palier : entier >= 0 attendu")
+    gam = diff.get("guardian_atk_multiplier", 1.0)
+    if not isinstance(gam, (int, float)) or not 0.1 <= gam <= 5:
+        errors.append(f"[tower.json] difficulty.guardian_atk_multiplier={gam!r} hors [0.1, 5]")
+    room = rules.get("room")
+    if not isinstance(room, dict):
+        errors.append("[tower.json] room : objet attendu (Tour v1)")
+    else:
+        if room.get("engage") not in ("click", "auto"):
+            errors.append(f"[tower.json] room.engage={room.get('engage')!r} : click ou auto")
+        for k in ("idle_timeout_seconds", "landing_timeout_seconds", "reconnect_grace_seconds"):
+            if k in room:
+                errors.append(f"[tower.json] room.{k} : aucune limite de temps dans la salle, et la fenetre de "
+                              "reconnexion vit dans server-combat combat.json (une seule source) : cle refusee")
+    entry = rules["access"].get("entry")
+    if not isinstance(entry, dict):
+        errors.append("[tower.json] access.entry : objet attendu (PNJ d'entree, Tour v1)")
+    else:
+        npcs = load_json(db / "entities" / "npcs.json")
+        npc_ids = set()
+        for block in (npcs.values() if isinstance(npcs, dict) else [npcs]):
+            if isinstance(block, list):
+                npc_ids |= {n.get("id") for n in block if isinstance(n, dict)}
+        if entry.get("npc_id") not in npc_ids:
+            errors.append(f"[tower.json] access.entry.npc_id '{entry.get('npc_id')}' : PNJ inconnu (entities/npcs.json)")
+        zones_text = (db / "world" / "zones.json").read_text(encoding="utf-8")
+        if f'"{entry.get("zone_id")}"' not in zones_text:
+            errors.append(f"[tower.json] access.entry.zone_id '{entry.get('zone_id')}' : zone inconnue")
+        if not all(isinstance(entry.get(k), (int, float)) for k in ("x", "y")) \
+                or not isinstance(entry.get("range_px"), int) or entry["range_px"] < 1:
+            errors.append("[tower.json] access.entry : x, y numeriques et range_px entier >= 1 attendus")
     rk = rules.get("ranking")
     if rk is not None:
         mh = rk.get("min_humans")
@@ -2622,6 +2639,74 @@ def validate_dungeon_key_refs(db: Path, all_item_ids: set) -> list:
     return errors
 
 
+TOWER_CHEST_RARITIES = ("uncommon", "rare", "epic", "legendary")
+
+
+def validate_tower_chest(db: Path, table_id, all_item_ids: set, keys: dict) -> list:
+    """items/loot_tables.json <table_id> (tower_chest, Tour v1) : memes refus que
+    services/dungeon/src/tower/tower_chest.cpp au demarrage."""
+    errors = []
+    tag = f"[loot_tables.json {table_id}]"
+    t = load_json(db / "items" / "loot_tables.json").get(table_id) if isinstance(table_id, str) else None
+    if not isinstance(t, dict):
+        return [f"[tower.json] rewards.palier_chest.loot_table '{table_id}' : table absente de items/loot_tables.json"]
+    prev = 0
+    rows = t.get("rarity_weights_by_palier", [])
+    if not rows:
+        errors.append(f"{tag} rarity_weights_by_palier : liste non vide attendue")
+    for row in rows:
+        ff = row.get("from_floor")
+        if not isinstance(ff, int) or ff <= prev:
+            errors.append(f"{tag} rarity_weights_by_palier : from_floor strictement croissants attendus ({ff!r})")
+        prev = ff if isinstance(ff, int) else prev
+        ws = [row.get(r) for r in TOWER_CHEST_RARITIES]
+        if any(not isinstance(w, int) or w < 0 for w in ws) or sum(w for w in ws if isinstance(w, int)) <= 0:
+            errors.append(f"{tag} rarity_weights_by_palier from_floor {ff} : poids entiers >= 0, total > 0")
+    if rows and rows[0].get("from_floor") != keys.get("tier_size"):
+        errors.append(f"{tag} rarity_weights_by_palier : la premiere ligne doit partir du premier palier "
+                      f"(etage {keys.get('tier_size')})")
+    rar = t.get("rarities", {})
+    pools = t.get("pools", {})
+    for r in TOWER_CHEST_RARITIES:
+        cfg = rar.get(r, {})
+        lo, hi = cfg.get("items_min"), cfg.get("items_max")
+        if not isinstance(lo, int) or not isinstance(hi, int) or not 1 <= lo <= hi <= 20:
+            errors.append(f"{tag} rarities.{r} : 1 <= items_min <= items_max <= 20 attendu")
+        if not pools.get(r):
+            errors.append(f"{tag} pools.{r} : liste non vide attendue")
+
+    def check_entries(where, entries):
+        for e in entries:
+            if e.get("item_id") not in all_item_ids:
+                errors.append(f"{tag} {where} : objet inconnu '{e.get('item_id')}'")
+            w, lo, hi = e.get("weight"), e.get("min"), e.get("max")
+            if not isinstance(w, int) or w < 1 or not isinstance(lo, int) or not isinstance(hi, int) \
+                    or not 1 <= lo <= hi <= 99:
+                errors.append(f"{tag} {where} '{e.get('item_id')}' : weight >= 1 et 1 <= min <= max <= 99")
+            if isinstance(e.get("item_id"), str) and e["item_id"].startswith(keys.get("item_prefix", "?")):
+                errors.append(f"{tag} {where} : la cle de la Tour sort par key_chance, pas par un pool")
+    for r in TOWER_CHEST_RARITIES:
+        check_entries(f"pools.{r}", pools.get(r, []))
+    for k in pools:
+        if k not in TOWER_CHEST_RARITIES:
+            errors.append(f"{tag} pools.{k} : rarete inconnue")
+    bonus = t.get("items_bonus", {})
+    if any(not isinstance(bonus.get(k), int) or bonus[k] < 0 for k in ("every_floors", "per_step", "max")) \
+            or bonus.get("every_floors", 0) < 1:
+        errors.append(f"{tag} items_bonus : every_floors >= 1, per_step et max entiers >= 0")
+    kc = t.get("key_chance")
+    if not isinstance(kc, (int, float)) or not 0 <= kc <= 1:
+        errors.append(f"{tag} key_chance hors [0, 1]")
+    ur = t.get("ultra_rare", {})
+    vals = [ur.get(k) for k in ("chance_at_floor_5", "chance_at_floor_100", "cap")]
+    if any(not isinstance(v, (int, float)) or not 0 <= v <= 1 for v in vals):
+        errors.append(f"{tag} ultra_rare : chances dans [0, 1]")
+    check_entries("ultra_rare.items", ur.get("items", []))
+    if not ur.get("items"):
+        errors.append(f"{tag} ultra_rare.items : liste non vide attendue")
+    return errors
+
+
 def validate_tower(db: Path, all_item_ids: set) -> list:
     """systems/tower.json + world/tower_floors.json : monstres actifs, cles, bornes."""
     errors = []
@@ -2642,17 +2727,33 @@ def validate_tower(db: Path, all_item_ids: set) -> list:
         for name in row["pools"]:
             if name not in diff["pools"]:
                 errors.append(f"[tower.json] floor_pools : pool inconnu '{name}'")
-    for decade in diff["guardians_by_decade"]:
-        for mid in decade:
+    for palier in diff.get("guardians_by_palier", []):
+        for mid in palier:
             if mid not in roster or roster[mid].get("roster_status") != "active":
                 errors.append(f"[tower.json] gardien '{mid}' inconnu ou inactif")
     keys = rules["keys"]
+    if not diff.get("guardians_by_palier"):
+        errors.append("[tower.json] difficulty.guardians_by_palier : liste non vide attendue")
+    if keys.get("tier_size") != rules["structure"]["guardian_every"]:
+        errors.append("[tower.json] keys.tier_size doit valoir structure.guardian_every (une cle par palier)")
+    if keys.get("granted_to") != "key_holder_on_exit":
+        errors.append(f"[tower.json] keys.granted_to={keys.get('granted_to')!r} : seule regle geree key_holder_on_exit")
+    if "floor_key_drop" in keys:
+        errors.append("[tower.json] keys.floor_key_drop : retire en Tour v1 (la chance de cle est dans le coffre)")
     for tier in range(2, keys["max_tier"] + 1):
-        if f"{keys['item_prefix']}{tier}" not in all_item_ids:
-            errors.append(f"[tower.json] cle '{keys['item_prefix']}{tier}' absente des objets")
-    for item in rules["rewards"]["guardian_chest"]["items"]:
-        if item["id"] not in all_item_ids:
-            errors.append(f"[tower.json] coffre de gardien : objet inconnu '{item['id']}'")
+        key_id = f"{keys['item_prefix']}{(tier - 1) * keys['tier_size']}"
+        if key_id not in all_item_ids:
+            errors.append(f"[tower.json] cle '{key_id}' absente des objets")
+    chest = rules.get("rewards", {}).get("palier_chest")
+    if not isinstance(chest, dict):
+        errors.append("[tower.json] rewards.palier_chest : objet attendu (Tour v1)")
+    else:
+        for k in ("gold_per_floor", "arena_tokens_per_floor"):
+            if not isinstance(chest.get(k), int) or chest[k] < 0:
+                errors.append(f"[tower.json] rewards.palier_chest.{k} : entier >= 0 attendu")
+        errors += validate_tower_chest(db, chest.get("loot_table"), all_item_ids, keys)
+    if "guardian_chest" in rules.get("rewards", {}):
+        errors.append("[tower.json] rewards.guardian_chest : remplace par rewards.palier_chest en Tour v1")
     errors += validate_tower_infinite(db, rules, all_item_ids)
     if not floors_path.exists():
         return errors + ["[tower_floors.json] absent : lancer scripts/generate_tower.py"]
