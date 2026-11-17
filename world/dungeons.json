@@ -2515,7 +2515,10 @@
           "floor_overrides": {
             "5": {
               "stars": 4,
-              "_a_valider": "Mode Histoire : groupe du boss a 4 etoiles (5 en Normal et Difficile), comme les Egouts. A mesurer au banc (WorldLowLevelSimulation, BoisFletriBossFight) et en jeu."
+              "_a_valider": "Mode Histoire : groupe du boss a 4 etoiles (5 en Normal et Difficile) et PV du Gardien x0,8. Banc server-combat WorldLowLevelSimulation.BoisFletriBossFight du 2026-11-17 (4 joueurs + 4 familiers joues par l'IA serveur, equipement moyen du niveau, sortie des zones scriptee ; 24 combats par mode) : Histoire (joueurs niv 29) 15/24 victoires, 35 % de PV restants, 179 s ; Normal (niv 34) 10/24, 23 %, 199 s ; Difficile (niv 39) 1/24, 1 %, 154 s. Avant reglage (Gardien PV x2.0 via per_mob_override, aucun multiplicateur d'etage) : 0/2 dans les trois modes. A VALIDER.",
+              "hp_multipliers": {
+                "boss_gardien_bois_fletri": 0.8
+              }
             }
           },
           "_story_mode_note": "Palier de base, affiche « Mode Histoire » par le client. Aucune quete n'y mene encore (la quete « La forêt qui dépérit » s'arrete aux arbres marques) : a relier quand Charleston le decidera.",
@@ -2576,7 +2579,16 @@
           },
           "description_fr": "Les créatures sont plus dangereuses et les attaques du Gardien demandent davantage de vigilance.",
           "description_en": "Creatures are more dangerous, and the Guardian's attacks require greater attention.",
-          "_a_valider": "Proposition du 2026-11-17 sur le schema des Egouts et de la Taniere : niveau conseille 31-35 (tableau des propositions du 16/11), monstres +5 niveaux, etoiles 4 ou 5 (50/50, comme les Egouts Normal), une competence de plus par espece (competences existantes de skills/monster_skills.json). Mecanique du Gardien a l'echelle normal (entities/boss_mechanics.json). Pas de floor_overrides de PV ou d'attaque : a mesurer d'abord."
+          "_a_valider": "Proposition du 2026-11-17 sur le schema des Egouts et de la Taniere : niveau conseille 31-35 (tableau des propositions du 16/11), monstres +5 niveaux, etoiles 4 ou 5 (50/50, comme les Egouts Normal), une competence de plus par espece (competences existantes de skills/monster_skills.json). Mecanique du Gardien a l'echelle normal (entities/boss_mechanics.json). Pas de floor_overrides de PV ou d'attaque : a mesurer d'abord.",
+          "floor_overrides": {
+            "5": {
+              "hp_multipliers": {
+                "boss_gardien_bois_fletri": 0.7,
+                "mob_tortue_cendre": 0.8
+              },
+              "_a_valider": "Normal : PV du Gardien x0,7 et de la Tortue de cendre x0,8 dans la salle du boss (salle a 5). Banc server-combat WorldLowLevelSimulation.BoisFletriBossFight du 2026-11-17 (4 joueurs + 4 familiers joues par l'IA serveur, equipement moyen du niveau, sortie des zones scriptee ; 24 combats par mode) : Histoire (joueurs niv 29) 15/24 victoires, 35 % de PV restants, 179 s ; Normal (niv 34) 10/24, 23 %, 199 s ; Difficile (niv 39) 1/24, 1 %, 154 s. Avant reglage (Gardien PV x2.0 via per_mob_override, aucun multiplicateur d'etage) : 0/2 dans les trois modes. A VALIDER."
+            }
+          }
         },
         "fissure_3": {
           "key_required": "key_bois_fletri",
@@ -2643,7 +2655,20 @@
           },
           "description_fr": "Le Gardien devient plus agressif et ses attaques s'enchaînent plus rapidement.",
           "description_en": "The Guardian grows more aggressive and unleashes attacks more rapidly.",
-          "_a_valider": "Proposition du 2026-11-17 : niveau conseille 36-40, monstres +10 niveaux, etoiles 30/70 entre 4 et 5 (comme les Egouts Difficile), deux competences de plus par espece. Mecanique du Gardien a l'echelle hard (plus de zones, annonce plus courte, ENRAGE)."
+          "_a_valider": "Proposition du 2026-11-17 : niveau conseille 36-40, monstres +10 niveaux, etoiles 30/70 entre 4 et 5 (comme les Egouts Difficile), deux competences de plus par espece. Mecanique du Gardien a l'echelle hard (plus de zones, annonce plus courte, ENRAGE).",
+          "floor_overrides": {
+            "5": {
+              "hp_multipliers": {
+                "boss_gardien_bois_fletri": 0.6,
+                "mob_tortue_cendre": 0.6
+              },
+              "atk_multipliers": {
+                "boss_gardien_bois_fletri": 0.7,
+                "mob_scarabee_cendre": 0.7
+              },
+              "_a_valider": "Difficile : PV du Gardien et de la Tortue x0,6, attaque du Gardien et du Scarabee de cendre x0,7 : la difficulte vient de la mecanique (2 zones a 90 %, enrage a 120 s), pas des PV. Sans ce reglage : 0 % de victoires au banc. Banc server-combat WorldLowLevelSimulation.BoisFletriBossFight du 2026-11-17 (4 joueurs + 4 familiers joues par l'IA serveur, equipement moyen du niveau, sortie des zones scriptee ; 24 combats par mode) : Histoire (joueurs niv 29) 15/24 victoires, 35 % de PV restants, 179 s ; Normal (niv 34) 10/24, 23 %, 199 s ; Difficile (niv 39) 1/24, 1 %, 154 s. Avant reglage (Gardien PV x2.0 via per_mob_override, aucun multiplicateur d'etage) : 0/2 dans les trois modes. A VALIDER."
+            }
+          }
         }
       },
       "_comment_difficulties": "Trois paliers comme les Egouts : fissure_1 = mode Histoire, fissure_2 = Normal, fissure_3 = Difficile (noms affiches par le client). Meme carte, memes etages et memes groupes : un palier decale le niveau des monstres (mob_level_offset), change le tirage d'etoiles et ajoute des competences (extra_skills). mechanic_scale = l'echelle de la mecanique du boss dans ce palier (entities/boss_mechanics.json), lue par server-combat ; aucun nombre de mecanique ici. Recompenses : config/rewards.json multiplier_families.dungeon_difficulty.<palier> (commun a tous les donjons ouverts), rien ici.",
