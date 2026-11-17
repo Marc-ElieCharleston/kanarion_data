@@ -63,6 +63,8 @@ FAMILIAR_TO_MONSTER = {
     "rat_rongeur": "rat", "loup_alpha": "loup", "louve_matriarche": "loup",
     # Rats a role des Egouts rendus capturables (2026-11-13) : famille a part, espece rat.
     "rat_cuirasse": "rat", "rat_assassin": "rat",
+    # Gardes du boss des Racines du Bois Fletri, capturables (2026-11-17) : famille a part, espece du monstre.
+    "cerf_rempart": "cervide", "biche_seve": "cervide", "renard_fletrisseur": "renard",
 }
 
 # Species passive per MONSTER species: (name_fr, name_en, {stat: weight}). Tier values below are

@@ -6069,6 +6069,90 @@
           "range": 4
         }
       ]
+    },
+    "bois_fletri": {
+      "_comment": "Donjon Racines du Bois Fletri (dungeon_bois_fletri, decision Charleston 2026-11-17). skill_mob_gardien_colere_racines n'est dans AUCUN kit : c'est le nom (barre d'incantation, journal) des zones annoncees de la mecanique de boss zones_annoncees_gardien (entities/boss_mechanics.json). Le serveur la lance lui-meme, avec les cases, la duree d'annonce et les degats de la mecanique selon le mode ; ses champs de puissance et d'incantation ici ne servent qu'a la charger (contrat du parseur). skill_mob_brume_vulnerante = l'affaiblissement du Renard Fletrisseur, l'utilitaire de la salle du boss. Textes (provisoire), brief copywriting du 2026-11-17.",
+      "pool": [
+        {
+          "id": "skill_mob_gardien_colere_racines",
+          "source_scope": "MONSTER",
+          "name_fr": "Colère des racines",
+          "name_en": "Wrath of the Roots",
+          "tier": "ultimate",
+          "target": "enemies",
+          "pattern": "row_all",
+          "damage_type": "magical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 0,
+          "mana_cost": 0,
+          "cooldown": 1.0,
+          "cast_time": 3.0,
+          "vfx_type": "wave",
+          "description_fr": "Le Gardien annonce des zones sur ton camp : rangées, colonnes ou carrés de 3x3, à n'importe quelle distance. Des racines mortes y jaillissent à la fin de l'annonce et emportent une grande part des PV de qui y reste. Il reste toujours une case sûre à portée : sors des zones.",
+          "description_en": "The Warden marks zones on your side: rows, columns or 3x3 squares, at any distance. Dead roots burst out of them when the warning ends and take a large share of the HP of anyone still standing there. There is always a safe cell within reach: get out of the zones.",
+          "tags": [
+            "damage",
+            "aoe",
+            "telegraph",
+            "boss",
+            "boss_mechanic",
+            "corrupted"
+          ],
+          "effects": [],
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": false,
+            "bypasses_los": true,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "row_all"
+          },
+          "range": "board"
+        },
+        {
+          "id": "skill_mob_brume_vulnerante",
+          "source_scope": "MONSTER",
+          "name_fr": "Brume rongeuse",
+          "name_en": "Gnawing Mist",
+          "tier": "advanced",
+          "target": "enemy",
+          "pattern": "single",
+          "damage_type": "magical",
+          "scaling_stat": "atk",
+          "base_power": 0,
+          "scaling_percent": 60,
+          "mana_cost": 0,
+          "cooldown": 10.0,
+          "cast_time": 1.5,
+          "vfx_type": "debuff_aura",
+          "description_fr": "Inflige 60% ATK dégâts magiques et rend la cible Vulnérable (2 charges, 8 s) : elle subit plus de dégâts de toutes sources.",
+          "description_en": "Deals 60% ATK magic damage and makes the target Vulnerable (2 stacks, 8 s): it takes more damage from every source.",
+          "tags": [
+            "damage",
+            "debuff",
+            "vulnerable",
+            "corrupted"
+          ],
+          "effects": [
+            {
+              "type": "debuff",
+              "stat": "vulnerable",
+              "stacks_to_apply": 2,
+              "duration": 8.0
+            }
+          ],
+          "targeting": {
+            "selection_mode": "entity",
+            "valid_target_team": "enemy",
+            "requires_line_of_sight": false,
+            "bypasses_los": true,
+            "requires_entity_on_target_tile": true,
+            "aoe_pattern_id": "single"
+          },
+          "range": 6
+        }
+      ]
     }
   }
 }

@@ -296,6 +296,111 @@ def validate_floor_overrides(root, dungeon):
     return errors
 
 
+# Boss mechanics catalogue (entities/boss_mechanics.json, 2026-11-17). Same contract as the
+# combat server's strict loader (server-combat/src/content/boss_mechanic_catalog.cpp): a gap
+# here would only surface as a combat service that refuses to start.
+MECHANIC_KEYS = {'type', 'name_fr', 'name_en', 'boss_of_origin', 'skill_id', 'params'}
+MECHANIC_PARAMS = {
+    'telegraphed_zones': ('first_delay_seconds', 'interval_seconds', 'warning_seconds', 'zones_min',
+                          'zones_max', 'hit_hp_fraction', 'shapes', 'enrage_after_seconds',
+                          'enrage_interval_multiplier'),
+}
+
+
+def _monster_skill_ids(root):
+    return set(_walk_ids(load(root, 'skills/monster_skills.json'), {}))
+
+
+def _is_num(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool)
+
+
+def validate_boss_mechanics(root, dungeons):
+    errors = []
+    cat = load(root, 'entities/boss_mechanics.json')
+    unknown = {k for k in cat if not k.startswith('_')} - {'scales', 'hit_reference', 'mechanics'}
+    if unknown:
+        errors.append(f'boss_mechanics.json: unknown top-level key(s) {sorted(unknown)}')
+    scales = cat.get('scales')
+    if not (isinstance(scales, list) and scales and all(isinstance(s, str) and s for s in scales)
+            and len(set(scales)) == len(scales)):
+        errors.append('boss_mechanics.json: scales must be a non-empty list of distinct names')
+        scales = []
+    ref = cat.get('hit_reference', {})
+    try:
+        node = load(root, ref['source_file'])
+        for key in ref['source_path']:
+            node = node[key]
+        if not (isinstance(node, dict) and node and all(k.isdigit() and _is_num(v) and v > 0
+                                                        for k, v in node.items())):
+            raise ValueError('not a {level: hp} curve')
+    except (KeyError, TypeError, ValueError, FileNotFoundError) as e:
+        errors.append(f'boss_mechanics.json hit_reference: {ref!r} does not resolve to a {{level: hp}} curve ({e})')
+    patterns = set(load(root, 'combat/targeting.json').get('patterns', {}))
+    skills = _monster_skill_ids(root)
+    mechanics = cat.get('mechanics', {})
+    for mid, m in mechanics.items():
+        if mid.startswith('_'):
+            continue
+        where = f'boss_mechanics.json {mid}'
+        extra = {k for k in m if not k.startswith('_')} - MECHANIC_KEYS
+        if extra:
+            errors.append(f'{where}: unknown key(s) {sorted(extra)}')
+        names = MECHANIC_PARAMS.get(m.get('type'))
+        if names is None:
+            errors.append(f'{where}: unknown type {m.get("type")!r} (known: {sorted(MECHANIC_PARAMS)})')
+            continue
+        if m.get('skill_id') not in skills:
+            errors.append(f'{where}: skill_id {m.get("skill_id")!r} is not in skills/monster_skills.json')
+        params = m.get('params', {})
+        got = {k for k in params if not k.startswith('_')}
+        if got != set(names):
+            errors.append(f'{where}: params {sorted(got)} != {sorted(names)}')
+            continue
+        for p in names:
+            vals = params[p]
+            have = {k for k in vals if not k.startswith('_')}
+            if have != set(scales):
+                errors.append(f'{where}.{p}: scales {sorted(have)} != {sorted(scales)}')
+        for s in scales:
+            v = {p: params[p].get(s) for p in names}
+            w = f'{where} [{s}]'
+            for p in ('first_delay_seconds', 'interval_seconds', 'warning_seconds'):
+                if not (_is_num(v[p]) and v[p] > 0):
+                    errors.append(f'{w}: {p} must be > 0')
+            if not (isinstance(v['zones_min'], int) and isinstance(v['zones_max'], int)
+                    and 1 <= v['zones_min'] <= v['zones_max'] <= 6):
+                errors.append(f'{w}: zones_min / zones_max must be integers, 1 <= min <= max <= 6')
+            if not (_is_num(v['hit_hp_fraction']) and 0 < v['hit_hp_fraction'] <= 1):
+                errors.append(f'{w}: hit_hp_fraction must be in ]0, 1]')
+            sh = v['shapes']
+            if not (isinstance(sh, list) and sh and all(x in patterns for x in sh)):
+                errors.append(f'{w}: shapes must be a non-empty list of combat/targeting.json patterns, got {sh!r}')
+            ea, em = v['enrage_after_seconds'], v['enrage_interval_multiplier']
+            if ea is None:
+                if em is not None:
+                    errors.append(f'{w}: enrage_interval_multiplier must be null without enrage')
+            elif not (_is_num(ea) and ea > 0 and _is_num(em) and 0 < em <= 1):
+                errors.append(f'{w}: enrage needs enrage_after_seconds > 0 and a multiplier in ]0, 1]')
+    for d in dungeons:
+        did = d['id']
+        mech = d.get('boss', {}).get('mechanic_id')
+        tiers = d.get('difficulties', {})
+        if mech is None:
+            for tier, spec in tiers.items():
+                if isinstance(spec, dict) and 'mechanic_scale' in spec:
+                    errors.append(f'{did} {tier}: mechanic_scale without boss.mechanic_id')
+            continue
+        if mech not in mechanics or mech.startswith('_'):
+            errors.append(f'{did}: boss.mechanic_id {mech!r} is not in entities/boss_mechanics.json')
+        for tier, spec in tiers.items():
+            if not isinstance(spec, dict):
+                continue
+            if spec.get('mechanic_scale') not in scales:
+                errors.append(f'{did} {tier}: mechanic_scale {spec.get("mechanic_scale")!r} must be one of {scales}')
+    return errors
+
+
 def validate(root, dungeon, front=None):
     errors = (validate_tiers(root, dungeon) + validate_tier_content(root, dungeon)
               + validate_floor_overrides(root, dungeon))
@@ -460,6 +565,7 @@ def main():
     for d in dungeons:
         errors += validate(args.data, d, args.front)
     errors += validate_key_drops(args.data, open_dungeons(content))
+    errors += validate_boss_mechanics(args.data, open_dungeons(content))
     sql = '\n\n'.join(template_sql(d) for d in dungeons) + '\n'
     if args.check_sql:
         text = args.check_sql.read_text(encoding='utf-8').replace('\r\n', '\n')

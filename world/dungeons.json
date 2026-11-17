@@ -2465,6 +2465,568 @@
       "_comment_post_boss": "Salle de la marque (npc_wolf_den_fissure, decouverte de q_act2_wolves_den), sortie par npc_wolf_den_exit (service dungeon_exit).",
       "_comment_floor_order": "2026-11-07 (Charleston, en jouant la 0.20.38, idem Egouts) : les SALLES des etages 2, 3 et 4 permutees. Etage 2 = ancienne salle 4 (couche de fourrures, wolf_den_f4.png, contour propre a cette salle), etage 3 = ancienne salle 2 (wolf_den_f2.png), etage 4 = ancienne salle 3 (campement, wolf_den_f3.png). Ont suivi la salle : le fond, le contour (area_limit des zones et RoomBounds), le point d arrivee. Restent au NUMERO d etage : monstres, niveaux, noms, reglages par palier (difficulte croissante 1 < 2 < 3 < 4 < boss). La repartition voulue par Charleston le 07/11 (1-2 betes, 3-4 humanoides, 5 boss) etait deja celle-ci : loups, loups enrages, vieux loups, loups noirs et blancs (quadrupedes) aux etages 1-2 ; Loup Meneur, Louve Matriarche et Molosse Corrompu (loups debout, sprites wolf_packleader, wolf_soigneur, wolf_corrupted) aux etages 3-4, toujours en tete de groupe. Aucun monstre deplace.",
       "_comment_layout": "Scenes PROVISOIRES : copies des 5 salles des Egouts (meme emprise, memes points d'arrivee), en attendant le decor de la taniere."
+    },
+    {
+      "id": "dungeon_bois_fletri",
+      "zone_prefix": "dungeon_bois_fletri",
+      "zone_id_pattern": "{zone_prefix}_f{floor}_{difficulty}",
+      "name": "Withered Roots",
+      "name_fr": "Racines du Bois Flétri",
+      "name_en": "Withered Roots",
+      "_textes_provisoires": "(provisoire) Nom du donjon, des etages, des paliers et descriptions a valider par le copywriting (brief C:/Users/Charl/Downloads/kanarion_brief_copywriting_bois_fletri.md, 2026-11-17). Nom de travail de Charleston : « Racines du Bois Fletri ».",
+      "description_fr": "Sous le Bois Flétri, une Fissure boit la sève par les racines. On descend dans des galeries de racines mortes, sous une lueur violette, parmi des bêtes vidées de leur couleur.",
+      "description_en": "Beneath the Witherwood, a Fissure drinks the sap through the roots. You go down into galleries of dead roots, under a violet glow, among beasts drained of their colour.",
+      "recommended_level": 28,
+      "level_range": [
+        26,
+        30
+      ],
+      "min_level": 1,
+      "_comment_niveaux": "Decision Charleston 2026-11-17 : contenu 26-30, cale sur l'aire de monstres de la carte mz_bois_fletri_25_35 (regle du 2026-11-16 : chaque donjon se cale sur les monstres de son aire). Entree libre (min_level 1) comme les Egouts et la Taniere : la porte et le contenu sont deux choses. Rang II (21-40).",
+      "recommended_party_size": [
+        4,
+        5
+      ],
+      "_comment_party_size": "Affichage seulement (aucun code ne lit ce champ), comme les Egouts. A valider.",
+      "type": "open_instance",
+      "lockout_type": "",
+      "_comment_lockout": "Chaine VIDE volontaire (voir dungeon_rat_den).",
+      "entry_location": "village",
+      "duration_estimate_minutes": [
+        12,
+        20
+      ],
+      "structure": {
+        "floor_count": 5,
+        "groups_needed_to_advance": 1,
+        "boss_floor_index": 4,
+        "spawn_model": "fixed_groups",
+        "star_weights": {
+          "3": 30,
+          "4": 40,
+          "5": 30
+        },
+        "_comment": "Modele des Egouts et de la Taniere : groupes fixes de 8, etoiles tirees 30/40/30 %, groupe du boss a etoiles fixes. Etages 1-2 : faune fletrie de l'aire mz_bois_fletri_25_35 (Biche Fletrie, Blaireau Fletri, Renard Brumeux, puis Cerf Fletri). Etages 3-4 : Cerf Obscur, Cerf Gardien, Ours Fissure, Grande Ourse (elite) ; les trois gardes du boss (Cerf Rempart, Biche de Seve, Renard Fletrisseur, propres au donjon et capturables) menent un groupe chacun aux etages 3 et 4, pour qu'on les rencontre et qu'on puisse les farmer avant la salle du boss. Etage 5 : le boss et ses trois gardes."
+      },
+      "difficulties": {
+        "fissure_1": {
+          "story_mode": true,
+          "mechanic_scale": "story",
+          "floor_overrides": {
+            "5": {
+              "stars": 4,
+              "_a_valider": "Mode Histoire : groupe du boss a 4 etoiles (5 en Normal et Difficile), comme les Egouts. A mesurer au banc (WorldLowLevelSimulation, BoisFletriBossFight) et en jeu."
+            }
+          },
+          "_story_mode_note": "Palier de base, affiche « Mode Histoire » par le client. Aucune quete n'y mene encore (la quete « La forêt qui dépérit » s'arrete aux arbres marques) : a relier quand Charleston le decidera.",
+          "key_required": null,
+          "description_fr": "La Fissure suce à peine la sève des racines.",
+          "description_en": "The Fissure barely sips the sap from the roots."
+        },
+        "fissure_2": {
+          "key_required": "key_bois_fletri",
+          "requires_cleared": "fissure_1",
+          "mechanic_scale": "normal",
+          "level_range": [
+            31,
+            35
+          ],
+          "mob_level_offset": 5,
+          "star_weights": {
+            "4": 50,
+            "5": 50
+          },
+          "extra_skills": {
+            "mob_biche_fletrie": [
+              "skill_mob_support_shield_barrier"
+            ],
+            "mob_blaireau_fletri": [
+              "skill_mob_berserker_rend"
+            ],
+            "mob_misty_fox": [
+              "skill_mob_assassin_quick_strike"
+            ],
+            "mob_cerf_fletri": [
+              "skill_mob_tank_taunt_roar"
+            ],
+            "mob_cerf_obscur": [
+              "skill_mob_assassin_ambush"
+            ],
+            "mob_cerf_obscur_soigneur": [
+              "skill_mob_support_shield_barrier"
+            ],
+            "mob_ours_fissure": [
+              "skill_mob_maul_rot"
+            ],
+            "mob_grande_ourse": [
+              "skill_mob_support_bloodlust"
+            ],
+            "mob_cerf_fletri_rempart": [
+              "skill_mob_tank_shield_wall"
+            ],
+            "mob_biche_fletrie_seve": [
+              "skill_mob_support_shield_barrier"
+            ],
+            "mob_misty_fox_fletrisseur": [
+              "skill_mob_support_weaken"
+            ]
+          },
+          "description_fr": "Emprise forte. Les racines se sont durcies : chaque bête a appris un tour de plus.",
+          "description_en": "Strong hold. The roots have hardened: every beast has learned one more trick.",
+          "_a_valider": "Proposition du 2026-11-17 sur le schema des Egouts et de la Taniere : niveau conseille 31-35 (tableau des propositions du 16/11), monstres +5 niveaux, etoiles 4 ou 5 (50/50, comme les Egouts Normal), une competence de plus par espece (competences existantes de skills/monster_skills.json). Mecanique du Gardien a l'echelle normal (entities/boss_mechanics.json). Pas de floor_overrides de PV ou d'attaque : a mesurer d'abord."
+        },
+        "fissure_3": {
+          "key_required": "key_bois_fletri",
+          "requires_cleared": "fissure_2",
+          "mechanic_scale": "hard",
+          "level_range": [
+            36,
+            40
+          ],
+          "mob_level_offset": 10,
+          "star_weights": {
+            "4": 30,
+            "5": 70
+          },
+          "extra_skills": {
+            "mob_biche_fletrie": [
+              "skill_mob_support_shield_barrier",
+              "skill_mob_support_haste"
+            ],
+            "mob_blaireau_fletri": [
+              "skill_mob_berserker_rend",
+              "skill_mob_brute_cleave"
+            ],
+            "mob_misty_fox": [
+              "skill_mob_assassin_quick_strike",
+              "skill_mob_assassin_poison_blade"
+            ],
+            "mob_cerf_fletri": [
+              "skill_mob_tank_taunt_roar",
+              "skill_mob_tank_shield_wall"
+            ],
+            "mob_cerf_obscur": [
+              "skill_mob_assassin_ambush",
+              "skill_mob_pounce"
+            ],
+            "mob_cerf_obscur_soigneur": [
+              "skill_mob_support_shield_barrier",
+              "skill_mob_healer_group_heal"
+            ],
+            "mob_ours_fissure": [
+              "skill_mob_maul_rot",
+              "skill_mob_brute_cleave"
+            ],
+            "mob_grande_ourse": [
+              "skill_mob_support_bloodlust",
+              "skill_mob_support_weaken"
+            ],
+            "mob_cerf_fletri_rempart": [
+              "skill_mob_tank_shield_wall",
+              "skill_mob_tank_defensive_stance"
+            ],
+            "mob_biche_fletrie_seve": [
+              "skill_mob_support_shield_barrier",
+              "skill_mob_healer_group_heal"
+            ],
+            "mob_misty_fox_fletrisseur": [
+              "skill_mob_support_weaken",
+              "skill_mob_feint"
+            ]
+          },
+          "description_fr": "Emprise totale. La Fissure tient le bois jusqu'à la dernière racine.",
+          "description_en": "Total hold. The Fissure holds the wood down to its last root.",
+          "_a_valider": "Proposition du 2026-11-17 : niveau conseille 36-40, monstres +10 niveaux, etoiles 30/70 entre 4 et 5 (comme les Egouts Difficile), deux competences de plus par espece. Mecanique du Gardien a l'echelle hard (plus de zones, annonce plus courte, ENRAGE)."
+        }
+      },
+      "_comment_difficulties": "Trois paliers comme les Egouts : fissure_1 = mode Histoire, fissure_2 = Normal, fissure_3 = Difficile (noms affiches par le client). Meme carte, memes etages et memes groupes : un palier decale le niveau des monstres (mob_level_offset), change le tirage d'etoiles et ajoute des competences (extra_skills). mechanic_scale = l'echelle de la mecanique du boss dans ce palier (entities/boss_mechanics.json), lue par server-combat ; aucun nombre de mecanique ici. Recompenses : config/rewards.json multiplier_families.dungeon_difficulty.<palier> (commun a tous les donjons ouverts), rien ici.",
+      "_comment_keys": "Cle unique key_bois_fletri pour fissure_2 et fissure_3, consommee a l'entree, une par joueur. Sources : items/loot_tables.json dungeon_key_drops (rang II : 1 % sur tout monstre de rang II du monde, decroissance au-dela ; 20 % sur le Gardien, un tirage par joueur) et la recette Runiste recipe_rune_key_bois_fletri. Valeurs reprises des deux premiers donjons, a valider.",
+      "floors": [
+        {
+          "floor": 1,
+          "name_fr": "Galeries de Racines",
+          "name_en": "Root Galleries",
+          "mob_level_range": [
+            26,
+            27
+          ],
+          "monster_groups": [
+            {
+              "id": "f1_harde",
+              "position": [
+                -107,
+                92
+              ],
+              "members": [
+                "mob_biche_fletrie",
+                "mob_blaireau_fletri",
+                "mob_blaireau_fletri",
+                "mob_misty_fox",
+                "mob_biche_fletrie",
+                "mob_blaireau_fletri",
+                "mob_misty_fox",
+                "mob_blaireau_fletri"
+              ]
+            },
+            {
+              "id": "f1_terriers",
+              "position": [
+                123,
+                87
+              ],
+              "members": [
+                "mob_blaireau_fletri",
+                "mob_blaireau_fletri",
+                "mob_misty_fox",
+                "mob_misty_fox",
+                "mob_biche_fletrie",
+                "mob_blaireau_fletri",
+                "mob_blaireau_fletri",
+                "mob_misty_fox"
+              ]
+            },
+            {
+              "id": "f1_brume",
+              "position": [
+                18,
+                -3
+              ],
+              "members": [
+                "mob_misty_fox",
+                "mob_misty_fox",
+                "mob_biche_fletrie",
+                "mob_blaireau_fletri",
+                "mob_blaireau_fletri",
+                "mob_misty_fox",
+                "mob_biche_fletrie",
+                "mob_blaireau_fletri"
+              ]
+            }
+          ],
+          "entry_position": [
+            -127,
+            -43
+          ]
+        },
+        {
+          "floor": 2,
+          "name_fr": "Sève Morte",
+          "name_en": "Dead Sap",
+          "mob_level_range": [
+            27,
+            28
+          ],
+          "monster_groups": [
+            {
+              "id": "f2_ramures",
+              "position": [
+                -107,
+                92
+              ],
+              "members": [
+                "mob_cerf_fletri",
+                "mob_biche_fletrie",
+                "mob_blaireau_fletri",
+                "mob_blaireau_fletri",
+                "mob_misty_fox",
+                "mob_misty_fox",
+                "mob_biche_fletrie",
+                "mob_blaireau_fletri"
+              ]
+            },
+            {
+              "id": "f2_harde",
+              "position": [
+                123,
+                87
+              ],
+              "members": [
+                "mob_cerf_fletri",
+                "mob_cerf_fletri",
+                "mob_biche_fletrie",
+                "mob_blaireau_fletri",
+                "mob_misty_fox",
+                "mob_misty_fox",
+                "mob_blaireau_fletri",
+                "mob_biche_fletrie"
+              ]
+            },
+            {
+              "id": "f2_guet",
+              "position": [
+                18,
+                -3
+              ],
+              "members": [
+                "mob_cerf_fletri",
+                "mob_misty_fox",
+                "mob_misty_fox",
+                "mob_biche_fletrie",
+                "mob_biche_fletrie",
+                "mob_blaireau_fletri",
+                "mob_blaireau_fletri",
+                "mob_blaireau_fletri"
+              ]
+            },
+            {
+              "id": "f2_souches",
+              "position": [
+                -207,
+                27
+              ],
+              "members": [
+                "mob_cerf_fletri",
+                "mob_biche_fletrie",
+                "mob_biche_fletrie",
+                "mob_blaireau_fletri",
+                "mob_blaireau_fletri",
+                "mob_misty_fox",
+                "mob_misty_fox",
+                "mob_misty_fox"
+              ]
+            }
+          ],
+          "entry_position": [
+            300,
+            24
+          ]
+        },
+        {
+          "floor": 3,
+          "name_fr": "Bois Obscur",
+          "name_en": "Darkwood",
+          "mob_level_range": [
+            28,
+            29
+          ],
+          "monster_groups": [
+            {
+              "id": "f3_rempart",
+              "position": [
+                -107,
+                92
+              ],
+              "members": [
+                "mob_cerf_fletri_rempart",
+                "mob_cerf_obscur",
+                "mob_cerf_obscur",
+                "mob_cerf_obscur_soigneur",
+                "mob_cerf_fletri",
+                "mob_biche_fletrie",
+                "mob_misty_fox",
+                "mob_blaireau_fletri"
+              ]
+            },
+            {
+              "id": "f3_seve",
+              "position": [
+                123,
+                87
+              ],
+              "members": [
+                "mob_biche_fletrie_seve",
+                "mob_cerf_obscur",
+                "mob_cerf_obscur",
+                "mob_cerf_fletri",
+                "mob_cerf_fletri",
+                "mob_misty_fox",
+                "mob_blaireau_fletri",
+                "mob_blaireau_fletri"
+              ]
+            },
+            {
+              "id": "f3_obscurs",
+              "position": [
+                18,
+                -3
+              ],
+              "members": [
+                "mob_cerf_obscur",
+                "mob_cerf_obscur",
+                "mob_cerf_obscur",
+                "mob_cerf_obscur_soigneur",
+                "mob_cerf_fletri",
+                "mob_biche_fletrie",
+                "mob_misty_fox",
+                "mob_misty_fox"
+              ]
+            },
+            {
+              "id": "f3_brume",
+              "position": [
+                -207,
+                27
+              ],
+              "members": [
+                "mob_misty_fox_fletrisseur",
+                "mob_cerf_obscur",
+                "mob_cerf_obscur",
+                "mob_cerf_obscur_soigneur",
+                "mob_cerf_fletri",
+                "mob_blaireau_fletri",
+                "mob_blaireau_fletri",
+                "mob_misty_fox"
+              ]
+            }
+          ],
+          "entry_position": [
+            300,
+            16
+          ]
+        },
+        {
+          "floor": 4,
+          "name_fr": "Tanière Fissurée",
+          "name_en": "Fissured Lair",
+          "mob_level_range": [
+            29,
+            30
+          ],
+          "monster_groups": [
+            {
+              "id": "f4_ourse",
+              "position": [
+                -107,
+                92
+              ],
+              "members": [
+                "mob_grande_ourse",
+                "mob_ours_fissure",
+                "mob_ours_fissure",
+                "mob_cerf_obscur",
+                "mob_cerf_obscur_soigneur",
+                "mob_cerf_fletri",
+                "mob_misty_fox",
+                "mob_blaireau_fletri"
+              ]
+            },
+            {
+              "id": "f4_rempart",
+              "position": [
+                123,
+                87
+              ],
+              "members": [
+                "mob_cerf_fletri_rempart",
+                "mob_ours_fissure",
+                "mob_ours_fissure",
+                "mob_cerf_obscur",
+                "mob_cerf_obscur_soigneur",
+                "mob_biche_fletrie",
+                "mob_misty_fox",
+                "mob_misty_fox"
+              ]
+            },
+            {
+              "id": "f4_seve",
+              "position": [
+                18,
+                -3
+              ],
+              "members": [
+                "mob_biche_fletrie_seve",
+                "mob_ours_fissure",
+                "mob_cerf_obscur",
+                "mob_cerf_obscur",
+                "mob_cerf_fletri",
+                "mob_cerf_fletri",
+                "mob_blaireau_fletri",
+                "mob_misty_fox"
+              ]
+            },
+            {
+              "id": "f4_brume",
+              "position": [
+                -207,
+                27
+              ],
+              "members": [
+                "mob_misty_fox_fletrisseur",
+                "mob_ours_fissure",
+                "mob_ours_fissure",
+                "mob_cerf_obscur",
+                "mob_cerf_obscur_soigneur",
+                "mob_cerf_fletri",
+                "mob_blaireau_fletri",
+                "mob_blaireau_fletri"
+              ]
+            },
+            {
+              "id": "f4_fissure",
+              "position": [
+                233,
+                37
+              ],
+              "members": [
+                "mob_ours_fissure",
+                "mob_ours_fissure",
+                "mob_ours_fissure",
+                "mob_cerf_obscur",
+                "mob_cerf_obscur",
+                "mob_cerf_obscur_soigneur",
+                "mob_cerf_fletri",
+                "mob_misty_fox"
+              ]
+            }
+          ],
+          "entry_position": [
+            -127,
+            -43
+          ]
+        },
+        {
+          "floor": 5,
+          "name_fr": "Cœur des Racines",
+          "name_en": "Heart of the Roots",
+          "mob_level_range": [
+            29,
+            30
+          ],
+          "is_boss_room": true,
+          "monster_groups": [
+            {
+              "id": "f5_boss_gardien",
+              "stars": 5,
+              "is_boss": true,
+              "position": [
+                144,
+                70
+              ],
+              "members": [
+                "boss_gardien_bois_fletri",
+                "mob_cerf_fletri_rempart",
+                "mob_biche_fletrie_seve",
+                "mob_misty_fox_fletrisseur"
+              ],
+              "_note": "Salle du boss a 4 (decision Charleston 2026-11-17) : le Gardien du Bois Fletri (boss.id, chef du groupe) et ses trois gardes propres au donjon : un TANK (Cerf Rempart), un SOIGNEUR qui le soigne (Biche de Seve) et un UTILITAIRE qui affaiblit les joueurs (Renard Fletrisseur : Vulnerable, Ralentissement). Les trois sont capturables. Pas de plantes ni d'ancres (decision du meme jour)."
+            }
+          ],
+          "entry_position": [
+            -236,
+            -20
+          ]
+        }
+      ],
+      "boss": {
+        "id": "boss_gardien_bois_fletri",
+        "name_fr": "Gardien du Bois Flétri",
+        "name_en": "Warden of the Withered Wood",
+        "mechanic_id": "zones_annoncees_gardien",
+        "_comment_mechanic": "Mecanique de boss (entities/boss_mechanics.json) : zones annoncees sans limite de portee, a l'echelle donnee par difficulties.<palier>.mechanic_scale. Server-combat l'attache au Gardien quand il apparait dans la zone d'etage du boss de ce donjon (dungeon_bois_fletri_f5_<palier>)."
+      },
+      "exit_zone": "village",
+      "exit_position": [
+        -580,
+        2360
+      ],
+      "_comment_exit_position": "PROVISOIRE (2026-11-17) : point de sortie au sud des arbres marques de la quete « La forêt qui dépérit » (world/zones.json, aire bois_fletri_arbres_marques, x -760..-400, y 2050..2300). La porte du donjon sur la carte de Havreden sera posee cote client plus tard : recopier ici le point d'arrivee devant elle quand elle existera, et ajouter un disque sans aggro (village no_aggro_areas) autour, comme pour les Egouts. Aujourd'hui aucun element de la carte n'ouvre ce donjon.",
+      "post_boss_zone": "dungeon_bois_fletri_fissure_room",
+      "post_boss_position": [
+        -236,
+        -20
+      ],
+      "_comment_post_boss": "Salle apres le boss, sans monstres (comme les deux premiers donjons). Pas encore de PNJ : la marque de la Fissure et le PNJ de sortie (service dungeon_exit, comme npc_wolf_den_exit) sont a creer avec la scene cote client et dans entities/npcs.json.",
+      "_comment_layout": "Scenes PROVISOIRES a creer cote client (res://scenes/world/donjons/bois_fletri/dungeon_bois_fletri_f1..f5.tscn + salle d'apres le boss) : contours, points d'arrivee et positions des groupes recopies de la Taniere des Loups en attendant les decors (prompts de decors deja donnes a Charleston)."
     }
   ],
   "dungeon_systems": {

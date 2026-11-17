@@ -41,6 +41,21 @@ Une règle de drop dont aucun palier déclaré ne demande la clé attend dans `_
 
 Toute nouvelle règle (durée de conservation après déconnexion, verrouillage) se décide avec Charleston avant d'être codée.
 
+## Mécanique de boss (catalogue, 2026-11-17)
+
+Un boss peut porter une mécanique du catalogue `entities/boss_mechanics.json` (source unique des nombres, par échelle : `story`, `normal`, `hard`, `tower_1` à `tower_4`). Le donjon ne dit que **laquelle** et **à quelle échelle** :
+
+```jsonc
+"boss": { "id": "boss_xxx", "mechanic_id": "zones_annoncees_gardien" },
+"difficulties": {
+  "fissure_1": { "mechanic_scale": "story", ... },
+  "fissure_2": { "mechanic_scale": "normal", ... },
+  "fissure_3": { "mechanic_scale": "hard", ... }
+}
+```
+
+Le combat (server-combat) attache la mécanique au boss quand il apparaît dans la zone d'étage du boss de ce donjon et de ce palier. Une mécanique inconnue, une échelle absente ou un paramètre manquant : le service de combat refuse de démarrer, et `scripts/dungeon_content.py` le refuse en CI. Premier donjon à mécanique : Racines du Bois Flétri (`dungeon_bois_fletri`, zones annoncées sans limite de portée).
+
 ## Où vit chaque donnée
 
 `world/dungeons.json` est la **seule** source des monstres d'un donjon. `world/zones.json` ne porte que les zones d'étage (porte d'entrée, contour, décor) et **ne redéclare jamais** de monstres.
