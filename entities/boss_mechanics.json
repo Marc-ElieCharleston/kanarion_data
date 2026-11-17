@@ -34,7 +34,7 @@
       "name_en": "Wrath of the Roots",
       "boss_of_origin": "boss_gardien_bois_fletri",
       "skill_id": "skill_mob_gardien_colere_racines",
-      "_comment": "Brique « zones annoncees » (decision Charleston 2026-11-17, Gardien du Bois Fletri, reutilisable par les gardiens de la Tour). Le boss annonce une ou plusieurs zones sur le camp adverse, SANS limite de portee : chaque forme est un motif de combat/targeting.json, centre sur un joueur tire au sort, et rogne a la moitie du plateau de ce camp. A la fin de l'annonce, toute unite du camp adverse encore sur une case annoncee perd hit_hp_fraction des PV de reference (degats bruts : ni armure, ni resistance, ni critique, ni multiplicateur de phase du boss ; les boucliers, la Vulnerabilite et les reductions de degats jouent). Regle de Charleston : il reste TOUJOURS au moins une case sure atteignable pour chaque joueur (une zone qui couvrirait un joueur sans case voisine libre hors zone, ou dont le deplacement ne sera pas pret avant l'impact, n'est pas tiree). L'annonce ne s'interrompt pas. Le boss ne lance rien d'autre pendant l'annonce. ENRAGE (Difficile et Tour 2 a 4) : apres enrage_after_seconds de combat, l'intervalle entre deux annonces est multiplie par enrage_interval_multiplier. Toutes les valeurs A VALIDER (proposition du 2026-11-17).",
+      "_comment": "Brique « zones annoncees » (decision Charleston 2026-11-17, Gardien du Bois Fletri, reutilisable par les gardiens de la Tour). Le boss annonce une ou plusieurs zones sur le camp adverse, SANS limite de portee : chaque forme est un motif de combat/targeting.json, centre sur un joueur tire au sort, et rogne a la moitie du plateau de ce camp. A la fin de l'annonce, toute unite du camp adverse encore sur une case annoncee prend un coup de hit_hp_fraction des PV de reference, REDUIT par sa defense exactement comme un coup de monstre normal (armure, reductions, blocage, boucliers, Vulnerabilite ; critique et phases du boss selon la regle commune) ; aucun plafond (decision Charleston 2026-11-17 : « les joueurs devront avoir des hp et de la defense »). Regle de Charleston : il reste TOUJOURS au moins une case sure atteignable pour chaque joueur (une zone qui couvrirait un joueur sans case voisine libre hors zone, ou dont le deplacement ne sera pas pret avant l'impact, n'est pas tiree). L'annonce ne s'interrompt pas. Le boss ne lance rien d'autre pendant l'annonce. ENRAGE (Difficile et Tour 2 a 4) : apres enrage_after_seconds de combat, l'intervalle entre deux annonces est multiplie par enrage_interval_multiplier. Toutes les valeurs A VALIDER (proposition du 2026-11-17).",
       "params": {
         "first_delay_seconds": {
           "_comment": "Secondes de combat avant la premiere annonce.",
@@ -87,23 +87,13 @@
           "tower_4": 3
         },
         "hit_hp_fraction": {
-          "_comment": "Part des PV de reference (hit_reference) perdue par qui reste dans une zone. Decision Charleston : Histoire ~50 %, Normal ~75 %, Difficile ~90 %.",
+          "_comment": "Puissance du coup, en part des PV de reference (hit_reference : PV d'un non-tank bien equipe du niveau du boss), AVANT defense. Le coup est ensuite reduit comme un coup de monstre normal (armure, reductions de degats, blocage, boucliers ; critique selon la regle commune des monstres) : un joueur avec plus de PV et de defense survit, un joueur mal equipe peut tomber (decision Charleston 2026-11-17, pas de plafond). Decision du 17/11 : Histoire ~50 %, Normal ~75 %, Difficile ~90 %.",
           "story": 0.5,
           "normal": 0.75,
           "hard": 0.9,
           "tower_1": 0.75,
           "tower_2": 0.9,
           "tower_3": 0.9,
-          "tower_4": 0.95
-        },
-        "max_target_hp_fraction": {
-          "_comment": "PLAFOND du coup de zone, en part des PV MAX DE LA CIBLE, applique APRES Vulnerabilite, reduction de degats et boucliers (decision Charleston 2026-11-17 : 95 % ; il ne doit jamais tuer d'un coup un joueur qui a tous ses PV). Dans ]0, 1[.",
-          "story": 0.95,
-          "normal": 0.95,
-          "hard": 0.95,
-          "tower_1": 0.95,
-          "tower_2": 0.95,
-          "tower_3": 0.95,
           "tower_4": 0.95
         },
         "shapes": {

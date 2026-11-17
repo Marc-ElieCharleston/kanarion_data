@@ -68,6 +68,8 @@ FAMILIAR_TO_MONSTER = {
     # (bete ailee fragile) en attendant une espece propre, a trancher par Charleston.
     "scarabee_cendre": "scarabee", "tortue_cendre": "tortue", "phalene_brume": "corbeau",
     "chouette_silence": "corbeau",
+    # Boss du Bois Fletri et Cerf Gardien, capturables (2026-11-17, « tous les monstres seront capturables »).
+    "gardien_bois_fletri": "cervide", "cerf_gardien": "cervide",
 }
 
 # Species passive per MONSTER species: (name_fr, name_en, {stat: weight}). Tier values below are

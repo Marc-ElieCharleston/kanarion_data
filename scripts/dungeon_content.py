@@ -302,7 +302,7 @@ def validate_floor_overrides(root, dungeon):
 MECHANIC_KEYS = {'type', 'name_fr', 'name_en', 'boss_of_origin', 'skill_id', 'params'}
 MECHANIC_PARAMS = {
     'telegraphed_zones': ('first_delay_seconds', 'interval_seconds', 'warning_seconds', 'zones_min',
-                          'zones_max', 'hit_hp_fraction', 'max_target_hp_fraction', 'shapes',
+                          'zones_max', 'hit_hp_fraction', 'shapes',
                           'enrage_after_seconds',
                           'enrage_interval_multiplier'),
 }
@@ -374,9 +374,6 @@ def validate_boss_mechanics(root, dungeons):
                 errors.append(f'{w}: zones_min / zones_max must be integers, 1 <= min <= max <= 6')
             if not (_is_num(v['hit_hp_fraction']) and 0 < v['hit_hp_fraction'] <= 1):
                 errors.append(f'{w}: hit_hp_fraction must be in ]0, 1]')
-            cap = v['max_target_hp_fraction']
-            if not (_is_num(cap) and 0 < cap < 1):
-                errors.append(f'{w}: max_target_hp_fraction must be in ]0, 1[ (a hit never kills a full-HP target)')
             sh = v['shapes']
             if not (isinstance(sh, list) and sh and all(x in patterns for x in sh)):
                 errors.append(f'{w}: shapes must be a non-empty list of combat/targeting.json patterns, got {sh!r}')
