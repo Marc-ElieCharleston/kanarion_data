@@ -63,8 +63,11 @@ FAMILIAR_TO_MONSTER = {
     "rat_rongeur": "rat", "loup_alpha": "loup", "louve_matriarche": "loup",
     # Rats a role des Egouts rendus capturables (2026-11-13) : famille a part, espece rat.
     "rat_cuirasse": "rat", "rat_assassin": "rat",
-    # Gardes du boss des Racines du Bois Fletri, capturables (2026-11-17) : famille a part, espece du monstre.
-    "cerf_rempart": "cervide", "biche_seve": "cervide", "renard_fletrisseur": "renard",
+    # Adds du boss des Racines du Bois Fletri, capturables (2026-11-17) : famille a part (sprite propre),
+    # espece du monstre. Aucune espece d'insecte vole ni de rapace : phalene et chouette sur corbeau
+    # (bete ailee fragile) en attendant une espece propre, a trancher par Charleston.
+    "scarabee_cendre": "scarabee", "tortue_cendre": "tortue", "phalene_brume": "corbeau",
+    "chouette_silence": "corbeau",
 }
 
 # Species passive per MONSTER species: (name_fr, name_en, {stat: weight}). Tier values below are

@@ -6071,7 +6071,7 @@
       ]
     },
     "bois_fletri": {
-      "_comment": "Donjon Racines du Bois Fletri (dungeon_bois_fletri, decision Charleston 2026-11-17). skill_mob_gardien_colere_racines n'est dans AUCUN kit : c'est le nom (barre d'incantation, journal) des zones annoncees de la mecanique de boss zones_annoncees_gardien (entities/boss_mechanics.json). Le serveur la lance lui-meme, avec les cases, la duree d'annonce et les degats de la mecanique selon le mode ; ses champs de puissance et d'incantation ici ne servent qu'a la charger (contrat du parseur). skill_mob_brume_vulnerante = l'affaiblissement du Renard Fletrisseur, l'utilitaire de la salle du boss. Textes (provisoire), brief copywriting du 2026-11-17.",
+      "_comment": "Donjon Racines du Bois Fletri (dungeon_bois_fletri, decision Charleston 2026-11-17). skill_mob_gardien_colere_racines n'est dans AUCUN kit : c'est le nom (barre d'incantation, journal) des zones annoncees de la mecanique de boss zones_annoncees_gardien (entities/boss_mechanics.json). Le serveur la lance lui-meme, avec les cases, la duree d'annonce et les degats de la mecanique selon le mode ; ses champs de puissance et d'incantation ici ne servent qu'a la charger (contrat du parseur). skill_mob_carapace_partagee = le partage de degats de la Tortue de cendre, add de la salle du boss (Transfert de Degats, effet existant). Textes (provisoire), brief copywriting du 2026-11-17.",
       "pool": [
         {
           "id": "skill_mob_gardien_colere_racines",
@@ -6111,46 +6111,48 @@
           "range": "board"
         },
         {
-          "id": "skill_mob_brume_vulnerante",
+          "id": "skill_mob_carapace_partagee",
           "source_scope": "MONSTER",
-          "name_fr": "Brume rongeuse",
-          "name_en": "Gnawing Mist",
+          "name_fr": "Carapace partagée",
+          "name_en": "Shared Shell",
           "tier": "advanced",
-          "target": "enemy",
-          "pattern": "single",
-          "damage_type": "magical",
-          "scaling_stat": "atk",
+          "target": "allies",
+          "pattern": "rect_3x3",
+          "damage_type": "none",
           "base_power": 0,
-          "scaling_percent": 60,
+          "scaling_percent": 0,
           "mana_cost": 0,
-          "cooldown": 10.0,
-          "cast_time": 1.5,
-          "vfx_type": "debuff_aura",
-          "description_fr": "Inflige 60% ATK dégâts magiques et rend la cible Vulnérable (2 charges, 8 s) : elle subit plus de dégâts de toutes sources.",
-          "description_en": "Deals 60% ATK magic damage and makes the target Vulnerable (2 stacks, 8 s): it takes more damage from every source.",
+          "cooldown": 16.0,
+          "cast_time": 2.0,
+          "range": 0,
+          "vfx_type": "shield",
+          "_range_note": "Centre sur la Tortue (regle nova de CLAUDE.md : range 0, sinon le plancher AOE la poserait a 5 cases).",
+          "description_fr": "La Tortue de cendre étend sa carapace sur les alliés autour d'elle : pendant 8 s, elle encaisse 35% des dégâts qu'ils subissent (Transfert de Dégâts).",
+          "description_en": "The Ash Tortoise spreads its shell over the allies around it: for 8 s, it takes 35% of the damage they suffer (Damage Transfer).",
           "tags": [
-            "damage",
-            "debuff",
-            "vulnerable",
-            "corrupted"
+            "buff",
+            "support",
+            "tank",
+            "damage_transfer"
           ],
           "effects": [
             {
-              "type": "debuff",
-              "stat": "vulnerable",
-              "stacks_to_apply": 2,
-              "duration": 8.0
+              "type": "buff",
+              "stat": "damage_transfer",
+              "value": 35,
+              "duration": 8.0,
+              "scaling": "caster_max_hp"
             }
           ],
           "targeting": {
             "selection_mode": "entity",
-            "valid_target_team": "enemy",
+            "valid_target_team": "ally",
             "requires_line_of_sight": false,
-            "bypasses_los": true,
-            "requires_entity_on_target_tile": true,
-            "aoe_pattern_id": "single"
+            "bypasses_los": false,
+            "requires_entity_on_target_tile": false,
+            "aoe_pattern_id": "rect_3x3"
           },
-          "range": 6
+          "_nouveau_sort": "SEUL sort de monstre cree pour les adds (2026-11-17) : aucun sort de monstre existant ne posait Transfert de Degats, l'effet que demande Charleston (« redirige ou partage sur elle les degats subis par ses allies »). Effet deja gere par le serveur (stats/status_effects.json damage_transfer, Room::apply_guardian_redirect), meme forme que le Don de Soi de la Sentinelle (skill_warrior_sentinel_selfless_vow, 35 %). Valeurs A VALIDER."
         }
       ]
     }

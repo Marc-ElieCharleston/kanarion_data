@@ -6875,35 +6875,32 @@
       "description_en": "Deals 120% ATK (+5%/lvl) and applies Bleed (1 stack, 6s) and Healing Reduction (1 stack, 6s)."
     },
     {
-      "id": "skill_familiar_sig_cerf_rempart",
+      "id": "skill_familiar_sig_scarabee_cendre",
       "source_scope": "FAMILIAR",
-      "name_fr": "Ramure-rempart",
-      "name_en": "Bulwark Antlers",
-      "signature_template": "cerf_rempart",
+      "name_fr": "Carapace de cendre",
+      "name_en": "Ash Shell",
+      "signature_template": "scarabee_cendre",
       "tier": "signature",
-      "target": "enemy",
+      "target": "ally",
       "pattern": "single",
-      "damage_type": "physical",
+      "damage_type": "none",
       "mana_cost": 5,
       "mana_cost_per_level": 1,
       "cooldown": 8.0,
       "percent_per_level": 5,
-      "scaling_stat": "atk",
-      "base_power": 0,
-      "scaling_percent": 70,
-      "vfx_type": "melee_slash",
+      "vfx_type": "shield",
       "effects": [
         {
-          "type": "debuff",
-          "stat": "taunt",
+          "type": "buff",
+          "stat": "cover",
           "duration": 6.0
         },
         {
           "type": "buff",
-          "stat": "armor_up",
-          "stacks_to_apply": 3,
-          "duration": 6.0,
-          "target": "self"
+          "stat": "shield_max_hp",
+          "value": 0,
+          "pct": 10,
+          "duration": 6.0
         }
       ],
       "tags": [
@@ -6914,22 +6911,71 @@
       "icon": "sig_resonant_guard",
       "targeting": {
         "selection_mode": "entity",
-        "valid_target_team": "enemy",
-        "requires_line_of_sight": true,
+        "valid_target_team": "ally",
+        "requires_line_of_sight": false,
         "bypasses_los": false,
-        "requires_entity_on_target_tile": true,
+        "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "single"
       },
-      "_note": "Signature du Cerf Rempart familier (decision Charleston 2026-11-17 : chaque nouvelle famille a SA signature), valeurs A VALIDER. Effets deja geres (Provocation de skill_familiar_sig_rat_cuirasse, Armure + sur soi comme la Ramure de ronces du Cerf Fletri). Icone provisoire sig_resonant_guard (a peindre, demande a ajouter dans art_requests cote client). Textes (provisoire).",
-      "description_fr": "Inflige 70% ATQ (+5%/niv), applique Provocation (6s) à la cible et se confère Armure + (3 charges, 6s).",
-      "description_en": "Deals 70% ATK (+5%/lvl), applies Taunt (6s) to the target and grants itself Armor Up (3 stacks, 6s)."
+      "_note": "Signature du Scarabee de cendre familier (decision Charleston 2026-11-17 : chaque nouvelle famille a SA signature, qui rappelle le monstre), valeurs A VALIDER. Effets deja geres (Couverture de skill_familiar_sig_resonant_guard, Bouclier en % des PV de l'Egide). Icone a peindre (prompt dans le compte rendu du 2026-11-17), icone provisoire sig_resonant_guard. Textes (provisoire).",
+      "description_fr": "Protège un allié : Couverture (6s, il intercepte la prochaine attaque mono-cible qui le vise) et Bouclier de 10% des PV max (6s).",
+      "description_en": "Protects an ally: Cover (6s, it intercepts the next single-target attack aimed at them) and a Shield of 10% of max HP (6s)."
     },
     {
-      "id": "skill_familiar_sig_biche_seve",
+      "id": "skill_familiar_sig_tortue_cendre",
       "source_scope": "FAMILIAR",
-      "name_fr": "Sève nourricière",
-      "name_en": "Nourishing Sap",
-      "signature_template": "biche_seve",
+      "name_fr": "Dos de cendre",
+      "name_en": "Ash Back",
+      "signature_template": "tortue_cendre",
+      "tier": "signature",
+      "target": "ally",
+      "pattern": "single",
+      "damage_type": "none",
+      "mana_cost": 5,
+      "mana_cost_per_level": 1,
+      "cooldown": 8.0,
+      "percent_per_level": 5,
+      "vfx_type": "shield_aura",
+      "effects": [
+        {
+          "type": "buff",
+          "stat": "damage_transfer",
+          "value": 30,
+          "duration": 6.0,
+          "scaling": "caster_max_hp"
+        },
+        {
+          "type": "buff",
+          "stat": "damage_reduction_up",
+          "stacks_to_apply": 2,
+          "duration": 6.0,
+          "target": "self"
+        }
+      ],
+      "tags": [
+        "signature",
+        "familiar"
+      ],
+      "is_signature": true,
+      "icon": "sig_stone_guard",
+      "targeting": {
+        "selection_mode": "entity",
+        "valid_target_team": "ally",
+        "requires_line_of_sight": false,
+        "bypasses_los": false,
+        "requires_entity_on_target_tile": false,
+        "aoe_pattern_id": "single"
+      },
+      "_note": "Signature du Tortue de cendre familier (decision Charleston 2026-11-17 : chaque nouvelle famille a SA signature, qui rappelle le monstre), valeurs A VALIDER. Effets deja geres (Transfert de Degats du Guardian joueur, Reduction Degats + sur soi de skill_familiar_sig_rat_cuirasse). Icone a peindre (prompt dans le compte rendu du 2026-11-17), icone provisoire sig_stone_guard. Textes (provisoire).",
+      "description_fr": "Prend sur elle 30% des dégâts subis par un allié (Transfert de Dégâts, 6s) et se confère Réduction Dégâts + (2 charges, 6s).",
+      "description_en": "Takes 30% of the damage an ally suffers (Damage Transfer, 6s) and grants itself Damage Reduction Up (2 stacks, 6s)."
+    },
+    {
+      "id": "skill_familiar_sig_phalene_brume",
+      "source_scope": "FAMILIAR",
+      "name_fr": "Poudre d'écailles",
+      "name_en": "Scale Dust",
+      "signature_template": "phalene_brume",
       "tier": "signature",
       "target": "ally",
       "pattern": "single",
@@ -6939,25 +6985,25 @@
       "cooldown": 8.0,
       "percent_per_level": 5,
       "heal_scaling_stat": "mag",
-      "heal_scaling_percent": 65,
+      "heal_scaling_percent": 60,
       "vfx_type": "heal",
       "effects": [
+        {
+          "type": "utility",
+          "stat": "cleanse",
+          "value": 1
+        },
         {
           "type": "buff",
           "stat": "heal_over_time",
           "stacks_to_apply": 1,
           "duration": 6.0
-        },
-        {
-          "type": "buff",
-          "stat": "armor_up",
-          "stacks_to_apply": 2,
-          "duration": 6.0
         }
       ],
       "tags": [
         "signature",
-        "familiar"
+        "familiar",
+        "cleanse"
       ],
       "is_signature": true,
       "icon": "sig_swarm_heal",
@@ -6969,40 +7015,38 @@
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "single"
       },
-      "_note": "Signature du Biche de Seve familier (decision Charleston 2026-11-17 : chaque nouvelle famille a SA signature), valeurs A VALIDER. Effets deja geres (soin + Soin Continu de skill_familiar_sig_rat_soigneur, Armure + de skill_familiar_sig_cerf_fletri). Icone provisoire sig_swarm_heal (a peindre, demande a ajouter dans art_requests cote client). Textes (provisoire).",
-      "description_fr": "Soigne un allié de 65% MAG (+5%/niv), lui applique Soin Continu (1 charge, 6s) et Armure + (2 charges, 6s).",
-      "description_en": "Heals an ally for 65% MAG (+5%/lvl) and applies Heal over Time (1 stack, 6s) and Armor Up (2 stacks, 6s)."
+      "_note": "Signature du Phalene de brume familier (decision Charleston 2026-11-17 : chaque nouvelle famille a SA signature, qui rappelle le monstre), valeurs A VALIDER. Effets deja geres (soin et Soin Continu de skill_familiar_sig_rat_soigneur, nettoyage de skill_familiar_sig_biche_fletrie). Icone a peindre (prompt dans le compte rendu du 2026-11-17), icone provisoire sig_swarm_heal. Textes (provisoire).",
+      "description_fr": "Soigne un allié de 60% MAG (+5%/niv), retire ses effets néfastes et applique Soin Continu (1 charge, 6s).",
+      "description_en": "Heals an ally for 60% MAG (+5%/lvl), removes their harmful effects and applies Heal over Time (1 stack, 6s)."
     },
     {
-      "id": "skill_familiar_sig_renard_fletrisseur",
+      "id": "skill_familiar_sig_chouette_silence",
       "source_scope": "FAMILIAR",
-      "name_fr": "Brume flétrissante",
-      "name_en": "Withering Mist",
-      "signature_template": "renard_fletrisseur",
+      "name_fr": "Regard du silence",
+      "name_en": "Hushing Gaze",
+      "signature_template": "chouette_silence",
       "tier": "signature",
       "target": "enemy",
       "pattern": "single",
-      "damage_type": "physical",
+      "damage_type": "none",
       "mana_cost": 5,
       "mana_cost_per_level": 1,
-      "cooldown": 8.0,
+      "cooldown": 10.0,
       "percent_per_level": 5,
-      "scaling_stat": "atk",
-      "base_power": 0,
-      "scaling_percent": 60,
       "vfx_type": "debuff_aura",
       "effects": [
         {
           "type": "debuff",
-          "stat": "vulnerable",
-          "stacks_to_apply": 2,
-          "duration": 6.0
+          "stat": "silence",
+          "duration": 3.0
         },
         {
-          "type": "debuff",
-          "stat": "slow",
-          "stacks_to_apply": 1,
-          "duration": 6.0
+          "type": "buff",
+          "stat": "shield_max_hp",
+          "value": 0,
+          "pct": 10,
+          "duration": 6.0,
+          "target": "self"
         }
       ],
       "tags": [
@@ -7019,9 +7063,9 @@
         "requires_entity_on_target_tile": true,
         "aoe_pattern_id": "single"
       },
-      "_note": "Signature du Renard Fletrisseur familier (decision Charleston 2026-11-17 : chaque nouvelle famille a SA signature), valeurs A VALIDER. Effets deja geres (Vulnerable de skill_familiar_sig_shadow_mark, Ralentissement des signatures de controle). Icone provisoire sig_shadow_mark (a peindre, demande a ajouter dans art_requests cote client). Textes (provisoire).",
-      "description_fr": "Inflige 60% ATQ (+5%/niv) et applique Vulnérable (2 charges, 6s) et Ralentissement (1 charge, 6s).",
-      "description_en": "Deals 60% ATK (+5%/lvl) and applies Vulnerable (2 stacks, 6s) and Slow (1 stack, 6s)."
+      "_note": "Signature du Chouette du silence familier (decision Charleston 2026-11-17 : chaque nouvelle famille a SA signature, qui rappelle le monstre), valeurs A VALIDER. Effets deja geres (Silence des sorts de controle (gros controle, 3 s sous le plafond de 4 s), Bouclier en % des PV max sur soi). Icone a peindre (prompt dans le compte rendu du 2026-11-17), icone provisoire sig_shadow_mark. Textes (provisoire).",
+      "description_fr": "Réduit la cible au Silence (3s) et se confère un Bouclier de 10% des PV max (6s).",
+      "description_en": "Silences the target (3s) and grants itself a Shield of 10% of max HP (6s)."
     },
     {
       "id": "skill_familiar_sig_scarabee",

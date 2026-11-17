@@ -2506,7 +2506,8 @@
           "4": 40,
           "5": 30
         },
-        "_comment": "Modele des Egouts et de la Taniere : groupes fixes de 8, etoiles tirees 30/40/30 %, groupe du boss a etoiles fixes. Etages 1-2 : faune fletrie de l'aire mz_bois_fletri_25_35 (Biche Fletrie, Blaireau Fletri, Renard Brumeux, puis Cerf Fletri). Etages 3-4 : Cerf Obscur, Cerf Gardien, Ours Fissure, Grande Ourse (elite) ; les trois gardes du boss (Cerf Rempart, Biche de Seve, Renard Fletrisseur, propres au donjon et capturables) menent un groupe chacun aux etages 3 et 4, pour qu'on les rencontre et qu'on puisse les farmer avant la salle du boss. Etage 5 : le boss et ses trois gardes."
+        "_comment": "Modele des Egouts et de la Taniere : groupes fixes, etoiles tirees 30/40/30 %, groupe du boss a etoiles fixes. Etages 1-2 : faune fletrie de l'aire mz_bois_fletri_25_35 (Biche Fletrie, Blaireau Fletri, Renard Brumeux, puis Cerf Fletri), sans les creatures du boss. Etage 3 : 4 groupes de 9 dont 3 creatures du boss (1 monstre sur 3), etage 4 : 5 groupes de 8 dont 4 creatures du boss (2 sur 4), etage 5 : le boss et ses 4 adds (Scarabee de cendre, Tortue de cendre, Phalene de brume, Chouette du silence), decision Charleston 2026-11-17.",
+        "_comment_tirage": "TIRAGE : le systeme des donjons ouverts (Egouts, Taniere) ne tire PAS au hasard la composition d'un groupe : chaque groupe a une liste de membres fixe (members), seule son etoile est tiree a chaque apparition. La variete vient de plusieurs groupes fixes de compositions differentes par etage, que le joueur choisit d'engager. La repartition voulue (1 creature sur 3 a l'etage 3, 2 sur 4 a l'etage 4, tirees parmi les 4) est donc exprimee au plus pres par des groupes fixes : chaque groupe de l'etage 3 compte 3 creatures sur 9 (combinaisons toutes differentes, chaque creature dans 3 groupes sur 4), chaque groupe de l'etage 4 en compte 4 sur 8 (chaque creature dans 4 ou 5 groupes sur 5). Un vrai tirage par emplacement demanderait du code presence (non fait)."
       },
       "difficulties": {
         "fissure_1": {
@@ -2561,14 +2562,17 @@
             "mob_grande_ourse": [
               "skill_mob_support_bloodlust"
             ],
-            "mob_cerf_fletri_rempart": [
+            "mob_scarabee_cendre": [
               "skill_mob_tank_shield_wall"
             ],
-            "mob_biche_fletrie_seve": [
+            "mob_tortue_cendre": [
+              "skill_mob_old_hide"
+            ],
+            "mob_phalene_brume": [
               "skill_mob_support_shield_barrier"
             ],
-            "mob_misty_fox_fletrisseur": [
-              "skill_mob_support_weaken"
+            "mob_chouette_silence": [
+              "skill_mob_controller_slow"
             ]
           },
           "description_fr": "Emprise forte. Les racines se sont durcies : chaque bête a appris un tour de plus.",
@@ -2621,17 +2625,21 @@
               "skill_mob_support_bloodlust",
               "skill_mob_support_weaken"
             ],
-            "mob_cerf_fletri_rempart": [
+            "mob_scarabee_cendre": [
               "skill_mob_tank_shield_wall",
+              "skill_mob_brute_cleave"
+            ],
+            "mob_tortue_cendre": [
+              "skill_mob_old_hide",
               "skill_mob_tank_defensive_stance"
             ],
-            "mob_biche_fletrie_seve": [
+            "mob_phalene_brume": [
               "skill_mob_support_shield_barrier",
-              "skill_mob_healer_group_heal"
+              "skill_mob_healer_heal"
             ],
-            "mob_misty_fox_fletrisseur": [
-              "skill_mob_support_weaken",
-              "skill_mob_feint"
+            "mob_chouette_silence": [
+              "skill_mob_controller_slow",
+              "skill_mob_controller_shackle"
             ]
           },
           "description_fr": "Emprise totale. La Fissure tient le bois jusqu'à la dernière racine.",
@@ -2801,69 +2809,73 @@
           ],
           "monster_groups": [
             {
-              "id": "f3_rempart",
+              "id": "f3_obscurs",
               "position": [
                 -107,
                 92
               ],
               "members": [
-                "mob_cerf_fletri_rempart",
                 "mob_cerf_obscur",
+                "mob_scarabee_cendre",
                 "mob_cerf_obscur",
                 "mob_cerf_obscur_soigneur",
                 "mob_cerf_fletri",
+                "mob_phalene_brume",
                 "mob_biche_fletrie",
                 "mob_misty_fox",
-                "mob_blaireau_fletri"
+                "mob_tortue_cendre"
               ]
             },
             {
-              "id": "f3_seve",
+              "id": "f3_ramures",
               "position": [
                 123,
                 87
               ],
               "members": [
-                "mob_biche_fletrie_seve",
-                "mob_cerf_obscur",
-                "mob_cerf_obscur",
                 "mob_cerf_fletri",
-                "mob_cerf_fletri",
-                "mob_misty_fox",
+                "mob_tortue_cendre",
+                "mob_cerf_obscur",
+                "mob_cerf_obscur_soigneur",
+                "mob_chouette_silence",
                 "mob_blaireau_fletri",
-                "mob_blaireau_fletri"
+                "mob_blaireau_fletri",
+                "mob_misty_fox",
+                "mob_scarabee_cendre"
               ]
             },
             {
-              "id": "f3_obscurs",
+              "id": "f3_brume",
               "position": [
                 18,
                 -3
               ],
               "members": [
                 "mob_cerf_obscur",
+                "mob_phalene_brume",
                 "mob_cerf_obscur",
-                "mob_cerf_obscur",
-                "mob_cerf_obscur_soigneur",
+                "mob_chouette_silence",
                 "mob_cerf_fletri",
+                "mob_cerf_obscur_soigneur",
+                "mob_tortue_cendre",
                 "mob_biche_fletrie",
-                "mob_misty_fox",
                 "mob_misty_fox"
               ]
             },
             {
-              "id": "f3_brume",
+              "id": "f3_silence",
               "position": [
                 -207,
                 27
               ],
               "members": [
-                "mob_misty_fox_fletrisseur",
-                "mob_cerf_obscur",
-                "mob_cerf_obscur",
                 "mob_cerf_obscur_soigneur",
+                "mob_scarabee_cendre",
+                "mob_cerf_obscur",
+                "mob_cerf_obscur",
+                "mob_chouette_silence",
                 "mob_cerf_fletri",
-                "mob_blaireau_fletri",
+                "mob_phalene_brume",
                 "mob_blaireau_fletri",
                 "mob_misty_fox"
               ]
@@ -2891,64 +2903,64 @@
               ],
               "members": [
                 "mob_grande_ourse",
+                "mob_scarabee_cendre",
+                "mob_tortue_cendre",
                 "mob_ours_fissure",
-                "mob_ours_fissure",
+                "mob_phalene_brume",
+                "mob_chouette_silence",
                 "mob_cerf_obscur",
-                "mob_cerf_obscur_soigneur",
-                "mob_cerf_fletri",
-                "mob_misty_fox",
-                "mob_blaireau_fletri"
+                "mob_ours_fissure"
               ]
             },
             {
-              "id": "f4_rempart",
+              "id": "f4_carapaces",
               "position": [
                 123,
                 87
               ],
               "members": [
-                "mob_cerf_fletri_rempart",
                 "mob_ours_fissure",
-                "mob_ours_fissure",
+                "mob_scarabee_cendre",
+                "mob_scarabee_cendre",
                 "mob_cerf_obscur",
+                "mob_phalene_brume",
+                "mob_tortue_cendre",
                 "mob_cerf_obscur_soigneur",
-                "mob_biche_fletrie",
-                "mob_misty_fox",
-                "mob_misty_fox"
+                "mob_ours_fissure"
               ]
             },
             {
-              "id": "f4_seve",
+              "id": "f4_tortues",
               "position": [
                 18,
                 -3
               ],
               "members": [
-                "mob_biche_fletrie_seve",
                 "mob_ours_fissure",
+                "mob_tortue_cendre",
+                "mob_tortue_cendre",
                 "mob_cerf_obscur",
-                "mob_cerf_obscur",
-                "mob_cerf_fletri",
-                "mob_cerf_fletri",
-                "mob_blaireau_fletri",
-                "mob_misty_fox"
+                "mob_chouette_silence",
+                "mob_phalene_brume",
+                "mob_ours_fissure",
+                "mob_cerf_obscur_soigneur"
               ]
             },
             {
-              "id": "f4_brume",
+              "id": "f4_silence",
               "position": [
                 -207,
                 27
               ],
               "members": [
-                "mob_misty_fox_fletrisseur",
-                "mob_ours_fissure",
-                "mob_ours_fissure",
                 "mob_cerf_obscur",
-                "mob_cerf_obscur_soigneur",
-                "mob_cerf_fletri",
-                "mob_blaireau_fletri",
-                "mob_blaireau_fletri"
+                "mob_chouette_silence",
+                "mob_scarabee_cendre",
+                "mob_ours_fissure",
+                "mob_chouette_silence",
+                "mob_phalene_brume",
+                "mob_ours_fissure",
+                "mob_cerf_obscur_soigneur"
               ]
             },
             {
@@ -2959,13 +2971,13 @@
               ],
               "members": [
                 "mob_ours_fissure",
+                "mob_phalene_brume",
+                "mob_tortue_cendre",
                 "mob_ours_fissure",
-                "mob_ours_fissure",
+                "mob_scarabee_cendre",
+                "mob_chouette_silence",
                 "mob_cerf_obscur",
-                "mob_cerf_obscur",
-                "mob_cerf_obscur_soigneur",
-                "mob_cerf_fletri",
-                "mob_misty_fox"
+                "mob_cerf_obscur_soigneur"
               ]
             }
           ],
@@ -2994,11 +3006,12 @@
               ],
               "members": [
                 "boss_gardien_bois_fletri",
-                "mob_cerf_fletri_rempart",
-                "mob_biche_fletrie_seve",
-                "mob_misty_fox_fletrisseur"
+                "mob_scarabee_cendre",
+                "mob_tortue_cendre",
+                "mob_phalene_brume",
+                "mob_chouette_silence"
               ],
-              "_note": "Salle du boss a 4 (decision Charleston 2026-11-17) : le Gardien du Bois Fletri (boss.id, chef du groupe) et ses trois gardes propres au donjon : un TANK (Cerf Rempart), un SOIGNEUR qui le soigne (Biche de Seve) et un UTILITAIRE qui affaiblit les joueurs (Renard Fletrisseur : Vulnerable, Ralentissement). Les trois sont capturables. Pas de plantes ni d'ancres (decision du meme jour)."
+              "_note": "Salle du boss a 5 (decisions Charleston 2026-11-17) : le Gardien du Bois Fletri (boss.id, chef du groupe) et ses quatre adds, creatures propres au donjon et capturables : Scarabee de cendre (tank semi-DPS), Tortue de cendre (tank qui prend sur elle une part des degats de ses allies, Transfert de Degats), Phalene de brume (soigneur) et Chouette du silence (boucliers, Silence court ; a tuer en premier). Pas de plantes ni d'ancres."
             }
           ],
           "entry_position": [
