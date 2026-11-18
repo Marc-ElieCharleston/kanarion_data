@@ -8119,7 +8119,21 @@
         18,
         40
       ],
-      "species": "cervide"
+      "species": "cervide",
+      "familiar_capture": {
+        "enabled": true,
+        "family": "cerf_gardien",
+        "drop_chance": 0.02,
+        "allowed_roles": [
+          "heal",
+          "utilitaire"
+        ],
+        "signature_template": "cerf_gardien",
+        "signature_name_fr": "Veille du Cerf Gardien",
+        "signature_name_en": "Warden Stag's Watch",
+        "growth_tier": "uncommon",
+        "_note_capture": "Capturable depuis le 2026-11-17 (Charleston : « tous les monstres seront capturables » ; c'etait le seul monstre du donjon Racines du Bois Fletri sans capture). 2 %, comme les autres cervides fletris (Biche Fletrie, Cerf Fletri). Roles heal + utilitaire (soigneur). A VALIDER. Textes (provisoire)."
+      }
     },
     {
       "id": "mob_rat_soigneur",
@@ -10100,7 +10114,7 @@
     {
       "id": "boss_gardien_bois_fletri",
       "name_fr": "Gardien du Bois Flétri",
-      "name_en": "Warden of the Withered Wood",
+      "name_en": "Withered Woods Guardian",
       "category": "beast",
       "base_level": 35,
       "danger_level": 10,
@@ -10123,9 +10137,10 @@
       "skills": [
         "skill_mob_gore",
         "skill_mob_gardien_coup_bouclier",
-        "skill_mob_withered_roots",
         "skill_mob_rift_bloom"
       ],
+      "_hp_note": "2026-11-17 : PV du palier boss (x4) sans multiplicateur propre ; le x2.0 de per_mob_override propose d'abord rendait la salle imbattable au banc (0 victoire dans les trois modes). Les PV par mode vivent dans world/dungeons.json difficulties.<palier>.floor_overrides.5.",
+      "_kit_note": "2026-11-17 (decision Charleston, donjon Racines du Bois Fletri) : Racines fletries (skill_mob_withered_roots, une rangee annoncee) retiree du kit : les zones annoncees du Gardien viennent maintenant de sa mecanique de boss (entities/boss_mechanics.json zones_annoncees_gardien, lue par server-combat), sans limite de portee, avec des valeurs par mode. Garder les deux ferait tomber deux annonces de rangee concurrentes. La competence reste en data (monstres tank 60+, config/monster_ai.json tank_roots_60).",
       "threat_tier": "boss",
       "aggro_type": "aggressive",
       "stat_archetype": "guardian",
@@ -10136,7 +10151,247 @@
         35
       ],
       "species": "cervide",
-      "stage": "ancient"
+      "stage": "ancient",
+      "familiar_capture": {
+        "enabled": true,
+        "family": "gardien_bois_fletri",
+        "drop_chance": 0.01,
+        "allowed_roles": [
+          "attaque",
+          "tank"
+        ],
+        "signature_template": "gardien_bois_fletri",
+        "signature_name_fr": "Colère des racines",
+        "signature_name_en": "Wrath of the Roots",
+        "growth_tier": "rare",
+        "_note_boss_capture": "Boss capturable (decision Charleston 2026-11-17 : « tous les monstres seront capturables »). 1 % par joueur, comme le Rongeur et l'Alpha, plus bas que ses adds (4 %) : un seul Gardien par descente complete, il reste la prise rare du donjon. Roles attaque + tank (regle des boss). Familier de boss : boss_stat_multiplier 1.3 (entities/familiars.json). A VALIDER."
+      }
+    },
+    {
+      "id": "mob_scarabee_cendre",
+      "name_fr": "Scarabée de cendre",
+      "name_en": "Ash Scarab",
+      "category": "beast",
+      "base_level": 28,
+      "danger_level": 4,
+      "tags": [
+        "beast",
+        "corrupted",
+        "melee",
+        "tank",
+        "elite"
+      ],
+      "ai_role": "tank",
+      "gold_weight": 1.3,
+      "base_stats": {
+        "hp": 980,
+        "atk": 38,
+        "def": 70,
+        "magic_resist": 30,
+        "mp": 120
+      },
+      "base_xp": 300,
+      "skills": [
+        "skill_mob_tank_taunt_roar",
+        "skill_mob_tank_shield_bash",
+        "skill_mob_slam_crush"
+      ],
+      "threat_tier": "elite",
+      "aggro_type": "aggressive",
+      "stat_archetype": "brute",
+      "rarity": "normal",
+      "roster_status": "active",
+      "level_range": [
+        26,
+        40
+      ],
+      "species": "scarabee",
+      "stage": "corrupted",
+      "familiar_capture": {
+        "enabled": true,
+        "family": "scarabee_cendre",
+        "drop_chance": 0.04,
+        "_override_reason": "Decision Charleston 2026-11-17 : creature propre au donjon Racines du Bois Fletri, nouvelle famille de familier (sprite propre). Taux PAR monstre tue et par joueur (combat_host roll_capture_traces ; le multiplicateur d'etoiles encounter_star_trace_multiplier n'est lu par aucun service). 4 % : une des 4 creatures de l'etage 3 (1 sur 3) et de l'etage 4 (2 sur 4), et garde du boss : environ 2 a 3 kills par descente complete, soit environ 10 % d'empreinte par joueur et par descente ; plus rare que les rats a role des Egouts (5 %), le donjon etant de rang II. A VALIDER.",
+        "allowed_roles": [
+          "tank",
+          "attaque"
+        ],
+        "signature_template": "scarabee_cendre",
+        "signature_name_fr": "Carapace de cendre",
+        "signature_name_en": "Ash Carapace",
+        "growth_tier": "uncommon"
+      },
+      "_comment": "Add du Gardien du Bois Fletri (decision Charleston 2026-11-17) : TANK SEMI-DPS, il encaisse mais tape correctement. Stats du modele : archetype brute (frappe) au palier ELITE (decision Charleston 17/11 : sans cela, l'identite scarabee (PV x0,6) lui donnait moins de PV qu'un Blaireau Fletri), identite d'espece scarabee (armure haute, PV bas). Kit existant : Rugissement Provocateur (provoque une ligne), Bouclier Ecrasant (frappe + etourdissement 1,5 s), Ecrasement (frappe + Ralentissement). Etages 3 et 4 et salle du boss. Sprite PixelLab propre (character 085faab7-ca33-4135-b2c3-a59e33baeaf9, integration cote client par Charleston).",
+      "_texts": "Textes du copywriting de Charleston (retour du 17/11) integres le 17/11."
+    },
+    {
+      "id": "mob_tortue_cendre",
+      "name_fr": "Tortue de cendre",
+      "name_en": "Ash Tortoise",
+      "category": "beast",
+      "base_level": 28,
+      "danger_level": 4,
+      "tags": [
+        "beast",
+        "corrupted",
+        "melee",
+        "tank"
+      ],
+      "ai_role": "tank",
+      "gold_weight": 1.3,
+      "base_stats": {
+        "hp": 1500,
+        "atk": 20,
+        "def": 110,
+        "magic_resist": 30,
+        "mp": 120
+      },
+      "base_xp": 300,
+      "skills": [
+        "skill_mob_carapace_partagee",
+        "skill_mob_tank_shield_wall",
+        "skill_mob_tank_slam"
+      ],
+      "threat_tier": "tough",
+      "aggro_type": "aggressive",
+      "stat_archetype": "tank",
+      "rarity": "normal",
+      "roster_status": "active",
+      "level_range": [
+        26,
+        40
+      ],
+      "species": "tortue",
+      "stage": "corrupted",
+      "familiar_capture": {
+        "enabled": true,
+        "family": "tortue_cendre",
+        "drop_chance": 0.04,
+        "_override_reason": "Decision Charleston 2026-11-17 : creature propre au donjon Racines du Bois Fletri, nouvelle famille de familier (sprite propre). Taux PAR monstre tue et par joueur (combat_host roll_capture_traces ; le multiplicateur d'etoiles encounter_star_trace_multiplier n'est lu par aucun service). 4 %, meme raisonnement que le Scarabee de cendre. A VALIDER.",
+        "allowed_roles": [
+          "tank",
+          "utilitaire"
+        ],
+        "signature_template": "tortue_cendre",
+        "signature_name_fr": "Dos de cendre",
+        "signature_name_en": "Ashen Back",
+        "growth_tier": "uncommon"
+      },
+      "_comment": "Add du Gardien du Bois Fletri (decision Charleston 2026-11-17) : TANK QUI ABSORBE LES DEGATS DE SES ALLIES. Effet serveur existant Transfert de Degats (damage_transfer, Room::apply_guardian_redirect, celui du Guardian joueur) pose sur les allies autour d'elle par skill_mob_carapace_partagee (seule competence de monstre creee pour ce donjon : aucun sort de monstre ne posait cet effet). Stats du modele : archetype tank au palier coriace, identite d'espece tortue (PV et armure tres hauts, attaque basse) : plus resistante et frappe moins que le Scarabee. Plus lente : aucun reglage de deplacement par monstre n'existe (monster_ai.json par role), non distinguee aujourd'hui. Sprite PixelLab propre (6f913e5e-3fd8-485c-a807-9c11007aa44d).",
+      "_texts": "Textes du copywriting de Charleston (retour du 17/11) integres le 17/11."
+    },
+    {
+      "id": "mob_phalene_brume",
+      "name_fr": "Phalène de brume",
+      "name_en": "Mist Moth",
+      "category": "beast",
+      "base_level": 28,
+      "danger_level": 4,
+      "tags": [
+        "beast",
+        "corrupted",
+        "support",
+        "healer"
+      ],
+      "ai_role": "healer",
+      "gold_weight": 1.2,
+      "base_stats": {
+        "hp": 520,
+        "atk": 22,
+        "mag": 30,
+        "def": 26,
+        "magic_resist": 46,
+        "mp": 180
+      },
+      "base_xp": 260,
+      "skills": [
+        "skill_mob_healer_mend",
+        "skill_mob_healer_group_heal",
+        "skill_mob_healer_dispel"
+      ],
+      "threat_tier": "standard",
+      "aggro_type": "aggressive",
+      "stat_archetype": "healer",
+      "rarity": "normal",
+      "roster_status": "active",
+      "level_range": [
+        26,
+        40
+      ],
+      "species": "corbeau",
+      "stage": "corrupted",
+      "familiar_capture": {
+        "enabled": true,
+        "family": "phalene_brume",
+        "drop_chance": 0.04,
+        "_override_reason": "Decision Charleston 2026-11-17 : creature propre au donjon Racines du Bois Fletri, nouvelle famille de familier (sprite propre). Taux PAR monstre tue et par joueur (combat_host roll_capture_traces ; le multiplicateur d'etoiles encounter_star_trace_multiplier n'est lu par aucun service). 4 %, meme raisonnement que le Scarabee de cendre. A VALIDER.",
+        "allowed_roles": [
+          "heal",
+          "utilitaire"
+        ],
+        "signature_template": "phalene_brume",
+        "signature_name_fr": "Poudre d'écailles",
+        "signature_name_en": "Scale Dust",
+        "growth_tier": "uncommon"
+      },
+      "_comment": "Add du Gardien du Bois Fletri (decision Charleston 2026-11-17) : le SOIGNEUR (soigne le Gardien et les autres adds). FRAGILE : archetype healer au palier standard. Espece de monstre : aucune espece d'insecte vole dans entities/monster_species.json ; corbeau (identite d'une bete ailee fragile : PV 0,7, RM 1,0) en attendant que Charleston tranche une espece propre (il faudrait ses chiffres d'identite). Kit existant : Soin Mineur, Soin de Groupe, Dissipation (nettoyage). Sprite PixelLab propre (e4a07b61-c9b2-42a9-9b14-2be6a060b423).",
+      "_texts": "Textes du copywriting de Charleston (retour du 17/11) integres le 17/11."
+    },
+    {
+      "id": "mob_chouette_silence",
+      "name_fr": "Chouette du silence",
+      "name_en": "Silent Owl",
+      "category": "beast",
+      "base_level": 28,
+      "danger_level": 4,
+      "tags": [
+        "beast",
+        "corrupted",
+        "support"
+      ],
+      "ai_role": "support",
+      "gold_weight": 1.2,
+      "base_stats": {
+        "hp": 560,
+        "atk": 26,
+        "mag": 30,
+        "def": 28,
+        "magic_resist": 48,
+        "mp": 170
+      },
+      "base_xp": 260,
+      "skills": [
+        "skill_mob_support_shield_barrier",
+        "skill_mob_gardien_egide",
+        "skill_mob_controller_silence"
+      ],
+      "threat_tier": "standard",
+      "aggro_type": "aggressive",
+      "stat_archetype": "support",
+      "rarity": "normal",
+      "roster_status": "active",
+      "level_range": [
+        26,
+        40
+      ],
+      "species": "corbeau",
+      "stage": "corrupted",
+      "familiar_capture": {
+        "enabled": true,
+        "family": "chouette_silence",
+        "drop_chance": 0.04,
+        "_override_reason": "Decision Charleston 2026-11-17 : creature propre au donjon Racines du Bois Fletri, nouvelle famille de familier (sprite propre). Taux PAR monstre tue et par joueur (combat_host roll_capture_traces ; le multiplicateur d'etoiles encounter_star_trace_multiplier n'est lu par aucun service). 4 %, meme raisonnement que le Scarabee de cendre. A VALIDER.",
+        "allowed_roles": [
+          "utilitaire",
+          "heal"
+        ],
+        "signature_template": "chouette_silence",
+        "signature_name_fr": "Regard du silence",
+        "signature_name_en": "Silencing Gaze",
+        "growth_tier": "uncommon"
+      },
+      "_comment": "Add du Gardien du Bois Fletri (decision Charleston 2026-11-17) : le SHIELDER, a tuer en premier. Boucliers sur ses allies (Barriere Protectrice sur un allie, Egide autour d'elle) et un petit controle (Silence 4 s, plafond des gros controles). FRAGILE : archetype support au palier standard. Espece de monstre corbeau (oiseau), comme la Phalene. Sprite PixelLab propre (7f09209e-c692-49ab-9af7-7a2b3d4bdf7a).",
+      "_texts": "Textes du copywriting de Charleston (retour du 17/11) integres le 17/11."
     },
     {
       "id": "mob_ours_fissure",
