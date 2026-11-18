@@ -369,15 +369,16 @@
       "_a_valider": "Neutre partout (proposition de l'etude)."
     },
     "rift_level_gap": {
-      "description": "Ecart (niveau du joueur - niveau de la faille) pour un combat DANS l'interieur de faille, et pour les recompenses de fermeture (rift_closing). Ecart <= full_up_to : in_range. De full_up_to + 1 a purification_from - 1 : over. A partir de purification_from : purification (ni XP ni or par combat ; decision Charleston 2026-10-17). Le butin par combat n'est plus penalise par l'ecart dans la faille (drop_chance 1.0 partout, decision Charleston du 2026-11-13 : « on garde le butin ») ; les recompenses de fermeture en purification restent celles de rift_closing.purification (ni coffre ni Braise). L'XP et l'or subissent EN PLUS level_difference, comme partout. Un joueur PLUS BAS que la faille est toujours in_range (sa garde est l'entree minimale de world/rift_events.json).",
+      "description": "Ecart (niveau du joueur - niveau de la faille) pour un combat DANS l'interieur de faille, et pour les recompenses de fermeture (rift_closing). Ecart <= full_up_to : in_range. De full_up_to + 1 a purification_from - 1 : over. A partir de purification_from : purification (pas d'or par combat, decision Charleston 2026-10-17). XP : l'ecart avec la faille ne reduit plus l'XP, dans aucune tranche (xp 1.0 partout, decision Charleston du 2026-11-18 : la regle d'XP normale s'applique partout, failles comprises ; nerf plus tard si les hauts niveaux farment trop) ; seule reste la penalite normale level_difference (reference = somme du groupe de monstres). Ces valeurs ne sont lues que par server-combat (XP, or et butin d'un combat) ; presence ne lit ici que les seuils full_up_to et purification_from (points de faille, facteur _assisted, recompenses de fermeture rift_closing). Le butin par combat n'est plus penalise par l'ecart dans la faille (drop_chance 1.0 partout, decision Charleston du 2026-11-13 : « on garde le butin ») ; les recompenses de fermeture en purification restent celles de rift_closing.purification (ni coffre ni Braise). L'XP et l'or subissent EN PLUS level_difference, comme partout. Un joueur PLUS BAS que la faille est toujours in_range (sa garde est l'entree minimale de world/rift_events.json).",
       "full_up_to": 5,
       "purification_from": 10,
       "values": {
         "in_range": {"xp": 1.0, "gold": 1.0, "drop_chance": 1.0},
         "over": {"xp": 1.0, "gold": 1.0, "drop_chance": 1.0},
-        "purification": {"xp": 0.0, "gold": 0.0, "drop_chance": 1.0}
+        "purification": {"xp": 1.0, "gold": 0.0, "drop_chance": 1.0}
       },
-      "_a_valider": "Purification a 10 niveaux d'ecart (decide) : 0 XP et 0 or par combat. Butin par combat jamais penalise par l'ecart (purification et over a 1.0, decision Charleston du 2026-11-13 ; l'over etait a 0.5)."
+      "_xp_2026_11_18": "Purification : xp 0.0 -> 1.0 (decision Charleston du 18/11/2026, constat en prod : deux joueurs niveau 47 et 49 dans une faille de niveau 28 gagnaient 0 XP sur des groupes de 8 a 9 monstres). L'or reste a 0 en purification, le butin et les seuils sont inchanges.",
+      "_a_valider": "Purification a 10 niveaux d'ecart (decide) : 0 or par combat, XP pleine depuis le 18/11/2026. Butin par combat jamais penalise par l'ecart (purification et over a 1.0, decision Charleston du 2026-11-13 ; l'over etait a 0.5)."
     }
   },
   "level_difference": {
