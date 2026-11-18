@@ -91,8 +91,9 @@ TYPE_LABELS_FR: dict[str, str] = {
     "perf": "Performances",
 }
 
-SECTION_ORDER_EN = ["New Features", "Content", "Balance", "Fixes", "Performance", "Other"]
-SECTION_ORDER_FR = ["Nouveautés", "Contenu", "Équilibrage", "Corrections", "Performances", "Autres"]
+# Corrections en tete : demande de Charleston du 18/11 (« mettre en avant les fix »).
+SECTION_ORDER_EN = ["Fixes", "New Features", "Content", "Balance", "Performance", "Other"]
+SECTION_ORDER_FR = ["Corrections", "Nouveautés", "Contenu", "Équilibrage", "Performances", "Autres"]
 
 FALLBACK_EN = "Other"
 FALLBACK_FR = "Autres"
@@ -334,6 +335,9 @@ def main() -> None:
     parser.add_argument("--digest", action="store_true",
                         help="Group every patch newer than the last posted one into ONE "
                              "message (rule since 2026-10-27: one grouped post every 2-3 days).")
+    parser.add_argument("--since", metavar="VERSION",
+                        help="With --digest: oldest version to include, even if older "
+                             "versions are missing from the tracker.")
     parser.add_argument("--dry-run", action="store_true",
                         help="Print the embed JSON instead of posting.")
     parser.add_argument("--force", action="store_true",
@@ -355,6 +359,10 @@ def main() -> None:
             if patch.get("version", "") in posted_before:
                 break
             pending.append(patch)
+            if args.since and patch.get("version", "") == args.since:
+                break
+        if args.since and pending[-1:] and pending[-1].get("version") != args.since:
+            sys.exit(f"digest: --since {args.since} not found among unposted versions")
         if not pending:
             sys.exit("digest: nothing new since the last posted version")
         patches_to_post = [build_digest(list(reversed(pending)))]
