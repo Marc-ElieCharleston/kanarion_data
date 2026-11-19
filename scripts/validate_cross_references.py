@@ -2465,6 +2465,45 @@ def _monster_skill_ids(db: Path) -> set:
 TOWER_ONLY_BACKDROPS = {"tower_corrupted"}
 
 
+def validate_tower_zone_rooms(db: Path, zr) -> list:
+    """Salles de Tour (« la Tour comme un donjon », 19/11) : systems/tower.json
+    room.zone_rooms + zones tower_room de world/zones.json. Le service dungeon
+    (tower_rules.cpp) refuse les memes erreurs au demarrage."""
+    errors = []
+    if zr is None:
+        return errors
+    if not isinstance(zr, dict):
+        return ["[tower.json] room.zone_rooms : objet attendu"]
+    if zr.get("mode") not in ("overlay", "zone"):
+        errors.append(f"[tower.json] room.zone_rooms.mode={zr.get('mode')!r} : overlay ou zone")
+    ps = zr.get("pool_size")
+    if not isinstance(ps, int) or isinstance(ps, bool) or ps < 1:
+        errors.append(f"[tower.json] room.zone_rooms.pool_size={ps!r} : entier >= 1 attendu")
+    for k in ("arrival", "group"):
+        p = zr.get(k)
+        if not isinstance(p, dict) or not all(isinstance(p.get(c), (int, float)) for c in ("x", "y")):
+            errors.append(f"[tower.json] room.zone_rooms.{k} : x et y numeriques attendus")
+    v = zr.get("min_client_version", "")
+    if not isinstance(v, str) or len(v.split(".")) != 3 or not all(p.isdigit() for p in v.split(".")):
+        errors.append(f"[tower.json] room.zone_rooms.min_client_version={v!r} : version x.y.z attendue")
+    rooms = [z for z in load_json(db / "world" / "zones.json").get("zones", [])
+             if isinstance(z, dict) and z.get("type") == "tower_room"]
+    if not rooms:
+        errors.append("[tower.json] room.zone_rooms : aucune zone type tower_room dans world/zones.json")
+    for z in rooms:
+        zid = z.get("id", "")
+        if not zid.startswith("tower_room_"):
+            errors.append(f"[zones.json] {zid} : une zone type tower_room s'appelle tower_room_NN")
+        if not z.get("map_path") or z.get("map_path") != rooms[0].get("map_path"):
+            errors.append(f"[zones.json] {zid} : toutes les salles de Tour partagent la meme map_path")
+        if z.get("mobs") or (z.get("spawn_config") or {}).get("max_active_monsters", 0):
+            errors.append(f"[zones.json] {zid} : une salle de Tour n'a aucun spawn (le service tour pose le groupe)")
+        if z.get("respawn_zone") != "village" or z.get("transfer_from") or z.get("dungeon_id"):
+            errors.append(f"[zones.json] {zid} : respawn_zone village, ni transfer_from ni dungeon_id "
+                          "(on n'y entre que sur ordre du serveur)")
+    return errors
+
+
 def validate_tower_infinite(db: Path, rules: dict, all_item_ids: set) -> list:
     """Tour infinie (2026-10-18) : presentation, segments de croissance, points de
     reprise, cycle hebdomadaire (affixes + coffre) et classement. Le serveur
@@ -2509,6 +2548,7 @@ def validate_tower_infinite(db: Path, rules: dict, all_item_ids: set) -> list:
             if k in room:
                 errors.append(f"[tower.json] room.{k} : aucune limite de temps dans la salle, et la fenetre de "
                               "reconnexion vit dans server-combat combat.json (une seule source) : cle refusee")
+        errors += validate_tower_zone_rooms(db, room.get("zone_rooms"))
     entry = rules["access"].get("entry")
     if not isinstance(entry, dict):
         errors.append("[tower.json] access.entry : objet attendu (PNJ d'entree, Tour v1)")
