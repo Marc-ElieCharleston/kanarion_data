@@ -6575,28 +6575,24 @@
       "signature_template": "taureau_braise",
       "tier": "signature",
       "target": "enemy",
-      "pattern": "rect_2x2",
+      "pattern": "col_4",
       "damage_type": "physical",
       "mana_cost": 6,
       "mana_cost_per_level": 1,
-      "cooldown": 8.0,
+      "cooldown": 10.0,
       "percent_per_level": 5,
       "scaling_stat": "atk",
       "base_power": 0,
-      "scaling_percent": 126,
+      "scaling_percent": 135,
       "range": 3,
+      "detonates_burn": true,
+      "detonate_damage_per_stack": 15,
       "vfx_type": "melee_slash",
       "effects": [
         {
           "type": "debuff",
           "stat": "burn",
           "stacks_to_apply": 2,
-          "duration": 6.0
-        },
-        {
-          "type": "debuff",
-          "stat": "vulnerable",
-          "stacks_to_apply": 1,
           "duration": 6.0
         }
       ],
@@ -6612,10 +6608,10 @@
         "requires_line_of_sight": true,
         "bypasses_los": false,
         "requires_entity_on_target_tile": false,
-        "aoe_pattern_id": "rect_2x2"
+        "aoe_pattern_id": "col_4"
       },
-      "description_fr": "Inflige 126% ATQ (+5%/niv) en zone 2x2 et applique Brûlure (2 charges, 6s) et Vulnérable (1 charge, 6s).",
-      "description_en": "Deals 126% ATK (+5%/lvl) in a 2x2 area and applies Burn (2 stacks, 6s) and Vulnerable (1 stack, 6s)."
+      "description_fr": "Charge sur 4 cases en profondeur : 135% ATQ (+5%/niv), fait exploser la Brûlure déjà posée (15 dégâts par charge) puis applique Brûlure (2 charges, 6s).",
+      "description_en": "Charges 4 cells deep: 135% ATK (+5%/lvl), detonates the Burn already applied (15 damage per stack), then applies Burn (2 stacks, 6s)."
     },
     {
       "id": "skill_familiar_sig_rat_jeune",
@@ -8521,11 +8517,11 @@
       "signature_template": "demon_mineur",
       "tier": "signature",
       "target": "enemy",
-      "pattern": "rect_2x2",
+      "pattern": "rect_3x3",
       "damage_type": "physical",
       "mana_cost": 6,
       "mana_cost_per_level": 1,
-      "cooldown": 8.0,
+      "cooldown": 11.0,
       "percent_per_level": 5,
       "scaling_stat": "atk",
       "base_power": 0,
@@ -8536,12 +8532,12 @@
         {
           "type": "debuff",
           "stat": "stun",
-          "duration": 4.0
+          "duration": 2.0
         },
         {
           "type": "debuff",
-          "stat": "vulnerable",
-          "stacks_to_apply": 1,
+          "stat": "armor_down",
+          "stacks_to_apply": 3,
           "duration": 6.0
         }
       ],
@@ -8557,10 +8553,10 @@
         "requires_line_of_sight": true,
         "bypasses_los": false,
         "requires_entity_on_target_tile": false,
-        "aoe_pattern_id": "rect_2x2"
+        "aoe_pattern_id": "rect_3x3"
       },
-      "description_fr": "Inflige 140% ATQ (+5%/niv) en zone 2x2 et applique Étourdissement (4s) et Vulnérable (1 charge, 6s).",
-      "description_en": "Deals 140% ATK (+5%/lvl) in a 2x2 area and applies Stun (4s) and Vulnerable (1 stack, 6s)."
+      "description_fr": "Inflige 140% ATQ (+5%/niv) en zone 3x3 et applique Étourdissement (2s) et Armure - (3 charges, 6s).",
+      "description_en": "Deals 140% ATK (+5%/lvl) in a 3x3 area and applies Stun (2s) and Armor Down (3 stacks, 6s)."
     },
     {
       "id": "skill_familiar_sig_chien_vide",
@@ -8713,25 +8709,21 @@
       "damage_type": "physical",
       "mana_cost": 4,
       "mana_cost_per_level": 1,
-      "cooldown": 9.0,
+      "cooldown": 10.0,
       "percent_per_level": 5,
       "scaling_stat": "atk",
       "base_power": 0,
-      "scaling_percent": 154,
+      "scaling_percent": 145,
       "range": 3,
+      "armor_pen": 30,
+      "shield_break": true,
       "vfx_type": "melee_slash",
       "effects": [
         {
           "type": "debuff",
           "stat": "armor_down",
-          "stacks_to_apply": 3,
+          "stacks_to_apply": 5,
           "duration": 8.5
-        },
-        {
-          "type": "debuff",
-          "stat": "vulnerable",
-          "stacks_to_apply": 1,
-          "duration": 6.0
         }
       ],
       "tags": [
@@ -8748,8 +8740,8 @@
         "requires_entity_on_target_tile": true,
         "aoe_pattern_id": "single"
       },
-      "description_fr": "Inflige 154% ATQ (+5%/niv) et applique Armure - (3 charges, 8.5s) et Vulnérable (1 charge, 6s).",
-      "description_en": "Deals 154% ATK (+5%/lvl) and applies Armor Down (3 stacks, 8.5s) and Vulnerable (1 stack, 6s)."
+      "description_fr": "Inflige 145% ATQ (+5%/niv) en ignorant 30% de l'armure, brise le bouclier de la cible et applique Armure - (5 charges, 8.5s).",
+      "description_en": "Deals 145% ATK (+5%/lvl) ignoring 30% of armor, breaks the target's shield and applies Armor Down (5 stacks, 8.5s)."
     },
     {
       "id": "skill_familiar_sig_larve_abysse",
@@ -9100,28 +9092,29 @@
       "signature_template": "seraphin_abyssal",
       "tier": "signature",
       "target": "enemy",
-      "pattern": "rect_2x2",
+      "pattern": "rect_3x3",
       "damage_type": "magical",
-      "mana_cost": 6,
+      "mana_cost": 8,
       "mana_cost_per_level": 1,
-      "cooldown": 8.0,
+      "cooldown": 12.0,
       "percent_per_level": 5,
       "scaling_stat": "mag",
       "base_power": 0,
       "scaling_percent": 135,
       "range": 5,
+      "cast_time": 1.0,
       "vfx_type": "aoe_pulse",
       "effects": [
         {
           "type": "debuff",
           "stat": "burn",
-          "stacks_to_apply": 2,
+          "stacks_to_apply": 3,
           "duration": 6.0
         },
         {
           "type": "debuff",
           "stat": "vulnerable",
-          "stacks_to_apply": 1,
+          "stacks_to_apply": 2,
           "duration": 6.0
         }
       ],
@@ -9134,13 +9127,13 @@
       "targeting": {
         "selection_mode": "tile",
         "valid_target_team": "enemy",
-        "requires_line_of_sight": true,
-        "bypasses_los": false,
+        "requires_line_of_sight": false,
+        "bypasses_los": true,
         "requires_entity_on_target_tile": false,
-        "aoe_pattern_id": "rect_2x2"
+        "aoe_pattern_id": "rect_3x3"
       },
-      "description_fr": "Inflige 135% MAG (+5%/niv) en zone 2x2 et applique Brûlure (2 charges, 6s) et Vulnérable (1 charge, 6s).",
-      "description_en": "Deals 135% MAG (+5%/lvl) in a 2x2 area and applies Burn (2 stacks, 6s) and Vulnerable (1 stack, 6s)."
+      "description_fr": "Après 1s d'incantation, une météore s'abat sur une zone 3x3 (ignore la ligne de vue) : 135% MAG (+5%/niv), Brûlure (3 charges, 6s) et Vulnérable (2 charges, 6s).",
+      "description_en": "After a 1s cast, a meteor crashes onto a 3x3 area (ignores line of sight): 135% MAG (+5%/lvl), Burn (3 stacks, 6s) and Vulnerable (2 stacks, 6s)."
     },
     {
       "id": "skill_familiar_sig_matrone_effroi",
@@ -9154,7 +9147,7 @@
       "damage_type": "none",
       "mana_cost": 6,
       "mana_cost_per_level": 1,
-      "cooldown": 9.0,
+      "cooldown": 11.0,
       "percent_per_level": 5,
       "vfx_type": "buff_aura",
       "effects": [
@@ -9174,7 +9167,7 @@
           "type": "buff",
           "stat": "magic_resist_up",
           "stacks_to_apply": 2,
-          "duration": 6.0
+          "duration": 8.5
         }
       ],
       "tags": [
@@ -9191,8 +9184,8 @@
         "requires_entity_on_target_tile": false,
         "aoe_pattern_id": "all"
       },
-      "description_fr": "Confère ATK + (3 charges, 8.5s), Dégâts % + (2 charges, 8.5s) et Résist Mag + (2 charges, 6s) à toute l'équipe.",
-      "description_en": "Grants ATK Up (3 stacks, 8.5s), Damage Up (2 stacks, 8.5s) and Magic Resist Up (2 stacks, 6s) to the whole team."
+      "description_fr": "Confère ATK + (3 charges, 8.5s), Dégâts % + (2 charges, 8.5s) et Résist Mag + (2 charges, 8.5s) à toute l'équipe.",
+      "description_en": "Grants ATK Up (3 stacks, 8.5s), Damage Up (2 stacks, 8.5s) and Magic Resist Up (2 stacks, 8.5s) to the whole team."
     },
     {
       "id": "skill_familiar_sig_rejeton_vide",
@@ -9544,19 +9537,21 @@
       "damage_type": "physical",
       "mana_cost": 4,
       "mana_cost_per_level": 1,
-      "cooldown": 6.5,
+      "cooldown": 10.0,
       "percent_per_level": 5,
       "scaling_stat": "atk",
       "base_power": 0,
-      "scaling_percent": 168,
+      "scaling_percent": 150,
       "range": 2,
+      "execute_threshold": 30,
+      "execute_bonus_percent": 100,
+      "cd_reset_on_kill": true,
       "vfx_type": "melee_slash",
       "effects": [
         {
-          "type": "debuff",
-          "stat": "vulnerable",
-          "stacks_to_apply": 1,
-          "duration": 6.0
+          "type": "utility",
+          "stat": "lifesteal",
+          "value": 25
         }
       ],
       "tags": [
@@ -9573,8 +9568,8 @@
         "requires_entity_on_target_tile": true,
         "aoe_pattern_id": "single"
       },
-      "description_fr": "Inflige 168% ATQ (+5%/niv) et applique Vulnérable (1 charge, 6s).",
-      "description_en": "Deals 168% ATK (+5%/lvl) and applies Vulnerable (1 stack, 6s)."
+      "description_fr": "Inflige 150% ATQ (+5%/niv), doublés sur une cible sous 30% de PV, et rend au familier 25% des dégâts infligés. Une mise à mort recharge le sort.",
+      "description_en": "Deals 150% ATK (+5%/lvl), doubled on a target below 30% HP, and heals the companion for 25% of the damage dealt. A kill resets the cooldown."
     },
     {
       "id": "skill_familiar_sig_archonte_abyssal",
@@ -9584,11 +9579,11 @@
       "signature_template": "archonte_abyssal",
       "tier": "signature",
       "target": "enemy",
-      "pattern": "rect_2x2",
+      "pattern": "cross",
       "damage_type": "magical",
       "mana_cost": 6,
       "mana_cost_per_level": 1,
-      "cooldown": 9.0,
+      "cooldown": 11.0,
       "percent_per_level": 5,
       "scaling_stat": "mag",
       "base_power": 0,
@@ -9605,13 +9600,12 @@
         {
           "type": "debuff",
           "stat": "silence",
-          "duration": 4.0
+          "duration": 3.0
         },
         {
-          "type": "debuff",
-          "stat": "vulnerable",
-          "stacks_to_apply": 1,
-          "duration": 6.0
+          "type": "utility",
+          "stat": "purge",
+          "value": 1
         }
       ],
       "tags": [
@@ -9626,10 +9620,10 @@
         "requires_line_of_sight": true,
         "bypasses_los": false,
         "requires_entity_on_target_tile": false,
-        "aoe_pattern_id": "rect_2x2"
+        "aoe_pattern_id": "cross"
       },
-      "description_fr": "Inflige 75% MAG (+5%/niv) en zone 2x2 et applique Anti-Soin (2 charges, 8.5s), Silence (4s) et Vulnérable (1 charge, 6s).",
-      "description_en": "Deals 75% MAG (+5%/lvl) in a 2x2 area and applies Healing Reduction (2 stacks, 8.5s), Silence (4s) and Vulnerable (1 stack, 6s)."
+      "description_fr": "Inflige 75% MAG (+5%/niv) en croix, applique Anti-Soin (2 charges, 8.5s) et Silence (3s), et retire un renforcement à chaque ennemi touché.",
+      "description_en": "Deals 75% MAG (+5%/lvl) in a cross, applies Healing Reduction (2 stacks, 8.5s) and Silence (3s), and removes one buff from each enemy hit."
     },
     {
       "id": "skill_familiar_sig_grenouille",
@@ -10287,7 +10281,7 @@
         {
           "type": "debuff",
           "stat": "slow",
-          "stacks_to_apply": 1,
+          "stacks_to_apply": 2,
           "duration": 6.0
         }
       ],
@@ -10307,8 +10301,8 @@
         "aoe_pattern_id": "row_all"
       },
       "_note": "Signature de familier de boss (2026-10-29), reprise de la competence de boss a l'echelle d'un familier. Valeurs A VALIDER. Le Rongeur a deux competences de boss : l'invocation d'assassins (Appel de la Meute) n'est PAS reprise : Room::summon_monsters cree toujours des monstres du camp ENNEMI et compte la place sur le camp du lanceur, donc lancee par un familier elle donnerait des renforts a l'adversaire et pourrait depasser le plafond de 10 du camp ennemi. La Deferlante (rangee entiere) la remplace : 2 s d'incantation, rangee entiere de la cible.",
-      "description_fr": "Après 2 s d'incantation, l'eau des égouts balaie toute la rangée de la cible : 60% MAG (+5%/niv) dégâts magiques et Ralentissement (1 charge, 6s) à chaque ennemi de la rangée.",
-      "description_en": "After a 2 s cast, sewer water sweeps the target's whole row: 60% MAG (+5%/lvl) magic damage and Slow (1 stack, 6s) to every enemy in the row."
+      "description_fr": "Après 2 s d'incantation, l'eau des égouts balaie toute la rangée de la cible : 60% MAG (+5%/niv) dégâts magiques et Ralentissement (2 charges, 6s) à chaque ennemi de la rangée.",
+      "description_en": "After a 2 s cast, sewer water sweeps the target's whole row: 60% MAG (+5%/lvl) magic damage and Slow (2 stacks, 6s) to every enemy in the row."
     },
     {
       "id": "skill_familiar_sig_loup_alpha",
@@ -10322,20 +10316,20 @@
       "damage_type": "physical",
       "mana_cost": 6,
       "mana_cost_per_level": 1,
-      "cooldown": 8.0,
+      "cooldown": 10.0,
       "cast_time": 1.0,
       "percent_per_level": 5,
       "scaling_stat": "atk",
       "base_power": 0,
-      "scaling_percent": 130,
+      "scaling_percent": 110,
       "range": 4,
       "vfx_type": "debuff_aura",
       "effects": [
         {
           "type": "debuff",
           "stat": "exposed",
-          "stacks_to_apply": 2,
-          "duration": 6.0
+          "stacks_to_apply": 3,
+          "duration": 8.0
         }
       ],
       "tags": [
@@ -10353,8 +10347,8 @@
         "aoe_pattern_id": "single"
       },
       "_note": "Signature de familier de boss (2026-10-29), reprise de la competence de boss a l'echelle d'un familier. Valeurs A VALIDER. Reprend skill_mob_assassin_death_mark (signature du Loup Alpha). Le lien bonded_pair (releve par la Matriarche, fureur) reste une mecanique du boss en duo, non transportee.",
-      "description_fr": "Marque une cible : 130% ATQ (+5%/niv) et Exposé (2 charges, 6s).",
-      "description_en": "Marks a target: 130% ATK (+5%/lvl) and Exposed (2 stacks, 6s)."
+      "description_fr": "Marque une cible : 110% ATQ (+5%/niv) et Exposé (3 charges, 8s).",
+      "description_en": "Marks a target: 110% ATK (+5%/lvl) and Exposed (3 stacks, 8s)."
     },
     {
       "id": "skill_familiar_sig_louve_matriarche",
@@ -10375,6 +10369,11 @@
       "range": 4,
       "vfx_type": "heal",
       "effects": [
+        {
+          "type": "utility",
+          "stat": "cleanse",
+          "value": 1
+        },
         {
           "type": "buff",
           "stat": "heal_over_time",
@@ -10403,8 +10402,8 @@
         "aoe_pattern_id": "single"
       },
       "_note": "Signature de familier de boss (2026-10-29), reprise de la competence de boss a l'echelle d'un familier. Valeurs A VALIDER. La Matriarche n'a pas de competence de boss propre : sa mecanique est la releve de l'Alpha (bonded_pair), une regle de duo non transposable a un familier seul (elle supposerait une resurrection d'allie, et l'IA familier ne vise pas les morts). Sa Veille reprend son Lechage (soin + Regeneration) et y ajoute la protection de meute (Reduction de degats).",
-      "description_fr": "Soigne un allié de 75% MAG (+5%/niv), lui applique Soin Continu (2 charges, 6s) et Réduction Dégâts + (2 charges, 6s).",
-      "description_en": "Heals an ally for 75% MAG (+5%/lvl) and applies Heal over Time (2 stacks, 6s) and Damage Reduction Up (2 stacks, 6s)."
+      "description_fr": "Soigne un allié de 75% MAG (+5%/niv), retire un effet néfaste et lui applique Soin Continu (2 charges, 6s) et Réduction Dégâts + (2 charges, 6s).",
+      "description_en": "Heals an ally for 75% MAG (+5%/lvl), removes one harmful effect and applies Heal over Time (2 stacks, 6s) and Damage Reduction Up (2 stacks, 6s)."
     }
   ]
 }
