@@ -101,6 +101,11 @@ NON_EXPORTEES = {"mz_to_do_6_15", "mz_to_do_16-25_elite"}
 # Une aire sans roster ou sans sol reste a 0 quand meme.
 COUNT_IMPOSE = {"mz_abords_d_havreden_1_8": 45}
 
+# +20 % de monstres dans toutes les aires peuplees du village (2026-11-19, Charleston,
+# release 0.21.17). Applique en dernier, apres la densite, le bornage, le facteur elite,
+# le decoupage et COUNT_IMPOSE ; arrondi a l'entier le plus proche. Une aire a 0 reste a 0.
+MULTIPLICATEUR_MONSTRES = 1.2
+
 # Noms de noeud provisoires : pas un nom de lieu, le script en donne un provisoire.
 NOMS_PROVISOIRES = {
     "to_do": {False: ("Zone à nommer", "Unnamed Zone"), True: ("Zone élite", "Elite Zone")},
@@ -673,6 +678,8 @@ def main():
     ap.add_argument("--empty-ground", type=float, default=0.20,
                     help="part maximale de cases sans sol avant de rendre l'aire dormante")
     ap.add_argument("--ground-step", type=float, default=32.0, help="pas de mesure du sol, px")
+    ap.add_argument("--monster-factor", type=float, default=MULTIPLICATEUR_MONSTRES,
+                    help="facteur applique a chaque aire peuplee, count impose compris (defaut %(default)s)")
     ap.add_argument("--report", type=Path, help="ecrit aussi le rapport en JSON")
     a = ap.parse_args()
 
@@ -809,6 +816,8 @@ def main():
                 etat = "spawnable"
             else:
                 n_monstres, etat = compte(surface(mpoly), elite, a), "spawnable"
+            if n_monstres > 0:
+                n_monstres = max(1, round(n_monstres * a.monster_factor))
             lr = bd["level_range"] if bd else [lo, hi]
             sortie = {"id": mid, "name_fr": name_fr, "name_en": name_en, "level_range": lr,
                       "count": n_monstres}
