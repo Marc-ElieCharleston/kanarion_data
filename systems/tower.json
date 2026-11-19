@@ -48,10 +48,16 @@
       "_mode": "overlay = comportement d'avant (la salle est un ecran par-dessus le village, pres de Rask), INCHANGE ; zone = salles tower_room_NN ci-dessus. Rester en overlay tant que le client qui connait la salle (etape 2) n'est pas publie. Test seulement : la variable TOWER_ROOM_MODE du service dungeon remplace cette valeur (logguee fort au demarrage).",
       "pool_size": 20,
       "_pool_size": "Nombre de montees qui peuvent avoir une salle en meme temps, plafonne au nombre de zones type tower_room de world/zones.json (20). Toutes prises = depart refuse avec le motif no_free_room.",
-      "arrival": {"x": 0, "y": 160},
-      "group": {"x": 0, "y": -120, "patrol_radius_px": 24},
-      "_points": "A CALER sur la scene scenes/world/donjons/tower/tower_floor.tscn quand elle existera (coordonnees monde de la scene) : arrival = ou chaque membre apparait en entrant, group = ou le groupe de l'etage attend (il erre de patrol_radius_px autour, comme en donjon).",
-      "min_client_version": "0.21.17",
+      "arrival": {"x": 0, "y": 150},
+      "group": {"x": 0, "y": -10, "patrol_radius_px": 24},
+      "_points": "Cales le 19/11 sur la scene scenes/world/donjons/tower/tower_floor.tscn (decor tower_room.png 688x384 a l'echelle 1, centre a l'origine ; sol marchable = area_limit des zones tower_room) : arrival = ou chaque membre apparait en entrant, group = ou le groupe de l'etage attend (il erre de patrol_radius_px autour, comme en donjon).",
+      "min_client_version": "0.21.18",
+      "objects": {
+        "_why": "Affichage client seulement (scene tower_floor.tscn, coordonnees monde) : ou poser le coffre de chaque membre et les deux portails d'un palier en mode zone. Le serveur ne lit pas ce bloc : il decide de qui ouvre quoi.",
+        "chests": {"x": 0, "y": 95, "step_x": 48},
+        "portal_climb": {"x": 40, "y": -70},
+        "portal_exit": {"x": -270, "y": 140}
+      },
       "_min_client_version": "Mode zone seulement : un membre dont le client est plus ancien que cette version (version de SA session, auth player_sessions_log) fait refuser le depart (motif client_outdated, avec son nom). Premiere version du client qui connait la salle : a confirmer a la publication de l'etape 2. Version inconnue = acceptee (comme la regle 0.21.14)."
     }
   },
@@ -240,7 +246,7 @@
     "consumed_on_entry": true,
     "tradeable": true,
     "granted_to": "key_holder_on_exit",
-    "_granted_to_note": "Tour v1 (Charleston 13/11) : le porteur de la cle (le chef qui l'a consommee a l'entree, ou le chef d'un groupe entre sans cle) ne recupere une cle qu'en SORTANT par le portail d'un palier : sortie a l'etage P = cle de l'etage P. Defaite, abandon, sortie ailleurs qu'a un portail de palier ou depart de la montee : cle perdue. Une coupure suivie d'un retour sous combat.json timing.abandoned_room_timeout_seconds ne la fait pas perdre. Une panne serveur la fait perdre aussi (Charleston 16/11). Les autres cles ne viennent que du coffre de palier (items/loot_tables.json tower_chest key_chance)."
+    "_granted_to_note": "Tour v1 (Charleston 13/11) : le porteur de la cle (le chef qui l'a consommee a l'entree, ou le chef d'un groupe entre sans cle) ne recupere une cle qu'en SORTANT par le portail d'un palier : sortie a l'etage P = cle de l'etage P. Defaite, abandon, sortie ailleurs qu'a un portail de palier ou depart de la montee : cle perdue. Une coupure suivie d'un retour sous combat.json timing.abandoned_room_timeout_seconds ne la fait pas perdre. Une panne serveur la fait perdre aussi (Charleston 16/11). Les autres cles ne viennent que du coffre de palier (items/loot_tables.json tower_chest key_chance). Charleston 19/11 : la cle de SORTIE ne revient qu'au CHEF (porteur ET chef) ; un membre qui sort n'en recoit pas."
   },
   "rewards": {
     "_per_floor": "Chaque etage gagne passe par le moteur de recompenses normal (XP, or, butin par combat selon les etoiles et la presence d'elites ou de boss).",
