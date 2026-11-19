@@ -2465,6 +2465,34 @@ def _monster_skill_ids(db: Path) -> set:
 TOWER_ONLY_BACKDROPS = {"tower_corrupted"}
 
 
+# Decors de combat propres au PvP (aucune zone ne les porte), connus du client
+# (kanarion_front scripts/combat/visuals/combat_backdrop.gd PATHS).
+PVP_ONLY_BACKDROPS = {"zone_arene", "zone_havreden_duels"}
+PVP_BACKDROP_KEYS = ("combat_backdrop_arena", "combat_backdrop_duel", "combat_backdrop_arena_lesson")
+
+
+def validate_pvp_presentation(db: Path) -> list:
+    """Decors de combat PvP (systems/pvp.json presentation, 19/11). server-combat les lit
+    au demarrage (shared/gameplay/pvp_backdrop.hpp) ; une cle absente = aucun decor."""
+    errors = []
+    path = db / "systems" / "pvp.json"
+    if not path.exists():
+        return errors
+    pres = load_json(path).get("presentation")
+    if pres is None:
+        return errors
+    if not isinstance(pres, dict):
+        return ["[pvp.json] presentation : objet attendu"]
+    zones_text = (db / "world" / "zones.json").read_text(encoding="utf-8")
+    for k in PVP_BACKDROP_KEYS:
+        v = pres.get(k, "")
+        known = v in PVP_ONLY_BACKDROPS or f'"combat_backdrop": "{v}"' in zones_text
+        if not isinstance(v, str) or (v and not known):
+            errors.append(f"[pvp.json] presentation.{k} '{v}' : decor inconnu (ni zone de "
+                          "world/zones.json, ni decor PvP de PVP_ONLY_BACKDROPS)")
+    return errors
+
+
 def validate_tower_zone_rooms(db: Path, zr) -> list:
     """Salles de Tour (« la Tour comme un donjon », 19/11) : systems/tower.json
     room.zone_rooms + zones tower_room de world/zones.json. Le service dungeon
@@ -4019,6 +4047,11 @@ def main():
 
     print("[12l/12] Validating rank chaining and craft batches...")
     errs = validate_recipe_chain(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12p/12] Validating PvP combat backdrops (systems/pvp.json presentation)...")
+    errs = validate_pvp_presentation(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
