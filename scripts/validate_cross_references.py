@@ -2737,6 +2737,9 @@ def validate_tower_chest(db: Path, table_id, all_item_ids: set, keys: dict) -> l
     kc = t.get("key_chance")
     if not isinstance(kc, (int, float)) or not 0 <= kc <= 1:
         errors.append(f"{tag} key_chance hors [0, 1]")
+    kp = t.get("key_previous_share", 0)
+    if not isinstance(kp, (int, float)) or not 0 <= kp <= 1:
+        errors.append(f"{tag} key_previous_share hors [0, 1]")
     ur = t.get("ultra_rare", {})
     vals = [ur.get(k) for k in ("chance_at_floor_5", "chance_at_floor_100", "cap")]
     if any(not isinstance(v, (int, float)) or not 0 <= v <= 1 for v in vals):
