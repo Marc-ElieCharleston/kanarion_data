@@ -89,11 +89,12 @@ REPRISE = {
     "mz_abords_de_rochebourg_45_50": "mz_rats_corrompu_40-50",
     "mz_chemin_des_pelerins_45_60": "mz_fanatique_45_60_elite",
     "mz_mines_basses_50_60": "mz_gobelins_50_60",
-    "mz_to_do_16-25_elite": "mz_taureaux_16-25_elite",
 }
 
-# Aires dessinees mais pas encore a exporter (Charleston les remplira).
-NON_EXPORTEES = {"mz_to_do_6_15"}
+# Aires dessinees mais pas exportees. Les deux zones « todo » sont abandonnees
+# (Charleston, 2026-11-17) : leurs polygones restent caches dans la carte, leur
+# surface est reprise par la Foret Nord, le Bois des Loups et la Clairiere.
+NON_EXPORTEES = {"mz_to_do_6_15", "mz_to_do_16-25_elite"}
 
 # Nombre de monstres impose a la place de la regle de densite (2026-10-20, Charleston :
 # les Abords d'Havreden passent de 32 a 45, la zone de depart doit etre plus peuplee).
