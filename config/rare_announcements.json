@@ -1,0 +1,100 @@
+{
+  "_meta": {
+    "description": "Bandeau des obtentions tres rares (decisions Charleston du 16/11/2026, 0.21.20). Quand un joueur OBTIENT un objet de cette liste, le serveur l'annonce a tout le serveur : bandeau en haut de l'ecran et ligne dans le chat. Le joueur peut couper le bandeau dans les options ; la ligne de chat reste. Liste FIXE : seules les regles ci-dessous declenchent, jamais un id ecrit dans le code.",
+    "owner": "economy detecte (butin de combat, coffres, fabrication), presence diffuse (anti-spam, envoi a tous les joueurs en ligne, message 0x0245 RARE_OBTAIN_BANNER). Le client n'affiche que ce qu'il recoit.",
+    "lecture": "shared/gameplay/rare_announce.hpp (Catalog::load) ; une regle qui ne trouve aucun objet refuse le chargement (annonces coupees, erreur au demarrage).",
+    "a_valider": "Durees d'affichage, plafonds anti-spam et file du client : valeurs provisoires du 19/11, a valider par Charleston."
+  },
+  "enabled": true,
+  "rank_order": {
+    "_rule": "Ordre des rangs (du plus bas au plus haut) et rarete de chaque rang, lus dans la data : systems/professions.json quality.ranks (C..SS) et resource_rarity.tiers[].item_rarity (C=common ... SS=legendary). Jamais recopies ici.",
+    "ranks_from": "systems/professions.json#quality.ranks",
+    "rarity_tiers_from": "systems/professions.json#resource_rarity.tiers"
+  },
+  "tiers": {
+    "_rule": "Une annonce a la rarete de l'objet obtenu. epic = bandeau discret (petit, court, sans effet), legendary et unique = bandeau plein. La couleur vient de la data de rarete (color_from = fichier#chemin).",
+    "epic": {
+      "style": "compact",
+      "display_seconds": 4.0,
+      "color_from": "items/currencies.json#rarity_colors.epic.hex"
+    },
+    "legendary": {
+      "style": "full",
+      "display_seconds": 7.0,
+      "color_from": "items/currencies.json#rarity_colors.legendary.hex"
+    },
+    "unique": {
+      "style": "full",
+      "display_seconds": 7.0,
+      "color_from": "items/uniques.json#_meta.rarity_color"
+    }
+  },
+  "item_triggers": [
+    {
+      "id": "unique_item",
+      "_rule": "Tout objet unique (items/uniques.json).",
+      "file": "items/uniques.json",
+      "array": "uniques",
+      "rarity": "unique"
+    },
+    {
+      "id": "legendary_skill_book",
+      "_rule": "Livre de competence (grimoire de familier) de rarete legendaire.",
+      "file": "items/pet_books.json",
+      "array": "pet_books",
+      "where": { "book_type": ["skill"], "rarity": ["legendary"] },
+      "rarity_field": "rarity"
+    },
+    {
+      "id": "koro_top_ranks",
+      "_rule": "Cartes Koro des DEUX rangs les plus hauts (S et SS internes aujourd'hui, A et S affiches). La rarete de l'annonce est celle du rang (epic, legendary).",
+      "file": "items/koro_cards.json",
+      "array": "koro_cards",
+      "rank_field": "rank",
+      "top_ranks": 2
+    },
+    {
+      "id": "keystone_epic_legendary",
+      "_rule": "Stigmates (keystones) dont le rang vaut epique ou legendaire.",
+      "file": "items/keystone_items.json",
+      "array": "keystone_items",
+      "rank_field": "rank",
+      "rank_rarities": ["epic", "legendary"]
+    },
+    {
+      "id": "legendary_familiar",
+      "_rule": "Familier legendaire : l'empreinte de Souffle legendaire capturee (la rarete du familier est celle de l'empreinte). L'eclosion ne declenche pas une seconde annonce.",
+      "file": "items/consumables.json",
+      "array": "familiar_traces",
+      "where": { "trace_rarity": ["legendary"] },
+      "rarity_field": "trace_rarity"
+    }
+  ],
+  "craft_triggers": [
+    {
+      "id": "crafted_legendary",
+      "_rule": "Resultat de fabrication (tous les metiers, forgeron compris) dont la qualite tiree vaut legendaire (rang SS interne, S affiche).",
+      "quality_rarities": ["legendary"]
+    }
+  ],
+  "sources": {
+    "_rule": "Ou l'on detecte une obtention. combat_loot = butin de fin de combat (donjons et Tour compris) ; craft = fabrication de metier ; inventory_add_reasons = dons d'objets par un autre service, annonces SEULEMENT pour les raisons listees (coffres). Boutique, hotel des ventes, echange, courrier, quetes, recuperations : jamais.",
+    "combat_loot": true,
+    "craft": true,
+    "inventory_add_reasons": {
+      "tower_palier_chest": "chest",
+      "tower_weekly_chest": "chest",
+      "zone_chest": "chest",
+      "rift_chest": "chest"
+    }
+  },
+  "anti_spam": {
+    "_rule": "Serveur : au plus server_max_per_window annonces par fenetre glissante de window_seconds pour tout le serveur, et player_max_per_window par joueur ; une meme obtention (meme cle) n'est annoncee qu'une fois. Client : file d'au plus client_queue_max bandeaux en attente (les plus anciens tombent), client_gap_ms entre deux bandeaux. Au-dela du plafond serveur rien n'est envoye (journal du service presence) ; un bandeau qui deborde de la file du client reste dans le chat.",
+    "window_seconds": 60,
+    "server_max_per_window": 6,
+    "player_max_per_window": 3,
+    "dedupe_memory": 1024,
+    "client_queue_max": 4,
+    "client_gap_ms": 600
+  }
+}
