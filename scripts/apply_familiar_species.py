@@ -118,6 +118,19 @@ SPECIES_PASSIVE = {
     "belette": ("Insaisissable", "Elusive", {"atk": 0.5, "magic_resist": 0.5}),
     "ragondin": ("Têtu", "Stubborn", {"hp": 0.5, "armor": 0.5}),
 }
+# Profil lanceur (option B du bilan des sorts de familiers, decision Charleston du 19/11) :
+# creatures magiques ou a distance dont la signature est magique (calculee sur la MAG). Leurs
+# archetypes attaque et tank prennent le profil de role avec ATQ et MAG inversees (base et
+# croissance), pour que la MAG soit leur stat d'attaque. Soin et utilitaire gardent leur profil.
+# Les stats d'un familier sont relues depuis l'archetype a chaque combat (rien en base) : les
+# familiers deja captures de ces especes changent avec la data.
+CASTER_SPECIES = {
+    "seraphin_abyssal", "archonte_abyssal", "sorcier_abyssal", "invocateur_neant",
+    "squelette_necromancien", "moissonneur_ames", "golem_runique", "gardien_bois_fletri",
+    "rat_rongeur", "rat_sorcier", "grenouille", "crapaud_cracheur",
+}
+CASTER_ROLES = {"attaque", "tank"}
+
 TIERS = [(1, 4.0), (20, 8.0), (50, 12.0), (100, 18.0)]  # (min familiar level, % at weight 1.0)
 STAT_FR = {"hp": "PV max", "atk": "attaque", "mag": "magie", "armor": "armure", "magic_resist": "résistance magique"}
 STAT_EN = {"hp": "max HP", "atk": "attack", "mag": "magic", "armor": "armor", "magic_resist": "magic resist"}
@@ -178,6 +191,12 @@ def main():
                 continue
             mult = {s: (v if s == "mp" else v * bsm) for s, v in mult.items()}
         prof = roles[f["role"]]
+        if f.get("species") in CASTER_SPECIES and f["role"] in CASTER_ROLES:
+            def swap(d):
+                d = dict(d)
+                d["atk"], d["mag"] = d["mag"], d["atk"]
+                return d
+            prof = {"base_stats": swap(prof["base_stats"]), "growth": swap(prof["growth"])}
         f["monster_species"] = msp
         own_mp = f["base_stats"].get("mp", 0)  # per familiar, kept as authored
         f["base_stats"] = {s: (own_mp if s == "mp" else max(1, round(prof["base_stats"][s] * mult[s])))
