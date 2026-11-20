@@ -70,6 +70,8 @@ FAMILIAR_TO_MONSTER = {
     "chouette_silence": "corbeau",
     # Boss du Bois Fletri et Cerf Gardien, capturables (2026-11-17, « tous les monstres seront capturables »).
     "gardien_bois_fletri": "cervide", "cerf_gardien": "cervide",
+    # Gobelins capturables (2026-11-20, Charleston : « au moins les gobelins ») : une famille par sprite.
+    "gobelin": "gobelin", "gobelin_guerrier": "gobelin", "gobelin_artificier": "gobelin", "gobelin_chaman": "gobelin",
 }
 
 # Species passive per MONSTER species: (name_fr, name_en, {stat: weight}). Tier values below are
@@ -127,7 +129,7 @@ SPECIES_PASSIVE = {
 CASTER_SPECIES = {
     "seraphin_abyssal", "archonte_abyssal", "sorcier_abyssal", "invocateur_neant",
     "squelette_necromancien", "moissonneur_ames", "golem_runique", "gardien_bois_fletri",
-    "rat_rongeur", "rat_sorcier", "grenouille", "crapaud_cracheur",
+    "rat_rongeur", "rat_sorcier", "grenouille", "crapaud_cracheur", "gobelin_artificier",
 }
 CASTER_ROLES = {"attaque", "tank"}
 
