@@ -2257,7 +2257,7 @@
         "xp": 880,
         "gold": 350
       },
-      "_note": "AUTO-ACCEPT AU NIVEAU 20 (demande produit). Le champ auto_accept_on_level N'EXISTE PAS ENCORE cote back : seul auto_accept_on_zone_enter est indexe, et il ne filtre pas sur le niveau. Le service quete est DEJA abonne a kanarion.events.character.CharacterLeveledUp, donc c'est un index de plus et un branchement dans le handler de level-up. Sans lui, un joueur qui ne clique jamais une quete n'apprend jamais ou debloquer sa sous-classe. Le champ est pose des maintenant pour que le branchement n'ait rien a chercher. Niveau verifie contre config/skill_system.json : skill_categories.subclass.unlock_at_player_level = 20.",
+      "_note": "AUTO-ACCEPT AU NIVEAU 20 (demande produit), EN PLACE cote back : auto_accept_at_min_level est lu au chargement par le service quete (quest_service.cpp) et branche sur le handler CharacterLeveledUp (maybe_auto_accept_level_quests -> try_auto_accept_quest, donc memes portes que toute auto-acceptation : prerequis, niveau, drapeaux). Verifie dans les logs prod le 2026-11-18 : un joueur l'a terminee sans jamais cliquer dessus. L'objectif est valide au choix de la sous-classe (handle_class_path_chosen, kSubclassReadyOnlyQuestIds), le rendu se fait chez Soren. Niveau verifie contre config/skill_system.json : skill_categories.subclass.unlock_at_player_level = 20. Ne pas confondre avec q_tournoi_subclass (meme objectif, personnages de tournoi seulement).",
       "dialogue_give_fr": "Te revoilà ! Je crois qu'il est temps de parler de ta voie.\nTu as fait du chemin depuis notre première rencontre. Viens me voir quand tu seras prêt à choisir.",
       "dialogue_give_en": "There you are! I think it's time we talked about your path.\nYou've come a long way since we first met. Come see me when you're ready to choose.",
       "dialogue_complete_fr": "Ah, tu as fait ton choix !\nBien, voyons ce que cette nouvelle voie te réserve.",
@@ -5720,7 +5720,7 @@
         "xp": 225,
         "gold": 300
       },
-      "_note": "DEMANDE BACK : cette quete devrait s'auto-accepter a la montee au niveau 20, pas etre prise a 9. Il n'existe aujourd'hui que auto_accept_on_zone_enter, indexe sur la zone seule et sans filtre de niveau, et min_level n'est lu nulle part cote serveur. Ajouter un auto_accept_on_level symetrique : le service quete est DEJA abonne a kanarion.events.character.CharacterLeveledUp. Sans ca, un joueur qui ne clique jamais une quete (bash, PvP) n'apprend jamais ou debloquer sa sous-classe. En attendant, la quete est offerte des la vague 3 et reste au journal pendant onze niveaux."
+      "_note": "Quete parquee (voir _note_parked), remplacee par q_soren_sous_classe. L'auto-acceptation au niveau EXISTE cote back : auto_accept_at_min_level est lu au chargement par le service quete (quest_service.cpp) et branche sur le handler CharacterLeveledUp (maybe_auto_accept_level_quests -> try_auto_accept_quest, memes portes que toute auto-acceptation : prerequis, niveau, drapeaux). q_soren_sous_classe l'utilise au niveau 20. min_level est aussi verifie cote serveur a l'acceptation (handle_quest_accept, depuis le 2026-08-22). Si cette quete est un jour reprise, poser auto_accept_at_min_level: true avec min_level 20 plutot que de la proposer des le niveau 9."
     },
     {
       "id": "q_gorik_reserves",
