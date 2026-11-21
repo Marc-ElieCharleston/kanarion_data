@@ -2836,6 +2836,14 @@ def validate_tower(db: Path, all_item_ids: set) -> list:
         for k in ("gold_per_floor", "tower_tokens_per_floor"):
             if not isinstance(chest.get(k), int) or chest[k] < 0:
                 errors.append(f"[tower.json] rewards.palier_chest.{k} : entier >= 0 attendu")
+        lk = chest.get("lower_key")
+        if lk is not None:
+            if not isinstance(lk, dict) or not isinstance(lk.get("chance"), (int, float)) \
+                    or not 0 <= lk["chance"] <= 1:
+                errors.append("[tower.json] rewards.palier_chest.lower_key.chance : nombre dans [0, 1] attendu")
+            elif lk.get("pick") != "uniform_lower_paliers":
+                errors.append("[tower.json] rewards.palier_chest.lower_key.pick : seule valeur geree "
+                              "uniform_lower_paliers")
         if "arena_tokens_per_floor" in chest:
             errors.append("[tower.json] rewards.palier_chest.arena_tokens_per_floor : la Tour paie en "
                           "tower_tokens depuis le 21/11 (une activite, une monnaie)")
