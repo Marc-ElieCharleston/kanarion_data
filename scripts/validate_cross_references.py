@@ -3166,6 +3166,21 @@ def validate_emote_scrolls(db: Path) -> list:
     emotes = {e["id"]: e for e in emotes_doc.get("emotes", []) if "id" in e}
     if not isinstance(emotes_doc.get("_meta", {}).get("diamond_sale_enabled"), bool):
         errors.append("[ui/emotes.json] _meta.diamond_sale_enabled doit etre un booleen (vente en diamants)")
+    # Vente en diamants : seules ces sources sont vendues (lu par economy et par le client).
+    # Jamais une emote liee au compte (scroll:false) ni une emote sans source active.
+    kinds = emotes_doc.get("_meta", {}).get("diamond_sale_source_kinds", [])
+    if not (isinstance(kinds, list) and all(isinstance(k, str) for k in kinds)):
+        errors.append("[ui/emotes.json] _meta.diamond_sale_source_kinds doit etre une liste de chaines")
+        kinds = []
+    if emotes_doc.get("_meta", {}).get("diamond_sale_enabled") is True and not kinds:
+        errors.append("[ui/emotes.json] vente en diamants ouverte sans diamond_sale_source_kinds : rien a vendre")
+    for k in kinds:
+        if k in ("free", "achievement", "event", "pending"):
+            errors.append(f"[ui/emotes.json] diamond_sale_source_kinds : '{k}' ne peut pas etre vendu en diamants")
+    for eid, e in emotes.items():
+        if e.get("tier") == "premium" and (e.get("source") or {}).get("kind") in kinds \
+                and (e.get("scroll", True) is False or e.get("obtainable", True) is False):
+            errors.append(f"[ui/emotes.json] emote '{eid}' : vendue en diamants mais liee au compte ou non obtenable")
     path = db / "items" / "emote_scrolls.json"
     if not path.exists():
         return errors + ["[emote_scrolls] items/emote_scrolls.json absent (python scripts/gen_emote_scrolls.py)"]
