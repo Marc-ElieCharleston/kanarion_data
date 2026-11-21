@@ -2778,6 +2778,10 @@ def validate_tower_chest(db: Path, table_id, all_item_ids: set, keys: dict) -> l
     return errors
 
 
+# Regles d'octroi de la cle de palier que services/dungeon sait appliquer (tower_rules.cpp).
+TOWER_KEY_GRANT_RULES = {"key_holder_on_exit", "key_holder_on_palier_clear"}
+
+
 def validate_tower(db: Path, all_item_ids: set) -> list:
     """systems/tower.json + world/tower_floors.json : monstres actifs, cles, bornes."""
     errors = []
@@ -2807,8 +2811,9 @@ def validate_tower(db: Path, all_item_ids: set) -> list:
         errors.append("[tower.json] difficulty.guardians_by_palier : liste non vide attendue")
     if keys.get("tier_size") != rules["structure"]["guardian_every"]:
         errors.append("[tower.json] keys.tier_size doit valoir structure.guardian_every (une cle par palier)")
-    if keys.get("granted_to") != "key_holder_on_exit":
-        errors.append(f"[tower.json] keys.granted_to={keys.get('granted_to')!r} : seule regle geree key_holder_on_exit")
+    if keys.get("granted_to") not in TOWER_KEY_GRANT_RULES:
+        errors.append(f"[tower.json] keys.granted_to={keys.get('granted_to')!r} : regles gerees par le serveur "
+                      f"{sorted(TOWER_KEY_GRANT_RULES)}")
     if "floor_key_drop" in keys:
         errors.append("[tower.json] keys.floor_key_drop : retire en Tour v1 (la chance de cle est dans le coffre)")
     for tier in range(2, keys["max_tier"] + 1):
