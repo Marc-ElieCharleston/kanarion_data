@@ -2651,8 +2651,10 @@ def validate_tower_infinite(db: Path, rules: dict, all_item_ids: set) -> list:
         if not isinstance(fl, int) or fl <= prev:
             errors.append(f"[tower.json] weekly.chest : seuils strictement croissants attendus ({fl!r})")
         prev = fl if isinstance(fl, int) else prev
+        if "arena_tokens" in t:
+            errors.append(f"[tower.json] weekly.chest seuil {fl} : arena_tokens interdit, la Tour paie en tower_tokens")
         if not isinstance(t.get("gold", 0), int) or t.get("gold", 0) < 0 \
-                or not isinstance(t.get("arena_tokens", 0), int) or t.get("arena_tokens", 0) < 0:
+                or not isinstance(t.get("tower_tokens", 0), int) or t.get("tower_tokens", 0) < 0:
             errors.append(f"[tower.json] weekly.chest seuil {fl} : or / jetons entiers >= 0 attendus")
         for it in t.get("items", []):
             if it.get("id") not in all_item_ids or not isinstance(it.get("qty"), int) or it["qty"] < 1:
@@ -2785,6 +2787,13 @@ TOWER_KEY_GRANT_RULES = {"key_holder_on_exit", "key_holder_on_palier_clear"}
 def validate_tower(db: Path, all_item_ids: set) -> list:
     """systems/tower.json + world/tower_floors.json : monstres actifs, cles, bornes."""
     errors = []
+    _rules = load_json(db / "systems" / "tower.json") if (db / "systems" / "tower.json").exists() else {}
+    for band in _rules.get("season", {}).get("rewards", []):
+        if "arena_tokens" in band:
+            errors.append(f"[tower.json] season.rewards rang {band.get('rank_max')} : arena_tokens interdit, "
+                          "la Tour paie en tower_tokens")
+        if not isinstance(band.get("tower_tokens", 0), int) or band.get("tower_tokens", 0) < 0:
+            errors.append(f"[tower.json] season.rewards rang {band.get('rank_max')} : tower_tokens entier >= 0")
     rules_path, floors_path = db / "systems" / "tower.json", db / "world" / "tower_floors.json"
     if not rules_path.exists():
         return errors
@@ -2824,9 +2833,12 @@ def validate_tower(db: Path, all_item_ids: set) -> list:
     if not isinstance(chest, dict):
         errors.append("[tower.json] rewards.palier_chest : objet attendu (Tour v1)")
     else:
-        for k in ("gold_per_floor", "arena_tokens_per_floor"):
+        for k in ("gold_per_floor", "tower_tokens_per_floor"):
             if not isinstance(chest.get(k), int) or chest[k] < 0:
                 errors.append(f"[tower.json] rewards.palier_chest.{k} : entier >= 0 attendu")
+        if "arena_tokens_per_floor" in chest:
+            errors.append("[tower.json] rewards.palier_chest.arena_tokens_per_floor : la Tour paie en "
+                          "tower_tokens depuis le 21/11 (une activite, une monnaie)")
         errors += validate_tower_chest(db, chest.get("loot_table"), all_item_ids, keys)
     if "guardian_chest" in rules.get("rewards", {}):
         errors.append("[tower.json] rewards.guardian_chest : remplace par rewards.palier_chest en Tour v1")
@@ -3032,11 +3044,54 @@ def validate_tool_slots(db: Path) -> list:
 
 
 def validate_arena_token_shop(db: Path, all_item_ids: set) -> list:
+    """Les deux boutiques de jetons (arene, Tour) : meme gabarit, meme moteur serveur."""
+    errors = _validate_token_shop(db, all_item_ids, "arena_token_shop", "arena_tokens")
+    errors += _validate_token_shop(db, all_item_ids, "tower_token_shop", "tower_tokens")
+    arena = db / "systems" / "arena_token_shop.json"
+    if arena.exists():
+        for o in load_json(arena).get("offers", []):
+            if str(o.get("grant_id", "")).startswith("key_tower_"):
+                errors.append(f"[arena_token_shop] {o.get('id')} : une cle de la Tour ne se vend jamais en jetons "
+                              "d'arene (systems/tower_token_shop.json seulement)")
+    errors += _validate_tower_key_prices(db)
+    return errors
+
+
+def _validate_tower_key_prices(db: Path) -> list:
+    """Prix d'une cle de palier = jetons de la montee de 20 etages qui y mene (tower_token_shop.json
+    _meta.key_price_rule) : tower_tokens_per_floor x somme des paliers P, P-5, P-10, P-15 (>= tier)."""
+    shop_p, tower_p = db / "systems" / "tower_token_shop.json", db / "systems" / "tower.json"
+    if not shop_p.exists() or not tower_p.exists():
+        return []
+    tower = load_json(tower_p)
+    keys = tower.get("keys", {})
+    tier, prefix = keys.get("tier_size", 5), keys.get("item_prefix", "key_tower_floor_")
+    per = tower.get("rewards", {}).get("palier_chest", {}).get("tower_tokens_per_floor", 0)
     errors = []
-    path = db / "systems" / "arena_token_shop.json"
+    for o in load_json(shop_p).get("offers", []):
+        gid = str(o.get("grant_id", ""))
+        if not gid.startswith(prefix):
+            continue
+        try:
+            floor = int(gid[len(prefix):])
+        except ValueError:
+            continue
+        expected = per * sum(f for f in range(floor, floor - 4 * tier, -tier) if f >= tier)
+        if o.get("price") != expected:
+            errors.append(f"[tower_token_shop] {o.get('id')} : prix {o.get('price')!r}, la regle donne {expected} "
+                          f"(jetons de la montee de 20 etages jusqu'a l'etage {floor})")
+    return errors
+
+
+def _validate_token_shop(db: Path, all_item_ids: set, name: str, currency: str) -> list:
+    errors = []
+    path = db / "systems" / f"{name}.json"
+    tag = f"[{name}]"
     if not path.exists():
         return errors
     shop = load_json(path)
+    if shop.get("currency") != currency:
+        errors.append(f"{tag} currency={shop.get('currency')!r} : {currency} attendu")
     emotes = {e["id"] for e in load_json(db / "ui" / "emotes.json").get("emotes", [])}
     cosmetics = {c["id"] for c in load_json(db / "ui" / "cosmetics.json").get("cosmetics", [])}
     # Les objets des metiers (Braises, parchemins...) vivent dans profession_recipes.json new_items.
@@ -3048,28 +3103,28 @@ def validate_arena_token_shop(db: Path, all_item_ids: set) -> list:
     for o in shop.get("offers", []):
         oid = o.get("id", "")
         if oid in seen:
-            errors.append(f"[arena_token_shop] offre en double '{oid}'")
+            errors.append(f"{tag} offre en double '{oid}'")
         seen.add(oid)
         kind, gid = o.get("kind"), o.get("grant_id", "")
         known = {"item": all_item_ids, "emote": emotes, "cosmetic": cosmetics}.get(kind)
         if known is None:
-            errors.append(f"[arena_token_shop] {oid} : kind '{kind}' inconnu (item|emote|cosmetic)")
+            errors.append(f"{tag} {oid} : kind '{kind}' inconnu (item|emote|cosmetic)")
         elif gid not in known:
-            errors.append(f"[arena_token_shop] {oid} : {kind} '{gid}' introuvable")
+            errors.append(f"{tag} {oid} : {kind} '{gid}' introuvable")
         if not _is_pos_int(o.get("price")):
-            errors.append(f"[arena_token_shop] {oid} : price doit etre un entier > 0")
+            errors.append(f"{tag} {oid} : price doit etre un entier > 0")
         if kind == "item" and not _is_pos_int(o.get("quantity")):
-            errors.append(f"[arena_token_shop] {oid} : quantity doit etre un entier > 0")
+            errors.append(f"{tag} {oid} : quantity doit etre un entier > 0")
         if not _is_nonneg_int(o.get("weekly_cap", 0)) or not _is_nonneg_int(o.get("min_level", 0)):
-            errors.append(f"[arena_token_shop] {oid} : weekly_cap / min_level doivent etre des entiers >= 0")
+            errors.append(f"{tag} {oid} : weekly_cap / min_level doivent etre des entiers >= 0")
         if o.get("category") not in cats:
-            errors.append(f"[arena_token_shop] {oid} : categorie '{o.get('category')}' inconnue")
+            errors.append(f"{tag} {oid} : categorie '{o.get('category')}' inconnue")
         if kind == "item" and o.get("category") == "progress" and not o.get("weekly_cap"):
-            errors.append(f"[arena_token_shop] {oid} : un objet de progression doit avoir un weekly_cap")
+            errors.append(f"{tag} {oid} : un objet de progression doit avoir un weekly_cap")
         if kind == "item" and any(gid.endswith(sfx) for sfx in ("_rank_3", "_rank_4", "_rank_5", "_r3", "_r4", "_r5")):
-            errors.append(f"[arena_token_shop] {oid} : '{gid}' est de rang 3+, regle volume-jamais-puissance")
+            errors.append(f"{tag} {oid} : '{gid}' est de rang 3+, regle volume-jamais-puissance")
     if not _is_pos_int(shop.get("max_lots_per_purchase")):
-        errors.append("[arena_token_shop] max_lots_per_purchase doit etre un entier > 0")
+        errors.append(f"{tag} max_lots_per_purchase doit etre un entier > 0")
     return errors
 
 

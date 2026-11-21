@@ -90,6 +90,27 @@
         "crafting"
       ],
       "_design_note": "Portefeuille au COMPTE (colonne accounts.arena_tokens, comme les diamants) : le personnage de tournoi gagne des jetons et les retrouve en aventure. Bareme dans config/rewards.json arena_match. Credit idempotent par match (table arena_match_rewards). Les usages (artisanat, rayon d'equipement) ne sont pas encore construits."
+    },
+    {
+      "id": "tower_tokens",
+      "name_fr": "Jetons de la Tour",
+      "name_en": "Tower Tokens",
+      "name_short_fr": "Jetons de la Tour",
+      "name_short_en": "Tower Tokens",
+      "description_fr": "Gagnés en franchissant les paliers de la Tour de la Faille. Ils se dépensent chez Rask, à la boutique de la Tour.",
+      "description_en": "Earned by clearing the landings of the Rift Tower. Spend them with Rask, at the Tower shop.",
+      "is_soft_currency": true,
+      "scope": "account",
+      "icon": "currency_tower_tokens",
+      "sources": [
+        "tower_palier_chest",
+        "tower_weekly_chest",
+        "tower_season"
+      ],
+      "uses": [
+        "tower_token_shop"
+      ],
+      "_design_note": "Brief jeton de la Tour (Charleston 21/11). Calque sur arena_tokens : portefeuille au COMPTE (colonne accounts.tower_tokens, migration 151), la Tour se joue en groupe et le progres suit le compte. Une activite, une monnaie : la Tour ne verse plus aucun jeton d'arene (systems/tower.json). L'economie est seule proprietaire du portefeuille : la Tour enregistre le gain puis demande le credit a economy (kanarion.economy.currency.modify, currency tower_tokens, cle d'idempotence + audit_log). Jamais remis a zero en fin de saison. Usage : systems/tower_token_shop.json."
     }
   ],
   "rarity_colors": {
