@@ -444,14 +444,16 @@
     "_enabled": "true = modèle 2. false = règle d'avant (XP par monstre au niveau du monstre, étoiles x palier, pénalité level_difference) à l'XP près, sans code. Bloc obligatoire : absent ou invalide, le service combat refuse de démarrer.",
     "_a_valider": "Livré activé le 21/11/2026 pour test en jeu (décision Charleston). Valeurs de la simulation, à remesurer après quelques jours.",
     "level_gap": {
-      "below_decay_per_level": 0.09,
-      "below_soft_until_levels": 10,
-      "below_floor_from_levels": 15,
+      "below_full_until_ratio": 0.10,
+      "below_full_value": 1.0,
+      "below_mid_ratio": 0.20,
+      "below_mid_value": 0.5,
+      "below_floor_from_ratio": 0.35,
       "below_floor": 0.02,
       "above_bonus_per_level": 0.05,
       "above_max_levels": 10,
-      "formula": "écart = niveau du monstre - niveau du joueur ; d = niveau du joueur - niveau du monstre quand le monstre est plus bas. Monstre au niveau ou au-dessus : g = 1 + above_bonus_per_level x min(écart ; above_max_levels) (au plus +50 %). Monstre plus bas, d <= below_soft_until_levels : g = exp(-below_decay_per_level x d) (64 % à 5 niveaux, 41 % à 10). below_soft_until_levels < d <= below_floor_from_levels : baisse LINÉAIRE de exp(-below_decay_per_level x below_soft_until_levels) jusqu'à below_floor (25 % à 12, 2 % à 15). d > below_floor_from_levels : below_floor (2 %).",
-      "_decision": "Réglage validé par Charleston le 21/11/2026 (simulation SIMU_XP_MODELE2_V2_NIV_20_A_100) : baisse douce jusqu'à 10 niveaux, chute linéaire jusqu'à 2 % à 15 niveaux, plancher de 2 % au-delà."
+      "formula": "Monstre au niveau du joueur ou au-dessus : g = 1 + above_bonus_per_level x min(niveau du monstre - niveau du joueur ; above_max_levels) (au plus +50 %). Monstre plus bas : l'écart se mesure en PROPORTION du niveau du joueur, r = (niveau du joueur - niveau du monstre) / niveau du joueur. r <= below_full_until_ratio : below_full_value (100 %). Jusqu'à below_mid_ratio : linéaire de below_full_value à below_mid_value (100 % à 50 %). Jusqu'à below_floor_from_ratio : linéaire de below_mid_value à below_floor (50 % à 2 %). Au-delà : below_floor (2 %). Joueur 20 : monstre 18 = 100 %, 16 = 50 %, 15 = 34 %, 13 et moins = 2 %.",
+      "_decision": "Courbe en pourcentage du niveau validée par Charleston le 22/11/2026 (SIMU_XP_MODELE2_V3_POURCENTAGE), remplace la courbe en niveaux (exp puis chute de 10 à 15 niveaux)."
     },
     "pack_size": {
       "exponent": 0.7,
@@ -465,11 +467,12 @@
     },
     "examples": [
       {"player": 86, "fight": "Tanière fissure_3, 5 étoiles, 8 loups standard niv 27", "xp": 4563, "before": 40248},
-      {"player": 40, "fight": "4 monstres standard niv 40, 0 étoile", "xp": 4092, "before": 4092},
+      {"player": 60, "fight": "4 monstres standard niv 60, 0 étoile", "xp": 7680, "before": 7680},
       {"player": 40, "fight": "1 monstre standard niv 40, 0 étoile", "xp": 1348, "before": 1023},
       {"player": 40, "fight": "10 monstres standard niv 40, 0 étoile", "xp": 9799, "before": 10230},
-      {"player": 20, "fight": "8 monstres standard niv 5, 0 étoile", "xp": 65, "before": 880},
-      {"player": 40, "fight": "8 monstres standard niv 25, 0 étoile", "xp": 156, "before": 4520}
+      {"player": 20, "fight": "8 monstres standard niv 15, 0 étoile", "xp": 1102, "before": 2256},
+      {"player": 40, "fight": "8 monstres standard niv 32, 0 étoile", "xp": 3902},
+      {"player": 80, "fight": "8 monstres standard niv 52, 0 étoile", "xp": 844}
     ]
   },
   "base_gold": {
