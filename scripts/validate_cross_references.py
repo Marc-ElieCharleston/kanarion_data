@@ -2511,6 +2511,12 @@ def validate_tower_zone_rooms(db: Path, zr) -> list:
         p = zr.get(k)
         if not isinstance(p, dict) or not all(isinstance(p.get(c), (int, float)) for c in ("x", "y")):
             errors.append(f"[tower.json] room.zone_rooms.{k} : x et y numeriques attendus")
+    g = zr.get("group")
+    if isinstance(g, dict) and "contact_radius_px" in g:
+        c = g["contact_radius_px"]
+        if not isinstance(c, (int, float)) or isinstance(c, bool) or c < 0:
+            errors.append(f"[tower.json] room.zone_rooms.group.contact_radius_px={c!r} : nombre >= 0 attendu "
+                          "(0 = pas de contact, presence)")
     v = zr.get("min_client_version", "")
     if not isinstance(v, str) or len(v.split(".")) != 3 or not all(p.isdigit() for p in v.split(".")):
         errors.append(f"[tower.json] room.zone_rooms.min_client_version={v!r} : version x.y.z attendue")
