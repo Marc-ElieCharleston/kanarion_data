@@ -3,7 +3,7 @@
     "version": "2.0",
     "owner": "Regles de la Tour de la Faille (contenu de groupe niveau 60+). Les etages 1-100 sont GENERES dans world/tower_floors.json par scripts/generate_tower.py a partir de ce fichier et du roster de entities/monsters.json ; la CI refuse un fichier d'etages perime (--check). Pour retoucher un etage a la main : floor_overrides ci-dessous, jamais world/tower_floors.json directement.",
     "design": "Valide avec Charleston le 2026-09-30. Contenu VRAIMENT difficile : la difficulte vient des combats, et il faut optimiser tout le personnage (equipement, forge, Koro, keystones). Pas de classement solo : un tank, un soigneur ou un DPS seul ne va pas loin. Etages FIXES : meme etage = meme combat pour tout le monde, ce qui rend le classement juste.",
-    "tour_v1": "Refonte decidee par Charleston le 13/11/2026, perimetre Tour v1 du 16/11 (data + serveur) : palier tous les 5 etages (gardien, coffre par joueur, portails monter / sortir, cle du palier), difficulte par sauts, cles etage 5 a 100 rendues seulement au portail de sortie, points de reprise supprimes. Les mecaniques propres des gardiens seront concues plus tard avec Charleston : en v1, les gardiens sont des boss et elites existants du theme Faille / Abysse, renforces au palier."
+    "tour_v1": "Refonte decidee par Charleston le 13/11/2026, perimetre Tour v1 du 16/11 (data + serveur) : palier tous les 5 etages (gardien, coffre par joueur, portails monter / sortir, cle du palier), difficulte par sauts, cles etage 5 a 100 rendues seulement au portail de sortie (confirme par Charleston le 21/11), points de reprise supprimes. Monnaie : jetons de la Tour (tower_tokens, au compte, jamais remis a zero par la saison) depuis le 21/11, depensables dans systems/tower_token_shop.json. Les mecaniques propres des gardiens seront concues plus tard avec Charleston : en v1, les gardiens sont des boss et elites existants du theme Faille / Abysse, renforces au palier."
   },
   "access": {
     "min_level": 60,
@@ -247,6 +247,7 @@
     "consumed_on_entry": true,
     "tradeable": true,
     "granted_to": "key_holder_on_exit",
+    "_granted_to_decision_2026_11_21": "Charleston 21/11 : on GARDE cette regle. Mourir dans la Tour fait perdre la cle ; on ne la garde qu'en sortant soi-meme par le portail d'un palier. Le serveur sait aussi appliquer key_holder_on_palier_clear (cle donnee des la chute du gardien), proposee puis refusee le 21/11 : ne pas l'activer sans nouvelle decision. Les cles d'etage inferieur viennent aussi du coffre (rewards.palier_chest.lower_key).",
     "_granted_to_note": "Tour v1 (Charleston 13/11) : le porteur de la cle (le chef qui l'a consommee a l'entree, ou le chef d'un groupe entre sans cle) ne recupere une cle qu'en SORTANT par le portail d'un palier : sortie a l'etage P = cle de l'etage P. Defaite, abandon, sortie ailleurs qu'a un portail de palier ou depart de la montee : cle perdue. Une coupure suivie d'un retour sous combat.json timing.abandoned_room_timeout_seconds ne la fait pas perdre. Une panne serveur la fait perdre aussi (Charleston 16/11). Les autres cles ne viennent que du coffre de palier (items/loot_tables.json tower_chest key_chance). Charleston 19/11 : la cle de SORTIE ne revient qu'au CHEF (porteur ET chef) ; un membre qui sort n'en recoit pas."
   },
   "rewards": {
@@ -255,12 +256,17 @@
       "_why": "Tour v1 (Charleston 13/11) : apres chaque gardien, UN coffre par joueur, ouvert une seule fois. A l'ouverture, le serveur tire la rarete de CE coffre (peu commun, rare, epique, legendaire) avec des chances qui montent avec le palier ; la rarete fixe le nombre d'objets et leur qualite. Coffre pas ouvert avant de passer un portail = perdu. Aucun butin lie au personnage. Remplace le coffre de gardien fixe.",
       "loot_table": "tower_chest",
       "gold_per_floor": 150,
-      "arena_tokens_per_floor": 1,
-      "_scaling": "Or et jetons d'arene du coffre multiplies par le numero de l'etage du palier, comme l'ancien coffre de gardien (valide par Charleston le 2026-10-01) : etage 5 = 750 or et 5 jetons, etage 100 = 15000 or et 100 jetons. Le reste du coffre vient de la table tower_chest."
+      "tower_tokens_per_floor": 1,
+      "lower_key": {
+        "chance": 0.2,
+        "pick": "uniform_lower_paliers",
+        "_a_valider": "Charleston 21/11 : le coffre de palier peut donner une cle d'un etage INFERIEUR a celui du palier. Proposition a valider : 20 % par coffre ; la cle est tiree uniformement parmi les paliers inferieurs (coffre du palier 20 : cle 5, 10 ou 15 ; jamais la cle du palier courant ni une superieure ; au palier 5, aucune). Tirage independant de la chance de cle de items/loot_tables.json tower_chest (key_chance), stocke avec le reste du tirage du coffre et paye au meme endroit, de facon idempotente."
+      },
+      "_scaling": "Or et jetons de la Tour (items/currencies.json tower_tokens, au compte, depuis le 21/11 : la Tour ne verse plus aucun jeton d'arene) du coffre multiplies par le numero de l'etage du palier, comme l'ancien coffre de gardien (valide par Charleston le 2026-10-01) : etage 5 = 750 or et 5 jetons, etage 100 = 15000 or et 100 jetons. Le reste du coffre vient de la table tower_chest."
     }
   },
   "season": {
-    "_why": "Classement de groupe par saison mensuelle. Seul le classement repart a zero ; les cles restent.",
+    "_why": "Classement de groupe par saison mensuelle. Seul le classement repart a zero ; les cles ET les jetons de la Tour (accounts.tower_tokens) restent.",
     "length": "calendar_month_utc",
     "ranking": "highest_floor_desc_then_time_asc",
     "_time_fairness": "Le temps n'est compare qu'entre montees parties du MEME palier : une montee lancee a l'etage 41 avec une cle ne bat pas au temps une montee partie de l'etage 1.",
@@ -268,17 +274,17 @@
       {
         "rank_max": 1,
         "title_id": "title_tower_conqueror",
-        "arena_tokens": 500
+        "tower_tokens": 500
       },
       {
         "rank_max": 10,
         "title_id": "title_tower_vanguard",
-        "arena_tokens": 250
+        "tower_tokens": 250
       },
       {
         "rank_max": 100,
         "title_id": "title_tower_climber",
-        "arena_tokens": 100
+        "tower_tokens": 100
       }
     ],
     "titles": {
@@ -433,18 +439,18 @@
       ]
     },
     "chest": {
-      "_comment": "Un coffre par seuil, par personnage et par semaine : verse au premier etage gagne au moins egal au seuil dans la semaine de la montee (n'importe quelle montee, reprise comprise), aux seuls membres presents. Les jetons d'arene vont au compte, comme le coffre de gardien.",
+      "_comment": "Un coffre par seuil, par personnage et par semaine : verse au premier etage gagne au moins egal au seuil dans la semaine de la montee (n'importe quelle montee, reprise comprise), aux seuls membres presents. Les jetons de la Tour vont au compte, comme le coffre de gardien.",
       "thresholds": [
         {
           "floor": 20,
           "gold": 2000,
-          "arena_tokens": 10,
+          "tower_tokens": 10,
           "items": []
         },
         {
           "floor": 40,
           "gold": 5000,
-          "arena_tokens": 25,
+          "tower_tokens": 25,
           "items": [
             {
               "id": "cons_hp_potion_t5",
@@ -455,7 +461,7 @@
         {
           "floor": 60,
           "gold": 9000,
-          "arena_tokens": 50,
+          "tower_tokens": 50,
           "items": [
             {
               "id": "cons_hp_potion_t5",
@@ -470,13 +476,13 @@
         {
           "floor": 80,
           "gold": 14000,
-          "arena_tokens": 80,
+          "tower_tokens": 80,
           "items": []
         },
         {
           "floor": 100,
           "gold": 20000,
-          "arena_tokens": 120,
+          "tower_tokens": 120,
           "items": []
         }
       ]

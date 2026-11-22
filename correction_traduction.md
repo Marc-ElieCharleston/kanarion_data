@@ -148,6 +148,9 @@ Ce glossaire est la **reference unique**. Toute deviation est un bug.
 | Empreinte | Imprint | Garde tel quel pour l'instant (decision du 2026-10-25). |
 | Mercenaire | Mercenary | Jamais « companion » seul pour un mercenaire en EN. |
 | Souffle | Breath | Jamais « Mana » dans le texte joueur. |
+| Jetons d'arène | Arena Tokens | Monnaie de l'arène (cle technique `arena_tokens`). |
+| Jetons de la Tour | Tower Tokens | Monnaie de la Tour de la Faille depuis le 2026-11-21 (cle technique `tower_tokens`). Jamais « jetons » seul quand les deux monnaies peuvent se confondre. |
+| Clé de palier | Landing key | Cle `key_tower_floor_<P>` : fait entrer le groupe a l'etage P + 1. |
 
 A trancher : quelques textes FR emploient « compagnons » pour familiers ET mercenaires
 ensemble (groupe, tour, salle perso, file PvP). Leur EN « companions » se lit desormais

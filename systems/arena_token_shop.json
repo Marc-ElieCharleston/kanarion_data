@@ -2,11 +2,11 @@
   "_meta": {
     "version": "1.0",
     "last_updated": "2026-10-18",
-    "description": "Boutique des jetons d'arene (lot 1 de l'endgame, 2026-10-18). Les jetons (items/currencies.json arena_tokens, portefeuille au COMPTE accounts.arena_tokens) se gagnent a l'arene, dans la Tour, les coffres de contrats et les missions de guilde ; ils n'avaient aucun usage. Le serveur (services/economy, token_shop/) lit ce fichier, le client n'envoie qu'un offer_id.",
+    "description": "Boutique des jetons d'arene (lot 1 de l'endgame, 2026-10-18). Les jetons (items/currencies.json arena_tokens, portefeuille au COMPTE accounts.arena_tokens) se gagnent a l'arene, dans les coffres de contrats et les missions de guilde ; ils n'avaient aucun usage. Depuis le 21/11 la Tour ne verse plus de jetons d'arene : elle a sa propre monnaie (tower_tokens) et sa boutique (systems/tower_token_shop.json). Le serveur (services/economy, token_shop/) lit ce fichier, le client n'envoie qu'un offer_id.",
     "status": "A VALIDER par Charleston : catalogue, prix, plafonds et niveaux sont des propositions.",
     "rule": "VOLUME, JAMAIS DE PUISSANCE. On vend du temps gagne sur ce qui s'obtient deja autrement (cosmetiques, confort, pierres et Braises de bas rang), jamais ce qui fait la difference au sommet (pas de pierre rang 3+, pas de Braise rang 3+, pas de stigmate, d'unique, d'equipement, de grimoire ni de cle de la Tour). Rien qui donne de la puissance en PvP : les nourritures de combat sont exclues.",
     "atomic": "Un achat = UNE transaction : verrou du portefeuille, plafond de la semaine, debit, octroi (objet dans le sac du personnage, emote ou cosmetique du compte), ligne arena_token_purchases et journal d'audit avec la cle d'idempotence. Sac plein, plafond atteint, solde court, niveau trop bas ou cosmetique deja possede : rien ne bouge.",
-    "income_reference": "Ordre de grandeur par semaine (valeurs du 2026-10-18) : joueur PvE avec contrats ~65 (coffres 5 x 7 + 30), membre de guilde ~35 de plus, joueur d'arene quotidien jusqu'a ~700 (5 premieres victoires doublees par jour x 10), Tour : 1 jeton x numero d'etage par gardien.",
+    "income_reference": "Ordre de grandeur par semaine (valeurs du 2026-10-18) : joueur PvE avec contrats ~65 (coffres 5 x 7 + 30), membre de guilde ~35 de plus, joueur d'arene quotidien jusqu'a ~700 (5 premieres victoires doublees par jour x 10) (la Tour n'en verse plus depuis le 21/11 : jetons de la Tour).",
     "cannibalization": "title_arene et les emotes sont AUSSI en vente en diamants (ui/cosmetics.json, ui/emotes.json). Les vendre en jetons ouvre une voie gratuite vers des objets payants : a trancher (garder, retirer, ou reserver des emotes et un titre aux jetons)."
   },
   "currency": "arena_tokens",
@@ -48,7 +48,7 @@
     {"id": "tok_rift_ember_r2", "kind": "item", "grant_id": "mat_rift_ember_r2", "quantity": 1, "price": 60, "weekly_cap": 2, "min_level": 25, "category": "progress"}
   ],
   "_excluded": {
-    "dungeon_keys": "Aucune cle de donjon utilisable : key_wild_den_*, key_lvl20_bandit_den_* et key_asher_tower_* visent des donjons sans entree sur la carte, key_tower_floor_* sont les cles de la Tour (etage de depart, rendues seulement au portail de sortie d un palier).",
+    "dungeon_keys": "Aucune cle de donjon utilisable : key_wild_den_*, key_lvl20_bandit_den_* et key_asher_tower_* visent des donjons sans entree sur la carte, key_tower_floor_* sont les cles de la Tour (etage de depart) : elles ne se vendent JAMAIS ici, meme cheres, sinon un joueur d'arene acheterait son entree a l'etage 21 sans avoir grimpe. Elles se vendent en jetons de la Tour (systems/tower_token_shop.json), qui ne se gagnent qu'en grimpant.",
     "fragments": "Aucun fragment de stigmate n'existe en data. mat_unlock_stone_* et mat_replace_token_* (substat_crafting_system.json) n'ont pas de lecteur serveur verifie : exclus tant que ce n'est pas tranche.",
     "food": "Les nourritures donnent des stats de combat : exclues (regle PvP)."
   }
