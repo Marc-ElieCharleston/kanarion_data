@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": "2.0",
-    "last_updated": "2026-10-17",
+    "last_updated": "2026-11-21",
     "description": "Pass Premium a deux niveaux (Premium, Premium+), confort et gain de temps, jamais de puissance en combat. Remplace le pass unique du 2026-10-13 (_meta/carnet/pass_premium.md). Source unique : niveaux, prix en diamants, duree, avantages. Le serveur lit ce fichier et n'envoie au client que les avantages qu'il applique. Prix de reference : 100 diamants = 1 euro (items/currencies.json) ; aucun prix en euros ici (data publique). Toutes les valeurs du 2026-10-17 sont A VALIDER par Charleston.",
     "rule": "aucune stat, aucun bonus en combat, aucun contenu ferme aux non-abonnes",
     "readers": {
@@ -14,7 +14,7 @@
       "benefits.auction_trade_away_from_npc_in_safe_zone": "economy, handle_auction_create / handle_auction_buyout via crafting::may_craft_here (la meme decision que la fabrication, postes de systems/economy.json auction_house.trade_posts) : vrai = l'abonne achete et vend a l'hotel des ventes sans etre aupres de Silas, mais seulement en zone sure (meme lecture que ci-dessus) et hors combat, a la position que presence connait. La consultation (recherche, prix, ses annonces) est libre pour tous, partout. Decision Charleston du 2026-10-28 pour la consultation ; l'achat et la vente a distance reserves au Premium en ville sont A VALIDER ; faux = tout le monde achete et vend aupres de Silas.",
       "benefits.bag_bonus_slots / bank_bonus_slots": "economy, InventoryManager::capacity : places de sac / banque en plus tant que le niveau est actif (Premium+ seulement, 0 si absent). A l'expiration rien n'est perdu : les objets restent, on peut les retirer, on ne peut plus en ajouter tant que le total depasse la capacite ; le seuil de surcharge garde le bonus, l'ancien abonne n'est jamais bloque. Valeurs du 2026-10-17 a valider (une extension de sac = 10 places).",
       "tiers": "economy, premium/premium_pass.hpp : prix (price_diamonds), duree (period_days), diamants reverses (bonus_diamonds), ordre (rank). Achat aux diamants uniquement, 0x0487.",
-      "offer": "economy : enabled ferme l'achat sans toucher aux abonnes en cours ; max_banked_days plafonne la reserve de jours.",
+      "offer": "economy : enabled ferme l'achat sans toucher aux abonnes en cours ; max_banked_days plafonne la reserve de jours. Ouvert a tous le 2026-11-21 (decision Charleston) : achat aux diamants (0x0487) sur toutes les plateformes, et bouton Google Play (premium_30d / premium_plus_30d, systems/store_products.json) sur Android.",
       "planned": "Avantages decides mais PAS branches. Le serveur ne les lit pas, le client ne les affiche pas tant qu'ils ne marchent pas."
     }
   },
@@ -61,7 +61,7 @@
     }
   },
   "offer": {
-    "enabled": false,
+    "enabled": true,
     "max_banked_days": 365
   },
   "planned": {
