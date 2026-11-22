@@ -438,6 +438,43 @@
     ],
     "_migrated_from": "items/loot_tables.json multipliers.level_difference"
   },
+  "combat_xp": {
+    "description": "XP de combat PvE, « modèle 2 » (simulation du 21/11/2026, section 10, validé par Charleston pour test). Chaque monstre tué vaut base(niveau du JOUEUR) x xp_multiplier du monstre x état (elite/boss) x g(écart), où g dépend de l'écart niveau du monstre - niveau du joueur (level_gap). Les valeurs sont triées de la plus forte à la plus faible et le k-ième monstre compte pour F(k) - F(k-1) (pack_size, rendement décroissant). Le total est multiplié UNE fois par le bonus de rencontre min(cap ; 1 + (étoiles.xp - 1) + (palier.xp - 1)) (encounter_bonus : étoiles et palier ADDITIONNÉS au lieu de multipliés), puis par groupe x événement x guilde x room_level_gap x faille, produit plafonné à global_cap. Un seul arrondi, au total du combat. La pénalité level_difference ne s'applique plus à l'XP de combat quand enabled vaut true (elle reste sur l'OR et pour les autres lecteurs). Même moteur pour l'XP des familiers (niveau du familier) et pour l'XP partielle d'un combat abandonné. Lu par server-combat (drop_config_parser parse_reward_scaling, LootRoller::roll_experience / roll_loot).",
+    "enabled": true,
+    "_enabled": "true = modèle 2. false = règle d'avant (XP par monstre au niveau du monstre, étoiles x palier, pénalité level_difference) à l'XP près, sans code. Bloc obligatoire : absent ou invalide, le service combat refuse de démarrer.",
+    "_a_valider": "Livré activé le 21/11/2026 pour test en jeu (décision Charleston). Valeurs de la simulation, à remesurer après quelques jours.",
+    "level_gap": {
+      "below_full_until_ratio": 0.10,
+      "below_full_value": 1.0,
+      "below_mid_ratio": 0.20,
+      "below_mid_value": 0.5,
+      "below_floor_from_ratio": 0.35,
+      "below_floor": 0.02,
+      "above_bonus_per_level": 0.05,
+      "above_max_levels": 10,
+      "formula": "Monstre au niveau du joueur ou au-dessus : g = 1 + above_bonus_per_level x min(niveau du monstre - niveau du joueur ; above_max_levels) (au plus +50 %). Monstre plus bas : l'écart se mesure en PROPORTION du niveau du joueur, r = (niveau du joueur - niveau du monstre) / niveau du joueur. r <= below_full_until_ratio : below_full_value (100 %). Jusqu'à below_mid_ratio : linéaire de below_full_value à below_mid_value (100 % à 50 %). Jusqu'à below_floor_from_ratio : linéaire de below_mid_value à below_floor (50 % à 2 %). Au-delà : below_floor (2 %). Joueur 20 : monstre 18 = 100 %, 16 = 50 %, 15 = 34 %, 13 et moins = 2 %.",
+      "_decision": "Courbe en pourcentage du niveau validée par Charleston le 22/11/2026 (SIMU_XP_MODELE2_V3_POURCENTAGE), remplace la courbe en niveaux (exp puis chute de 10 à 15 niveaux)."
+    },
+    "pack_size": {
+      "exponent": 0.7,
+      "bonus_per_extra_monster": 0.05,
+      "reference_count": 4,
+      "formula": "F(n) = n^exponent x (1 + bonus_per_extra_monster x (n - 1)), normalisé pour que F(reference_count) = reference_count : un combat de 4 monstres rapporte exactement comme avant. Poids total : 1 monstre 1,32 ; 2 : 2,25 ; 4 : 4 ; 8 : 7,63 ; 10 : 9,58."
+    },
+    "encounter_bonus": {
+      "cap": 4.0,
+      "formula": "min(cap ; 1 + (encounter_stars.xp - 1) + (dungeon_difficulty.xp - 1)). 5 étoiles + fissure_3 : x4 (au lieu de x8,05). 5 étoiles seules : x3,5 (inchangé)."
+    },
+    "examples": [
+      {"player": 86, "fight": "Tanière fissure_3, 5 étoiles, 8 loups standard niv 27", "xp": 4563, "before": 40248},
+      {"player": 60, "fight": "4 monstres standard niv 60, 0 étoile", "xp": 7680, "before": 7680},
+      {"player": 40, "fight": "1 monstre standard niv 40, 0 étoile", "xp": 1348, "before": 1023},
+      {"player": 40, "fight": "10 monstres standard niv 40, 0 étoile", "xp": 9799, "before": 10230},
+      {"player": 20, "fight": "8 monstres standard niv 15, 0 étoile", "xp": 1102, "before": 2256},
+      {"player": 40, "fight": "8 monstres standard niv 32, 0 étoile", "xp": 3902},
+      {"player": 80, "fight": "8 monstres standard niv 52, 0 étoile", "xp": 844}
+    ]
+  },
   "base_gold": {
     "_comment": "Or de base d un monstre, par niveau. PROPRIETAIRE UNIQUE de cette valeur. Lue par server-combat/src/content/content_loader.cpp (load_reward_multipliers). La formule complete est le champ `formula.gold` plus haut : or = (curve_base + curve_coef x niveau ^ curve_exponent) x gold_weight du monstre x variance x PRODUIT(familles.gold) x (1 - penalite_ecart).",
     "_why_here": "Elle vivait dans items/loot_tables.json base_drops.gold, alors que CE fichier se declare proprietaire unique des recompenses et ne la nommait que dans une formule, sans dire ou la trouver. Qui la cherchait tombait sur le defaut du membre C++ (2.0f) et le prenait pour la reponse : dix fois la vraie valeur, sans aucune erreur. Un chiffrage complet d economie s est trompe ainsi le 2026-08-31.",
