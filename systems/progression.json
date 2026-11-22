@@ -11,7 +11,8 @@
     "xp_source": "lookup_table",
     "xp_source_note": "La lookup table est la source de verite, cote serveur ET client (level_calc.cpp la charge, BalanceConfig la relit). La formule polynomiale sert d'interpolation pour les niveaux non definis. mvp_cap (20) a ete retire le 2026-09-10 : aucun code ne le lisait.",
     "xp_formula_fallback": "xp_base * level^xp_exponent",
-    "xp_base": 27,
+    "xp_base": 363,
+    "_xp_base_note": "Le 22/11/2026 (0.21.28, valide par Charleston) : 27 -> 363. La table est dense de 2 a 100 et le polynome ne sert plus qu'au niveau 101, lu par base_xp_for_level(100) (XP de combat d'un joueur ou d'un familier niveau 100) et par l'XP restante affichee au niveau 100. Avec 27 il donnait 21 758 (base(100) = 1 116 contre 14 360 pour base(99)). 363 x 101^1,45 = 292 531, soit le pas constant des derniers niveaux (+15 000 par niveau de 95 a 100 : 277 500 + 15 000 = 292 500), d'ou base(100) = 15 002. On NE met PAS de cle 101 dans xp_table : le plafond de niveau du serveur est la plus grande cle de la table (shared/gameplay/level_calc.cpp, compute_level_from_xp sans autre garde), une cle 101 ouvrirait le niveau 101.",
     "xp_exponent": 1.45,
     "xp_table": {
       "2": 100,
