@@ -35,7 +35,7 @@ Validation happens at three levels:
 
 ## Database Structure
 
-- **`_meta/`** — Version info (`version.json`), roadmap (`ROADMAP.md`), ideas backlog, 15 design suggestions in `suggestions/`
+- **`_meta/`** — Version info (`version.json`), changelog joueur (`changelog.json`), ideas backlog (`ideas_to_integrate.json`), 14 design suggestions in `suggestions/` (`.txt`), carnet de conception (`carnet/`, `conception_*/`). Pas de `ROADMAP.md` (absent du depot ; `_meta/index.json` le cite encore). Les plans et audits livres sortent vers l'archive hors depot (`Old_fichier_md_a_ne_pas_suivre/cleanup_<date>/`).
 - **`classes/`** — 6 base classes (warrior, mage, healer, archer, rogue, artisan), each with `skills.json` and `passives.json`. Also `common_passives.json` (10 universal passives) and `_classes_index.json` (6 classes x 4 subclasses x 2 tier3 = 48 tier3 specs)
 - **`combat/`** — Targeting system (`targeting.json`), LoS mechanics, ability ideas. Le plateau courant est un **12x6** ; les grilles nommees de `targeting.json` sont ecrites a la main et toute grille absente retombe sur les dimensions de `config/game.json`
 - **`config/`** — Combat formulas (`combat.json`), game constants (`game.json`), monster AI (`monster_ai.json`), skill system (`skill_system.json`), role tags (`roles.json`), monster skill scaling, **monster scaling model (`monster_scaling_model.json`: derived-stats architecture — see Monster Structure)**
