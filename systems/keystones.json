@@ -31,7 +31,7 @@
       "Quatre emplacements ; une variante ne s'équipe qu'une fois, deux variantes d'une même famille peuvent se porter ensemble.",
       "Rangs C à SS : nature identique, valeurs dans runtime/runtime_scaling.",
       "Rôles de matrice : tank, DPS mêlée, DPS physique distance, DPS magique, healer, support buffer, support debuff/entrave.",
-      "Recharges d'Harmonie (soin, bouclier, vigueur : 15 s en C, 10/10/12 s en SS) et de Frénésie réductrice (4 s puis 2 s) : PROPOSITION du 23/11, À VALIDER par Charleston. Elles étaient à 0 tant qu'on ne pouvait porter qu'une variante par famille."
+      "Recharges des variantes qui se déclenchent souvent, décision Charleston du 23/11 (elles étaient à 0 tant qu'on ne portait qu'une variante par famille) : Harmonie soin et bouclier 15 s en C puis 10 s en SS, Harmonie vigueur 15 s puis 12 s, Frénésie réductrice 4 s puis 2 s, rangs intermédiaires interpolés. Restent à 0 : Maîtrise prolongée, Bénédiction prolongée et les déclencheurs de début de combat ou de premier sort."
     ],
     "runtime_contract": {
       "engine": "proc_processor",
@@ -943,7 +943,7 @@
             "triggers": [
               {
                 "trigger": "on_kill",
-                "cooldown": 4,
+                "cooldown": 4.0,
                 "effects": [
                   {
                     "stat": "cooldown_reduction",
@@ -956,8 +956,8 @@
           },
           "runtime_scaling": {
             "/triggers/0/cooldown": [
-              4,
-              2
+              4.0,
+              2.0
             ],
             "/triggers/0/effects/0/value": [
               10,
@@ -3548,11 +3548,13 @@
           "scaling": {
             "C": {
               "every_n": 5,
-              "value": 4
+              "value": 4,
+              "cooldown": 15
             },
             "SS": {
               "every_n": 3,
-              "value": 10
+              "value": 10,
+              "cooldown": 10
             }
           },
           "runtime": {
@@ -3560,7 +3562,7 @@
             "triggers": [
               {
                 "trigger": "every_n_skills",
-                "cooldown": 15,
+                "cooldown": 15.0,
                 "effects": [
                   {
                     "heal_percent_max_hp": 4,
@@ -3573,8 +3575,8 @@
           },
           "runtime_scaling": {
             "/triggers/0/cooldown": [
-              15,
-              10
+              15.0,
+              10.0
             ],
             "/triggers/0/effects/0/heal_percent_max_hp": [
               4,
@@ -3620,12 +3622,14 @@
             "C": {
               "every_n": 5,
               "value": 5,
-              "duration": 5
+              "duration": 5,
+              "cooldown": 15
             },
             "SS": {
               "every_n": 3,
               "value": 12,
-              "duration": 8
+              "duration": 8,
+              "cooldown": 10
             }
           },
           "runtime": {
@@ -3633,7 +3637,7 @@
             "triggers": [
               {
                 "trigger": "every_n_skills",
-                "cooldown": 15,
+                "cooldown": 15.0,
                 "effects": [
                   {
                     "apply_shield_percent_max_hp": 5,
@@ -3647,8 +3651,8 @@
           },
           "runtime_scaling": {
             "/triggers/0/cooldown": [
-              15,
-              10
+              15.0,
+              10.0
             ],
             "/triggers/0/effects/0/apply_shield_percent_max_hp": [
               5,
@@ -3705,12 +3709,14 @@
             "C": {
               "every_n": 5,
               "value": 8,
-              "duration": 6
+              "duration": 6,
+              "cooldown": 15
             },
             "SS": {
               "every_n": 3,
               "value": 20,
-              "duration": 10
+              "duration": 10,
+              "cooldown": 12
             }
           },
           "runtime": {
@@ -3718,7 +3724,7 @@
             "triggers": [
               {
                 "trigger": "every_n_skills",
-                "cooldown": 15,
+                "cooldown": 15.0,
                 "effects": [
                   {
                     "apply_status": "atk_up",
@@ -3739,8 +3745,8 @@
           },
           "runtime_scaling": {
             "/triggers/0/cooldown": [
-              15,
-              12
+              15.0,
+              12.0
             ],
             "/triggers/0/effects/0/stacks_to_apply": [
               2,
