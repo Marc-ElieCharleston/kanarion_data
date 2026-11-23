@@ -85,15 +85,28 @@ def stone_level_caps():
     du +N vise peut encore exiger plus : c'est le « jusqu'a +8 » de la phrase).
     Le dernier rang va jusqu'au bout de sa tranche. Les seuils doivent etre ceux des
     tranches de rank_system, sinon le script s'arrete (deux sources divergentes).
+
+    equipment_rank_gate.item_rank_offset (2026-11-23, absent = 0) : le minimum impose
+    par l'objet est son rang MOINS ce decalage (au moins 1), comme
+    EnhancementRules::min_rank_for_level_req. Une pierre de rang N passe donc tout
+    objet de rang N + decalage ou moins (rang 1 et decalage 2 : objets de niveau 60
+    ou moins).
     """
     b = bands()
-    gate = load("systems/enhancement_system.json")["equipment_rank_gate"]["min_stone_rank_by_level_req"]
+    gate_node = load("systems/enhancement_system.json")["equipment_rank_gate"]
+    gate = gate_node["min_stone_rank_by_level_req"]
+    offset = int(gate_node.get("item_rank_offset", 0))
     mins = {int(str(g["stone_rank"]).replace("rank_", "")): int(g["min_level_req"]) for g in gate}
     for n in range(1, 6):
         if mins.get(n) != b[n][0]:
             raise SystemExit("systems/enhancement_system.json equipment_rank_gate rank_%d (%s) != debut de la "
                              "tranche items/panoplies.json rang_%d (%d)" % (n, mins.get(n), n, b[n][0]))
-    return {n: (mins[n + 1] - 1 if n + 1 in mins else b[n][1]) for n in range(1, 6)}
+    top = max(mins)
+    caps = {}
+    for n in range(1, 6):
+        r = min(n + offset, top)
+        caps[n] = mins[r + 1] - 1 if r + 1 in mins else b[r][1]
+    return caps
 
 
 def sub_one(rx, text, repl, where):
