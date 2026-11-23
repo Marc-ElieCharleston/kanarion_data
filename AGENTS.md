@@ -107,6 +107,24 @@ Players choose a faction at level 60. Subclass lore must NOT lock players into a
 
 - **⚠️ LETTRE INTERNE ≠ LETTRE AFFICHÉE (décision produit 2026-10-01)** : en data, en base et dans les ids, les rangs restent `C/B/A/S/SS` (ou 1..5) et ne changent JAMAIS (`koro_<x>_c..ss`, `book_<x>_rank_c..ss`, `ks_<x>_*`, champs `rank` / `quality_cap` / `contract_rank`, `custom_data.rank`) : ces objets sont dans les inventaires en prod. Le joueur lit **D, C, B, A, S** (C→D, B→C, A→B, S→A, SS→S). Tout texte joueur écrit en data (noms `(X)`, `au rang X`, titres de contrat, suffixes de variantes de ressource) porte la lettre AFFICHÉE ; règle et table dans `systems/professions.json` `quality.display_letters`, garde CI `validate_cross_references.py` étape 7b. Les générateurs (`generate_koro_catalog.py`, `gen_pet_books.py`) écrivent déjà la lettre affichée. Les rangs I..V (équipement, pierres, arène) ne sont pas des lettres. Côté client : `RankDisplay.letter()`.
 
+### Keystones (stigmates) : rangs, identifiants, règles
+
+Trois écritures d'un même rang, à ne JAMAIS renommer (objets en inventaire en prod, décision Charleston du 23/11 : on documente le décalage, on ne touche ni au code ni aux noms) :
+
+| Suffixe d'id d'objet (`items/keystone_items.json`) | Rang interne (`rank`, runtime `@C..@SS`) | `rank_index` | `level_req` | Lettre affichée au joueur |
+|---|---|---|---|---|
+| `ks_<famille>_a` | C | 1 | 1 | D |
+| `ks_<famille>_b` | B | 2 | 21 | C |
+| `ks_<famille>_c` | A | 3 | 41 | B |
+| `ks_<famille>_s` | S | 4 | 61 | A |
+| `ks_<famille>_ss` | SS | 5 | 81 | S |
+
+- **Piège propre aux stigmates** : leur suffixe suit l'ORDRE des rangs (`_a` = 1er rang = C), pas la lettre interne. `ks_x_c` est donc le rang interne **A** (affiché B), alors que chez les cartes Koro (`koro_<x>_c`) et les grimoires de familier (`book_<x>_rank_c`) le suffixe EST la lettre interne (`_c` = C, affiché D). Lettres internes C..SS et lettres affichées D..S sont, elles, communes aux trois familles (section précédente).
+- **Emplacements** : 4, débloqués aux niveaux 30 / 50 / 70 / 100 (`systems/keystones.json rules.slots_unlock_levels`, `max_active` 4).
+- **Équipement** : une variante ne s'équipe qu'une fois ; deux variantes d'une même famille se portent ensemble (décision du 22/11, `rules.one_per_variant`, index `uq_keystone_family` retiré par la migration back 152).
+- **Valeurs par rang** : `runtime` = rang C, `runtime_scaling` = bornes [C, SS] par pointeur JSON, B/A/S interpolés linéairement (`shared/domain/keystone_runtime.hpp`). ⚠️ Le serveur ARRONDIT à l'entier une valeur écrite en entier (`15`), le client (`keystone_catalog.gd`) n'arrondit que si `runtime_ui.integer` est vrai : écrire une recharge ou une durée en virgule (`15.0`) pour que serveur et fiche affichent la même valeur aux rangs intermédiaires.
+- **Plus de `class_keystones`** (retiré le 23/11, six paniers vides) : toutes les familles vivent dans `common_keystones`.
+
 ### Skill Structure
 - **Tiers:** `filler` (low CD, always usable), `basic`, `advanced`, `ultimate`
 - **Per character:** 15 skills (5 base + 5 subclass + 5 tier3) in the original layout, max 100 skill points, 150 needed to max all (intentional -50 deficit forcing build choices). Since 2026-11-12 (decision Charleston, a valider): skills are ADDED, none removed. Every subclass has 6 subclass skills (the 6th sits before the ultimate) and the Falconer has 7 (Great Falcon summon + Blinding Dive), so 16 skills (17 for the Falconer), 160 (170) points to max all, budget still 100, deficit -60 (-70). Never assume a fixed subclass kit size in code: derive it from `classes/<class>/skills.json`
