@@ -1931,6 +1931,23 @@ def _derived_links(pd: dict):
     return consumes, feeds, uses
 
 
+def _active_monster_drops(db: Path) -> set:
+    """Objets laches par au moins un monstre actif (roster_status active), avec la resolution de
+    table du serveur : loot_table_id, sinon l'id sans mob_ / boss_."""
+    tables = load_json(db / "items" / "loot_tables.json").get("monster_loot_tables", {})
+    out = set()
+    for m in load_json(db / "entities" / "monsters.json").get("monsters", []):
+        if m.get("roster_status") != "active":
+            continue
+        key = m.get("loot_table_id") if m.get("loot_table_id") in tables else \
+            m["id"].removeprefix("mob_").removeprefix("boss_")
+        table = tables.get(key)
+        for e in table if isinstance(table, list) else []:
+            if isinstance(e, dict) and e.get("item_id") and e.get("chance", 0) > 0:
+                out.add(e["item_id"])
+    return out
+
+
 def validate_professions(db: Path) -> list:
     """systems/professions.json : usages des materiaux, liens declares = liens derives, aucun metier isole."""
     errors = []
@@ -1945,9 +1962,27 @@ def validate_professions(db: Path) -> list:
     tracked = {iid for iid, it in pd["new_items"].items()
                if it.get("category") == "intermediate"
                or it.get("gathered_by") in ("miner", "lumberjack", "fisher", "herbalist", "fissure_hunter")}
-    for mid in sorted(ids - set(uses)):
-        errors.append(f"[professions.json] materiau '{mid}' sans metier (material_uses)")
     consumes, feeds, recipe_uses = _derived_links(pd)
+    # Nettoyage des metiers (2026-11-24, 0.22.1) : un materiau de monstre n'a une entree que si une
+    # recette le consomme, et sa liste = les metiers de ces recettes. Un butin LACHE par un monstre
+    # actif sans recette doit etre un trophee a revendre declare (materials.resale_only). Les
+    # materiaux que plus rien ne lache (anciennes empreintes, araignees retirees) restent dans
+    # items/materials.json pour les inventaires existants, sans entree.
+    resale_only = set(d.get("materials", {}).get("resale_only", []))
+    dropped = _active_monster_drops(db)
+    for mid in sorted(ids - set(uses)):
+        if recipe_uses.get(mid):
+            errors.append(f"[professions.json] materiau '{mid}' consomme par une recette mais absent de material_uses")
+        elif mid in dropped and mid not in resale_only:
+            errors.append(f"[professions.json] butin '{mid}' lache par un monstre actif, consomme par aucune "
+                          f"recette et absent de materials.resale_only (butin mort)")
+    for mid in sorted(resale_only):
+        if mid not in ids:
+            errors.append(f"[professions.json] resale_only : materiau inconnu '{mid}'")
+        elif mid in uses or recipe_uses.get(mid):
+            errors.append(f"[professions.json] resale_only : '{mid}' est consomme par une recette (le retirer de la liste)")
+        elif mid not in dropped:
+            errors.append(f"[professions.json] resale_only : '{mid}' n'est lache par aucun monstre actif (entree morte)")
     for mid, profs in uses.items():
         if mid not in ids and mid not in tracked:
             errors.append(f"[professions.json] material_uses : materiau inconnu '{mid}'")
@@ -1956,6 +1991,9 @@ def validate_professions(db: Path) -> list:
         for p in profs:
             if p not in prof_ids:
                 errors.append(f"[professions.json] material_uses['{mid}'] : metier inconnu '{p}'")
+        if mid in ids and sorted(set(profs)) != sorted(recipe_uses.get(mid, set())):
+            errors.append(f"[professions.json] material_uses['{mid}'] {profs} != metiers des recettes "
+                          f"{sorted(recipe_uses.get(mid, set()))} (entree morte ou liste a corriger)")
         if mid in tracked and sorted(profs) != sorted(recipe_uses.get(mid, set())):
             errors.append(f"[professions.json] material_uses['{mid}'] {sorted(profs)} != recettes "
                           f"{sorted(recipe_uses.get(mid, set()))} (relancer le generateur)")
