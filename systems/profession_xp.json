@@ -20,6 +20,16 @@
     "start_level": 0,
     "_start": "Chaque personnage possede les 15 metiers des sa creation, au NIVEAU 0 (decision de Charleston, 2026-10-01). xp_table['1'] = XP pour passer de 0 a 1 = 5 recoltes communes de rang I. Les recettes et ressources de rang I s'ouvrent au niveau 0."
   },
+  "rank_curve": {
+    "multiplier_by_rank": {
+      "1": 0.5,
+      "2": 0.75,
+      "3": 1.0,
+      "4": 1.0,
+      "5": 1.0
+    },
+    "_rule": "A VALIDER (2026-11-24, 0.21.37, demande de Charleston : « le niveau 10 devrait se faire plus vite, surtout les bas rangs, une courbe par rang »). SEUL endroit de la courbe par rang. L'XP pour atteindre le niveau L = xp_table[L] x multiplier_by_rank[rang de L], arrondi a l'unite (au moins 1). Rang de L = plafond(L / 20) (systems/professions.json rules.levels_per_rank) : niveaux 1-20 = rang I (x0,5), 21-40 = rang II (x0,75), 41 et plus x1. xp_table reste la courbe de BASE (Albion v3) ; xp_cumulative_checkpoints et time_model la decrivent sans ce multiplicateur. Applique par economy au chargement (ProfessionRules) ; la barre d'XP du client vient du serveur. Cumul effectif : niveau 10 = 617 XP (1 234 en base), 20 = 3 037 (6 074), 40 = 36 675 (50 924), 50 = 104 195 (118 444). Joueurs existants : le stockage est (niveau, XP dans le niveau), aucun niveau acquis ne bouge ; l'XP deja accumulee dans le niveau en cours est gardee et compte contre le nouveau seuil (passage immediat a la prochaine recolte si elle le depasse deja). Tous a 1.0 = comportement d'avant. Simulation (scratchpad sim/sim.py, calee sur un joueur en prod le 24/11, recolte d'un seul metier, avec la densite 0.21.37) : niveau 10 mineur 101 -> 50 min, herbaliste 42 -> 21, bucheron 80 -> 40, pecheur 42 -> 21."
+  },
   "xp_table": {
     "1": 50,
     "2": 58,
