@@ -1962,7 +1962,21 @@ def validate_professions(db: Path) -> list:
     tracked = {iid for iid, it in pd["new_items"].items()
                if it.get("category") == "intermediate"
                or it.get("gathered_by") in ("miner", "lumberjack", "fisher", "herbalist", "fissure_hunter")}
+    # Poissons d'un rang sans eau (profession_xp.json time_model.fishing_max_rank_available) : ils ne se
+    # pechent pas, aucune recette ne doit les demander (recette impossible), donc ni usage ni entree
+    # material_uses tant que l'eau de ce rang n'existe pas (nettoyage des metiers 0.22.1).
+    fish_max = load_json(db / "systems" / "profession_xp.json").get("time_model", {}) \
+        .get("fishing_max_rank_available", 5)
+    unfishable = {iid for iid, it in pd["new_items"].items()
+                  if it.get("gathered_by") == "fisher" and it.get("rank", 1) > fish_max}
+    tracked -= unfishable
     consumes, feeds, recipe_uses = _derived_links(pd)
+    for mid in sorted(unfishable):
+        if recipe_uses.get(mid):
+            errors.append(f"[professions.json] '{mid}' : aucune eau de son rang (fishing_max_rank_available "
+                          f"{fish_max}), aucune recette ne doit le demander (recette impossible)")
+        if mid in uses:
+            errors.append(f"[professions.json] material_uses['{mid}'] : poisson sans eau, entree morte")
     # Nettoyage des metiers (2026-11-24, 0.22.1) : un materiau de monstre n'a une entree que si une
     # recette le consomme, et sa liste = les metiers de ces recettes. Un butin LACHE par un monstre
     # actif sans recette doit etre un trophee a revendre declare (materials.resale_only). Les
