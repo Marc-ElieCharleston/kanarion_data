@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": "1.0",
-    "last_updated": "2026-10-18",
+    "last_updated": "2026-11-24",
     "description": "Points de recolte (Metiers V2, valide par Charleston le 2026-10-01). Le SERVEUR pose des points (arbres, rochers, berges de sable, carres d'herbes, buissons, coins de peche) dans des AIRES de recolte dessinees par zone, sur le modele des coffres de zone (world/zone_chests.json, presence ChestWorld). Le joueur clique, une barre d'extraction se remplit pendant gather_ms (envoye par le serveur), la ressource tombe a la fin. Bouger, entrer en combat ou prendre un coup annule la recolte.",
     "owner": "services/presence (apparition, rang, rarete, verrou de recolte, duree, tirage) + services/economy (ajout en inventaire, usure de l'outil et XP de metier dans la meme transaction). Le client lit ce fichier pour l'AFFICHAGE seulement (sprite par type et rang, cadre de rarete).",
     "status": "LU PAR LE SERVEUR (presence, metiers V1, 2026-10-01) : placement par decouverte sur les aires de monstres des zones listees dans placement.zones. Aucune aire tracee a la main.",
@@ -21,26 +21,27 @@
     "_charges": "Nombre de coups avant epuisement, par rang. Epuise : sprite vide, puis reapparition apres respawn_seconds, a un AUTRE point tire dans l'aire (rang et rarete retires).",
     "respawn_seconds": {
       "1": [
+        90,
+        180
+      ],
+      "2": [
+        120,
+        240
+      ],
+      "3": [
+        150,
+        300
+      ],
+      "4": [
         240,
         420
       ],
-      "2": [
+      "5": [
         300,
         540
-      ],
-      "3": [
-        360,
-        660
-      ],
-      "4": [
-        480,
-        780
-      ],
-      "5": [
-        600,
-        900
       ]
     },
+    "_respawn_seconds": "A VALIDER (2026-11-24, retour joueur « minerais introuvables, je n'ai pas un metier au niveau 10 »). Avant : I 240-420, II 300-540, III 360-660, IV 480-780, V 600-900. Delai entre l'epuisement d'un point et l'apparition de son remplacant ailleurs dans l'aire. Divise par 2,5 environ aux rangs I a III (ceux des joueurs qui debutent un metier), par 1,8 aux rangs IV et V.",
     "first_spawn_seconds": [
       10,
       120
@@ -909,12 +910,22 @@
       "expedition_lv_11_20",
       "expedition_lv_21_30"
     ],
-    "nodes_per_area": 3,
+    "nodes_per_area": 6,
+    "_nodes_per_area": "A VALIDER (2026-11-24, retour joueur : minerais introuvables). Avant : 3. Points actifs a la fois dans une aire de rang I a III : c'est le PLAFOND de l'aire, jamais depasse. Au village : rang I 18 -> 36 points, rang II 27 -> 54, rang III 18 -> 36.",
     "nodes_per_area_by_rank": {
-      "4": 6,
-      "5": 9
+      "4": 8,
+      "5": 12
     },
-    "_nodes_per_area_by_rank": "Densite de fin de jeu (2026-10-18, lot 1 endgame), A VALIDER : les aires de monstres de rang IV (niveau max 61-80) recoivent 6 points au lieu de 3, celles de rang V (81-100) 9. Memes positions (aires deja connues, rien de nouveau sur la carte). Effet : rang IV 9 -> 18 points sur le serveur, rang V 6 -> 18. Un rang absent garde nodes_per_area. Lu par presence (GatherConfig::nodes_for_rank).",
+    "min_nodes_per_type_per_area": 1,
+    "_min_nodes_per_type_per_area": "A VALIDER (2026-11-24). Minimum garanti de chaque type au sol dans chaque aire : tant qu'un type de l'aire (ses poids) a moins de points que ce minimum, le point suivant est tire parmi les types manquants, le reste suit les poids. Avec 1 : chaque aire a toujours au moins un arbre, un rocher, un carre d'herbes et un buisson. Rochers de rang I au village : 2 en moyenne avant (aucune aire de rang I n'a la roche dominante), 7,4 apres. 0 = sans effet (comportement d'avant). Lu par presence (GatherWorld::pick_type).",
+    "max_nodes_per_zone_by_type": {
+      "tree": 80,
+      "rock": 80,
+      "herb_patch": 80,
+      "wild_bush": 80
+    },
+    "_max_nodes_per_zone_by_type": "A VALIDER (2026-11-24). Plafond de points d'un type dans une zone, tous rangs confondus (les plans d'eau pechables ne comptent pas). Un type plein n'est plus tire ; si tous les types d'une aire sont pleins, l'emplacement attend et reessaie 1 a 3 min plus tard. Attendu au village avec les densites ci-dessus : environ 59 arbres, 72 rochers, 59 herbes, 55 buissons (153 points en tout avant, 246 apres) : 80 laisse passer la densite prevue et borne une hausse future de nodes_per_area. Type absent = sans plafond. Lu par presence (GatherWorld::pick_type).",
+    "_nodes_per_area_by_rank": "2026-11-24, A VALIDER : rang IV 6 -> 8, rang V 9 -> 12, pour que le minimum garanti par type ne reduise pas les rochers des aires minieres de fin de jeu (rang IV 22,5 -> 24 rochers attendus, rang V 15,8 -> 18). Historique : densite de fin de jeu (2026-10-18, lot 1 endgame), A VALIDER : les aires de monstres de rang IV (niveau max 61-80) recoivent 6 points au lieu de 3, celles de rang V (81-100) 9. Memes positions (aires deja connues, rien de nouveau sur la carte). Effet : rang IV 9 -> 18 points sur le serveur, rang V 6 -> 18. Un rang absent garde nodes_per_area. Lu par presence (GatherConfig::nodes_for_rank).",
     "ground_types_weights": {
       "tree": 3,
       "rock": 3,
