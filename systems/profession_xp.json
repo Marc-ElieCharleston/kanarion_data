@@ -22,13 +22,13 @@
   },
   "rank_curve": {
     "multiplier_by_rank": {
-      "1": 0.5,
-      "2": 0.75,
-      "3": 1.0,
+      "1": 0.6,
+      "2": 0.8,
+      "3": 0.9,
       "4": 1.0,
       "5": 1.0
     },
-    "_rule": "A VALIDER (2026-11-24, 0.21.37, demande de Charleston : « le niveau 10 devrait se faire plus vite, surtout les bas rangs, une courbe par rang »). SEUL endroit de la courbe par rang. L'XP pour atteindre le niveau L = xp_table[L] x multiplier_by_rank[rang de L], arrondi a l'unite (au moins 1). Rang de L = plafond(L / 20) (systems/professions.json rules.levels_per_rank) : niveaux 1-20 = rang I (x0,5), 21-40 = rang II (x0,75), 41 et plus x1. xp_table reste la courbe de BASE (Albion v3) ; xp_cumulative_checkpoints et time_model la decrivent sans ce multiplicateur. Applique par economy au chargement (ProfessionRules) ; la barre d'XP du client vient du serveur. Cumul effectif : niveau 10 = 617 XP (1 234 en base), 20 = 3 037 (6 074), 40 = 36 675 (50 924), 50 = 104 195 (118 444). Joueurs existants : le stockage est (niveau, XP dans le niveau), aucun niveau acquis ne bouge ; l'XP deja accumulee dans le niveau en cours est gardee et compte contre le nouveau seuil (passage immediat a la prochaine recolte si elle le depasse deja). Tous a 1.0 = comportement d'avant. Simulation (scratchpad sim/sim.py, calee sur un joueur en prod le 24/11, recolte d'un seul metier, avec la densite 0.21.37) : niveau 10 mineur 101 -> 50 min, herbaliste 42 -> 21, bucheron 80 -> 40, pecheur 42 -> 21."
+    "_rule": "A VALIDER (2026-11-24, 0.21.37, Charleston : « le niveau 10 devrait se faire plus vite, surtout les bas rangs, une courbe par rang » puis « ca doit augmenter avec les rangs »). SEUL endroit de la courbe par rang. L'XP pour atteindre le niveau L = xp_table[L] x multiplier_by_rank[rang de L], arrondi a l'unite (au moins 1). Rang de L = plafond(L / 20) (systems/professions.json rules.levels_per_rank) : niveaux 1-20 x0,6, 21-40 x0,8, 41-60 x0,9, 61 et plus x1. Le multiplicateur ne baisse jamais d'un rang au suivant et l'XP par niveau monte a chaque niveau, changements de rang compris (20 -> 21 : 456 -> 672 ; 40 -> 41 : 3 504 -> 4 257 ; 60 -> 61 : 15 255 -> 18 000) ; verifie par le test economy RankCurveScalesEachLevelByItsRank. xp_table reste la courbe de BASE (Albion v3) ; xp_cumulative_checkpoints et time_model la decrivent sans ce multiplicateur. Applique par economy au chargement (ProfessionRules) ; la barre d'XP du client vient du serveur. Cumul effectif : niveau 10 = 741 XP (1 234 en base), 20 = 3 645 (6 074), 40 = 39 525 (50 924), 50 = 100 293 (118 444). Rarete : l'XP d'un coup = gather_xp.by_rank x xp_multiplier de la rarete du point (systems/professions.json resource_rarity, C 1 / B 1,5 / A 2 / S 3 / SS 5, tiree a l'apparition avec rarity.weights_by_rank : x1,17 en moyenne au rang I, x1,34 au rang V) ; la quantite et les secondaires donnent des objets, pas d'XP. Joueurs existants : le stockage est (niveau, XP dans le niveau), aucun niveau acquis ne bouge ; l'XP deja accumulee dans le niveau en cours est gardee et compte contre le nouveau seuil. Tous a 1.0 = comportement d'avant."
   },
   "xp_table": {
     "1": 50,

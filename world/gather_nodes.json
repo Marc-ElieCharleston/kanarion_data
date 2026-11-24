@@ -910,22 +910,22 @@
       "expedition_lv_11_20",
       "expedition_lv_21_30"
     ],
-    "nodes_per_area": 6,
-    "_nodes_per_area": "A VALIDER (2026-11-24, retour joueur : minerais introuvables). Avant : 3. Points actifs a la fois dans une aire de rang I a III : c'est le PLAFOND de l'aire, jamais depasse. Au village : rang I 18 -> 36 points, rang II 27 -> 54, rang III 18 -> 36.",
+    "nodes_per_area": 12,
+    "_nodes_per_area": "A VALIDER (2026-11-24, 0.21.37, decision Charleston « doubler le nombre par zone, x1,5 pour les plus hauts »). Avant : 3 (puis 6 propose). Points actifs a la fois dans une aire de rang I a III : c'est le PLAFOND de l'aire, jamais depasse. Au village : rang I 18 -> 72 points, rang II 27 -> 108, rang III 18 -> 72.",
     "nodes_per_area_by_rank": {
-      "4": 8,
-      "5": 12
+      "4": 12,
+      "5": 18
     },
     "min_nodes_per_type_per_area": 1,
-    "_min_nodes_per_type_per_area": "A VALIDER (2026-11-24). Minimum garanti de chaque type au sol dans chaque aire : tant qu'un type de l'aire (ses poids) a moins de points que ce minimum, le point suivant est tire parmi les types manquants, le reste suit les poids. Avec 1 : chaque aire a toujours au moins un arbre, un rocher, un carre d'herbes et un buisson. Rochers de rang I au village : 2 en moyenne avant (aucune aire de rang I n'a la roche dominante), 7,4 apres. 0 = sans effet (comportement d'avant). Lu par presence (GatherWorld::pick_type).",
+    "_min_nodes_per_type_per_area": "A VALIDER (2026-11-24). Minimum garanti de chaque type au sol dans chaque aire : tant qu'un type de l'aire (ses poids) a moins de points que ce minimum, le point suivant est tire parmi les types manquants, le reste suit les poids. Avec 1 : chaque aire a toujours au moins un arbre, un rocher, un carre d'herbes et un buisson. Rochers de rang I au village : 2 en moyenne avant (aucune aire de rang I n'a la roche dominante), 11,5 apres (avec 12 points par aire). 0 = sans effet (comportement d'avant). Lu par presence (GatherWorld::pick_type).",
     "max_nodes_per_zone_by_type": {
-      "tree": 80,
-      "rock": 80,
-      "herb_patch": 80,
-      "wild_bush": 80
+      "tree": 160,
+      "rock": 160,
+      "herb_patch": 160,
+      "wild_bush": 160
     },
-    "_max_nodes_per_zone_by_type": "A VALIDER (2026-11-24). Plafond de points d'un type dans une zone, tous rangs confondus (les plans d'eau pechables ne comptent pas). Un type plein n'est plus tire ; si tous les types d'une aire sont pleins, l'emplacement attend et reessaie 1 a 3 min plus tard. Attendu au village avec les densites ci-dessus : environ 59 arbres, 72 rochers, 59 herbes, 55 buissons (153 points en tout avant, 246 apres) : 80 laisse passer la densite prevue et borne une hausse future de nodes_per_area. Type absent = sans plafond. Lu par presence (GatherWorld::pick_type).",
-    "_nodes_per_area_by_rank": "2026-11-24, A VALIDER : rang IV 6 -> 8, rang V 9 -> 12, pour que le minimum garanti par type ne reduise pas les rochers des aires minieres de fin de jeu (rang IV 22,5 -> 24 rochers attendus, rang V 15,8 -> 18). Historique : densite de fin de jeu (2026-10-18, lot 1 endgame), A VALIDER : les aires de monstres de rang IV (niveau max 61-80) recoivent 6 points au lieu de 3, celles de rang V (81-100) 9. Memes positions (aires deja connues, rien de nouveau sur la carte). Effet : rang IV 9 -> 18 points sur le serveur, rang V 6 -> 18. Un rang absent garde nodes_per_area. Lu par presence (GatherConfig::nodes_for_rank).",
+    "_max_nodes_per_zone_by_type": "A VALIDER (2026-11-24, 0.21.37). Plafond de points d'un type dans une zone, tous rangs confondus (les plans d'eau pechables ne comptent pas). Un type plein n'est plus tire ; si tous les types d'une aire sont pleins, l'emplacement attend et reessaie 1 a 3 min plus tard. Attendu au village avec les densites 12 / 12 / 18 : environ 107 arbres, 126 rochers, 103 herbes, 97 buissons (153 points en tout avant, 432 apres). 160 = le type le plus nombreux (rochers, 126) plus 25 % de marge, au-dessus des ecarts du tirage : il ne coupe pas la densite prevue et borne une hausse future de nodes_per_area (80, valeur de la premiere proposition, aurait coupe les rochers et les arbres). Type absent = sans plafond. Lu par presence (GatherWorld::pick_type).",
+    "_nodes_per_area_by_rank": "A VALIDER (2026-11-24, 0.21.37) : rang IV 6 -> 12, rang V 9 -> 18 (x1,5 sur la proposition 8 / 12, decision Charleston). Rochers attendus : rang IV 22,5 -> 39, rang V 15,8 -> 28,6. Historique : densite de fin de jeu du 2026-10-18 (lot 1 endgame), 6 et 9 au lieu de 3. Un rang absent garde nodes_per_area. Lu par presence (GatherConfig::nodes_for_rank).",
     "ground_types_weights": {
       "tree": 3,
       "rock": 3,
