@@ -1904,6 +1904,13 @@ def _profession_data(db: Path) -> dict:
             "suffixes": suffixes}
 
 
+def _crafting_kit_type(prof: dict) -> str:
+    """Type d'outil du Necessaire d'artisan (tools.crafting_kit.tool_type, 2026-11-24), "" sans bloc.
+    Le seul outil qui n'appartient a aucun metier de recolte : il sert a toute fabrication."""
+    kit = prof.get("tools", {}).get("crafting_kit")
+    return kit.get("tool_type", "") if isinstance(kit, dict) else ""
+
+
 def _derived_links(pd: dict):
     """consumes[p] / feeds[p] derives des recettes et des outils (le Glaneur produit les materiaux de monstre)."""
     consumes, uses = {}, {}
@@ -1924,6 +1931,23 @@ def _derived_links(pd: dict):
     return consumes, feeds, uses
 
 
+def _active_monster_drops(db: Path) -> set:
+    """Objets laches par au moins un monstre actif (roster_status active), avec la resolution de
+    table du serveur : loot_table_id, sinon l'id sans mob_ / boss_."""
+    tables = load_json(db / "items" / "loot_tables.json").get("monster_loot_tables", {})
+    out = set()
+    for m in load_json(db / "entities" / "monsters.json").get("monsters", []):
+        if m.get("roster_status") != "active":
+            continue
+        key = m.get("loot_table_id") if m.get("loot_table_id") in tables else \
+            m["id"].removeprefix("mob_").removeprefix("boss_")
+        table = tables.get(key)
+        for e in table if isinstance(table, list) else []:
+            if isinstance(e, dict) and e.get("item_id") and e.get("chance", 0) > 0:
+                out.add(e["item_id"])
+    return out
+
+
 def validate_professions(db: Path) -> list:
     """systems/professions.json : usages des materiaux, liens declares = liens derives, aucun metier isole."""
     errors = []
@@ -1938,9 +1962,41 @@ def validate_professions(db: Path) -> list:
     tracked = {iid for iid, it in pd["new_items"].items()
                if it.get("category") == "intermediate"
                or it.get("gathered_by") in ("miner", "lumberjack", "fisher", "herbalist", "fissure_hunter")}
-    for mid in sorted(ids - set(uses)):
-        errors.append(f"[professions.json] materiau '{mid}' sans metier (material_uses)")
+    # Poissons d'un rang sans eau (profession_xp.json time_model.fishing_max_rank_available) : ils ne se
+    # pechent pas, aucune recette ne doit les demander (recette impossible), donc ni usage ni entree
+    # material_uses tant que l'eau de ce rang n'existe pas (nettoyage des metiers 0.22.1).
+    fish_max = load_json(db / "systems" / "profession_xp.json").get("time_model", {}) \
+        .get("fishing_max_rank_available", 5)
+    unfishable = {iid for iid, it in pd["new_items"].items()
+                  if it.get("gathered_by") == "fisher" and it.get("rank", 1) > fish_max}
+    tracked -= unfishable
     consumes, feeds, recipe_uses = _derived_links(pd)
+    for mid in sorted(unfishable):
+        if recipe_uses.get(mid):
+            errors.append(f"[professions.json] '{mid}' : aucune eau de son rang (fishing_max_rank_available "
+                          f"{fish_max}), aucune recette ne doit le demander (recette impossible)")
+        if mid in uses:
+            errors.append(f"[professions.json] material_uses['{mid}'] : poisson sans eau, entree morte")
+    # Nettoyage des metiers (2026-11-24, 0.22.1) : un materiau de monstre n'a une entree que si une
+    # recette le consomme, et sa liste = les metiers de ces recettes. Un butin LACHE par un monstre
+    # actif sans recette doit etre un trophee a revendre declare (materials.resale_only). Les
+    # materiaux que plus rien ne lache (anciennes empreintes, araignees retirees) restent dans
+    # items/materials.json pour les inventaires existants, sans entree.
+    resale_only = set(d.get("materials", {}).get("resale_only", []))
+    dropped = _active_monster_drops(db)
+    for mid in sorted(ids - set(uses)):
+        if recipe_uses.get(mid):
+            errors.append(f"[professions.json] materiau '{mid}' consomme par une recette mais absent de material_uses")
+        elif mid in dropped and mid not in resale_only:
+            errors.append(f"[professions.json] butin '{mid}' lache par un monstre actif, consomme par aucune "
+                          f"recette et absent de materials.resale_only (butin mort)")
+    for mid in sorted(resale_only):
+        if mid not in ids:
+            errors.append(f"[professions.json] resale_only : materiau inconnu '{mid}'")
+        elif mid in uses or recipe_uses.get(mid):
+            errors.append(f"[professions.json] resale_only : '{mid}' est consomme par une recette (le retirer de la liste)")
+        elif mid not in dropped:
+            errors.append(f"[professions.json] resale_only : '{mid}' n'est lache par aucun monstre actif (entree morte)")
     for mid, profs in uses.items():
         if mid not in ids and mid not in tracked:
             errors.append(f"[professions.json] material_uses : materiau inconnu '{mid}'")
@@ -1949,6 +2005,9 @@ def validate_professions(db: Path) -> list:
         for p in profs:
             if p not in prof_ids:
                 errors.append(f"[professions.json] material_uses['{mid}'] : metier inconnu '{p}'")
+        if mid in ids and sorted(set(profs)) != sorted(recipe_uses.get(mid, set())):
+            errors.append(f"[professions.json] material_uses['{mid}'] {profs} != metiers des recettes "
+                          f"{sorted(recipe_uses.get(mid, set()))} (entree morte ou liste a corriger)")
         if mid in tracked and sorted(profs) != sorted(recipe_uses.get(mid, set())):
             errors.append(f"[professions.json] material_uses['{mid}'] {sorted(profs)} != recettes "
                           f"{sorted(recipe_uses.get(mid, set()))} (relancer le generateur)")
@@ -2108,7 +2167,16 @@ def validate_profession_recipes(db: Path, all_item_ids: set) -> list:
             errors.append(f"[profession_recipes.json] '{iid}' : gathered_by '{it['gathered_by']}' n'est pas un "
                           f"metier de recolte")
         if it.get("kind") == "tool":
-            if it.get("profession") not in pd["gathering"]:
+            kit_type = _crafting_kit_type(pd["prof"])
+            if kit_type and it.get("tool_type") == kit_type:
+                # Necessaire d'artisan : aucun metier proprietaire, fabrique par crafting_kit.crafted_by.
+                if "profession" in it:
+                    errors.append(f"[profession_recipes.json] outil '{iid}' : le Necessaire d'artisan n'a pas de "
+                                  f"champ profession (il sert a toute fabrication)")
+                if it.get("crafted_by") != pd["prof"]["tools"]["crafting_kit"].get("crafted_by"):
+                    errors.append(f"[profession_recipes.json] outil '{iid}' : crafted_by doit valoir "
+                                  f"tools.crafting_kit.crafted_by")
+            elif it.get("profession") not in pd["gathering"]:
                 errors.append(f"[profession_recipes.json] outil '{iid}' : profession '{it.get('profession')}' "
                               f"n'est pas un metier de recolte")
             if not isinstance(it.get("uses"), int) or it["uses"] <= 0:
@@ -2987,6 +3055,8 @@ def validate_tool_sellers(db: Path) -> list:
     tools = {iid: it for iid, it in pd["new_items"].items() if it.get("kind") == "tool"}
     max_rank = sellers.get("max_sold_rank")
     r2_seller = sellers.get("rank_2")
+    # Necessaire d'artisan (tools.crafting_kit, 2026-11-24) : rang I chez son vendeur, rien d'autre en boutique.
+    kit = tools_cfg.get("crafting_kit") if isinstance(tools_cfg.get("crafting_kit"), dict) else None
     npcs = {n["id"]: n for n in _npc_entries(db)}
     if r2_seller not in npcs:
         errors.append(f"[professions.json] tools.sellers.rank_2 : PNJ inconnu '{r2_seller}'")
@@ -3013,6 +3083,10 @@ def validate_tool_sellers(db: Path) -> list:
             if not isinstance(rank, int) or not isinstance(max_rank, int) or rank > max_rank:
                 errors.append(f"[npcs.json] '{nid}' vend '{iid}' : rang {rank} > max_sold_rank {max_rank} "
                               f"(fabrication seulement)")
+            elif rank == 1 and kit and tools[iid].get("tool_type") == kit.get("tool_type"):
+                if nid != kit.get("rank_1_seller") or npcs[nid].get("location") != kit.get("rank_1_location"):
+                    errors.append(f"[npcs.json] '{nid}' vend '{iid}' : le Necessaire d'artisan de rang I se vend "
+                                  f"chez '{kit.get('rank_1_seller')}' a {kit.get('rank_1_location')} seulement")
             elif rank == 1:
                 prof = tools[iid].get("profession")
                 if masters.get(prof) != nid or npcs[nid].get("location") != sellers.get("rank_1_location"):
@@ -3027,6 +3101,13 @@ def validate_tool_sellers(db: Path) -> list:
             errors.append(f"[npcs.json] le maitre '{masters.get(prof)}' ne vend pas '{r1}'")
         if r2 in tools and r2 not in sold.get(r2_seller, set()):
             errors.append(f"[npcs.json] '{r2_seller}' ne vend pas '{r2}' (les six outils de rang II)")
+    if kit:
+        k1 = f"tool_{kit.get('tool_type')}_r1"
+        if kit.get("rank_1_seller") not in npcs:
+            errors.append(f"[professions.json] tools.crafting_kit.rank_1_seller : PNJ inconnu "
+                          f"'{kit.get('rank_1_seller')}'")
+        elif k1 in tools and k1 not in sold.get(kit.get("rank_1_seller"), set()):
+            errors.append(f"[npcs.json] '{kit.get('rank_1_seller')}' ne vend pas '{k1}'")
     return errors
 
 
@@ -3044,9 +3125,39 @@ def validate_tool_slots(db: Path) -> list:
         return ["[professions.json] tools.slots absent ou mal forme (liste des types d'outil, ordre des emplacements)"]
     if len(set(slots)) != len(slots):
         errors.append(f"[professions.json] tools.slots contient un doublon : {slots}")
-    if set(slots) != set(by_prof.values()):
+    # Le Necessaire d'artisan (tools.crafting_kit) a son emplacement sans appartenir a un metier.
+    kit_type = _crafting_kit_type(pd["prof"])
+    want = set(by_prof.values()) | ({kit_type} if kit_type else set())
+    if set(slots) != want:
         errors.append(f"[professions.json] tools.slots {sorted(set(slots))} doit contenir exactement les types de "
-                      f"tools.by_profession {sorted(set(by_prof.values()))}")
+                      f"tools.by_profession et tools.crafting_kit.tool_type {sorted(want)}")
+    if kit_type:
+        kit = tools_cfg["crafting_kit"]
+        if kit_type in by_prof.values():
+            errors.append(f"[professions.json] tools.crafting_kit.tool_type '{kit_type}' est deja un outil de "
+                          f"recolte (by_profession)")
+        if not isinstance(kit.get("rank_guard"), bool):
+            errors.append("[professions.json] tools.crafting_kit.rank_guard doit etre un booleen")
+        if kit.get("crafted_by") not in pd["prof_ids"]:
+            errors.append(f"[professions.json] tools.crafting_kit.crafted_by : metier inconnu "
+                          f"'{kit.get('crafted_by')}'")
+    # Un type d'outil existant garde son index (item_instances.slot_index, migrations 131 et 153) :
+    # les six premiers emplacements ne bougent jamais, un nouveau type s'ajoute en fin de liste.
+    frozen = ["pickaxe", "axe", "sickle", "fishing_rod", "satchel", "lantern", "artisan_kit"]
+    if slots[:len(frozen)] != frozen[:len(slots)]:
+        errors.append(f"[professions.json] tools.slots {slots} : l'ordre fige par les migrations back est "
+                      f"{frozen} (un type nouveau s'ajoute EN FIN de liste)")
+    # Sous-stats (tools.substats.pools) : un type de pool doit etre un emplacement d'outil.
+    pools = tools_cfg.get("substats", {}).get("pools", {})
+    stats = tools_cfg.get("substats", {}).get("stats", {})
+    for ptype, ids in pools.items():
+        if ptype.startswith("_"):
+            continue
+        if ptype not in slots:
+            errors.append(f"[professions.json] tools.substats.pools.{ptype} : pas un emplacement d'outil")
+        for sid in ids if isinstance(ids, list) else []:
+            if sid not in stats:
+                errors.append(f"[professions.json] tools.substats.pools.{ptype} : sous-stat inconnue '{sid}'")
     tool_types = {it.get("tool_type") for it in pd["new_items"].values() if it.get("kind") == "tool"}
     for t in slots:
         if t not in tool_types:
