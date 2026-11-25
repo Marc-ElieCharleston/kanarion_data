@@ -1,0 +1,20 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "last_updated": "2026-11-25",
+    "description": "Presets de build SEPARES (decision Charleston du 25/11, maquettes « Presets » planches E a H) : trois sortes independantes, chacune avec ses places. stats = repartition des points (Place). skills = rangs des sorts actifs, ordre de la barre de combat, passifs, stigmates (keystones). equipment = onglet Combat de l'inventaire (12 emplacements, Koro et uniques compris), jamais les outils de metier. Propre au PERSONNAGE, stocke cote serveur (migration 156, table character_build_presets). Le familier et le mercenaire n'entrent pas dans un preset. Lu par economy (build_presets/preset_config.cpp), seule source de ces reglages : rien en dur.",
+    "_status": "A VALIDER par Charleston : toutes les valeurs ci-dessous sont des defauts proposes le 25/11, pas des decisions.",
+    "_slots_note": "slots_per_kind = places par sorte (1..5, la base refuse slot hors de 0..4). open_slots = places ouvertes d'office (les premieres). Les autres sont fermees : cadenas + bouton « Debloquer ».",
+    "_unlock_note": "unlock_cost et unlock_currency a null = deblocage PAS ENCORE DISPONIBLE : le serveur refuse avec la raison unlock_unavailable (« Pas encore disponible »), le bouton reste visible. Pour l'ouvrir : unlock_currency = \"gold\" (character_currencies.gold) ou \"diamonds\" (accounts.diamonds, compte enregistre), unlock_cost = entier > 0. Un deblocage ouvre UNE place d UNE sorte (stats, skills ou equipment), comme les maquettes : chaque onglet a son bouton.",
+    "_load_cost_note": "stats_load_cost : or preleve pour charger un preset de stats (0 = gratuit, alors que STAT_RESET est payant). skills_load_cost : \"respec\" = meme prix que la remise a zero des points de sorts aujourd'hui, lu la ou il vit (systems/economy.json gold_sinks.respec : gratuit jusqu'au niveau free_until_level, puis (niveau - free_until_level) x gold_per_level_above). Preleve UNE fois par chargement, et seulement si les rangs de sorts ou de passifs changent (barre et stigmates seuls = gratuit). Un entier >= 0 a la place de \"respec\" fixerait un prix propre aux presets. Le chargement d'equipement est toujours gratuit.",
+    "_timing_note": "allow_in_pregame : false = chargement refuse en combat ET pendant le decompte du bandeau Pret (presence dit « en combat » des l'entree dans la salle). true n'est PAS cable cote serveur (le combat ne relit pas le profil pendant le decompte) : economy le refuse au demarrage et garde false."
+  },
+  "slots_per_kind": 3,
+  "open_slots": 2,
+  "unlock_cost": null,
+  "unlock_currency": null,
+  "name_max_length": 20,
+  "stats_load_cost": 0,
+  "skills_load_cost": "respec",
+  "allow_in_pregame": false
+}

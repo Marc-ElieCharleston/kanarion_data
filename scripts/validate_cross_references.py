@@ -3608,6 +3608,40 @@ def validate_respec_cost(db: Path) -> list:
     return errors
 
 
+def validate_build_presets(db: Path) -> list:
+    """systems/build_presets.json owns the separate build presets (stats, skills, equipment) of economy."""
+    path = db / "systems" / "build_presets.json"
+    if not path.exists():
+        return ["[build_presets.json] absent : les presets de build sont fermes"]
+    d = load_json(path)
+    errors = []
+    slots, open_slots = d.get("slots_per_kind"), d.get("open_slots")
+    if not (isinstance(slots, int) and 1 <= slots <= 5):
+        return [f"[build_presets.json] slots_per_kind doit etre un entier de 1 a 5 ({slots!r}) : "
+                f"la base refuse slot hors de 0..4"]
+    if not (isinstance(open_slots, int) and 1 <= open_slots <= slots):
+        errors.append(f"[build_presets.json] open_slots doit etre un entier de 1 a slots_per_kind ({open_slots!r})")
+    cost, currency = d.get("unlock_cost"), d.get("unlock_currency")
+    if (cost is None) != (currency is None):
+        errors.append("[build_presets.json] unlock_cost et unlock_currency sont null ensemble ou remplis ensemble")
+    if cost is not None and not (isinstance(cost, int) and not isinstance(cost, bool) and cost > 0):
+        errors.append(f"[build_presets.json] unlock_cost doit etre null ou un entier > 0 ({cost!r})")
+    if currency is not None and currency not in ("gold", "diamonds"):
+        errors.append(f"[build_presets.json] unlock_currency doit etre null, \"gold\" ou \"diamonds\" ({currency!r})")
+    nml = d.get("name_max_length")
+    if not (isinstance(nml, int) and 1 <= nml <= 64):
+        errors.append(f"[build_presets.json] name_max_length doit etre un entier de 1 a 64 ({nml!r})")
+    if not _is_nonneg_int(d.get("stats_load_cost")):
+        errors.append(f"[build_presets.json] stats_load_cost absent ou non entier >= 0 ({d.get('stats_load_cost')!r})")
+    slc = d.get("skills_load_cost")
+    if not (slc == "respec" or _is_nonneg_int(slc)):
+        errors.append(f"[build_presets.json] skills_load_cost doit valoir \"respec\" ou un entier >= 0 ({slc!r})")
+    if d.get("allow_in_pregame") is not False:
+        errors.append("[build_presets.json] allow_in_pregame doit valoir false : le chargement pendant le "
+                      "decompte n'est pas cable cote serveur")
+    return errors
+
+
 def validate_koro_equipment(db: Path) -> list:
     """systems/koro.json equipment owns the number of Koro cards and their unlock levels."""
     eq = load_json(db / "systems" / "koro.json").get("equipment")
@@ -4300,6 +4334,11 @@ def main():
 
     print("[12x/12] Validating emote scrolls (one per premium emote, drop chances, generator)...")
     errs = validate_emote_scrolls(db)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12z/12] Validating build presets (slots, unlock, load costs)...")
+    errs = validate_build_presets(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
