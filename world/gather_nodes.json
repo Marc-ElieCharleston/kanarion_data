@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": "1.0",
-    "last_updated": "2026-11-24",
+    "last_updated": "2026-11-25",
     "description": "Points de recolte (Metiers V2, valide par Charleston le 2026-10-01). Le SERVEUR pose des points (arbres, rochers, berges de sable, carres d'herbes, buissons, coins de peche) dans des AIRES de recolte dessinees par zone, sur le modele des coffres de zone (world/zone_chests.json, presence ChestWorld). Le joueur clique, une barre d'extraction se remplit pendant gather_ms (envoye par le serveur), la ressource tombe a la fin. Bouger, entrer en combat ou prendre un coup annule la recolte.",
     "owner": "services/presence (apparition, rang, rarete, verrou de recolte, duree, tirage) + services/economy (ajout en inventaire, usure de l'outil et XP de metier dans la meme transaction). Le client lit ce fichier pour l'AFFICHAGE seulement (sprite par type et rang, cadre de rarete).",
     "status": "LU PAR LE SERVEUR (presence, metiers V1, 2026-10-01) : placement par decouverte sur les aires de monstres des zones listees dans placement.zones. Aucune aire tracee a la main.",
@@ -12,36 +12,36 @@
     "access": "Pour recolter : niveau du metier >= gather_level de la ressource principale (1, 20, 40, 60, 80) ET un outil du bon type de rang >= rang du point dans le sac (items/profession_recipes.json, tool_<type>_r<rang>). Chaque coup use une utilisation de l'outil. Sinon le serveur refuse avec la raison (niveau ou outil) et le client l'affiche.",
     "lock": "Un point est VERROUILLE pour le premier joueur qui commence a le recolter, jusqu'a la fin ou l'annulation. Les autres le voient occupe. Pas de PvP, pas de vol.",
     "charges": {
-      "1": 3,
-      "2": 3,
+      "1": 4,
+      "2": 4,
       "3": 4,
       "4": 4,
       "5": 5
     },
-    "_charges": "Nombre de coups avant epuisement, par rang. Epuise : sprite vide, puis reapparition apres respawn_seconds, a un AUTRE point tire dans l'aire (rang et rarete retires).",
+    "_charges": "25/11, décision Charleston, densité x1,5, réapparition /2, à mesurer (fluidité Android à Havreden). Rangs I et II : 3 -> 4 coups, rangs III a V inchanges. Nombre de coups avant epuisement, par rang. Epuise : sprite vide, puis reapparition apres respawn_seconds, a un AUTRE point tire dans l'aire (rang et rarete retires).",
     "respawn_seconds": {
       "1": [
-        90,
-        180
+        45,
+        90
       ],
       "2": [
-        120,
-        240
+        60,
+        120
       ],
       "3": [
-        150,
-        300
+        75,
+        150
       ],
       "4": [
-        240,
-        420
+        120,
+        210
       ],
       "5": [
-        300,
-        540
+        150,
+        270
       ]
     },
-    "_respawn_seconds": "A VALIDER (2026-11-24, retour joueur « minerais introuvables, je n'ai pas un metier au niveau 10 »). Avant : I 240-420, II 300-540, III 360-660, IV 480-780, V 600-900. Delai entre l'epuisement d'un point et l'apparition de son remplacant ailleurs dans l'aire. Divise par 2,5 environ aux rangs I a III (ceux des joueurs qui debutent un metier), par 1,8 aux rangs IV et V.",
+    "_respawn_seconds": "25/11, décision Charleston, densité x1,5, réapparition /2, à mesurer (fluidité Android à Havreden). Avant le 25/11 : I 90-180, II 120-240, III 150-300, IV 240-420, V 300-540. A VALIDER (2026-11-24, retour joueur « minerais introuvables, je n'ai pas un metier au niveau 10 »). Avant : I 240-420, II 300-540, III 360-660, IV 480-780, V 600-900. Delai entre l'epuisement d'un point et l'apparition de son remplacant ailleurs dans l'aire. Divise par 2,5 environ aux rangs I a III (ceux des joueurs qui debutent un metier), par 1,8 aux rangs IV et V.",
     "first_spawn_seconds": [
       10,
       120
@@ -910,22 +910,22 @@
       "expedition_lv_11_20",
       "expedition_lv_21_30"
     ],
-    "nodes_per_area": 12,
-    "_nodes_per_area": "A VALIDER (2026-11-24, 0.21.37, decision Charleston « doubler le nombre par zone, x1,5 pour les plus hauts »). Avant : 3 (puis 6 propose). Points actifs a la fois dans une aire de rang I a III : c'est le PLAFOND de l'aire, jamais depasse. Au village : rang I 18 -> 72 points, rang II 27 -> 108, rang III 18 -> 72.",
+    "nodes_per_area": 18,
+    "_nodes_per_area": "25/11, décision Charleston, densité x1,5, réapparition /2, à mesurer (fluidité Android à Havreden). 12 -> 18. A VALIDER (2026-11-24, 0.21.37, decision Charleston « doubler le nombre par zone, x1,5 pour les plus hauts »). Avant : 3 (puis 6 propose). Points actifs a la fois dans une aire de rang I a III : c'est le PLAFOND de l'aire, jamais depasse. Au village : rang I 18 -> 72 points, rang II 27 -> 108, rang III 18 -> 72.",
     "nodes_per_area_by_rank": {
-      "4": 12,
-      "5": 18
+      "4": 18,
+      "5": 27
     },
     "min_nodes_per_type_per_area": 1,
     "_min_nodes_per_type_per_area": "A VALIDER (2026-11-24). Minimum garanti de chaque type au sol dans chaque aire : tant qu'un type de l'aire (ses poids) a moins de points que ce minimum, le point suivant est tire parmi les types manquants, le reste suit les poids. Avec 1 : chaque aire a toujours au moins un arbre, un rocher, un carre d'herbes et un buisson. Rochers de rang I au village : 2 en moyenne avant (aucune aire de rang I n'a la roche dominante), 11,5 apres (avec 12 points par aire). 0 = sans effet (comportement d'avant). Lu par presence (GatherWorld::pick_type).",
     "max_nodes_per_zone_by_type": {
-      "tree": 160,
-      "rock": 160,
-      "herb_patch": 160,
-      "wild_bush": 160
+      "tree": 240,
+      "rock": 240,
+      "herb_patch": 240,
+      "wild_bush": 240
     },
-    "_max_nodes_per_zone_by_type": "A VALIDER (2026-11-24, 0.21.37). Plafond de points d'un type dans une zone, tous rangs confondus (les plans d'eau pechables ne comptent pas). Un type plein n'est plus tire ; si tous les types d'une aire sont pleins, l'emplacement attend et reessaie 1 a 3 min plus tard. Attendu au village avec les densites 12 / 12 / 18 : environ 107 arbres, 126 rochers, 103 herbes, 97 buissons (153 points en tout avant, 432 apres). 160 = le type le plus nombreux (rochers, 126) plus 25 % de marge, au-dessus des ecarts du tirage : il ne coupe pas la densite prevue et borne une hausse future de nodes_per_area (80, valeur de la premiere proposition, aurait coupe les rochers et les arbres). Type absent = sans plafond. Lu par presence (GatherWorld::pick_type).",
-    "_nodes_per_area_by_rank": "A VALIDER (2026-11-24, 0.21.37) : rang IV 6 -> 12, rang V 9 -> 18 (x1,5 sur la proposition 8 / 12, decision Charleston). Rochers attendus : rang IV 22,5 -> 39, rang V 15,8 -> 28,6. Historique : densite de fin de jeu du 2026-10-18 (lot 1 endgame), 6 et 9 au lieu de 3. Un rang absent garde nodes_per_area. Lu par presence (GatherConfig::nodes_for_rank).",
+    "_max_nodes_per_zone_by_type": "25/11, décision Charleston, densité x1,5, réapparition /2, à mesurer (fluidité Android à Havreden). 160 -> 240 pour les 4 types (environ 189 rochers attendus au village avec la densite x1,5, plus 25 % de marge). A VALIDER (2026-11-24, 0.21.37). Plafond de points d'un type dans une zone, tous rangs confondus (les plans d'eau pechables ne comptent pas). Un type plein n'est plus tire ; si tous les types d'une aire sont pleins, l'emplacement attend et reessaie 1 a 3 min plus tard. Attendu au village avec les densites 12 / 12 / 18 : environ 107 arbres, 126 rochers, 103 herbes, 97 buissons (153 points en tout avant, 432 apres). 160 = le type le plus nombreux (rochers, 126) plus 25 % de marge, au-dessus des ecarts du tirage : il ne coupe pas la densite prevue et borne une hausse future de nodes_per_area (80, valeur de la premiere proposition, aurait coupe les rochers et les arbres). Type absent = sans plafond. Lu par presence (GatherWorld::pick_type).",
+    "_nodes_per_area_by_rank": "25/11, décision Charleston, densité x1,5, réapparition /2, à mesurer (fluidité Android à Havreden). Rang IV 12 -> 18, rang V 18 -> 27. A VALIDER (2026-11-24, 0.21.37) : rang IV 6 -> 12, rang V 9 -> 18 (x1,5 sur la proposition 8 / 12, decision Charleston). Rochers attendus : rang IV 22,5 -> 39, rang V 15,8 -> 28,6. Historique : densite de fin de jeu du 2026-10-18 (lot 1 endgame), 6 et 9 au lieu de 3. Un rang absent garde nodes_per_area. Lu par presence (GatherConfig::nodes_for_rank).",
     "ground_types_weights": {
       "tree": 3,
       "rock": 3,
