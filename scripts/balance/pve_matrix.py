@@ -271,6 +271,14 @@ class Gear:
 
 # ---------------------------------------------------------------- players
 
+def player_growth(class_growth, game):
+    """Per-level growth of a PLAYER: config/game.json stat_scaling.player_growth replaces the
+    class growth of the stats it lists, every class (hp 10, 2026-11-25). Companions keep
+    stats/class_growth.json. Same rule as kanarion_back shared/gameplay/stat_scaling.hpp."""
+    over = game["stat_scaling"]["player_growth"]
+    return {c: (dict(g, **over) if not c.startswith("_") else g) for c, g in class_growth.items()}
+
+
 def player(data, gear, build, level, profile="moyen"):
     cls, off, split, aw, dtype, weapon = BUILDS[build]
     base, growth = data["base"][cls], data["growth"][cls]
@@ -334,7 +342,7 @@ def main():
     prog = load("systems/progression.json")["stat_allocation"]
     data = {
         "base": load("stats/class_base_stats.json"),
-        "growth": load("stats/class_growth.json"),
+        "growth": player_growth(load("stats/class_growth.json"), load("config/game.json")),
         "point_values": prog["point_values"],
         "points_per_level": prog["points_per_level"],
     }

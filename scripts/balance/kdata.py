@@ -296,7 +296,11 @@ def _parse_skill(s, base_class, subclass, unpriced_log):
 def load_subclasses(include_subclass_passives=True):
     reg = load_json("classes/class_registry.json")
     cbs = load_json("stats/class_base_stats.json")
-    cg = load_json("stats/class_growth.json")
+    # Player growth: config/game.json stat_scaling.player_growth replaces the class growth
+    # of the stats it lists (hp 10, 2026-11-25), as kanarion_back stat_scaling.hpp does.
+    over = load_json("config/game.json")["stat_scaling"]["player_growth"]
+    cg = {c: (dict(g, **over) if not c.startswith("_") else g)
+          for c, g in load_json("stats/class_growth.json").items()}
     commons = load_json("classes/common_passives.json")["common_passives"]
     out = {}
     for bc in reg["base_classes"]:

@@ -60,14 +60,17 @@
   },
   "_stats_definition_owner": "SOURCE UNIQUE de la valeur d'un point alloue (hp, mp, atk, mag, def). Lue par le combat ET l'economie via kanarion_back shared/gameplay/stat_scaling.hpp, sans valeur par defaut : une valeur absente fait refuser le fichier au demarrage. 1 point de Souffle = 3 (decision owner 2026-10-14, etait 5 en combat). systems/progression.json stat_allocation.point_values est un MIROIR controle par scripts/validate_cross_references.py.",
   "stat_scaling": {
-    "_comment": "Lu par shared/gameplay/stat_scaling.hpp (combat, economie, personnage, PNJ). Valeur de classe au niveau L = base + croissance x (L-1), arrondie par `rounding` (floor : ce que le combat appliquait deja). `allocation` : stat du profil que nourrit chaque point alloue (point_value dans stats_definition). `derived` : stats calculees depuis une autre (RM = 0,2 x MAG, auparavant en dur dans combat_profile_builder.cpp).",
+    "_comment": "Lu par shared/gameplay/stat_scaling.hpp (combat, economie, personnage, PNJ). Valeur de classe au niveau L = base + croissance x (L-1) (croissance des joueurs : `player_growth` quand la stat y figure, sinon stats/class_growth.json), arrondie par `rounding` (floor : ce que le combat appliquait deja). `allocation` : stat du profil que nourrit chaque point alloue (point_value dans stats_definition). `derived` : stats calculees depuis une autre (RM = 0,2 x MAG, auparavant en dur dans combat_profile_builder.cpp).",
     "rounding": "floor",
     "allocation": {"hp": "hp", "mp": "mp", "atk": "atk", "mag": "mag", "def": "armor"},
+    "player_growth": {"hp": 10},
+    "_player_growth_comment": "Croissance par niveau des JOUEURS (personnages, personnage de tournoi, salle d'essai de classe), toutes classes, qui REMPLACE pour ces stats la croissance de stats/class_growth.json. Une stat absente ici garde la croissance de sa classe. Les compagnons (mercenaires, recrues d'arene, familiers) ne lisent PAS ce bloc : ils gardent stats/class_growth.json. hp 10 : decision Charleston du 2026-11-25 (etait 3 pour le warrior, 2 pour les cinq autres classes). Lu par kanarion_back shared/gameplay/stat_scaling.hpp (StatSubject::Player), sans valeur par defaut : le bloc est obligatoire (objet vide = aucune difference joueur/compagnon).",
     "derived": [{"target": "magic_resist", "source": "mag", "ratio": 0.2}]
   },
   "stats_definition": {
     "hp": {
-      "point_value": 5
+      "point_value": 10,
+      "_point_value_note": "1 point de PV alloue = +10 PV max (decision Charleston du 2026-11-25, etait 5)."
     },
     "mp": {
       "point_value": 3,

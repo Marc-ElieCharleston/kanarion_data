@@ -36,7 +36,10 @@ ROLES_CFG = load("config/roles.json")
 PATTERNS = load("combat/targeting.json")["patterns"]
 STATUS = {k: dict(e, category=c) for c, es in load("stats/status_effects.json")["effects"].items()
           for k, e in es.items() if not k.startswith("_")}
-BASE, GROWTH = load("stats/class_base_stats.json"), load("stats/class_growth.json")
+BASE = load("stats/class_base_stats.json")
+# Player growth (config/game.json stat_scaling.player_growth overrides the class growth it lists).
+GROWTH = {c: (dict(g, **GAME["stat_scaling"]["player_growth"]) if not c.startswith("_") else g)
+          for c, g in load("stats/class_growth.json").items()}
 
 GCD = COMBAT["gcd_duration"]
 CDR_CAP = load("stats/definitions.json")["stats"]["special"]["cooldown_reduction"]["cap"] / 100   # cap owner: the stat definition
