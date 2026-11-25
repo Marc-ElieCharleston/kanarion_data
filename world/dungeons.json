@@ -1316,10 +1316,12 @@
           "key_required": "key_rat_den",
           "requires_cleared": "fissure_1",
           "level_range": [
-            15,
-            18
+            23,
+            27
           ],
-          "mob_level_offset": 6,
+          "mob_level_offset": 15,
+          "hp_multiplier": 1.3,
+          "atk_multiplier": 1.1,
           "star_weights": {
             "4": 50,
             "5": 50
@@ -1346,80 +1348,26 @@
           },
           "description_fr": "Emprise forte. La Fissure a durci le terrier : chaque rat a appris un tour de plus.",
           "description_en": "Strong hold. The Fissure has hardened the burrow: every rat has learned one more trick.",
-          "_a_valider": "Proposition du 2026-11-14 (retour testeur : groupe entre au niveau 15-17, seul le boss pose probleme ; Charleston : Normal et Difficile bien plus durs), a valider et a mesurer en jeu. Niveau conseille 15-18 (13-17 avant). Monstres +6 niveaux (+5 avant) : etages 1 a 3 en 14-17, etage 4 au niveau du groupe du boss (16-17, voir floor_overrides.4), boss inchange (16-17). Etoiles 4 ou 5 (50/50 ; 3 a 5 en 30/40/30 avant). PV et attaque des monstres d etage relevees par floor_overrides (detail dans floor_overrides._a_valider). Competences de palier inchangees. Banc server-combat WorldLowLevelSimulation.DISABLED_DungeonFloorCurve (IA serveur, equipement moyen), groupe de 4 joueurs + 4 familiers au niveau 16 (etage 4 corrige le 14/11) : etages 1-4 gagnes a 100 %, PV restants 88/76/60/68 % (avant : 100 %, 96/91/87/85 % au niveau 15) ; a 3 joueurs + 3 familiers : etages 3-4 gagnes a 67 % et 75 % (avant 100 %). Boss : 53 % a 4 joueurs, 8 % a 3 joueurs (inchange). Valeurs de palier precedentes, du 2026-10-29 : offset 5, etoiles 30/40/30, niveau conseille 13-17.",
+          "_palier_25_11": "25/11, decision Charleston, A MESURER. Regle unique du palier Normal : monstres +15 niveaux, PV x1.3 et attaque x1.1 (hp_multiplier / atk_multiplier du palier, lus par presence world/dungeon_fixed_groups.cpp, appliques a TOUS les monstres de TOUS les etages, boss et gardes compris, multiplies par les floor_overrides eventuels ; envoyes au combat en MonsterMapping.post_hp/post_atk_multiplier, apres le modele et les etoiles). level_range suit le decalage : niveaux des monstres du palier. Les invocations du boss ne recoivent pas ces multiplicateurs (elles suivent le niveau du boss). Boss (version clemente de la mecanique heroique) : Appel de la Meute a 3 Rats Assassins, 2 niveaux sous le Rongeur, qui bondissent sur le fond du groupe (skill_mob_rongeur_summon_assassins_2 ; avant 2).",
+          "_anciennes_valeurs_25_11": "Avant le 25/11 (proposition du 14/11) : level_range [15, 18], mob_level_offset 6, floor_overrides etages 1 a 4 (rats de base PV x2,0 et attaque x1,35 ; Alpha et Mage PV x1,5 et attaque x1,25 ; Soigneur attaque x1,25), etages 4 et 5 mob_level_range [10, 11] (niveaux 16-17). Supprimes : la regle du palier remplace les bonus etage par etage, et la raison de l exception de l etage 4 (Mage et Soigneur de l etage 4 pas plus solides que ceux du groupe du boss) disparait avec eux : etages 4 et 5 sont au meme niveau (11-12 + decalage), meme multiplicateur, le boss a 5 etoiles fixes.",
           "floor_overrides": {
-            "1": {
-              "hp_multipliers": {
-                "mob_rat": 2.0,
-                "mob_rat_jeune": 2.0
-              },
-              "atk_multipliers": {
-                "mob_rat": 1.35,
-                "mob_rat_jeune": 1.35
-              }
-            },
-            "2": {
-              "hp_multipliers": {
-                "mob_rat_alpha": 1.5,
-                "mob_rat": 2.0,
-                "mob_rat_jeune": 2.0
-              },
-              "atk_multipliers": {
-                "mob_rat_alpha": 1.25,
-                "mob_rat": 1.35,
-                "mob_rat_jeune": 1.35
-              }
-            },
-            "3": {
-              "hp_multipliers": {
-                "mob_rat_mage": 1.5,
-                "mob_rat_alpha": 1.5,
-                "mob_rat": 2.0,
-                "mob_rat_jeune": 2.0
-              },
-              "atk_multipliers": {
-                "mob_rat_mage": 1.25,
-                "mob_rat_alpha": 1.25,
-                "mob_rat": 1.35,
-                "mob_rat_jeune": 1.35
-              }
-            },
-            "4": {
-              "mob_level_range": [
-                10,
-                11
-              ],
-              "hp_multipliers": {
-                "mob_rat_alpha": 1.5,
-                "mob_rat": 2.0,
-                "mob_rat_jeune": 2.0
-              },
-              "atk_multipliers": {
-                "mob_rat_soigneur": 1.25,
-                "mob_rat_alpha": 1.25,
-                "mob_rat_mage": 1.25,
-                "mob_rat": 1.35,
-                "mob_rat_jeune": 1.35
-              },
-              "_etage_4_a_valider": "14/11, decision Charleston (incoherence relevee au banc) : le Mage et le Soigneur de l etage 4 ne doivent pas avoir plus de PV que ceux du groupe du boss. Etage 4 ramene au niveau du groupe du boss (16-17, mob_level_range [10, 11] + offset) et Mage et Soigneur sans multiplicateur de PV : leurs PV ne depassent plus ceux du groupe du boss (meme niveau, le boss est a 5 etoiles fixes). Leur attaque garde le multiplicateur du palier ; rats et Alpha gardent leurs PV relevees."
-            },
             "5": {
-              "mob_level_range": [
-                10,
-                11
-              ]
-            },
-            "_a_valider": "Normal (14/11, demande de Charleston : « bien plus dur », valeurs a valider). Etages 1 a 4 seulement : les rats de base (mob_rat, mob_rat_jeune, rang fodder) passent PV x2,0 et attaque x1,35, l Alpha, le Mage et le Soigneur PV x1,5 et attaque x1,25 (post_hp/post_atk_multiplier, appliques par le combat apres le modele et les etoiles). Etage 5 : mob_level_range [10, 11] + mob_level_offset 6 = 16-17, soit le groupe du Rongeur d avant (meme niveau, memes competences, 5 etoiles) : le boss ne bouge pas, ce sont les etages qui montent."
-          }
+              "tier_multipliers": false,
+              "_raison_25_11": "25/11, A MESURER, exception documentee : la salle du boss ne prend PAS les multiplicateurs de PV et d attaque du palier (seulement son decalage de niveau, ses etoiles et ses competences). La difficulte du boss vient de sa mecanique de palier (precision de Charleston du 25/11 : Heroique punitif par la mecanique, pas par plus de PV a taper). Banc server-combat DISABLED_DungeonFloorCurve (Egouts, 4 joueurs + 4 familiers) : avec les multiplicateurs, le groupe du boss tombe a 0-8 % de victoires meme sans invocation de palier."
+            }
+          },
+          "_mesures_25_11": "Banc server-combat WorldLowLevelSimulation.DISABLED_DungeonFloorCurve du 25/11 (4 joueurs + 4 familiers joues par l IA serveur, equipement moyen du niveau, 36 combats par etage), joueurs niv 26 : etages 1 a 4 gagnes a 100/100/100/97 %, PV restants 92/85/75/76 %, 18/27/45/50 s par combat. Boss : 0 % (l IA des joueurs ne cible pas les assassins invoques, mecanique ignoree) ; 44 % en 155 s quand l appel est neutralise (borne d un groupe qui tue les invocations) ; joueurs niv 29 : 14 %. Avant (14/11, joueurs niv 18) : etages 100 %, PV restants 89/82/76/83 %, boss 86 % en 94 s."
         },
         "fissure_3": {
           "key_required": "key_rat_den",
           "requires_cleared": "fissure_2",
           "level_range": [
-            20,
-            24
+            28,
+            32
           ],
-          "mob_level_offset": 11,
+          "mob_level_offset": 20,
+          "hp_multiplier": 1.5,
+          "atk_multiplier": 1.2,
           "star_weights": {
             "4": 30,
             "5": 70
@@ -1454,74 +1402,18 @@
           },
           "description_fr": "Emprise totale. La Fissure a pris le terrier : les rats frappent comme une meute qui n'a plus peur de rien.",
           "description_en": "Total hold. The Fissure owns the burrow: the rats strike like a pack that fears nothing anymore.",
-          "_a_valider": "Proposition du 2026-11-14, a valider et a mesurer en jeu. Niveau conseille 20-24 (18-22 avant). Monstres +11 niveaux (+10 avant) : etages 1 a 3 en 19-22, etage 4 au niveau du groupe du boss (21-22, voir floor_overrides.4), boss inchange (21-22). Etoiles 4 ou 5 (30/70 ; 20/40/40 entre 3 et 5 avant). PV et attaque des monstres d etage relevees par floor_overrides. Competences de palier et 3 assassins du Rongeur inchanges. Banc DungeonFloorCurve, 4 joueurs + 4 familiers niveau 22 : etages 1-4 gagnes a 100/100/72/89 %, PV restants 85/75/32/51 % (etage 4 corrige le 14/11 ; avant : 100 %, 96/95/82/87 %) ; a 3 joueurs : etages 3-4 a 17 % et 42 %. Boss : 0 % a 4 joueurs niveau 22, 12 % au niveau 25 (deja 0 % avant ce changement, non retouche ; le passer a 2 assassins ne change rien au banc : 0 %, 6 % au niveau 24). Valeurs precedentes du 2026-10-29 : offset 10, etoiles 20/40/40, niveau conseille 18-22.",
+          "_palier_25_11": "25/11, decision Charleston, A MESURER. Regle unique du palier Heroique : monstres +20 niveaux, PV x1.5 et attaque x1.2 (hp_multiplier / atk_multiplier du palier, lus par presence world/dungeon_fixed_groups.cpp, appliques a TOUS les monstres de TOUS les etages, boss et gardes compris, multiplies par les floor_overrides eventuels ; envoyes au combat en MonsterMapping.post_hp/post_atk_multiplier, apres le modele et les etoiles). level_range suit le decalage : niveaux des monstres du palier. Les invocations du boss ne recoivent pas ces multiplicateurs (elles suivent le niveau du boss). Boss (mecanique punitive) : Appel de la Meute a 6 Rats Assassins au niveau du Rongeur, recharge 20 s, qui bondissent sur le fond du groupe (skill_mob_rongeur_summon_assassins_3 ; avant 3 au niveau -2, 25 s).",
+          "_anciennes_valeurs_25_11": "Avant le 25/11 (proposition du 14/11) : level_range [20, 24], mob_level_offset 11, floor_overrides etages 1 a 4 (rats de base PV x2,0 et attaque x1,3 ; Alpha et Mage PV x1,4 et attaque x1,15 ; Soigneur attaque x1,15), etages 4 et 5 mob_level_range [10, 11] (niveaux 21-22). Supprimes pour la meme raison qu en Normal.",
           "floor_overrides": {
-            "1": {
-              "hp_multipliers": {
-                "mob_rat": 2.0,
-                "mob_rat_jeune": 2.0
-              },
-              "atk_multipliers": {
-                "mob_rat": 1.3,
-                "mob_rat_jeune": 1.3
-              }
-            },
-            "2": {
-              "hp_multipliers": {
-                "mob_rat_alpha": 1.4,
-                "mob_rat": 2.0,
-                "mob_rat_jeune": 2.0
-              },
-              "atk_multipliers": {
-                "mob_rat_alpha": 1.15,
-                "mob_rat": 1.3,
-                "mob_rat_jeune": 1.3
-              }
-            },
-            "3": {
-              "hp_multipliers": {
-                "mob_rat_mage": 1.4,
-                "mob_rat_alpha": 1.4,
-                "mob_rat": 2.0,
-                "mob_rat_jeune": 2.0
-              },
-              "atk_multipliers": {
-                "mob_rat_mage": 1.15,
-                "mob_rat_alpha": 1.15,
-                "mob_rat": 1.3,
-                "mob_rat_jeune": 1.3
-              }
-            },
-            "4": {
-              "mob_level_range": [
-                10,
-                11
-              ],
-              "hp_multipliers": {
-                "mob_rat_alpha": 1.4,
-                "mob_rat": 2.0,
-                "mob_rat_jeune": 2.0
-              },
-              "atk_multipliers": {
-                "mob_rat_soigneur": 1.15,
-                "mob_rat_alpha": 1.15,
-                "mob_rat_mage": 1.15,
-                "mob_rat": 1.3,
-                "mob_rat_jeune": 1.3
-              },
-              "_etage_4_a_valider": "14/11, decision Charleston (incoherence relevee au banc) : le Mage et le Soigneur de l etage 4 ne doivent pas avoir plus de PV que ceux du groupe du boss. Etage 4 ramene au niveau du groupe du boss (21-22, mob_level_range [10, 11] + offset) et Mage et Soigneur sans multiplicateur de PV : leurs PV ne depassent plus ceux du groupe du boss (meme niveau, le boss est a 5 etoiles fixes). Leur attaque garde le multiplicateur du palier ; rats et Alpha gardent leurs PV relevees."
-            },
             "5": {
-              "mob_level_range": [
-                10,
-                11
-              ]
-            },
-            "_a_valider": "Difficile (14/11, valeurs a valider). Etages 1 a 4 : rats de base PV x2,0 et attaque x1,3, Alpha, Mage et Soigneur PV x1,4 et attaque x1,15, en plus des 2 competences de palier par espece. Etage 5 : mob_level_range [10, 11] + mob_level_offset 11 = 21-22, le groupe du Rongeur d avant, inchange."
-          }
+              "tier_multipliers": false,
+              "_raison_25_11": "25/11, A MESURER, exception documentee : la salle du boss ne prend PAS les multiplicateurs de PV et d attaque du palier (seulement son decalage de niveau, ses etoiles et ses competences). La difficulte du boss vient de sa mecanique de palier (precision de Charleston du 25/11 : Heroique punitif par la mecanique, pas par plus de PV a taper). Banc server-combat DISABLED_DungeonFloorCurve (Egouts, 4 joueurs + 4 familiers) : avec les multiplicateurs, le groupe du boss tombe a 0-8 % de victoires meme sans invocation de palier."
+            }
+          },
+          "_mesures_25_11": "Banc du 25/11, joueurs niv 31 : etages 1 a 4 gagnes a 100/97/81/72 %, PV restants 90/78/36/50 %, 21/32/58/61 s. Boss : 0 % mecanique ignoree ; 8 % (22 % au niveau 34) quand l appel est neutralise. Avant (14/11, joueurs niv 23) : etages 100/100/86/92 %, boss 8 %."
         }
       },
-      "_comment_difficulties": "Trois paliers (2026-10-29, valeurs validees par Charleston, a mesurer) : fissure_1 = mode Histoire de l acte I (entree libre), fissure_2 et fissure_3 = paliers a cle. MEMES cartes, decor, etages et groupes pour les trois : un palier decale le niveau des monstres (mob_level_offset, lu par presence), peut changer le tirage d etoiles (star_weights) et ajoute des competences a des monstres choisis (extra_skills, envoyees au combat ; une competence de palier qui declare replaces prend la place de celle du kit). Chaque palier a ses zones d etage (dungeon_rat_den_f<N>_fissure_<M> dans zones.json, meme map_path) et sa ligne dungeon_templates (migration generee par scripts/dungeon_content.py --sql). Recompenses : rewards.json multiplier_families.dungeon_difficulty.<palier>, transmis par presence au combat (CreateRoomRequest.dungeon_difficulty). level_range d un palier = affichage du niveau conseille, n ouvre ni ne ferme rien. Noms affiches (Charleston 2026-11-14) : fissure_1 = mode Histoire, fissure_2 = Normal, fissure_3 = Difficile (client : DUNGEON_DIFFICULTY_FISSURE_2/3) ; les ids ne changent pas. Depuis le 2026-11-14, Normal et Difficile relevent aussi PV et attaque des monstres des etages 1 a 4 (floor_overrides.<etage>.hp_multipliers / atk_multipliers) et gardent le groupe du boss tel quel (floor_overrides.5.mob_level_range).",
+      "_comment_difficulties": "Trois paliers (2026-10-29, valeurs validees par Charleston, a mesurer) : fissure_1 = mode Histoire de l acte I (entree libre), fissure_2 et fissure_3 = paliers a cle. MEMES cartes, decor, etages et groupes pour les trois : un palier decale le niveau des monstres (mob_level_offset, lu par presence), peut changer le tirage d etoiles (star_weights) et ajoute des competences a des monstres choisis (extra_skills, envoyees au combat ; une competence de palier qui declare replaces prend la place de celle du kit). Chaque palier a ses zones d etage (dungeon_rat_den_f<N>_fissure_<M> dans zones.json, meme map_path) et sa ligne dungeon_templates (migration generee par scripts/dungeon_content.py --sql). Recompenses : rewards.json multiplier_families.dungeon_difficulty.<palier>, transmis par presence au combat (CreateRoomRequest.dungeon_difficulty). level_range d un palier = affichage du niveau conseille, n ouvre ni ne ferme rien. Noms affiches : fissure_1 = mode Histoire, fissure_2 = Normal, fissure_3 = Heroique (25/11, decision Charleston, avant Difficile ; client : DUNGEON_DIFFICULTY_FISSURE_2/3) ; les ids ne changent pas. Depuis le 25/11 (decision Charleston, A MESURER), une regle unique par palier : mob_level_offset +15 / +20, hp_multiplier et atk_multiplier du palier appliques a tous les monstres de tous les etages (presence world/dungeon_fixed_groups.cpp, multiplies par floor_overrides s il en reste), et une mecanique de boss renforcee par palier (competences de palier du boss). Les floor_overrides de PV et d attaque des paliers Normal et Heroique (14/11) sont supprimes ; ceux du mode Histoire sont inchanges.",
       "_comment_keys": "Paliers et cle (proprietaire 2026-10-15, active le 2026-10-29) : fissure_1 reste libre. fissure_2 et fissure_3 demandent la MEME cle, key_rat_den (key_required), consommee a l entree, une par joueur, et chacune s ouvre quand le joueur a fini le palier d avant (requires_cleared, verifie par le dungeon service sur last_completed_at). Sources : items/loot_tables.json dungeon_key_drops (depuis le 2026-10-30 : 1,5 % sur tout monstre de rang I du monde, la moitie au rang II, le quart au-dela ; 20 % sur le Rongeur avec un seul tirage) et la recette Runiste recipe_rune_key_rat_den. scripts/dungeon_content.py refuse une cle qui tombe sans qu un palier la demande.",
       "floors": [
         {
@@ -1978,10 +1870,12 @@
           "key_required": "key_wolf_den",
           "requires_cleared": "fissure_1",
           "level_range": [
-            20,
-            25
+            30,
+            35
           ],
-          "mob_level_offset": 5,
+          "mob_level_offset": 15,
+          "hp_multiplier": 1.3,
+          "atk_multiplier": 1.1,
           "star_weights": {
             "3": 30,
             "4": 40,
@@ -2013,21 +1907,32 @@
               "skill_mob_maul_rot"
             ],
             "boss_alpha_wolf": [
-              "skill_mob_dread_howl"
+              "skill_mob_dread_howl",
+              "skill_mob_alpha_wolf_call_pack_2"
             ]
           },
           "description_fr": "Emprise forte. La Fissure a gagné la tanière : chaque loup a appris un tour de plus.",
           "description_en": "Strong hold. The Fissure has taken the den: every wolf has learned one more trick.",
-          "_a_valider": "Proposition du 2026-10-30, sur le schema des Egouts II : niveau conseille 20-25, monstres +5 niveaux, etoiles 30/40/30, une competence de plus par espece (competences existantes de monster_skills.json : Ronge-jarret, Frenesie Sanguinaire, Cuir du solitaire, Frappe Rapide, Hate, Furie Gregaire, Barriere Protectrice, Morsure Putride ; l Alpha gagne Hurlement d Effroi). Le duo Alpha / Matriarche (bonded_pair) est inchange : memes membres, la releve et la Fureur jouent comme en fissure_1."
+          "_palier_25_11": "25/11, decision Charleston, A MESURER. Regle unique du palier Normal : monstres +15 niveaux, PV x1.3 et attaque x1.1 (hp_multiplier / atk_multiplier du palier, lus par presence world/dungeon_fixed_groups.cpp, appliques a TOUS les monstres de TOUS les etages, boss et gardes compris, multiplies par les floor_overrides eventuels ; envoyes au combat en MonsterMapping.post_hp/post_atk_multiplier, apres le modele et les etoiles). level_range suit le decalage : niveaux des monstres du palier. Les invocations du boss ne recoivent pas ces multiplicateurs (elles suivent le niveau du boss). Boss (version clemente) : le Loup Alpha gagne Appel de la Meute, 3 Loups Noirs 2 niveaux sous lui, a cote de lui, recharge 25 s (skill_mob_alpha_wolf_call_pack_2) ; il garde sa Marque de mort (kit). Le duo Alpha / Matriarche (releve, Fureur) est inchange.",
+          "_anciennes_valeurs_25_11": "Avant le 25/11 (proposition du 2026-10-30) : level_range [20, 25], mob_level_offset 5, pas de multiplicateur de PV ni d attaque, pas d invocation.",
+          "floor_overrides": {
+            "5": {
+              "tier_multipliers": false,
+              "_raison_25_11": "25/11, A MESURER, exception documentee : la salle du boss ne prend PAS les multiplicateurs de PV et d attaque du palier (seulement son decalage de niveau, ses etoiles et ses competences). La difficulte du boss vient de sa mecanique de palier (precision de Charleston du 25/11 : Heroique punitif par la mecanique, pas par plus de PV a taper). Banc server-combat DISABLED_DungeonFloorCurve (Egouts, 4 joueurs + 4 familiers) : avec les multiplicateurs, le groupe du boss tombe a 0-8 % de victoires meme sans invocation de palier."
+            }
+          },
+          "_mesures_25_11": "Banc du 25/11, joueurs niv 33 : etages 1 a 4 gagnes a 6/28/31/6 %, boss 0 % (0 % aussi sans invocation). Avant (joueurs niv 23) : etages 100/100/92/86 %, boss deja 0 %. Banc NON CONCLUANT pour la Taniere au-dela du niveau 30 : avec le seul decalage de niveau (sans multiplicateurs ni invocation), etages 29 a 54 %."
         },
         "fissure_3": {
           "key_required": "key_wolf_den",
           "requires_cleared": "fissure_2",
           "level_range": [
-            25,
-            30
+            35,
+            40
           ],
-          "mob_level_offset": 10,
+          "mob_level_offset": 20,
+          "hp_multiplier": 1.5,
+          "atk_multiplier": 1.2,
           "star_weights": {
             "3": 20,
             "4": 40,
@@ -2068,12 +1973,21 @@
             ],
             "boss_alpha_wolf": [
               "skill_mob_dread_howl",
-              "skill_mob_assassin_ambush"
+              "skill_mob_assassin_ambush",
+              "skill_mob_alpha_wolf_call_pack_3"
             ]
           },
           "description_fr": "Emprise totale. La Fissure possède la tanière : la meute chasse comme un seul corps.",
           "description_en": "Total hold. The Fissure owns the den: the pack hunts as a single body.",
-          "_a_valider": "Proposition du 2026-10-30, sur le schema des Egouts III : niveau conseille 25-30, monstres +10 niveaux, etoiles 20/40/40, la competence de Taniere II plus une autre par espece (Bond Predateur, Frappe Sauvage, Rugissement Provocateur, Lame Empoisonnee, Grondement des cavernes, Affaiblissement, Soin Mineur, Fendre ; l Alpha gagne Embuscade). Duo Alpha / Matriarche inchange."
+          "_palier_25_11": "25/11, decision Charleston, A MESURER. Regle unique du palier Heroique : monstres +20 niveaux, PV x1.5 et attaque x1.2 (hp_multiplier / atk_multiplier du palier, lus par presence world/dungeon_fixed_groups.cpp, appliques a TOUS les monstres de TOUS les etages, boss et gardes compris, multiplies par les floor_overrides eventuels ; envoyes au combat en MonsterMapping.post_hp/post_atk_multiplier, apres le modele et les etoiles). level_range suit le decalage : niveaux des monstres du palier. Les invocations du boss ne recoivent pas ces multiplicateurs (elles suivent le niveau du boss). Boss (mecanique punitive) : Appel de la Meute a 4 Loups Noirs a son niveau, recharge 20 s (skill_mob_alpha_wolf_call_pack_3), plus la Marque de mort du kit (+50 % de degats subis pendant 6 s), Hurlement d Effroi et Embuscade. Duo inchange.",
+          "_anciennes_valeurs_25_11": "Avant le 25/11 (proposition du 2026-10-30) : level_range [25, 30], mob_level_offset 10, pas de multiplicateur de PV ni d attaque, pas d invocation.",
+          "floor_overrides": {
+            "5": {
+              "tier_multipliers": false,
+              "_raison_25_11": "25/11, A MESURER, exception documentee : la salle du boss ne prend PAS les multiplicateurs de PV et d attaque du palier (seulement son decalage de niveau, ses etoiles et ses competences). La difficulte du boss vient de sa mecanique de palier (precision de Charleston du 25/11 : Heroique punitif par la mecanique, pas par plus de PV a taper). Banc server-combat DISABLED_DungeonFloorCurve (Egouts, 4 joueurs + 4 familiers) : avec les multiplicateurs, le groupe du boss tombe a 0-8 % de victoires meme sans invocation de palier."
+            }
+          },
+          "_mesures_25_11": "Banc du 25/11, joueurs niv 38 : etages 0/0/17/0 %, boss 0 %. Avant (joueurs niv 28) : etages 94/89/86/64 %, boss 0 %. Meme reserve qu en Normal."
         }
       },
       "floors": [
@@ -2531,10 +2445,12 @@
           "requires_cleared": "fissure_1",
           "mechanic_scale": "normal",
           "level_range": [
-            31,
-            35
+            41,
+            45
           ],
-          "mob_level_offset": 5,
+          "mob_level_offset": 15,
+          "hp_multiplier": 1.3,
+          "atk_multiplier": 1.1,
           "star_weights": {
             "4": 50,
             "5": 50
@@ -2579,26 +2495,27 @@
           },
           "description_fr": "Les créatures sont plus dangereuses et les attaques du Gardien demandent davantage de vigilance.",
           "description_en": "Creatures are more dangerous, and the Guardian's attacks require greater attention.",
-          "_a_valider": "Proposition du 2026-11-17 sur le schema des Egouts et de la Taniere : niveau conseille 31-35 (tableau des propositions du 16/11), monstres +5 niveaux, etoiles 4 ou 5 (50/50, comme les Egouts Normal), une competence de plus par espece (competences existantes de skills/monster_skills.json). Mecanique du Gardien a l'echelle normal (entities/boss_mechanics.json). Pas de floor_overrides de PV ou d'attaque : a mesurer d'abord.",
+          "_palier_25_11": "25/11, decision Charleston, A MESURER. Regle unique du palier Normal : monstres +15 niveaux, PV x1.3 et attaque x1.1 (hp_multiplier / atk_multiplier du palier, lus par presence world/dungeon_fixed_groups.cpp, appliques a TOUS les monstres de TOUS les etages, boss et gardes compris, multiplies par les floor_overrides eventuels ; envoyes au combat en MonsterMapping.post_hp/post_atk_multiplier, apres le modele et les etoiles). level_range suit le decalage : niveaux des monstres du palier. Les invocations du boss ne recoivent pas ces multiplicateurs (elles suivent le niveau du boss). Boss : zones annoncees a l echelle normal (entities/boss_mechanics.json, 1 a 2 zones, coup 75 %), inchange.",
+          "_anciennes_valeurs_25_11": "Avant le 25/11 (proposition du 2026-11-17) : level_range [31, 35], mob_level_offset 5, floor_overrides.5 PV du Gardien x0,7 et de la Tortue de cendre x0,8 (reductions retirees, decision Charleston : le boss du Normal avait moins de PV que celui du mode Histoire).",
           "floor_overrides": {
             "5": {
-              "hp_multipliers": {
-                "boss_gardien_bois_fletri": 0.7,
-                "mob_tortue_cendre": 0.8
-              },
-              "_a_valider": "Normal : PV du Gardien x0,7 et de la Tortue de cendre x0,8 dans la salle du boss (salle a 5). Banc server-combat WorldLowLevelSimulation.BoisFletriBossFight du 2026-11-17 (4 joueurs + 4 familiers joues par l'IA serveur, equipement moyen du niveau, sortie des zones scriptee ; 24 combats par mode) : Histoire (joueurs niv 29) 15/24 victoires, 35 % de PV restants, 179 s ; Normal (niv 34) 10/24, 23 %, 199 s ; Difficile (niv 39) 1/24, 1 %, 154 s. Avant reglage (Gardien PV x2.0 via per_mob_override, aucun multiplicateur d'etage) : 0/2 dans les trois modes. A VALIDER."
+              "tier_multipliers": false,
+              "_raison_25_11": "25/11, A MESURER, exception documentee : la salle du boss ne prend PAS les multiplicateurs de PV et d attaque du palier (seulement son decalage de niveau, ses etoiles et ses competences). La difficulte du boss vient de sa mecanique de palier (precision de Charleston du 25/11 : Heroique punitif par la mecanique, pas par plus de PV a taper). Banc server-combat DISABLED_DungeonFloorCurve (Egouts, 4 joueurs + 4 familiers) : avec les multiplicateurs, le groupe du boss tombe a 0-8 % de victoires meme sans invocation de palier."
             }
-          }
+          },
+          "_mesures_25_11": "Banc du 25/11, etages joueurs niv 44 : 0 % (deja 6 a 14 % avant au niveau 34 ; mode Histoire 33 a 81 % au niveau 29 : banc non concluant pour ce donjon). Salle du boss, banc BoisFletriBossFight (esquive scriptee des zones = mecanique jouee) : 4/8 victoires, PV restants 50 %, 269 s ; sans esquive 0/8. Avant (joueurs niv 34) : 5/8, 203 s."
         },
         "fissure_3": {
           "key_required": "key_bois_fletri",
           "requires_cleared": "fissure_2",
           "mechanic_scale": "hard",
           "level_range": [
-            36,
-            40
+            46,
+            50
           ],
-          "mob_level_offset": 10,
+          "mob_level_offset": 20,
+          "hp_multiplier": 1.5,
+          "atk_multiplier": 1.2,
           "star_weights": {
             "4": 30,
             "5": 70
@@ -2651,27 +2568,25 @@
             "mob_chouette_silence": [
               "skill_mob_controller_slow",
               "skill_mob_controller_shackle"
+            ],
+            "boss_gardien_bois_fletri": [
+              "skill_mob_gardien_appel_racines_3"
             ]
           },
           "description_fr": "Le Gardien devient plus agressif et ses attaques s'enchaînent plus rapidement.",
           "description_en": "The Guardian grows more aggressive and unleashes attacks more rapidly.",
-          "_a_valider": "Proposition du 2026-11-17 : niveau conseille 36-40, monstres +10 niveaux, etoiles 30/70 entre 4 et 5 (comme les Egouts Difficile), deux competences de plus par espece. Mecanique du Gardien a l'echelle hard (plus de zones, annonce plus courte, ENRAGE).",
+          "_palier_25_11": "25/11, decision Charleston, A MESURER. Regle unique du palier Heroique : monstres +20 niveaux, PV x1.5 et attaque x1.2 (hp_multiplier / atk_multiplier du palier, lus par presence world/dungeon_fixed_groups.cpp, appliques a TOUS les monstres de TOUS les etages, boss et gardes compris, multiplies par les floor_overrides eventuels ; envoyes au combat en MonsterMapping.post_hp/post_atk_multiplier, apres le modele et les etoiles). level_range suit le decalage : niveaux des monstres du palier. Les invocations du boss ne recoivent pas ces multiplicateurs (elles suivent le niveau du boss). Boss : zones annoncees a l echelle hard (2 zones, coup 90 %, annonce 3 s, enrage a 120 s), plus une mecanique en plus : Appel des Racines, 6 Scarabees de cendre 2 niveaux sous lui, a cote de lui, recharge 30 s (skill_mob_gardien_appel_racines_3) ; la Chouette du silence entrave (Entrave, palier).",
+          "_anciennes_valeurs_25_11": "Avant le 25/11 (proposition du 2026-11-17) : level_range [36, 40], mob_level_offset 10, floor_overrides.5 PV du Gardien et de la Tortue x0,6, attaque du Gardien et du Scarabee x0,7 (reductions retirees, decision Charleston).",
           "floor_overrides": {
             "5": {
-              "hp_multipliers": {
-                "boss_gardien_bois_fletri": 0.6,
-                "mob_tortue_cendre": 0.6
-              },
-              "atk_multipliers": {
-                "boss_gardien_bois_fletri": 0.7,
-                "mob_scarabee_cendre": 0.7
-              },
-              "_a_valider": "Difficile : PV du Gardien et de la Tortue x0,6, attaque du Gardien et du Scarabee de cendre x0,7 : la difficulte vient de la mecanique (2 zones a 90 %, enrage a 120 s), pas des PV. Sans ce reglage : 0 % de victoires au banc. Banc server-combat WorldLowLevelSimulation.BoisFletriBossFight du 2026-11-17 (4 joueurs + 4 familiers joues par l'IA serveur, equipement moyen du niveau, sortie des zones scriptee ; 24 combats par mode) : Histoire (joueurs niv 29) 15/24 victoires, 35 % de PV restants, 179 s ; Normal (niv 34) 10/24, 23 %, 199 s ; Difficile (niv 39) 1/24, 1 %, 154 s. Avant reglage (Gardien PV x2.0 via per_mob_override, aucun multiplicateur d'etage) : 0/2 dans les trois modes. A VALIDER."
+              "tier_multipliers": false,
+              "_raison_25_11": "25/11, A MESURER, exception documentee : la salle du boss ne prend PAS les multiplicateurs de PV et d attaque du palier (seulement son decalage de niveau, ses etoiles et ses competences). La difficulte du boss vient de sa mecanique de palier (precision de Charleston du 25/11 : Heroique punitif par la mecanique, pas par plus de PV a taper). Banc server-combat DISABLED_DungeonFloorCurve (Egouts, 4 joueurs + 4 familiers) : avec les multiplicateurs, le groupe du boss tombe a 0-8 % de victoires meme sans invocation de palier."
             }
-          }
+          },
+          "_mesures_25_11": "Banc du 25/11, etages joueurs niv 49 : 0 %. Salle du boss avec esquive scriptee 0/8 (139 s), sans esquive 0/8 ; les 6 Scarabees ne sont pas cibles en priorite par l IA. Avant (joueurs niv 39) : 3/8, 216 s."
         }
       },
-      "_comment_difficulties": "Trois paliers comme les Egouts : fissure_1 = mode Histoire, fissure_2 = Normal, fissure_3 = Difficile (noms affiches par le client). Meme carte, memes etages et memes groupes : un palier decale le niveau des monstres (mob_level_offset), change le tirage d'etoiles et ajoute des competences (extra_skills). mechanic_scale = l'echelle de la mecanique du boss dans ce palier (entities/boss_mechanics.json), lue par server-combat ; aucun nombre de mecanique ici. Recompenses : config/rewards.json multiplier_families.dungeon_difficulty.<palier> (commun a tous les donjons ouverts), rien ici.",
+      "_comment_difficulties": "Trois paliers comme les Egouts : fissure_1 = mode Histoire, fissure_2 = Normal, fissure_3 = Heroique (noms affiches par le client ; Difficile jusqu au 25/11). Regle unique par palier depuis le 25/11 (voir dungeon_rat_den _comment_difficulties). Meme carte, memes etages et memes groupes : un palier decale le niveau des monstres (mob_level_offset), change le tirage d'etoiles et ajoute des competences (extra_skills). mechanic_scale = l'echelle de la mecanique du boss dans ce palier (entities/boss_mechanics.json), lue par server-combat ; aucun nombre de mecanique ici. Recompenses : config/rewards.json multiplier_families.dungeon_difficulty.<palier> (commun a tous les donjons ouverts), rien ici.",
       "_comment_keys": "Cle unique key_bois_fletri pour fissure_2 et fissure_3, consommee a l'entree, une par joueur. Sources : items/loot_tables.json dungeon_key_drops (rang II : 1 % sur tout monstre de rang II du monde, decroissance au-dela ; 20 % sur le Gardien, un tirage par joueur) et la recette Runiste recipe_rune_key_bois_fletri. Valeurs reprises des deux premiers donjons, a valider.",
       "floors": [
         {
