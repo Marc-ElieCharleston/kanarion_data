@@ -63,9 +63,12 @@
     "_comment": "Lu par shared/gameplay/stat_scaling.hpp (combat, economie, personnage, PNJ). Valeur de classe au niveau L = base + croissance x (L-1) (croissance des joueurs : `player_growth` quand la stat y figure, sinon stats/class_growth.json), arrondie par `rounding` (floor : ce que le combat appliquait deja). `allocation` : stat du profil que nourrit chaque point alloue (point_value dans stats_definition). `derived` : stats calculees depuis une autre (RM = 0,2 x MAG, auparavant en dur dans combat_profile_builder.cpp).",
     "rounding": "floor",
     "allocation": {"hp": "hp", "mp": "mp", "atk": "atk", "mag": "mag", "def": "armor"},
+    "allocation_also": {"def": ["magic_resist"]},
+    "_allocation_also_comment": "Autres stats que nourrit le meme point, a la meme point_value (decision Charleston du 19/11 et du 25/11 : 1 point de DEF = +1 armure ET +1 RM). `allocation` garde la stat principale (celle que le client affiche). Lu par kanarion_back shared/gameplay/stat_scaling.hpp, obligatoire ({} = un point ne nourrit qu'une stat).",
     "player_growth": {"hp": 10},
     "_player_growth_comment": "Croissance par niveau des JOUEURS (personnages, personnage de tournoi, salle d'essai de classe), toutes classes, qui REMPLACE pour ces stats la croissance de stats/class_growth.json. Une stat absente ici garde la croissance de sa classe. Les compagnons (mercenaires, recrues d'arene, familiers) ne lisent PAS ce bloc : ils gardent stats/class_growth.json. hp 10 : decision Charleston du 2026-11-25 (etait 3 pour le warrior, 2 pour les cinq autres classes). Lu par kanarion_back shared/gameplay/stat_scaling.hpp (StatSubject::Player), sans valeur par defaut : le bloc est obligatoire (objet vide = aucune difference joueur/compagnon).",
-    "derived": [{"target": "magic_resist", "source": "mag", "ratio": 0.2}]
+    "_derived_2026_11_26": "Vide depuis le 2026-11-26 (decision Charleston du 19/11, confirmee le 25/11) : la RM n'est plus nourrie par la MAG (etait magic_resist += 0,2 x MAG hors equipement). La RM vient de la croissance, des points de DEF (allocation_also), de l'equipement et des passifs.",
+    "derived": []
   },
   "stats_definition": {
     "hp": {
