@@ -123,6 +123,17 @@
       "_comment": "Recharge du deplacement d'une case par role d'IA (ai_role du monstre). Prime sur melee_movement. Role absent = melee_movement ou recharge commune.",
       "assassin": 7.0
     },
+    "role_move_cells": {
+      "_decision": "Charleston 2026-11-26 : les bruisers (roles brute, bruiser, berserker) se deplacent d'une case de plus par deplacement (2 au lieu de 1), pour rattraper les joueurs.",
+      "_a_valider": "2 cases par deplacement pour brute, bruiser et berserker, a valider en jeu par Charleston. Les boss de ces roles sont compris ; les rats du tutoriel (mob_rat, mob_rat_alpha, mob_rat_tutorial, role brute) aussi.",
+      "_comment": "Lu par server-combat (ai/monster_ai.cpp, CLE OBLIGATOIRE : absente = le combat refuse de demarrer). Nombre de cases d'UN deplacement (action MOVE) d'un monstre, par role d'IA (ai_role). Role absent = 1 case, comme le joueur. Applique au spawn (MoveCellsComponent, monde, donjon, tour, invocation) ; Room::validate_move accepte alors une case a cette distance au plus (Manhattan), atteinte par un chemin de cases libres, et l'IA avance d'autant sur son chemin vers la cible. La recharge du deplacement ne change pas (melee_movement, role_movement_cooldown_seconds). La fuite reste d'une case. exclude_monsters : ids de monstres qui gardent 1 case.",
+      "cells": {
+        "brute": 2,
+        "bruiser": 2,
+        "berserker": 2
+      },
+      "exclude_monsters": []
+    },
     "dive": {
       "_comment": "Plongee (competence teleport_adjacent sur un ennemi avec movement.landing behind) : l'IA choisit la cible, le serveur la case (son dos, sinon le flanc le plus proche du lanceur, la face, puis l'anneau 2 : Room::teleport_landing_cells). Cible : un ennemi de classe de base target_base_classes (joueur, recrue, mercenaire) ou de role target_ai_roles (monstre) ; s'il n'y en a aucun, n'importe quel ennemi. Parmi eux : le plus en arriere dans son camp d'abord (meme ordre que l'Appel de la Meute du Rongeur), puis le plus haut score = distance au lanceur (cases) + missing_hp_weight x part de PV manquants. Jamais une cible deja au contact, inciblable (invisible) ou une invocation.",
       "target_base_classes": ["healer", "mage", "archer"],
