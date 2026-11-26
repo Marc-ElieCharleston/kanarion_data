@@ -9,6 +9,7 @@
       "benefits.out_of_combat_regen_multiplier": "economy, EconomyService::do_regen_tick puis HealthCoordinator::apply_regen_tick : multiplie la regen hors combat de PV et de Souffle, valeur du rang actif (Premium x2, Premium+ x3 par tiers.premium_plus.benefits, decision Charleston du 2026-11-26).",
       "benefits.familiar_out_of_combat_regen_multiplier": "familiar, FamiliarService::do_regen_tick : multiplie la regen hors combat du familier actif, valeur du rang actif du proprietaire (Premium x2, Premium+ x3 par tiers.premium_plus.benefits, decision Charleston du 2026-11-26).",
       "xp_bonus": "PAS dans ce fichier : le bonus d'XP des abonnes (+5 % Premium et Premium+, decision Charleston du 2026-11-26) vit dans config/rewards.json subscriber_xp_bonus, proprietaire unique des multiplicateurs de recompense. Les descriptions ci-dessous le citent ; le message d'etat 0x0486 ne le porte pas.",
+      "benefits.contract_extra_rerolls_per_day": "quest, reply_contract_board (db/contract_bonus_reroll.hpp, migration 157) : relances du tableau de contrats EN PLUS par jour de jeu (05:00 Europe/Paris, comme les coffres de contrats), utilisables pendant la recharge normale (world/quests.json contract_limits.reroll_cooldown_seconds, qui reste la meme pour tous et passe toujours en premier). Un compteur par personnage, partage par toutes les planches, consomme atomiquement ; une requete rejouee (meme correlation_id) ne consomme rien. Rang lu en base. Facultative (0 si absente). Decision Charleston du 2026-11-26.",
       "benefits.teleport_free": "economy, handle_teleport : le passeur ne preleve pas d'or.",
       "benefits.npc_buy_discount_percent": "economy, handle_buy_item : remise sur le TOTAL d'un achat chez un marchand PNJ, arrondi au superieur, jamais sous 1 or. Pas sur la revente, l'HDV, la forge, les plans de metier.",
       "benefits.bag_bonus_slots / bank_bonus_slots": "economy, InventoryManager::capacity : places de sac / banque en plus tant que le niveau est actif (Premium+ seulement, 0 si absent). A l'expiration rien n'est perdu : les objets restent, on peut les retirer, on ne peut plus en ajouter tant que le total depasse la capacite ; le seuil de surcharge garde le bonus, l'ancien abonne n'est jamais bloque. Valeurs du 2026-10-17 a valider (une extension de sac = 10 places).",
@@ -29,15 +30,16 @@
     "teleport_free": true,
     "npc_buy_discount_percent": 10,
     "craft_away_from_station_in_safe_zone": true,
-    "auction_trade_away_from_npc_in_safe_zone": true
+    "auction_trade_away_from_npc_in_safe_zone": true,
+    "contract_extra_rerolls_per_day": 2
   },
   "tiers": {
     "premium": {
       "rank": 1,
       "name_fr": "Premium",
       "name_en": "Premium",
-      "description_fr": "Le confort au quotidien : récupération hors combat x2, pour toi et ton familier, +5 % d'expérience, voyages gratuits et prix réduits chez les marchands.",
-      "description_en": "Everyday comfort: x2 out-of-combat recovery for you and your familiar, +5% experience, free travel and lower prices at merchants.",
+      "description_fr": "Le confort au quotidien : récupération hors combat x2, pour toi et ton familier, +5 % d'expérience, 2 relances de contrats en plus par jour, voyages gratuits et prix réduits chez les marchands.",
+      "description_en": "Everyday comfort: x2 out-of-combat recovery for you and your familiar, +5% experience, 2 extra contract rerolls per day, free travel and lower prices at merchants.",
       "_description_note": "Revu le 2026-11-26 : fabrication et hotel des ventes a distance retires (ouverts a tous depuis la 0.22.2 et la 0.23.10), recuperation chiffree (x2 ici, x3 en Premium+). Premium+ reprend ce niveau (Tout Premium).",
       "price_diamonds": 1000,
       "period_days": 30,
@@ -69,7 +71,6 @@
     "_comment": "Decide, pas branche. Rien de ceci n'est lu ni affiche.",
     "weekly_dungeon_key": "1 cle de donjon par semaine (drop et consommation des cles pas branches)",
     "weekly_passive_tree_reset": "1 reinitialisation d'arbre de passifs par semaine",
-    "contract_reroll": "1 relance de contrat",
     "subscriber_cosmetics": "aura ou cadre d'abonne, par un artiste"
   }
 }
