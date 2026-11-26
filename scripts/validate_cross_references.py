@@ -3608,6 +3608,47 @@ def validate_respec_cost(db: Path) -> list:
     return errors
 
 
+def validate_build_pages(db: Path) -> list:
+    """systems/build_pages.json owns the build page prices and the switch cooldown (economy)."""
+    path = db / "systems" / "build_pages.json"
+    if not path.exists():
+        return ["[build_pages.json] absent : les pages de build sont fermees"]
+    d = load_json(path)
+    errors = []
+    max_pages, free_pages = d.get("max_pages"), d.get("free_pages")
+    if not (isinstance(max_pages, int) and 1 <= max_pages <= 5):
+        errors.append(f"[build_pages.json] max_pages doit etre un entier de 1 a 5 ({max_pages!r}) : "
+                      f"la base refuse page_index hors de 0..4")
+        return errors
+    if not (isinstance(free_pages, int) and 1 <= free_pages <= max_pages):
+        errors.append(f"[build_pages.json] free_pages doit etre un entier de 1 a max_pages ({free_pages!r})")
+        return errors
+    for k in ("switch_cooldown_seconds", "name_max_length"):
+        if not _is_nonneg_int(d.get(k)):
+            errors.append(f"[build_pages.json] {k} absent ou non entier >= 0 ({d.get(k)!r})")
+    if not isinstance(d.get("gold_option_enabled"), bool):
+        errors.append("[build_pages.json] gold_option_enabled doit etre un booleen")
+    gold_option = d.get("gold_option_enabled") is True
+    by_page = {}
+    for e in d.get("pages", []):
+        p = e.get("page")
+        if not isinstance(p, int) or p <= free_pages or p > max_pages:
+            errors.append(f"[build_pages.json] page {p!r} hors de {free_pages + 1}..{max_pages}")
+            continue
+        if p in by_page:
+            errors.append(f"[build_pages.json] page {p} en double")
+        by_page[p] = e
+        for k in ("gold", "diamonds", "gold_option"):
+            if k in e and not (isinstance(e[k], int) and e[k] > 0):
+                errors.append(f"[build_pages.json] page {p}.{k} doit etre un entier > 0 ({e[k]!r})")
+        if not ("gold" in e or "diamonds" in e or (gold_option and "gold_option" in e)):
+            errors.append(f"[build_pages.json] page {p} sans prix actif : elle ne s'achete pas")
+    for p in range(free_pages + 1, max_pages + 1):
+        if p not in by_page:
+            errors.append(f"[build_pages.json] page {p} sans entree de prix")
+    return errors
+
+
 def validate_koro_equipment(db: Path) -> list:
     """systems/koro.json equipment owns the number of Koro cards and their unlock levels."""
     eq = load_json(db / "systems" / "koro.json").get("equipment")
@@ -4305,6 +4346,11 @@ def main():
 
     print("[12y/12] Validating dungeon keys (key_required, key drop rules, key recipes)...")
     errs = validate_dungeon_key_refs(db, all_item_ids)
+    all_errors.extend(errs)
+    print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
+
+    print("[12z/12] Validating build pages (prices, cooldown, page bounds)...")
+    errs = validate_build_pages(db)
     all_errors.extend(errs)
     print(f"  {'PASS' if not errs else f'FAIL ({len(errs)} errors)'}")
 
