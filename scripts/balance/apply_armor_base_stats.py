@@ -4,8 +4,8 @@
 Source unique : items/equipment_scaling.json `armor_base_stats` (decision Charleston du
 2026-11-26). Ce script recopie la table dans items/equipment.json
 base_items.armor.<emplacement>[].base_stats. Le socle d'une piece d'armure ne porte QUE les
-cles de armor_base_stats.base_stats_keys (hp / armor / magic_resist) : toute autre cle
-(Souffle, MAG, esquive, regen de Souffle) est retiree. Les sous-stats font la difference.
+cles de armor_base_stats.base_stats_keys (hp / armor / magic_resist / mp) : toute autre cle
+(MAG, esquive, regen de Souffle) est retiree. Les sous-stats font la difference.
 
     valeur = unit_by_weight[poids][stat] x slot_weight[emplacement] x tier_mult[palier]
     arrondi a l'entier le plus proche (moitie vers le haut), minimum 1
@@ -80,16 +80,16 @@ def main():
         tiers = [t for t in table["tier_mult"] if not t.startswith("_")]
         slots = [s for s in table["slot_weight"] if not s.startswith("_")]
         for w in table["unit_by_weight"]:
-            print(f"\n{w} (PV / armure / RM, avant rarete)")
-            print("  " + "emplacement".ljust(12) + "".join(t.rjust(14) for t in tiers))
+            print(f"\n{w} ({' / '.join(STATS)}, avant rarete)")
+            print("  " + "emplacement".ljust(12) + "".join(t.rjust(16) for t in tiers))
             for s in slots:
                 cells = []
                 for t in tiers:
                     e = expected(table, s, w, t)
-                    cells.append(f"{e['hp']}/{e['armor']}/{e['magic_resist']}".rjust(14))
+                    cells.append("/".join(str(e[k]) for k in STATS).rjust(16))
                 print("  " + s.ljust(12) + "".join(cells))
             tot = {t: {k: sum(expected(table, s, w, t)[k] for s in slots) for k in STATS} for t in tiers}
-            print("  " + "6 pieces".ljust(12) + "".join(f"{v['hp']}/{v['armor']}/{v['magic_resist']}".rjust(14) for v in tot.values()))
+            print("  " + "6 pieces".ljust(12) + "".join("/".join(str(v[k]) for k in STATS).rjust(16) for v in tot.values()))
         return 0
 
     diffs = []
