@@ -55,6 +55,43 @@
     }
   },
 
+  "armor_base_stats": {
+    "_comment": "SOURCE UNIQUE des stats FIXES de base (PV, armure, RM) des pieces d'armure (decision Charleston du 2026-11-26). Une table emplacement x palier x poids : valeur = unit_by_weight[poids][stat] x slot_weight[emplacement] x tier_mult[palier], arrondie a l'entier le plus proche (moitie vers le haut), minimum 1. Ecrite dans items/equipment.json base_items.armor.*.base_stats par scripts/balance/apply_armor_base_stats.py (--check en CI : une piece qui differe de la table est refusee). Les autres cles de la piece (Souffle, MAG, esquive, regen) ne sont pas touchees. Le SERVEUR applique ensuite la rarete (rarity_system.rarities.<r>.power_mult) et l'amelioration (systems/enhancement_system.json) a ces stats de modele, comme avant (economy StatCalculator) : la table ne contient pas la rarete. Les trois poids donnent armure et RM a parts egales (brief equilibrage 12.4) ; le lourd a plus de PV et de defense, le leger garde l'offensif (MAG, Souffle) de ses pieces. Palier b1..b5 = suffixe du modele (niveaux 1-20 ... 81-100). Palier tournament = pieces tournoi_*_role_<role>, poids donne par tournament_weight_by_role. Toutes les valeurs A VALIDER (proposition du 2026-11-26).",
+    "unit_by_weight": {
+      "heavy": { "hp": 18, "armor": 7, "magic_resist": 7 },
+      "medium": { "hp": 14, "armor": 5, "magic_resist": 5 },
+      "light": { "hp": 10, "armor": 3.5, "magic_resist": 3.5 }
+    },
+    "slot_weight": {
+      "_comment": "Part de chaque emplacement, torse = 1. Recopie les proportions des pieces lourdes d'avant le 2026-11-26 (tete 13/5, jambes 15/6, bottes 11/4, ceinture 9/4, cape 10/4 pour un torse 18/7).",
+      "chest": 1.0,
+      "legs": 0.85,
+      "head": 0.7,
+      "feet": 0.6,
+      "cape": 0.55,
+      "belt": 0.5
+    },
+    "tier_mult": {
+      "_comment": "b1..b5 = paliers de niveau des modeles (memes multiplicateurs que tier_system.tiers). tournament = kit des personnages de tournoi (niveau 20) : un cran au-dessus de b1, pour un peu plus de defense en tournoi.",
+      "b1": 1.0,
+      "b2": 1.5,
+      "b3": 2.0,
+      "b4": 2.8,
+      "b5": 4.0,
+      "tournament": 1.5
+    },
+    "tournament_weight_by_role": {
+      "_comment": "Poids des pieces de tournoi par role (systems/tournament_role_kits.json) : le tank en lourd, les combattants physiques en intermediaire, les mages, soigneurs et soutiens en leger.",
+      "tank": "heavy",
+      "melee": "medium",
+      "ranged_physical": "medium",
+      "ranged_magic": "light",
+      "healer": "light",
+      "support": "light",
+      "support_buff": "light",
+      "support_debuff": "light"
+    }
+  },
   "rarity_system": {
     "description_fr": "La rareté affecte le nombre de substats et la fourchette de roll",
     "description_en": "Rarity affects substat count and roll range",
