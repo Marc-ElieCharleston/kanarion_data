@@ -264,7 +264,8 @@ def validate_floor_overrides(root, dungeon):
     errors = []
     did = dungeon['id']
     floors = {fl.get('floor'): fl for fl in dungeon.get('floors', [])}
-    allowed = {'mob_level_range', 'stars', 'hp_multipliers', 'atk_multipliers', 'tier_multipliers'}
+    allowed = {'mob_level_range', 'stars', 'hp_multipliers', 'atk_multipliers', 'tier_multipliers',
+               'group_members'}
     for tier, settings in dungeon.get('difficulties', {}).items():
         fos = settings.get('floor_overrides')
         if fos is None:
@@ -306,6 +307,33 @@ def validate_floor_overrides(root, dungeon):
                     if not isinstance(mult, (int, float)) or not 0.1 <= mult <= 50:
                         errors.append(f'{where}: {field}.{mob} = {mult!r} outside [0.1, 50] '
                                       f'(the combat server clamps there)')
+            # group_members (26/11, option A): this tier's composition of a group of this floor.
+            # A tier only REMOVES members (multiset subset of the authored group) and keeps the
+            # leader (members[0], boss.id on the boss floor). Read by presence.
+            gm = fo.get('group_members')
+            if gm is not None:
+                authored = {g.get('id'): g.get('members', []) for g in fl.get('monster_groups', [])}
+                if not isinstance(gm, dict):
+                    errors.append(f'{where}: group_members must be an object group id -> member list')
+                    gm = {}
+                for gid, members in gm.items():
+                    if gid.startswith('_'):
+                        continue
+                    if gid not in authored:
+                        errors.append(f'{where}: group_members names {gid}, not a group of floor {key}')
+                        continue
+                    if not (isinstance(members, list) and members and all(isinstance(m, str) for m in members)):
+                        errors.append(f'{where}: group_members.{gid} must be a non-empty list of monster ids')
+                        continue
+                    if members[0] != authored[gid][0]:
+                        errors.append(f'{where}: group_members.{gid} must keep the leader {authored[gid][0]}')
+                    left = list(authored[gid])
+                    for m in members:
+                        if m in left:
+                            left.remove(m)
+                        else:
+                            errors.append(f'{where}: group_members.{gid} adds {m}: a tier may only remove '
+                                          f'members of the authored group')
     return errors
 
 
