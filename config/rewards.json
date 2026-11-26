@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": "1.2",
-    "last_updated": "2026-10-18",
+    "last_updated": "2026-11-26",
     "schema_version": 1,
     "description": "Proprietaire UNIQUE des recompenses : XP, or et chance de drop. Toute quantite qui depend du CONTEXTE d'un combat vit ici. Ce que la rencontre EST (stats, IA, composition, tirage des etoiles) vit dans entities/monster_variants.json star_system. Le critere de rangement est le verbe : ETRE vs RAPPORTER.",
     "why": "Avant ce fichier, la meme quantite etait ecrite dans jusqu'a cinq endroits dont quatre morts. Releve du 2026-08-13 : le multiplicateur d'XP a 5 etoiles valait 14.0 dans monster_variants, 3.0 dans encounter_stars et 2.3 dans loot_tables — seul le dernier etait lu. Les 180 monstres portaient un base_xp ecrit a la main que le moteur n'a jamais lu. config/monster_tiers.json documentait son propre consommateur (loot_roller) qui ne l'a jamais ouvert. La formule documentee dans loot_tables.final_calculation avait perdu son etape 5 (les etoiles) que le code applique pourtant. Un seul proprietaire supprime la question.",
@@ -734,6 +734,13 @@
     "_comment": "Combat PvE du monde ABANDONNE : plus aucun participant connecte pendant timing.abandoned_room_timeout_seconds (combat.json du serveur). Decision Charleston 2026-10-17, modele Dofus : seule l'XP des monstres effectivement tues avant l'abandon est versee, multipliee par xp_ratio. Ni or, ni butin, ni empreinte, ni quete, ni defaite comptee. L'XP est calculee par le meme moteur qu'une victoire (LootRoller, memes familles de multiplicateurs), puis multipliee par ce ratio.",
     "xp_ratio": 0.5,
     "_a_valider": "0.5 est une PROPOSITION, a valider par Charleston. 0 = l'abandon ne rapporte rien (l'autre option qu'il a acceptee). Lu par server-combat (content_loader load_reward_multipliers) ; absent = 0, rien n'est verse."
+  },
+  "subscriber_xp_bonus": {
+    "_comment": "Bonus d'XP de personnage des abonnes au Pass (systems/premium.json tiers), decision Charleston du 2026-11-26. Pourcentage ENTIER par niveau, arrondi a l'INFERIEUR : xp + floor(xp x pourcentage / 100). Applique UNE seule fois, au credit de l'XP, apres tous les autres multiplicateurs (familles de combat, abandoned_fight.xp_ratio, arena_match x2 des premieres victoires et x0,5 contre les recrues, contract_xp_band, fractions d'invasion et de faille, coffres de contrats). Rang lu en base dans la transaction du credit (accounts.premium_until / premium_plus_until), jamais chez le client. Pas sur l'XP de metier ni sur l'XP du familier. Lecteurs : economy RewardProcessor::apply_character_rewards (combats PvE, donjons, Tour, abandon) ; quest QuestQueries::turn_in_quest (quetes et contrats) et credit_xp_locked (arene, succes, etapes de quete, invasions, failles, coffres de niveau). Gabarit partage : shared/gameplay/subscriber_xp_bonus.hpp. Bloc absent ou invalide = aucun bonus (erreur au journal), jamais de valeur devinee.",
+    "percent_by_tier": {
+      "premium": 5,
+      "premium_plus": 5
+    }
   },
   "familiar_xp": {
     "_comment": "XP de combat du familier. Regles du proprietaire (2026-10-21) : (1) l'XP du familier depend du niveau du FAMILIER, pas de celui du maitre : elle est calculee par le meme moteur que celle d'un joueur (LootRoller::roll_experience, memes monstres tues, etoiles, groupe, evenements, guilde), avec le niveau de combat du familier a la place du niveau du joueur (penalite d'ecart de niveau comprise) ; l'ecart de niveau de la salle (room_level_gap) ne s'applique pas au familier, comme le dit multiplier_families.room_level_gap. (2) Combat GAGNE = XP, meme si le familier est mort pendant le combat. Defaite = 0. Combat abandonne = la meme XP partielle qu'un joueur (abandoned_fight.xp_ratio). Puis multipliee par xp_ratio. Le niveau reste plafonne a celui du maitre (service familiar).",
