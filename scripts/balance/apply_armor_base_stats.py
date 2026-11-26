@@ -3,8 +3,9 @@
 
 Source unique : items/equipment_scaling.json `armor_base_stats` (decision Charleston du
 2026-11-26). Ce script recopie la table dans items/equipment.json
-base_items.armor.<emplacement>[].base_stats, cles hp / armor / magic_resist seulement : les
-autres stats d'une piece (Souffle, MAG, esquive, regen de Souffle) restent telles quelles.
+base_items.armor.<emplacement>[].base_stats. Le socle d'une piece d'armure ne porte QUE les
+cles de armor_base_stats.base_stats_keys (hp / armor / magic_resist) : toute autre cle
+(Souffle, MAG, esquive, regen de Souffle) est retiree. Les sous-stats font la difference.
 
     valeur = unit_by_weight[poids][stat] x slot_weight[emplacement] x tier_mult[palier]
     arrondi a l'entier le plus proche (moitie vers le haut), minimum 1
@@ -33,7 +34,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 EQUIPMENT = ROOT / "items" / "equipment.json"
 SCALING = ROOT / "items" / "equipment_scaling.json"
-STATS = ("hp", "armor", "magic_resist")
+STATS = ("hp", "armor", "magic_resist")  # remplace par base_stats_keys de la table
 TOURNAMENT = re.compile(r"^tournoi_[a-z]+_role_(?P<role>[a-z_]+)$")
 BRACKET = re.compile(r"_(?P<b>b[1-5])$")
 
@@ -70,6 +71,8 @@ def main():
     args = ap.parse_args()
 
     table = load(SCALING)[0]["armor_base_stats"]
+    global STATS
+    STATS = tuple(table["base_stats_keys"])
     eq, nl = load(EQUIPMENT)
     brackets = eq["equipment_system"]["level_brackets"]
 
@@ -104,6 +107,9 @@ def main():
                 weight, tier = piece["weight"], tier_of(piece, brackets)
             want = expected(table, slot, weight, tier)
             bs = piece.setdefault("base_stats", {})
+            for s in [k for k in bs if k not in STATS]:
+                diffs.append((piece["id"], s, bs[s], None))
+                del bs[s]
             for s in STATS:
                 if bs.get(s) != want[s]:
                     diffs.append((piece["id"], s, bs.get(s), want[s]))
