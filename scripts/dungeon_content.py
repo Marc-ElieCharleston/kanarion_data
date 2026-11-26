@@ -334,6 +334,25 @@ def validate_floor_overrides(root, dungeon):
                         else:
                             errors.append(f'{where}: group_members.{gid} adds {m}: a tier may only remove '
                                           f'members of the authored group')
+            # Multipliers vs the EFFECTIVE groups (26/11): presence applies hp_multipliers /
+            # atk_multipliers to the monsters it actually spawns, i.e. group_members.<gid> when this
+            # tier recomposes the group, the authored members otherwise. A key naming a monster that
+            # group_members removed would be ignored IN SILENCE (e.g. a multiplier left on a guard
+            # cut from the boss room). Monsters absent from the authored floor are reported above.
+            gm_ok = gm if isinstance(gm, dict) else {}
+            authored_floor = {m for g in fl.get('monster_groups', []) for m in g.get('members', [])}
+            effective = set()
+            for g in fl.get('monster_groups', []):
+                comp = gm_ok.get(g.get('id'))
+                if not (isinstance(comp, list) and comp and all(isinstance(m, str) for m in comp)):
+                    comp = g.get('members', [])
+                effective.update(comp)
+            for field in ('hp_multipliers', 'atk_multipliers'):
+                for mob in (fo.get(field) or {}):
+                    if mob.startswith('_') or mob not in authored_floor or mob in effective:
+                        continue
+                    errors.append(f'{where}: {field} names {mob}, which group_members removes from every '
+                                  f'group of floor {key} in this tier: the multiplier would be ignored')
     return errors
 
 
