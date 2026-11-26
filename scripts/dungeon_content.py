@@ -104,7 +104,8 @@ def _walk_ids(node, out):
 
 def validate_tier_content(root, dungeon):
     """Per-tier settings (2026-10-29): same floors for every tier, a tier moves the
-    monster level (mob_level_offset), may retune the star roll (star_weights) and adds
+    monster level (mob_level_offset), scales HP / attack of every monster of every floor
+    (hp_multiplier / atk_multiplier, 25/11), may retune the star roll (star_weights) and adds
     skills to chosen monsters (extra_skills, sent by presence to combat). A tier skill
     that declares `replaces` must replace a skill the monster really has. Every tier has
     its value in config/rewards.json multiplier_families.dungeon_difficulty."""
@@ -136,6 +137,14 @@ def validate_tier_content(root, dungeon):
         if lr is not None and not (isinstance(lr, list) and len(lr) == 2
                                    and all(isinstance(x, int) for x in lr) and lr[0] <= lr[1]):
             errors.append(f'{where}: level_range must be [min, max]')
+        # Regle unique du palier (25/11, decision Charleston) : PV et attaque de tous les monstres
+        # de tous les etages, lus par presence (world/dungeon_fixed_groups.cpp), bornes du combat.
+        for field in ('hp_multiplier', 'atk_multiplier'):
+            mult = settings.get(field)
+            if mult is not None and (isinstance(mult, bool) or not isinstance(mult, (int, float))
+                                     or not 0.1 <= mult <= 50):
+                errors.append(f'{where}: {field} = {mult!r} must be a number in [0.1, 50] '
+                              f'(the combat server clamps there)')
         for mob, extra in (settings.get('extra_skills') or {}).items():
             if mob not in present:
                 errors.append(f'{where}: extra_skills names {mob}, absent from the floors')
@@ -255,7 +264,7 @@ def validate_floor_overrides(root, dungeon):
     errors = []
     did = dungeon['id']
     floors = {fl.get('floor'): fl for fl in dungeon.get('floors', [])}
-    allowed = {'mob_level_range', 'stars', 'hp_multipliers', 'atk_multipliers'}
+    allowed = {'mob_level_range', 'stars', 'hp_multipliers', 'atk_multipliers', 'tier_multipliers'}
     for tier, settings in dungeon.get('difficulties', {}).items():
         fos = settings.get('floor_overrides')
         if fos is None:
@@ -280,6 +289,10 @@ def validate_floor_overrides(root, dungeon):
                                        and all(isinstance(x, int) for x in lr)
                                        and 1 <= lr[0] <= lr[1] and lr[1] + offset <= 100):
                 errors.append(f'{where}: mob_level_range must be [min, max] within 1..100 (offset included)')
+            tm = fo.get('tier_multipliers')
+            if tm is not None and not isinstance(tm, bool):
+                errors.append(f'{where}: tier_multipliers must be true or false (false = this floor '
+                              f'ignores the tier hp_multiplier / atk_multiplier)')
             st = fo.get('stars')
             if st is not None and not (isinstance(st, int) and 0 <= st <= 5):
                 errors.append(f'{where}: stars must be an integer 0..5')
