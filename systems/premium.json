@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": "2.0",
-    "last_updated": "2026-11-26",
+    "last_updated": "2026-11-27",
     "description": "Pass Premium a deux niveaux (Premium, Premium+), confort et gain de temps, jamais de puissance en combat. Remplace le pass unique du 2026-10-13 (_meta/carnet/pass_premium.md). Source unique : niveaux, prix en diamants, duree, avantages. Le serveur lit ce fichier et n'envoie au client que les avantages qu'il applique. Prix de reference : 100 diamants = 1 euro (items/currencies.json) ; aucun prix en euros ici (data publique). Toutes les valeurs du 2026-10-17 sont A VALIDER par Charleston.",
     "rule": "aucune stat, aucun bonus en combat, aucun contenu ferme aux non-abonnes",
     "readers": {
@@ -9,6 +9,7 @@
       "benefits.out_of_combat_regen_multiplier": "economy, EconomyService::do_regen_tick puis HealthCoordinator::apply_regen_tick : multiplie la regen hors combat de PV et de Souffle, valeur du rang actif (Premium x2, Premium+ x3 par tiers.premium_plus.benefits, decision Charleston du 2026-11-26).",
       "benefits.familiar_out_of_combat_regen_multiplier": "familiar, FamiliarService::do_regen_tick : multiplie la regen hors combat du familier actif, valeur du rang actif du proprietaire (Premium x2, Premium+ x3 par tiers.premium_plus.benefits, decision Charleston du 2026-11-26).",
       "xp_bonus": "PAS dans ce fichier : le bonus d'XP des abonnes (+5 % Premium et Premium+, decision Charleston du 2026-11-26) vit dans config/rewards.json subscriber_xp_bonus, proprietaire unique des multiplicateurs de recompense. Les descriptions ci-dessous le citent ; le message d'etat 0x0486 ne le porte pas.",
+      "benefits.auction_trade_anywhere": "economy, check_auction_trade -> crafting::may_craft_here (exemption.anywhere, raison premium_anywhere) : acheter et vendre a l'hotel des ventes a distance PARTOUT, hors ville comprise, jamais en combat (decision Charleston du 2026-11-27). Sans abonnement : seulement en ville / zone sure (auction_house.remote_trade_for_all). Facultatif dans le code (absent = false), envoye au client dans PremiumTierOffer champ 13 (0x0486).",
       "benefits.teleport_free": "economy, handle_teleport : le passeur ne preleve pas d'or.",
       "benefits.npc_buy_discount_percent": "economy, handle_buy_item : remise sur le TOTAL d'un achat chez un marchand PNJ, arrondi au superieur, jamais sous 1 or. Pas sur la revente, l'HDV, la forge, les plans de metier.",
       "benefits.bag_bonus_slots / bank_bonus_slots": "economy, InventoryManager::capacity : places de sac / banque en plus tant que le niveau est actif (Premium+ seulement, 0 si absent). A l'expiration rien n'est perdu : les objets restent, on peut les retirer, on ne peut plus en ajouter tant que le total depasse la capacite ; le seuil de surcharge garde le bonus, l'ancien abonne n'est jamais bloque. Valeurs du 2026-10-17 a valider (une extension de sac = 10 places).",
@@ -29,16 +30,17 @@
     "teleport_free": true,
     "npc_buy_discount_percent": 10,
     "craft_away_from_station_in_safe_zone": true,
-    "auction_trade_away_from_npc_in_safe_zone": true
+    "auction_trade_away_from_npc_in_safe_zone": true,
+    "auction_trade_anywhere": true
   },
   "tiers": {
     "premium": {
       "rank": 1,
       "name_fr": "Premium",
       "name_en": "Premium",
-      "description_fr": "Le confort au quotidien : récupération hors combat x2, pour toi et ton familier, +5 % d'expérience, voyages gratuits et prix réduits chez les marchands.",
-      "description_en": "Everyday comfort: x2 out-of-combat recovery for you and your familiar, +5% experience, free travel and lower prices at merchants.",
-      "_description_note": "Revu le 2026-11-26 : fabrication et hotel des ventes a distance retires (ouverts a tous depuis la 0.22.2 et la 0.23.10), recuperation chiffree (x2 ici, x3 en Premium+). Premium+ reprend ce niveau (Tout Premium).",
+      "description_fr": "Le confort au quotidien : récupération hors combat x2, pour toi et ton familier, +5 % d'expérience, voyages gratuits, prix réduits chez les marchands et hôtel des ventes à distance partout, même hors de la ville.",
+      "description_en": "Everyday comfort: x2 out-of-combat recovery for you and your familiar, +5% experience, free travel, lower prices at merchants and the auction house from anywhere, even outside town.",
+      "_description_note": "Revu le 2026-11-26 : fabrication et hotel des ventes a distance retires (ouverts a tous depuis la 0.22.2 et la 0.23.10), recuperation chiffree (x2 ici, x3 en Premium+). Premium+ reprend ce niveau (Tout Premium). 2026-11-27 : ajout de l'hotel des ventes a distance PARTOUT, hors ville comprise, hors combat (benefits.auction_trade_anywhere).",
       "price_diamonds": 1000,
       "period_days": 30,
       "bonus_diamonds": 0
