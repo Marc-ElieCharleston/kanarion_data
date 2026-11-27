@@ -75,6 +75,8 @@ def main():
     STATS = tuple(table["base_stats_keys"])
     eq, nl = load(EQUIPMENT)
     brackets = eq["equipment_system"]["level_brackets"]
+    excluded = {k for k in table.get("excluded_items", {}) if not k.startswith("_")}
+
 
     if args.table:
         tiers = [t for t in table["tier_mult"] if not t.startswith("_")]
@@ -97,6 +99,8 @@ def main():
         if slot not in table["slot_weight"]:
             raise SystemExit(f"emplacement {slot} absent de armor_base_stats.slot_weight")
         for piece in pieces:
+            if piece["id"] in excluded:
+                continue
             m = TOURNAMENT.match(piece["id"])
             if m:
                 weight, tier = table["tournament_weight_by_role"][m.group("role")], "tournament"
