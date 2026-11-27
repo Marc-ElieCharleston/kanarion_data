@@ -32,23 +32,27 @@
         }
       },
       "substat_pool": [
-        { "stat": "hp", "weight": 20 },
-        { "stat": "mp", "weight": 15 },
-        { "stat": "armor", "weight": 15 },
-        { "stat": "magic_resist", "weight": 15 },
-        { "stat": "hp_regen", "weight": 12 },
-        { "stat": "mp_regen", "weight": 12 },
-        { "stat": "def_percent", "weight": 8 },
-        { "stat": "damage_reduction", "weight": 3 },
-        { "stat": "crit", "weight": 6 },
+        { "stat": "hp", "weight": 12 },
+        { "stat": "armor", "weight": 10 },
+        { "stat": "magic_resist", "weight": 10 },
+        { "stat": "hp_regen", "weight": 6 },
+        { "stat": "def_percent", "weight": 4 },
+        { "stat": "damage_reduction", "weight": 2 },
         { "stat": "flee", "weight": 6 },
-        { "stat": "cast_speed", "weight": 6 }
+        { "stat": "atk", "weight": 8 },
+        { "stat": "mag", "weight": 8 },
+        { "stat": "crit", "weight": 7 },
+        { "stat": "armor_pen", "weight": 3 },
+        { "stat": "magic_pen", "weight": 3 },
+        { "stat": "cast_speed", "weight": 3 },
+        { "stat": "mp", "weight": 7 },
+        { "stat": "mp_regen", "weight": 6 }
       ],
       "substat_weight_multipliers": {
-        "_comment": "Budget de puissance (2026-09-28) : substats PONDEREES par le role de la piece, jamais interdites. Cle = poids d armure de la piece (le meme qui choisit la stat principale). Poids effectif = weight du pool x facteur (absent = 1). Hors role = x0.25 : lourde = defense/PV (Souffle, crit, esquive, vitesse d incantation rares) ; moyenne = physique/esquive (Souffle et vitesse d incantation rares) ; legere = magie/Souffle/vitesse d incantation (armure, crit, esquive rares). crit/flee/cast_speed ajoutees au pool (poids 6) pour que le role moyen/leger ait ses stats.",
-        "heavy": { "mp": 0.25, "mp_regen": 0.25, "crit": 0.25, "flee": 0.25, "cast_speed": 0.25 },
-        "medium": { "mp": 0.25, "mp_regen": 0.25, "cast_speed": 0.25 },
-        "light": { "armor": 0.25, "crit": 0.25, "flee": 0.25 }
+        "_comment": "SOURCE UNIQUE des ponderations de sous-stats des pieces d'armure PAR POIDS (decision Charleston du 2026-11-26 au soir) : le socle d'une piece ne porte que PV / armure / RM (items/equipment_scaling.json armor_base_stats), ce sont les sous-stats qui font la difference. Poids effectif = weight du pool x facteur de la ligne du poids de la piece (absent = 1). Le pool est le profil INTERMEDIAIRE (melange : ~46 % defense, ~34 % offensif, ~14 % Souffle, 6 % esquive) et sert aussi aux pieces sans poids. Lourd : ~82 % defense (PV, armure, RM, regen, def_percent, reduction). Leger : ~54 % offensif (ATK, MAG, critique, penetrations, vitesse d'incantation) + ~21 % Souffle, ~20 % defense. Aucune sous-stat n'est interdite. Sous-stats en % deja presentes avant le 2026-11-26 : def_percent, damage_reduction, crit, flee, cast_speed ; armor_pen et magic_pen (en %, plafond 70) existaient deja en sous-stat des bijoux et entrent dans le pool d'armure ce jour, atk et mag (plats) aussi. Lu par server-combat StatRoller::effective_substat_pool (tirage serveur, sans remise). Toutes les valeurs A VALIDER.",
+        "heavy": { "hp": 1.5, "armor": 2, "magic_resist": 2, "hp_regen": 2, "def_percent": 2, "damage_reduction": 1.5, "flee": 0.5, "atk": 0.25, "mag": 0.25, "crit": 0.25, "armor_pen": 0.25, "magic_pen": 0.25, "cast_speed": 0.25, "mp": 0.5, "mp_regen": 0.5 },
+        "medium": {},
+        "light": { "hp": 0.5, "armor": 0.25, "magic_resist": 0.25, "hp_regen": 0.5, "def_percent": 0.25, "damage_reduction": 0.25, "flee": 0.75, "atk": 1.5, "mag": 1.5, "crit": 1.5, "armor_pen": 1.5, "magic_pen": 1.5, "cast_speed": 2, "mp": 1.5, "mp_regen": 1.5 }
       }
     },
 

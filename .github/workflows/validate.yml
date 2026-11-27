@@ -291,6 +291,12 @@ jobs:
       - name: Verify skill power matrix is up to date
         run: python3 scripts/balance/skill_power_matrix.py --check
 
+      # 3b''''. Stats fixes de base des pieces d'armure (2026-11-26, Charleston) : table unique
+      # items/equipment_scaling.json armor_base_stats (emplacement x palier x poids), recopiee
+      # dans items/equipment.json. Echoue si une piece ne correspond plus a la table.
+      - name: Verify armor base stats follow the table
+        run: python3 scripts/balance/apply_armor_base_stats.py --check
+
       # 3b'''. Cooldowns et temps d'incantation des sorts de classe (2026-10-15) : regle de
       # config/skill_power_model.json timing (cooldown selon la puissance par role, budget de
       # charge par kit, incantation selon la puissance nette, copies en description).
