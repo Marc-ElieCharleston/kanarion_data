@@ -550,6 +550,10 @@ def regen_rule_deviations():
         _, want, values = bands[s["band"]]
         for thr, b in s["bonuses"].items():
             out += [(sid, s["band"], thr, k, f"la forme {want}") for k in b if k in stat_form and stat_form[k] != want]
+        if s.get("tournament"):
+            # Sets de tournoi (decision Charleston du 2026-11-27, 0.23.15) : regen de Souffle
+            # propre au tournoi (mp_regen 6, total 7 avec la classe), hors valeur de rang.
+            continue
         for res, value in values.items():
             stat = forms["flat"][res]
             total = sum(b.get(stat, 0) for b in s["bonuses"].values())
