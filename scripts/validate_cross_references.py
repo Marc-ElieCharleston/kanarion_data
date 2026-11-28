@@ -1439,6 +1439,40 @@ def validate_zone_chests(db: Path, all_item_ids: set) -> list:
                 errors.append(f"[zone_chests.json] rang {rank} : objet '{iid}' inexistant")
             if it.get("weight", 0) <= 0 or it.get("min", 1) > it.get("max", 1):
                 errors.append(f"[zone_chests.json] rang {rank} : '{iid}' poids ou quantites invalides")
+            if not isinstance(it.get("top_item", False), bool):
+                errors.append(f"[zone_chests.json] rang {rank} : '{iid}' top_item doit etre un booleen")
+    # Raretes (2026-11-28) : facultatives ; presentes, presence refuse le fichier si une
+    # entree est mal formee (memes regles que ChestConfig::load_from_json).
+    rarities = data.get("rarities")
+    if rarities is not None:
+        if not isinstance(rarities, dict):
+            errors.append("[zone_chests.json] rarities doit etre un objet")
+        else:
+            entries = {k: v for k, v in rarities.items() if not k.startswith("_")}
+            total = 0
+            for rid, r in entries.items():
+                p = f"[zone_chests.json] rarities.{rid}"
+                if not isinstance(r, dict):
+                    errors.append(f"{p} doit etre un objet")
+                    continue
+                w = r.get("weight")
+                if not isinstance(w, int) or isinstance(w, bool) or w < 0:
+                    errors.append(f"{p}.weight doit etre un entier >= 0")
+                else:
+                    total += w
+                gm = r.get("gold_mult", 1.0)
+                if not isinstance(gm, (int, float)) or isinstance(gm, bool) or gm < 0:
+                    errors.append(f"{p}.gold_mult doit etre un nombre >= 0")
+                er = r.get("extra_rolls", 0)
+                if not isinstance(er, int) or isinstance(er, bool) or not 0 <= er <= 10:
+                    errors.append(f"{p}.extra_rolls doit etre un entier entre 0 et 10")
+                tm = r.get("top_item_weight_mult", 1.0)
+                if not isinstance(tm, (int, float)) or isinstance(tm, bool) or tm <= 0:
+                    errors.append(f"{p}.top_item_weight_mult doit etre un nombre > 0")
+            if "normal" not in entries:
+                errors.append("[zone_chests.json] rarities.normal manquant (rarete par defaut)")
+            if total <= 0:
+                errors.append("[zone_chests.json] rarities : somme des poids nulle")
     return errors
 
 
